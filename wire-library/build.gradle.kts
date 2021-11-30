@@ -138,7 +138,10 @@ allprojects {
 
     configure<MavenPublishBaseExtension> {
       publishToMavenCentral(SonatypeHost.DEFAULT)
-      signAllPublications()
+      val inMemoryKey = project.findProperty("signingInMemoryKey") as String?
+      if (!inMemoryKey.isNullOrEmpty()) {
+        signAllPublications()
+      }
       pom {
         description.set("gRPC and protocol buffers for Android, Kotlin, and Java.")
         name.set(project.name)

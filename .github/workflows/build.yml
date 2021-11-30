@@ -43,10 +43,6 @@ jobs:
         run: |
           ./gradlew -p wire-library -Dkjs=false -Dknative=false build --stacktrace -Pswift=false
           ./gradlew build
-        env:
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ARTIFACT_SIGNING_PRIVATE_KEY }}
 
   multiplatform:
     runs-on: macos-latest
@@ -81,10 +77,6 @@ jobs:
         run: |
           ./gradlew -p wire-library build -Pswift=false --stacktrace
           ./gradlew build --stacktrace
-        env:
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ARTIFACT_SIGNING_PRIVATE_KEY }}
 
   windows:
     runs-on: windows-latest
@@ -120,10 +112,6 @@ jobs:
           ./gradlew -p wire-library build --stacktrace -Pswift=false
           ./gradlew build --stacktrace
         shell: bash
-        env:
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ARTIFACT_SIGNING_PRIVATE_KEY }}
 
   swift:
     runs-on: macos-latest
