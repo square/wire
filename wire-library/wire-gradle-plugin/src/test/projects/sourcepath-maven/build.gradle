@@ -12,4 +12,6 @@ repositories {
 
 wire {
   sourcePath 'com.squareup.wire.dinosaur:all-protos:+'
+  java{
+  }
 }

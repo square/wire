@@ -15,3 +15,8 @@ repositories {
 dependencies {
   implementation "com.squareup.wire:wire-runtime:$VERSION_NAME"
 }
+
+wire{
+  java{
+  }
+}

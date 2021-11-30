@@ -19,4 +19,6 @@ wire {
     srcJar 'com.squareup.wire.dinosaur:all-protos:+'
     include 'squareup/dinosaurs/dinosaur.proto'
   }
+  java{
+  }
 }

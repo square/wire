@@ -8,4 +8,6 @@ wire {
     srcDir 'src/main/proto'
     include 'squareup/**'
   }
+  java{
+  }
 }

@@ -104,6 +104,18 @@ class WirePluginTest {
   }
 
   @Test
+  fun requireTarget() {
+    val fixtureRoot = File("src/test/projects/require-target")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNull()
+    assertThat(result.output)
+      .contains("At least one target must be provided for project")
+  }
+
+  @Test
   fun useDefaultSourcePath() {
     val fixtureRoot = File("src/test/projects/sourcepath-default")
 
