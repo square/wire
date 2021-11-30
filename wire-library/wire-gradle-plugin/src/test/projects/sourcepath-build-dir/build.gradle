@@ -23,4 +23,6 @@ wire {
   sourcePath {
     srcDir OUTPUT_REPO_DIR
   }
+  java{
+  }
 }

@@ -15,4 +15,6 @@ wire {
     srcJar 'com.squareup.wire.dinosaur:all-protos:+'
     include 'squareup/geology/period.proto', 'squareup/dinosaurs/dinosaur.proto'
   }
+  java{
+  }
 }

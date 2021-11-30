@@ -11,11 +11,13 @@ dependencies {
   implementation(deps.wire.runtime)
 }
 
+wire{
+  java{}
+}
 /**
  * Default settings:
  * 1) all proto definitions located in "${projectDir}/src/main/proto"
- * 2) all protos generated in Java
- * 3) all generated protos written to "${projectDir}/build/generated/source/wire"
+ * 2) all generated protos written to "${projectDir}/build/generated/source/wire"
  *
  * If all of the above suffice, no additional configuration is needed!
  */

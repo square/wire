@@ -5,4 +5,6 @@ plugins {
 
 wire {
   sourcePath 'http://www.squareup.com'
+  java{
+  }
 }

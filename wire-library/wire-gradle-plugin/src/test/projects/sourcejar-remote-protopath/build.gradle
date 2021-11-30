@@ -19,4 +19,6 @@ wire {
     srcDir 'src/main/proto'
     include 'squareup/geology/period.proto'
   }
+  java{
+  }
 }

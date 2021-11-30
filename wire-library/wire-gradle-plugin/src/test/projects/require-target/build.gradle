@@ -2,8 +2,3 @@ plugins {
   id 'application'
   id 'com.squareup.wire'
 }
-
-wire{
-  java{
-  }
-}
