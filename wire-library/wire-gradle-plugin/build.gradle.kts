@@ -66,7 +66,7 @@ val generateVersion by tasks.creating {
       """
       |// Generated file. Do not edit!
       |package com.squareup.wire
-      |const val VERSION = "${project.version}"
+      |val VERSION = "${project.version}"
       |""".trimMargin()
     )
   }
