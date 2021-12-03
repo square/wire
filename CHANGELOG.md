@@ -1,6 +1,20 @@
 Change Log
 ==========
 
+Version 4.0.0
+----------------------
+
+_2021-12-03_
+
+ * New: The Wire plugin requires an output to be set. Before, it would generate Java code by
+     default; it will now throw if there are no [output][wire-customizing-output] defined.
+ * New: `wire-runtime` exposes a `com.squareup.wire.VERSION` constant reflecting the project
+     version.
+ * New: The default value of `emitAppliedOptions` for our Java and Kotlin target is now set to true.
+ * Fix: Bugs in JSON serialization of builder-less Kotlin types have been addressed.
+ * Fix: Handle out of order proto fields when initializing Kotlin constructors.
+ * Fix: Emitting proper protobuf format for option values defined as a list of enum constants.
+
 Version 4.0.0-alpha.20
 ----------------------
 
@@ -1015,6 +1029,7 @@ Initial version.
 
  [jimfs]: https://github.com/google/jimfs
  [javapoet]: https://github.com/square/javapoet
+ [wire-customizing-output]: https://square.github.io/wire/wire_compiler/#customizing-output
  [okio_3_0_0]: https://square.github.io/okio/changelog/#version-300
  [okio_3_0_0_a_3]: https://square.github.io/okio/changelog/#version-300-alpha3
  [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
