@@ -6,137 +6,11 @@ Version 4.0.0
 
 _2021-12-03_
 
- * New: The Wire plugin requires an output to be set. Before, it would generate Java code by
-     default; it will now throw if there are no [output][wire-customizing-output] defined.
- * New: `wire-runtime` exposes a `com.squareup.wire.VERSION` constant reflecting the project
-     version.
- * New: The default value of `emitAppliedOptions` for our Java and Kotlin target is now set to true.
- * Fix: Bugs in JSON serialization of builder-less Kotlin types have been addressed.
- * Fix: Handle out of order proto fields when initializing Kotlin constructors.
- * Fix: Emitting proper protobuf format for option values defined as a list of enum constants.
-
-Version 4.0.0-alpha.20
-----------------------
-
-_2021-11-25_
-
+ * New: Add 'nameSuffix' parameter for configuring generated service-class names in Kotlin.
+ * New: Define `oneofName` in `@WireField`.
  * New: Enable iosSimulatorArm64 for Kotlin multiplatform.
- * New: SchemaLoader doesn't extend the `Closeable` interface anymore.
- * Fix: Don't re-use the cache if protobuf inputs have changed.
- * Fix: Wire will not generate respective built-in types for Java, Kotlin, and Swift generation.
-    Those are usually the google types for which Wire will provide its own implementation.
-
-Version 4.0.0-alpha.19
-----------------------
-
-_2021-11-23_
-
- * Fix: Reverse the topological sort of dependent files in `SchemaReflector`. We had problems with
-   `grpc-curl` which expects the requested file to be listed first.
- * Upgrade: [OkHttp 4.9.3][okhttp_4_9_3].
-
-Version 4.0.0-alpha.18
-----------------------
-
-_2021-11-22_
-
- * Fix: In Java, rename instances to avoid field and class name conflicts.
- * New: Wire should build and execute properly on Windows.
-
-Version 4.0.0-alpha.17
-----------------------
-
-_2021-11-11_
-
- * Fix: Validate enum constant uniqueness for the entire package.
- * Fix: Compile Kotlin/JS with both LEGACY and IR compilers.
- * Fix: Don't depend on moshi-kotlin in wire-moshi. This caused a transitive dependency on
-   kotlin-reflect, which we neither needed nor wanted.
-
-Version 4.0.0-alpha.16
-----------------------
-
-_2021-11-09_
-
- * Fix: Don't generate invalid code when an enum constant is named `name` or `ordinal`.
- * Fix: Deep copy metadata on `GrpcCall.clone()`.
- * Fix: Support reporting errors in `CustomHandlerBeta`.
- * Upgrade: [Okio 3.0.0][okio_3_0_0]. This is binary-incompatible with the Okio 3.0 alpha releases.
-
-Version 3.7.1
--------------
-
-_2021-11-03_
-
- * Fix: Properly load schema located at root without packages.
-
-Version 4.0.0-alpha.15
-----------------------
-
-_2021-10-21_
-
- * Fix: Support for serializing builder-less Kotlin generated classes to JSON.
- * Fix: Wire Gradle plugin tasks have been modernized with configuration caching support.
-
-Version 4.0.0-alpha.13
-----------------------
-
-_2021-10-12_
-
- * Fix: Memory fixes found with Address Sanitizer in Swift.
-
-Version 4.0.0-alpha.11
-----------------------
-
-_2021-09-02_
-
- * New: change the Gradle plugin so that (unstable) custom handlers can be configured with instance
-   instead of with a class name.
-
-Note that releases `4.0.0-alpha.9` and `4.0.0-alpha.10` were published incorrectly and should not be
-used.
-
-Version 4.0.0-alpha.8
----------------------
-
-_2021-08-30_
-
-This release drops the `-multiplatform` suffix on Kotlin Multiplatform artifacts. All artifacts now
-share the same name (like `com.squareup.wire:wire-runtime:4.0.0-alpha.8`) for both Kotlin/JVM and
-Kotlin Multiplatform.
-
- * New: Programmatic API to prune schemas. See `Pruner` in wire-schema.
  * New: Expose the source `.proto` file at `ProtoAdaper.sourceFile`. This is null for built-in types
    and types generated prior to this release.
- * Fix: Retain field order when emitting a schema as `.proto` files.
- * Fix: Support Kotlin-generated annotations on Java fields.
- * Fix: Locate files in the root package when importing.
-
-
-Version 4.0.0-alpha.7
----------------------
-
-_2021-08-09_
-
- * Fix: Use correct type when referencing a custom adapter in Kotlin generated code.
- * Fix: Handle writing/reading exceptions for duplex calls in Wire gRPC.
-
-Version 4.0.0-alpha.6
----------------------
-
-_2021-08-03_
-
- * Fix: Explicitly defined Wire gRPC server generation as experimental: the feature isn't complete.
- * Fix: Suppress deprecation warnings on generated enum's `fromValue` method in Kotlin.
- * Fix: Use relative path sensitivity and file collection.
-
-Version 4.0.0-alpha.5
----------------------
-
-_2021-06-24_
-
-**Kotlin + Java**
-
  * New: Generate Kotlin code whose members match the declaration order of the corresponding `.proto`
    files. In previous releases, generated members were sorted by kind (fields, oneofs), then by
    declaration order. With this update only declaration order is used. **Note that this will change
@@ -144,87 +18,89 @@ _2021-06-24_
    Identical encoding of equal messages across Wire releases is typical but not guaranteed, and this
    is a rare release that changes that encoding. If you do cryptographic hashes on encoded proto
    messages, you will notice that the hashes are different in this release.
- * Fix: Redact boxed `OneOf` fields.
- * Fix: Don't crash encoding schemas when an option contains a repeated field, an enum, or a double.
- * Fix: Be more aggressive about loading transitive files with `SchemaLoader.loadExhaustively`.
- * Fix: Don't break task caching by using absolute paths in the Gradle plugin. Wire now uses
-   project-relative paths in any attribute that is used as a cache key.
-
-
-Version 4.0.0-alpha.4
----------------------
-
-_2021-06-15_
-
-**Kotlin + Java**
-
- * New: Define `oneofName` in `@WireField`.
  * New: Option in `SchemaLoader` to exhaustively load imported files. By default we only load what's
    immediately necessary to generate code; this new option loads everything reachable into the
    schema.
-
-
-Version 4.0.0-alpha.3
----------------------
-
-_2021-06-03_
-
-**Kotlin + Java**
-
- * New: Support for special float literals.
- * New: Support for Android variants.
- * New: Add 'nameSuffix' parameter for configuring generated service-class names in Kotlin.
- * New: Support for glob syntax in srcJar includes.
- * Fix: Redacted Kotlin scalars now respect nullability.
- * Update: Update KotlinPoet to `1.8.0`.
- * Bye: Drop support for emitKotlinxSerialization.
-
-
-Version 4.0.0-alpha.2
----------------------
-
-_2021-05-11_
-
-**Kotlin + Java**
-
- * New: `@WireRpc` has a new `sourceFile` attribute.
- * New: `wire-reflector` bundles gRPC's `reflection.proto` which it is built upon.
-
-
-Version 4.0.0-alpha.1
----------------------
-
-_2021-05-01_
-
-**Kotlin + Java**
-
- * New: `GrpcClient.Builder.minMessageToCompress()` configures which messages are compressed.
-   This will completely disable compression if the size is `Long.MAX_VALUE`. We've seen problems
-   where some Golang gRPC servers don't support compression; setting this to `MAX_VALUE` is
-   necessary to interop with them.
- * New: `SchemaReflector` is our initial implementation of the [gRPC Server Reflection
-   Protocol][reflect]. Note that although we implement the business logic of gRPC reflection, we
-   don't offer a gRPC server built into Wire.
+ * New: Programmatic API to prune schemas. See `Pruner` in wire-schema.
+ * New: SchemaLoader doesn't extend the `Closeable` interface anymore.
  * New: Support `rpcRole = 'none'` in the Gradle plugin to generate neither client nor server code.
+ * New: Support for Android variants.
+ * New: Support for glob syntax in srcJar includes.
+ * New: Support for special float literals.
+ * New: Swift support `Timestamp` and `Duration`.
+ * New: The Wire plugin requires an output to be set. Before, it would generate Java code by
+   default; it will now throw if there are no [output][wire-customizing-output] defined.
+ * New: The default value of `emitAppliedOptions` for our Java and Kotlin target is now set to true.
+ * New: Wire should build and execute properly on Windows.
+ * New: `@WireRpc` has a new `sourceFile` attribute.
+ * New: `GrpcClient.Builder.minMessageToCompress()` configures which messages are compressed. This
+   will completely disable compression if the size is `Long.MAX_VALUE`. We've seen problems where
+   some Golang gRPC servers don't support compression; setting this to `MAX_VALUE` is necessary to
+   interop with them.
+ * New: `SchemaReflector` is our initial implementation of the
+   [gRPC Server Reflection Protocol][reflect]. Note that although we implement the business logic of
+   gRPC reflection, we don't offer a gRPC server built into Wire.
+ * New: `wire-reflector` bundles gRPC's `reflection.proto` which it is built upon.
+ * New: `wire-runtime` exposes a `com.squareup.wire.VERSION` constant reflecting the project version.
+ * New: change the Gradle plugin so that (unstable) custom handlers can be configured with instance
+   instead of with a class name.
+ * Fix: Be more aggressive about loading transitive files with `SchemaLoader.loadExhaustively`.
+ * Fix: Bugs in JSON serialization of builder-less Kotlin types have been addressed.
+ * Fix: Compile Kotlin/JS with both LEGACY and IR compilers.
+ * Fix: Deep copy metadata on `GrpcCall.clone()`.
+ * Fix: Don't break task caching by using absolute paths in the Gradle plugin. Wire now uses
+   project-relative paths in any attribute that is used as a cache key.
+ * Fix: Don't crash encoding schemas when an option contains a repeated field, an enum, or a double.
+ * Fix: Don't depend on moshi-kotlin in wire-moshi. This caused a transitive dependency on
+   kotlin-reflect, which we neither needed nor wanted.
+ * Fix: Don't generate invalid code when an enum constant is named `name` or `ordinal`.
+ * Fix: Don't re-use the cache if protobuf inputs have changed.
+ * Fix: Emitting proper protobuf format for option values defined as a list of enum constants.
+ * Fix: Explicitly defined Wire gRPC server generation as experimental: the feature isn't complete.
  * Fix: Generate `@Deprecated` annotations on deprecated messages, fields, enums, and enum
    constants.
+ * Fix: Handle out of order proto fields when initializing Kotlin constructors.
+ * Fix: Handle writing/reading exceptions for duplex calls in Wire gRPC.
+ * Fix: In Java, rename instances to avoid field and class name conflicts.
+ * Fix: Locate files in the root package when importing.
+ * Fix: Memory fixes found with Address Sanitizer in Swift.
+ * Fix: Permit values other than `0` and `1` when decoding protobuf-encoded booleans. Previously we
+   threw an `IOException` for other values; now all non-zero values are true.
+ * Fix: Redact boxed `OneOf` fields.
+ * Fix: Redacted Kotlin scalars now respect nullability.
+ * Fix: Retain field order when emitting a schema as `.proto` files.
+ * Fix: Reverse the topological sort of dependent files in `SchemaReflector`. We had problems with
+   `grpc-curl` which expects the requested file to be listed first.
+ * Fix: Support Kotlin-generated annotations on Java fields.
+ * Fix: Support for serializing builder-less Kotlin generated classes to JSON.
+ * Fix: Support reporting errors in `CustomHandlerBeta`.
+ * Fix: Suppress deprecation warnings on generated enum's `fromValue` method in Kotlin.
+ * Fix: Swift adapters will throw an error when encountering an unexpected
+   `ProtoReader.beginMessage()` rather than calling `fatalError()`.
+ * Fix: Update the Wire Gradle plugin to clear the output directory before generating code. This
+   prevents the need to do a clean build after removing a message type.
  * Fix: Update the Wire Gradle plugin to register generated `.java` sources with the Java compiler.
    Previously this was broken if the Kotlin plugin was installed.
  * Fix: Use Gradle's logging mechanism to reduce output when Wire generates code.
- * Fix: Update the Wire Gradle plugin to clear the output directory before generating code. This
-   prevents the need to do a clean build after removing a message type.
- * Fix: Permit values other than `0` and `1` when decoding protobuf-encoded booleans. Previously we
-   threw an `IOException` for other values; now all non-zero values are true.
- * Upgrade: [Okio 3.0.0-alpha.3][okio_3_0_0_a_3]. We now use Okio 3's `FileSystem` in
-   `SchemaLoader`, which makes it easier to load `.proto` files from the classpath.
+ * Fix: Use correct type when referencing a custom adapter in Kotlin generated code.
+ * Fix: Use relative path sensitivity and file collection.
+ * Fix: Validate enum constant uniqueness for the entire package.
+ * Fix: Wire Gradle plugin tasks have been modernized with configuration caching support.
+ * Fix: Wire will not generate respective built-in types for Java, Kotlin, and Swift generation.
+   Those are usually the google types for which Wire will provide its own implementation.
+ * Upgrade: Update KotlinPoet to `1.8.0`.
+ * Upgrade: [OkHttp 4.9.3][okhttp_4_9_3].
+ * Upgrade: [Okio 3.0.0][okio_3_0_0]. We now use Okio 3's `FileSystem` in `SchemaLoader`, which
+   makes it easier to load `.proto` files from the classpath. This is binary-incompatible with the
+   Okio 3.0 alpha releases.
+ * Bye: Drop support for emitKotlinxSerialization.
 
+Version 3.7.1
+-------------
 
-**Swift**:
+_2021-11-03_
 
- * New: Support `Timestamp` and `Duration`.
- * Fix: Throw an error when encountering an unexpected `ProtoReader.beginMessage()` rather
-   than calling `fatalError()`.
-
+ * Fix: Properly load schema located at root without packages.
 
 Version 3.7.0
 -------------
