@@ -10,6 +10,8 @@ plugins {
   id("com.vanniktech.maven.publish.base")
 }
 
+val versionWriterTaskProvider = tasks.register("writeVersion", VersionWriterTask::class)
+
 kotlin {
   jvm {
     withJava()
@@ -43,7 +45,7 @@ kotlin {
       languageSettings.useExperimentalAnnotation("kotlin.Experimental")
     }
     val commonMain by getting {
-      kotlin.srcDir("src/generated/kotlin")
+      kotlin.srcDir(versionWriterTaskProvider)
       dependencies {
         api(deps.okio.core)
       }
@@ -138,27 +140,4 @@ configure<MavenPublishBaseExtension> {
   configure(
     KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
   )
-}
-
-val generateVersion by tasks.creating {
-  val outputDir = file("src/generated/kotlin")
-
-  inputs.property("version", version)
-  outputs.dir(outputDir)
-
-  doLast {
-    val versionFile = file("${outputDir}/com/squareup/wire/Version.kt")
-    versionFile.parentFile.mkdirs()
-    versionFile.writeText(
-        """
-      |// Generated file. Do not edit!
-      |package com.squareup.wire
-      |val VERSION = "${project.version}"
-      |""".trimMargin()
-    )
-  }
-}
-
-tasks.matching { it.name.startsWith("compileKotlin") }.forEach {
-  it.dependsOn(generateVersion)
 }

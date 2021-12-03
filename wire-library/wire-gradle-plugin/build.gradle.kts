@@ -47,33 +47,12 @@ dependencies {
   testImplementation(deps.assertj)
 }
 
+val versionWriterTaskProvider = tasks.register("writeVersion", VersionWriterTask::class)
+
 sourceSets {
   val main by getting {
-    java.srcDir("src/generated/kotlin")
+    java.srcDir(versionWriterTaskProvider)
   }
-}
-
-val generateVersion by tasks.creating {
-  val outputDir = file("src/generated/kotlin")
-
-  inputs.property("version", version)
-  outputs.dir(outputDir)
-
-  doLast {
-    val versionFile = file("${outputDir}/com/squareup/wire/Version.kt")
-    versionFile.parentFile.mkdirs()
-    versionFile.writeText(
-      """
-      |// Generated file. Do not edit!
-      |package com.squareup.wire
-      |val VERSION = "${project.version}"
-      |""".trimMargin()
-    )
-  }
-}
-
-val compileKotlin by tasks.getting {
-  dependsOn(generateVersion)
 }
 
 val installProtoJars by tasks.creating(Copy::class) {
