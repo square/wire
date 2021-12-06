@@ -61,7 +61,7 @@ jobs:
           java-version: 14
 
       - name: Setup Xcode
-        run: sudo xcode-select -switch "/Applications/Xcode_12.app"
+        run: sudo xcode-select -switch "/Applications/Xcode_12.5.1.app"
 
       - name: Check test files
         run: |
@@ -129,7 +129,7 @@ jobs:
           java-version: 14
 
       - name: Setup Xcode
-        run: sudo xcode-select -switch "/Applications/Xcode_12.app"
+        run: sudo xcode-select -switch "/Applications/Xcode_12.5.1.app"
 
       - name: Test Swift Runtime
         # This builds the wire-swift-runtime, verifies that generated protos match what's
@@ -166,7 +166,7 @@ jobs:
           java-version: 14
 
       - name: Setup Xcode
-        run: sudo xcode-select -switch "/Applications/Xcode_12.app"
+        run: sudo xcode-select -switch "/Applications/Xcode_12.5.1.app"
 
       - name: Upload Artifacts
         run: |
