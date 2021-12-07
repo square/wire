@@ -314,6 +314,32 @@ final class ProtoReaderTests: XCTestCase {
         XCTAssertTrue(didThrow, "Unknown enum should throw")
     }
 
+    func testDecodeEnumInOneOf() throws {
+        let data = Data(hexEncoded: """
+            20 // (Tag 4 | Varint)
+            01 // Value 1
+            10 // (Tag 2 | Varint)
+            01 // Value 1
+        """)!
+        try test(data: data, enumStrategy: .returnNil) { reader in
+            let message = OneOfs(standalone_enum: OneOfs.NestedEnum.A, choice: OneOfs.Choice.similar_enum_option(OneOfs.NestedEnum.A))
+            XCTAssertEqual(try reader.decode(OneOfs.self), message)
+        }
+    }
+
+    func testDecodeUnknownEnumInOneOfNilStrategy() throws {
+        let data = Data(hexEncoded: """
+            20 // (Tag 4 | Varint)
+            01 // Value 1
+            10 // (Tag 2 | Varint)
+            02 // Value 2
+        """)!
+        try test(data: data, enumStrategy: .returnNil) { reader in
+            let message = OneOfs(standalone_enum: OneOfs.NestedEnum.A, choice: nil)
+            XCTAssertEqual(try reader.decode(OneOfs.self), message)
+        }
+    }
+
     // MARK: - Tests - Decoding Repeated Fields
 
     func testDecodeRepeatedBools() throws {
