@@ -74,6 +74,8 @@ class SwiftGenerator private constructor(
     get() = nameToTypeName.getValue(this)
   private val ProtoType.isMessage
     get() = schema.getType(this) is MessageType
+  private val ProtoType.isEnum
+    get() = schema.getType(this) is EnumType
   private val Type.typeName
     get() = type.typeName
 
@@ -404,10 +406,27 @@ class SwiftGenerator private constructor(
           }
           type.oneOfs.forEach { oneOf ->
             oneOf.fields.forEach { field ->
-              addStatement(
-                  "case %L: %N = .%N(try $reader.decode(%T.self))", field.tag,
-                  oneOf.name, field.name, field.typeName.makeNonOptional()
-              )
+              when {
+                // ProtoReader.decode() return optional for enums. Handle that specially.
+                field.type!!.isEnum -> {
+                  addStatement(
+                    "case %1L: %2N = (try $reader.decode(%4T.self)).flatMap { .%3N(\$0) }",
+                    field.tag,
+                    oneOf.name,
+                    field.name,
+                    field.typeName.makeNonOptional()
+                  )
+                }
+                else -> {
+                  addStatement(
+                    "case %1L: %2N = .%3N(try $reader.decode(%4T.self))",
+                    field.tag,
+                    oneOf.name,
+                    field.name,
+                    field.typeName.makeNonOptional()
+                  )
+                }
+              }
             }
           }
           addStatement("default: try $reader.readUnknownField(tag: $tag)")
