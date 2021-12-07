@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 4.0.1
+-------------
+
+_2021-12-07_
+
+ * Fix: Don't fail at compilation when an enum is in a `oneof` for Swift generation.
+
 Version 4.0.0
 ----------------------
 
