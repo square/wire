@@ -22,9 +22,9 @@ cd $DIR
 
 # Generate the API docs
 ./gradlew -p wire-library \
-    :wire-grpc-client:dokka \
-    :wire-moshi-adapter:dokka \
-    :wire-runtime:dokka
+    :wire-grpc-client:dokkaGfm \
+    :wire-moshi-adapter:dokkaGfm \
+    :wire-runtime:dokkaGfm
 
 # Fix *.md links to point to where the docs live under Mkdocs.
 # Linux
