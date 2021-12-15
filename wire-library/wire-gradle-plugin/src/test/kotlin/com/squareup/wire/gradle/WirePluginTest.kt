@@ -2,6 +2,7 @@
 
 package com.squareup.wire.gradle
 
+import com.squareup.wire.VERSION
 import okio.Path
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.BuildResult
@@ -43,6 +44,10 @@ class WirePluginTest {
           "--configuration-cache",
         )
         .withDebug(true)
+  }
+
+  @Test fun versionIsExposed() {
+    assertThat(VERSION).isNotNull()
   }
 
   @After
