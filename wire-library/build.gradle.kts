@@ -134,7 +134,7 @@ allprojects {
     }
 
     configure<MavenPublishBaseExtension> {
-      publishToMavenCentral(SonatypeHost.DEFAULT)
+      publishToMavenCentral(SonatypeHost.S01)
       val inMemoryKey = project.findProperty("signingInMemoryKey") as String?
       if (!inMemoryKey.isNullOrEmpty()) {
         signAllPublications()
