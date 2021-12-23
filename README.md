@@ -611,5 +611,5 @@ See [Google's excellent documentation][schema_docs] on the structure and syntax 
  [grpc_docs]: wire-library/docs/wire_grpc.md
  [dl_runtime]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-runtime&v=LATEST
  [dl_compiler]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
- [snap]: https://oss.sonatype.org/content/repositories/snapshots/
+ [snap]: https://s01.oss.sonatype.org/content/repositories/snapshots/
  [wire]: https://square.github.io/wire/
