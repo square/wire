@@ -47,7 +47,6 @@ import java.nio.file.FileSystem as NioFileSystem
  *   [--files=<protos.include>]
  *   [--includes=<message_name>[,<message_name>...]]
  *   [--excludes=<message_name>[,<message_name>...]]
- *   [--quiet]
  *   [--dry_run]
  *   [--android]
  *   [--android-annotations]
@@ -71,8 +70,6 @@ import java.nio.file.FileSystem as NioFileSystem
  * the given name will be generated, containing a constant list of all extension classes generated
  * during the compile. This list is suitable for passing to Wire's constructor at runtime for
  * constructing its internal extension registry.
- *
- * If `--quiet` is specified, diagnostic messages to stdout are suppressed.
  *
  * The `--dry_run` flag causes the compile to just emit the names of the source files that would be
  * generated to stdout.
@@ -200,7 +197,6 @@ class WireCompiler internal constructor(
     private const val INCLUDES_FLAG = "--includes="
     private const val EXCLUDES_FLAG = "--excludes="
     private const val MANIFEST_FLAG = "--experimental-module-manifest="
-    private const val QUIET_FLAG = "--quiet"
     private const val DRY_RUN_FLAG = "--dry_run"
     private const val ANDROID = "--android"
     private const val ANDROID_ANNOTATIONS = "--android-annotations"
@@ -249,7 +245,6 @@ class WireCompiler internal constructor(
       var javaOut: String? = null
       var kotlinOut: String? = null
       var swiftOut: String? = null
-      var quiet = false
       var dryRun = false
       var emitAndroid = false
       var emitAndroidAnnotations = false
@@ -311,7 +306,6 @@ class WireCompiler internal constructor(
             modules = parseManifestModules(yaml)
           }
 
-          arg == QUIET_FLAG -> quiet = true
           arg == DRY_RUN_FLAG -> dryRun = true
           arg == ANDROID -> emitAndroid = true
           arg == ANDROID_ANNOTATIONS -> emitAndroidAnnotations = true
@@ -329,8 +323,6 @@ class WireCompiler internal constructor(
         throw WireException(
             "Nothing to do! Specify $JAVA_OUT_FLAG, $KOTLIN_OUT_FLAG, or $SWIFT_OUT_FLAG")
       }
-
-      logger.setQuiet(quiet)
 
       if (treeShakingRoots.isEmpty()) {
         treeShakingRoots += "*"
