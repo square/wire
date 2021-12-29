@@ -335,8 +335,7 @@ class WireCompilerTest {
   @Test
   fun testDryRun() {
     val sources = arrayOf("service_root.proto")
-    compileToJava(sources, "--includes=squareup.wire.protos.roots.TheService", "--dry_run",
-        "--quiet")
+    compileToJava(sources, "--includes=squareup.wire.protos.roots.TheService", "--dry_run")
 
     assertThat(logger!!.log).isEqualTo("""
         |skipped squareup.wire.protos.roots.TheRequest
