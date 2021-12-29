@@ -32,9 +32,43 @@ internal class StringWireLogger : WireLogger {
     buffer.append("skipped $type\n")
   }
 
-  @Synchronized override fun warn(message: String) {
-    if (!quiet) {
-      buffer.append("$message\n")
-    }
+  @Synchronized override fun unusedRoots(unusedRoots: Set<String>) {
+    if (quiet) return
+
+    buffer.append(
+      """Unused element in treeShakingRoots:
+      |  ${unusedRoots.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
+  }
+
+  @Synchronized override fun unusedPrunes(unusedPrunes: Set<String>) {
+    if (quiet) return
+
+    buffer.append(
+      """Unused element in treeShakingRubbish:
+      |  ${unusedPrunes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
+  }
+
+  @Synchronized override fun unusedIncludesInTarget(unusedIncludes: Set<String>) {
+    if (quiet) return
+
+    buffer.append(
+      """Unused includes in targets:
+      |  ${unusedIncludes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
+  }
+
+  @Synchronized override fun unusedExcludesInTarget(unusedExcludes: Set<String>) {
+    if (quiet) return
+
+    buffer.append(
+      """Unused excludes in targets:
+      |  ${unusedExcludes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
   }
 }

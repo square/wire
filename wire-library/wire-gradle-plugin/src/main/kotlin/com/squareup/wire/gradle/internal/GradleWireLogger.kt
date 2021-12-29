@@ -24,8 +24,36 @@ import org.slf4j.LoggerFactory
 internal object GradleWireLogger : WireLogger {
   private val slf4jLogger = LoggerFactory.getLogger(WirePlugin::class.java)
 
-  override fun warn(message: String) {
-    slf4jLogger.warn(message)
+  override fun unusedRoots(unusedRoots: Set<String>) {
+    slf4jLogger.warn(
+      """Unused element in treeShakingRoots:
+      |  ${unusedRoots.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
+  }
+
+  override fun unusedPrunes(unusedPrunes: Set<String>) {
+    slf4jLogger.warn(
+      """Unused element in treeShakingRubbish:
+      |  ${unusedPrunes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
+  }
+
+  override fun unusedIncludesInTarget(unusedIncludes: Set<String>) {
+    slf4jLogger.warn(
+      """Unused includes in targets:
+      |  ${unusedIncludes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
+  }
+
+  override fun unusedExcludesInTarget(unusedExcludes: Set<String>) {
+    slf4jLogger.warn(
+      """Unused excludes in targets:
+      |  ${unusedExcludes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
   }
 
   override fun artifactHandled(outputPath: Path, qualifiedName: String) {

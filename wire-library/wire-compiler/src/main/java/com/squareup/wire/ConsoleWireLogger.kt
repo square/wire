@@ -21,10 +21,44 @@ import okio.Path
 internal class ConsoleWireLogger : WireLogger {
   var quiet: Boolean = false
 
-  override fun warn(message: String) {
-    if (!quiet) {
-      println(message)
-    }
+  override fun unusedRoots(unusedRoots: Set<String>) {
+    if (quiet) return
+
+    println(
+      """Unused element in treeShakingRoots:
+      |  ${unusedRoots.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
+  }
+
+  override fun unusedPrunes(unusedPrunes: Set<String>) {
+    if (quiet) return
+
+    println(
+      """Unused element in treeShakingRubbish:
+      |  ${unusedPrunes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
+  }
+
+  override fun unusedIncludesInTarget(unusedIncludes: Set<String>) {
+    if (quiet) return
+
+    println(
+      """Unused includes in targets:
+      |  ${unusedIncludes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
+  }
+
+  override fun unusedExcludesInTarget(unusedExcludes: Set<String>) {
+    if (quiet) return
+
+    println(
+      """Unused excludes in targets:
+      |  ${unusedExcludes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
   }
 
   override fun artifactHandled(outputPath: Path, qualifiedName: String) {
