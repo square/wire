@@ -255,7 +255,7 @@ data class JavaTarget(
             javaFile.packageName.replace(".", "/") /
             "${javaTypeName.simpleName()}.java"
 
-        logger.artifactHandled(modulePath, "${javaFile.packageName}.${javaFile.typeSpec.name}")
+        logger.artifactHandled(modulePath, "${javaFile.packageName}.${javaFile.typeSpec.name}", "Java")
         try {
           fs.createDirectories(filePath.parent!!)
           fs.write(filePath) {
@@ -419,7 +419,7 @@ data class KotlinTarget(
             "${kotlinFile.name}.kt"
         val path = outDirectory.toPath()
 
-        logger.artifactHandled(path, "${kotlinFile.packageName}.${(kotlinFile.members.first() as TypeSpec).name}")
+        logger.artifactHandled(path, "${kotlinFile.packageName}.${(kotlinFile.members.first() as TypeSpec).name}", "Kotlin")
         try {
           fs.createDirectories(filePath.parent!!)
           fs.write(filePath) {
@@ -498,7 +498,7 @@ data class SwiftTarget(
               "Error emitting ${swiftFile.moduleName}.${typeName.canonicalName} to $modulePath", e)
         }
 
-        logger.artifactHandled(modulePath, "${swiftFile.moduleName}.${typeName.canonicalName}")
+        logger.artifactHandled(modulePath, "${swiftFile.moduleName}.${typeName.canonicalName}", "Swift")
         return filePath
       }
 
@@ -565,7 +565,7 @@ data class ProtoTarget(
             .substringBeforeLast("/", missingDelimiterValue = ".")
         val outputDirectory = modulePath / relativePath
         val outputFilePath = outputDirectory / "${protoFile.name()}.proto"
-        logger.artifactHandled(outputDirectory, protoFile.location.path)
+        logger.artifactHandled(outputDirectory, protoFile.location.path, "Proto")
 
         try {
           fs.createDirectories(outputFilePath.parent!!)
@@ -612,12 +612,12 @@ data class NullTarget(
   ): SchemaHandler {
     return object : SchemaHandler {
       override fun handle(type: Type): Path? {
-        logger.artifactSkipped(type.type)
+        logger.artifactSkipped(type.type, "Dry-run")
         return null
       }
 
       override fun handle(service: Service): List<Path> {
-        logger.artifactSkipped(service.type)
+        logger.artifactSkipped(service.type, "Dry-run")
         return emptyList()
       }
 

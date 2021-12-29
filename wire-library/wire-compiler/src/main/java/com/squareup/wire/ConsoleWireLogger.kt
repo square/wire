@@ -61,7 +61,7 @@ internal class ConsoleWireLogger : WireLogger {
     )
   }
 
-  override fun artifactHandled(outputPath: Path, qualifiedName: String) {
+  override fun artifactHandled(outputPath: Path, qualifiedName: String, targetName: String) {
     if (quiet) {
       println(qualifiedName)
     } else {
@@ -69,7 +69,7 @@ internal class ConsoleWireLogger : WireLogger {
     }
   }
 
-  override fun artifactSkipped(type: ProtoType) {
+  override fun artifactSkipped(type: ProtoType, targetName: String) {
     println("Skipping $type")
   }
 }

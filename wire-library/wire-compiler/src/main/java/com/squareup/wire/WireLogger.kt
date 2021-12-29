@@ -31,16 +31,26 @@ interface WireLogger {
    * @param qualifiedName is the file path when generating a `.proto` file, the type or service
    *   name prefixed with its package name when generating a `.java` or `.kt` file, and the type
    *   name when generating a `.swift` file.
+   * @param targetName is used to identify the concerned target. For
+   * [JavaTarget][com.squareup.wire.schema.JavaTarget], the name will be "Java". For
+   * [KotlinTarget][com.squareup.wire.schema.KotlinTarget], the name will be "Kotlin". For
+   * [SwiftTarget][com.squareup.wire.schema.SwiftTarget], the name will be "Swift". For
+   * [ProtoTarget][com.squareup.wire.schema.ProtoTarget], the name will be "Proto".
    */
-  fun artifactHandled(outputPath: Path, qualifiedName: String)
+  fun artifactHandled(outputPath: Path, qualifiedName: String, targetName: String)
 
   /**
    * This is called when an artifact has been passed down to a
    * [SchemaHandler][com.squareup.wire.schema.Target.SchemaHandler] but has been skipped. This is
    * useful for dry-runs.
    * @param type is the unique identifier for the skipped type.
+   * @param targetName is used to identify the concerned target. For
+   * [JavaTarget][com.squareup.wire.schema.JavaTarget], the name will be "Java". For
+   * [KotlinTarget][com.squareup.wire.schema.KotlinTarget], the name will be "Kotlin". For
+   * [SwiftTarget][com.squareup.wire.schema.SwiftTarget], the name will be "Swift". For
+   * [ProtoTarget][com.squareup.wire.schema.ProtoTarget], the name will be "Proto".
    */
-  fun artifactSkipped(type: ProtoType)
+  fun artifactSkipped(type: ProtoType, targetName: String)
 
   /**
    * This is called if some `root` values have not been used when Wire pruned the schema model.
