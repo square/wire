@@ -19,11 +19,7 @@ import com.squareup.wire.schema.ProtoType
 import okio.Path
 
 internal class ConsoleWireLogger : WireLogger {
-  private var quiet: Boolean = false
-
-  override fun setQuiet(quiet: Boolean) {
-    this.quiet = quiet
-  }
+  var quiet: Boolean = false
 
   override fun warn(message: String) {
     if (!quiet) {

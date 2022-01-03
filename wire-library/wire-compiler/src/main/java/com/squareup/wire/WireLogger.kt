@@ -24,8 +24,6 @@ import okio.Path
  * processing the protobuf [Schema][com.squareup.wire.schema.Schema].
  */
 interface WireLogger {
-  // TODO(Benoit) I think we should remove this one.
-  fun setQuiet(quiet: Boolean)
   /**
    * This is called when an artifact is handled by a
    * [SchemaHandler][com.squareup.wire.schema.Target.SchemaHandler].

@@ -19,14 +19,10 @@ import com.squareup.wire.schema.ProtoType
 import okio.Path
 
 internal class StringWireLogger : WireLogger {
-  private var quiet: Boolean = false
+  var quiet: Boolean = false
   private val buffer = StringBuilder()
 
   val log: String get() = buffer.toString()
-
-  override fun setQuiet(quiet: Boolean) {
-    this.quiet = quiet
-  }
 
   @Synchronized override fun artifactHandled(outputPath: Path, qualifiedName: String) {
     buffer.append("$outputPath $qualifiedName\n")

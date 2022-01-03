@@ -24,9 +24,6 @@ import org.slf4j.LoggerFactory
 internal object GradleWireLogger : WireLogger {
   private val slf4jLogger = LoggerFactory.getLogger(WirePlugin::class.java)
 
-  override fun setQuiet(quiet: Boolean) {
-  }
-
   override fun warn(message: String) {
     slf4jLogger.warn(message)
   }
