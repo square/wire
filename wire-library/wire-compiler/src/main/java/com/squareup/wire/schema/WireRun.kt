@@ -240,7 +240,6 @@ data class WireRun(
       mapOf(null to Partition(schema))
     }
 
-    val skippedForSyntax = mutableSetOf<Location>()
     val claimedPaths = mutableMapOf<Path, String>()
     val errorCollector = ErrorCollector()
     for ((moduleName, partition) in partitions) {
@@ -283,23 +282,12 @@ data class WireRun(
 
     for (emittingRules in targetToEmittingRules.values) {
       if (emittingRules.unusedIncludes().isNotEmpty()) {
-        logger.warn("""Unused includes in targets:
-            |  ${emittingRules.unusedIncludes().joinToString(separator = "\n  ")}
-            """.trimMargin())
+        logger.unusedIncludesInTarget(emittingRules.unusedIncludes())
       }
 
       if (emittingRules.unusedExcludes().isNotEmpty()) {
-        logger.warn("""Unused excludes in targets:
-            |  ${emittingRules.unusedExcludes().joinToString(separator = "\n  ")}
-            """.trimMargin())
+        logger.unusedExcludesInTarget(emittingRules.unusedExcludes())
       }
-    }
-
-    if (skippedForSyntax.isNotEmpty()) {
-      logger.warn("""Skipped .proto files with unsupported syntax. Add this line to fix:
-          |  syntax = "proto2";
-          |  ${skippedForSyntax.joinToString(separator = "\n  ") { it.toString() }}
-          """.trimMargin())
     }
   }
 
@@ -323,12 +311,11 @@ data class WireRun(
 
     val prunedSchema = schema.prune(pruningRules)
 
-    for (rule in pruningRules.unusedRoots()) {
-      logger.warn("Unused element in treeShakingRoots: $rule")
+    if (pruningRules.unusedRoots().isNotEmpty()) {
+      logger.unusedRoots(pruningRules.unusedRoots())
     }
-
-    for (rule in pruningRules.unusedPrunes()) {
-      logger.warn("Unused element in treeShakingRubbish: $rule")
+    if (pruningRules.unusedPrunes().isNotEmpty()) {
+      logger.unusedPrunes(pruningRules.unusedPrunes())
     }
 
     return TypeMover(prunedSchema, moves).move()

@@ -43,8 +43,44 @@ interface WireLogger {
   fun artifactSkipped(type: ProtoType)
 
   /**
-   * This is called when [WireRun][com.squareup.wire.schema.WireRun] found unusual configurations.
-   * For instance when types marked as roots or prunes are not used.
+   * This is called if some `root` values have not been used when Wire pruned the schema model.
+   * Note that `root` should contain package names (suffixed with `.*`), type names, and member
+   * names only. It should not contain file paths. Unused roots can happen if the referenced type
+   * or service isn't part of any `.proto` files defined in either
+   * [sourcePath][com.squareup.wire.schema.WireRun.sourcePath] or
+   * [protoPath][com.squareup.wire.schema.WireRun.protoPath], or if a broader root value is already
+   * defined.
    */
-  fun warn(message: String)
+  fun unusedRoots(unusedRoots: Set<String>)
+
+  /**
+   * This is called if some `prune` values have not been used when Wire pruned the schema model.
+   * Note that `prune` should contain package names (suffixed with `.*`), type names, and member
+   * names only. It should not contain file paths. Unused prunes can happen if the referenced type
+   * or service isn't part of any `.proto` files defined in either
+   * [sourcePath][com.squareup.wire.schema.WireRun.sourcePath] or
+   * [protoPath][com.squareup.wire.schema.WireRun.protoPath], or if a broader prune value is
+   * already defined.
+   */
+  fun unusedPrunes(unusedPrunes: Set<String>)
+
+  /**
+   * This is called if some `includes` values have not been used by the target they were defined in.
+   * Note that `includes` should contain package names (suffixed with `.*`) and type names only. It
+   * should not contain member names, nor file paths. Unused includes can happen if the referenced
+   * type or service isn't part of the parsed and pruned schema model, or has already been consumed
+   * by another preceding target.
+   */
+  // TODO(Benoit) We could pass the target name or something which makes it identifiable.
+  fun unusedIncludesInTarget(unusedIncludes: Set<String>)
+
+  /**
+   * This is called if some `excludes` values have not been used by the target they were defined in.
+   * Note that `excludes` should contain package names (suffixed with `.*`) and type names only. It
+   * should not contain member names, nor file paths. Unused excludes can happen if the referenced
+   * type or service isn't part of the parsed and pruned schema model, or has already been consumed
+   * by another preceding target.
+   */
+  // TODO(Benoit) We could pass the target name or something which makes it identifiable.
+  fun unusedExcludesInTarget(unusedExcludes: Set<String>)
 }
