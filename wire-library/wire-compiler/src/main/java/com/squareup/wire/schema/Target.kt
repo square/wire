@@ -593,54 +593,6 @@ data class ProtoTarget(
   }
 }
 
-/** Omit code generation for these sources. Use this for a dry-run. */
-data class NullTarget(
-  override val includes: List<String> = listOf("*"),
-  override val excludes: List<String> = listOf()
-) : Target() {
-  override val exclusive: Boolean = true
-  override val outDirectory = ""
-
-  override fun newHandler(
-    schema: Schema,
-    moduleName: String?,
-    upstreamTypes: Map<ProtoType, String>,
-    fs: FileSystem,
-    logger: WireLogger,
-    profileLoader: ProfileLoader,
-    errorCollector: ErrorCollector,
-  ): SchemaHandler {
-    return object : SchemaHandler {
-      override fun handle(type: Type): Path? {
-        logger.artifactSkipped(type.type, "Dry-run")
-        return null
-      }
-
-      override fun handle(service: Service): List<Path> {
-        logger.artifactSkipped(service.type, "Dry-run")
-        return emptyList()
-      }
-
-      override fun handle(extend: Extend, field: Field): Path? {
-        return null
-      }
-    }
-  }
-
-
-  override fun copyTarget(
-    includes: List<String>,
-    excludes: List<String>,
-    exclusive: Boolean,
-    outDirectory: String
-  ): Target {
-    return copy(
-        includes = includes,
-        excludes = excludes,
-    )
-  }
-}
-
 /**
  * Generate something custom defined by an external class.
  *

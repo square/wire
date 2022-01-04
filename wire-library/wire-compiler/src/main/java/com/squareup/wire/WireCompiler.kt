@@ -20,7 +20,6 @@ import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.JavaTarget
 import com.squareup.wire.schema.KotlinTarget
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.NullTarget
 import com.squareup.wire.schema.SwiftTarget
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
@@ -47,7 +46,6 @@ import java.nio.file.FileSystem as NioFileSystem
  *   [--files=<protos.include>]
  *   [--includes=<message_name>[,<message_name>...]]
  *   [--excludes=<message_name>[,<message_name>...]]
- *   [--dry_run]
  *   [--android]
  *   [--android-annotations]
  *   [--compact]
@@ -93,7 +91,6 @@ class WireCompiler internal constructor(
   val treeShakingRoots: List<String>,
   val treeShakingRubbish: List<String>,
   val modules: Map<String, WireRun.Module>,
-  val dryRun: Boolean,
   val emitAndroid: Boolean,
   val emitAndroidAnnotations: Boolean,
   val emitCompact: Boolean,
@@ -107,9 +104,7 @@ class WireCompiler internal constructor(
   @Throws(IOException::class)
   fun compile() {
     val targets = mutableListOf<Target>()
-    if (dryRun) {
-      targets += NullTarget()
-    } else if (javaOut != null) {
+    if (javaOut != null) {
       targets += JavaTarget(
           outDirectory = javaOut,
           android = emitAndroid,
@@ -197,7 +192,6 @@ class WireCompiler internal constructor(
     private const val INCLUDES_FLAG = "--includes="
     private const val EXCLUDES_FLAG = "--excludes="
     private const val MANIFEST_FLAG = "--experimental-module-manifest="
-    private const val DRY_RUN_FLAG = "--dry_run"
     private const val ANDROID = "--android"
     private const val ANDROID_ANNOTATIONS = "--android-annotations"
     private const val COMPACT = "--compact"
@@ -245,7 +239,6 @@ class WireCompiler internal constructor(
       var javaOut: String? = null
       var kotlinOut: String? = null
       var swiftOut: String? = null
-      var dryRun = false
       var emitAndroid = false
       var emitAndroidAnnotations = false
       var emitCompact = false
@@ -306,7 +299,6 @@ class WireCompiler internal constructor(
             modules = parseManifestModules(yaml)
           }
 
-          arg == DRY_RUN_FLAG -> dryRun = true
           arg == ANDROID -> emitAndroid = true
           arg == ANDROID_ANNOTATIONS -> emitAndroidAnnotations = true
           arg == COMPACT -> emitCompact = true
@@ -339,7 +331,6 @@ class WireCompiler internal constructor(
           treeShakingRoots = treeShakingRoots,
           treeShakingRubbish = treeShakingRubbish,
           modules = modules,
-          dryRun = dryRun,
           emitAndroid = emitAndroid,
           emitAndroidAnnotations = emitAndroidAnnotations,
           emitCompact = emitCompact,

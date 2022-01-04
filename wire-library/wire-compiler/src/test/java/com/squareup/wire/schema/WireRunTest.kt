@@ -362,26 +362,6 @@ class WireRunTest {
   }
 
   @Test
-  fun nullTarget() {
-    writeBlueProto()
-    writeRedProto()
-    writeTriangleProto()
-
-    val wireRun = WireRun(
-        sourcePath = listOf(Location.get("colors/src/main/proto")),
-        protoPath = listOf(Location.get("polygons/src/main/proto")),
-        targets = listOf(
-            NullTarget(includes = listOf("squareup.colors.Red")),
-            KotlinTarget(outDirectory = "generated/kt")
-        )
-    )
-    wireRun.execute(fs, logger)
-
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
-        "generated/kt/squareup/colors/Blue.kt")
-  }
-
-  @Test
   fun javaPackageForJvmLanguages() {
     writeSquareProto()
     writeRhombusProto()
@@ -1034,7 +1014,7 @@ class WireRunTest {
     val wireRun = WireRun(
         sourcePath = listOf(Location.get("colors/src/main/proto")),
         protoPath = listOf(Location.get("polygons/src/main/proto")),
-        targets = listOf(NullTarget())
+        targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
     )
 
     try {
