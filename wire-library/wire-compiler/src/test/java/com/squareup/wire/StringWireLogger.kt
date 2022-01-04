@@ -24,12 +24,16 @@ internal class StringWireLogger : WireLogger {
 
   val log: String get() = buffer.toString()
 
-  @Synchronized override fun artifactHandled(outputPath: Path, qualifiedName: String) {
-    buffer.append("$outputPath $qualifiedName\n")
+  @Synchronized override fun artifactHandled(
+    outputPath: Path,
+    qualifiedName: String,
+    targetName: String
+  ) {
+    buffer.append("$outputPath $qualifiedName (target=$targetName)\n")
   }
 
-  override fun artifactSkipped(type: ProtoType) {
-    buffer.append("skipped $type\n")
+  override fun artifactSkipped(type: ProtoType, targetName: String) {
+    buffer.append("Skipped $type (target=$targetName)\n")
   }
 
   @Synchronized override fun unusedRoots(unusedRoots: Set<String>) {

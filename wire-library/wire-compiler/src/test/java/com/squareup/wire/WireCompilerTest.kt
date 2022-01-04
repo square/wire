@@ -338,9 +338,9 @@ class WireCompilerTest {
     compileToJava(sources, "--includes=squareup.wire.protos.roots.TheService", "--dry_run")
 
     assertThat(logger!!.log).isEqualTo("""
-        |skipped squareup.wire.protos.roots.TheRequest
-        |skipped squareup.wire.protos.roots.TheResponse
-        |skipped squareup.wire.protos.roots.TheService
+        |Skipped squareup.wire.protos.roots.TheRequest (target=Dry-run)
+        |Skipped squareup.wire.protos.roots.TheResponse (target=Dry-run)
+        |Skipped squareup.wire.protos.roots.TheService (target=Dry-run)
         |""".trimMargin())
   }
 
