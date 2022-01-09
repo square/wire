@@ -22,6 +22,7 @@ Pod::Spec.new do |s|
   s.test_spec do |test_spec|
     test_spec.ios.deployment_target  = '11.0'
     test_spec.osx.deployment_target  = '10.15'
+    test_spec.watchos.deployment_target = '3.0'
 
     test_spec.script_phase = {
       :name => 'Compile Test Protos',
