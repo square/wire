@@ -24,7 +24,14 @@ cd $DIR
 ./gradlew -p wire-library \
     :wire-grpc-client:dokkaGfm \
     :wire-moshi-adapter:dokkaGfm \
-    :wire-runtime:dokkaGfm
+    :wire-runtime:dokkaGfm \
+    :wire-compiler:dokkaGfm \
+    :wire-gson-support:dokkaGfm \
+    :wire-java-generator:dokkaGfm \
+    :wire-kotlin-generator:dokkaGfm \
+    :wire-reflector:dokkaGfm \
+    :wire-schema:dokkaGfm \
+    :wire-swift-generator:dokkaGfm
 
 # Fix *.md links to point to where the docs live under Mkdocs.
 # Linux
