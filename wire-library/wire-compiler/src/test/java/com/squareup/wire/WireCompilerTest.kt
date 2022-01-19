@@ -333,18 +333,6 @@ class WireCompilerTest {
   }
 
   @Test
-  fun testDryRun() {
-    val sources = arrayOf("service_root.proto")
-    compileToJava(sources, "--includes=squareup.wire.protos.roots.TheService", "--dry_run")
-
-    assertThat(logger!!.log).isEqualTo("""
-        |Skipped squareup.wire.protos.roots.TheRequest (target=Dry-run)
-        |Skipped squareup.wire.protos.roots.TheResponse (target=Dry-run)
-        |Skipped squareup.wire.protos.roots.TheService (target=Dry-run)
-        |""".trimMargin())
-  }
-
-  @Test
   fun serviceAreIgnoredForJava() {
     val sources = arrayOf("service_root.proto")
     compileToJava(sources, "--includes=squareup.wire.protos.roots.TheService")
