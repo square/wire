@@ -36,11 +36,17 @@ import java.lang.reflect.Type
  * including extensions. It ignores unknown field values. The JSON encoding is intended to be
  * compatible with the [protobuf-java-format](https://code.google.com/p/protobuf-java-format/)
  * library.
+ *
+ * In Proto3, if a field is set to its default (or identity) value, it will be omitted in the
+ * JSON-encoded data. Set [writeIdentityValues] to true if you want Wire to always write values,
+ * including default ones.
  */
 class WireJsonAdapterFactory private constructor(
+  private val writeIdentityValues: Boolean,
   private val typeUrlToAdapter: Map<String, ProtoAdapter<*>>
 ) : JsonAdapter.Factory {
-  constructor() : this(mapOf())
+  @JvmOverloads
+  constructor(writeIdentityValues: Boolean = false) : this(writeIdentityValues, mapOf())
 
   /**
    * Returns a new WireJsonAdapterFactory that can encode the messages for [adapters] if they're
@@ -53,7 +59,7 @@ class WireJsonAdapterFactory private constructor(
           "recompile ${adapter.type} to use it with WireJsonAdapterFactory")
       newMap[key] = adapter
     }
-    return WireJsonAdapterFactory(newMap)
+    return WireJsonAdapterFactory(writeIdentityValues, newMap)
   }
 
   /**
@@ -75,7 +81,7 @@ class WireJsonAdapterFactory private constructor(
       annotations.isNotEmpty() -> null
       rawType == AnyMessage::class.java -> AnyMessageJsonAdapter(moshi, typeUrlToAdapter)
       Message::class.java.isAssignableFrom(rawType) -> {
-        val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(type as Class<Nothing>)
+        val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(type as Class<Nothing>, writeIdentityValues)
         val jsonAdapters = MoshiJsonIntegration.jsonAdapters(messageAdapter, moshi)
         val redactedFieldsAdapter = moshi.adapter<List<String>>(
             Types.newParameterizedType(List::class.java, String::class.java))

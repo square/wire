@@ -1,0 +1,31 @@
+{
+  "mapInt32List": {},
+  "mapInt32NullValue": {},
+  "mapInt32Struct": {},
+  "mapInt32ValueA": {},
+  "repList": [],
+  "repNullValue": [],
+  "repStruct": [],
+  "repValueA": [],
+  "struct": {
+    "a": null
+  },
+  "list": [],
+  "valueA": {
+    "a": [
+      "b",
+      2.0,
+      {
+        "c": false
+      }
+    ]
+  },
+  "valueB": [
+    {
+      "d": null,
+      "e": "trois"
+    }
+  ],
+  "valueC": [],
+  "valueD": {}
+}

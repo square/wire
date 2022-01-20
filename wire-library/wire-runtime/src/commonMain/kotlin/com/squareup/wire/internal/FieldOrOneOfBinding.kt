@@ -51,6 +51,11 @@ abstract class FieldOrOneOfBinding<M, B> {
 
   abstract val singleAdapter: ProtoAdapter<*>
 
+  /**
+   * If true, Wire will always write identity values.
+   */
+  abstract val writeIdentityValues: Boolean
+
   val adapter: ProtoAdapter<Any> by lazy {
     // Delegate adapters are created lazily; otherwise we could stack overflow!
     if (isMap) {
@@ -77,6 +82,7 @@ abstract class FieldOrOneOfBinding<M, B> {
   }
 
   private fun omitIdentity(syntax: Syntax): Boolean {
+    if (writeIdentityValues) return false
     if (label == WireField.Label.OMIT_IDENTITY) return true
     if (label.isRepeated && syntax == Syntax.PROTO_3) return true
     if (isMap && syntax == Syntax.PROTO_3) return true

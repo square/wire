@@ -24,7 +24,8 @@ import java.lang.reflect.Field
 internal class OneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constructor(
   private val messageField: Field,
   builderType: Class<B>,
-  private val key: OneOf.Key<*>
+  private val key: OneOf.Key<*>,
+  override val writeIdentityValues: Boolean,
 ) : FieldOrOneOfBinding<M, B>() {
   private val builderField: Field = builderType.getDeclaredField(messageField.name)
 
