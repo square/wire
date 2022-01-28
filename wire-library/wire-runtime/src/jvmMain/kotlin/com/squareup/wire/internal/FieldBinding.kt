@@ -30,7 +30,8 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   wireField: WireField,
   messageType: Class<M>,
   private val messageField: Field,
-  builderType: Class<B>
+  builderType: Class<B>,
+  override val writeIdentityValues: Boolean,
 ) : FieldOrOneOfBinding<M, B>() {
   override val label: WireField.Label = wireField.label
   override val name: String = messageField.name

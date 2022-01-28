@@ -26,7 +26,6 @@ import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -174,6 +173,8 @@ class WireJsonTest {
   }
 
   @Test fun allStruct() {
+    if (jsonLibrary.writeIdentityValues) return
+
     val value = AllStructs.Builder()
         .struct(mapOf("a" to 1.0))
         .list(listOf("a", 3.0))
@@ -195,6 +196,12 @@ class WireJsonTest {
   }
 
   @Test fun allStructWithIdentities() {
+    val json = if (jsonLibrary.writeIdentityValues) {
+      ALL_STRUCT_IDENTITY_WRITTEN_JSON
+    } else {
+      ALL_STRUCT_IDENTITY_JSON
+    }
+
     val value = AllStructs.Builder()
         .struct(mapOf("a" to null))
         .list(emptyList<Any>())
@@ -204,9 +211,9 @@ class WireJsonTest {
         .value_d(emptyMap<String, Any>())
         .build()
 
-    assertJsonEquals(ALL_STRUCT_IDENTITY_JSON, jsonLibrary.toJson(value, AllStructs::class.java))
+    assertJsonEquals(json, jsonLibrary.toJson(value, AllStructs::class.java))
 
-    val parsed = jsonLibrary.fromJson(ALL_STRUCT_IDENTITY_JSON, AllStructs::class.java)
+    val parsed = jsonLibrary.fromJson(json, AllStructs::class.java)
     assertThat(parsed).isEqualTo(value)
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
@@ -215,6 +222,8 @@ class WireJsonTest {
   }
 
   @Test fun pizzaDelivery() {
+    if (jsonLibrary.writeIdentityValues) return
+
     val value = PizzaDelivery.Builder()
         .address("507 Cross Street")
         .pizzas(listOf(Pizza.Builder().toppings(listOf("pineapple", "onion")).build()))
@@ -471,13 +480,18 @@ class WireJsonTest {
         jsonLibrary.toJson(allTypes, AllTypesProto3::class.java))
   }
 
-  @Test fun serializeIdentityAllTypesMoshi() {
+  @Test fun serializeIdentityAllTypes() {
+    val json = if (jsonLibrary.writeIdentityValues) {
+      ALL_TYPES_IDENTITY_WRITTEN_PROTO3_JSON
+    } else {
+      ALL_TYPES_IDENTITY_PROTO3_JSON
+    }
     val allTypes = AllTypesProto3.Builder().build()
-    assertJsonEquals(ALL_TYPES_IDENTITY_PROTO3_JSON,
-        jsonLibrary.toJson(allTypes, AllTypesProto3::class.java))
+
+    assertJsonEquals(json, jsonLibrary.toJson(allTypes, AllTypesProto3::class.java))
   }
 
-  @Test fun deserializeIdentityAllTypesMoshi() {
+  @Test fun deserializeIdentityAllTypes() {
     val allTypes = AllTypesProto3.Builder().build()
     val parsed = jsonLibrary.fromJson(ALL_TYPES_IDENTITY_PROTO3_JSON, AllTypesProto3::class.java)
     assertThat(parsed).isEqualTo(allTypes)
@@ -486,16 +500,18 @@ class WireJsonTest {
         jsonLibrary.toJson(allTypes, AllTypesProto3::class.java))
   }
 
-  @Test fun serializeExplicitIdentityAllTypesMoshi() {
+  @Test fun serializeExplicitIdentityAllTypes() {
+    if (jsonLibrary.writeIdentityValues) return
+
     val value = allTypesExplicitIdentityProto3Builder().build()
-    assertJsonEquals(ALL_TYPES_EXPLICITY_IDENTITY_PROTO3_JSON,
+    assertJsonEquals(ALL_TYPES_EXPLICIT_IDENTITY_PROTO3_JSON,
         jsonLibrary.toJson(value, AllTypesProto3::class.java))
   }
 
-  @Test fun deserializeExplicitIdentityAllTypesMoshi() {
+  @Test fun deserializeExplicitIdentityAllTypes() {
     val value = allTypesExplicitIdentityProto3Builder().build()
 
-    val parsed = jsonLibrary.fromJson(ALL_TYPES_EXPLICITY_IDENTITY_PROTO3_JSON,
+    val parsed = jsonLibrary.fromJson(ALL_TYPES_EXPLICIT_IDENTITY_PROTO3_JSON,
         AllTypesProto3::class.java)
     assertThat(parsed).isEqualTo(value)
     assertThat(parsed.toString()).isEqualTo(value.toString())
@@ -504,6 +520,8 @@ class WireJsonTest {
   }
 
   @Test fun minusDoubleZero() {
+    if (jsonLibrary.writeIdentityValues) return
+
     val value = AllTypesProto3.Builder().my_double(-0.0).build()
     val json = "{\"myDouble\": -0.0}"
 
@@ -961,14 +979,19 @@ class WireJsonTest {
 
     private val ALL_TYPES_IDENTITY_PROTO3_JSON = loadJson("all_types_identity_proto3.json")
 
-    private val ALL_TYPES_EXPLICITY_IDENTITY_PROTO3_JSON =
+    private val ALL_TYPES_EXPLICIT_IDENTITY_PROTO3_JSON =
         loadJson("all_types_explicit_identity_proto3.json")
+
+    private val ALL_TYPES_IDENTITY_WRITTEN_PROTO3_JSON =
+        loadJson("all_types_identity_written_proto3.json")
 
     private val CAMEL_CASE_JSON = loadJson("camel_case_proto3.json")
 
     private val ALL_STRUCT_JSON = loadJson("all_struct_proto3.json")
 
     private val ALL_STRUCT_IDENTITY_JSON = loadJson("all_struct_identity_proto3.json")
+
+    private val ALL_STRUCT_IDENTITY_WRITTEN_JSON = loadJson("all_struct_identity_written_proto3.json")
 
     private val PIZZA_DELIVERY_JSON = loadJson("pizza_delivery_proto3.json")
 
@@ -994,11 +1017,14 @@ class WireJsonTest {
     private val MAP_TYPES_JSON = loadJson("map_types_proto3.json")
 
     private val moshi = object : JsonLibrary {
-      private val moshi = Moshi.Builder()
-          .add(WireJsonAdapterFactory().plus(listOf(BuyOneGetOnePromotion.ADAPTER)))
-          .build()
-
       override fun toString() = "Moshi"
+
+      override val writeIdentityValues = false
+
+      private val moshi = Moshi.Builder()
+          .add(WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues)
+              .plus(listOf(BuyOneGetOnePromotion.ADAPTER)))
+          .build()
 
       override fun <T> fromJson(json: String, type: Class<T>): T {
         return moshi.adapter(type).fromJson(json)!!
@@ -1010,13 +1036,57 @@ class WireJsonTest {
     }
 
     private val gson = object : JsonLibrary {
+      override fun toString() = "Gson"
+
+      override val writeIdentityValues = false
+
       private val gson = GsonBuilder()
           .registerTypeAdapterFactory(
-              WireTypeAdapterFactory().plus(listOf(BuyOneGetOnePromotion.ADAPTER)))
+              WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues)
+                  .plus(listOf(BuyOneGetOnePromotion.ADAPTER)))
           .disableHtmlEscaping()
           .create()
 
-      override fun toString() = "Gson"
+      override fun <T> fromJson(json: String, type: Class<T>): T {
+        return gson.fromJson(json, type)
+      }
+
+      override fun <T> toJson(value: T, type: Class<T>): String {
+        return gson.toJson(value, type)
+      }
+    }
+
+    private val writeIdentitiesMoshi = object : JsonLibrary {
+      override fun toString() = "WriteIdentitiesMoshi"
+
+      override val writeIdentityValues = true
+
+      private val moshi = Moshi.Builder()
+          .add(
+              WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues)
+                  .plus(listOf(BuyOneGetOnePromotion.ADAPTER)))
+          .build()
+
+      override fun <T> fromJson(json: String, type: Class<T>): T {
+        return moshi.adapter(type).fromJson(json)!!
+      }
+
+      override fun <T> toJson(value: T, type: Class<T>): String {
+        return moshi.adapter(type).toJson(value)
+      }
+    }
+
+    private val writeIdentitiesGson = object : JsonLibrary {
+      override fun toString() = "writeIdentitiesGson"
+
+      override val writeIdentityValues = true
+
+      private val gson = GsonBuilder()
+          .registerTypeAdapterFactory(
+              WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues)
+                  .plus(listOf(BuyOneGetOnePromotion.ADAPTER)))
+          .disableHtmlEscaping()
+          .create()
 
       override fun <T> fromJson(json: String, type: Class<T>): T {
         return gson.fromJson(json, type)
@@ -1029,7 +1099,12 @@ class WireJsonTest {
 
     @Parameters(name = "{0}")
     @JvmStatic
-    internal fun parameters() = listOf(arrayOf(gson), arrayOf(moshi))
+    internal fun parameters() = listOf(
+        arrayOf(gson),
+        arrayOf(moshi),
+        arrayOf(writeIdentitiesMoshi),
+        arrayOf(writeIdentitiesGson),
+    )
 
     private fun loadJson(fileName: String): String {
       return File("src/commonTest/shared/json", fileName).source().use { it.buffer().readUtf8() }
@@ -1038,6 +1113,7 @@ class WireJsonTest {
 }
 
 internal interface JsonLibrary {
+  val writeIdentityValues: Boolean
   fun <T> fromJson(json: String, type: Class<T>): T
   fun <T> toJson(value: T, type: Class<T>): String
 }

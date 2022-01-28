@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import okio.ByteString;
 import okio.Okio;
-import org.junit.Ignore;
 import org.junit.Test;
 import squareup.proto2.keywords.KeywordJava;
 import squareup.proto2.keywords.KeywordJava.KeywordJavaEnum;

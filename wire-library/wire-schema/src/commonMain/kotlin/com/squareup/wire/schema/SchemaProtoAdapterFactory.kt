@@ -217,6 +217,7 @@ internal class SchemaProtoAdapterFactory(
     override val name: String = field.name
     override val declaredName: String = field.name
     override val wireFieldJsonName: String = field.jsonName!!
+    override val writeIdentityValues: Boolean = false
 
     override val keyAdapter: ProtoAdapter<*>
       get() = get(this.field.type!!.keyType!!)
