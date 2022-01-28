@@ -1,6 +1,20 @@
 Change Log
 ==========
 
+Version 4.0.2
+-------------
+
+_2022-01-28_
+
+ * New: When using Wire JSON factories, you can now override the proto3 behavior of skipping default
+   values when writing JSON. Set `writeIdentityValues` to true for either `WireJsonAdapterFactory`
+   or `WireTypeAdapterFactory` to enable it.
+ * Breaking: WireLogger methods has been refactored to remove platform dependencies and allow more
+   precise callbacks. We might add new methods in the future for better logging still.
+ * Removal: The `dry-run` option on `WireCompiler` has been removed.
+ * Swift: WireCompiler podspec is now backup by a jar so consumers will not have to locally build it
+    on `pod install`.
+
 Version 4.0.1
 -------------
 
