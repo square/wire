@@ -41,13 +41,10 @@ import java.lang.reflect.Type
  * JSON-encoded data. Set [writeIdentityValues] to true if you want Wire to always write values,
  * including default ones.
  */
-class WireJsonAdapterFactory private constructor(
-  private val writeIdentityValues: Boolean,
-  private val typeUrlToAdapter: Map<String, ProtoAdapter<*>>
+class WireJsonAdapterFactory @JvmOverloads constructor(
+  private val typeUrlToAdapter: Map<String, ProtoAdapter<*>> = mapOf(),
+  private val writeIdentityValues: Boolean = false,
 ) : JsonAdapter.Factory {
-  @JvmOverloads
-  constructor(writeIdentityValues: Boolean = false) : this(writeIdentityValues, mapOf())
-
   /**
    * Returns a new WireJsonAdapterFactory that can encode the messages for [adapters] if they're
    * used with [AnyMessage].
@@ -59,7 +56,7 @@ class WireJsonAdapterFactory private constructor(
           "recompile ${adapter.type} to use it with WireJsonAdapterFactory")
       newMap[key] = adapter
     }
-    return WireJsonAdapterFactory(writeIdentityValues, newMap)
+    return WireJsonAdapterFactory(newMap, writeIdentityValues)
   }
 
   /**

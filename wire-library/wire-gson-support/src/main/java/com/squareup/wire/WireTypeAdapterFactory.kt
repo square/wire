@@ -45,13 +45,10 @@ import com.squareup.wire.internal.createRuntimeMessageAdapter
  * JSON-encoded data. Set [writeIdentityValues] to true if you want Wire to always write values,
  * including default ones.
  */
-class WireTypeAdapterFactory(
-  private val writeIdentityValues: Boolean,
-  private val typeUrlToAdapter: Map<String, ProtoAdapter<*>>
+class WireTypeAdapterFactory @JvmOverloads constructor(
+  private val typeUrlToAdapter: Map<String, ProtoAdapter<*>> = mapOf(),
+  private val writeIdentityValues: Boolean = false,
 ) : TypeAdapterFactory {
-  @JvmOverloads
-  constructor(writeIdentityValues: Boolean = false) : this(writeIdentityValues, mapOf())
-
   /**
    * Returns a new WireJsonAdapterFactory that can encode the messages for [adapters] if they're
    * used with [AnyMessage].
@@ -63,7 +60,7 @@ class WireTypeAdapterFactory(
           "recompile ${adapter.type} to use it with WireTypeAdapterFactory")
       newMap[key] = adapter
     }
-    return WireTypeAdapterFactory(writeIdentityValues, newMap)
+    return WireTypeAdapterFactory(newMap, writeIdentityValues)
   }
 
   /**
