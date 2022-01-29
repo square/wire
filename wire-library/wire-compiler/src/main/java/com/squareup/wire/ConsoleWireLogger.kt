@@ -65,11 +65,11 @@ internal class ConsoleWireLogger : WireLogger {
     if (quiet) {
       println(qualifiedName)
     } else {
-      println("Writing $qualifiedName to $outputPath")
+      println("Writing $qualifiedName to $outputPath (target=$targetName)")
     }
   }
 
   override fun artifactSkipped(type: ProtoType, targetName: String) {
-    println("Skipping $type")
+    println("Skipping $type (target=$targetName)")
   }
 }
