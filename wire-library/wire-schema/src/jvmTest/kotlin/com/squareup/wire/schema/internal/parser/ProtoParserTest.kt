@@ -534,6 +534,40 @@ class ProtoParserTest {
   }
 
   @Test
+  fun fieldCannotStartWithDigits() {
+    val proto = """
+        |message Test {
+        |  optional string 3DS = 1;
+        |}
+        """.trimMargin()
+    try {
+      ProtoParser.parse(location, proto)
+      fail()
+    } catch (e: IllegalStateException) {
+      assertThat(e).hasMessage(
+          "Syntax error in file.proto:2:18: field and constant names cannot start with a digit"
+      )
+    }
+  }
+
+  @Test
+  fun constantCannotStartWithDigits() {
+    val proto = """
+        |enum Test {
+        |  3DS = 1;
+        |}
+        """.trimMargin()
+    try {
+      ProtoParser.parse(location, proto)
+      fail()
+    } catch (e: IllegalStateException) {
+      assertThat(e).hasMessage(
+          "Syntax error in file.proto:2:2: field and constant names cannot start with a digit"
+      )
+    }
+  }
+
+  @Test
   fun invalidTrailingComment() {
     val proto = """
         |enum Test {

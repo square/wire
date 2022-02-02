@@ -140,23 +140,23 @@ class SyntaxReader(
   }
 
   /** Reads a (paren-wrapped), [square-wrapped] or naked symbol name. */
-  fun readName(): String {
+  fun readName(allowLeadingDigit: Boolean = true): String {
     return when (peekChar()) {
       '(' -> {
         pos++
-        readWord().also {
+        readWord(allowLeadingDigit).also {
           expect(readChar() == ')') { "expected ')'" }
         }
       }
 
       '[' -> {
         pos++
-        readWord().also {
+        readWord(allowLeadingDigit).also {
           expect(readChar() == ']') { "expected ']'" }
         }
       }
 
-      else -> readWord()
+      else -> readWord(allowLeadingDigit)
     }
   }
 
@@ -185,7 +185,7 @@ class SyntaxReader(
   }
 
   /** Reads a non-empty word and returns it. */
-  fun readWord(): String {
+  fun readWord(allowLeadingDigit: Boolean = true): String {
     skipWhitespace(skipComments = true)
     val start = pos
     loop@ while (pos < data.size) {
@@ -195,6 +195,11 @@ class SyntaxReader(
       }
     }
     expect(start < pos) { "expected a word" }
+    if (!allowLeadingDigit) {
+      expect(!data[start].isDigit(), location().copy(column = start - lineStart)) {
+        "field and constant names cannot start with a digit"
+      }
+    }
     return data.concatToString(start, pos)
   }
 
