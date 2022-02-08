@@ -93,7 +93,7 @@ extension RedactedOneOf : Codable {
         } else if container.contains(.c) {
             let c = try container.decode(String.self, forKey: .c)
             self.a = .c(c)
-        } else  {
+        } else {
             self.a = nil
         }
     }

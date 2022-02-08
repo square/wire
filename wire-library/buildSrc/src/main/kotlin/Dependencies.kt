@@ -70,7 +70,7 @@ object deps {
   val gson = "com.google.code.gson:gson:${versions.gson}"
   val javapoet = "com.squareup:javapoet:${versions.javapoet}"
   val kotlinpoet = "com.squareup:kotlinpoet:${versions.kotlinpoet}"
-  val swiftpoet = "io.outfoxx:swiftpoet:1.0.0"
+  val swiftpoet = "io.outfoxx:swiftpoet:1.3.1"
 
   object okhttp {
     val mockwebserver = "com.squareup.okhttp3:mockwebserver"
