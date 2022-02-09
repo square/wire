@@ -709,7 +709,7 @@ extension Form : Codable {
         } else if container.contains(.currency_conversion_flags_element) {
             let currency_conversion_flags_element = try container.decode(Form.CurrencyConversionFlagsElement.self, forKey: .currency_conversion_flags_element)
             self.choice = .currency_conversion_flags_element(currency_conversion_flags_element)
-        } else  {
+        } else {
             self.choice = nil
         }
         if container.contains(.a) {
@@ -736,7 +736,7 @@ extension Form : Codable {
         } else if container.contains(.h) {
             let h = try container.decode(String.self, forKey: .h)
             self.decision = .h(h)
-        } else  {
+        } else {
             self.decision = nil
         }
     }

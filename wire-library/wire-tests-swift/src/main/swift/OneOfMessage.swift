@@ -104,7 +104,7 @@ extension OneOfMessage : Codable {
         } else if container.contains(.baz) {
             let baz = try container.decode(String.self, forKey: .baz)
             self.choice = .baz(baz)
-        } else  {
+        } else {
             self.choice = nil
         }
     }
