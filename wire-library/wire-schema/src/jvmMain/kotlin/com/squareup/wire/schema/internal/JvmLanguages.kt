@@ -62,6 +62,10 @@ fun builtInAdapterString(type: ProtoType): String? {
 fun eligibleAsAnnotationMember(schema: Schema, field: Field): Boolean {
   val type = field.type!!
 
+  if (field.label == Field.Label.REPEATED) {
+    return false
+  }
+
   if (type == ProtoType.BYTES) {
     return false
   }
