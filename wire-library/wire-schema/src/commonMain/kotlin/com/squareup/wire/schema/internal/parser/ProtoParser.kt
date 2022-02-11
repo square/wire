@@ -96,7 +96,7 @@ class ProtoParser internal constructor(
     if (reader.peekChar(';')) return null
 
     val location = reader.location()
-    val label = reader.readWord()
+    val label = reader.readWord(allowLeadingDigit = context !== Context.ENUM)
 
     // TODO(benoit) Let's better parse the proto keywords. We are pretty weak when field/constants
     //  are named after any of the label we check here.
@@ -344,9 +344,7 @@ class ProtoParser internal constructor(
     label: Field.Label?,
     type: String
   ): FieldElement {
-    var documentation = documentation
-
-    val name = reader.readName()
+    val name = reader.readName(allowLeadingDigit = false)
     reader.require('=')
     val tag = reader.readInt()
 
@@ -357,7 +355,7 @@ class ProtoParser internal constructor(
     val jsonName = stripJsonName(options)
     reader.require(';')
 
-    documentation = reader.tryAppendTrailingDocumentation(documentation)
+    val documentation = reader.tryAppendTrailingDocumentation(documentation)
 
     return FieldElement(
         location = location,
@@ -465,7 +463,6 @@ class ProtoParser internal constructor(
 
   /** Reads a reserved tags and names list like "reserved 10, 12 to 14, 'foo';". */
   private fun readReserved(location: Location, documentation: String): ReservedElement {
-    var documentation = documentation
     val values = mutableListOf<Any>()
 
     loop@ while (true) {
@@ -497,7 +494,7 @@ class ProtoParser internal constructor(
       "'reserved' must have at least one field name or tag"
     }
 
-    documentation = reader.tryAppendTrailingDocumentation(documentation)
+    val documentation = reader.tryAppendTrailingDocumentation(documentation)
 
     return ReservedElement(
         location = location,
@@ -544,15 +541,13 @@ class ProtoParser internal constructor(
   private fun readEnumConstant(
     documentation: String, location: Location, label: String
   ): EnumConstantElement {
-    var documentation = documentation
-
     reader.require('=')
     val tag = reader.readInt()
 
     val options = OptionReader(reader).readOptions()
     reader.require(';')
 
-    documentation = reader.tryAppendTrailingDocumentation(documentation)
+    val documentation = reader.tryAppendTrailingDocumentation(documentation)
 
     return EnumConstantElement(
         location = location,
