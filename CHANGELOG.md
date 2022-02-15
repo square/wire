@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 4.1.1
+-------------
+
+_2022-02-15_
+
+ * Fix: Print target name in `ConsoleWireLogger`.
+ * Fix: Throw early when field or constant names start with a digit.
+ * Update: Bumped SwiftPoet to `1.3.1`.
+ * Fix: Wire will not generate annotations for `repeated` options. 
+
 Version 4.1.0
 -------------
 
