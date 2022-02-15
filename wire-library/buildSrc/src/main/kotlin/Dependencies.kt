@@ -25,7 +25,6 @@ object versions {
   val kotlinpoet = "1.9.0"
   val moshi = "1.12.0"
   val okhttp = "4.9.3"
-  val okio = "3.0.0"
   val protobuf = "3.17.3"
   val protobufGradlePlugin = "0.8.16"
 }
@@ -37,7 +36,7 @@ object deps {
     val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
     val kotlinSerialization = "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
     val shadow = "com.github.jengelman.gradle.plugins:shadow:4.0.1"
-    val japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.3.0"
+    val japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.3.1"
   }
 
   val android = "com.google.android:android:${versions.android}"
@@ -54,8 +53,9 @@ object deps {
   val guava = "com.google.guava:guava:${versions.guava}"
 
   object okio {
-    val core = "com.squareup.okio:okio:${versions.okio}"
-    val fakefilesystem = "com.squareup.okio:okio-fakefilesystem:${versions.okio}"
+    val bom = "com.squareup.okio:okio-bom:3.0.0"
+    val core = "com.squareup.okio:okio"
+    val fakefilesystem = "com.squareup.okio:okio-fakefilesystem"
   }
 
   val jsr305 = "com.google.code.findbugs:jsr305:${versions.jsr305}"
