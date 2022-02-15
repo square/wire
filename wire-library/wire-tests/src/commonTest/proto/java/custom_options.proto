@@ -28,7 +28,8 @@ message FooBar {
   optional string bar = 2 [(squareup.protos.custom_options.my_field_option_two) = 33.5];
   optional Nested baz = 3 [(squareup.protos.custom_options.my_field_option_three) = BAR];
   optional uint64 qux = 4 [(squareup.protos.custom_options.my_field_option_one) = 18,
-                           (squareup.protos.custom_options.my_field_option_two) = 34.5];
+                           (squareup.protos.custom_options.my_field_option_two) = 34.5,
+                           (squareup.protos.custom_options.my_field_option_five) = 3];
   repeated float fred = 5 [(squareup.protos.custom_options.my_field_option_four) = {
       foo: 11, bar: "22", baz: { value: BAR }, fred : [444.0, 555.0],
       nested: { foo: 33, fred: [100.0, 200.0] }
@@ -49,7 +50,8 @@ message FooBar {
     option (squareup.protos.custom_options.enum_option) = true;
     FOO = 1 [(squareup.protos.custom_options.enum_value_option)=17,
              (squareup.protos.custom_options.complex_enum_value_option)={ serial: [ 99, 199 ] }];
-    BAR = 2 [(squareup.protos.foreign.foreign_enum_value_option)=true];
+    BAR = 2 [(squareup.protos.foreign.foreign_enum_value_option)=true,
+             (repeated_enum_value_option)=3];
     BAZ = 3 [(squareup.protos.custom_options.enum_value_option)=18,
             (squareup.protos.foreign.foreign_enum_value_option)=false];
   }
@@ -63,6 +65,7 @@ extend google.protobuf.MessageOptions {
   optional FooBar.FooBarBazEnum my_message_option_four = 50004;
   optional FooBar my_message_option_five = 50005;
   optional FooBar my_message_option_six = 50006;
+  repeated int32 my_message_option_seven = 50008; // 50007 is taken.
 }
 
 extend google.protobuf.FieldOptions {
@@ -71,12 +74,14 @@ extend google.protobuf.FieldOptions {
   optional float my_field_option_two = 60002;
   optional FooBar.FooBarBazEnum my_field_option_three = 60003;
   optional FooBar my_field_option_four = 60004;
+  repeated int32 my_field_option_five = 60005;
 }
 
 extend google.protobuf.EnumValueOptions {
   /** This is a nice option! Apply it to your friendly enum constants. */
   optional int32 enum_value_option = 70000;
   optional FooBar.More complex_enum_value_option = 70001;
+  repeated int32 repeated_enum_value_option = 70003; // 70002 is taken.
 }
 
 extend google.protobuf.EnumOptions {
@@ -124,6 +129,7 @@ message MessageWithOptions {
     nested: { foo: 44, [ext]: BAR },
     nested: { foo: 55 }
   };
+  option (my_message_option_seven) = 33;
 }
 
 service ServiceWithOptions {
