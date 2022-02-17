@@ -1,6 +1,25 @@
 Change Log
 ==========
 
+Version 4.2.0
+-------------
+
+_2022-02-17_
+
+ * New: Publish a [bill of materials (BOM)][bom] for Wire. Depend on this from Gradle or Maven to
+   keep all of your Wire artifacts on the same version, even if they're declared via transitive
+   dependencies. You can even omit versions when declaring other Wire dependencies.
+
+    ```kotlin
+    dependencies {
+      implementation(platform("com.squareup.wire:wire-bom:4.2.0"))
+      implementation("com.squareup.wire:wire-compiler")      // No version!
+      implementation("com.squareup.wire:wire-gradle-plugin") // No version!
+      implementation("com.squareup.wire:wire-grpc-client")   // No version!
+      // Etc.
+    }
+    ```
+
 Version 4.1.1
 -------------
 
@@ -934,6 +953,7 @@ _2013-08-23_
 Initial version.
 
 
+ [bom]: https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import
  [jimfs]: https://github.com/google/jimfs
  [javapoet]: https://github.com/square/javapoet
  [wire-customizing-output]: https://square.github.io/wire/wire_compiler/#customizing-output
