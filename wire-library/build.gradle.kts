@@ -95,6 +95,7 @@ allprojects {
     val configuration = this
     configuration.dependencies.all {
       val bom = when (group) {
+        "com.squareup.okio" -> deps.okio.bom
         "com.squareup.okhttp3" -> deps.okhttp.bom
         else -> return@all
       }
