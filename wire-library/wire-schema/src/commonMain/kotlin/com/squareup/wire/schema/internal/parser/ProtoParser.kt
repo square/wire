@@ -476,7 +476,10 @@ class ProtoParser internal constructor(
 
             else -> {
               reader.expect(reader.readWord() == "to", location) { "expected ',', ';', or 'to'" }
-              val tagEnd = reader.readInt()
+              val tagEnd = when (val s = reader.readWord()) {
+                "max" -> MAX_TAG_VALUE
+                else -> s.toInt()
+              }
               values.add(tagStart..tagEnd)
             }
           }
