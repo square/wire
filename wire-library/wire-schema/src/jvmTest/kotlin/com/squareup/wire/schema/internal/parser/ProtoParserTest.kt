@@ -2292,10 +2292,10 @@ class ProtoParserTest {
   }
 
   @Test
-  fun reserved() {
+  fun reservedMessage() {
     val proto = """
         |message Foo {
-        |  reserved 10, 12 to 14, 'foo';
+        |  reserved 10, 12 to 14, 23 to max, 'foo', "bar";
         |}
         """.trimMargin()
     val message = MessageElement(
@@ -2304,13 +2304,39 @@ class ProtoParserTest {
         reserveds = listOf(
             ReservedElement(
                 location = location.at(2, 3),
-                values = listOf(10, 12..14, "foo")
+                values = listOf(10, 12..14, 23..MAX_TAG_VALUE, "foo", "bar")
             )
         )
     )
     val expected = ProtoFileElement(
         location = location,
         types = listOf(message)
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
+  // Reserved are not supported yet for enums, this test asserts that we don't crash parsing them.
+  // See https://github.com/square/wire/issues/797
+  @Test
+  fun reservedEnum() {
+    val proto = """
+        |enum Foo {
+        |  reserved 10, 12 to 14, 23 to max, 'FOO', "BAR";
+        |}
+        """.trimMargin()
+    val message = EnumElement(
+      location = location.at(1, 1),
+      name = "Foo",
+      // reserveds = listOf(
+      //   ReservedElement(
+      //     location = location.at(2, 3),
+      //     values = listOf(10, 12..14, 23..MAX_TAG_VALUE, "foo")
+      //   )
+      // )
+    )
+    val expected = ProtoFileElement(
+      location = location,
+      types = listOf(message)
     )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
