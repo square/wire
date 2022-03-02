@@ -16,7 +16,10 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.Syntax
+import com.squareup.wire.schema.EnumConstant.Companion.toElements
 import com.squareup.wire.schema.Options.Companion.ENUM_OPTIONS
+import com.squareup.wire.schema.Reserved.Companion.fromElements
+import com.squareup.wire.schema.Reserved.Companion.toElements
 import com.squareup.wire.schema.internal.parser.EnumElement
 import kotlin.jvm.JvmStatic
 
@@ -26,6 +29,7 @@ data class EnumType(
   override val documentation: String,
   val name: String,
   val constants: List<EnumConstant>,
+  private val reserveds: List<Reserved>,
   override val options: Options,
   override val syntax: Syntax
 ) : Type() {
@@ -126,13 +130,14 @@ data class EnumType(
         .map { it.retainAll(schema, markSet) }
 
     val result = EnumType(
-        type = type,
-        location = location,
-        documentation = documentation,
-        name = name,
-        constants = retainedConstants,
-        options = options.retainAll(schema, markSet),
-        syntax = syntax
+      type = type,
+      location = location,
+      documentation = documentation,
+      name = name,
+      constants = retainedConstants,
+      options = options.retainAll(schema, markSet),
+      syntax = syntax,
+      reserveds = reserveds
     )
     result.allowAlias = allowAlias
     return result
@@ -146,23 +151,25 @@ data class EnumType(
     val retainedConstants = constants.map { it.retainLinked() }
 
     return EnumType(
-        type = type,
-        location = location,
-        documentation = documentation,
-        name = name,
-        constants = retainedConstants,
-        options = options.retainLinked(),
-        syntax = syntax
+      type = type,
+      location = location,
+      documentation = documentation,
+      name = name,
+      constants = retainedConstants,
+      options = options.retainLinked(),
+      syntax = syntax,
+      reserveds = reserveds,
     )
   }
 
   fun toElement(): EnumElement {
     return EnumElement(
-        location = location,
-        name = name,
-        documentation = documentation,
-        options = options.elements,
-        constants = EnumConstant.toElements(constants)
+      location = location,
+      name = name,
+      documentation = documentation,
+      options = options.elements,
+      constants = toElements(constants),
+      reserveds = toElements(reserveds),
     )
   }
 
@@ -177,13 +184,14 @@ data class EnumType(
       syntax: Syntax
     ): EnumType {
       return EnumType(
-          type = protoType,
-          location = enumElement.location,
-          documentation = enumElement.documentation,
-          name = enumElement.name,
-          constants = EnumConstant.fromElements(enumElement.constants),
-          options = Options(ENUM_OPTIONS, enumElement.options),
-          syntax = syntax
+        type = protoType,
+        location = enumElement.location,
+        documentation = enumElement.documentation,
+        name = enumElement.name,
+        constants = EnumConstant.fromElements(enumElement.constants),
+        options = Options(ENUM_OPTIONS, enumElement.options),
+        syntax = syntax,
+        reserveds = fromElements(enumElement.reserveds),
       )
     }
   }

@@ -2322,17 +2322,22 @@ class ProtoParserTest {
     val proto = """
         |enum Foo {
         |  reserved 10, 12 to 14, 23 to max, 'FOO', "BAR";
+        |  reserved 3;
         |}
         """.trimMargin()
     val message = EnumElement(
       location = location.at(1, 1),
       name = "Foo",
-      // reserveds = listOf(
-      //   ReservedElement(
-      //     location = location.at(2, 3),
-      //     values = listOf(10, 12..14, 23..MAX_TAG_VALUE, "foo")
-      //   )
-      // )
+      reserveds = listOf(
+        ReservedElement(
+          location = location.at(2, 3),
+          values = listOf(10, 12..14, 23..MAX_TAG_VALUE, "FOO", "BAR")
+        ),
+        ReservedElement(
+          location = location.at(3, 3),
+          values = listOf(3)
+        ),
+      ),
     )
     val expected = ProtoFileElement(
       location = location,

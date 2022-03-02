@@ -16,6 +16,7 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -119,6 +120,37 @@ class EnumElementTest {
     val expected = """
         |// Hello
         |enum Enum {
+        |  ONE = 1;
+        |  TWO = 2;
+        |  SIX = 6;
+        |}
+        |""".trimMargin()
+    assertThat(element.toSchema()).isEqualTo(expected)
+  }
+
+  @Test
+  fun simpleWithReservedToSchema() {
+    val element = EnumElement(
+      location = location,
+      name = "Enum",
+      reserveds = listOf(
+        ReservedElement(location = location, values = listOf(10, 12..14, "FOO")),
+        ReservedElement(location = location, values = listOf(10)),
+        ReservedElement(location = location, values = listOf(25..MAX_TAG_VALUE)),
+        ReservedElement(location = location, values = listOf("FOO"))
+      ),
+      constants = listOf(
+        EnumConstantElement(location = location, name = "ONE", tag = 1),
+        EnumConstantElement(location = location, name = "TWO", tag = 2),
+        EnumConstantElement(location = location, name = "SIX", tag = 6)
+      )
+    )
+    val expected = """
+        |enum Enum {
+        |  reserved 10, 12 to 14, "FOO";
+        |  reserved 10;
+        |  reserved 25 to max;
+        |  reserved "FOO";
         |  ONE = 1;
         |  TWO = 2;
         |  SIX = 6;

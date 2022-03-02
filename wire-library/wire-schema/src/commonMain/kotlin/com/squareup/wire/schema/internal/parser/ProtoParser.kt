@@ -279,6 +279,7 @@ class ProtoParser internal constructor(
     val name = reader.readName()
     val constants = mutableListOf<EnumConstantElement>()
     val options = mutableListOf<OptionElement>()
+    val reserveds = mutableListOf<ReservedElement>()
 
     reader.require('{')
     while (true) {
@@ -288,11 +289,12 @@ class ProtoParser internal constructor(
       when (val declared = readDeclaration(valueDocumentation, Context.ENUM)) {
         is EnumConstantElement -> constants.add(declared)
         is OptionElement -> options.add(declared)
+        is ReservedElement -> reserveds.add(declared)
         // TODO: add else clause to catch unexpected declarations.
       }
     }
 
-    return EnumElement(location, name, documentation, options, constants)
+    return EnumElement(location, name, documentation, options, constants, reserveds)
   }
 
   private fun readField(documentation: String, location: Location, word: String): Any {
