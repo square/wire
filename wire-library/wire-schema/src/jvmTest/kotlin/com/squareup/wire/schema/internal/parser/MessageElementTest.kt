@@ -19,6 +19,7 @@ import com.squareup.wire.schema.Field.Label.OPTIONAL
 import com.squareup.wire.schema.Field.Label.REPEATED
 import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -392,7 +393,7 @@ class MessageElementTest {
         reserveds = listOf(
             ReservedElement(location = location, values = listOf(10, 12..14, "foo")),
             ReservedElement(location = location, values = listOf(10)),
-            ReservedElement(location = location, values = listOf(12..14)),
+            ReservedElement(location = location, values = listOf(12..MAX_TAG_VALUE)),
             ReservedElement(location = location, values = listOf("foo"))
         )
     )
@@ -400,7 +401,7 @@ class MessageElementTest {
         |message Message {
         |  reserved 10, 12 to 14, "foo";
         |  reserved 10;
-        |  reserved 12 to 14;
+        |  reserved 12 to max;
         |  reserved "foo";
         |}
         |""".trimMargin()
