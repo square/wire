@@ -1474,6 +1474,56 @@ class SchemaTest {
   }
 
   @Test
+  fun reservedTagThrowsWhenUsedForMessageWithMax() {
+    try {
+      RepoBuilder()
+        .add("test.proto", """
+               |message Message {
+               |  reserved 1 to max;
+               |  optional string name = 3;
+               |}
+               """.trimMargin()
+        )
+        .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |tag 3 is reserved (/source/test.proto:2:3)
+            |  for field name (/source/test.proto:3:3)
+            |  in message Message (/source/test.proto:1:1)
+            """.trimMargin()
+      )
+    }
+  }
+
+  @Test
+  fun reservedTagThrowsWhenUsedForEnums() {
+    try {
+      val schema = RepoBuilder()
+        .add("test.proto", """
+               |enum Enum {
+               |  reserved 3 to max, 'FOO';
+               |  FOO = 2;
+               |  NAME = 4;
+               |}
+               """.trimMargin()
+        )
+        .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |name 'FOO' is reserved (/source/test.proto:2:3)
+            |  for constant FOO (/source/test.proto:3:3)
+            |  in enum Enum (/source/test.proto:1:1)
+            |tag 4 is reserved (/source/test.proto:2:3)
+            |  for constant NAME (/source/test.proto:4:3)
+            |  in enum Enum (/source/test.proto:1:1)
+            """.trimMargin()
+      )
+    }
+  }
+
+  @Test
   fun reservedTagRangeThrowsWhenUsed() {
     try {
       RepoBuilder()
