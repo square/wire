@@ -71,6 +71,17 @@ data class EnumType(
     }
     validateTagNameAmbiguity("true" == allowAlias, linker)
     syntaxRules.validateEnumConstants(constants, linker.errors)
+
+    for (constant in constants) {
+      for (reserved in reserveds) {
+        if (reserved.matchesTag(constant.tag)) {
+          linker.errors.at(constant) += "tag ${constant.tag} is reserved (${reserved.location})"
+        }
+        if (reserved.matchesName(constant.name)) {
+          linker.errors.at(constant) += "name '${constant.name}' is reserved (${reserved.location})"
+        }
+      }
+    }
   }
 
   private fun validateTagNameAmbiguity(allowAlias: Boolean, linker: Linker) {
