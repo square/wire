@@ -138,7 +138,7 @@ private fun BaseExtension.sourceRoots(project: Project, kotlin: Boolean): List<S
     if (kotlin) {
       sourceSets
         .associate { sourceSet ->
-          sourceSet.name to sourceSet.kotlin
+          sourceSet.name to sourceSet.kotlinSourceDirectorySet
         }
     } else null
 

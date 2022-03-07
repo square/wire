@@ -13,9 +13,9 @@ jobs:
       fail-fast: false
       matrix:
         java-version:
-          - 8
-          - 9
-          - 10
+          #- 8
+          #- 9
+          #- 10
           - 11
           - 12
           - 14

@@ -32,6 +32,7 @@ import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
+import org.junit.Ignore
 import org.junit.Test
 import squareup.proto2.kotlin.interop.type.InteropTypes.MessageProto2
 import squareup.proto3.kotlin.MapTypesOuterClass
@@ -375,6 +376,7 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(parsed).isEqualTo(defaultAllWrappersProtoc)
   }
 
+  @Ignore("Protobuf changed their spec around negative zeros for doubles and floats https://github.com/square/wire/issues/2217")
   @Test fun minusDoubleZero() {
     val protoc = AllTypesOuterClass.AllTypes.newBuilder()
         .setMyDouble(-0.0)
