@@ -574,7 +574,7 @@ With Maven:
 ```xml
 <dependency>
   <groupId>com.squareup.wire</groupId>
-  <artifactId>wire-runtime</artifactId>
+  <artifactId>wire-runtime-jvm</artifactId>
   <version>4.2.0</version>
 </dependency>
 ```
