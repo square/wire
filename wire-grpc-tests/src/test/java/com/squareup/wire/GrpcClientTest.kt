@@ -1479,6 +1479,49 @@ class GrpcClientTest {
     assertThat(clonedCall.responseMetadata!!["response-lucky-animal"]).isEqualTo("emu")
   }
 
+  @Test
+  fun requestResponseCanceledInHttpCall() {
+    interceptor = object : Interceptor {
+      override fun intercept(chain: Interceptor.Chain): Response {
+        chain.call().cancel()
+        throw IOException("boom")
+      }
+    }
+
+    val grpcCall = routeGuideService.GetFeature()
+    runBlocking {
+      try {
+        grpcCall.execute(Point(latitude = 5, longitude = 6))
+        fail()
+      } catch (expected: Throwable) {
+        assertThat(expected).isInstanceOf(IOException::class.java)
+        assertThat(grpcCall.isCanceled()).isTrue()
+      }
+    }
+  }
+
+  @Test
+  fun requestResponseStreamingCanceledInHttpCall() {
+    interceptor = object : Interceptor {
+      override fun intercept(chain: Interceptor.Chain): Response {
+        chain.call().cancel()
+        throw IOException("boom")
+      }
+    }
+
+    val grpcCall = routeGuideService.RouteChat()
+    runBlocking {
+      val (_, receive) = grpcCall.executeIn(this@runBlocking)
+      try {
+        receive.receive()
+        fail()
+      } catch (expected: Throwable) {
+        assertThat(expected).isInstanceOf(IOException::class.java)
+        assertThat(grpcCall.isCanceled()).isTrue()
+      }
+    }
+  }
+
   private fun removeGrpcStatusInterceptor(): Interceptor {
     val noTrailersResponse = noTrailersResponse()
     assertThat(noTrailersResponse.trailers().size).isEqualTo(0)

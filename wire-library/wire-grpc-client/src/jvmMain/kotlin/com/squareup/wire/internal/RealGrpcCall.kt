@@ -49,7 +49,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
     call?.cancel()
   }
 
-  override fun isCanceled(): Boolean = canceled
+  override fun isCanceled(): Boolean = canceled || call?.isCanceled() == true
 
   override suspend fun execute(request: S): R {
     val call = initCall(request)

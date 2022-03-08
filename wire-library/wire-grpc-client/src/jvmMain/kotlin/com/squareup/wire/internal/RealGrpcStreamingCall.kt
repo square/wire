@@ -56,7 +56,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
     call?.cancel()
   }
 
-  override fun isCanceled(): Boolean = canceled
+  override fun isCanceled(): Boolean = canceled || call?.isCanceled() == true
 
   override fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>> = executeIn(GlobalScope)
 
