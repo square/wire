@@ -10,7 +10,7 @@ plugins {
   id("com.google.protobuf")
   id("com.squareup.wire")
   id("com.github.johnrengelman.shadow")
-  id("me.champeau.gradle.jmh")
+  id("me.champeau.jmh").version("0.6.6")
 }
 
 protobuf {
@@ -25,9 +25,9 @@ wire {
 }
 
 jmh {
-  jvmArgs = listOf("-Djmh.separateClasspathJAR=true")
-  include = listOf("""com\.squareup\.wire\.benchmarks\.EncodeBenchmark.*""")
-  duplicateClassesStrategy = DuplicatesStrategy.WARN
+  jvmArgs.addAll(listOf("-Djmh.separateClasspathJAR=true"))
+  includes.addAll(listOf("""com\.squareup\.wire\.benchmarks\.EncodeBenchmark.*"""))
+  duplicateClassesStrategy.set(DuplicatesStrategy.WARN)
 }
 
 dependencies {

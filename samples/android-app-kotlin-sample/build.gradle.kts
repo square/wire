@@ -6,7 +6,6 @@ plugins {
 
 android {
   compileSdkVersion(30)
-  buildToolsVersion("30.0.2")
 
   defaultConfig {
     applicationId = "com.square.wire.java.sample.myapplication"
@@ -40,7 +39,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath("com.android.tools.build:gradle:3.6.3")
+    classpath(deps.plugins.android)
     classpath("com.squareup.wire:wire-gradle-plugin")
   }
 }

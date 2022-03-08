@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-  compileSdkVersion(29)
+  compileSdkVersion(30)
   defaultConfig {
     applicationId = "com.squareup.wire.whiteboard"
     minSdkVersion(28)
-    targetSdkVersion(29)
+    targetSdkVersion(30)
   }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_1_8

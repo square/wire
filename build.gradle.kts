@@ -9,7 +9,6 @@ buildscript {
     classpath(deps.animalSniffer.gradle)
     classpath(deps.plugins.android)
     classpath(deps.protobuf.gradlePlugin)
-    classpath(deps.plugins.jmh)
   }
 
   repositories {

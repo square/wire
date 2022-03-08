@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.gradle.plugin.KOTLIN_DSL_NAME
 import org.jetbrains.kotlin.gradle.plugin.KOTLIN_JS_DSL_NAME
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
-internal val AndroidSourceSet.kotlin: SourceDirectorySet?
+internal val AndroidSourceSet.kotlinSourceDirectorySet: SourceDirectorySet?
   get() = kotlinSourceSet
 
 internal val SourceSet.kotlin: SourceDirectorySet?

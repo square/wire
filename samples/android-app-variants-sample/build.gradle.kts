@@ -44,7 +44,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath("com.android.tools.build:gradle:3.6.3")
+    classpath(deps.plugins.android)
     classpath("com.squareup.wire:wire-gradle-plugin")
   }
 }
