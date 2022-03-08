@@ -35,7 +35,6 @@ buildscript {
   repositories {
     mavenCentral()
     google()
-    jcenter()
   }
   dependencies {
     classpath(deps.plugins.android)

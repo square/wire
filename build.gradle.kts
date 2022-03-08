@@ -22,7 +22,6 @@ allprojects {
   repositories {
     mavenCentral()
     google()
-    jcenter()
   }
 
   // Prefer to get dependency versions from BOMs.
