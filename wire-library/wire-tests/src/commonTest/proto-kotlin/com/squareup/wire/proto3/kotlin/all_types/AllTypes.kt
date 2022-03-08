@@ -1398,10 +1398,10 @@ public class AllTypes(
             value.proto3_kotlin_sfixed64)
         if (value.proto3_kotlin_bool != false) size += ProtoAdapter.BOOL.encodedSizeWithTag(11,
             value.proto3_kotlin_bool)
-        if (value.proto3_kotlin_float != 0f) size += ProtoAdapter.FLOAT.encodedSizeWithTag(12,
+        if (!value.proto3_kotlin_float.equals(0f)) size += ProtoAdapter.FLOAT.encodedSizeWithTag(12,
             value.proto3_kotlin_float)
-        if (value.proto3_kotlin_double != 0.0) size += ProtoAdapter.DOUBLE.encodedSizeWithTag(13,
-            value.proto3_kotlin_double)
+        if (!value.proto3_kotlin_double.equals(0.0)) size +=
+            ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.proto3_kotlin_double)
         if (value.proto3_kotlin_string != "") size += ProtoAdapter.STRING.encodedSizeWithTag(14,
             value.proto3_kotlin_string)
         if (value.proto3_kotlin_bytes != ByteString.EMPTY) size +=
@@ -1526,9 +1526,9 @@ public class AllTypes(
             value.proto3_kotlin_sfixed64)
         if (value.proto3_kotlin_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11,
             value.proto3_kotlin_bool)
-        if (value.proto3_kotlin_float != 0f) ProtoAdapter.FLOAT.encodeWithTag(writer, 12,
+        if (!value.proto3_kotlin_float.equals(0f)) ProtoAdapter.FLOAT.encodeWithTag(writer, 12,
             value.proto3_kotlin_float)
-        if (value.proto3_kotlin_double != 0.0) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
+        if (!value.proto3_kotlin_double.equals(0.0)) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
             value.proto3_kotlin_double)
         if (value.proto3_kotlin_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14,
             value.proto3_kotlin_string)
@@ -1723,9 +1723,9 @@ public class AllTypes(
             15, value.proto3_kotlin_bytes)
         if (value.proto3_kotlin_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14,
             value.proto3_kotlin_string)
-        if (value.proto3_kotlin_double != 0.0) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
+        if (!value.proto3_kotlin_double.equals(0.0)) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
             value.proto3_kotlin_double)
-        if (value.proto3_kotlin_float != 0f) ProtoAdapter.FLOAT.encodeWithTag(writer, 12,
+        if (!value.proto3_kotlin_float.equals(0f)) ProtoAdapter.FLOAT.encodeWithTag(writer, 12,
             value.proto3_kotlin_float)
         if (value.proto3_kotlin_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11,
             value.proto3_kotlin_bool)

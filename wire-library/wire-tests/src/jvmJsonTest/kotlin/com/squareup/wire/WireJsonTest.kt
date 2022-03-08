@@ -520,14 +520,25 @@ class WireJsonTest {
   }
 
   @Test fun minusDoubleZero() {
-    if (jsonLibrary.writeIdentityValues) return
-
     val value = AllTypesProto3.Builder().my_double(-0.0).build()
-    val json = "{\"myDouble\": -0.0}"
+    val json = "\"myDouble\":-0.0"
 
-    assertJsonEquals(json, jsonLibrary.toJson(value, AllTypesProto3::class.java))
+    // -0.0 isn't the identity value for doubles so we print it.
+    assertThat(jsonLibrary.toJson(value, AllTypesProto3::class.java)).contains(json)
 
-    val parsed = jsonLibrary.fromJson(json, AllTypesProto3::class.java)
+    val parsed = jsonLibrary.fromJson("{$json}", AllTypesProto3::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+  }
+
+  @Test fun minusFloatZero() {
+    val value = AllTypesProto3.Builder().my_float(-0f).build()
+    val json = "\"myFloat\":-0.0"
+
+    // -0f isn't the identity value for floats so we print it.
+    assertThat(jsonLibrary.toJson(value, AllTypesProto3::class.java)).contains(json)
+
+    val parsed = jsonLibrary.fromJson("{$json}", AllTypesProto3::class.java)
     assertThat(parsed).isEqualTo(value)
     assertThat(parsed.toString()).isEqualTo(value.toString())
   }

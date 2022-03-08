@@ -1767,8 +1767,9 @@ public class AllTypes(
         if (value.my_sfixed64 != 0L) size += ProtoAdapter.SFIXED64.encodedSizeWithTag(10,
             value.my_sfixed64)
         if (value.my_bool != false) size += ProtoAdapter.BOOL.encodedSizeWithTag(11, value.my_bool)
-        if (value.my_float != 0f) size += ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.my_float)
-        if (value.my_double != 0.0) size += ProtoAdapter.DOUBLE.encodedSizeWithTag(13,
+        if (!value.my_float.equals(0f)) size += ProtoAdapter.FLOAT.encodedSizeWithTag(12,
+            value.my_float)
+        if (!value.my_double.equals(0.0)) size += ProtoAdapter.DOUBLE.encodedSizeWithTag(13,
             value.my_double)
         if (value.my_string != "") size += ProtoAdapter.STRING.encodedSizeWithTag(14,
             value.my_string)
@@ -1848,8 +1849,9 @@ public class AllTypes(
         if (value.my_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10,
             value.my_sfixed64)
         if (value.my_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.my_bool)
-        if (value.my_float != 0f) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.my_float)
-        if (value.my_double != 0.0) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.my_double)
+        if (!value.my_float.equals(0f)) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.my_float)
+        if (!value.my_double.equals(0.0)) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
+            value.my_double)
         if (value.my_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14, value.my_string)
         if (value.my_bytes != ByteString.EMPTY) ProtoAdapter.BYTES.encodeWithTag(writer, 15,
             value.my_bytes)
@@ -1975,8 +1977,9 @@ public class AllTypes(
         if (value.my_bytes != ByteString.EMPTY) ProtoAdapter.BYTES.encodeWithTag(writer, 15,
             value.my_bytes)
         if (value.my_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14, value.my_string)
-        if (value.my_double != 0.0) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.my_double)
-        if (value.my_float != 0f) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.my_float)
+        if (!value.my_double.equals(0.0)) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
+            value.my_double)
+        if (!value.my_float.equals(0f)) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.my_float)
         if (value.my_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.my_bool)
         if (value.my_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10,
             value.my_sfixed64)

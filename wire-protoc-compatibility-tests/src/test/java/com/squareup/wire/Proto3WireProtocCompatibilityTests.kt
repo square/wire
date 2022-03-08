@@ -376,19 +376,38 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(parsed).isEqualTo(defaultAllWrappersProtoc)
   }
 
-  @Ignore("Protobuf changed their spec around negative zeros for doubles and floats https://github.com/square/wire/issues/2217")
   @Test fun minusDoubleZero() {
     val protoc = AllTypesOuterClass.AllTypes.newBuilder()
-        .setMyDouble(-0.0)
-        .build()
+      .setMyDouble(-0.0)
+      .build()
     val wireKotlin = AllTypesK(my_double = -0.0)
+    val wireJava = AllTypesJ.Builder().double_(-0.0).build()
 
     val protocByteArray = protoc.toByteArray()
     assertThat(AllTypesK.ADAPTER.encode(wireKotlin)).isEqualTo(protocByteArray)
     assertThat(AllTypesK.ADAPTER.decode(protocByteArray)).isEqualTo(wireKotlin)
+    assertThat(AllTypesJ.ADAPTER.encode(wireJava)).isEqualTo(protocByteArray)
+    assertThat(AllTypesJ.ADAPTER.decode(protocByteArray)).isEqualTo(wireJava)
 
     val protocJson = JsonFormat.printer().print(protoc)
     assertJsonEquals("{\"myDouble\": -0.0}", protocJson)
+  }
+
+  @Test fun minusFloatZero() {
+    val protoc = AllTypesOuterClass.AllTypes.newBuilder()
+      .setMyFloat(-0f)
+      .build()
+    val wireKotlin = AllTypesK(my_float = -0f)
+    val wireJava = AllTypesJ.Builder().float_(-0f).build()
+
+    val protocByteArray = protoc.toByteArray()
+    assertThat(AllTypesK.ADAPTER.encode(wireKotlin)).isEqualTo(protocByteArray)
+    assertThat(AllTypesK.ADAPTER.decode(protocByteArray)).isEqualTo(wireKotlin)
+    assertThat(AllTypesJ.ADAPTER.encode(wireJava)).isEqualTo(protocByteArray)
+    assertThat(AllTypesJ.ADAPTER.decode(protocByteArray)).isEqualTo(wireJava)
+
+    val protocJson = JsonFormat.printer().print(protoc)
+    assertJsonEquals("{\"myFloat\": -0.0}", protocJson)
   }
 
   @Test fun cannotPassNullToIdentityString() {
