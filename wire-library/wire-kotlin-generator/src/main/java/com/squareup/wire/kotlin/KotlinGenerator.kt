@@ -1387,7 +1387,7 @@ class KotlinGenerator private constructor(
           is Field -> {
             val fieldName = localNameAllocator[fieldOrOneOf]
             if (fieldOrOneOf.encodeMode == EncodeMode.OMIT_IDENTITY) {
-              add("if (value.%1L != %2L) ", fieldName, fieldOrOneOf.identityValue)
+              add(fieldEqualsIdentityBlock(fieldOrOneOf, fieldName))
             }
             addStatement("%N += %L.encodedSizeWithTag(%L, value.%L)", sizeName, adapterFor(fieldOrOneOf),
               fieldOrOneOf.tag, fieldName)
@@ -1428,7 +1428,7 @@ class KotlinGenerator private constructor(
       val fieldName = nameAllocator[field]
       encodeCalls += buildCodeBlock {
         if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
-          add("if (value.%L != %L) ", fieldName, field.identityValue)
+          add(fieldEqualsIdentityBlock(field, fieldName))
         }
         addStatement(
           "%L.encodeWithTag(writer, %L, value.%L)",
@@ -1839,6 +1839,15 @@ class KotlinGenerator private constructor(
         .build()
   }
 
+  private fun fieldEqualsIdentityBlock(field: Field, fieldName: String): CodeBlock {
+      val format = when (field.type) {
+        // Special case for doubles and floats because of negative zeros.
+        ProtoType.DOUBLE,
+        ProtoType.FLOAT -> "if (!value.%1L.equals(%2L)) "
+        else -> "if (value.%1L != %2L) "
+      }
+     return CodeBlock.of(format, fieldName, field.identityValue)
+  }
   private fun generateEnumCompanion(message: EnumType): TypeSpec {
     val nameAllocator = nameAllocator(message)
     val companionObjectBuilder = TypeSpec.companionObjectBuilder()
