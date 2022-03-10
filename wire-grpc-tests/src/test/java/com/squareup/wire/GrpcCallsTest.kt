@@ -239,4 +239,18 @@ class GrpcCallsTest {
     assertThat(clonedGrpcCall.requestMetadata).isEqualTo(mapOf("1" to "one"))
     assertThat(clonedGrpcCall.executeBlocking("world")).isEqualTo("WORLD")
   }
+
+  @Test
+  fun propagatesGrpcExceptionsWithoutWrappingIOException() {
+    val grpcCall = GrpcCall<String, String> { request ->
+      throw GrpcException(GrpcStatus.INTERNAL, "oops")
+    }
+
+    try {
+      grpcCall.executeBlocking("hello")
+      fail()
+    } catch (e: GrpcException) {
+      assertThat(e).hasMessage("grpc-status=13, grpc-status-name=INTERNAL, grpc-message=oops")
+    }
+  }
 }
