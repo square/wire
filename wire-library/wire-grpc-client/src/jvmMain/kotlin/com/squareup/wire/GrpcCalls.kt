@@ -99,6 +99,8 @@ fun <S : Any, R : Any> GrpcCall(function: (S) -> R): GrpcCall<S, R> {
       if (canceled.get()) throw IOException("canceled")
       try {
         return function(request)
+      } catch (e: IOException) {
+        throw e
       } catch (e: Exception) {
         throw IOException("call failed: $e", e)
       }
