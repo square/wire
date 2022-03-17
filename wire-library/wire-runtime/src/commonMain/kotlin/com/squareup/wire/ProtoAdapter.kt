@@ -1284,33 +1284,38 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
   }
 }
 
+/**
+ * Wire implements scalar wrapper types as nullable scalar ones. Protoc omits both null wrappers
+ * and wrappers whose scalar value is the identity value of the scalar type. This is why we are
+ * checking for both null and identities in the wrapper adapter methods.
+ */
 internal fun <T : Any> commonWrapper(delegate: ProtoAdapter<T>, typeUrl: String): ProtoAdapter<T?> {
   return object : ProtoAdapter<T?>(
       LENGTH_DELIMITED,
       delegate.type,
       typeUrl,
       Syntax.PROTO_3,
-      null
+      delegate.identity,
   ) {
     override fun encodedSize(value: T?): Int {
-      if (value == null) return 0
+      if (value == null || value == delegate.identity) return 0
       return delegate.encodedSizeWithTag(1, value)
     }
 
     override fun encode(writer: ProtoWriter, value: T?) {
-      if (value != null) {
+      if (value != null && value != delegate.identity) {
         delegate.encodeWithTag(writer, 1, value)
       }
     }
 
     override fun encode(writer: ReverseProtoWriter, value: T?) {
-      if (value != null) {
+      if (value != null && value != delegate.identity) {
         delegate.encodeWithTag(writer, 1, value)
       }
     }
 
     override fun decode(reader: ProtoReader): T? {
-      var result: T? = null
+      var result: T? = delegate.identity
       reader.forEachTag { tag ->
         when (tag) {
           1 -> result = delegate.decode(reader)

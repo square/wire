@@ -46,9 +46,35 @@ class ProtoAdapterIdentityTest {
         protoAdapter.type == String::class && protoAdapter.syntax === Syntax.PROTO_2 -> {
           assertThat(protoAdapter.identity).isEqualTo("")
         }
+        protoAdapter.typeUrl == "type.googleapis.com/google.protobuf.DoubleValue" -> {
+          assertThat(protoAdapter.identity).isEqualTo(ProtoAdapter.DOUBLE.identity)
+        }
+        protoAdapter.typeUrl == "type.googleapis.com/google.protobuf.FloatValue" -> {
+          assertThat(protoAdapter.identity).isEqualTo(ProtoAdapter.FLOAT.identity)
+        }
+        protoAdapter.typeUrl == "type.googleapis.com/google.protobuf.Int64Value" -> {
+          assertThat(protoAdapter.identity).isEqualTo(ProtoAdapter.INT64.identity)
+        }
+        protoAdapter.typeUrl == "type.googleapis.com/google.protobuf.UInt64Value" -> {
+          assertThat(protoAdapter.identity).isEqualTo(ProtoAdapter.UINT64.identity)
+        }
+        protoAdapter.typeUrl == "type.googleapis.com/google.protobuf.Int32Value" -> {
+          assertThat(protoAdapter.identity).isEqualTo(ProtoAdapter.INT32.identity)
+        }
+        protoAdapter.typeUrl == "type.googleapis.com/google.protobuf.UInt32Value" -> {
+          assertThat(protoAdapter.identity).isEqualTo(ProtoAdapter.UINT32.identity)
+        }
+        protoAdapter.typeUrl == "type.googleapis.com/google.protobuf.BoolValue" -> {
+          assertThat(protoAdapter.identity).isEqualTo(ProtoAdapter.BOOL.identity)
+        }
+        protoAdapter.typeUrl == "type.googleapis.com/google.protobuf.StringValue" -> {
+          assertThat(protoAdapter.identity).isEqualTo(ProtoAdapter.STRING.identity)
+        }
+        protoAdapter.typeUrl == "type.googleapis.com/google.protobuf.BytesValue" -> {
+          assertThat(protoAdapter.identity).isEqualTo(ProtoAdapter.BYTES.identity)
+        }
         else -> {
-          // All other types are messages or wrappers (nullable primitives) and must have null as
-          // their identity value.
+          // All other types are messages and must have null as their identity value.
           assertThat(protoAdapter.identity).isNull()
         }
       }
@@ -70,21 +96,21 @@ class ProtoAdapterIdentityTest {
   @Test fun runtimeMessageAdaptersHaveNullIdentities() {
     val protoAdapter =
       ProtoAdapter.newMessageAdapter(
-          Person::class.java
+        Person::class.java
       )
     assertThat(protoAdapter.identity).isNull()
   }
 
   @Test fun runtimeEnumAdaptersHaveZeroIdentities() {
     val protoAdapter = ProtoAdapter.newEnumAdapter(
-        PhoneType::class.java
+      PhoneType::class.java
     )
     assertThat(protoAdapter.identity).isEqualTo(PhoneType.MOBILE) // value = 0.
   }
 
   @Test fun runtimeEnumAdaptersHaveNullIdentitiesWhenThereIsNoZero() {
     val protoAdapter = ProtoAdapter.newEnumAdapter(
-        NestedEnum::class.java
+      NestedEnum::class.java
     )
     assertThat(protoAdapter.identity).isNull()
   }
@@ -121,11 +147,12 @@ class ProtoAdapterIdentityTest {
 
   @Test fun mapIdentityIsEmptyMap() {
     assertThat(
-        ProtoAdapter.newMapAdapter(
-            ProtoAdapter.STRING,
-            ProtoAdapter.STRING
-        ).identity)
-        .isEqualTo(mapOf<String, String>())
+      ProtoAdapter.newMapAdapter(
+        ProtoAdapter.STRING,
+        ProtoAdapter.STRING
+      ).identity
+    )
+      .isEqualTo(mapOf<String, String>())
   }
 
   private val KClass<*>?.isPrimitive

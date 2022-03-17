@@ -18,6 +18,7 @@ syntax = "proto3";
 package squareup.proto3.java.interop;
 
 import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
 
 message InteropDuration {
   google.protobuf.Duration value = 1;
@@ -56,3 +57,14 @@ message InteropBoxOneOf {
   }
 }
 
+message InteropWrappers {
+  google.protobuf.DoubleValue double_value = 1;
+  google.protobuf.FloatValue float_value = 2;
+  google.protobuf.Int64Value int64_value = 3;
+  google.protobuf.UInt64Value uint64_value = 4;
+  google.protobuf.Int32Value int32_value = 5;
+  google.protobuf.UInt32Value uint32_value = 6;
+  google.protobuf.BoolValue bool_value = 7;
+  google.protobuf.StringValue string_value = 8;
+  google.protobuf.BytesValue bytes_value = 9;
+}

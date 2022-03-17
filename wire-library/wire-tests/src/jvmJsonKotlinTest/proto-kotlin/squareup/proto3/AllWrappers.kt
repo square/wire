@@ -31,7 +31,6 @@ public class AllWrappers(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
     jsonName = "doubleValue"
   )
   @JvmField
@@ -39,7 +38,6 @@ public class AllWrappers(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
     jsonName = "floatValue"
   )
   @JvmField
@@ -47,7 +45,6 @@ public class AllWrappers(
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#INT64_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
     jsonName = "int64Value"
   )
   @JvmField
@@ -55,7 +52,6 @@ public class AllWrappers(
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
     jsonName = "uint64Value"
   )
   @JvmField
@@ -63,7 +59,6 @@ public class AllWrappers(
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#INT32_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
     jsonName = "int32Value"
   )
   @JvmField
@@ -71,7 +66,6 @@ public class AllWrappers(
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
     jsonName = "uint32Value"
   )
   @JvmField
@@ -79,7 +73,6 @@ public class AllWrappers(
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
     jsonName = "boolValue"
   )
   @JvmField
@@ -87,7 +80,6 @@ public class AllWrappers(
   @field:WireField(
     tag = 8,
     adapter = "com.squareup.wire.ProtoAdapter#STRING_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
     jsonName = "stringValue"
   )
   @JvmField
@@ -95,7 +87,6 @@ public class AllWrappers(
   @field:WireField(
     tag = 9,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
     jsonName = "bytesValue"
   )
   @JvmField

@@ -61,6 +61,10 @@ class ProtoType {
       }
     }
 
+  /** True if this type is defined in `google/protobuf/wrappers.proto`. */
+  val isWrapper: Boolean
+    get() = this in WRAPPER_TYPES
+
   /** Creates a scalar or message type.  */
   private constructor(isScalar: Boolean, string: String) {
     this.isScalar = isScalar
@@ -130,36 +134,49 @@ class ProtoType {
     @JvmField val BYTES_VALUE = ProtoType(false, "google.protobuf.BytesValue")
 
     private val SCALAR_TYPES: Map<String, ProtoType> = listOf(
-        BOOL,
-        BYTES,
-        DOUBLE,
-        FLOAT,
-        FIXED32,
-        FIXED64,
-        INT32,
-        INT64,
-        SFIXED32,
-        SFIXED64,
-        SINT32,
-        SINT64,
-        STRING,
-        UINT32,
-        UINT64
+      BOOL,
+      BYTES,
+      DOUBLE,
+      FLOAT,
+      FIXED32,
+      FIXED64,
+      INT32,
+      INT64,
+      SFIXED32,
+      SFIXED64,
+      SINT32,
+      SINT64,
+      STRING,
+      UINT32,
+      UINT64
     ).associateBy { it.string }
 
     internal val NUMERIC_SCALAR_TYPES = listOf(
-        DOUBLE,
-        FLOAT,
-        FIXED32,
-        FIXED64,
-        INT32,
-        INT64,
-        SFIXED32,
-        SFIXED64,
-        SINT32,
-        SINT64,
-        UINT32,
-        UINT64
+      DOUBLE,
+      FLOAT,
+      FIXED32,
+      FIXED64,
+      INT32,
+      INT64,
+      SFIXED32,
+      SFIXED64,
+      SINT32,
+      SINT64,
+      UINT32,
+      UINT64
+    )
+
+    /** All types defined in `google/protobuf/wrappers.proto`. */
+    internal val WRAPPER_TYPES = listOf(
+      DOUBLE_VALUE,
+      FLOAT_VALUE,
+      INT64_VALUE,
+      UINT64_VALUE,
+      INT32_VALUE,
+      UINT32_VALUE,
+      BOOL_VALUE,
+      STRING_VALUE,
+      BYTES_VALUE,
     )
 
     @JvmStatic
@@ -189,6 +206,6 @@ class ProtoType {
     }
 
     @JvmStatic fun get(keyType: ProtoType, valueType: ProtoType, name: String) =
-        ProtoType(keyType, valueType, name)
+      ProtoType(keyType, valueType, name)
   }
 }

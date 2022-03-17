@@ -200,7 +200,7 @@ data class Field(
     /** Required from proto2. */
     REQUIRED,
 
-    /** Non-repeated fields in proto3. Identify can be `0`, `false`, `""`, or `null`. */
+    /** Non-repeated fields in proto3. Identity can be `0`, `false`, `""`, or `null`. */
     OMIT_IDENTITY,
 
     /** List. */

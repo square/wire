@@ -16,8 +16,10 @@
 package com.squareup.wire
 
 import com.google.protobuf.Duration
+import okio.ByteString
 import org.junit.Ignore
 import org.junit.Test
+import squareup.proto3.java.interop.InteropTest.InteropWrappers
 import squareup.proto2.java.interop.InteropBoxOneOf as InteropBoxOneOfJ2
 import squareup.proto2.java.interop.InteropCamelCase as InteropCamelCaseJ2
 import squareup.proto2.java.interop.InteropDuration as InteropDurationJ2
@@ -42,12 +44,14 @@ import squareup.proto3.java.interop.InteropTest.InteropDuration as InteropDurati
 import squareup.proto3.java.interop.InteropTest.InteropJsonName as InteropJsonNameP3
 import squareup.proto3.java.interop.InteropTest.InteropUint64 as InteropUint64P3
 import squareup.proto3.java.interop.InteropUint64 as InteropUint64J3
+import squareup.proto3.java.interop.InteropWrappers as InteropWrappersJ3
 import squareup.proto3.kotlin.interop.InteropBoxOneOf as InteropBoxOneOfK3
 import squareup.proto3.kotlin.interop.InteropCamelCase as InteropCamelCaseK3
 import squareup.proto3.kotlin.interop.InteropDuration as InteropDurationK3
 import squareup.proto3.kotlin.interop.InteropJsonName as InteropJsonNameK3
 import squareup.proto3.kotlin.interop.InteropOptional as InteropOptionalK3
 import squareup.proto3.kotlin.interop.InteropUint64 as InteropUint64K3
+import squareup.proto3.kotlin.interop.InteropWrappers as InteropWrappersK3
 import squareup.proto3.kotlin.interop.TestProto3Optional.InteropOptional as InteropOptionalP3
 
 class InteropTest {
@@ -270,6 +274,101 @@ class InteropTest {
     )
     checker.check(InteropBoxOneOfJ2.Builder().a("Hello").build())
     checker.check(InteropBoxOneOfJ3.Builder().a("Hello").build())
+  }
+
+  @Test fun wrappersDoesNotOmitWrappedIdentityValues() {
+    val checker = InteropChecker(
+      protocMessage = InteropWrappers.newBuilder()
+        .setDoubleValue(0.0.toDoubleValue())
+        .setFloatValue(0f.toFloatValue())
+        .setInt64Value(0L.toInt64Value())
+        .setUint64Value(0L.toUInt64Value())
+        .setInt32Value(0.toInt32Value())
+        .setUint32Value(0.toUInt32Value())
+        .setBoolValue(false.toBoolValue())
+        .setStringValue("".toStringValue())
+        .setBytesValue(ByteString.EMPTY.toBytesValue())
+        .build(),
+      canonicalJson = """{"doubleValue":0.0,"floatValue":0.0,"int64Value":"0","uint64Value":"0","int32Value":0,"uint32Value":0,"boolValue":false,"stringValue":"","bytesValue":""}""",
+    )
+    checker.check(
+      InteropWrappersJ3.Builder()
+        .double_value(0.0)
+        .float_value(0f)
+        .int64_value(0L)
+        .uint64_value(0L)
+        .int32_value(0)
+        .uint32_value(0)
+        .bool_value(false)
+        .string_value("")
+        .bytes_value(ByteString.EMPTY)
+        .build()
+    )
+    checker.check(
+      InteropWrappersK3.Builder()
+        .double_value(0.0)
+        .float_value(0f)
+        .int64_value(0L)
+        .uint64_value(0L)
+        .int32_value(0)
+        .uint32_value(0)
+        .bool_value(false)
+        .string_value("")
+        .bytes_value(ByteString.EMPTY)
+        .build()
+    )
+  }
+
+  @Test fun wrappersWithNulls() {
+    val checker = InteropChecker(
+      protocMessage = InteropWrappers.newBuilder().build(),
+      canonicalJson = """{}""",
+    )
+    checker.check(InteropWrappersJ3.Builder().build())
+    checker.check(InteropWrappersK3.Builder().build())
+  }
+
+  @Test fun wrappers() {
+    val checker = InteropChecker(
+      protocMessage = InteropWrappers.newBuilder()
+        .setDoubleValue(1.0.toDoubleValue())
+        .setFloatValue(2f.toFloatValue())
+        .setInt64Value(3L.toInt64Value())
+        .setUint64Value(4L.toUInt64Value())
+        .setInt32Value(5.toInt32Value())
+        .setUint32Value(6.toUInt32Value())
+        .setBoolValue(true.toBoolValue())
+        .setStringValue("string".toStringValue())
+        .setBytesValue(ByteString.of(1).toBytesValue())
+        .build(),
+      canonicalJson = """{"doubleValue":1.0,"floatValue":2.0,"int64Value":"3","uint64Value":"4","int32Value":5,"uint32Value":6,"boolValue":true,"stringValue":"string","bytesValue":"AQ=="}""",
+    )
+    checker.check(
+      InteropWrappersJ3.Builder()
+        .double_value(1.0)
+        .float_value(2f)
+        .int64_value(3L)
+        .uint64_value(4L)
+        .int32_value(5)
+        .uint32_value(6)
+        .bool_value(true)
+        .string_value("string")
+        .bytes_value(ByteString.of(1))
+        .build()
+    )
+    checker.check(
+      InteropWrappersK3.Builder()
+        .double_value(1.0)
+        .float_value(2f)
+        .int64_value(3L)
+        .uint64_value(4L)
+        .int32_value(5)
+        .uint32_value(6)
+        .bool_value(true)
+        .string_value("string")
+        .bytes_value(ByteString.of(1))
+        .build()
+    )
   }
 }
 

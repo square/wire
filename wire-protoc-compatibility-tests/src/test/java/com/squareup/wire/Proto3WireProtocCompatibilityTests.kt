@@ -32,7 +32,6 @@ import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
-import org.junit.Ignore
 import org.junit.Test
 import squareup.proto2.kotlin.interop.type.InteropTypes.MessageProto2
 import squareup.proto3.kotlin.MapTypesOuterClass

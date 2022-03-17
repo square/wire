@@ -97,6 +97,7 @@ class InteropChecker(
     val wireBytes = (adapter as ProtoAdapter<Any>).encodeByteString(message)
     assertThat(wireBytes).isEqualTo(protocBytes)
     assertThat(adapter.encodeByteString(message)).isEqualTo(protocBytes)
+    assertThat(adapter.decode(protocBytes!!)).isEqualTo(message)
   }
 
   private fun roundtripGson(message: Any) {
