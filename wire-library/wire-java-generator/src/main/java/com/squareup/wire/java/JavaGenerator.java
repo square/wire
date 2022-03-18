@@ -1326,7 +1326,12 @@ public final class JavaGenerator {
         wireFieldLabel = WireField.Label.REQUIRED;
         break;
       case OMIT_IDENTITY:
-        wireFieldLabel = WireField.Label.OMIT_IDENTITY;
+        // Wrapper types don't omit identity values on JSON as other proto3 messages would.
+        if (field.getType().isWrapper()) {
+          wireFieldLabel = null;
+        } else {
+          wireFieldLabel =  WireField.Label.OMIT_IDENTITY;
+        }
         break;
       case REPEATED:
         wireFieldLabel = WireField.Label.REPEATED;

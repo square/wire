@@ -1093,7 +1093,11 @@ class KotlinGenerator private constructor(
           val wireFieldLabel: WireField.Label? =
             when (field.encodeMode!!) {
               EncodeMode.REQUIRED -> WireField.Label.REQUIRED
-              EncodeMode.OMIT_IDENTITY -> WireField.Label.OMIT_IDENTITY
+              EncodeMode.OMIT_IDENTITY -> {
+                // Wrapper types don't omit identity values on JSON as other proto3 messages would.
+                if (field.type!!.isWrapper) null
+                else WireField.Label.OMIT_IDENTITY
+              }
               EncodeMode.REPEATED -> WireField.Label.REPEATED
               EncodeMode.PACKED -> WireField.Label.PACKED
               EncodeMode.MAP,
