@@ -194,7 +194,7 @@ internal class WireSourceDirectorySet private constructor(
   init {
     check(
       (sourceDirectorySet == null || androidSourceDirectorySet == null) &&
-          (sourceDirectorySet != null || androidSourceDirectorySet != null)
+        (sourceDirectorySet != null || androidSourceDirectorySet != null)
     ) {
       "At least and at most one of sourceDirectorySet, androidSourceDirectorySet should be non-null"
     }

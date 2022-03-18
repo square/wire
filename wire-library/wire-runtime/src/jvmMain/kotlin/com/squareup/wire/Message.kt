@@ -77,7 +77,6 @@ protected actual constructor(
     return adapter.encodeByteString(this as M)
   }
 
-
   /** Encode this message and write it to `stream`.  */
   @Throws(IOException::class)
   fun encode(stream: OutputStream) {
@@ -95,6 +94,7 @@ protected actual constructor(
      * [buildUnknownFields].
      */
     @Transient internal var unknownFieldsByteString = ByteString.EMPTY
+
     /**
      * [Buffer] of the message's unknown fields that is lazily instantiated between calls to
      * [buildUnknownFields]. It's automatically cleared in [buildUnknownFields], and can also be

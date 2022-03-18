@@ -23,9 +23,11 @@ actual open class GrpcRequestBuilder {
     name: String,
     value: String
   ): GrpcRequestBuilder = TODO("Not yet implemented")
+
   actual open fun method(
     method: String,
     body: GrpcRequestBody?
   ): GrpcRequestBuilder = TODO("Not yet implemented")
+
   actual open fun build(): GrpcRequest = TODO("Not yet implemented")
 }

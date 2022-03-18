@@ -21,6 +21,7 @@ internal class FileLinker(
 ) {
   /** Lazily computed set of files used to reference other types and options. */
   private var effectiveImports: Set<String>? = null
+
   /** True once this linker has registered its types with the enclosing linker. */
   private var typesRegistered = false
   private var extensionsLinked = false
@@ -28,6 +29,7 @@ internal class FileLinker(
   private var extensionOptionsLinked = false
   private var importedExtensionOptionsLinked = false
   private var fileOptionsLinked = false
+
   /** The set of types defined in this file whose members have been linked. */
   private val typesWithMembersLinked: MutableSet<ProtoType> = LinkedHashSet()
 

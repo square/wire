@@ -134,7 +134,7 @@ public class UnknownFieldsTest {
 
     // Serializes v2 and decodes it as a VersionOne.
     byte[] v2Bytes = v2Adapter.encode(v2);
-    VersionOne.Builder v1Builder  = v1Adapter.decode(v2Bytes).newBuilder();
+    VersionOne.Builder v1Builder = v1Adapter.decode(v2Bytes).newBuilder();
 
     // Builds v1Builder. It should equal to v2.
     VersionOne v1A = v1Builder.build();

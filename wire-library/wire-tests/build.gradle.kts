@@ -119,10 +119,14 @@ kotlin {
       val iosSimulatorArm64Test by getting
       val linuxX64Test by getting
       val macosX64Test by getting
-      for (it in listOf(iosX64Main, iosArm64Main, iosSimulatorArm64Main, linuxX64Main, macosX64Main)) {
+      for (it in listOf(
+        iosX64Main, iosArm64Main, iosSimulatorArm64Main, linuxX64Main, macosX64Main
+      )) {
         it.dependsOn(nativeMain)
       }
-      for (it in listOf(iosX64Test, iosArm64Test, iosSimulatorArm64Test, linuxX64Test, macosX64Test)) {
+      for (it in listOf(
+        iosX64Test, iosArm64Test, iosSimulatorArm64Test, linuxX64Test, macosX64Test
+      )) {
         it.dependsOn(nativeTest)
       }
       for (it in listOf(iosX64Test, iosArm64Test, macosX64Test)) {

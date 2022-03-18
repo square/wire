@@ -56,7 +56,7 @@ class Options(
 
     return entries!!.any { entry ->
       nameRegex.matchEntire(entry.protoMember.member) != null &&
-          valueRegex.matchEntire(entry.value.toString()) != null
+        valueRegex.matchEntire(entry.value.toString()) != null
     }
   }
 
@@ -65,8 +65,8 @@ class Options(
 
     for (option in optionElements) {
       val canonicalOption: List<LinkedOptionEntry> =
-          canonicalizeOption(linker, optionType, option, validate, location)
-              ?: continue
+        canonicalizeOption(linker, optionType, option, validate, location)
+          ?: continue
 
       entries = union(linker, entries, canonicalOption)
     }
@@ -81,7 +81,7 @@ class Options(
     location: Location
   ): List<LinkedOptionEntry>? {
     val type = linker.getForOptions(extensionType) as? MessageType
-        ?: return null // No known extensions for the given extension type.
+      ?: return null // No known extensions for the given extension type.
 
     var path: Array<String>?
     var field = type.field(option.name)
@@ -105,7 +105,7 @@ class Options(
             checkedExtensionFields = true
             val extensionFields = type.extensionFields.filter { it.name == option.name }
             if (extensionFields.size > 1) {
-              if (validate){
+              if (validate) {
                 linker.errors += """
                    |ambiguous options ${option.name} defined in
                    |  ${extensionFields.map { "- ${it.location}" }.joinToString("\n  ")}
@@ -253,14 +253,14 @@ class Options(
     }
 
     return a.map { it.optionElement to it.protoMember }
-        .union(b.map { it.optionElement to it.protoMember })
-        .map { (optionElement, protoMember) ->
-          LinkedOptionEntry(
-              optionElement,
-              protoMember,
-              valuesMap[protoMember]
-          )
-        }
+      .union(b.map { it.optionElement to it.protoMember })
+      .map { (optionElement, protoMember) ->
+        LinkedOptionEntry(
+          optionElement,
+          protoMember,
+          valuesMap[protoMember]
+        )
+      }
   }
 
   private fun union(
@@ -318,13 +318,13 @@ class Options(
 
     @Suppress("UNCHECKED_CAST") // All maps have these type parameters.
     val map = retainAll(schema, markSet, optionType, entries!!.toMap()) as Map<ProtoMember, Any?>?
-        ?: emptyMap<ProtoMember, Any>()
+      ?: emptyMap<ProtoMember, Any>()
 
     result.entries = entries
-        ?.filter { map.containsKey(it.protoMember) }
-        ?.map { entry ->
-          entry.copy(value = map.getValue(entry.protoMember))
-        }
+      ?.filter { map.containsKey(it.protoMember) }
+      ?.map { entry ->
+        entry.copy(value = map.getValue(entry.protoMember))
+      }
 
     return result
   }
@@ -342,8 +342,8 @@ class Options(
         for ((key, value) in o) {
           val protoMember = key as ProtoMember
           val isCoreMemberOfGoogleProtobuf =
-              protoMember.type in GOOGLE_PROTOBUF_OPTION_TYPES &&
-                  !schema.isExtensionField(protoMember)
+            protoMember.type in GOOGLE_PROTOBUF_OPTION_TYPES &&
+              !schema.isExtensionField(protoMember)
           if (!markSet.contains(protoMember) && !isCoreMemberOfGoogleProtobuf) {
             continue  // Prune this field.
           }
@@ -391,13 +391,13 @@ class Options(
     @JvmField val SERVICE_OPTIONS = ProtoType.get("google.protobuf.ServiceOptions")
     @JvmField val METHOD_OPTIONS = ProtoType.get("google.protobuf.MethodOptions")
     val GOOGLE_PROTOBUF_OPTION_TYPES = arrayOf(
-        FILE_OPTIONS,
-        MESSAGE_OPTIONS,
-        FIELD_OPTIONS,
-        ENUM_OPTIONS,
-        ENUM_VALUE_OPTIONS,
-        SERVICE_OPTIONS,
-        METHOD_OPTIONS
+      FILE_OPTIONS,
+      MESSAGE_OPTIONS,
+      FIELD_OPTIONS,
+      ENUM_OPTIONS,
+      ENUM_VALUE_OPTIONS,
+      SERVICE_OPTIONS,
+      METHOD_OPTIONS
     )
 
     /**

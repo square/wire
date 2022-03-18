@@ -21,7 +21,10 @@ import okio.IOException
 import kotlin.jvm.JvmStatic
 
 enum class FieldEncoding(internal val value: Int) {
-  VARINT(0), FIXED64(1), LENGTH_DELIMITED(2), FIXED32(5);
+  VARINT(0),
+  FIXED64(1),
+  LENGTH_DELIMITED(2),
+  FIXED32(5);
 
   /**
    * Returns a Wire adapter that reads this field encoding without interpretation. For example,

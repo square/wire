@@ -58,22 +58,22 @@ class GrpcOnMockWebServerTest {
   @Before
   fun setUp() {
     mockWebServer.dispatcher = GrpcDispatcher(
-        services = listOf(fakeRouteGuide),
-        delegate = mockWebServer.dispatcher
+      services = listOf(fakeRouteGuide),
+      delegate = mockWebServer.dispatcher
     )
     mockWebServer.protocols = listOf(Protocol.H2_PRIOR_KNOWLEDGE)
 
     okhttpClient = OkHttpClient.Builder()
-        .addInterceptor { chain ->
-          callReference.set(chain.call())
-          interceptor.intercept(chain)
-        }
-        .protocols(listOf(Protocol.H2_PRIOR_KNOWLEDGE))
-        .build()
+      .addInterceptor { chain ->
+        callReference.set(chain.call())
+        interceptor.intercept(chain)
+      }
+      .protocols(listOf(Protocol.H2_PRIOR_KNOWLEDGE))
+      .build()
     grpcClient = GrpcClient.Builder()
-        .client(okhttpClient)
-        .baseUrl(mockWebServer.url("/"))
-        .build()
+      .client(okhttpClient)
+      .baseUrl(mockWebServer.url("/"))
+      .build()
     routeGuideService = grpcClient.create(RouteGuideClient::class)
   }
 
@@ -85,7 +85,7 @@ class GrpcOnMockWebServerTest {
 
       assertThat(feature).isEqualTo(Feature(name = "tree"))
       assertThat(fakeRouteGuide.recordedGetFeatureCalls)
-          .containsExactly(Point(latitude = 5, longitude = 6))
+        .containsExactly(Point(latitude = 5, longitude = 6))
     }
   }
 

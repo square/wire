@@ -28,22 +28,22 @@ class FieldElementTest {
   @Test
   fun field() {
     val field = FieldElement(
-        location = location,
-        label = OPTIONAL,
-        type = "CType",
-        name = "ctype",
-        tag = 1,
-        options = listOf(
-            OptionElement.create("default", Kind.ENUM, "TEST"),
-            OptionElement.create("deprecated", Kind.BOOLEAN, "true")
-        )
+      location = location,
+      label = OPTIONAL,
+      type = "CType",
+      name = "ctype",
+      tag = 1,
+      options = listOf(
+        OptionElement.create("default", Kind.ENUM, "TEST"),
+        OptionElement.create("deprecated", Kind.BOOLEAN, "true")
+      )
     )
 
     assertThat(field.options)
-        .containsOnly(
-            OptionElement.create("default", Kind.ENUM, "TEST"),
-            OptionElement.create("deprecated", Kind.BOOLEAN, "true")
-        )
+      .containsOnly(
+        OptionElement.create("default", Kind.ENUM, "TEST"),
+        OptionElement.create("deprecated", Kind.BOOLEAN, "true")
+      )
   }
 
   @Test
@@ -51,12 +51,12 @@ class FieldElementTest {
     val kitKat = OptionElement.create("kit", Kind.STRING, "kat")
     val fooBar = OptionElement.create("foo", Kind.STRING, "bar")
     val field = FieldElement(
-        location = location,
-        label = REQUIRED,
-        type = "string",
-        name = "name",
-        tag = 1,
-        options = listOf(kitKat, fooBar)
+      location = location,
+      label = REQUIRED,
+      type = "string",
+      name = "name",
+      tag = 1,
+      options = listOf(kitKat, fooBar)
     )
 
     assertThat(field.options).hasSize(2)
@@ -65,55 +65,61 @@ class FieldElementTest {
   @Test
   fun defaultIsSet() {
     val field = FieldElement(
-        location = location,
-        label = REQUIRED,
-        type = "string",
-        name = "name",
-        tag = 1,
-        defaultValue = "defaultValue"
+      location = location,
+      label = REQUIRED,
+      type = "string",
+      name = "name",
+      tag = 1,
+      defaultValue = "defaultValue"
     )
 
     assertThat(field.toSchema())
-        .isEqualTo("""
+      .isEqualTo(
+        """
             |required string name = 1 [default = "defaultValue"];
-            |""".trimMargin())
+            |""".trimMargin()
+      )
   }
 
   @Test
   fun jsonNameAndDefaultValue() {
     val field = FieldElement(
-        location = location,
-        label = REQUIRED,
-        type = "string",
-        name = "name",
-        defaultValue = "defaultValue",
-        jsonName = "my_json",
-        tag = 1
+      location = location,
+      label = REQUIRED,
+      type = "string",
+      name = "name",
+      defaultValue = "defaultValue",
+      jsonName = "my_json",
+      tag = 1
     )
 
     assertThat(field.toSchema())
-        .isEqualTo("""
+      .isEqualTo(
+        """
             |required string name = 1 [
             |  default = "defaultValue",
             |  json_name = "my_json"
             |];
-            |""".trimMargin())
+            |""".trimMargin()
+      )
   }
 
   @Test
   fun jsonName() {
     val field = FieldElement(
-        location = location,
-        label = REQUIRED,
-        type = "string",
-        name = "name",
-        jsonName = "my_json",
-        tag = 1
+      location = location,
+      label = REQUIRED,
+      type = "string",
+      name = "name",
+      jsonName = "my_json",
+      tag = 1
     )
 
     assertThat(field.toSchema())
-        .isEqualTo("""
+      .isEqualTo(
+        """
             |required string name = 1 [json_name = "my_json"];
-            |""".trimMargin())
+            |""".trimMargin()
+      )
   }
 }

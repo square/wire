@@ -56,7 +56,9 @@ public final class ProtoAdapterTest {
     assertThat(adapter.asPacked()).isSameAs(adapter.asPacked());
   }
 
-  /** https://github.com/square/wire/issues/541 */
+  /**
+   * https://github.com/square/wire/issues/541
+   */
   @Test public void embeddedEmptyPackedMessage() throws IOException {
     OuterMessage outerMessage = new OuterMessage.Builder()
         .outer_number_before(2)

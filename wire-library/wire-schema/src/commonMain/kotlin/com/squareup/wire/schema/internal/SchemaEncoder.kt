@@ -75,7 +75,7 @@ class SchemaEncoder(
     return fileEncoder.encode(protoFile).toByteString()
   }
 
-  private val fileEncoder : Encoder<ProtoFile> = object : Encoder<ProtoFile>() {
+  private val fileEncoder: Encoder<ProtoFile> = object : Encoder<ProtoFile>() {
     override fun encode(writer: ReverseProtoWriter, value: ProtoFile) {
       if (value.syntax != Syntax.PROTO_2) {
         STRING.encodeWithTag(writer, 12, value.syntax?.toString())
@@ -108,7 +108,7 @@ class SchemaEncoder(
     }
   }
 
-  private val messageEncoder : Encoder<MessageType> = object : Encoder<MessageType>() {
+  private val messageEncoder: Encoder<MessageType> = object : Encoder<MessageType>() {
     override fun encode(writer: ReverseProtoWriter, value: MessageType) {
       val syntax = schema.protoFile(value.type)!!.syntax
 
@@ -252,7 +252,7 @@ class SchemaEncoder(
       get() = syntax == Syntax.PROTO_3 && field.label == Field.Label.OPTIONAL
   }
 
-  private val fieldEncoder : Encoder<EncodedField> = object : Encoder<EncodedField>() {
+  private val fieldEncoder: Encoder<EncodedField> = object : Encoder<EncodedField>() {
     override fun encode(writer: ReverseProtoWriter, value: EncodedField) {
       INT32.encodeWithTag(writer, 9, value.oneOfIndex)
       if (value.isProto3Optional) {
@@ -317,14 +317,14 @@ class SchemaEncoder(
     val fields: List<EncodedField> = listOf()
   )
 
-  private val oneOfEncoder : Encoder<EncodedOneOf> = object : Encoder<EncodedOneOf>() {
+  private val oneOfEncoder: Encoder<EncodedOneOf> = object : Encoder<EncodedOneOf>() {
     override fun encode(writer: ReverseProtoWriter, value: EncodedOneOf) {
       // OneofOptions.ADAPTER.encodeWithTag(writer, 2, value.options)
       STRING.encodeWithTag(writer, 1, value.name)
     }
   }
 
-  private val enumEncoder : Encoder<EnumType> = object : Encoder<EnumType>() {
+  private val enumEncoder: Encoder<EnumType> = object : Encoder<EnumType>() {
     override fun encode(writer: ReverseProtoWriter, value: EnumType) {
       // STRING.asRepeated().encodeWithTag(writer, 5, value.reserved_name)
       // EnumReservedRange.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.reserved_range)
@@ -334,7 +334,7 @@ class SchemaEncoder(
     }
   }
 
-  private val extensionRangeEncoder : Encoder<Any> = object : Encoder<Any>() {
+  private val extensionRangeEncoder: Encoder<Any> = object : Encoder<Any>() {
     override fun encode(writer: ReverseProtoWriter, value: Any) {
       when (value) {
         is IntRange -> {
@@ -350,7 +350,7 @@ class SchemaEncoder(
     }
   }
 
-  private val enumConstantEncoder : Encoder<EnumConstant> = object : Encoder<EnumConstant>() {
+  private val enumConstantEncoder: Encoder<EnumConstant> = object : Encoder<EnumConstant>() {
     override fun encode(writer: ReverseProtoWriter, value: EnumConstant) {
       enumValueOptionsProtoAdapter.encodeWithTag(writer, 3, value.options.toJsonOptions())
       INT32.encodeWithTag(writer, 2, value.tag)
@@ -358,7 +358,7 @@ class SchemaEncoder(
     }
   }
 
-  private val serviceEncoder : Encoder<Service> = object : Encoder<Service>() {
+  private val serviceEncoder: Encoder<Service> = object : Encoder<Service>() {
     override fun encode(writer: ReverseProtoWriter, value: Service) {
       serviceOptionsProtoAdapter.encodeWithTag(writer, 3, value.options.toJsonOptions())
       rpcEncoder.asRepeated().encodeWithTag(writer, 2, value.rpcs)
@@ -366,7 +366,7 @@ class SchemaEncoder(
     }
   }
 
-  private val rpcEncoder : Encoder<Rpc> = object : Encoder<Rpc>() {
+  private val rpcEncoder: Encoder<Rpc> = object : Encoder<Rpc>() {
     override fun encode(writer: ReverseProtoWriter, value: Rpc) {
       if (value.responseStreaming) {
         BOOL.encodeWithTag(writer, 6, value.responseStreaming)

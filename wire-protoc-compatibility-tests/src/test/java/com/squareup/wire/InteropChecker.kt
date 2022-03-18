@@ -47,24 +47,24 @@ class InteropChecker(
   private var protocBytes: ByteString? = null
 
   private val typeRegistry = JsonFormat.TypeRegistry.newBuilder()
-      .build()
+    .build()
 
   private val jsonPrinter = JsonFormat.printer()
-      .omittingInsignificantWhitespace()
-      .usingTypeRegistry(typeRegistry)
+    .omittingInsignificantWhitespace()
+    .usingTypeRegistry(typeRegistry)
 
   private val jsonParser = JsonFormat.parser()
-      // TODO(bquenaudon): add .ignoringUnknownFields()
-      .usingTypeRegistry(typeRegistry)
+    // TODO(bquenaudon): add .ignoringUnknownFields()
+    .usingTypeRegistry(typeRegistry)
 
   private val gson = GsonBuilder()
-      .registerTypeAdapterFactory(WireTypeAdapterFactory())
-      .disableHtmlEscaping()
-      .create()
+    .registerTypeAdapterFactory(WireTypeAdapterFactory())
+    .disableHtmlEscaping()
+    .create()
 
   private val moshi = Moshi.Builder()
-      .add(WireJsonAdapterFactory())
-      .build()
+    .add(WireJsonAdapterFactory())
+    .build()
 
   fun check(message: Any) {
     protocBytes = protocMessage.toByteArray().toByteString()
@@ -87,8 +87,8 @@ class InteropChecker(
 
   private fun JsonFormat.Parser.parse(json: String): Message {
     return protocMessage.newBuilderForType()
-        .apply { merge(json, this) }
-        .build()
+      .apply { merge(json, this) }
+      .build()
   }
 
   private fun roundtripWireBytes(message: Any) {

@@ -30,12 +30,12 @@ class ProtoAdapterTypeUrlTest {
         protoAdapter.type == Nothing::class -> {
           // StructNull's <Nothing> in Kotlin is <Void> in Java.
           assertThat(protoAdapter.typeUrl)
-              .isEqualTo("type.googleapis.com/google.protobuf.NullValue")
+            .isEqualTo("type.googleapis.com/google.protobuf.NullValue")
         }
         protoAdapter.syntax === Syntax.PROTO_2 &&
-            (protoAdapter.type.isPrimitive ||
-                protoAdapter.type == String::class ||
-                protoAdapter.type == ByteString::class) -> {
+          (protoAdapter.type.isPrimitive ||
+            protoAdapter.type == String::class ||
+            protoAdapter.type == ByteString::class) -> {
           // Scalar types don't have a type URL.
           assertThat(protoAdapter.typeUrl).isNull()
         }
@@ -48,7 +48,7 @@ class ProtoAdapterTypeUrlTest {
 
   @Test fun generatedMessageAdaptersHaveTypeUrls() {
     assertThat(Person.ADAPTER.typeUrl)
-        .isEqualTo("type.googleapis.com/squareup.protos.person.Person")
+      .isEqualTo("type.googleapis.com/squareup.protos.person.Person")
   }
 
   @Test fun generatedEnumAdaptersDoNotHaveTypeUrls() {

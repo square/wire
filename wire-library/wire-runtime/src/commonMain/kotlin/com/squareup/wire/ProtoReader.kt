@@ -50,18 +50,25 @@ import kotlin.jvm.JvmName
 class ProtoReader(private val source: BufferedSource) {
   /** The current position in the input source, starting at 0 and increasing monotonically. */
   private var pos: Long = 0
+
   /** The absolute position of the end of the current message. */
   private var limit = Long.MAX_VALUE
+
   /** The current number of levels of message nesting. */
   private var recursionDepth = 0
+
   /** How to interpret the next read call. */
   private var state = STATE_LENGTH_DELIMITED
+
   /** The most recently read tag. Used to make packed values look like regular values. */
   private var tag = -1
+
   /** Limit once we complete the current length-delimited value. */
   private var pushedLimit: Long = -1
+
   /** The encoding of the next value to be read. */
   private var nextFieldEncoding: FieldEncoding? = null
+
   /** Pooled buffers for unknown fields, indexed by [recursionDepth]. */
   private val bufferStack = mutableListOf<Buffer>()
 
@@ -116,9 +123,9 @@ class ProtoReader(private val source: BufferedSource) {
    */
   @Throws(IOException::class)
   @Deprecated(
-      level = DeprecationLevel.WARNING,
-      message = "prefer endMessageAndGetUnknownFields()",
-      replaceWith = ReplaceWith("endMessageAndGetUnknownFields(token)")
+    level = DeprecationLevel.WARNING,
+    message = "prefer endMessageAndGetUnknownFields()",
+    replaceWith = ReplaceWith("endMessageAndGetUnknownFields(token)")
   )
   fun endMessage(token: Long) {
     endMessageAndGetUnknownFields(token)

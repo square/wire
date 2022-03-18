@@ -44,11 +44,11 @@ object ParsingTester {
 
         try {
           file.source()
-              .buffer()
-              .use { `in` ->
-                val data = `in`.readUtf8()
-                ProtoParser.parse(Location.get(file.path), data)
-              }
+            .buffer()
+            .use { `in` ->
+              val data = `in`.readUtf8()
+              ProtoParser.parse(Location.get(file.path), data)
+            }
         } catch (e: Exception) {
           e.printStackTrace()
           failed += 1

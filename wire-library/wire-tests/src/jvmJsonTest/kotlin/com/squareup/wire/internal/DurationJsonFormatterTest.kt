@@ -35,30 +35,33 @@ class DurationJsonFormatterTest {
     assertThat(fromString("-0.2s")).isEqualTo(durationOfSeconds(0L, -200000000L))
     assertThat(fromString("0.2s")).isEqualTo(durationOfSeconds(0L, 200000000L))
     assertThat(fromString("-9223372036854775808s")).isEqualTo(
-        durationOfSeconds(Long.MIN_VALUE, 0L))
+      durationOfSeconds(Long.MIN_VALUE, 0L)
+    )
     assertThat(fromString("9223372036854775807.999999999s"))
-        .isEqualTo(durationOfSeconds(Long.MAX_VALUE, 999_999_999L))
+      .isEqualTo(durationOfSeconds(Long.MAX_VALUE, 999_999_999L))
     assertThat(fromString("-9223372036854775807.999999999s"))
-        .isEqualTo(durationOfSeconds(-9223372036854775807L, -999_999_999L))
+      .isEqualTo(durationOfSeconds(-9223372036854775807L, -999_999_999L))
   }
 
   @Test
   fun `duration to string`() {
-    assertThat(toStringOrNumber(durationOfSeconds( 0L,             0L))).isEqualTo("0s")
-    assertThat(toStringOrNumber(durationOfSeconds( 1L,             0L))).isEqualTo("1s")
-    assertThat(toStringOrNumber(durationOfSeconds( 1L,             2L))).isEqualTo( "1.000000002s")
-    assertThat(toStringOrNumber(durationOfSeconds( 1L,            20L))).isEqualTo( "1.000000020s")
-    assertThat(toStringOrNumber(durationOfSeconds( 1L,         2_000L))).isEqualTo( "1.000002s")
-    assertThat(toStringOrNumber(durationOfSeconds( 1L,     2_000_000L))).isEqualTo( "1.002s")
-    assertThat(toStringOrNumber(durationOfSeconds( 1L,   200_000_000L))).isEqualTo( "1.200s")
-    assertThat(toStringOrNumber(durationOfSeconds(-1L,  -200_000_000L))).isEqualTo("-1.200s")
-    assertThat(toStringOrNumber(durationOfSeconds( 0L,  -200_000_000L))).isEqualTo("-0.200s")
-    assertThat(toStringOrNumber(durationOfSeconds( 0L,  -999_999_999L))).isEqualTo("-0.999999999s")
-    assertThat(toStringOrNumber(durationOfSeconds( 0L,  -999_999_000L))).isEqualTo("-0.999999s")
-    assertThat(toStringOrNumber(durationOfSeconds( 0L,  -999_900_000L))).isEqualTo("-0.999900s")
-    assertThat(toStringOrNumber(durationOfSeconds( 0L,  -999_000_000L))).isEqualTo("-0.999s")
-    assertThat(toStringOrNumber(durationOfSeconds(Long.MIN_VALUE, 0L))).isEqualTo("-9223372036854775808s")
+    assertThat(toStringOrNumber(durationOfSeconds(0L, 0L))).isEqualTo("0s")
+    assertThat(toStringOrNumber(durationOfSeconds(1L, 0L))).isEqualTo("1s")
+    assertThat(toStringOrNumber(durationOfSeconds(1L, 2L))).isEqualTo("1.000000002s")
+    assertThat(toStringOrNumber(durationOfSeconds(1L, 20L))).isEqualTo("1.000000020s")
+    assertThat(toStringOrNumber(durationOfSeconds(1L, 2_000L))).isEqualTo("1.000002s")
+    assertThat(toStringOrNumber(durationOfSeconds(1L, 2_000_000L))).isEqualTo("1.002s")
+    assertThat(toStringOrNumber(durationOfSeconds(1L, 200_000_000L))).isEqualTo("1.200s")
+    assertThat(toStringOrNumber(durationOfSeconds(-1L, -200_000_000L))).isEqualTo("-1.200s")
+    assertThat(toStringOrNumber(durationOfSeconds(0L, -200_000_000L))).isEqualTo("-0.200s")
+    assertThat(toStringOrNumber(durationOfSeconds(0L, -999_999_999L))).isEqualTo("-0.999999999s")
+    assertThat(toStringOrNumber(durationOfSeconds(0L, -999_999_000L))).isEqualTo("-0.999999s")
+    assertThat(toStringOrNumber(durationOfSeconds(0L, -999_900_000L))).isEqualTo("-0.999900s")
+    assertThat(toStringOrNumber(durationOfSeconds(0L, -999_000_000L))).isEqualTo("-0.999s")
+    assertThat(toStringOrNumber(durationOfSeconds(Long.MIN_VALUE, 0L))).isEqualTo(
+      "-9223372036854775808s"
+    )
     assertThat(toStringOrNumber(durationOfSeconds(Long.MIN_VALUE, 1L)))
-        .isEqualTo("-9223372036854775807.999999999s")
+      .isEqualTo("-9223372036854775807.999999999s")
   }
 }

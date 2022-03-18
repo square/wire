@@ -91,11 +91,11 @@ class PruningRules private constructor(builder: Builder) {
 
   /** Returns true unless [options] specifies a version that is outside of the configured range. */
   fun isFieldRetainedVersion(options: Options) =
-      isRetainedVersion(options, FIELD_SINCE, FIELD_UNTIL)
+    isRetainedVersion(options, FIELD_SINCE, FIELD_UNTIL)
 
   /** Returns true unless [options] specifies a version that is outside of the configured range. */
   fun isEnumConstantRetainedVersion(options: Options) =
-      isRetainedVersion(options, ENUM_CONSTANT_SINCE, ENUM_CONSTANT_UNTIL)
+    isRetainedVersion(options, ENUM_CONSTANT_SINCE, ENUM_CONSTANT_UNTIL)
 
   private fun isRetainedVersion(
     options: Options,
@@ -106,7 +106,7 @@ class PruningRules private constructor(builder: Builder) {
       val sinceOption = options.get(sinceMember)
       val since = (sinceOption as? String)?.toLowerCaseSemVer()
       if (_until != null && since != null && since >= _until ||
-          _only != null && since != null && since > _only) {
+        _only != null && since != null && since > _only) {
         return false
       }
     }
@@ -266,8 +266,10 @@ class PruningRules private constructor(builder: Builder) {
   companion object {
     internal val FIELD_SINCE = ProtoMember.get(Options.FIELD_OPTIONS, "wire.since")
     internal val FIELD_UNTIL = ProtoMember.get(Options.FIELD_OPTIONS, "wire.until")
-    internal val ENUM_CONSTANT_SINCE = ProtoMember.get(Options.ENUM_VALUE_OPTIONS, "wire.constant_since")
-    internal val ENUM_CONSTANT_UNTIL = ProtoMember.get(Options.ENUM_VALUE_OPTIONS, "wire.constant_until")
+    internal val ENUM_CONSTANT_SINCE =
+      ProtoMember.get(Options.ENUM_VALUE_OPTIONS, "wire.constant_since")
+    internal val ENUM_CONSTANT_UNTIL =
+      ProtoMember.get(Options.ENUM_VALUE_OPTIONS, "wire.constant_until")
 
     /**
      * Returns the identifier or wildcard that encloses [identifier], or null if it is not enclosed.

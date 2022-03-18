@@ -27,6 +27,7 @@ class Pruner(
   private val pruningRules: PruningRules
 ) {
   private val marks = MarkSet(pruningRules)
+
   /**
    * [types][ProtoType] and [members][ProtoMember] whose immediate dependencies have not
    * yet been visited.
@@ -179,18 +180,15 @@ class Pruner(
           checkNotNull(field) { "unexpected member: $member" }
           result.add(field.type)
           options = field.options
-
         } else if (type is EnumType) {
           val constant = type.constant(member)
-              ?: throw IllegalStateException("unexpected member: $member")
+            ?: throw IllegalStateException("unexpected member: $member")
           options = constant.options
-
         } else if (service != null) {
           val rpc = service.rpc(member) ?: throw IllegalStateException("unexpected rpc: $member")
           result.add(rpc.requestType)
           result.add(rpc.responseType)
           options = rpc.options
-
         } else {
           throw IllegalStateException("unexpected member: $member")
         }
@@ -224,22 +222,18 @@ class Pruner(
               result.add(get(root, field.name))
             }
           }
-
         } else if (type is EnumType) {
           options = type.options
           for (constant in type.constants) {
             result.add(get(type.type, constant.name))
           }
-
         } else if (type is EnclosingType) {
           options = type.options
-
         } else if (service != null) {
           options = service.options
           for (rpc in service.rpcs) {
             result.add(get(service.type, rpc.name))
           }
-
         } else {
           throw IllegalStateException("unexpected type: $root")
         }

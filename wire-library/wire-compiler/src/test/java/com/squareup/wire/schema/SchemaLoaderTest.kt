@@ -45,47 +45,57 @@ class SchemaLoaderTest {
     //     - oval
     //     - triangle
     // Note that the protoPath element octagon.proto is not imported!
-    fs.add("colors/src/main/proto/squareup/colors/blue.proto", """
+    fs.add(
+      "colors/src/main/proto/squareup/colors/blue.proto", """
         |syntax = "proto2";
         |package squareup.colors;
         |import "squareup/curves/circle.proto";
         |message Blue {
         |}
-        """.trimMargin())
-    fs.add("colors/src/main/proto/squareup/colors/red.proto", """
+        """.trimMargin()
+    )
+    fs.add(
+      "colors/src/main/proto/squareup/colors/red.proto", """
         |syntax = "proto2";
         |package squareup.colors;
         |import "squareup/curves/oval.proto";
         |import "squareup/polygons/triangle.proto";
         |message Red {
         |}
-        """.trimMargin())
-    fs.add("polygons/src/main/proto/squareup/polygons/octagon.proto", """
+        """.trimMargin()
+    )
+    fs.add(
+      "polygons/src/main/proto/squareup/polygons/octagon.proto", """
         |syntax = "proto2";
         |package squareup.polygons;
         |message Octagon {
         |}
-        """.trimMargin())
-    fs.add("polygons/src/main/proto/squareup/polygons/triangle.proto", """
+        """.trimMargin()
+    )
+    fs.add(
+      "polygons/src/main/proto/squareup/polygons/triangle.proto", """
         |syntax = "proto2";
         |package squareup.polygons;
         |message Triangle {
         |}
-        """.trimMargin())
-    fs.addZip("lib/curves.zip",
-        "squareup/curves/circle.proto" to """
+        """.trimMargin()
+    )
+    fs.addZip(
+      "lib/curves.zip",
+      "squareup/curves/circle.proto" to """
         |syntax = "proto2";
         |package squareup.curves;
         |import "squareup/polygons/triangle.proto";
         |message Circle {
         |}
         """.trimMargin(),
-        "squareup/curves/oval.proto" to """
+      "squareup/curves/oval.proto" to """
         |syntax = "proto2";
         |package squareup.curves;
         |message Oval {
         |}
-        """.trimMargin())
+        """.trimMargin()
+    )
 
     val loader = SchemaLoader(fs)
     loader.initRoots(
@@ -125,12 +135,14 @@ class SchemaLoaderTest {
 
   @Test
   fun packageDoesNotMatchFileSystemIsOkayWithBaseDirectory() {
-    fs.add("colors/src/main/proto/squareup/shapes/blue.proto", """
+    fs.add(
+      "colors/src/main/proto/squareup/shapes/blue.proto", """
         |syntax = "proto2";
         |package squareup.colors;
         |message Blue {
         |}
-        """.trimMargin())
+        """.trimMargin()
+    )
 
     val loader = SchemaLoader(fs)
     loader.initRoots(
@@ -143,12 +155,14 @@ class SchemaLoaderTest {
 
   @Test
   fun packageDoesNotMatchFileSystemFailsWithoutBaseDirectory() {
-    fs.add("colors/src/main/proto/squareup/shapes/blue.proto", """
+    fs.add(
+      "colors/src/main/proto/squareup/shapes/blue.proto", """
         |syntax = "proto2";
         |package squareup.colors;
         |message Blue {
         |}
-        """.trimMargin())
+        """.trimMargin()
+    )
 
     val exception = assertFailsWith<SchemaException> {
       val loader = SchemaLoader(fs)
@@ -157,25 +171,31 @@ class SchemaLoaderTest {
       )
       loader.loadSourcePathFiles()
     }
-    assertThat(exception).hasMessage("expected colors/src/main/proto/squareup/shapes/blue.proto " +
-        "to have a path ending with squareup/colors/blue.proto")
+    assertThat(exception).hasMessage(
+      "expected colors/src/main/proto/squareup/shapes/blue.proto " +
+        "to have a path ending with squareup/colors/blue.proto"
+    )
   }
 
   @Test
   fun protoPathSpecifiedWithBaseAndFile() {
-    fs.add("colors/src/main/proto/squareup/colors/blue.proto", """
+    fs.add(
+      "colors/src/main/proto/squareup/colors/blue.proto", """
         |syntax = "proto2";
         |package squareup.colors;
         |import "squareup/curves/circle.proto";
         |message Blue {
         |}
-        """.trimMargin())
-    fs.add("curves/src/main/proto/squareup/curves/circle.proto", """
+        """.trimMargin()
+    )
+    fs.add(
+      "curves/src/main/proto/squareup/curves/circle.proto", """
         |syntax = "proto2";
         |package squareup.curves;
         |message Circle {
         |}
-        """.trimMargin())
+        """.trimMargin()
+    )
 
     val loader = SchemaLoader(fs)
     loader.initRoots(
@@ -194,7 +214,8 @@ class SchemaLoaderTest {
 
   @Test
   fun emptyPackagedProtoMessage() {
-    fs.add("address.proto", """
+    fs.add(
+      "address.proto", """
       |syntax = "proto3";
       |option java_package ="address";
       |
@@ -202,9 +223,11 @@ class SchemaLoaderTest {
       |  string street = 1;
       |  int32 zip = 2;
       |  string city = 3;
-      |}""".trimMargin())
+      |}""".trimMargin()
+    )
 
-    fs.add("customer.proto", """
+    fs.add(
+      "customer.proto", """
       |syntax = "proto3";
       |option java_package ="customer";
       |
@@ -213,7 +236,8 @@ class SchemaLoaderTest {
       |message Customer {
       |  string name = 1;
       |  Address address = 3;
-      |}""".trimMargin())
+      |}""".trimMargin()
+    )
 
     val loader = SchemaLoader(fs)
     loader.initRoots(
@@ -227,46 +251,56 @@ class SchemaLoaderTest {
 
   @Test
   fun bomAwareLoading() {
-    fs.add("colors/squareup/colors/red.proto", """
+    fs.add(
+      "colors/squareup/colors/red.proto", """
         |syntax = "proto2";
         |package squareup.colors;
         |message Red {
         |}
-        """.trimMargin(), charset = UTF_8, bom = "efbbbf".decodeHex())
-    fs.add("colors/squareup/colors/orange.proto", """
+        """.trimMargin(), charset = UTF_8, bom = "efbbbf".decodeHex()
+    )
+    fs.add(
+      "colors/squareup/colors/orange.proto", """
         |syntax = "proto2";
         |package squareup.colors;
         |message Orange {
         |}
-        """.trimMargin(), charset = UTF_16BE, bom = "feff".decodeHex())
-    fs.add("colors/squareup/colors/yellow.proto", """
+        """.trimMargin(), charset = UTF_16BE, bom = "feff".decodeHex()
+    )
+    fs.add(
+      "colors/squareup/colors/yellow.proto", """
         |syntax = "proto2";
         |package squareup.colors;
         |message Yellow {
         |}
-        """.trimMargin(), charset = UTF_16LE, bom = "fffe".decodeHex())
-    fs.add("colors/squareup/colors/green.proto", """
+        """.trimMargin(), charset = UTF_16LE, bom = "fffe".decodeHex()
+    )
+    fs.add(
+      "colors/squareup/colors/green.proto", """
         |syntax = "proto2";
         |package squareup.colors;
         |message Green {
         |}
-        """.trimMargin(), charset = UTF_32BE, bom = "0000ffff".decodeHex())
-    fs.add("colors/squareup/colors/blue.proto", """
+        """.trimMargin(), charset = UTF_32BE, bom = "0000ffff".decodeHex()
+    )
+    fs.add(
+      "colors/squareup/colors/blue.proto", """
         |syntax = "proto2";
         |package squareup.colors;
         |message Blue {
         |}
-        """.trimMargin(), charset = UTF_32LE, bom = "ffff0000".decodeHex())
+        """.trimMargin(), charset = UTF_32LE, bom = "ffff0000".decodeHex()
+    )
 
     val loader = SchemaLoader(fs)
     loader.initRoots(sourcePath = listOf(Location.get("colors")))
     val sourcePathFiles = loader.loadSourcePathFiles()
     assertThat(sourcePathFiles.map { it.location.path }).containsExactlyInAnyOrder(
-        "squareup/colors/red.proto",
-        "squareup/colors/orange.proto",
-        "squareup/colors/yellow.proto",
-        "squareup/colors/green.proto",
-        "squareup/colors/blue.proto"
+      "squareup/colors/red.proto",
+      "squareup/colors/orange.proto",
+      "squareup/colors/yellow.proto",
+      "squareup/colors/green.proto",
+      "squareup/colors/blue.proto"
     )
   }
 
@@ -274,16 +308,18 @@ class SchemaLoaderTest {
   fun symlinkDirectory() {
     if (!fs.allowSymlinks) return
 
-    fs.add("secret/proto/squareup/colors/blue.proto", """
+    fs.add(
+      "secret/proto/squareup/colors/blue.proto", """
         |syntax = "proto2";
         |package squareup.colors;
         |message Blue {
         |}
-        """.trimMargin())
+        """.trimMargin()
+    )
     fs.createDirectories("colors/src/main".toPath())
     fs.createSymlink(
-        "colors/src/main/proto".toPath(),
-        "../../../secret/proto".toPath()
+      "colors/src/main/proto".toPath(),
+      "../../../secret/proto".toPath()
     )
 
     val loader = SchemaLoader(fs)
@@ -300,16 +336,18 @@ class SchemaLoaderTest {
   fun symlinkFile() {
     if (!fs.allowSymlinks) return
 
-    fs.add("secret/proto/squareup/colors/blue.proto", """
+    fs.add(
+      "secret/proto/squareup/colors/blue.proto", """
         |syntax = "proto2";
         |package squareup.colors;
         |message Blue {
         |}
-        """.trimMargin())
+        """.trimMargin()
+    )
     fs.createDirectories("colors/src/main/proto/squareup/colors".toPath())
     fs.createSymlink(
-        "colors/src/main/proto/squareup/colors/blue.proto".toPath(),
-        "../../../../../../secret/proto/squareup/colors/blue.proto".toPath()
+      "colors/src/main/proto/squareup/colors/blue.proto".toPath(),
+      "../../../../../../secret/proto/squareup/colors/blue.proto".toPath()
     )
 
     val loader = SchemaLoader(fs)
@@ -324,27 +362,33 @@ class SchemaLoaderTest {
 
   @Test
   fun importNotFound() {
-    fs.add("colors/src/main/proto/squareup/colors/blue.proto", """
+    fs.add(
+      "colors/src/main/proto/squareup/colors/blue.proto", """
         |syntax = "proto2";
         |package squareup.colors;
         |import "squareup/curves/circle.proto";
         |import "squareup/polygons/rectangle.proto";
         |message Blue {
         |}
-        """.trimMargin())
-    fs.add("polygons/src/main/proto/squareup/polygons/triangle.proto", """
+        """.trimMargin()
+    )
+    fs.add(
+      "polygons/src/main/proto/squareup/polygons/triangle.proto", """
         |syntax = "proto2";
         |package squareup.polygons;
         |message Triangle {
         |}
-        """.trimMargin())
-    fs.addZip("lib/curves.zip",
-        "squareup/curves/oval.proto" to """
+        """.trimMargin()
+    )
+    fs.addZip(
+      "lib/curves.zip",
+      "squareup/curves/oval.proto" to """
         |syntax = "proto2";
         |package squareup.curves;
         |message Oval {
         |}
-        """.trimMargin())
+        """.trimMargin()
+    )
 
     val exception = assertFailsWith<SchemaException> {
       val loader = SchemaLoader(fs)
@@ -362,7 +406,8 @@ class SchemaLoaderTest {
       loader.load("squareup/polygons/rectangle.proto")
       loader.reportLoadingErrors()
     }
-    assertThat(exception).hasMessage("""
+    assertThat(exception).hasMessage(
+      """
         |unable to find squareup/curves/circle.proto
         |  searching 2 proto paths:
         |    polygons/src/main/proto
@@ -371,31 +416,38 @@ class SchemaLoaderTest {
         |  searching 2 proto paths:
         |    polygons/src/main/proto
         |    lib/curves.zip
-        """.trimMargin())
+        """.trimMargin()
+    )
   }
 
   @Test
   fun ambiguousImport() {
-    fs.add("colors/src/main/proto/squareup/colors/blue.proto", """
+    fs.add(
+      "colors/src/main/proto/squareup/colors/blue.proto", """
         |syntax = "proto2";
         |package squareup.colors;
         |import "squareup/curves/circle.proto";
         |message Blue {
         |}
-        """.trimMargin())
-    fs.add("polygons/src/main/proto/squareup/curves/circle.proto", """
+        """.trimMargin()
+    )
+    fs.add(
+      "polygons/src/main/proto/squareup/curves/circle.proto", """
         |syntax = "proto2";
         |package squareup.curves;
         |message Circle {
         |}
-        """.trimMargin())
-    fs.addZip("lib/curves.zip",
-        "squareup/curves/circle.proto" to """
+        """.trimMargin()
+    )
+    fs.addZip(
+      "lib/curves.zip",
+      "squareup/curves/circle.proto" to """
         |syntax = "proto2";
         |package squareup.curves;
         |message Circle {
         |}
-        """.trimMargin())
+        """.trimMargin()
+    )
 
     val exception = assertFailsWith<SchemaException> {
       val loader = SchemaLoader(fs)
@@ -412,67 +464,75 @@ class SchemaLoaderTest {
       loader.load("squareup/curves/circle.proto")
       loader.reportLoadingErrors()
     }
-    assertThat(exception).hasMessage("""
+    assertThat(exception).hasMessage(
+      """
         |squareup/curves/circle.proto is ambiguous:
         |  lib/curves.zip/squareup/curves/circle.proto
         |  polygons/src/main/proto/squareup/curves/circle.proto
-        """.trimMargin())
+        """.trimMargin()
+    )
   }
 
   @Test
   fun locationsToCheck() {
     val newSchemaLoader = SchemaLoader(fs)
-    val result = newSchemaLoader.locationsToCheck("java", listOf(
-        Location.get("shared-protos.jar", "squareup/cash/money/Money.proto"),
-        Location.get("src/main/proto", "squareup/cash/Service.proto"),
-        Location.get("src/main/proto", "squareup/cash/cashtags/Cashtag.proto"),
-        Location.get("src/main/proto", "squareup/cash/payments/Payment.proto")
-    ))
+    val result = newSchemaLoader.locationsToCheck(
+      "java", listOf(
+      Location.get("shared-protos.jar", "squareup/cash/money/Money.proto"),
+      Location.get("src/main/proto", "squareup/cash/Service.proto"),
+      Location.get("src/main/proto", "squareup/cash/cashtags/Cashtag.proto"),
+      Location.get("src/main/proto", "squareup/cash/payments/Payment.proto")
+    )
+    )
     assertThat(result).containsExactlyInAnyOrder(
-        Location.get("shared-protos.jar", "java.wire"),
-        Location.get("shared-protos.jar", "squareup/cash/java.wire"),
-        Location.get("shared-protos.jar", "squareup/cash/money/java.wire"),
-        Location.get("shared-protos.jar", "squareup/java.wire"),
-        Location.get("src/main/proto", "java.wire"),
-        Location.get("src/main/proto", "squareup/cash/cashtags/java.wire"),
-        Location.get("src/main/proto", "squareup/cash/java.wire"),
-        Location.get("src/main/proto", "squareup/cash/payments/java.wire"),
-        Location.get("src/main/proto", "squareup/java.wire")
+      Location.get("shared-protos.jar", "java.wire"),
+      Location.get("shared-protos.jar", "squareup/cash/java.wire"),
+      Location.get("shared-protos.jar", "squareup/cash/money/java.wire"),
+      Location.get("shared-protos.jar", "squareup/java.wire"),
+      Location.get("src/main/proto", "java.wire"),
+      Location.get("src/main/proto", "squareup/cash/cashtags/java.wire"),
+      Location.get("src/main/proto", "squareup/cash/java.wire"),
+      Location.get("src/main/proto", "squareup/cash/payments/java.wire"),
+      Location.get("src/main/proto", "squareup/java.wire")
     )
   }
 
   @Test
   fun pathsToAttempt() {
     val newSchemaLoader = SchemaLoader(fs)
-    val result = newSchemaLoader.locationsToCheck("android", listOf(
-        Location.get("/a/b", "c/d/e.proto")
-    ))
+    val result = newSchemaLoader.locationsToCheck(
+      "android", listOf(
+      Location.get("/a/b", "c/d/e.proto")
+    )
+    )
     assertThat(result).containsExactlyInAnyOrder(
-        Location.get("/a/b", "c/d/android.wire"),
-        Location.get("/a/b", "c/android.wire"),
-        Location.get("/a/b", "android.wire")
+      Location.get("/a/b", "c/d/android.wire"),
+      Location.get("/a/b", "c/android.wire"),
+      Location.get("/a/b", "android.wire")
     )
   }
 
   @Test
   fun pathsToAttemptMultipleRoots() {
     val newSchemaLoader = SchemaLoader(fs)
-    val result = newSchemaLoader.locationsToCheck("android", listOf(
-        Location.get("/a/b", "c/d/e.proto"),
-        Location.get("/a/b", "c/f/g/h.proto"),
-        Location.get("/i/j.zip", "k/l/m.proto"),
-        Location.get("/i/j.zip", "k/l/m/n.proto")
-    ))
+    val result = newSchemaLoader.locationsToCheck(
+      "android", listOf(
+      Location.get("/a/b", "c/d/e.proto"),
+      Location.get("/a/b", "c/f/g/h.proto"),
+      Location.get("/i/j.zip", "k/l/m.proto"),
+      Location.get("/i/j.zip", "k/l/m/n.proto")
+    )
+    )
     assertThat(result).containsExactlyInAnyOrder(
-        Location.get("/a/b", "c/d/android.wire"),
-        Location.get("/a/b", "c/android.wire"),
-        Location.get("/a/b", "android.wire"),
-        Location.get("/a/b", "c/f/g/android.wire"),
-        Location.get("/a/b", "c/f/android.wire"),
-        Location.get("/i/j.zip", "k/l/android.wire"),
-        Location.get("/i/j.zip", "k/android.wire"),
-        Location.get("/i/j.zip", "android.wire"),
-        Location.get("/i/j.zip", "k/l/m/android.wire")
+      Location.get("/a/b", "c/d/android.wire"),
+      Location.get("/a/b", "c/android.wire"),
+      Location.get("/a/b", "android.wire"),
+      Location.get("/a/b", "c/f/g/android.wire"),
+      Location.get("/a/b", "c/f/android.wire"),
+      Location.get("/i/j.zip", "k/l/android.wire"),
+      Location.get("/i/j.zip", "k/android.wire"),
+      Location.get("/i/j.zip", "android.wire"),
+      Location.get("/i/j.zip", "k/l/m/android.wire")
     )
   }
 

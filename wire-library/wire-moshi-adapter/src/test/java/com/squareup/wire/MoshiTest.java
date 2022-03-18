@@ -49,6 +49,10 @@ public class MoshiTest {
     }
   }
 
+  private final Moshi moshi = new Moshi.Builder()
+      .add(new WireJsonAdapterFactory())
+      .build();
+
   private static AllTypes.Builder createIdentityBuilder() {
     return new AllTypes.Builder()
         .opt_int32(0)
@@ -86,10 +90,6 @@ public class MoshiTest {
         .req_nested_enum(AllTypes.NestedEnum.A)
         .req_nested_message(new AllTypes.NestedMessage.Builder().a(0).build());
   }
-
-  private final Moshi moshi = new Moshi.Builder()
-      .add(new WireJsonAdapterFactory())
-      .build();
 
   @SuppressWarnings("ConstantConditions")
   @Test public void notIdentityOneOf() throws IOException {

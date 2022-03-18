@@ -26,9 +26,9 @@ public class OneOfTest {
 
   private static final byte[] INITIAL_BYTES = {};
   // (Tag #1 << 3 | VARINT) = 8.
-  private static final byte[] FOO_BYTES = { 8, 17 };
+  private static final byte[] FOO_BYTES = {8, 17};
   // (Tag #3 << 3 | LENGTH_DELIMITED) = 26, string length = 6.
-  private static final byte[] BAR_BYTES = { 26, 6, 'b', 'a', 'r', 'b', 'a', 'r'};
+  private static final byte[] BAR_BYTES = {26, 6, 'b', 'a', 'r', 'b', 'a', 'r'};
 
   private final ProtoAdapter<OneOfMessage> adapter = OneOfMessage.ADAPTER;
 

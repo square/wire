@@ -58,12 +58,12 @@ class MainActivity : AppCompatActivity(), OnBoardEventListener {
     uiScope.launch {
       withContext(Dispatchers.IO) {
         GrpcClientProvider.grpcClient.create(WhiteboardClient::class)
-            .Whiteboard()
-            .execute()
-            .let { (sendChannel, receiveChannel) ->
-              sendCommandChannel = sendChannel
-              receiveUpdateChannel = receiveChannel
-            }
+          .Whiteboard()
+          .execute()
+          .let { (sendChannel, receiveChannel) ->
+            sendCommandChannel = sendChannel
+            receiveUpdateChannel = receiveChannel
+          }
       }
       try {
         for (update in receiveUpdateChannel) {
@@ -75,14 +75,14 @@ class MainActivity : AppCompatActivity(), OnBoardEventListener {
       } catch (e: IOException) {
         e.printStackTrace()
         AlertDialog.Builder(this@MainActivity)
-            .setTitle("Ouch!")
-            .setMessage("IoException:\n${e.localizedMessage}")
-            .setPositiveButton("That hurts.") { _, _ ->
-              this@MainActivity.finish()
-            }
-            .setIcon(android.R.drawable.ic_dialog_alert)
-            .setCancelable(false)
-            .show()
+          .setTitle("Ouch!")
+          .setMessage("IoException:\n${e.localizedMessage}")
+          .setPositiveButton("That hurts.") { _, _ ->
+            this@MainActivity.finish()
+          }
+          .setIcon(android.R.drawable.ic_dialog_alert)
+          .setCancelable(false)
+          .show()
       }
     }
 
@@ -140,11 +140,11 @@ class MainActivity : AppCompatActivity(), OnBoardEventListener {
       points.forEach { point ->
         val (realX, realY) = convertToReal(point.x, point.y)
         canvas.drawRect(
-            realX - realWidth / 2f,
-            realY - realHeight / 2f,
-            realX + realWidth / 2f - 1,
-            realY + realHeight / 2f - 1,
-            Paint().apply { color = point.color }
+          realX - realWidth / 2f,
+          realY - realHeight / 2f,
+          realX + realWidth / 2f - 1,
+          realY + realHeight / 2f - 1,
+          Paint().apply { color = point.color }
         )
       }
     }
@@ -167,16 +167,16 @@ class MainActivity : AppCompatActivity(), OnBoardEventListener {
       x: Int,
       y: Int
     ) = Pair(
-        x * width / abstractWidth,
-        y * height / abstractHeight
+      x * width / abstractWidth,
+      y * height / abstractHeight
     )
 
     private fun convertToAbstract(
       x: Float,
       y: Float
     ) = Pair(
-        (x / width * abstractWidth).roundToInt(),
-        (y / height * abstractHeight).roundToInt()
+      (x / width * abstractWidth).roundToInt(),
+      (y / height * abstractHeight).roundToInt()
     )
 
     private fun Canvas.showEmptyView() {
@@ -189,10 +189,10 @@ class MainActivity : AppCompatActivity(), OnBoardEventListener {
       }
 
       drawText(
-          text,
-          (centerX - (paint.measureText(text) / 2).toInt()).toFloat(),
-          (centerY - (paint.descent() + paint.ascent()) / 2).toInt().toFloat(),
-          paint
+        text,
+        (centerX - (paint.measureText(text) / 2).toInt()).toFloat(),
+        (centerY - (paint.descent() + paint.ascent()) / 2).toInt().toFloat(),
+        paint
       )
     }
   }
@@ -203,14 +203,14 @@ class MainActivity : AppCompatActivity(), OnBoardEventListener {
     } catch (e: IOException) {
       e.printStackTrace()
       AlertDialog.Builder(this@MainActivity)
-          .setTitle("Ouch!")
-          .setMessage("IoException:\n${e.localizedMessage}")
-          .setPositiveButton("That hurts.") { _, _ ->
-            this@MainActivity.finish()
-          }
-          .setIcon(android.R.drawable.ic_dialog_alert)
-          .setCancelable(false)
-          .show()
+        .setTitle("Ouch!")
+        .setMessage("IoException:\n${e.localizedMessage}")
+        .setPositiveButton("That hurts.") { _, _ ->
+          this@MainActivity.finish()
+        }
+        .setIcon(android.R.drawable.ic_dialog_alert)
+        .setCancelable(false)
+        .show()
     }
   }
 }

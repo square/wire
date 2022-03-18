@@ -31,13 +31,16 @@ class OptionsLinkingTest {
 
   @Test
   fun extensionOnTheSourcePathIsApplied() {
-    fs.add("source-path/a.proto", """
+    fs.add(
+      "source-path/a.proto", """
              |import "formatting_options.proto";
              |message A {
              |  optional string s = 1 [formatting_options.language = "English"];
              |}
-            """.trimMargin())
-    fs.add("source-path/formatting_options.proto", """
+            """.trimMargin()
+    )
+    fs.add(
+      "source-path/formatting_options.proto", """
              |import "google/protobuf/descriptor.proto";
              |
              |message FormattingOptions {
@@ -47,28 +50,32 @@ class OptionsLinkingTest {
              |extend google.protobuf.FieldOptions {
              |  optional FormattingOptions formatting_options = 22001;
              |}
-            """.trimMargin())
+            """.trimMargin()
+    )
     val schema = loadAndLinkSchema()
 
     val typeA = schema.getType("A") as MessageType
     assertThat(typeA.field("s")!!.options.map).isEqualTo(
-        mapOf(
-            formattingOptionsField to mapOf(
-                languageField to "English"
-            )
+      mapOf(
+        formattingOptionsField to mapOf(
+          languageField to "English"
         )
+      )
     )
   }
 
   @Test
   fun extensionOnTheProtoPathIsApplied() {
-    fs.add("source-path/a.proto", """
+    fs.add(
+      "source-path/a.proto", """
              |import "formatting_options.proto";
              |message A {
              |  optional string s = 1 [formatting_options.language = "English"];
              |}
-            """.trimMargin())
-    fs.add("proto-path/formatting_options.proto", """
+            """.trimMargin()
+    )
+    fs.add(
+      "proto-path/formatting_options.proto", """
              |import "google/protobuf/descriptor.proto";
              |
              |message FormattingOptions {
@@ -78,29 +85,33 @@ class OptionsLinkingTest {
              |extend google.protobuf.FieldOptions {
              |  optional FormattingOptions formatting_options = 22001;
              |}
-            """.trimMargin())
+            """.trimMargin()
+    )
     val schema = loadAndLinkSchema()
 
     val typeA = schema.getType("A") as MessageType
     assertThat(typeA.field("s")!!.options.map).isEqualTo(
-        mapOf(
-            formattingOptionsField to mapOf(
-                languageField to "English"
-            )
+      mapOf(
+        formattingOptionsField to mapOf(
+          languageField to "English"
         )
+      )
     )
   }
 
   @Test
   fun fieldsOfExtensions() {
-    fs.add("source-path/a.proto", """
+    fs.add(
+      "source-path/a.proto", """
              |import "formatting_options.proto";
              |message A {
              |  optional string s = 1 [formatting_options.language.name = "English"];
              |  optional string t = 2 [(length).max = 80];
              |}
-            """.trimMargin())
-    fs.add("proto-path/formatting_options.proto", """
+            """.trimMargin()
+    )
+    fs.add(
+      "proto-path/formatting_options.proto", """
              |import "google/protobuf/descriptor.proto";
              |
              |message FormattingOptions {
@@ -128,18 +139,19 @@ class OptionsLinkingTest {
              |  optional double min = 1;
              |  optional double max = 2;
              |}
-            """.trimMargin())
+            """.trimMargin()
+    )
     val schema = loadAndLinkSchema()
 
     val typeA = schema.getType("A") as MessageType
     assertThat(typeA.field("s")!!.options.map).isEqualTo(
-        mapOf(
-            formattingOptionsField to mapOf(
-                languageField to mapOf(
-                    nameField to "English"
-                )
-            )
+      mapOf(
+        formattingOptionsField to mapOf(
+          languageField to mapOf(
+            nameField to "English"
+          )
         )
+      )
     )
 
     val typeLanguage = schema.getType("Language") as MessageType
@@ -151,28 +163,34 @@ class OptionsLinkingTest {
 
   @Test
   fun extensionTypesInExternalFile() {
-    fs.add("source-path/a.proto", """
+    fs.add(
+      "source-path/a.proto", """
              |import "extensions.proto";
              |
              |message A {
              |  optional string s = 2 [(length).max = 80];
              |}
-            """.trimMargin())
-    fs.add("proto-path/extensions.proto", """
+            """.trimMargin()
+    )
+    fs.add(
+      "proto-path/extensions.proto", """
              |import "google/protobuf/descriptor.proto";
              |import "range.proto";
              |
              |extend google.protobuf.FieldOptions {
              |  optional Range length = 22002;
              |}
-            """.trimMargin())
-    fs.add("proto-path/range.proto", """
+            """.trimMargin()
+    )
+    fs.add(
+      "proto-path/range.proto", """
              |
              |message Range {
              |  optional double min = 1;
              |  optional double max = 2;
              |}
-            """.trimMargin())
+            """.trimMargin()
+    )
     val schema = loadAndLinkSchema()
 
     val typeRange = schema.getType("Range") as MessageType

@@ -107,8 +107,10 @@ fun <T> immutableCopyOfStruct(name: String, value: T): T {
       copy.toUnmodifiableMap() as T
     }
     else -> {
-      throw IllegalArgumentException("struct value $name must be a JSON type " +
-          "(null, Boolean, Double, String, List, or Map) but was ${value.typeName}: $value")
+      throw IllegalArgumentException(
+        "struct value $name must be a JSON type " +
+          "(null, Boolean, Double, String, List, or Map) but was ${value.typeName}: $value"
+      )
     }
   }
 }

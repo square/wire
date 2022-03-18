@@ -72,7 +72,7 @@ class TypeMover(
       pathToFile[sourcePath] = oldSourceProtoFile.copy(types = sourceTypes)
 
       val targetProtoFile = pathToFile[targetPath]
-          ?: oldSourceProtoFile.emptyCopy(targetPath)
+        ?: oldSourceProtoFile.emptyCopy(targetPath)
       pathToFile[targetPath] = targetProtoFile.copy(types = targetProtoFile.types + movedType)
 
       sourceAndTargetPaths += sourcePath
@@ -105,7 +105,7 @@ class TypeMover(
 
   private fun ProtoFile.fixImports(): ProtoFile {
     if (location.path !in sourceAndTargetPaths &&
-        sourceAndTargetPaths.none { it in imports || it in publicImports }) {
+      sourceAndTargetPaths.none { it in imports || it in publicImports }) {
       return this // This file isn't impacted. Skip it.
     }
 
@@ -156,8 +156,8 @@ class TypeMover(
     newPublicImports.removeAll(obsoleteImports)
 
     return copy(
-        imports = newImports,
-        publicImports = newPublicImports
+      imports = newImports,
+      publicImports = newPublicImports
     )
   }
 
@@ -216,12 +216,12 @@ class TypeMover(
 
   private fun ProtoFile.emptyCopy(path: String): ProtoFile {
     return copy(
-        location = location.copy(path = path),
-        imports = listOf(),
-        publicImports = listOf(),
-        types = listOf(),
-        services = listOf(),
-        extendList = listOf()
+      location = location.copy(path = path),
+      imports = listOf(),
+      publicImports = listOf(),
+      types = listOf(),
+      services = listOf(),
+      extendList = listOf()
     )
   }
 

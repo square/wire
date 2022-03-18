@@ -43,9 +43,9 @@ class WhiteboardGrpcAction : WebAction, WhiteboardWhiteboardBlockingServer {
     fun process() {
       updates.use {
         val initialiseBoard = InitialiseBoard(
-            BOARD_WIDTH,
-            BOARD_HEIGHT,
-            COLORS[clients.indexOf(this) % COLORS.size]
+          BOARD_WIDTH,
+          BOARD_HEIGHT,
+          COLORS[clients.indexOf(this) % COLORS.size]
         )
         updates.write(WhiteboardUpdate(initialise_board = initialiseBoard))
         updates.write(WhiteboardUpdate(update_points = UpdatePoints(points)))
@@ -72,10 +72,10 @@ class WhiteboardGrpcAction : WebAction, WhiteboardWhiteboardBlockingServer {
     private const val BOARD_HEIGHT = 80
 
     private val COLORS = arrayOf(
-        0xff00c8fa.toInt(), // Blue
-        0xfff46e38.toInt(), // Red
-        0xff0bb634.toInt(), // Green
-        0xff333333.toInt() // Black
+      0xff00c8fa.toInt(), // Blue
+      0xfff46e38.toInt(), // Red
+      0xff0bb634.toInt(), // Green
+      0xff333333.toInt() // Black
     )
   }
 }

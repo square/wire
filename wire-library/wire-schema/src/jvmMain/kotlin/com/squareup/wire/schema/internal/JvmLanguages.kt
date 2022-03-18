@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 @file:JvmName("JvmLanguages")
+
 package com.squareup.wire.schema.internal
 
 import com.squareup.wire.ProtoAdapter
@@ -87,7 +88,7 @@ fun eligibleAsAnnotationMember(schema: Schema, field: Field): Boolean {
 
 fun annotationTargetType(extend: Extend): ElementType? {
   return when (extend.type!!) {
-    Options.MESSAGE_OPTIONS, Options.ENUM_OPTIONS, Options.SERVICE_OPTIONS  -> ElementType.TYPE
+    Options.MESSAGE_OPTIONS, Options.ENUM_OPTIONS, Options.SERVICE_OPTIONS -> ElementType.TYPE
     Options.FIELD_OPTIONS, Options.ENUM_VALUE_OPTIONS -> ElementType.FIELD
     Options.METHOD_OPTIONS -> ElementType.METHOD
     else -> null

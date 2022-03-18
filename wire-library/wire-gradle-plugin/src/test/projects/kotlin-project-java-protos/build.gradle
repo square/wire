@@ -19,7 +19,7 @@ dependencies {
   compileOnly "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.20"
 }
 
-wire{
-  java{
+wire {
+  java {
   }
 }

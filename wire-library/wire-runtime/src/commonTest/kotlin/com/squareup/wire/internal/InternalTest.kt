@@ -27,8 +27,10 @@ class InternalTest {
     assertEquals("""\\""", sanitize("""\"""))
     assertEquals("""Hi\, I'm \{CURRENT_HOST\} dax!""", sanitize("""Hi, I'm {CURRENT_HOST} dax!"""))
 
-    assertEquals("""[\,, \{, \}, \[, \], \\]""",
-        sanitize(listOf(""",""", """{""", """}""", """[""", """]""", """\""")))
+    assertEquals(
+      """[\,, \{, \}, \[, \], \\]""",
+      sanitize(listOf(""",""", """{""", """}""", """[""", """]""", """\"""))
+    )
   }
 
   @Test fun lowerCamelCase() {

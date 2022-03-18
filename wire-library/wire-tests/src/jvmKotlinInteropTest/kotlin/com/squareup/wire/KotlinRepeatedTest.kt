@@ -18,11 +18,11 @@ package com.squareup.wire
 import com.squareup.wire.internal.createRuntimeMessageAdapter
 import com.squareup.wire.protos.kotlin.repeated.Repeated
 import com.squareup.wire.protos.kotlin.repeated.Thing
+import okio.ByteString.Companion.decodeHex
+import okio.ByteString.Companion.toByteString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import okio.ByteString.Companion.decodeHex
-import okio.ByteString.Companion.toByteString
 
 class KotlinRepeatedTest {
   private val adapter = createRuntimeMessageAdapter(
@@ -48,11 +48,11 @@ class KotlinRepeatedTest {
     private val BYTES = "0a050a034f6e650a050a0354776f0a070a055468726565".decodeHex()
     private val EMPTY = Repeated(things = emptyList())
     private val THREE = Repeated(
-        things = listOf(
-            Thing("One"),
-            Thing("Two"),
-            Thing("Three")
-        )
+      things = listOf(
+        Thing("One"),
+        Thing("Two"),
+        Thing("Three")
+      )
     )
   }
 }

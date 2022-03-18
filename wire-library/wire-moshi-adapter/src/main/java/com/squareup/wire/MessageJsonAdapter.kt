@@ -48,9 +48,9 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
 
     out.beginObject()
     messageAdapter.writeAllFields(
-        message = message,
-        jsonAdapters = jsonAdapters,
-        redactedFieldsAdapter = redactedFieldsAdapter
+      message = message,
+      jsonAdapters = jsonAdapters,
+      redactedFieldsAdapter = redactedFieldsAdapter
     ) { name, value, jsonAdapter ->
       out.name(name)
       jsonAdapter.toJson(out, value)

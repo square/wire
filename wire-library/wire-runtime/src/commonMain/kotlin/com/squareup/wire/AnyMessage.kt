@@ -49,8 +49,8 @@ class AnyMessage(
   }
 
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Nothing = throw AssertionError()
 
@@ -80,20 +80,20 @@ class AnyMessage(
   companion object {
     fun pack(message: Message<*, *>): AnyMessage {
       val typeUrl = message.adapter.typeUrl
-          ?: error("recompile ${message::class} to use it with AnyMessage")
+        ?: error("recompile ${message::class} to use it with AnyMessage")
       return AnyMessage(typeUrl, message.encodeByteString())
     }
 
     @JvmField
     val ADAPTER: ProtoAdapter<AnyMessage> = object : ProtoAdapter<AnyMessage>(
-        FieldEncoding.LENGTH_DELIMITED,
-        AnyMessage::class,
-        "type.googleapis.com/google.protobuf.Any",
-        Syntax.PROTO_3
+      FieldEncoding.LENGTH_DELIMITED,
+      AnyMessage::class,
+      "type.googleapis.com/google.protobuf.Any",
+      Syntax.PROTO_3
     ) {
       override fun encodedSize(value: AnyMessage): Int =
-          STRING.encodedSizeWithTag(1, value.typeUrl) +
-              BYTES.encodedSizeWithTag(2, value.value)
+        STRING.encodedSizeWithTag(1, value.typeUrl) +
+          BYTES.encodedSizeWithTag(2, value.value)
 
       override fun encode(writer: ProtoWriter, value: AnyMessage) {
         STRING.encodeWithTag(writer, 1, value.typeUrl)
@@ -120,7 +120,7 @@ class AnyMessage(
 
       // TODO: this is a hazard.
       override fun redact(value: AnyMessage) =
-          AnyMessage("square.github.io/wire/redacted", ByteString.EMPTY)
+        AnyMessage("square.github.io/wire/redacted", ByteString.EMPTY)
     }
   }
 }

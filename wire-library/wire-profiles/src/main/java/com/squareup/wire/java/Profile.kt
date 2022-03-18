@@ -47,6 +47,6 @@ class Profile(
   /** Returns the config for [type], or null if it is not configured.  */
   private fun typeConfig(type: ProtoType) =
     profileFiles
-        .flatMap { it.typeConfigs }
-        .find { it.type == type.toString() }
+      .flatMap { it.typeConfigs }
+      .find { it.type == type.toString() }
 }

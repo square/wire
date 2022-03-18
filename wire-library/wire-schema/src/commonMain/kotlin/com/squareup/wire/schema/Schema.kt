@@ -17,7 +17,6 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.ProtoAdapter
 import kotlin.collections.set
-import kotlin.jvm.JvmOverloads
 
 /**
  * A collection of .proto files that describe a set of messages. A schema is *linked*: each
@@ -31,6 +30,7 @@ class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
   private val protoFilesIndex: Map<ProtoType, ProtoFile>
   private val typesIndex: Map<String, Type>
   private val servicesIndex: Map<String, Service>
+
   init {
     val index = mutableMapOf<ProtoType, ProtoFile>()
     typesIndex = buildTypesIndex(protoFiles, index)

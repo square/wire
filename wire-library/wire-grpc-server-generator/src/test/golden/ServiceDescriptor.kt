@@ -18,11 +18,11 @@ public class RouteGuideWireGrpc {
         result = serviceDescriptor
         if (result == null) {
           result = newBuilder(SERVICE_NAME)
-          .addMethod(getGetFeatureMethod())
-          .addMethod(getListFeaturesMethod())
-          .addMethod(getRecordRouteMethod())
-          .addMethod(getRouteChatMethod())
-          .build()
+            .addMethod(getGetFeatureMethod())
+            .addMethod(getListFeaturesMethod())
+            .addMethod(getRecordRouteMethod())
+            .addMethod(getRouteChatMethod())
+            .build()
           serviceDescriptor = result
         }
       }

@@ -24,31 +24,31 @@ import org.junit.Test
 class InstantJsonFormatterTest {
   @Test fun `instant to string`() {
     assertThat(toStringOrNumber(ofEpochSecond(0L, 250_000_000L)))
-        .isEqualTo("1970-01-01T00:00:00.250Z")
+      .isEqualTo("1970-01-01T00:00:00.250Z")
     assertThat(toStringOrNumber(ofEpochSecond(0L, 250_000L)))
-        .isEqualTo("1970-01-01T00:00:00.000250Z")
+      .isEqualTo("1970-01-01T00:00:00.000250Z")
     assertThat(toStringOrNumber(ofEpochSecond(0L, 250L)))
-        .isEqualTo("1970-01-01T00:00:00.000000250Z")
+      .isEqualTo("1970-01-01T00:00:00.000000250Z")
     assertThat(toStringOrNumber(ofEpochSecond(0L, 1L)))
-        .isEqualTo("1970-01-01T00:00:00.000000001Z")
+      .isEqualTo("1970-01-01T00:00:00.000000001Z")
   }
 
   @Test fun `string to instant`() {
     assertThat(fromString("0001-01-01T00:00:00Z"))
-        .isEqualTo(ofEpochSecond(-62_135_596_800L, 0L))
+      .isEqualTo(ofEpochSecond(-62_135_596_800L, 0L))
     assertThat(fromString("9999-12-31T23:59:59.999999999Z"))
-        .isEqualTo(ofEpochSecond(253_402_300_799, 999_999_999L))
+      .isEqualTo(ofEpochSecond(253_402_300_799, 999_999_999L))
     assertThat(fromString("1970-01-01T00:00:00.250Z"))
-        .isEqualTo(ofEpochSecond(0L, 250_000_000L))
+      .isEqualTo(ofEpochSecond(0L, 250_000_000L))
     assertThat(fromString("1970-01-01T00:00:00.000250Z"))
-        .isEqualTo(ofEpochSecond(0L, 250_000L))
+      .isEqualTo(ofEpochSecond(0L, 250_000L))
     assertThat(fromString("1970-01-01T00:00:00.000000250Z"))
-        .isEqualTo(ofEpochSecond(0L, 250L))
+      .isEqualTo(ofEpochSecond(0L, 250L))
     assertThat(fromString("1970-01-01T00:00:00.000000001Z"))
-        .isEqualTo(ofEpochSecond(0L, 1L))
+      .isEqualTo(ofEpochSecond(0L, 1L))
     assertThat(fromString("1970-01-01T01:00:00+02:00"))
-        .isEqualTo(ofEpochSecond(-3_600L, 0L))
+      .isEqualTo(ofEpochSecond(-3_600L, 0L))
     assertThat(fromString("1970-01-01T01:00:00-02:00"))
-        .isEqualTo(ofEpochSecond(10_800L, 0L))
+      .isEqualTo(ofEpochSecond(10_800L, 0L))
   }
 }

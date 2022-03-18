@@ -72,8 +72,8 @@ internal data class SemVer(val version: String) : Comparable<SemVer> {
         val bLimit = b.find(SEPARATORS, startIndex = bPos, endIndex = bSize)
 
         val result = compareSegment(
-            a.substring(aPos, aLimit),
-            b.substring(bPos, bLimit)
+          a.substring(aPos, aLimit),
+          b.substring(bPos, bLimit)
         )
 
         if (result != 0) return result
@@ -139,8 +139,10 @@ internal data class SemVer(val version: String) : Comparable<SemVer> {
   companion object {
     /** Characters that signal the end of the release section. */
     private val RELEASE_TERMINATORS = charArrayOf('+', '-')
+
     /** Characters that signal the end of the pre-release section. */
     private val PRERELEASE_TERMINATORS = charArrayOf('+')
+
     /** Characters that separate segments within a section. */
     private val SEPARATORS = charArrayOf('.', '-')
 

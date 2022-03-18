@@ -40,6 +40,8 @@ class ServiceDescriptorTest {
       .toString()
 
     println(code)
-    assertThat(code).isEqualTo(File("src/test/golden/ServiceDescriptor.kt").source().buffer().readUtf8())
+    assertThat(code).isEqualTo(
+      File("src/test/golden/ServiceDescriptor.kt").source().buffer().readUtf8()
+    )
   }
 }

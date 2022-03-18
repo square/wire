@@ -19,8 +19,8 @@ import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
 import com.squareup.wire.java.JavaGenerator
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.SchemaLoader
 import com.squareup.wire.schema.Schema
+import com.squareup.wire.schema.SchemaLoader
 import okio.buffer
 import okio.sink
 import org.assertj.core.api.Assertions.assertThat
@@ -38,7 +38,8 @@ class ServiceGeneratorTest {
   @Test @Throws(IOException::class)
   fun service() {
     val schema = schema(
-        mapOf("sample.proto" to """
+      mapOf(
+        "sample.proto" to """
               |syntax = "proto2";
               |package squareup.wire.sample;
               |
@@ -62,15 +63,15 @@ class ServiceGeneratorTest {
               |  rpc OtherOne (SampleRequest) returns (SampleResponse);
               |}
               |""".trimMargin()
-        )
+      )
     )
     val service = schema.getService("squareup.wire.sample.SampleApi")
     val javaGenerator = JavaGenerator.get(schema)
     val generator = ServiceGenerator(javaGenerator)
     val typeSpec = generator.api(service)
     assertThat(toString(typeSpec))
-        .isEqualTo(
-            """
+      .isEqualTo(
+        """
               |package squareup.wire.sample;
               |
               |/**
@@ -85,7 +86,7 @@ class ServiceGeneratorTest {
               |  SampleResponse OtherOne(SampleRequest request);
               |}
               |""".trimMargin()
-        )
+      )
   }
 
   @Throws(IOException::class)
@@ -95,10 +96,10 @@ class ServiceGeneratorTest {
     for (entry in fileToProto.entries) {
       val file = File(temporaryFolder.root, entry.key)
       file.parentFile
-          .mkdirs()
+        .mkdirs()
       file.sink()
-          .buffer()
-          .use { out -> out.writeUtf8(entry.value) }
+        .buffer()
+        .use { out -> out.writeUtf8(entry.value) }
     }
     return schemaLoader.loadSchema()
   }

@@ -7,6 +7,6 @@ wire {
   sourcePath {
     srcJar 'src/main/proto/protos-plus-nonprotos.jar'
   }
-  java{
+  java {
   }
 }

@@ -55,9 +55,15 @@ class MessageSourceAdapter<T : Any> : MessageSource<T>, StreamObserver<T> {
     monitor.enterIf(valuePresent)
     return try {
       when {
-        completed -> { null }
-        error != null -> { throw error!! }
-        else -> { value }
+        completed -> {
+          null
+        }
+        error != null -> {
+          throw error!!
+        }
+        else -> {
+          value
+        }
       }
     } finally {
       value = null

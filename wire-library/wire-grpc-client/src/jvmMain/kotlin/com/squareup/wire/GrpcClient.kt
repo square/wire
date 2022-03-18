@@ -17,9 +17,9 @@ package com.squareup.wire
 
 import com.squareup.wire.internal.RealGrpcCall
 import com.squareup.wire.internal.RealGrpcStreamingCall
-import kotlin.reflect.KClass
 import okhttp3.Call
 import okhttp3.OkHttpClient
+import kotlin.reflect.KClass
 
 actual class GrpcClient private constructor(
   internal val client: Call.Factory,

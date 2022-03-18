@@ -53,7 +53,8 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
     val newMap = typeUrlToAdapter.toMutableMap()
     for (adapter in adapters) {
       val key = adapter.typeUrl ?: throw IllegalArgumentException(
-          "recompile ${adapter.type} to use it with WireJsonAdapterFactory")
+        "recompile ${adapter.type} to use it with WireJsonAdapterFactory"
+      )
       newMap[key] = adapter
     }
     return WireJsonAdapterFactory(newMap, writeIdentityValues)
@@ -78,10 +79,12 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
       annotations.isNotEmpty() -> null
       rawType == AnyMessage::class.java -> AnyMessageJsonAdapter(moshi, typeUrlToAdapter)
       Message::class.java.isAssignableFrom(rawType) -> {
-        val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(type as Class<Nothing>, writeIdentityValues)
+        val messageAdapter =
+          createRuntimeMessageAdapter<Nothing, Nothing>(type as Class<Nothing>, writeIdentityValues)
         val jsonAdapters = MoshiJsonIntegration.jsonAdapters(messageAdapter, moshi)
         val redactedFieldsAdapter = moshi.adapter<List<String>>(
-            Types.newParameterizedType(List::class.java, String::class.java))
+          Types.newParameterizedType(List::class.java, String::class.java)
+        )
         MessageJsonAdapter(messageAdapter, jsonAdapters, redactedFieldsAdapter).nullSafe()
       }
       WireEnum::class.java.isAssignableFrom(rawType) -> {

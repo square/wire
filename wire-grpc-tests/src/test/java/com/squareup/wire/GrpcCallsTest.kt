@@ -52,7 +52,7 @@ class GrpcCallsTest {
     }
 
     val log = LinkedBlockingQueue<String>()
-    grpcCall.enqueue("hello", object:  GrpcCall.Callback<String, String> {
+    grpcCall.enqueue("hello", object : GrpcCall.Callback<String, String> {
       override fun onFailure(call: GrpcCall<String, String>, exception: IOException) {
         log.add("failure: $exception")
       }
@@ -102,7 +102,7 @@ class GrpcCallsTest {
     }
 
     val log = LinkedBlockingQueue<String>()
-    grpcCall.enqueue("hello", object:  GrpcCall.Callback<String, String> {
+    grpcCall.enqueue("hello", object : GrpcCall.Callback<String, String> {
       override fun onFailure(call: GrpcCall<String, String>, exception: IOException) {
         log.add("failure: $exception")
       }
@@ -113,7 +113,7 @@ class GrpcCallsTest {
     })
 
     assertThat(log.take())
-        .isEqualTo("failure: java.io.IOException: call failed: java.lang.Exception: boom!")
+      .isEqualTo("failure: java.io.IOException: call failed: java.lang.Exception: boom!")
     assertThat(log).isEmpty()
   }
 
@@ -157,7 +157,7 @@ class GrpcCallsTest {
     assertThat(grpcCall.executeBlocking("hello")).isEqualTo("HELLO")
 
     try {
-      grpcCall.enqueue("hello", object:  GrpcCall.Callback<String, String> {
+      grpcCall.enqueue("hello", object : GrpcCall.Callback<String, String> {
         override fun onFailure(call: GrpcCall<String, String>, exception: IOException) {
           error("unexpected call")
         }
@@ -212,7 +212,7 @@ class GrpcCallsTest {
     grpcCall.cancel()
 
     val log = LinkedBlockingQueue<String>()
-    grpcCall.enqueue("hello", object:  GrpcCall.Callback<String, String> {
+    grpcCall.enqueue("hello", object : GrpcCall.Callback<String, String> {
       override fun onFailure(call: GrpcCall<String, String>, exception: IOException) {
         log.add("failure: $exception")
       }

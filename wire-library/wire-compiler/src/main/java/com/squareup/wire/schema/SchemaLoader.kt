@@ -224,7 +224,7 @@ class SchemaLoader : Loader, ProfileLoader {
         val requiredImport = resolvedType.location.path
         if (!profileFile.imports.contains(requiredImport)) {
           errors += "${typeConfig.location.path} needs to import $requiredImport " +
-              "(${typeConfig.location})"
+            "(${typeConfig.location})"
         }
       }
     }

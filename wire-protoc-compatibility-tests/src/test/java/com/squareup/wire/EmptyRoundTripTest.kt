@@ -19,8 +19,8 @@ import com.google.protobuf.Empty
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import squareup.proto3.kotlin.alltypes.AllEmptyOuterClass
-import squareup.proto3.kotlin.alltypes.AllEmpty as AllEmptyK
 import squareup.proto3.java.alltypes.AllEmpty as AllEmptyJ
+import squareup.proto3.kotlin.alltypes.AllEmpty as AllEmptyK
 
 class EmptyRoundTripTest {
   @Test fun empty() {
@@ -36,25 +36,25 @@ class EmptyRoundTripTest {
 
   @Test fun allEmpty() {
     val googleMessage = AllEmptyOuterClass.AllEmpty.newBuilder()
-        .setEmpty(Empty.newBuilder().build())
-        .addRepEmpty(Empty.newBuilder().build())
-        .addRepEmpty(Empty.newBuilder().build())
-        .putMapInt32Empty(1, Empty.newBuilder().build())
-        .setOneofEmpty(Empty.newBuilder().build())
-        .build()
+      .setEmpty(Empty.newBuilder().build())
+      .addRepEmpty(Empty.newBuilder().build())
+      .addRepEmpty(Empty.newBuilder().build())
+      .putMapInt32Empty(1, Empty.newBuilder().build())
+      .setOneofEmpty(Empty.newBuilder().build())
+      .build()
 
     val wireMessageJava = AllEmptyJ.Builder()
-        .empty(Unit)
-        .rep_empty(listOf(Unit, Unit))
-        .map_int32_empty(mapOf(1 to Unit))
-        .oneof_empty(Unit)
-        .build()
+      .empty(Unit)
+      .rep_empty(listOf(Unit, Unit))
+      .map_int32_empty(mapOf(1 to Unit))
+      .oneof_empty(Unit)
+      .build()
 
     val wireMessageKotlin = AllEmptyK(
-        empty = Unit,
-        rep_empty = listOf(Unit, Unit),
-        map_int32_empty = mapOf(1 to Unit),
-        oneof_empty = Unit
+      empty = Unit,
+      rep_empty = listOf(Unit, Unit),
+      map_int32_empty = mapOf(1 to Unit),
+      oneof_empty = Unit
     )
 
     val googleMessageBytes = googleMessage.toByteArray()
@@ -64,7 +64,9 @@ class EmptyRoundTripTest {
     assertThat(AllEmptyJ.ADAPTER.decode(googleMessageBytes)).isEqualTo(wireMessageJava)
     assertThat(AllEmptyJ.ADAPTER.encodedSize(wireMessageJava)).isEqualTo(googleMessageBytes.size)
     val wireMessageKotlinBytes = AllEmptyK.ADAPTER.encode(wireMessageKotlin)
-    assertThat(AllEmptyOuterClass.AllEmpty.parseFrom(wireMessageKotlinBytes)).isEqualTo(googleMessage)
+    assertThat(AllEmptyOuterClass.AllEmpty.parseFrom(wireMessageKotlinBytes)).isEqualTo(
+      googleMessage
+    )
     assertThat(AllEmptyK.ADAPTER.decode(wireMessageKotlinBytes)).isEqualTo(wireMessageKotlin)
     assertThat(AllEmptyK.ADAPTER.decode(googleMessageBytes)).isEqualTo(wireMessageKotlin)
     assertThat(AllEmptyK.ADAPTER.encodedSize(wireMessageKotlin)).isEqualTo(googleMessageBytes.size)

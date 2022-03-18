@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 @file:JvmName("JsonUtils")
+
 package com.squareup.wire.json
 
 import com.squareup.moshi.JsonReader
@@ -22,5 +23,5 @@ import org.assertj.core.api.Assertions.assertThat
 
 fun assertJsonEquals(expected: String, value: String) {
   assertThat(JsonReader.of(Buffer().writeUtf8(value)).readJsonValue())
-      .isEqualTo(JsonReader.of(Buffer().writeUtf8(expected)).readJsonValue())
+    .isEqualTo(JsonReader.of(Buffer().writeUtf8(expected)).readJsonValue())
 }

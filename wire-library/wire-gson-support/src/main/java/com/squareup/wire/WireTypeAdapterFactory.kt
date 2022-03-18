@@ -57,7 +57,8 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
     val newMap = typeUrlToAdapter.toMutableMap()
     for (adapter in adapters) {
       val key = adapter.typeUrl ?: throw IllegalArgumentException(
-          "recompile ${adapter.type} to use it with WireTypeAdapterFactory")
+        "recompile ${adapter.type} to use it with WireTypeAdapterFactory"
+      )
       newMap[key] = adapter
     }
     return WireTypeAdapterFactory(newMap, writeIdentityValues)
@@ -75,9 +76,13 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
     val rawType = type.rawType
 
     return when {
-      rawType == AnyMessage::class.java -> AnyMessageTypeAdapter(gson, typeUrlToAdapter) as TypeAdapter<T>
+      rawType == AnyMessage::class.java -> AnyMessageTypeAdapter(
+        gson, typeUrlToAdapter
+      ) as TypeAdapter<T>
       Message::class.java.isAssignableFrom(rawType) -> {
-        val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(rawType as Class<Nothing>, writeIdentityValues)
+        val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(
+          rawType as Class<Nothing>, writeIdentityValues
+        )
         val jsonAdapters = GsonJsonIntegration.jsonAdapters(messageAdapter, gson)
         MessageTypeAdapter(messageAdapter, jsonAdapters).nullSafe() as TypeAdapter<T>
       }

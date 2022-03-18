@@ -32,6 +32,7 @@ import java.io.IOException
 class MapTest {
   @Parameter(0)
   lateinit var name: String
+
   @Parameter(1)
   lateinit var adapter: ProtoAdapter<Mappy>
 
@@ -53,18 +54,22 @@ class MapTest {
   companion object {
     private val BYTES =
       "0a0c0a036f6e6512050a034f6e650a0c0a0374776f12050a0354776f0a100a05746872656512070a055468726565"
-          .decodeHex()
+        .decodeHex()
     private val EMPTY = Mappy.Builder()
-        .build()
+      .build()
     private val THREE = Mappy.Builder()
-        .things(mapOf("one" to Thing("One"), "two" to Thing("Two"), "three" to Thing("Three")))
-        .build()
+      .things(mapOf("one" to Thing("One"), "two" to Thing("Two"), "three" to Thing("Three")))
+      .build()
 
     @Parameters(name = "{0}")
     @JvmStatic
     fun parameters() = listOf(
-        arrayOf("Generated", Mappy.ADAPTER),
-        arrayOf("Runtime", createRuntimeMessageAdapter(Mappy::class.java, "square.github.io/wire/unknown", Syntax.PROTO_2))
+      arrayOf("Generated", Mappy.ADAPTER),
+      arrayOf(
+        "Runtime", createRuntimeMessageAdapter(
+        Mappy::class.java, "square.github.io/wire/unknown", Syntax.PROTO_2
+      )
+      )
     )
   }
 }

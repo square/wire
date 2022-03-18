@@ -51,11 +51,11 @@ public object RouteGuideWireGrpc {
         result = serviceDescriptor
         if (result == null) {
           result = newBuilder(SERVICE_NAME)
-          .addMethod(getGetFeatureMethod())
-          .addMethod(getListFeaturesMethod())
-          .addMethod(getRecordRouteMethod())
-          .addMethod(getRouteChatMethod())
-          .build()
+            .addMethod(getGetFeatureMethod())
+            .addMethod(getListFeaturesMethod())
+            .addMethod(getRecordRouteMethod())
+            .addMethod(getRouteChatMethod())
+            .build()
           serviceDescriptor = result
         }
       }
@@ -158,68 +158,70 @@ public object RouteGuideWireGrpc {
   public fun newStub(channel: Channel): RouteGuideStub = RouteGuideStub(channel)
 
   public fun newBlockingStub(channel: Channel): RouteGuideBlockingStub =
-      RouteGuideBlockingStub(channel)
+    RouteGuideBlockingStub(channel)
 
   public abstract class RouteGuideImplBase : BindableService {
-    public open fun GetFeature(request: Point, response: StreamObserver<Feature>): Unit = throw
-        UnsupportedOperationException()
+    public open fun GetFeature(
+      request: Point,
+      response: StreamObserver<Feature>
+    ): Unit = throw UnsupportedOperationException()
 
     public open fun ListFeatures(request: Rectangle, response: StreamObserver<Feature>): Unit =
-        throw UnsupportedOperationException()
+      throw UnsupportedOperationException()
 
     public open fun RecordRoute(response: StreamObserver<RouteSummary>): StreamObserver<Point> =
-        throw UnsupportedOperationException()
+      throw UnsupportedOperationException()
 
     public open fun RouteChat(response: StreamObserver<RouteNote>): StreamObserver<RouteNote> =
-        throw UnsupportedOperationException()
+      throw UnsupportedOperationException()
 
     public override fun bindService(): ServerServiceDefinition =
-        ServerServiceDefinition.builder(getServiceDescriptor()).addMethod(
-              getGetFeatureMethod(),
-              asyncUnaryCall(this@RouteGuideImplBase::GetFeature)
-            ).addMethod(
-              getListFeaturesMethod(),
-              asyncServerStreamingCall(this@RouteGuideImplBase::ListFeatures)
-            ).addMethod(
-              getRecordRouteMethod(),
-              asyncClientStreamingCall(this@RouteGuideImplBase::RecordRoute)
-            ).addMethod(
-              getRouteChatMethod(),
-              asyncBidiStreamingCall(this@RouteGuideImplBase::RouteChat)
-            ).build()
+      ServerServiceDefinition.builder(getServiceDescriptor()).addMethod(
+        getGetFeatureMethod(),
+        asyncUnaryCall(this@RouteGuideImplBase::GetFeature)
+      ).addMethod(
+        getListFeaturesMethod(),
+        asyncServerStreamingCall(this@RouteGuideImplBase::ListFeatures)
+      ).addMethod(
+        getRecordRouteMethod(),
+        asyncClientStreamingCall(this@RouteGuideImplBase::RecordRoute)
+      ).addMethod(
+        getRouteChatMethod(),
+        asyncBidiStreamingCall(this@RouteGuideImplBase::RouteChat)
+      ).build()
 
     public class PointMarshaller : MethodDescriptor.Marshaller<Point> {
       public override fun stream(`value`: Point): InputStream =
-          Point.ADAPTER.encode(value).inputStream()
+        Point.ADAPTER.encode(value).inputStream()
 
       public override fun parse(stream: InputStream): Point = Point.ADAPTER.decode(stream)
     }
 
     public class FeatureMarshaller : MethodDescriptor.Marshaller<Feature> {
       public override fun stream(`value`: Feature): InputStream =
-          Feature.ADAPTER.encode(value).inputStream()
+        Feature.ADAPTER.encode(value).inputStream()
 
       public override fun parse(stream: InputStream): Feature = Feature.ADAPTER.decode(stream)
     }
 
     public class RectangleMarshaller : MethodDescriptor.Marshaller<Rectangle> {
       public override fun stream(`value`: Rectangle): InputStream =
-          Rectangle.ADAPTER.encode(value).inputStream()
+        Rectangle.ADAPTER.encode(value).inputStream()
 
       public override fun parse(stream: InputStream): Rectangle = Rectangle.ADAPTER.decode(stream)
     }
 
     public class RouteSummaryMarshaller : MethodDescriptor.Marshaller<RouteSummary> {
       public override fun stream(`value`: RouteSummary): InputStream =
-          RouteSummary.ADAPTER.encode(value).inputStream()
+        RouteSummary.ADAPTER.encode(value).inputStream()
 
       public override fun parse(stream: InputStream): RouteSummary =
-          RouteSummary.ADAPTER.decode(stream)
+        RouteSummary.ADAPTER.decode(stream)
     }
 
     public class RouteNoteMarshaller : MethodDescriptor.Marshaller<RouteNote> {
       public override fun stream(`value`: RouteNote): InputStream =
-          RouteNote.ADAPTER.encode(value).inputStream()
+        RouteNote.ADAPTER.encode(value).inputStream()
 
       public override fun parse(stream: InputStream): RouteNote = RouteNote.ADAPTER.decode(stream)
     }
@@ -264,26 +266,36 @@ public object RouteGuideWireGrpc {
 
     internal constructor(channel: Channel, callOptions: CallOptions) : super(channel, callOptions)
 
-    public override fun build(channel: Channel, callOptions: CallOptions) = RouteGuideStub(channel,
-        callOptions)
+    public override fun build(channel: Channel, callOptions: CallOptions) = RouteGuideStub(
+      channel,
+      callOptions
+    )
 
     public fun GetFeature(request: Point, response: StreamObserver<Feature>): Unit {
-      ClientCalls.asyncUnaryCall(channel.newCall(getGetFeatureMethod(), callOptions), request,
-          response)
+      ClientCalls.asyncUnaryCall(
+        channel.newCall(getGetFeatureMethod(), callOptions), request,
+        response
+      )
     }
 
     public fun ListFeatures(request: Rectangle, response: StreamObserver<Feature>): Unit {
-      ClientCalls.asyncServerStreamingCall(channel.newCall(getListFeaturesMethod(), callOptions),
-          request, response)
+      ClientCalls.asyncServerStreamingCall(
+        channel.newCall(getListFeaturesMethod(), callOptions),
+        request, response
+      )
     }
 
     public fun RecordRoute(response: StreamObserver<RouteSummary>): StreamObserver<Point> =
-        ClientCalls.asyncClientStreamingCall(channel.newCall(getRecordRouteMethod(), callOptions),
-        response)
+      ClientCalls.asyncClientStreamingCall(
+        channel.newCall(getRecordRouteMethod(), callOptions),
+        response
+      )
 
     public fun RouteChat(response: StreamObserver<RouteNote>): StreamObserver<RouteNote> =
-        ClientCalls.asyncBidiStreamingCall(channel.newCall(getRouteChatMethod(), callOptions),
-        response)
+      ClientCalls.asyncBidiStreamingCall(
+        channel.newCall(getRouteChatMethod(), callOptions),
+        response
+      )
   }
 
   public class RouteGuideBlockingStub : AbstractStub<RouteGuideStub> {
@@ -291,13 +303,17 @@ public object RouteGuideWireGrpc {
 
     internal constructor(channel: Channel, callOptions: CallOptions) : super(channel, callOptions)
 
-    public override fun build(channel: Channel, callOptions: CallOptions) = RouteGuideStub(channel,
-        callOptions)
+    public override fun build(channel: Channel, callOptions: CallOptions) = RouteGuideStub(
+      channel,
+      callOptions
+    )
 
-    public fun GetFeature(request: Point): Feature = blockingUnaryCall(channel,
-        getGetFeatureMethod(), callOptions, request)
+    public fun GetFeature(request: Point): Feature = blockingUnaryCall(
+      channel,
+      getGetFeatureMethod(), callOptions, request
+    )
 
     public fun RecordRoute(request: Point): Iterator<RouteSummary> =
-        blockingServerStreamingCall(channel, getRecordRouteMethod(), callOptions, request)
+      blockingServerStreamingCall(channel, getRecordRouteMethod(), callOptions, request)
   }
 }

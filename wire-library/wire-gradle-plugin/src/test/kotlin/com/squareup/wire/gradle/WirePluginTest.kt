@@ -31,19 +31,19 @@ class WirePluginTest {
   @Before
   fun setUp() {
     gradleRunner = GradleRunner.create()
-        .withPluginClasspath()
-        // Ensure individual tests are isolated and not reusing each other's previous outputs
-        // by setting project dir and gradle home directly.
-        .withProjectDir(tmpFolder.newFolder("project-dir"))
-        .withArguments(
-          "-g",
-          tmpFolder.newFolder("gradle-home").absolutePath,
-          "generateProtos",
-          "--stacktrace",
-          "--info",
-          "--configuration-cache",
-        )
-        .withDebug(true)
+      .withPluginClasspath()
+      // Ensure individual tests are isolated and not reusing each other's previous outputs
+      // by setting project dir and gradle home directly.
+      .withProjectDir(tmpFolder.newFolder("project-dir"))
+      .withArguments(
+        "-g",
+        tmpFolder.newFolder("gradle-home").absolutePath,
+        "generateProtos",
+        "--stacktrace",
+        "--info",
+        "--configuration-cache",
+      )
+      .withDebug(true)
   }
 
   @Test fun versionIsExposed() {
@@ -74,7 +74,7 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output).contains(
-            """
+      """
             |Invalid path string: "src/main/proto".
             |For individual files, use the following syntax:
             |wire {
@@ -83,7 +83,8 @@ class WirePluginTest {
             |    include 'relativePath'
             |  }
             |}
-            """.trimMargin())
+            """.trimMargin()
+    )
   }
 
   @Test
@@ -104,8 +105,10 @@ class WirePluginTest {
     assertThat(result.task(":copyProtos")).isNotNull
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-            .contains("Writing com.squareup.geology.Period")
-            .contains("src/test/projects/sourcepath-build-dir/build/generated/source/wire".withPlatformSlashes())
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcepath-build-dir/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -129,9 +132,11 @@ class WirePluginTest {
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/sourcepath-default/build/generated/source/wire".withPlatformSlashes())
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcepath-default/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -153,8 +158,8 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
-        .contains(
-            """
+      .contains(
+        """
             |Invalid path string: "src/main/proto/squareup/geology/period.proto".
             |For individual files, use the following syntax:
             |wire {
@@ -164,7 +169,7 @@ class WirePluginTest {
             |  }
             |}
             """.trimMargin()
-        )
+      )
   }
 
   @Test
@@ -175,9 +180,9 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
-        .contains(
-            """Invalid path string: "http://www.squareup.com". URL dependencies are not allowed."""
-        )
+      .contains(
+        """Invalid path string: "http://www.squareup.com". URL dependencies are not allowed."""
+      )
   }
 
   @Test
@@ -188,9 +193,11 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/sourcepath-dir/build/generated/source/wire".withPlatformSlashes())
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcepath-dir/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -201,9 +208,11 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/sourcepath-maven/build/generated/source/wire".withPlatformSlashes())
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcepath-maven/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -214,8 +223,8 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
+      .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
   }
 
   @Test
@@ -226,8 +235,10 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/sourcetree-one-srcdir-one-file/build/generated/source/wire".withPlatformSlashes())
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcetree-one-srcdir-one-file/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -238,11 +249,11 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .contains(
-            "src/test/projects/sourcetree-one-srcdir-many-files/build/generated/source/wire".withPlatformSlashes()
-        )
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcetree-one-srcdir-many-files/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -253,9 +264,11 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/sourcetree-many-srcdirs/build/generated/source/wire".withPlatformSlashes())
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcetree-many-srcdirs/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -266,11 +279,11 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .contains(
-            "src/test/projects/sourcejar-local-many-files/build/generated/source/wire".withPlatformSlashes()
-        )
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcejar-local-many-files/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -281,11 +294,11 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .contains(
-            "src/test/projects/sourcejar-local-nonproto-file/build/generated/source/wire".withPlatformSlashes()
-        )
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcejar-local-nonproto-file/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -296,11 +309,11 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .contains(
-            "src/test/projects/sourcejar-local-single-file/build/generated/source/wire".withPlatformSlashes()
-        )
+      .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcejar-local-single-file/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -327,11 +340,11 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .contains(
-            "src/test/projects/sourcejar-remote-many-files/build/generated/source/wire".withPlatformSlashes()
-        )
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcejar-remote-many-files/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -342,12 +355,12 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .doesNotContain("Writing com.excluded.Martian")
-        .contains(
-            "src/test/projects/sourcejar-remote-wildcards/build/generated/source/wire".withPlatformSlashes()
-        )
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .doesNotContain("Writing com.excluded.Martian")
+      .contains(
+        "src/test/projects/sourcejar-remote-wildcards/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -358,11 +371,11 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .doesNotContain("Writing com.squareup.geology.Period")
-        .contains(
-            "src/test/projects/sourcejar-remote-protopath/build/generated/source/wire".withPlatformSlashes()
-        )
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .doesNotContain("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcejar-remote-protopath/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -373,10 +386,12 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
-        .doesNotContain("Writing com.squareup.geology.Period")
-        .contains("Writing com.squareup.dinosaurs.Dig")
-        .contains("src/test/projects/protopath-maven/build/generated/source/wire".withPlatformSlashes())
+      .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
+      .doesNotContain("Writing com.squareup.geology.Period")
+      .contains("Writing com.squareup.dinosaurs.Dig")
+      .contains(
+        "src/test/projects/protopath-maven/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -387,8 +402,8 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/different-java-out/custom".withPlatformSlashes())
+      .contains("Writing com.squareup.geology.Period")
+      .contains("src/test/projects/different-java-out/custom".withPlatformSlashes())
   }
 
   @Test
@@ -399,8 +414,8 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/different-kotlin-out/custom".withPlatformSlashes())
+      .contains("Writing com.squareup.geology.Period")
+      .contains("src/test/projects/different-kotlin-out/custom".withPlatformSlashes())
   }
 
   @Test
@@ -411,8 +426,8 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing squareup/geology/period.proto")
-        .contains("src/test/projects/different-proto-out/custom".withPlatformSlashes())
+      .contains("Writing squareup/geology/period.proto")
+      .contains("src/test/projects/different-proto-out/custom".withPlatformSlashes())
   }
 
   @Test
@@ -423,8 +438,9 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
-        .contains(
-            "Wire Gradle plugin applied in project ':' but no supported Kotlin plugin was found")
+      .contains(
+        "Wire Gradle plugin applied in project ':' but no supported Kotlin plugin was found"
+      )
   }
 
   @Test
@@ -435,10 +451,10 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .doesNotContain("Writing com.squareup.geology.Period")
+      .doesNotContain("Writing com.squareup.geology.Period")
 
     val generatedProto =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     val generatedProtoSource = generatedProto.readText()
@@ -453,15 +469,15 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .doesNotContain("Writing com.squareup.geology.Period")
+      .doesNotContain("Writing com.squareup.geology.Period")
 
     val generatedProto =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     val generatedProtoSource = generatedProto.readText()
     assertThat(fieldsFromProtoSource(generatedProtoSource))
-        .containsOnly("val name", "val length_meters")
+      .containsOnly("val name", "val length_meters")
   }
 
   @Test
@@ -472,11 +488,11 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
 
     val generatedProto =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     assertThat(generatedProto.readText()).doesNotContain("val name")
@@ -490,11 +506,11 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
 
     val generatedProto =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     assertThat(generatedProto.readText()).doesNotContain("val name", "val length_meters")
@@ -508,10 +524,10 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .doesNotContain("Writing com.squareup.geology.Period")
+      .doesNotContain("Writing com.squareup.geology.Period")
 
     val generatedProto =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     val generatedProtoSource = generatedProto.readText()
@@ -526,11 +542,11 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
 
     val generatedProto =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     assertThat(generatedProto.readText()).doesNotContain("val name")
@@ -546,14 +562,16 @@ class WirePluginTest {
 
     assertThat(result.task(":generateMainProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/java-project-java-protos/build/generated/source/wire".withPlatformSlashes())
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/java-project-java-protos/build/generated/source/wire".withPlatformSlashes()
+      )
 
     val generatedProto1 =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.java")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.java")
     val generatedProto2 =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.java")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.java")
     assertThat(generatedProto1).exists()
     assertThat(generatedProto2).exists()
   }
@@ -568,14 +586,16 @@ class WirePluginTest {
 
     assertThat(result.task(":generateMainProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/java-project-kotlin-protos/build/generated/source/wire".withPlatformSlashes())
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/java-project-kotlin-protos/build/generated/source/wire".withPlatformSlashes()
+      )
 
     val generatedProto1 =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     val generatedProto2 =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")
     assertThat(generatedProto1).exists()
     assertThat(generatedProto2).exists()
   }
@@ -590,14 +610,16 @@ class WirePluginTest {
 
     assertThat(result.task(":generateMainProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/kotlin-project-java-protos/build/generated/source/wire".withPlatformSlashes())
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/kotlin-project-java-protos/build/generated/source/wire".withPlatformSlashes()
+      )
 
     val generatedProto1 =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.java")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.java")
     val generatedProto2 =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.java")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.java")
     assertThat(generatedProto1).exists()
     assertThat(generatedProto2).exists()
   }
@@ -612,14 +634,16 @@ class WirePluginTest {
 
     assertThat(result.task(":generateMainProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/kotlin-project-kotlin-protos/build/generated/source/wire".withPlatformSlashes())
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/kotlin-project-kotlin-protos/build/generated/source/wire".withPlatformSlashes()
+      )
 
     val generatedProto1 =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     val generatedProto2 =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")
     assertThat(generatedProto1).exists()
     assertThat(generatedProto2).exists()
   }
@@ -634,7 +658,9 @@ class WirePluginTest {
     assertThat(result.output)
       .contains("Writing com.squareup.dinosaurs.Dinosaur")
       .contains("Writing com.squareup.geology.Period")
-      .contains("src/test/projects/sourcedir-exclude/build/generated/source/wire".withPlatformSlashes())
+      .contains(
+        "src/test/projects/sourcedir-exclude/build/generated/source/wire".withPlatformSlashes()
+      )
     assertThat(result.output)
       .doesNotContain("Writing com.excluded.Martian")
 
@@ -661,7 +687,9 @@ class WirePluginTest {
     assertThat(result.output)
       .contains("Writing com.squareup.dinosaurs.Dinosaur")
       .contains("Writing com.squareup.geology.Period")
-      .contains("src/test/projects/sourcedir-include/build/generated/source/wire".withPlatformSlashes())
+      .contains(
+        "src/test/projects/sourcedir-include/build/generated/source/wire".withPlatformSlashes()
+      )
     assertThat(result.output)
       .doesNotContain("Writing com.excluded.Martian")
 
@@ -684,11 +712,11 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .doesNotContain("Writing com.squareup.geology.Period")
-        .contains(
-            "src/test/projects/sourcepath-and-protopath-intersect/build/generated/source/wire".withPlatformSlashes()
-        )
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .doesNotContain("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcepath-and-protopath-intersect/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -700,8 +728,8 @@ class WirePluginTest {
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -734,8 +762,8 @@ class WirePluginTest {
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")).exists()
@@ -753,8 +781,8 @@ class WirePluginTest {
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")).exists()
@@ -801,15 +829,17 @@ class WirePluginTest {
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.BattleServiceFight")
-        .contains("Writing com.squareup.dinosaurs.BattleServiceBrawl")
+      .contains("Writing com.squareup.dinosaurs.BattleServiceFight")
+      .contains("Writing com.squareup.dinosaurs.BattleServiceBrawl")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceClient.kt")).exists()
     assertThat(
-        File(outputRoot, "com/squareup/dinosaurs/BattleServiceFightBlockingServer.kt")).exists()
+      File(outputRoot, "com/squareup/dinosaurs/BattleServiceFightBlockingServer.kt")
+    ).exists()
     assertThat(
-        File(outputRoot, "com/squareup/dinosaurs/BattleServiceBrawlBlockingServer.kt")).exists()
+      File(outputRoot, "com/squareup/dinosaurs/BattleServiceBrawlBlockingServer.kt")
+    ).exists()
   }
 
   @Test
@@ -820,7 +850,7 @@ class WirePluginTest {
 
     assertThat(task).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.BattleServiceClient")
+      .contains("Writing com.squareup.dinosaurs.BattleServiceClient")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceClient.kt")).exists()
@@ -839,10 +869,12 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
-        .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
-        .doesNotContain("Writing com.squareup.geology.Period")
-        .contains("Writing com.squareup.dinosaurs.Dig")
-        .contains("src/test/projects/customize-configuration/build/generated/source/wire".withPlatformSlashes())
+      .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
+      .doesNotContain("Writing com.squareup.geology.Period")
+      .contains("Writing com.squareup.dinosaurs.Dig")
+      .contains(
+        "src/test/projects/customize-configuration/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   /**
@@ -858,9 +890,11 @@ class WirePluginTest {
     assertThat(result.task(":generateMainProtos")).isNotNull
     assertThat(result.task(":helloWorld")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dig")
-        .contains("Hello, World!")
-        .contains("src/test/projects/customize-task/build/generated/source/wire".withPlatformSlashes())
+      .contains("Writing com.squareup.dinosaurs.Dig")
+      .contains("Hello, World!")
+      .contains(
+        "src/test/projects/customize-task/build/generated/source/wire".withPlatformSlashes()
+      )
   }
 
   @Test
@@ -869,7 +903,7 @@ class WirePluginTest {
 
     val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
     assertThat(result.output)
-        .contains("custom handler is running!!")
+      .contains("custom handler is running!!")
   }
 
   @Test
@@ -878,7 +912,7 @@ class WirePluginTest {
 
     val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
     assertThat(result.output)
-        .contains("Couldn't find CustomHandlerClass 'NoSuchClass'")
+      .contains("Couldn't find CustomHandlerClass 'NoSuchClass'")
   }
 
   @Test
@@ -891,7 +925,7 @@ class WirePluginTest {
     assertThat(result.output).contains("Writing com.squareup.media.NewsFlash")
 
     val generatedProto =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/media/NewsFlash.kt")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/media/NewsFlash.kt")
     assertThat(generatedProto).exists()
 
     val newsFlash = generatedProto.readText()
@@ -910,7 +944,7 @@ class WirePluginTest {
     assertThat(result.output).contains("Writing com.squareup.media.NewsFlash")
 
     val generatedProto =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/media/NewsFlash.kt")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/media/NewsFlash.kt")
     assertThat(generatedProto).exists()
 
     val newsFlash = generatedProto.readText()
@@ -927,21 +961,23 @@ class WirePluginTest {
 
     val result = gradleRunner.runFixture(fixtureRoot) {
       withArguments(
-          "assemble", "--stacktrace", "-Dkjs=$kmpJsEnabled", "-Dknative=$kmpNativeEnabled", "--info"
+        "assemble", "--stacktrace", "-Dkjs=$kmpJsEnabled", "-Dknative=$kmpNativeEnabled", "--info"
       ).build()
     }
 
     println(result.tasks.joinToString { it.toString() })
     assertThat(result.task(":generateCommonMainProtos")).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.Dinosaur")
-        .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/kotlin-multiplatform/build/generated/source/wire".withPlatformSlashes())
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/kotlin-multiplatform/build/generated/source/wire".withPlatformSlashes()
+      )
 
     val generatedProto1 =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     val generatedProto2 =
-        File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")
     assertThat(generatedProto1).exists()
     assertThat(generatedProto2).exists()
   }
@@ -949,10 +985,10 @@ class WirePluginTest {
   private fun fieldsFromProtoSource(generatedProtoSource: String): List<String> {
     val protoFieldPattern = "@field:WireField.*?(val .*?):"
     val matchedFields = protoFieldPattern.toRegex(setOf(MULTILINE, DOT_MATCHES_ALL))
-        .findAll(generatedProtoSource)
+      .findAll(generatedProtoSource)
     return matchedFields
-        .map { it.groupValues[1] }
-        .toList()
+      .map { it.groupValues[1] }
+      .toList()
   }
 
   @Test
@@ -964,8 +1000,8 @@ class WirePluginTest {
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
     assertThat(result.output)
-        .contains("Writing squareup/dinosaurs/dinosaur.proto")
-        .contains("Writing squareup/geology/period.proto")
+      .contains("Writing squareup/dinosaurs/dinosaur.proto")
+      .contains("Writing squareup/geology/period.proto")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "squareup/dinosaurs/dinosaur.proto")).exists()
@@ -981,7 +1017,7 @@ class WirePluginTest {
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
     assertThat(result.output)
-        .contains("Writing squareup/dinosaurs/dinosaur.proto")
+      .contains("Writing squareup/dinosaurs/dinosaur.proto")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "squareup/dinosaurs/dinosaur.proto")).exists()
@@ -997,7 +1033,7 @@ class WirePluginTest {
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
     assertThat(result.output)
-        .contains("Writing squareup/geology/period.proto")
+      .contains("Writing squareup/geology/period.proto")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "squareup/geology/period.proto")).exists()
@@ -1011,13 +1047,13 @@ class WirePluginTest {
     val firstRun = gradleRunner.runFixture(fixtureRoot) { build() }
     assertThat(firstRun.task(":generateMainProtos")).isNotNull
     assertThat(firstRun.output)
-        .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/consecutive-runs/custom".withPlatformSlashes())
+      .contains("Writing com.squareup.geology.Period")
+      .contains("src/test/projects/consecutive-runs/custom".withPlatformSlashes())
 
     val secondRun = gradleRunner.runFixture(fixtureRoot) { build() }
     assertThat(secondRun.task(":generateMainProtos")).isNotNull
     assertThat(secondRun.output)
-        .contains("Task :generateMainProtos UP-TO-DATE")
+      .contains("Task :generateMainProtos UP-TO-DATE")
   }
 
   @Test
@@ -1029,8 +1065,8 @@ class WirePluginTest {
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
     assertThat(result.output)
-        .contains("Writing squareup/dinosaurs/dinosaur.proto")
-        .contains("Writing squareup/geology/geology.proto")
+      .contains("Writing squareup/dinosaurs/dinosaur.proto")
+      .contains("Writing squareup/geology/geology.proto")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
@@ -1051,10 +1087,11 @@ class WirePluginTest {
     assertThat(result.output).contains("Writing squareup.options.DocumentationUrlOption")
 
     val generatedProto = File(
-        fixtureRoot, "build/generated/source/wire/squareup/polygons/Octagon.java")
+      fixtureRoot, "build/generated/source/wire/squareup/polygons/Octagon.java"
+    )
     val octagon = generatedProto.readText()
     assertThat(octagon)
-        .contains("""@DocumentationUrlOption("https://en.wikipedia.org/wiki/Octagon")""")
+      .contains("""@DocumentationUrlOption("https://en.wikipedia.org/wiki/Octagon")""")
   }
 
   @Test
@@ -1067,10 +1104,11 @@ class WirePluginTest {
     assertThat(result.output).contains("Writing squareup.options.DocumentationUrlOption")
 
     val generatedProto = File(
-        fixtureRoot, "build/generated/source/wire/squareup/polygons/Octagon.kt")
+      fixtureRoot, "build/generated/source/wire/squareup/polygons/Octagon.kt"
+    )
     val octagon = generatedProto.readText()
     assertThat(octagon)
-        .contains("""@DocumentationUrlOption("https://en.wikipedia.org/wiki/Octagon")""")
+      .contains("""@DocumentationUrlOption("https://en.wikipedia.org/wiki/Octagon")""")
   }
 
   @Test
@@ -1087,10 +1125,10 @@ class WirePluginTest {
 
     val result = gradleRunner.runFixture(fixtureRoot) { build() }
     assertThat(result.output)
-        .contains("Writing people.Employee")
-        .contains("Writing people.OfficeManager")
-        .contains("Writing locations.Office")
-        .contains("Writing locations.Residence")
+      .contains("Writing people.Employee")
+      .contains("Writing people.OfficeManager")
+      .contains("Writing locations.Office")
+      .contains("Writing locations.Residence")
   }
 
   @Test
@@ -1103,18 +1141,26 @@ class WirePluginTest {
 
     assertThat(result.task(":dinosaurs:generateMainProtos")?.outcome)
       .isIn(TaskOutcome.SUCCESS, TaskOutcome.UP_TO_DATE)
-    val generatedProto1 = File(fixtureRoot,
-      "dinosaurs/build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
-    val generatedProto2 = File(fixtureRoot,
-      "geology/build/generated/source/wire/com/squareup/geology/Period.kt")
-    val generatedProto3 = File(fixtureRoot,
-      "dinosaurs/build/generated/source/wire/com/squareup/location/Continent.kt")
+    val generatedProto1 = File(
+      fixtureRoot,
+      "dinosaurs/build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt"
+    )
+    val generatedProto2 = File(
+      fixtureRoot,
+      "geology/build/generated/source/wire/com/squareup/geology/Period.kt"
+    )
+    val generatedProto3 = File(
+      fixtureRoot,
+      "dinosaurs/build/generated/source/wire/com/squareup/location/Continent.kt"
+    )
     assertThat(generatedProto1).exists()
     assertThat(generatedProto2).exists()
     assertThat(generatedProto3).exists()
 
-    val notExpected = File(fixtureRoot,
-      "dinosaurs/build/generated/source/wire/com/squareup/location/Planet.kt")
+    val notExpected = File(
+      fixtureRoot,
+      "dinosaurs/build/generated/source/wire/com/squareup/location/Planet.kt"
+    )
     assertThat(notExpected).doesNotExist()
 
     ZipFile(File(fixtureRoot, "geology/build/libs/geology.jar")).use {
@@ -1127,7 +1173,7 @@ class WirePluginTest {
     // Remove the build cache folder if it is leftover from a previous run
     val buildCacheDir = File("src/test/projects/.relocation-build-cache")
     if (buildCacheDir.exists()) {
-        buildCacheDir.deleteRecursively()
+      buildCacheDir.deleteRecursively()
     }
     assertThat(buildCacheDir.exists()).isFalse()
 
@@ -1135,7 +1181,7 @@ class WirePluginTest {
 
     val fixtureRoot = File("src/test/projects/cache-relocation-1")
     val result = gradleRunner.runFixture(fixtureRoot) {
-        withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
+      withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
     }
 
     assertThat(result.task(":generateProtos")).isNotNull()
@@ -1150,12 +1196,14 @@ class WirePluginTest {
 
     val relocatedRoot = File("src/test/projects/cache-relocation-2")
     val relocatedResult = gradleRunner.runFixture(relocatedRoot) {
-        withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
+      withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
     }
 
     assertThat(relocatedResult.task(":generateProtos")).isNotNull()
     assertThat(relocatedResult.output).doesNotContain("Writing com.squareup.geology.Period")
-    assertThat(relocatedResult.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.FROM_CACHE)
+    assertThat(relocatedResult.task(":generateMainProtos")?.outcome).isEqualTo(
+      TaskOutcome.FROM_CACHE
+    )
     assertThat(relocatedResult.task(":generateProtos")?.outcome).isEqualTo(TaskOutcome.UP_TO_DATE)
     assertThat(File(relocatedRoot, generatedProto)).exists()
 
@@ -1306,6 +1354,7 @@ class WirePluginTest {
     // instead of duplicating this.
     private val slash = Path.DIRECTORY_SEPARATOR
     private val otherSlash = if (slash == "/") "\\" else "/"
+
     /**
      * This returns a string where all other slashes are replaced with the slash of the local platform.
      * On Windows, `/` will be replaced with `\`. On other platforms, `\` will be replaced with `/`.

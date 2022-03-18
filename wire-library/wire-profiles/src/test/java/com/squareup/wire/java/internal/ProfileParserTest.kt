@@ -23,6 +23,7 @@ import org.junit.Test
 
 class ProfileParserTest {
   private var location = Location.get("android.wire")
+
   @Test
   fun parseType() {
     val proto =
@@ -43,30 +44,30 @@ class ProfileParserTest {
       |}
       """.trimMargin()
     val expected = ProfileFileElement(
-        location = location,
-        packageName = "squareup.dinosaurs",
-        imports = listOf("squareup/geology/period.proto"),
-        typeConfigs = listOf(
-            TypeConfigElement(
-                location = location.at(7, 1),
-                documentation = "Roar!",
-                type = "squareup.dinosaurs.Dinosaur",
-                target = "com.squareup.dino.Dinosaur",
-                adapter = "com.squareup.dino.Dinosaurs#DINO_ADAPTER"
-            ),
+      location = location,
+      packageName = "squareup.dinosaurs",
+      imports = listOf("squareup/geology/period.proto"),
+      typeConfigs = listOf(
+        TypeConfigElement(
+          location = location.at(7, 1),
+          documentation = "Roar!",
+          type = "squareup.dinosaurs.Dinosaur",
+          target = "com.squareup.dino.Dinosaur",
+          adapter = "com.squareup.dino.Dinosaurs#DINO_ADAPTER"
+        ),
 
-            TypeConfigElement(
-                location = location.at(11, 1),
-                type = "squareup.geology.Period",
-                with = listOf(
-                    OptionElement.create(
-                        "custom_type", OptionElement.Kind.STRING, "duration"
-                    )
-                ),
-                target = "java.time.Period",
-                adapter = "com.squareup.time.Time#PERIOD_ADAPTER"
+        TypeConfigElement(
+          location = location.at(11, 1),
+          type = "squareup.geology.Period",
+          with = listOf(
+            OptionElement.create(
+              "custom_type", OptionElement.Kind.STRING, "duration"
             )
+          ),
+          target = "java.time.Period",
+          adapter = "com.squareup.time.Time#PERIOD_ADAPTER"
         )
+      )
     )
 
     val parser = ProfileParser(location, proto)

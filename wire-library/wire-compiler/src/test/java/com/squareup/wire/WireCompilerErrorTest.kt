@@ -45,64 +45,78 @@ class WireCompilerErrorTest {
       fileNames += fileName
     }
 
-    val compiler = WireCompiler.forArgs(fileSystem, StringWireLogger(),
-        "--proto_path=/source", "--java_out=/target", *fileNames.toTypedArray())
+    val compiler = WireCompiler.forArgs(
+      fileSystem, StringWireLogger(),
+      "--proto_path=/source", "--java_out=/target", *fileNames.toTypedArray()
+    )
     compiler.compile()
   }
 
   @Test
   fun testCorrect() {
-    compile("""
+    compile(
+      """
         |package com.squareup.protos.test;
         |message Simple {
         |  optional int32 f = 1;
         |}
-        """.trimMargin())
+        """.trimMargin()
+    )
     val generatedSource = readFile("/target/com/squareup/protos/test/Simple.java")
     assertThat(generatedSource).contains(
-        "public final class Simple extends Message<Simple, Simple.Builder> {")
+      "public final class Simple extends Message<Simple, Simple.Builder> {"
+    )
   }
 
   @Test
   fun testZeroTag() {
     val e = assertFailsWith<SchemaException> {
-      compile("""
+      compile(
+        """
           |package com.squareup.protos.test;
           |message Simple {
           |  optional int32 f = 0;
           |}
-          """.trimMargin())
+          """.trimMargin()
+      )
     }
-    assertThat(e).hasMessage("""
+    assertThat(e).hasMessage(
+      """
           |tag is out of range: 0
           |  for field f (/source/test_1.proto:3:3)
           |  in message com.squareup.protos.test.Simple (/source/test_1.proto:2:1)
-          """.trimMargin())
+          """.trimMargin()
+    )
   }
 
   @Test
   fun testDuplicateTag() {
     val e = assertFailsWith<SchemaException> {
-      compile("""
+      compile(
+        """
           |package com.squareup.protos.test;
           |message Simple {
           |  optional int32 f = 1;
           |  optional int32 g = 1;
           |}
-          """.trimMargin())
+          """.trimMargin()
+      )
     }
-    assertThat(e).hasMessage("""
+    assertThat(e).hasMessage(
+      """
           |multiple fields share tag 1:
           |  1. f (/source/test_1.proto:3:3)
           |  2. g (/source/test_1.proto:4:3)
           |  for message com.squareup.protos.test.Simple (/source/test_1.proto:2:1)
-          """.trimMargin())
+          """.trimMargin()
+    )
   }
 
   @Test
   fun testEnumNamespaceType() {
     val e = assertFailsWith<SchemaException> {
-      compile("""
+      compile(
+        """
           |package com.squareup.protos.test;
           |message Foo {
           |  enum Bar {
@@ -115,20 +129,24 @@ class WireCompilerErrorTest {
           |    QUIX = 1;
           |  }
           |}
-          """.trimMargin())
+          """.trimMargin()
+      )
     }
-    assertThat(e).hasMessage("""
+    assertThat(e).hasMessage(
+      """
           |multiple enums share constant QUIX:
           |  1. com.squareup.protos.test.Foo.Bar.QUIX (/source/test_1.proto:4:5)
           |  2. com.squareup.protos.test.Foo.Bar2.QUIX (/source/test_1.proto:10:5)
           |  for message com.squareup.protos.test.Foo (/source/test_1.proto:2:1)
-          """.trimMargin())
+          """.trimMargin()
+    )
   }
 
   @Test
   fun testEnumNamespaceTypeSplitAcrossTwoFiles() {
     val e = assertFailsWith<SchemaException> {
-      compile("""
+      compile(
+        """
           |package com.squareup.protos.test;
           |
           |enum Bar {
@@ -136,27 +154,31 @@ class WireCompilerErrorTest {
           |  FOO = 1;
           |}
           """.trimMargin(),
-          """
+        """
           |package com.squareup.protos.test;
           |
           |enum Bar2 {
           |  BAZ = 0;
           |  QUIX = 1;
           |}
-          """.trimMargin())
+          """.trimMargin()
+      )
     }
-    assertThat(e).hasMessage("""
+    assertThat(e).hasMessage(
+      """
         |multiple enums share constant QUIX:
         |  1. com.squareup.protos.test.Bar.QUIX (/source/test_1.proto:4:3)
         |  2. com.squareup.protos.test.Bar2.QUIX (/source/test_2.proto:5:3)
         |  for file /source/test_1.proto
-        """.trimMargin())
+        """.trimMargin()
+    )
   }
 
   @Test
   fun testEnumNamespaceFile() {
     val e = assertFailsWith<SchemaException> {
-      compile("""
+      compile(
+        """
           |package com.squareup.protos.test;
           |
           |enum Bar {
@@ -168,14 +190,17 @@ class WireCompilerErrorTest {
           |  BAZ = 0;
           |  QUIX = 1;
           |}
-          """.trimMargin())
+          """.trimMargin()
+      )
     }
-    assertThat(e).hasMessage("""
+    assertThat(e).hasMessage(
+      """
           |multiple enums share constant QUIX:
           |  1. com.squareup.protos.test.Bar.QUIX (/source/test_1.proto:4:3)
           |  2. com.squareup.protos.test.Bar2.QUIX (/source/test_1.proto:10:3)
           |  for file /source/test_1.proto
-          """.trimMargin())
+          """.trimMargin()
+    )
   }
 
   @Test

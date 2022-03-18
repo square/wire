@@ -27,7 +27,6 @@ import com.squareup.kotlinpoet.UNIT
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
 import java.io.InputStream
-import java.lang.UnsupportedOperationException
 
 object ImplBaseGenerator {
   internal fun addImplBase(
@@ -39,7 +38,7 @@ object ImplBaseGenerator {
       TypeSpec.classBuilder("${service.name}ImplBase")
         .addModifiers(KModifier.ABSTRACT)
         .addSuperinterface(ClassName("io.grpc", "BindableService"))
-        .apply { addImplBaseBody(generator,this, service) }
+        .apply { addImplBaseBody(generator, this, service) }
         .build()
     )
 

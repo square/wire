@@ -34,19 +34,22 @@ class ProfileLoaderTest {
 
   @Test @Throws(IOException::class)
   fun test() {
-    fs.add("source-path/a/b/message1.proto", """
+    fs.add(
+      "source-path/a/b/message1.proto", """
         |package a.b;
         |message Message1 {
         |}
         """.trimMargin()
     )
-    fs.add("source-path/a/b/c/message2.proto", """
+    fs.add(
+      "source-path/a/b/c/message2.proto", """
         |package a.b.c;
         |message Message2 {
         |}
         """.trimMargin()
     )
-    fs.add("source-path/android.wire", """
+    fs.add(
+      "source-path/android.wire", """
         |syntax = "wire2";
         |import "a/b/message1.proto";
         |type a.b.Message1 {
@@ -54,7 +57,8 @@ class ProfileLoaderTest {
         |}
         """.trimMargin()
     )
-    fs.add("source-path/a/b/c/android.wire", """
+    fs.add(
+      "source-path/a/b/c/android.wire", """
         |syntax = "wire2";
         |import "a/b/c/message2.proto";
         |package a.b.c;
@@ -69,23 +73,24 @@ class ProfileLoaderTest {
     val message1 = ProtoType.get("a.b.Message1")
     assertThat(profile.javaTarget(message1)).isEqualTo(ClassName.OBJECT)
     assertThat(profile.getAdapter(message1))
-        .isEqualTo(AdapterConstant("com.example.Message1#OBJECT_ADAPTER"))
+      .isEqualTo(AdapterConstant("com.example.Message1#OBJECT_ADAPTER"))
 
     val message2 = ProtoType.get("a.b.c.Message2")
     assertThat(profile.javaTarget(message2))
-        .isEqualTo(ClassName.get(String::class.java))
+      .isEqualTo(ClassName.get(String::class.java))
     assertThat(profile.getAdapter(message2))
-        .isEqualTo(AdapterConstant("com.example.Message2#STRING_ADAPTER"))
+      .isEqualTo(AdapterConstant("com.example.Message2#STRING_ADAPTER"))
   }
 
   @Test @Throws(IOException::class)
   fun profileInZip() {
-    fs.addZip("/source/protos.zip",
-        "a/b/message.proto" to """
+    fs.addZip(
+      "/source/protos.zip",
+      "a/b/message.proto" to """
           |package a.b;
           |message Message {}
           """.trimMargin(),
-        "a/b/android.wire" to """
+      "a/b/android.wire" to """
           |syntax = "wire2";
           |package a.b;
           |import "a/b/message.proto";
@@ -96,25 +101,27 @@ class ProfileLoaderTest {
     )
 
     val profile = loadAndLinkProfile(
-        "android",
-        sourcePath = listOf(Location.get("/source/protos.zip"))
+      "android",
+      sourcePath = listOf(Location.get("/source/protos.zip"))
     )
 
     val message = ProtoType.get("a.b.Message")
     assertThat(profile.javaTarget(message)).isEqualTo(ClassName.OBJECT)
     assertThat(profile.getAdapter(message))
-        .isEqualTo(AdapterConstant("com.example.Message#ADAPTER"))
+      .isEqualTo(AdapterConstant("com.example.Message#ADAPTER"))
   }
 
   @Test
   fun unknownType() {
-    fs.add("source-path/a/b/message.proto", """
+    fs.add(
+      "source-path/a/b/message.proto", """
         |package a.b;
         |message Message {
         |}
         """.trimMargin()
     )
-    fs.add("source-path/a/b/android.wire", """
+    fs.add(
+      "source-path/a/b/android.wire", """
         |syntax = "wire2";
         |type a.b.Message2 {
         |  target java.lang.Object using com.example.Message#OBJECT_ADAPTER;
@@ -128,13 +135,15 @@ class ProfileLoaderTest {
 
   @Test
   fun missingImport() {
-    fs.add("source-path/a/b/message.proto", """
+    fs.add(
+      "source-path/a/b/message.proto", """
         |package a.b;
         |message Message {
         |}
         """.trimMargin()
     )
-    fs.add("source-path/a/b/android.wire", """
+    fs.add(
+      "source-path/a/b/android.wire", """
         |syntax = "wire2";
         |type a.b.Message {
         |  target java.lang.Object using com.example.Message#OBJECT_ADAPTER;
@@ -145,8 +154,10 @@ class ProfileLoaderTest {
       loadAndLinkProfile("android")
       fail()
     } catch (expected: SchemaException) {
-      assertThat(expected).hasMessage("a/b/android.wire needs to import a/b/message.proto" +
-          " (source-path/a/b/android.wire:2:1)")
+      assertThat(expected).hasMessage(
+        "a/b/android.wire needs to import a/b/message.proto" +
+          " (source-path/a/b/android.wire:2:1)"
+      )
     }
   }
 

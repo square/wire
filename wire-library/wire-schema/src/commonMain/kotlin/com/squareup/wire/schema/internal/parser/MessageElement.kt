@@ -48,7 +48,9 @@ data class MessageElement(
       }
     }
 
-    val allFieldsSorted = (fields + oneOfs.flatMap { it.fields }).sortedWith(compareBy({ it.location.line }, { it.location.column }))
+    val allFieldsSorted = (fields + oneOfs.flatMap { it.fields }).sortedWith(
+      compareBy({ it.location.line }, { it.location.column })
+    )
 
     val getOneOfForField = { field: FieldElement -> oneOfs.find { it.fields.contains(field) } }
 

@@ -30,58 +30,70 @@ class LinkerTest {
 
   @Test
   fun usedProtoPathFileIncludedInSchema() {
-    fs.add("source-path/a.proto", """
+    fs.add(
+      "source-path/a.proto", """
             |import "b.proto";
             |message A {
             |  optional B b = 1;
             |}
-            """.trimMargin())
-    fs.add("proto-path/b.proto", """
+            """.trimMargin()
+    )
+    fs.add(
+      "proto-path/b.proto", """
             |message B {
             |}
-            """.trimMargin())
+            """.trimMargin()
+    )
     val schema = loadAndLinkSchema()
 
     assertThat(schema.protoFiles.map { it.location }).containsExactly(
-        Location.get("source-path", "a.proto"),
-        Location.get("proto-path", "b.proto"),
-        Location.get("google/protobuf/descriptor.proto")
+      Location.get("source-path", "a.proto"),
+      Location.get("proto-path", "b.proto"),
+      Location.get("google/protobuf/descriptor.proto")
     )
   }
 
   @Test
   fun unusedProtoPathFileExcludedFromSchema() {
-    fs.add("source-path/a.proto", """
+    fs.add(
+      "source-path/a.proto", """
             |import "b.proto";
             |message A {
             |}
-            """.trimMargin())
-    fs.add("proto-path/b.proto", """
+            """.trimMargin()
+    )
+    fs.add(
+      "proto-path/b.proto", """
             |message B {
             |}
-            """.trimMargin())
+            """.trimMargin()
+    )
     val schema = loadAndLinkSchema()
 
     assertThat(schema.protoFiles.map { it.location }).containsExactly(
-        Location.get("source-path", "a.proto"),
-        Location.get("google/protobuf/descriptor.proto")
+      Location.get("source-path", "a.proto"),
+      Location.get("google/protobuf/descriptor.proto")
     )
   }
 
   @Test
   fun onlyProtoPathTypesAreIncludedInSchema() {
-    fs.add("source-path/a.proto", """
+    fs.add(
+      "source-path/a.proto", """
             |import "b.proto";
             |message A {
             |  optional B b = 1;
             |}
-            """.trimMargin())
-    fs.add("proto-path/b.proto", """
+            """.trimMargin()
+    )
+    fs.add(
+      "proto-path/b.proto", """
             |message B {
             |}
             |message C {
             |}
-            """.trimMargin())
+            """.trimMargin()
+    )
     val schema = loadAndLinkSchema()
 
     assertThat(schema.getType("B")).isNotNull()
@@ -90,13 +102,16 @@ class LinkerTest {
 
   @Test
   fun protoPathMembersAreIncludedInSchemaIfTheyAreUsedInOptions() {
-    fs.add("source-path/a.proto", """
+    fs.add(
+      "source-path/a.proto", """
              |import "formatting_options.proto";
              |message A {
              |  optional string s = 1 [formatting_options.language.name = "English"];
              |}
-            """.trimMargin())
-    fs.add("proto-path/formatting_options.proto", """
+            """.trimMargin()
+    )
+    fs.add(
+      "proto-path/formatting_options.proto", """
              |import "google/protobuf/descriptor.proto";
              |
              |message FormattingOptions {
@@ -118,7 +133,8 @@ class LinkerTest {
              |  TITLE_CASE = 2;
              |  SENTENCE_CASE = 3;
              |}
-            """.trimMargin())
+            """.trimMargin()
+    )
     val schema = loadAndLinkSchema()
 
     assertThat(schema.getType("FormattingOptions")).isNotNull()
@@ -135,19 +151,23 @@ class LinkerTest {
 
   @Test
   fun protoPathMembersAreNotIncludedInSchemaIfTheyAreNotUsedInOptions() {
-    fs.add("source-path/a.proto", """
+    fs.add(
+      "source-path/a.proto", """
             |import "b.proto";
             |message A {
             |  optional B b = 1;
             |}
-            """.trimMargin())
-    fs.add("proto-path/b.proto", """
+            """.trimMargin()
+    )
+    fs.add(
+      "proto-path/b.proto", """
             |message B {
             |  optional C c = 1;
             |}
             |message C {
             |}
-            """.trimMargin())
+            """.trimMargin()
+    )
     val schema = loadAndLinkSchema()
 
     assertThat(schema.getType("B")).isNotNull()
@@ -157,17 +177,21 @@ class LinkerTest {
 
   @Test
   fun javaPackageIsSetOnProtoPathFiles() {
-    fs.add("source-path/a.proto", """
+    fs.add(
+      "source-path/a.proto", """
             |import "b.proto";
             |message A {
             |  optional B b = 1;
             |}
-            """.trimMargin())
-    fs.add("proto-path/b.proto", """
+            """.trimMargin()
+    )
+    fs.add(
+      "proto-path/b.proto", """
             |option java_package = "com.squareup.b";
             |message B {
             |}
-            """.trimMargin())
+            """.trimMargin()
+    )
     val schema = loadAndLinkSchema()
 
     assertThat(schema.protoFile("b.proto")!!.javaPackage()).isEqualTo("com.squareup.b")
@@ -175,7 +199,8 @@ class LinkerTest {
 
   @Test
   fun descriptorProtoIsLinked() {
-    fs.add("source-path/a.proto", """
+    fs.add(
+      "source-path/a.proto", """
              |import "google/protobuf/descriptor.proto";
              |
              |enum Roshambo {
@@ -183,7 +208,8 @@ class LinkerTest {
              |  SCISSORS = 2;
              |  PAPER = 3;
              |}
-            """.trimMargin())
+            """.trimMargin()
+    )
     fs.add("proto-path/b.proto", "")
     val schema = loadAndLinkSchema()
 

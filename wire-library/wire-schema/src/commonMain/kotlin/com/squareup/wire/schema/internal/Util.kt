@@ -40,8 +40,8 @@ fun StringBuilder.appendDocumentation(
   }
   for (line in lines) {
     append("// ")
-        .append(line)
-        .append('\n')
+      .append(line)
+      .append('\n')
   }
 }
 
@@ -51,8 +51,8 @@ internal fun StringBuilder.appendOptions(
   val count = options.size
   if (count == 1) {
     append('[')
-        .append(options[0].toSchema())
-        .append(']')
+      .append(options[0].toSchema())
+      .append(']')
     return
   }
   append("[\n")
@@ -73,8 +73,8 @@ fun StringBuilder.appendIndented(
   }
   for (line in lines) {
     append("  ")
-        .append(line)
-        .append('\n')
+      .append(line)
+      .append('\n')
   }
 }
 
@@ -87,7 +87,7 @@ private const val RESERVED_TAG_VALUE_END = 19999
 /** True if the supplied value is in the valid tag range and not reserved.  */
 internal fun Int.isValidTag() =
   this in MIN_TAG_VALUE until RESERVED_TAG_VALUE_START ||
-      this in (RESERVED_TAG_VALUE_END + 1) until MAX_TAG_VALUE + 1
+    this in (RESERVED_TAG_VALUE_END + 1) until MAX_TAG_VALUE + 1
 
 internal expect fun Char.isDigit(): Boolean
 
@@ -111,12 +111,12 @@ fun Schema.withStubs(typesToStub: Set<ProtoType>): Schema {
   }
   return Schema(protoFiles.map { protoFile ->
     protoFile.copy(
-        types = protoFile.types.map { type ->
-          if (type.type in typesToStub) type.asStub() else type
-        },
-        services = protoFile.services.map { service ->
-          if (service.type in typesToStub) service.asStub() else service
-        }
+      types = protoFile.types.map { type ->
+        if (type.type in typesToStub) type.asStub() else type
+      },
+      services = protoFile.services.map { service ->
+        if (service.type in typesToStub) service.asStub() else service
+      }
     )
   })
 }
@@ -127,19 +127,19 @@ private fun Type.asStub(): Type = when {
   type.toString().startsWith("google.protobuf.") -> this
 
   this is MessageType -> copy(
-      declaredFields = emptyList(),
-      extensionFields = mutableListOf(),
-      nestedTypes = nestedTypes.map { it.asStub() },
-      options = Options(Options.MESSAGE_OPTIONS, emptyList())
+    declaredFields = emptyList(),
+    extensionFields = mutableListOf(),
+    nestedTypes = nestedTypes.map { it.asStub() },
+    options = Options(Options.MESSAGE_OPTIONS, emptyList())
   )
 
   this is EnumType -> copy(
-      constants = emptyList(),
-      options = Options(Options.ENUM_OPTIONS, emptyList())
+    constants = emptyList(),
+    options = Options(Options.ENUM_OPTIONS, emptyList())
   )
 
   this is EnclosingType -> copy(
-      nestedTypes = nestedTypes.map { it.asStub() }
+    nestedTypes = nestedTypes.map { it.asStub() }
   )
 
   else -> throw AssertionError("Unknown type $type")
@@ -147,8 +147,8 @@ private fun Type.asStub(): Type = when {
 
 /** Return a copy of this service with all possible type references removed. */
 private fun Service.asStub() = copy(
-    rpcs = emptyList(),
-    options = Options(Options.SERVICE_OPTIONS, emptyList())
+  rpcs = emptyList(),
+  options = Options(Options.SERVICE_OPTIONS, emptyList())
 )
 
 fun Path.withUnixSlashes(): Path {

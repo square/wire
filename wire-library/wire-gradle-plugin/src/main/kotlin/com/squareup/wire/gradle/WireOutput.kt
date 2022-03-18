@@ -54,15 +54,15 @@ open class JavaOutput @Inject constructor() : WireOutput() {
 
   override fun toTarget(outputDirectory: String): JavaTarget {
     return JavaTarget(
-        includes = includes ?: listOf("*"),
-        excludes = excludes ?: listOf(),
-        exclusive = exclusive,
-        outDirectory = outputDirectory,
-        android = android,
-        androidAnnotations = androidAnnotations,
-        compact = compact,
-        emitDeclaredOptions = emitDeclaredOptions,
-        emitAppliedOptions = emitAppliedOptions
+      includes = includes ?: listOf("*"),
+      excludes = excludes ?: listOf(),
+      exclusive = exclusive,
+      outDirectory = outputDirectory,
+      android = android,
+      androidAnnotations = androidAnnotations,
+      compact = compact,
+      emitDeclaredOptions = emitDeclaredOptions,
+      emitAppliedOptions = emitAppliedOptions
     )
   }
 }
@@ -84,29 +84,34 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
 
   override fun toTarget(outputDirectory: String): KotlinTarget {
     val rpcCallStyle = RpcCallStyle.values()
-        .singleOrNull { it.toString().equals(rpcCallStyle, ignoreCase = true) }
-        ?: throw IllegalArgumentException(
-            "Unknown rpcCallStyle $rpcCallStyle. Valid values: ${RpcCallStyle.values().contentToString()}")
+      .singleOrNull { it.toString().equals(rpcCallStyle, ignoreCase = true) }
+      ?: throw IllegalArgumentException(
+        "Unknown rpcCallStyle $rpcCallStyle. Valid values: ${
+          RpcCallStyle.values()
+            .contentToString()
+        }"
+      )
     val rpcRole = RpcRole.values()
-        .singleOrNull { it.toString().equals(rpcRole, ignoreCase = true) }
-        ?: throw IllegalArgumentException(
-            "Unknown rpcRole $rpcRole. Valid values: ${RpcRole.values().contentToString()}")
+      .singleOrNull { it.toString().equals(rpcRole, ignoreCase = true) }
+      ?: throw IllegalArgumentException(
+        "Unknown rpcRole $rpcRole. Valid values: ${RpcRole.values().contentToString()}"
+      )
 
     return KotlinTarget(
-        includes = includes ?: listOf("*"),
-        excludes = excludes ?: listOf(),
-        exclusive = exclusive,
-        outDirectory = outputDirectory,
-        android = android,
-        javaInterop = javaInterop,
-        emitDeclaredOptions = emitDeclaredOptions,
-        emitAppliedOptions = emitAppliedOptions,
-        rpcCallStyle = rpcCallStyle,
-        rpcRole = rpcRole,
-        singleMethodServices = singleMethodServices,
-        boxOneOfsMinSize = boxOneOfsMinSize,
-        grpcServerCompatible = grpcServerCompatible,
-        nameSuffix = nameSuffix,
+      includes = includes ?: listOf("*"),
+      excludes = excludes ?: listOf(),
+      exclusive = exclusive,
+      outDirectory = outputDirectory,
+      android = android,
+      javaInterop = javaInterop,
+      emitDeclaredOptions = emitDeclaredOptions,
+      emitAppliedOptions = emitAppliedOptions,
+      rpcCallStyle = rpcCallStyle,
+      rpcRole = rpcRole,
+      singleMethodServices = singleMethodServices,
+      boxOneOfsMinSize = boxOneOfsMinSize,
+      grpcServerCompatible = grpcServerCompatible,
+      nameSuffix = nameSuffix,
     )
   }
 }
@@ -121,11 +126,13 @@ open class CustomOutput @Inject constructor() : WireOutput() {
   var includes: List<String>? = null
   var excludes: List<String>? = null
   var exclusive: Boolean = true
+
   /**
    * Assign the custom handler instance. If you use this, your custom handler should implement
    * [java.io.Serializable] (which Gradle uses as a cache key).
    */
   var customHandler: CustomHandlerBeta? = null
+
   /**
    * Assign the custom handler by name. If you use a class name, that class must have a no-arguments
    * constructor.
@@ -137,11 +144,11 @@ open class CustomOutput @Inject constructor() : WireOutput() {
       "customHandlerClass or customHandler required"
     }
     return CustomTargetBeta(
-        includes = includes ?: listOf("*"),
-        excludes = excludes ?: listOf(),
-        exclusive = exclusive,
-        outDirectory = outputDirectory,
-        customHandler = customHandler ?: newCustomHandler(customHandlerClass!!)
+      includes = includes ?: listOf("*"),
+      excludes = excludes ?: listOf(),
+      exclusive = exclusive,
+      outDirectory = outputDirectory,
+      customHandler = customHandler ?: newCustomHandler(customHandlerClass!!)
     )
   }
 }

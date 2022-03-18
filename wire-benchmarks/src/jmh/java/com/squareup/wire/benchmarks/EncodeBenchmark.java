@@ -43,6 +43,22 @@ import static org.openjdk.jmh.annotations.Mode.SampleTime;
 public class EncodeBenchmark {
   Buffer buffer = new Buffer();
 
+  /**
+   * Run encode for 10 seconds to capture a profile.
+   */
+  public static void main(String[] args) throws IOException {
+    long now = System.nanoTime();
+    long done = now + TimeUnit.SECONDS.toNanos(20L);
+    EncodeBenchmark encodeBenchmark = new EncodeBenchmark();
+    encodeBenchmark.setup();
+    while (System.nanoTime() < done) {
+      System.out.println(".");
+      for (int i = 0; i < 1_000_000; i++) {
+        encodeBenchmark.wire4x();
+      }
+    }
+  }
+
   @Setup public void setup() {
   }
 
@@ -62,19 +78,5 @@ public class EncodeBenchmark {
   @Benchmark public void protobuf() throws IOException {
     SampleData.newMediumValueProtobuf().writeTo(buffer.outputStream());
     buffer.clear();
-  }
-
-  /** Run encode for 10 seconds to capture a profile. */
-  public static void main(String[] args) throws IOException {
-    long now = System.nanoTime();
-    long done = now + TimeUnit.SECONDS.toNanos(20L);
-    EncodeBenchmark encodeBenchmark = new EncodeBenchmark();
-    encodeBenchmark.setup();
-    while (System.nanoTime() < done) {
-      System.out.println(".");
-      for (int i = 0; i < 1_000_000; i++) {
-        encodeBenchmark.wire4x();
-      }
-    }
   }
 }

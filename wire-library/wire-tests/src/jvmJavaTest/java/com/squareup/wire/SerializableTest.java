@@ -29,6 +29,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SerializableTest {
 
+  private static ByteString serialize(Message message) throws Exception {
+    Buffer buffer = new Buffer();
+    ObjectOutputStream stream = new ObjectOutputStream(buffer.outputStream());
+    stream.writeObject(message);
+    stream.flush();
+    return buffer.readByteString();
+  }
+
+  public static Object deserialize(ByteString data) throws Exception {
+    Buffer buffer = new Buffer().write(data);
+    ObjectInputStream stream = new ObjectInputStream(buffer.inputStream());
+    return stream.readObject();
+  }
+
   @Test public void simple() throws Exception {
     SimpleMessage message = new SimpleMessage.Builder().required_int32(42).build();
     assertThat(deserialize(serialize(message))).isEqualTo(message);
@@ -72,19 +86,5 @@ public class SerializableTest {
     );
     assertThat(deserialize(goldenSerialized)).isEqualTo(goldenValue);
     assertThat(serialize(goldenValue)).isEqualTo(goldenSerialized);
-  }
-
-  private static ByteString serialize(Message message) throws Exception {
-    Buffer buffer = new Buffer();
-    ObjectOutputStream stream = new ObjectOutputStream(buffer.outputStream());
-    stream.writeObject(message);
-    stream.flush();
-    return buffer.readByteString();
-  }
-
-  public static Object deserialize(ByteString data) throws Exception {
-    Buffer buffer = new Buffer().write(data);
-    ObjectInputStream stream = new ObjectInputStream(buffer.inputStream());
-    return stream.readObject();
   }
 }

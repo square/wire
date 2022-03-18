@@ -155,8 +155,8 @@ class ReverseProtoWriter {
           // Emit a 11-bit character with 2 bytes.
           require(2)
           /* ktlint-disable no-multi-spaces */
-          array[--arrayLimit] = (c        and 0x3f or 0x80).toByte() // 10xxxxxx
-          array[--arrayLimit] = (c shr  6          or 0xc0).toByte() // 110xxxxx
+          array[--arrayLimit] = (c and 0x3f or 0x80).toByte() // 10xxxxxx
+          array[--arrayLimit] = (c shr 6 or 0xc0).toByte() // 110xxxxx
           /* ktlint-enable no-multi-spaces */
         }
 
@@ -164,9 +164,9 @@ class ReverseProtoWriter {
           // Emit a 16-bit character with 3 bytes.
           require(3)
           /* ktlint-disable no-multi-spaces */
-          array[--arrayLimit] = (c        and 0x3f or 0x80).toByte() // 10xxxxxx
-          array[--arrayLimit] = (c shr  6 and 0x3f or 0x80).toByte() // 10xxxxxx
-          array[--arrayLimit] = (c shr 12          or 0xe0).toByte() // 1110xxxx
+          array[--arrayLimit] = (c and 0x3f or 0x80).toByte() // 10xxxxxx
+          array[--arrayLimit] = (c shr 6 and 0x3f or 0x80).toByte() // 10xxxxxx
+          array[--arrayLimit] = (c shr 12 or 0xe0).toByte() // 1110xxxx
           /* ktlint-enable no-multi-spaces */
         }
 
@@ -188,10 +188,10 @@ class ReverseProtoWriter {
             // Emit a 21-bit character with 4 bytes.
             require(4)
             /* ktlint-disable no-multi-spaces */
-            array[--arrayLimit] = (codePoint        and 0x3f or 0x80).toByte() // 10yyyyyy
-            array[--arrayLimit] = (codePoint shr  6 and 0x3f or 0x80).toByte() // 10xxyyyy
+            array[--arrayLimit] = (codePoint and 0x3f or 0x80).toByte() // 10yyyyyy
+            array[--arrayLimit] = (codePoint shr 6 and 0x3f or 0x80).toByte() // 10xxyyyy
             array[--arrayLimit] = (codePoint shr 12 and 0x3f or 0x80).toByte() // 10xxxxxx
-            array[--arrayLimit] = (codePoint shr 18          or 0xf0).toByte() // 11110xxx
+            array[--arrayLimit] = (codePoint shr 18 or 0xf0).toByte() // 11110xxx
             /* ktlint-enable no-multi-spaces */
           }
         }
@@ -250,10 +250,10 @@ class ReverseProtoWriter {
     require(4)
     arrayLimit -= 4
     var offset = arrayLimit
-    array[offset++] = (value         and 0xff).toByte() // ktlint-disable no-multi-spaces
-    array[offset++] = (value ushr  8 and 0xff).toByte() // ktlint-disable no-multi-spaces
+    array[offset++] = (value and 0xff).toByte() // ktlint-disable no-multi-spaces
+    array[offset++] = (value ushr 8 and 0xff).toByte() // ktlint-disable no-multi-spaces
     array[offset++] = (value ushr 16 and 0xff).toByte()
-    array[offset  ] = (value ushr 24 and 0xff).toByte() // ktlint-disable no-multi-spaces
+    array[offset] = (value ushr 24 and 0xff).toByte() // ktlint-disable no-multi-spaces
   }
 
   /** Write a little-endian 64-bit integer. */
@@ -261,14 +261,14 @@ class ReverseProtoWriter {
     require(8)
     arrayLimit -= 8
     var offset = arrayLimit
-    array[offset++] = (value         and 0xffL).toByte() // ktlint-disable no-multi-spaces
-    array[offset++] = (value ushr  8 and 0xffL).toByte() // ktlint-disable no-multi-spaces
+    array[offset++] = (value and 0xffL).toByte() // ktlint-disable no-multi-spaces
+    array[offset++] = (value ushr 8 and 0xffL).toByte() // ktlint-disable no-multi-spaces
     array[offset++] = (value ushr 16 and 0xffL).toByte()
     array[offset++] = (value ushr 24 and 0xffL).toByte()
     array[offset++] = (value ushr 32 and 0xffL).toByte()
     array[offset++] = (value ushr 40 and 0xffL).toByte()
     array[offset++] = (value ushr 48 and 0xffL).toByte()
-    array[offset  ] = (value ushr 56 and 0xffL).toByte() // ktlint-disable no-multi-spaces
+    array[offset] = (value ushr 56 and 0xffL).toByte() // ktlint-disable no-multi-spaces
   }
 
   private companion object {

@@ -21,6 +21,10 @@ import java.util.Arrays;
 import okio.ByteString;
 
 public final class Sample {
+  public static void main(String[] args) throws IOException {
+    new Sample().run();
+  }
+
   public void run() throws IOException {
     // Create an immutable value object with the Builder API.
     Dinosaur stegosaurus = new Dinosaur.Builder()
@@ -46,9 +50,5 @@ public final class Sample {
     // Print both of our dinosaurs.
     System.out.println(stegosaurus.name + " is " + stegosaurus.length_meters + " meters long!");
     System.out.println(tyrannosaurus.name + " weighs " + tyrannosaurus.mass_kilograms + " kilos!");
-  }
-
-  public static void main(String[] args) throws IOException {
-    new Sample().run();
   }
 }

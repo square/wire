@@ -39,7 +39,7 @@ internal class AnyMessageJsonAdapter(
     writer.value(value.typeUrl)
 
     val protoAdapter = typeUrlToAdapter[value.typeUrl]
-        ?: throw JsonDataException("Cannot find type for url: ${value.typeUrl} in ${writer.path}")
+      ?: throw JsonDataException("Cannot find type for url: ${value.typeUrl} in ${writer.path}")
 
     val delegate = moshi.adapter(protoAdapter.type!!.java) as JsonAdapter<Message<*, *>>
 
@@ -57,10 +57,10 @@ internal class AnyMessageJsonAdapter(
     }
 
     val typeUrl = reader.peekJson().use { it.readStringNamed("@type") }
-        ?: throw JsonDataException("expected @type in ${reader.path}")
+      ?: throw JsonDataException("expected @type in ${reader.path}")
 
     val protoAdapter = typeUrlToAdapter[typeUrl]
-        ?: throw JsonDataException("Cannot resolve type: $typeUrl in ${reader.path}")
+      ?: throw JsonDataException("Cannot resolve type: $typeUrl in ${reader.path}")
 
     val delegate = moshi.adapter(protoAdapter.type!!.java) as JsonAdapter<Message<*, *>>
 

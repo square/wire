@@ -29,10 +29,12 @@ abstract class VersionWriterTask : DefaultTask() {
   fun writeVersionFile() {
     val outputFile = outputDir.get().asFile.resolve("com/squareup/wire/Version.kt")
     outputFile.parentFile.mkdirs()
-    outputFile.writeText("""
+    outputFile.writeText(
+      """
       |package com.squareup.wire
       |
       |val VERSION = "$version"
-      |""".trimMargin())
+      |""".trimMargin()
+    )
   }
 }

@@ -111,7 +111,8 @@ class SchemaReflector(
     val allProtoFiles = allDependencies(protoFile)
     val schemaEncoder = SchemaEncoder(schema)
     return ServerReflectionResponse(
-      file_descriptor_response = FileDescriptorResponse(allProtoFiles.map { schemaEncoder.encode(it) })
+      file_descriptor_response = FileDescriptorResponse(
+        allProtoFiles.map { schemaEncoder.encode(it) })
     )
   }
 
@@ -140,7 +141,8 @@ class SchemaReflector(
     val allProtoFiles = allDependencies(protoFile)
     val schemaEncoder = SchemaEncoder(schema)
     return ServerReflectionResponse(
-      file_descriptor_response = FileDescriptorResponse(allProtoFiles.map { schemaEncoder.encode(it) })
+      file_descriptor_response = FileDescriptorResponse(
+        allProtoFiles.map { schemaEncoder.encode(it) })
     )
   }
 
@@ -159,7 +161,8 @@ class SchemaReflector(
     val allProtoFiles = allDependencies(protoFile)
     val schemaEncoder = SchemaEncoder(schema)
     return ServerReflectionResponse(
-      file_descriptor_response = FileDescriptorResponse(allProtoFiles.map { schemaEncoder.encode(it) })
+      file_descriptor_response = FileDescriptorResponse(
+        allProtoFiles.map { schemaEncoder.encode(it) })
     )
   }
 
@@ -198,7 +201,11 @@ class SchemaReflector(
     return result
   }
 
-  private fun collectAllDependencies(protoFile: ProtoFile, visited: MutableSet<String>, result: MutableList<ProtoFile>) {
+  private fun collectAllDependencies(
+    protoFile: ProtoFile,
+    visited: MutableSet<String>,
+    result: MutableList<ProtoFile>
+  ) {
     if (visited.add(protoFile.name())) {
       result.add(protoFile)
       protoFile.imports.forEach {

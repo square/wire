@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import kotlin.KotlinNullPointerException;
 import okio.Buffer;
 import okio.ByteString;
 import okio.ForwardingSource;
@@ -37,6 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class TestAllTypes {
+
+  private final AllTypes allTypes = createAllTypes();
+  private final ProtoAdapter<AllTypes> adapter = AllTypes.ADAPTER;
 
   // Return a two-element list with a given repeated value
   private static <T> List<T> list(T x) {
@@ -128,9 +130,6 @@ public class TestAllTypes {
         .ext_rep_bool(list(true, numRepeated))
         .ext_pack_bool(list(true, numRepeated));
   }
-
-  private final AllTypes allTypes = createAllTypes();
-  private final ProtoAdapter<AllTypes> adapter = AllTypes.ADAPTER;
 
   private AllTypes createAllTypes(int numRepeated) {
     return getBuilder(numRepeated).build();
@@ -386,21 +385,6 @@ public class TestAllTypes {
     assertThat(allTypes.ext_pack_bool).isEqualTo(list(true, 50));
   }
 
-  /** A source that returns 1, 2, 3, or 4 bytes at a time. */
-  private static class SlowSource extends ForwardingSource {
-    private long pos;
-
-    SlowSource(Source delegate) {
-      super(delegate);
-    }
-
-    @Override public long read(Buffer sink, long byteCount) throws IOException {
-      long bytesToReturn = Math.min(byteCount, (pos % 4) + 1);
-      pos += bytesToReturn;
-      return super.read(sink, byteCount);
-    }
-  }
-
   @Test
   public void testReadFromSlowSource() throws IOException {
     byte[] data = adapter.encode(allTypes);
@@ -463,7 +447,7 @@ public class TestAllTypes {
   public void testDefaults() throws Exception {
     assertThat(AllTypes.DEFAULT_DEFAULT_BOOL).isEqualTo((Object) true);
     // original: "<c-cedilla>ok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11g<u umlaut>zel"
-    assertThat(AllTypes.DEFAULT_DEFAULT_STRING).isEqualTo( "çok\u0007\b\f\n\r\t\u000b\u0001\u0001"
+    assertThat(AllTypes.DEFAULT_DEFAULT_STRING).isEqualTo("çok\u0007\b\f\n\r\t\u000b\u0001\u0001"
         + "\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel");
     assertThat(new String(AllTypes.DEFAULT_DEFAULT_BYTES.toByteArray(), "ISO-8859-1")).isEqualTo(
         "çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001"
@@ -479,7 +463,7 @@ public class TestAllTypes {
 
   @Test
   public void testSkipGroup() throws IOException {
-    byte[] data =  new byte[TestAllTypesData.expectedOutput.size() + 27];
+    byte[] data = new byte[TestAllTypesData.expectedOutput.size() + 27];
     System.arraycopy(TestAllTypesData.expectedOutput.toByteArray(), 0, data, 0, 17);
     int index = 17;
     data[index++] = (byte) 0xa3; // start group, tag = 20, type = 3
@@ -565,6 +549,23 @@ public class TestAllTypes {
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("Parameter specified as non-null is null: method "
           + "com.squareup.wire.internal.Internal__InternalKt.checkElementsNotNull, parameter list");
+    }
+  }
+
+  /**
+   * A source that returns 1, 2, 3, or 4 bytes at a time.
+   */
+  private static class SlowSource extends ForwardingSource {
+    private long pos;
+
+    SlowSource(Source delegate) {
+      super(delegate);
+    }
+
+    @Override public long read(Buffer sink, long byteCount) throws IOException {
+      long bytesToReturn = Math.min(byteCount, (pos % 4) + 1);
+      pos += bytesToReturn;
+      return super.read(sink, byteCount);
     }
   }
 }

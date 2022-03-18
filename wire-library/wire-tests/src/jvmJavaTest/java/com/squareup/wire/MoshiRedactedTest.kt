@@ -33,7 +33,7 @@ class MoshiRedactedTest {
     val redacted = RedactedFields.Builder().a("a").b("b").c("c").build()
     val jsonAdapter = moshi.adapter(RedactedFields::class.java).redacting()
     assertThat(jsonAdapter.toJson(redacted))
-        .isEqualTo("""{"b":"b","c":"c","__redacted_fields":["a"]}""")
+      .isEqualTo("""{"b":"b","c":"c","__redacted_fields":["a"]}""")
   }
 
   @Test fun redactedButSkipped() {
@@ -44,28 +44,30 @@ class MoshiRedactedTest {
 
   @Test fun redactedChild() {
     val redacted = RedactedChild.Builder()
-        .a("a")
-        .b(RedactedFields.Builder()
-            .a("a")
-            .b("b")
-            .c("c")
-            .build()
-        ).c(NotRedacted.Builder()
-            .a("a")
-            .b("b")
-            .build()
-        ).build()
+      .a("a")
+      .b(
+        RedactedFields.Builder()
+          .a("a")
+          .b("b")
+          .c("c")
+          .build()
+      ).c(
+        NotRedacted.Builder()
+          .a("a")
+          .b("b")
+          .build()
+      ).build()
 
     val jsonAdapter = moshi.adapter(RedactedChild::class.java).redacting()
     assertThat(jsonAdapter.toJson(redacted)).isEqualTo(
-        """{"a":"a","b":{"b":"b","c":"c","__redacted_fields":["a"]},"c":{"a":"a","b":"b"}}"""
+      """{"a":"a","b":{"b":"b","c":"c","__redacted_fields":["a"]},"c":{"a":"a","b":"b"}}"""
     )
   }
 
   companion object {
     private val moshi = Moshi.Builder()
-        .add(WireJsonAdapterFactory())
-        .build()
+      .add(WireJsonAdapterFactory())
+      .build()
   }
 }
 

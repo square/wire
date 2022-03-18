@@ -47,7 +47,8 @@ fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
   for (messageField in messageType.declaredFields) {
     val wireField = messageField.getAnnotation(WireField::class.java)
     if (wireField != null) {
-      fields[wireField.tag] = FieldBinding(wireField, messageType, messageField, builderType, writeIdentityValues)
+      fields[wireField.tag] =
+        FieldBinding(wireField, messageType, messageField, builderType, writeIdentityValues)
     } else if (messageField.type == OneOf::class.java) {
       for (key in getKeys<M, B>(messageField)) {
         fields[key.tag] = OneOfBinding(messageField, builderType, key, writeIdentityValues)
@@ -95,7 +96,7 @@ private fun <M : Message<M, B>, B : Message.Builder<M, B>> getBuilderType(
   return runCatching {
     Class.forName("${messageType.name}\$Builder") as Class<B>
   }
-      .getOrNull() ?: KotlinConstructorBuilder::class.java as Class<B>
+    .getOrNull() ?: KotlinConstructorBuilder::class.java as Class<B>
 }
 
 private class RuntimeMessageBinding<M : Message<M, B>, B : Message.Builder<M, B>>(
@@ -105,7 +106,7 @@ private class RuntimeMessageBinding<M : Message<M, B>, B : Message.Builder<M, B>
   override val fields: Map<Int, FieldOrOneOfBinding<M, B>>,
   override val typeUrl: String?,
   override val syntax: Syntax
-)  : MessageBinding<M, B> {
+) : MessageBinding<M, B> {
 
   override fun unknownFields(message: M) = message.unknownFields
 

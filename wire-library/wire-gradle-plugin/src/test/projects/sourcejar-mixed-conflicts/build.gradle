@@ -20,6 +20,6 @@ wire {
     include 'squareup/**/*.proto'
     exclude 'squareup/geology/period.proto'
   }
-  java{
+  java {
   }
 }

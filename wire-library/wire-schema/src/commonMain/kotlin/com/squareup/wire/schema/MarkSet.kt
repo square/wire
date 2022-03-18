@@ -34,8 +34,10 @@ class MarkSet(
 
   /** The members to retain. Any member not in here should be pruned! */
   val members = mutableMapOf<ProtoType, MutableSet<ProtoMember>>()
+
   /** The root members which are never to be pruned, including their referenced type. */
   private val rootMemberTypes = mutableMapOf<ProtoMember, ProtoType>()
+
   /** The members this MarkSet have seen. The values should be non-null once the marking is done. */
   private val memberTypes = mutableMapOf<ProtoMember, ProtoType>()
 
@@ -107,14 +109,14 @@ class MarkSet(
 
     // We do not contain non-root members whose referenced type is excluded.
     if (!rootMemberTypes.containsKey(protoMember) &&
-        memberType != null && pruningRules.prunes(memberType)) {
+      memberType != null && pruningRules.prunes(memberType)) {
       return false
     }
 
     // A member cannot be included if its referencing type is excluded unless a root member of this
     // referenced type exists.
     if (pruningRules.prunes(protoMember.type) &&
-        rootMemberTypes.containsValue(protoMember.type)) {
+      rootMemberTypes.containsValue(protoMember.type)) {
       return true
     }
 

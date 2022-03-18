@@ -54,15 +54,15 @@ class ProtoParser internal constructor(
       val documentation = reader.readDocumentation()
       if (reader.exhausted()) {
         return ProtoFileElement(
-            location = location,
-            packageName = packageName,
-            syntax = syntax,
-            imports = imports.map { it.toPath().withUnixSlashes().toString() },
-            publicImports = publicImports.map { it.toPath().withUnixSlashes().toString() },
-            types = nestedTypes,
-            services = services,
-            extendDeclarations = extendsList,
-            options = options
+          location = location,
+          packageName = packageName,
+          syntax = syntax,
+          imports = imports.map { it.toPath().withUnixSlashes().toString() },
+          publicImports = publicImports.map { it.toPath().withUnixSlashes().toString() },
+          types = nestedTypes,
+          services = services,
+          extendDeclarations = extendsList,
+          options = options
         )
       }
 
@@ -70,16 +70,20 @@ class ProtoParser internal constructor(
         is TypeElement -> {
           val duplicate = nestedTypes.find { it.name == declaration.name }
           if (duplicate != null) {
-            error("${declaration.name} (${declaration.location}) is already defined at " +
-                "${duplicate.location}")
+            error(
+              "${declaration.name} (${declaration.location}) is already defined at " +
+                "${duplicate.location}"
+            )
           }
           nestedTypes.add(declaration)
         }
         is ServiceElement -> {
           val duplicate = services.find { it.name == declaration.name }
           if (duplicate != null) {
-            error("${declaration.name} (${declaration.location}) is already defined at " +
-                "${duplicate.location}")
+            error(
+              "${declaration.name} (${declaration.location}) is already defined at " +
+                "${duplicate.location}"
+            )
           }
           services.add(declaration)
         }
@@ -207,16 +211,16 @@ class ProtoParser internal constructor(
     prefix = previousPrefix
 
     return MessageElement(
-        location = location,
-        name = name,
-        documentation = documentation,
-        nestedTypes = nestedTypes,
-        options = options,
-        reserveds = reserveds,
-        fields = fields,
-        oneOfs = oneOfs,
-        extensions = extensions,
-        groups = groups
+      location = location,
+      name = name,
+      documentation = documentation,
+      nestedTypes = nestedTypes,
+      options = options,
+      reserveds = reserveds,
+      fields = fields,
+      oneOfs = oneOfs,
+      extensions = extensions,
+      groups = groups
     )
   }
 
@@ -237,10 +241,10 @@ class ProtoParser internal constructor(
     }
 
     return ExtendElement(
-        location = location,
-        name = name,
-        documentation = documentation,
-        fields = fields
+      location = location,
+      name = name,
+      documentation = documentation,
+      fields = fields
     )
   }
 
@@ -263,11 +267,11 @@ class ProtoParser internal constructor(
     }
 
     return ServiceElement(
-        location = location,
-        name = name,
-        documentation = documentation,
-        rpcs = rpcs,
-        options = options
+      location = location,
+      name = name,
+      documentation = documentation,
+      rpcs = rpcs,
+      options = options
     )
   }
 
@@ -320,8 +324,10 @@ class ProtoParser internal constructor(
       }
 
       else -> {
-        reader.expect(syntax == PROTO_3 ||
-            (word == "map" && reader.peekChar() == '<'), location) {
+        reader.expect(
+          syntax == PROTO_3 ||
+            (word == "map" && reader.peekChar() == '<'), location
+        ) {
           "unexpected label: $word"
         }
         label = null
@@ -360,15 +366,15 @@ class ProtoParser internal constructor(
     val documentation = reader.tryAppendTrailingDocumentation(documentation)
 
     return FieldElement(
-        location = location,
-        label = label,
-        type = type,
-        name = name,
-        defaultValue = defaultValue,
-        jsonName = jsonName,
-        tag = tag,
-        documentation = documentation,
-        options = options.toList()
+      location = location,
+      label = label,
+      type = type,
+      name = name,
+      defaultValue = defaultValue,
+      jsonName = jsonName,
+      tag = tag,
+      documentation = documentation,
+      options = options.toList()
     )
   }
 
@@ -422,11 +428,11 @@ class ProtoParser internal constructor(
     }
 
     return OneOfElement(
-        name = name,
-        documentation = documentation,
-        fields = fields,
-        groups = groups,
-        options = options,
+      name = name,
+      documentation = documentation,
+      fields = fields,
+      groups = groups,
+      options = options,
     )
   }
 
@@ -454,12 +460,12 @@ class ProtoParser internal constructor(
     }
 
     return GroupElement(
-        label = label,
-        location = location,
-        name = name,
-        tag = tag,
-        documentation = documentation,
-        fields = fields
+      label = label,
+      location = location,
+      name = name,
+      tag = tag,
+      documentation = documentation,
+      fields = fields
     )
   }
 
@@ -502,9 +508,9 @@ class ProtoParser internal constructor(
     val documentation = reader.tryAppendTrailingDocumentation(documentation)
 
     return ReservedElement(
-        location = location,
-        documentation = documentation,
-        values = values
+      location = location,
+      documentation = documentation,
+      values = values
     )
   }
 
@@ -536,9 +542,9 @@ class ProtoParser internal constructor(
     }
 
     return ExtensionsElement(
-        location = location,
-        documentation = documentation,
-        values = values
+      location = location,
+      documentation = documentation,
+      values = values
     )
   }
 
@@ -555,11 +561,11 @@ class ProtoParser internal constructor(
     val documentation = reader.tryAppendTrailingDocumentation(documentation)
 
     return EnumConstantElement(
-        location = location,
-        name = label,
-        tag = tag,
-        documentation = documentation,
-        options = options
+      location = location,
+      name = label,
+      tag = tag,
+      documentation = documentation,
+      options = options
     )
   }
 
@@ -601,14 +607,14 @@ class ProtoParser internal constructor(
     }
 
     return RpcElement(
-        location = location,
-        name = name,
-        documentation = documentation,
-        requestType = requestType,
-        responseType = responseType,
-        requestStreaming = requestStreaming,
-        responseStreaming = responseStreaming,
-        options = options
+      location = location,
+      name = name,
+      documentation = documentation,
+      requestType = requestType,
+      responseType = responseType,
+      requestStreaming = requestStreaming,
+      responseStreaming = responseStreaming,
+      options = options
     )
   }
 

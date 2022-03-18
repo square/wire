@@ -6,6 +6,10 @@ import java.util.Arrays;
 import okio.ByteString;
 
 public final class Sample {
+  public static void main(String[] args) throws IOException {
+    new Sample().run();
+  }
+
   public void run() throws IOException {
     // Create an immutable value object with the Builder API.
     Dinosaur stegosaurus = new Dinosaur.Builder()
@@ -19,9 +23,5 @@ public final class Sample {
     // Encode that value to bytes, and print that as base64.
     byte[] stegosaurusEncoded = Dinosaur.ADAPTER.encode(stegosaurus);
     System.out.println(ByteString.of(stegosaurusEncoded).base64());
-  }
-
-  public static void main(String[] args) throws IOException {
-    new Sample().run();
   }
 }

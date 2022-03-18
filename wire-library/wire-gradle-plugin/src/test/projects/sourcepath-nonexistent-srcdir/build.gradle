@@ -7,6 +7,6 @@ wire {
   sourcePath {
     srcDir 'src/main/proto'
   }
-  java{
+  java {
   }
 }

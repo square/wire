@@ -119,11 +119,6 @@ public final class JavaGenerator {
       return Integer.compare(o1.getTag(), o2.getTag());
     }
   });
-
-  public static boolean builtInType(ProtoType protoType) {
-    return BUILT_IN_TYPES_MAP.containsKey(protoType);
-  }
-
   private static final Map<ProtoType, TypeName> BUILT_IN_TYPES_MAP =
       ImmutableMap.<ProtoType, TypeName>builder()
           .put(ProtoType.BOOL, TypeName.BOOLEAN)
@@ -163,7 +158,6 @@ public final class JavaGenerator {
           .put(ProtoType.STRING_VALUE, ClassName.get(String.class))
           .put(ProtoType.BYTES_VALUE, ClassName.get(ByteString.class))
           .build();
-
   private static final Map<ProtoType, CodeBlock> PROTOTYPE_TO_IDENTITY_VALUES =
       ImmutableMap.<ProtoType, CodeBlock>builder()
           .put(ProtoType.BOOL, CodeBlock.of("false"))
@@ -182,12 +176,20 @@ public final class JavaGenerator {
           .put(ProtoType.SINT32, CodeBlock.of("0"))
           .put(ProtoType.UINT32, CodeBlock.of("0"))
           .build();
-
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
   private static final int MAX_PARAMS_IN_CONSTRUCTOR = 16;
-
   private static final String DOUBLE_FULL_BLOCK = "\u2588\u2588";
-
+  private final Schema schema;
+  /**
+   * Proto type to the corresponding Java type. This honors the Java package extension.
+   */
+  private final ImmutableMap<ProtoType, TypeName> typeToJavaName;
+  /**
+   * Proto member to the corresponding Java type. This is only used for extension fields.
+   */
+  private final ImmutableMap<ProtoMember, TypeName> memberToJavaName;
+  private final Profile profile;
+  private final boolean emitAndroid;
   /**
    * Preallocate all of the names we'll need for {@code type}. Names are allocated in precedence
    * order, so names we're stuck with (serialVersionUID etc.) occur before proto field names are
@@ -213,14 +215,13 @@ public final class JavaGenerator {
         Set<String> collidingNames = collidingFieldNames(fieldsAndOneOfFields);
         for (Field field : fieldsAndOneOfFields) {
           String suggestion = collidingNames.contains(field.getName())
-            || (field.getName().equals(field.getType().getSimpleName())
+              || (field.getName().equals(field.getType().getSimpleName())
               && !field.getType().isScalar())
-            || schema.getType(field.getQualifiedName()) != null
+              || schema.getType(field.getQualifiedName()) != null
               ? field.getQualifiedName()
               : field.getName();
           nameAllocator.newName(suggestion, field);
         }
-
       } else if (type instanceof EnumType) {
         nameAllocator.newName("value", "value");
         nameAllocator.newName("i", "i");
@@ -235,22 +236,10 @@ public final class JavaGenerator {
       return nameAllocator;
     }
   });
-
-  private final Schema schema;
-
-  /** Proto type to the corresponding Java type. This honors the Java package extension. */
-  private final ImmutableMap<ProtoType, TypeName> typeToJavaName;
-
-  /** Proto member to the corresponding Java type. This is only used for extension fields. */
-  private final ImmutableMap<ProtoMember, TypeName> memberToJavaName;
-
-  private final Profile profile;
-  private final boolean emitAndroid;
   private final boolean emitAndroidAnnotations;
   private final boolean emitCompact;
   private final boolean emitDeclaredOptions;
   private final boolean emitAppliedOptions;
-
   private JavaGenerator(Schema schema, Map<ProtoType, TypeName> typeToJavaName,
       Map<ProtoMember, TypeName> memberToJavaName, Profile profile, boolean emitAndroid,
       boolean emitAndroidAnnotations, boolean emitCompact, boolean emitDeclaredOptions,
@@ -266,29 +255,8 @@ public final class JavaGenerator {
     this.emitAppliedOptions = emitAppliedOptions;
   }
 
-  public JavaGenerator withAndroid(boolean emitAndroid) {
-    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
-        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
-  }
-
-  public JavaGenerator withAndroidAnnotations(boolean emitAndroidAnnotations) {
-    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
-        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
-  }
-
-  public JavaGenerator withCompact(boolean emitCompact) {
-    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
-        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
-  }
-
-  public JavaGenerator withProfile(Profile profile) {
-    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
-        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
-  }
-
-  public JavaGenerator withOptions(boolean emitDeclaredOptions, boolean emitAppliedOptions) {
-    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
-        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
+  public static boolean builtInType(ProtoType protoType) {
+    return BUILT_IN_TYPES_MAP.containsKey(protoType);
   }
 
   public static JavaGenerator get(Schema schema) {
@@ -336,6 +304,69 @@ public final class JavaGenerator {
     }
   }
 
+  static TypeName listOf(TypeName type) {
+    return ParameterizedTypeName.get(LIST, type);
+  }
+
+  static TypeName messageOf(ClassName messageType, TypeName type, ClassName builderType) {
+    return ParameterizedTypeName.get(messageType, type, builderType);
+  }
+
+  static TypeName adapterOf(TypeName messageType) {
+    return ParameterizedTypeName.get(ADAPTER, messageType);
+  }
+
+  static TypeName builderOf(TypeName messageType, ClassName builderType) {
+    return ParameterizedTypeName.get(BUILDER, messageType, builderType);
+  }
+
+  static TypeName creatorOf(TypeName messageType) {
+    return ParameterizedTypeName.get(CREATOR, messageType);
+  }
+
+  static TypeName enumAdapterOf(TypeName enumType) {
+    return ParameterizedTypeName.get(ENUM_ADAPTER, enumType);
+  }
+
+  /**
+   * A grab-bag of fixes for things that can go wrong when converting to javadoc.
+   */
+  static String sanitizeJavadoc(String documentation) {
+    // Remove trailing whitespace on each line.
+    documentation = documentation.replaceAll("[^\\S\n]+\n", "\n");
+    documentation = documentation.replaceAll("\\s+$", "");
+    documentation = documentation.replaceAll("\\*/", "&#42;/");
+    // Rewrite '@see <url>' to use an html anchor tag
+    documentation = documentation.replaceAll(
+        "@see (http:" + URL_CHARS + "+)", "@see <a href=\"$1\">$1</a>");
+    return documentation;
+  }
+
+  public JavaGenerator withAndroid(boolean emitAndroid) {
+    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
+        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
+  }
+
+  public JavaGenerator withAndroidAnnotations(boolean emitAndroidAnnotations) {
+    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
+        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
+  }
+
+  public JavaGenerator withCompact(boolean emitCompact) {
+    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
+        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
+  }
+
+  public JavaGenerator withProfile(Profile profile) {
+    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
+        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
+  }
+
+  public JavaGenerator withOptions(boolean emitDeclaredOptions, boolean emitAppliedOptions) {
+    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
+        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
+  }
+
   public Schema schema() {
     return schema;
   }
@@ -344,7 +375,7 @@ public final class JavaGenerator {
    * Returns the Java type for {@code protoType}.
    *
    * @throws IllegalArgumentException if there is no known Java type for {@code protoType}, such as
-   *     if that type wasn't in this generator's schema.
+   *                                  if that type wasn't in this generator's schema.
    */
   public TypeName typeName(ProtoType protoType) {
     TypeName profileJavaName = profile.javaTarget(protoType);
@@ -452,43 +483,9 @@ public final class JavaGenerator {
     return wireEnum.getConstants().get(0);
   }
 
-  static TypeName listOf(TypeName type) {
-    return ParameterizedTypeName.get(LIST, type);
-  }
-
-  static TypeName messageOf(ClassName messageType, TypeName type, ClassName builderType) {
-    return ParameterizedTypeName.get(messageType, type, builderType);
-  }
-
-  static TypeName adapterOf(TypeName messageType) {
-    return ParameterizedTypeName.get(ADAPTER, messageType);
-  }
-
-  static TypeName builderOf(TypeName messageType, ClassName builderType) {
-    return ParameterizedTypeName.get(BUILDER, messageType, builderType);
-  }
-
-  static TypeName creatorOf(TypeName messageType) {
-    return ParameterizedTypeName.get(CREATOR, messageType);
-  }
-
-  static TypeName enumAdapterOf(TypeName enumType) {
-    return ParameterizedTypeName.get(ENUM_ADAPTER, enumType);
-  }
-
-  /** A grab-bag of fixes for things that can go wrong when converting to javadoc. */
-  static String sanitizeJavadoc(String documentation) {
-    // Remove trailing whitespace on each line.
-    documentation = documentation.replaceAll("[^\\S\n]+\n", "\n");
-    documentation = documentation.replaceAll("\\s+$", "");
-    documentation = documentation.replaceAll("\\*/", "&#42;/");
-    // Rewrite '@see <url>' to use an html anchor tag
-    documentation = documentation.replaceAll(
-        "@see (http:" + URL_CHARS + "+)", "@see <a href=\"$1\">$1</a>");
-    return documentation;
-  }
-
-  /** Returns the full name of the class generated for {@code type}. */
+  /**
+   * Returns the full name of the class generated for {@code type}.
+   */
   public ClassName generatedTypeName(Type type) {
     ClassName abstractAdapterName = abstractAdapterName(type.getType());
     return abstractAdapterName != null
@@ -496,7 +493,9 @@ public final class JavaGenerator {
         : (ClassName) typeName(type.getType());
   }
 
-  /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
+  /**
+   * Returns the generated code for {@code type}, which may be a top-level or a nested type.
+   */
   public TypeSpec generateType(Type type) {
     AdapterConstant adapterConstant = profile.getAdapter(type.getType());
     if (adapterConstant != null) {
@@ -759,7 +758,9 @@ public final class JavaGenerator {
     return builder.build();
   }
 
-  /** Returns a standalone adapter for {@code type}. */
+  /**
+   * Returns a standalone adapter for {@code type}.
+   */
   public TypeSpec generateAdapterForCustomType(Type type) {
     NameAllocator nameAllocator = nameAllocators.getUnchecked(type);
     ClassName adapterTypeName = abstractAdapterName(type.getType());
@@ -788,7 +789,9 @@ public final class JavaGenerator {
     return adapter.build();
   }
 
-  /** Returns the set of names that are not unique within {@code fields}. */
+  /**
+   * Returns the set of names that are not unique within {@code fields}.
+   */
   private Set<String> collidingFieldNames(List<Field> fields) {
     Set<String> fieldNames = new LinkedHashSet<>();
     Set<String> collidingNames = new LinkedHashSet<>();
@@ -1169,8 +1172,8 @@ public final class JavaGenerator {
     if (field.isRepeated()) {
       return useBuilder
           ? field.getType().equals(ProtoType.STRUCT_NULL)
-            ? CodeBlock.of("builder.$L.add(($T) $L)", fieldName, Void.class, decode)
-            : CodeBlock.of("builder.$L.add($L)", fieldName, decode)
+          ? CodeBlock.of("builder.$L.add(($T) $L)", fieldName, Void.class, decode)
+          : CodeBlock.of("builder.$L.add($L)", fieldName, decode)
           : CodeBlock.of("$L.add($L)", fieldName, decode);
     } else if (field.getType().isMap()) {
       return useBuilder
@@ -1179,8 +1182,8 @@ public final class JavaGenerator {
     } else {
       return useBuilder
           ? field.getType().equals(ProtoType.STRUCT_NULL)
-            ? CodeBlock.of("builder.$L(($T) $L)", fieldName, Void.class, decode)
-            : CodeBlock.of("builder.$L($L)", fieldName, decode)
+          ? CodeBlock.of("builder.$L(($T) $L)", fieldName, Void.class, decode)
+          : CodeBlock.of("builder.$L($L)", fieldName, decode)
           : CodeBlock.of("$L = $L", fieldName, decode);
     }
   }
@@ -1330,7 +1333,7 @@ public final class JavaGenerator {
         if (field.getType().isWrapper()) {
           wireFieldLabel = null;
         } else {
-          wireFieldLabel =  WireField.Label.OMIT_IDENTITY;
+          wireFieldLabel = WireField.Label.OMIT_IDENTITY;
         }
         break;
       case REPEATED:
@@ -1785,7 +1788,9 @@ public final class JavaGenerator {
     return result.build();
   }
 
-  /** Returns the initial value of {@code field}, or null if it is doesn't have one. */
+  /**
+   * Returns the initial value of {@code field}, or null if it is doesn't have one.
+   */
   private @Nullable CodeBlock initialValue(Field field) {
     if (field.isPacked() || field.isRepeated()) {
       return CodeBlock.of("$T.newMutableList()", Internal.class);
@@ -1959,7 +1964,6 @@ public final class JavaGenerator {
       }
       builder.add(")");
       return builder.build();
-
     } else if (value instanceof Map) {
       CodeBlock.Builder builder = CodeBlock.builder();
       builder.add("new $T.Builder()", javaType);
@@ -1971,16 +1975,12 @@ public final class JavaGenerator {
       }
       builder.add("\n$>$>.build()$<$<");
       return builder.build();
-
     } else if (javaType.equals(TypeName.BOOLEAN)) {
       return CodeBlock.of("$L", value != null ? value : false);
-
     } else if (javaType.equals(TypeName.INT)) {
       return CodeBlock.of("$L", optionValueToInt(value));
-
     } else if (javaType.equals(TypeName.LONG)) {
       return CodeBlock.of("$LL", optionValueToLong(value));
-
     } else if (javaType.equals(TypeName.FLOAT)) {
       if (value == null) {
         return CodeBlock.of("0.0f");
@@ -1993,7 +1993,6 @@ public final class JavaGenerator {
       } else {
         return CodeBlock.of("$Lf", String.valueOf(value));
       }
-
     } else if (javaType.equals(TypeName.DOUBLE)) {
       if (value == null) {
         return CodeBlock.of("0.0d");
@@ -2006,10 +2005,8 @@ public final class JavaGenerator {
       } else {
         return CodeBlock.of("$Ld", String.valueOf(value));
       }
-
     } else if (javaType.equals(STRING)) {
       return CodeBlock.of("$S", value != null ? value : "");
-
     } else if (javaType.equals(BYTE_STRING)) {
       if (value == null) {
         return CodeBlock.of("$T.EMPTY", ByteString.class);
@@ -2017,10 +2014,8 @@ public final class JavaGenerator {
         return CodeBlock.of("$T.decodeBase64($S)", ByteString.class,
             ByteString.encodeString(String.valueOf(value), Charsets.ISO_8859_1).base64());
       }
-
     } else if (isEnum(type) && value != null) {
       return CodeBlock.of("$T.$L", javaType, value);
-
     } else {
       throw new IllegalStateException(type + " is not an allowed scalar type");
     }
@@ -2068,7 +2063,9 @@ public final class JavaGenerator {
         nameAllocators.getUnchecked(enumType).get(constantZero));
   }
 
-  /** Returns the full name of the class generated for {@code field}. */
+  /**
+   * Returns the full name of the class generated for {@code field}.
+   */
   public ClassName generatedTypeName(Field field) {
     return (ClassName) memberToJavaName.get(field.getMember());
   }

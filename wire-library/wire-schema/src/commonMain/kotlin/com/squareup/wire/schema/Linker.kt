@@ -163,13 +163,13 @@ class Linker {
 
       // Retain this type if it's used by anything in the source path.
       val anyTypeIsUsed = fileLinker.protoFile.typesAndNestedTypes()
-          .any { type ->
-            requestedTypes.contains(type.type)
-          }
+        .any { type ->
+          requestedTypes.contains(type.type)
+        }
       val anyFieldIsUsed = fileLinker.protoFile.extendList
-          .any { extend ->
-            extend.fields.any { it in requestedFields }
-          }
+        .any { extend ->
+          extend.fields.any { it in requestedFields }
+        }
       if (anyTypeIsUsed || anyFieldIsUsed) {
         result.add(fileLinker.protoFile.retainLinked(requestedTypes.toSet(), requestedFields))
       }
@@ -404,8 +404,8 @@ class Linker {
       // We allow JSON collisions for extensions.
       if (!field.isExtension) {
         jsonNameToField
-            .getOrPut(syntaxRules.jsonName(field.name, field.declaredJsonName), { mutableSetOf() })
-            .add(field)
+          .getOrPut(syntaxRules.jsonName(field.name, field.declaredJsonName), { mutableSetOf() })
+          .add(field)
       }
 
       syntaxRules.validateTypeReference(get(field.type!!), errors.at(field))
@@ -476,8 +476,10 @@ class Linker {
         val error = buildString {
           append("multiple enums share constant $constant:")
           values.forEachIndexed { index, enumType ->
-            append("\n  ${index + 1}. ${enumType.type}.$constant " +
-                "(${enumType.constant(constant)!!.location})")
+            append(
+              "\n  ${index + 1}. ${enumType.type}.$constant " +
+                "(${enumType.constant(constant)!!.location})"
+            )
           }
         }
         errors += error

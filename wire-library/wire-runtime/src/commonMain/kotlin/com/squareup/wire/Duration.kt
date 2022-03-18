@@ -27,6 +27,7 @@ package com.squareup.wire
  */
 expect class Duration {
   fun getSeconds(): Long
+
   /** Returns a value in `[0..1,000,000,000)`. */
   fun getNano(): Int
 }

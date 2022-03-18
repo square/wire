@@ -370,7 +370,10 @@ public final class JavaGeneratorTest {
     assertThat(repoBuilder.generateJava("A", "android")).contains(""
         + "  public abstract static class AbstractBAdapter extends ProtoAdapter<String> {\n");
   }
-  /** https://github.com/square/wire/issues/655 */
+
+  /**
+   * https://github.com/square/wire/issues/655
+   */
   @Test public void defaultValues() throws IOException {
     RepoBuilder repoBuilder = new RepoBuilder()
         .add("message.proto", ""
@@ -444,14 +447,14 @@ public final class JavaGeneratorTest {
     JavaGenerator javaGenerator = JavaGenerator.get(schema).withAndroid(true);
     TypeSpec typeSpec = javaGenerator.generateType(message);
     assertThat(JavaFile.builder("", typeSpec).build().toString()).contains(""
-        + " @WireField(\n"
-        + "        tag = 1,\n"
-        + "        adapter = \"com.squareup.wire.ProtoAdapter#STRING\"\n"
-        + "    )\n"
-        + "    public final String c;")
+            + " @WireField(\n"
+            + "        tag = 1,\n"
+            + "        adapter = \"com.squareup.wire.ProtoAdapter#STRING\"\n"
+            + "    )\n"
+            + "    public final String c;")
         .contains(""
-        + "public static final Parcelable.Creator<B> CREATOR = AndroidMessage.newCreator(ADAPTER)");
-        ;
+            + "public static final Parcelable.Creator<B> CREATOR = AndroidMessage.newCreator(ADAPTER)");
+    ;
   }
 
   @Test
@@ -597,13 +600,13 @@ public final class JavaGeneratorTest {
     RepoBuilder repoBuilder = new RepoBuilder()
         .add("proto_package/person.proto",
             "package proto_package;\n"
-            + "import \"wire/extensions.proto\";\n"
-            + "\n"
-            + "option (wire.wire_package) = \"wire_package\";\n"
-            + "\n"
-            + "message Person {\n"
-            + "	required string name = 1;\n"
-            + "}\n");
+                + "import \"wire/extensions.proto\";\n"
+                + "\n"
+                + "option (wire.wire_package) = \"wire_package\";\n"
+                + "\n"
+                + "message Person {\n"
+                + "	required string name = 1;\n"
+                + "}\n");
     String code = repoBuilder.generateJava("proto_package.Person");
     assertThat(code).contains("package wire_package");
     assertThat(code).contains("class Person");
@@ -613,17 +616,17 @@ public final class JavaGeneratorTest {
     RepoBuilder repoBuilder = new RepoBuilder()
         .add("common/common_message.proto",
             "package a.Common;\n"
-          + "option java_package = \"a.common\";"
-          + "message CommonMessage {\n"
-          + "   required string First = 1;\n"
-          + "}\n")
+                + "option java_package = \"a.common\";"
+                + "message CommonMessage {\n"
+                + "   required string First = 1;\n"
+                + "}\n")
         .add("example.proto",
             "package a;\n"
-          + "import \"common/common_message.proto\";\n"
-          + "\n"
-          + "message Example {\n"
-          + "   required Common.CommonMessage CommonMessage = 1;\n"
-          + "}\n");
+                + "import \"common/common_message.proto\";\n"
+                + "\n"
+                + "message Example {\n"
+                + "   required Common.CommonMessage CommonMessage = 1;\n"
+                + "}\n");
     String code = repoBuilder.generateJava("a.Example");
     assertThat(code).contains("package a");
     assertThat(code).contains("import a.common.CommonMessage");
@@ -633,21 +636,21 @@ public final class JavaGeneratorTest {
   @Test public void wirePackageUsedInImport() throws IOException {
     RepoBuilder repoBuilder = new RepoBuilder()
         .add("proto_package/person.proto",
-        "package proto_package;\n"
-            + "import \"wire/extensions.proto\";\n"
-            + "\n"
-            + "option (wire.wire_package) = \"wire_package\";\n"
-            + "\n"
-            + "message Person {\n"
-            + "	required string name = 1;\n"
-            + "}\n")
+            "package proto_package;\n"
+                + "import \"wire/extensions.proto\";\n"
+                + "\n"
+                + "option (wire.wire_package) = \"wire_package\";\n"
+                + "\n"
+                + "message Person {\n"
+                + "	required string name = 1;\n"
+                + "}\n")
         .add("city_package/home.proto",
             "package city_package;\n"
-            + "import \"proto_package/person.proto\";\n"
-            + "\n"
-            + "message Home {\n"
-            + "	repeated proto_package.Person person = 1;\n"
-            + "}\n");
+                + "import \"proto_package/person.proto\";\n"
+                + "\n"
+                + "message Home {\n"
+                + "	repeated proto_package.Person person = 1;\n"
+                + "}\n");
     String code = repoBuilder.generateJava("city_package.Home");
     assertThat(code).contains("package city_package");
     assertThat(code).contains("import wire_package.Person");

@@ -17,6 +17,7 @@ class MyCustomHandler implements CustomHandlerBeta, Serializable {
           String outDirectory, WireLogger logger, ProfileLoader profileLoader) {
     throw new RuntimeException("custom handler is running!!")
   }
+
   public Target.SchemaHandler newHandler(Schema schema, FileSystem fs,
           String outDirectory, WireLogger logger, ProfileLoader profileLoader,
           ErrorCollector errorCollector) {

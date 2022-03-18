@@ -70,8 +70,10 @@ annotation class WireField(
     OPTIONAL,
     REPEATED,
     ONE_OF,
+
     /** Implies [REPEATED]. */
     PACKED,
+
     /**
      * Special label to define proto3 fields which should not be emitted if their value is equal
      * to their type's respective identity value. E.g.: a field of type `int32` will not get emitted

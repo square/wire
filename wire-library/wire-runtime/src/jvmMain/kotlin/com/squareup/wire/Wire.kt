@@ -17,8 +17,6 @@
 
 package com.squareup.wire
 
-import kotlin.jvm.JvmName
-
 /**
  * Returns `value` if it is not null; `defaultValue` otherwise. This is used to conveniently return
  * a default value when a value is null. For example,

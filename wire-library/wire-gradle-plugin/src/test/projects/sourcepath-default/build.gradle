@@ -3,7 +3,7 @@ plugins {
   id 'com.squareup.wire'
 }
 
-wire{
-  java{
+wire {
+  java {
   }
 }

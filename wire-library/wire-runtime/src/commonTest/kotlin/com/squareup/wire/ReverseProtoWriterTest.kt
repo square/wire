@@ -19,7 +19,6 @@ import com.squareup.wire.FieldEncoding.LENGTH_DELIMITED
 import com.squareup.wire.ProtoAdapter.Companion.newMapAdapter
 import com.squareup.wire.Syntax.PROTO_2
 import okio.Buffer
-import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.encodeUtf8
 import okio.utf8Size
 import kotlin.test.Test

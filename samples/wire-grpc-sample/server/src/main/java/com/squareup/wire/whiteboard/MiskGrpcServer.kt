@@ -28,10 +28,10 @@ fun main(args: Array<String>) {
   val config = MiskConfig.load<WhiteboardConfig>("whiteboard", environment)
 
   MiskApplication(
-      MiskRealServiceModule(),
-      MiskWebModule(config.web),
-      WhiteboardGrpcModule(),
-      ConfigModule.create("whiteboard", config),
-      EnvironmentModule(environment)
+    MiskRealServiceModule(),
+    MiskWebModule(config.web),
+    WhiteboardGrpcModule(),
+    ConfigModule.create("whiteboard", config),
+    EnvironmentModule(environment)
   ).run(args)
 }

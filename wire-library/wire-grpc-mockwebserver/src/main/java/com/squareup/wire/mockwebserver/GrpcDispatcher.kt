@@ -22,7 +22,6 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Service
 import com.squareup.wire.internal.GrpcMessageSink
 import com.squareup.wire.internal.GrpcMessageSource
-import java.lang.reflect.Method
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Headers.Companion.headersOf
@@ -32,6 +31,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.RecordedRequest
 import okio.Buffer
 import okio.Timeout
+import java.lang.reflect.Method
 
 /**
  * Serves gRPC calls using MockWebServer over HTTP/2.
@@ -97,8 +97,8 @@ class GrpcDispatcher(
     val interfaces = type.interfaces
 
     if (type.isInterface &&
-        interfaces.size == 1 &&
-        interfaces[0] == Service::class.java) {
+      interfaces.size == 1 &&
+      interfaces[0] == Service::class.java) {
       @Suppress("UNCHECKED_CAST") // Checked reflectively above.
       sink += type as Class<out Service>
       return
@@ -118,7 +118,7 @@ class GrpcDispatcher(
     val endpoint = endpoints[request.path] ?: return delegate.dispatch(request)
 
     if (request.headers["content-type"] != "application/grpc" ||
-        request.method != "POST") {
+      request.method != "POST") {
       return delegate.dispatch(request)
     }
 
@@ -141,11 +141,11 @@ class GrpcDispatcher(
     val responseBody = encodeResponse(response, endpoint.grpcMethod.responseAdapter)
 
     return MockResponse()
-        .setHeader("grpc-encoding", "identity")
-        .setHeader("grpc-accept-encoding", "gzip")
-        .setHeader("Content-Type", "application/grpc")
-        .setTrailers(headersOf("grpc-status", "0"))
-        .setBody(responseBody)
+      .setHeader("grpc-encoding", "identity")
+      .setHeader("grpc-accept-encoding", "gzip")
+      .setHeader("Content-Type", "application/grpc")
+      .setTrailers(headersOf("grpc-status", "0"))
+      .setBody(responseBody)
   }
 
   private fun <S : Any> decodeRequest(
@@ -153,9 +153,9 @@ class GrpcDispatcher(
     protoAdapter: ProtoAdapter<S>
   ): S {
     val source = GrpcMessageSource(
-        source = request.body,
-        messageAdapter = protoAdapter,
-        grpcEncoding = request.headers["grpc-encoding"]
+      source = request.body,
+      messageAdapter = protoAdapter,
+      grpcEncoding = request.headers["grpc-encoding"]
     )
     return source.readExactlyOneAndClose()
   }
@@ -203,10 +203,10 @@ class GrpcDispatcher(
      * corresponding calls.
      */
     private val nullGrpcClient = GrpcClient.Builder()
-        .callFactory(object : Call.Factory {
-          override fun newCall(it: Request) = NullCall
-        })
-        .baseUrl("https://localhost/")
-        .build()
+      .callFactory(object : Call.Factory {
+        override fun newCall(it: Request) = NullCall
+      })
+      .baseUrl("https://localhost/")
+      .build()
   }
 }

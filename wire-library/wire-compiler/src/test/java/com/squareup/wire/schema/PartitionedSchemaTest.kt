@@ -23,7 +23,8 @@ import org.junit.Test
 class ManifestPartitionTest {
   @Test fun upstreamPruneIsNotGeneratedDownstream() {
     val schema = RepoBuilder()
-        .add("example.proto", """
+      .add(
+        "example.proto", """
           |syntax = "proto2";
           |
           |message A {
@@ -34,22 +35,23 @@ class ManifestPartitionTest {
           |}
           |message C {
           |}
-          |""".trimMargin())
-        .schema()
+          |""".trimMargin()
+      )
+      .schema()
 
     val modules = mapOf(
-        "common" to Module(
-            pruningRules = PruningRules.Builder()
-                .addRoot("B")
-                .prune("C")
-                .build()
-        ),
-        "feature" to Module(
-            dependencies = setOf("common"),
-            pruningRules = PruningRules.Builder()
-                .addRoot("A")
-                .build()
-        )
+      "common" to Module(
+        pruningRules = PruningRules.Builder()
+          .addRoot("B")
+          .prune("C")
+          .build()
+      ),
+      "feature" to Module(
+        dependencies = setOf("common"),
+        pruningRules = PruningRules.Builder()
+          .addRoot("A")
+          .build()
+      )
     )
 
     val partitionedSchema = schema.partition(modules)
@@ -67,7 +69,8 @@ class ManifestPartitionTest {
 
   @Test fun upstreamPruneIsNotPrunedDownstream() {
     val schema = RepoBuilder()
-        .add("example.proto", """
+      .add(
+        "example.proto", """
           |syntax = "proto2";
           |
           |message A {
@@ -79,22 +82,23 @@ class ManifestPartitionTest {
           |}
           |message C {
           |}
-          |""".trimMargin())
-        .schema()
+          |""".trimMargin()
+      )
+      .schema()
 
     val modules = mapOf(
-        "common" to Module(
-            pruningRules = PruningRules.Builder()
-                .addRoot("B")
-                .prune("C")
-                .build()
-        ),
-        "feature" to Module(
-            dependencies = setOf("common"),
-            pruningRules = PruningRules.Builder()
-                .addRoot("A")
-                .build()
-        )
+      "common" to Module(
+        pruningRules = PruningRules.Builder()
+          .addRoot("B")
+          .prune("C")
+          .build()
+      ),
+      "feature" to Module(
+        dependencies = setOf("common"),
+        pruningRules = PruningRules.Builder()
+          .addRoot("A")
+          .build()
+      )
     )
 
     val partitionedSchema = schema.partition(modules)
@@ -114,7 +118,8 @@ class ManifestPartitionTest {
 
   @Test fun duplicatedTypesReportedOnce() {
     val schema = RepoBuilder()
-      .add("example.proto", """
+      .add(
+        "example.proto", """
           |syntax = "proto2";
           |
           |message A {
@@ -126,7 +131,8 @@ class ManifestPartitionTest {
           |}
           |message C {
           |}
-          |""".trimMargin())
+          |""".trimMargin()
+      )
       .schema()
 
     val modules = mapOf(
@@ -152,11 +158,13 @@ class ManifestPartitionTest {
 
     val partitionedSchema = schema.partition(modules)
 
-    assertThat(partitionedSchema.warnings).containsExactly("""
+    assertThat(partitionedSchema.warnings).containsExactly(
+      """
       |C is generated twice in peer modules feature1 and feature2.
       |  Consider moving this type into a common dependency of both modules.
       |  To suppress this warning, explicitly add the type to the roots of both modules.
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 }
 
