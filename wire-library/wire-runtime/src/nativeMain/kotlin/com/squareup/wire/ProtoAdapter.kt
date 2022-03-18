@@ -122,7 +122,8 @@ actual abstract class ProtoAdapter<E> actual constructor(
       "Unable to pack a length-delimited type."
     }
     return packedAdapter ?: throw UnsupportedOperationException(
-        "Can't create a packed adapter from a packed or repeated adapter.")
+      "Can't create a packed adapter from a packed or repeated adapter."
+    )
   }
 
   /**
@@ -134,7 +135,8 @@ actual abstract class ProtoAdapter<E> actual constructor(
    */
   actual fun asRepeated(): ProtoAdapter<List<E>> {
     return repeatedAdapter ?: throw UnsupportedOperationException(
-        "Can't create a repeated adapter from a repeated or packed adapter.")
+      "Can't create a repeated adapter from a repeated or packed adapter."
+    )
   }
 
   actual class EnumConstantNotFoundException actual constructor(

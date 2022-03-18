@@ -67,9 +67,9 @@ fun <S : Any, R : Any> GrpcCall(function: (S) -> R): GrpcCall<S, R> {
 
     override val method: GrpcMethod<S, R>
       get() = GrpcMethod(
-          path = "/wire/AnonymousEndpoint",
-          requestAdapter = ProtoAdapter.BYTES,
-          responseAdapter = ProtoAdapter.BYTES
+        path = "/wire/AnonymousEndpoint",
+        requestAdapter = ProtoAdapter.BYTES,
+        responseAdapter = ProtoAdapter.BYTES
       ) as GrpcMethod<S, R>
 
     override val timeout: Timeout = Timeout.NONE
@@ -149,9 +149,9 @@ fun <S : Any, R : Any> GrpcStreamingCall(
   return object : GrpcStreamingCall<S, R> {
     override val method: GrpcMethod<S, R>
       get() = GrpcMethod(
-          path = "/wire/AnonymousEndpoint",
-          requestAdapter = ProtoAdapter.BYTES,
-          responseAdapter = ProtoAdapter.BYTES
+        path = "/wire/AnonymousEndpoint",
+        requestAdapter = ProtoAdapter.BYTES,
+        responseAdapter = ProtoAdapter.BYTES
       ) as GrpcMethod<S, R>
 
     private var canceled = AtomicBoolean()

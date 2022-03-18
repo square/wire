@@ -17,48 +17,48 @@ class MoshiPersonTest {
   @Test
   fun javaClobberNonNullWithNull() {
     val personWithName = moshi.adapter(JavaPerson::class.java)
-        .fromJson("""{"id":1,"name":"Jo","email":"foo@square.com"}""")
+      .fromJson("""{"id":1,"name":"Jo","email":"foo@square.com"}""")
     assertThat(personWithName!!.email).isEqualTo("foo@square.com")
 
     val personWithNameClobberedWithNull = moshi.adapter(JavaPerson::class.java)
-        .fromJson("""{"id":1,"name":"Jo","email":"foo@square.com","email":null}""")
+      .fromJson("""{"id":1,"name":"Jo","email":"foo@square.com","email":null}""")
     assertThat(personWithNameClobberedWithNull!!.email).isEqualTo("foo@square.com")
   }
 
   @Test
   fun kotlinClobberNonNullWithNull() {
     val personWithName = moshi.adapter(KotlinPerson::class.java)
-        .fromJson("""{"id":1,"name":"Jo","email":"foo@square.com"}""")
+      .fromJson("""{"id":1,"name":"Jo","email":"foo@square.com"}""")
     assertThat(personWithName!!.email).isEqualTo("foo@square.com")
 
     val personWithNameClobberedWithNull = moshi.adapter(KotlinPerson::class.java)
-        .fromJson("""{"id":1,"name":"Jo","email":"foo@square.com","email":null}""")
+      .fromJson("""{"id":1,"name":"Jo","email":"foo@square.com","email":null}""")
     assertThat(personWithNameClobberedWithNull!!.email).isEqualTo("foo@square.com")
   }
 
   @Test
   fun kotlinWithoutBuilderFromJson() {
     val personWithName = moshi.adapter(KotlinPerson::class.java)
-        .fromJson("""{"id":1,"name":"Jo","email":"foo@square.com"}""")
+      .fromJson("""{"id":1,"name":"Jo","email":"foo@square.com"}""")
     assertThat(personWithName)
-        .isEqualTo(KotlinPerson(id = 1, name = "Jo", email = "foo@square.com"))
+      .isEqualTo(KotlinPerson(id = 1, name = "Jo", email = "foo@square.com"))
   }
 
   @Test
   fun kotlinWithoutBuilderToJson() {
     val json = moshi.adapter(KotlinPerson::class.java)
-        .toJson(KotlinPerson(id = 1, name = "Jo", email = "foo@square.com"))
+      .toJson(KotlinPerson(id = 1, name = "Jo", email = "foo@square.com"))
     assertJsonEquals("""{"id":1,"name":"Jo","email":"foo@square.com", "phone":[]}""", json)
   }
 
   @Test
   fun javaInteropKotlinClobberNonNullWithNull() {
     val personWithName = moshi.adapter(JavaInteropKotlinPerson::class.java)
-        .fromJson("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\"}")
+      .fromJson("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\"}")
     assertThat(personWithName!!.email).isEqualTo("foo@square.com")
 
     val personWithNameClobberedWithNull = moshi.adapter(JavaInteropKotlinPerson::class.java)
-        .fromJson("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\",\"email\":null}")
+      .fromJson("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\",\"email\":null}")
     assertThat(personWithNameClobberedWithNull!!.email).isEqualTo("foo@square.com")
   }
 
@@ -78,7 +78,7 @@ class MoshiPersonTest {
 
   companion object {
     private val moshi = Moshi.Builder()
-        .add(WireJsonAdapterFactory())
-        .build()
+      .add(WireJsonAdapterFactory())
+      .build()
   }
 }

@@ -86,7 +86,7 @@ private fun Path.roots(fileSystem: FileSystem, location: Location): List<Root> {
         listOf(DirectoryRoot(location.path, sourceFs, "/".toPath()))
       } catch (_: IOException) {
         throw IllegalArgumentException(
-            "expected a directory, archive (.zip / .jar / etc.), or .proto: $this"
+          "expected a directory, archive (.zip / .jar / etc.), or .proto: $this"
         )
       }
     }
@@ -156,23 +156,24 @@ internal class DirectoryRoot(
 ) : Root() {
   override fun allProtoFiles(): Set<ProtoFilePath> {
     return fileSystem.listRecursively(rootDirectory)
-        .filter { it.toString().endsWith(".proto") }
-        .map { descendant ->
-          val location = Location.get(
-              base = base,
-              path = descendant.relativeTo(rootDirectory).withUnixSlashes().toString())
-          ProtoFilePath(location, fileSystem, descendant)
-        }
-        .toSet()
+      .filter { it.toString().endsWith(".proto") }
+      .map { descendant ->
+        val location = Location.get(
+          base = base,
+          path = descendant.relativeTo(rootDirectory).withUnixSlashes().toString()
+        )
+        ProtoFilePath(location, fileSystem, descendant)
+      }
+      .toSet()
   }
 
   override fun resolve(import: String): ProtoFilePath? {
     val resolved = rootDirectory / import
     if (!fileSystem.exists(resolved)) return null
     return ProtoFilePath(
-        location = Location.get(base, import.toPath().withUnixSlashes().toString()),
-        fileSystem = fileSystem,
-        path = resolved
+      location = Location.get(base, import.toPath().withUnixSlashes().toString()),
+      fileSystem = fileSystem,
+      path = resolved
     )
   }
 

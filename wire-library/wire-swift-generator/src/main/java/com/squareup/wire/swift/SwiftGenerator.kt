@@ -125,11 +125,11 @@ class SwiftGenerator private constructor(
 
   private fun String.sanitizeDoc(): String {
     return this
-        // Remove trailing whitespace on each line.
-        .replace("[^\\S\n]+\n".toRegex(), "\n")
-        .replace("\\s+$".toRegex(), "")
-        .replace("\\*/".toRegex(), "&#42;/")
-        .replace("/\\*".toRegex(), "/&#42;")
+      // Remove trailing whitespace on each line.
+      .replace("[^\\S\n]+\n".toRegex(), "\n")
+      .replace("\\s+$".toRegex(), "")
+      .replace("\\*/".toRegex(), "&#42;/")
+      .replace("/\\*".toRegex(), "/&#42;")
   }
 
   /**
@@ -161,177 +161,196 @@ class SwiftGenerator private constructor(
 
     val typeSpecs = mutableListOf<TypeSpec>()
 
-    typeSpecs +=  TypeSpec.structBuilder(structType)
-        .addModifiers(PUBLIC)
-        .apply {
-          if (type.documentation.isNotBlank()) {
-            addDoc("%L\n", type.documentation.sanitizeDoc())
-          }
+    typeSpecs += TypeSpec.structBuilder(structType)
+      .addModifiers(PUBLIC)
+      .apply {
+        if (type.documentation.isNotBlank()) {
+          addDoc("%L\n", type.documentation.sanitizeDoc())
+        }
 
-          if (type.isHeapAllocated) {
-            addProperty(PropertySpec.varBuilder(storageName, storageType, PRIVATE)
-                .addAttribute(AttributeSpec.builder(heap).build())
-                .build())
-            generateMessageStoragePropertyDelegates(type, storageName, oneOfEnumNames)
-            addFunction(FunctionSpec.constructorBuilder()
-                .addModifiers(PUBLIC)
-                .addParameters(type, oneOfEnumNames, includeDefaults = true)
-                .apply {
-                  val storageParams = mutableListOf<CodeBlock>()
-                  type.fields.forEach { field ->
-                    storageParams += CodeBlock.of("%1N: %1N", field.name)
-                  }
-                  type.oneOfs.forEach { oneOf ->
-                    storageParams += CodeBlock.of("%1N: %1N", oneOf.name)
-                  }
-                  addStatement("_storage = %T(value: %T(%L))", heap, storageType,
-                      storageParams.joinToCode(separator = ",%W"))
+        if (type.isHeapAllocated) {
+          addProperty(
+            PropertySpec.varBuilder(storageName, storageType, PRIVATE)
+              .addAttribute(AttributeSpec.builder(heap).build())
+              .build()
+          )
+          generateMessageStoragePropertyDelegates(type, storageName, oneOfEnumNames)
+          addFunction(
+            FunctionSpec.constructorBuilder()
+              .addModifiers(PUBLIC)
+              .addParameters(type, oneOfEnumNames, includeDefaults = true)
+              .apply {
+                val storageParams = mutableListOf<CodeBlock>()
+                type.fields.forEach { field ->
+                  storageParams += CodeBlock.of("%1N: %1N", field.name)
                 }
-                .build())
-            addFunction(FunctionSpec.builder("copyStorage")
-                .addModifiers(PRIVATE, MUTATING)
-                .beginControlFlow("if", "!isKnownUniquelyReferenced(&_%N)", storageName)
-                .addStatement("_%1N = %2T(value: %1N)", storageName, heap)
-                .endControlFlow("if")
-                .build())
-          } else {
-            generateMessageProperties(type, oneOfEnumNames)
-            generateMessageConstructor(type, oneOfEnumNames)
-          }
+                type.oneOfs.forEach { oneOf ->
+                  storageParams += CodeBlock.of("%1N: %1N", oneOf.name)
+                }
+                addStatement(
+                  "_storage = %T(value: %T(%L))", heap, storageType,
+                  storageParams.joinToCode(separator = ",%W")
+                )
+              }
+              .build()
+          )
+          addFunction(
+            FunctionSpec.builder("copyStorage")
+              .addModifiers(PRIVATE, MUTATING)
+              .beginControlFlow("if", "!isKnownUniquelyReferenced(&_%N)", storageName)
+              .addStatement("_%1N = %2T(value: %1N)", storageName, heap)
+              .endControlFlow("if")
+              .build()
+          )
+        } else {
+          generateMessageProperties(type, oneOfEnumNames)
+          generateMessageConstructor(type, oneOfEnumNames)
+        }
 
-          generateMessageOneOfs(type, oneOfEnumNames, fileMembers)
+        generateMessageOneOfs(type, oneOfEnumNames, fileMembers)
 
-          type.nestedTypes.forEach { nestedType ->
-            generateType(nestedType, fileMembers).forEach {
-              addType(it)
-            }
+        type.nestedTypes.forEach { nestedType ->
+          generateType(nestedType, fileMembers).forEach {
+            addType(it)
           }
         }
-        .build()
+      }
+      .build()
 
     val structEquatableExtension = ExtensionSpec.builder(structType)
-        .addSuperType(equatable)
-        .build()
+      .addSuperType(equatable)
+      .build()
     fileMembers += FileMemberSpec.builder(structEquatableExtension)
-        .addGuard("!$FLAG_REMOVE_EQUATABLE")
-        .build()
+      .addGuard("!$FLAG_REMOVE_EQUATABLE")
+      .build()
 
     val structHashableExtension = ExtensionSpec.builder(structType)
-        .addSuperType(hashable)
-        .build()
+      .addSuperType(hashable)
+      .build()
     fileMembers += FileMemberSpec.builder(structHashableExtension)
-        .addGuard("!$FLAG_REMOVE_HASHABLE")
-        .build()
+      .addGuard("!$FLAG_REMOVE_HASHABLE")
+      .build()
 
     val redactionExtension = if (type.fields.any { it.isRedacted }) {
       ExtensionSpec.builder(structType)
-          .addSuperType(redactable)
-          .addType(TypeSpec.enumBuilder("RedactedKeys")
-              .addModifiers(PUBLIC)
-              .addSuperType(STRING)
-              .addSuperType(redactedKey)
-              .apply {
-                type.fields.forEach { field ->
-                  if (field.isRedacted) {
-                    addEnumCase(field.name)
-                  }
+        .addSuperType(redactable)
+        .addType(
+          TypeSpec.enumBuilder("RedactedKeys")
+            .addModifiers(PUBLIC)
+            .addSuperType(STRING)
+            .addSuperType(redactedKey)
+            .apply {
+              type.fields.forEach { field ->
+                if (field.isRedacted) {
+                  addEnumCase(field.name)
                 }
               }
-              .build())
+            }
+            .build()
+        )
     } else {
       null
     }
 
     if (type.isHeapAllocated) {
       typeSpecs += TypeSpec.structBuilder(storageType)
-          .addModifiers(FILEPRIVATE)
-          .apply {
-            generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
-            generateMessageConstructor(type, oneOfEnumNames, includeDefaults = false)
-          }
-          .build()
+        .addModifiers(FILEPRIVATE)
+        .apply {
+          generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
+          generateMessageConstructor(type, oneOfEnumNames, includeDefaults = false)
+        }
+        .build()
 
       val structProtoCodableExtension = ExtensionSpec.builder(structType)
-          .addSuperType(type.protoCodableType)
-          .addFunction(FunctionSpec.constructorBuilder()
-              .addModifiers(PUBLIC)
-              .addParameter("from", "reader", protoReader)
-              .throws(true)
-              .addStatement("_%N = %T(value: try %T(from: reader))", storageName, heap, storageType)
-              .build())
-          .addFunction(FunctionSpec.builder("encode")
-              .addModifiers(PUBLIC)
-              .addParameter("to", "writer", protoWriter)
-              .throws(true)
-              .addStatement("try %N.encode(to: writer)", storageName)
-              .build())
-          .build()
+        .addSuperType(type.protoCodableType)
+        .addFunction(
+          FunctionSpec.constructorBuilder()
+            .addModifiers(PUBLIC)
+            .addParameter("from", "reader", protoReader)
+            .throws(true)
+            .addStatement("_%N = %T(value: try %T(from: reader))", storageName, heap, storageType)
+            .build()
+        )
+        .addFunction(
+          FunctionSpec.builder("encode")
+            .addModifiers(PUBLIC)
+            .addParameter("to", "writer", protoWriter)
+            .throws(true)
+            .addStatement("try %N.encode(to: writer)", storageName)
+            .build()
+        )
+        .build()
       fileMembers += FileMemberSpec.builder(structProtoCodableExtension).build()
 
       val storageProtoCodableExtension = ExtensionSpec.builder(storageType)
-          .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames)
-          .build()
+        .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames)
+        .build()
       fileMembers += FileMemberSpec.builder(storageProtoCodableExtension).build()
 
       val structCodableExtension = ExtensionSpec.builder(structType)
-          .addSuperType(codable)
-          .build()
+        .addSuperType(codable)
+        .build()
       fileMembers += FileMemberSpec.builder(structCodableExtension)
-          .addGuard("!$FLAG_REMOVE_CODABLE")
-          .build()
+        .addGuard("!$FLAG_REMOVE_CODABLE")
+        .build()
 
       val storageCodableExtension = messageCodableExtension(type, storageType)
       fileMembers += FileMemberSpec.builder(storageCodableExtension)
-          .addGuard("!$FLAG_REMOVE_CODABLE")
-          .build()
+        .addGuard("!$FLAG_REMOVE_CODABLE")
+        .build()
 
       val storageEquatableExtension = ExtensionSpec.builder(storageType)
-          .addSuperType(equatable)
-          .build()
+        .addSuperType(equatable)
+        .build()
       fileMembers += FileMemberSpec.builder(storageEquatableExtension)
-          .addGuard("!$FLAG_REMOVE_EQUATABLE")
-          .build()
+        .addGuard("!$FLAG_REMOVE_EQUATABLE")
+        .build()
 
       val storageHashableExtension = ExtensionSpec.builder(storageType)
-          .addSuperType(hashable)
-          .build()
+        .addSuperType(hashable)
+        .build()
       fileMembers += FileMemberSpec.builder(storageHashableExtension)
-          .addGuard("!$FLAG_REMOVE_HASHABLE")
-          .build()
+        .addGuard("!$FLAG_REMOVE_HASHABLE")
+        .build()
 
       if (redactionExtension != null) {
-        redactionExtension.addProperty(PropertySpec.varBuilder("description", STRING)
+        redactionExtension.addProperty(
+          PropertySpec.varBuilder("description", STRING)
             .addModifiers(PUBLIC)
-            .getter(FunctionSpec.getterBuilder()
+            .getter(
+              FunctionSpec.getterBuilder()
                 .addStatement("return %N.description", storageName)
-                .build())
-            .build())
+                .build()
+            )
+            .build()
+        )
 
         val storageRedactableExtension = ExtensionSpec.builder(storageType)
-            .addSuperType(redactable)
-            .addType(
-                TypeAliasSpec.builder("RedactedKeys", structType.nestedType("RedactedKeys"))
-                    .build())
-            .build()
+          .addSuperType(redactable)
+          .addType(
+            TypeAliasSpec.builder("RedactedKeys", structType.nestedType("RedactedKeys"))
+              .build()
+          )
+          .build()
         fileMembers += FileMemberSpec.builder(storageRedactableExtension)
-            .addGuard("!$FLAG_REMOVE_REDACTABLE")
-            .build()
+          .addGuard("!$FLAG_REMOVE_REDACTABLE")
+          .build()
       }
     } else {
       val protoCodableExtension = ExtensionSpec.builder(structType)
-          .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames)
-          .build()
+        .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames)
+        .build()
       fileMembers += FileMemberSpec.builder(protoCodableExtension).build()
 
       fileMembers += FileMemberSpec.builder(messageCodableExtension(type, structType))
-          .addGuard("!$FLAG_REMOVE_CODABLE")
-          .build()
+        .addGuard("!$FLAG_REMOVE_CODABLE")
+        .build()
     }
 
     if (redactionExtension != null) {
       fileMembers += FileMemberSpec.builder(redactionExtension.build())
-          .addGuard("!$FLAG_REMOVE_REDACTABLE")
-          .build()
+        .addGuard("!$FLAG_REMOVE_REDACTABLE")
+        .build()
     }
 
     return typeSpecs
@@ -348,7 +367,8 @@ class SwiftGenerator private constructor(
     val reader = if ("reader" in propertyNames) "_reader" else "reader"
     val token = if ("token" in propertyNames) "_token" else "token"
     val tag = if ("tag" in propertyNames) "_tag" else "tag"
-    addFunction(FunctionSpec.constructorBuilder()
+    addFunction(
+      FunctionSpec.constructorBuilder()
         .addModifiers(PUBLIC)
         .addParameter("from", reader, protoReader)
         .throws(true)
@@ -393,8 +413,8 @@ class SwiftGenerator private constructor(
                 decoder.add("try $reader.decode(into: &%N", field.name)
               } else {
                 decoder.add(
-                    "%N = try $reader.decode(%T.self", field.name,
-                    field.typeName.makeNonOptional()
+                  "%N = try $reader.decode(%T.self", field.name,
+                  field.typeName.makeNonOptional()
                 )
               }
               field.type!!.encoding?.let { encoding ->
@@ -452,10 +472,12 @@ class SwiftGenerator private constructor(
             addStatement("self.%1N = %1N", oneOf.name)
           }
         }
-        .build())
+        .build()
+    )
 
     val writer = if ("writer" in propertyNames) "_writer" else "writer"
-    addFunction(FunctionSpec.builder("encode")
+    addFunction(
+      FunctionSpec.builder("encode")
         .addModifiers(PUBLIC)
         .addParameter("to", writer, protoWriter)
         .throws(true)
@@ -488,7 +510,8 @@ class SwiftGenerator private constructor(
           }
         }
         .addStatement("try $writer.writeUnknownFields(unknownFields)")
-        .build())
+        .build()
+    )
   }
 
   private val MessageType.protoCodableType: DeclaredTypeName
@@ -502,83 +525,89 @@ class SwiftGenerator private constructor(
     structType: DeclaredTypeName
   ): ExtensionSpec {
     return ExtensionSpec.builder(structType)
-        .addSuperType(codable)
-        .apply {
-          val codingKeys = structType.nestedType("CodingKeys")
+      .addSuperType(codable)
+      .apply {
+        val codingKeys = structType.nestedType("CodingKeys")
 
-          if (type.fieldsAndOneOfFields.isNotEmpty()) {
-            // Define the keys which are the set of all direct properties and the properties within
-            // each oneof.
-            addType(TypeSpec.enumBuilder(codingKeys)
-                .addModifiers(PUBLIC)
-                .addSuperType(STRING)
-                .addSuperType(codingKey)
-                .apply {
-                  type.fieldsAndOneOfFields.forEach { field ->
-                    addEnumCase(field.name)
-                  }
+        if (type.fieldsAndOneOfFields.isNotEmpty()) {
+          // Define the keys which are the set of all direct properties and the properties within
+          // each oneof.
+          addType(
+            TypeSpec.enumBuilder(codingKeys)
+              .addModifiers(PUBLIC)
+              .addSuperType(STRING)
+              .addSuperType(codingKey)
+              .apply {
+                type.fieldsAndOneOfFields.forEach { field ->
+                  addEnumCase(field.name)
                 }
-                .build())
-          }
+              }
+              .build()
+          )
+        }
 
-          // If there are any oneofs we cannot rely on the built-in Codable support since the
-          // keys of the nested associated enum are flattened into the enclosing parent.
-          if (type.oneOfs.isNotEmpty()) {
-            addFunction(FunctionSpec.constructorBuilder()
-                .addParameter("from", "decoder", decoder)
-                .addModifiers(PUBLIC)
-                .throws(true)
-                .addStatement("let container = try decoder.container(keyedBy: %T.self)", codingKeys)
-                .apply {
-                  type.fields.forEach { field ->
+        // If there are any oneofs we cannot rely on the built-in Codable support since the
+        // keys of the nested associated enum are flattened into the enclosing parent.
+        if (type.oneOfs.isNotEmpty()) {
+          addFunction(
+            FunctionSpec.constructorBuilder()
+              .addParameter("from", "decoder", decoder)
+              .addModifiers(PUBLIC)
+              .throws(true)
+              .addStatement("let container = try decoder.container(keyedBy: %T.self)", codingKeys)
+              .apply {
+                type.fields.forEach { field ->
+                  addStatement(
+                    "self.%1N = try container.decode(%2T.self, forKey: .%1N)", field.name,
+                    field.typeName
+                  )
+                }
+                type.oneOfs.forEach { oneOf ->
+                  oneOf.fields.forEachIndexed { index, field ->
+                    if (index == 0) {
+                      beginControlFlow("if", "container.contains(.%N)", field.name)
+                    } else {
+                      nextControlFlow("else if", "container.contains(.%N)", field.name)
+                    }
                     addStatement(
-                        "self.%1N = try container.decode(%2T.self, forKey: .%1N)", field.name,
-                        field.typeName
+                      "let %1N = try container.decode(%2T.self, forKey: .%1N)", field.name,
+                      field.typeName.makeNonOptional()
+                    )
+                    addStatement("self.%1N = .%2N(%2N)", oneOf.name, field.name)
+                  }
+                  nextControlFlow("else", "")
+                  addStatement("self.%N = nil", oneOf.name)
+                  endControlFlow("if")
+                }
+              }
+              .build()
+          )
+          addFunction(
+            FunctionSpec.builder("encode")
+              .addParameter("to", "encoder", encoder)
+              .addModifiers(PUBLIC)
+              .throws(true)
+              .addStatement("var container = encoder.container(keyedBy: %T.self)", codingKeys)
+              .apply {
+                type.fields.forEach { field ->
+                  addStatement("try container.encode(self.%1N, forKey: .%1N)", field.name)
+                }
+                type.oneOfs.forEach { oneOf ->
+                  beginControlFlow("switch", "self.%N", oneOf.name)
+                  oneOf.fields.forEach { field ->
+                    addStatement(
+                      "case .%1N(let %1N): try container.encode(%1N, forKey: .%1N)", field.name
                     )
                   }
-                  type.oneOfs.forEach { oneOf ->
-                    oneOf.fields.forEachIndexed { index, field ->
-                      if (index == 0) {
-                        beginControlFlow("if", "container.contains(.%N)", field.name)
-                      } else {
-                        nextControlFlow("else if", "container.contains(.%N)", field.name)
-                      }
-                      addStatement(
-                          "let %1N = try container.decode(%2T.self, forKey: .%1N)", field.name,
-                          field.typeName.makeNonOptional()
-                      )
-                      addStatement("self.%1N = .%2N(%2N)", oneOf.name, field.name)
-                    }
-                    nextControlFlow("else", "")
-                    addStatement("self.%N = nil", oneOf.name)
-                    endControlFlow("if")
-                  }
+                  addStatement("case %T.none: break", OPTIONAL)
+                  endControlFlow("switch")
                 }
-                .build())
-            addFunction(FunctionSpec.builder("encode")
-                .addParameter("to", "encoder", encoder)
-                .addModifiers(PUBLIC)
-                .throws(true)
-                .addStatement("var container = encoder.container(keyedBy: %T.self)", codingKeys)
-                .apply {
-                  type.fields.forEach { field ->
-                    addStatement("try container.encode(self.%1N, forKey: .%1N)", field.name)
-                  }
-                  type.oneOfs.forEach { oneOf ->
-                    beginControlFlow("switch", "self.%N", oneOf.name)
-                    oneOf.fields.forEach { field ->
-                      addStatement(
-                          "case .%1N(let %1N): try container.encode(%1N, forKey: .%1N)", field.name
-                      )
-                    }
-                    addStatement("case %T.none: break", OPTIONAL)
-                    endControlFlow("switch")
-                  }
-                }
-                .build())
-          }
+              }
+              .build()
+          )
         }
-        .build()
+      }
+      .build()
   }
 
   private fun ParameterSpec.Builder.withFieldDefault(field: Field) = apply {
@@ -596,20 +625,22 @@ class SwiftGenerator private constructor(
   ) = apply {
     type.fields.forEach { field ->
       val fieldType = field.typeName
-      addParameter(ParameterSpec.builder(field.name, fieldType)
+      addParameter(
+        ParameterSpec.builder(field.name, fieldType)
           .apply {
             if (includeDefaults) {
               withFieldDefault(field)
             }
           }
-          .build())
+          .build()
+      )
     }
     type.oneOfs.forEach { oneOf ->
       val enumName = oneOfEnumNames.getValue(oneOf).makeOptional()
       addParameter(
-          ParameterSpec.builder(oneOf.name, enumName)
-              .defaultValue("nil")
-              .build()
+        ParameterSpec.builder(oneOf.name, enumName)
+          .defaultValue("nil")
+          .build()
       )
     }
   }
@@ -619,7 +650,8 @@ class SwiftGenerator private constructor(
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
     includeDefaults: Boolean = true
   ) {
-    addFunction(FunctionSpec.constructorBuilder()
+    addFunction(
+      FunctionSpec.constructorBuilder()
         .addModifiers(PUBLIC)
         .addParameters(type, oneOfEnumNames, includeDefaults)
         .apply {
@@ -634,7 +666,8 @@ class SwiftGenerator private constructor(
             addStatement("self.%1N = %1N", oneOf.name)
           }
         }
-        .build())
+        .build()
+    )
   }
 
   private fun TypeSpec.Builder.generateMessageProperties(
@@ -662,18 +695,22 @@ class SwiftGenerator private constructor(
     type.oneOfs.forEach { oneOf ->
       val enumName = oneOfEnumNames.getValue(oneOf)
 
-      addProperty(PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
+      addProperty(
+        PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
           .apply {
             if (oneOf.documentation.isNotBlank()) {
               addDoc("%N\n", oneOf.documentation.sanitizeDoc())
             }
           }
-          .build())
+          .build()
+      )
     }
 
-    addProperty(PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
+    addProperty(
+      PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
         .initializer(".init()")
-        .build())
+        .build()
+    )
   }
 
   private fun TypeSpec.Builder.generateMessageStoragePropertyDelegates(
@@ -683,21 +720,25 @@ class SwiftGenerator private constructor(
   ) {
     type.fields.forEach { field ->
       val property = PropertySpec.varBuilder(field.name, field.typeName, PUBLIC)
-          .getter(FunctionSpec.getterBuilder()
-              .addStatement("%N.%N", storageName, field.name)
-              .build())
-          .setter(FunctionSpec.setterBuilder()
-              .addStatement("copyStorage()")
-              .addStatement("%N.%N = newValue", storageName, field.name)
-              .build())
+        .getter(
+          FunctionSpec.getterBuilder()
+            .addStatement("%N.%N", storageName, field.name)
+            .build()
+        )
+        .setter(
+          FunctionSpec.setterBuilder()
+            .addStatement("copyStorage()")
+            .addStatement("%N.%N = newValue", storageName, field.name)
+            .build()
+        )
       if (field.documentation.isNotBlank()) {
         property.addDoc("%L\n", field.documentation.sanitizeDoc())
       }
       if (field.isDeprecated) {
         property.addAttribute(
-            AttributeSpec.builder("available")
-                .addArguments("*", "deprecated")
-                .build()
+          AttributeSpec.builder("available")
+            .addArguments("*", "deprecated")
+            .build()
         )
       }
       addProperty(property.build())
@@ -706,31 +747,43 @@ class SwiftGenerator private constructor(
     type.oneOfs.forEach { oneOf ->
       val enumName = oneOfEnumNames.getValue(oneOf)
 
-      addProperty(PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
-          .getter(FunctionSpec.getterBuilder()
+      addProperty(
+        PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
+          .getter(
+            FunctionSpec.getterBuilder()
               .addStatement("%N.%N", storageName, oneOf.name)
-              .build())
-          .setter(FunctionSpec.setterBuilder()
+              .build()
+          )
+          .setter(
+            FunctionSpec.setterBuilder()
               .addStatement("copyStorage()")
               .addStatement("%N.%N = newValue", storageName, oneOf.name)
-              .build())
+              .build()
+          )
           .apply {
             if (oneOf.documentation.isNotBlank()) {
               addDoc("%N\n", oneOf.documentation.sanitizeDoc())
             }
           }
-          .build())
+          .build()
+      )
     }
 
-    addProperty(PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
-        .getter(FunctionSpec.getterBuilder()
+    addProperty(
+      PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
+        .getter(
+          FunctionSpec.getterBuilder()
             .addStatement("%N.unknownFields", storageName)
-            .build())
-        .setter(FunctionSpec.setterBuilder()
+            .build()
+        )
+        .setter(
+          FunctionSpec.setterBuilder()
             .addStatement("copyStorage()")
             .addStatement("%N.unknownFields = newValue", storageName)
-            .build())
-        .build())
+            .build()
+        )
+        .build()
+    )
   }
 
   private fun TypeSpec.Builder.generateMessageOneOfs(
@@ -743,22 +796,27 @@ class SwiftGenerator private constructor(
 
       // TODO use a NameAllocator
       val writer = if (oneOf.fields.any { it.name == "writer" }) "_writer" else "writer"
-      addType(TypeSpec.enumBuilder(enumName)
+      addType(
+        TypeSpec.enumBuilder(enumName)
           .addModifiers(PUBLIC)
           .apply {
             oneOf.fields.forEach { oneOfField ->
-              addEnumCase(EnumerationCaseSpec.builder(oneOfField.name, oneOfField.typeName.makeNonOptional())
+              addEnumCase(
+                EnumerationCaseSpec.builder(oneOfField.name, oneOfField.typeName.makeNonOptional())
                   .apply {
                     if (oneOfField.documentation.isNotBlank()) {
                       addDoc("%L\n", oneOfField.documentation.sanitizeDoc())
                     }
                     if (oneOfField.isDeprecated) {
                       addAttribute(deprecated)
-                    }                  }
-                  .build())
+                    }
+                  }
+                  .build()
+              )
             }
           }
-          .addFunction(FunctionSpec.builder("encode")
+          .addFunction(
+            FunctionSpec.builder("encode")
               .addParameter("to", writer, protoWriter)
               .addModifiers(FILEPRIVATE)
               .throws(true)
@@ -766,48 +824,52 @@ class SwiftGenerator private constructor(
               .apply {
                 oneOf.fields.forEach { field ->
                   addStatement(
-                      "case .%1N(let %1N): try $writer.encode(tag: %2L, value: %1N)",
-                      field.name, field.tag
+                    "case .%1N(let %1N): try $writer.encode(tag: %2L, value: %1N)",
+                    field.name, field.tag
                   )
                 }
               }
               .endControlFlow("switch")
-              .build())
-          .build())
+              .build()
+          )
+          .build()
+      )
 
       val equatableExtension = ExtensionSpec.builder(enumName)
-          .addSuperType(equatable)
-          .build()
+        .addSuperType(equatable)
+        .build()
       fileMembers += FileMemberSpec.builder(equatableExtension)
-          .addGuard("!$FLAG_REMOVE_EQUATABLE")
-          .build()
+        .addGuard("!$FLAG_REMOVE_EQUATABLE")
+        .build()
 
       val hashableExtension = ExtensionSpec.builder(enumName)
-          .addSuperType(hashable)
-          .build()
+        .addSuperType(hashable)
+        .build()
       fileMembers += FileMemberSpec.builder(hashableExtension)
-          .addGuard("!$FLAG_REMOVE_HASHABLE")
-          .build()
+        .addGuard("!$FLAG_REMOVE_HASHABLE")
+        .build()
 
       if (oneOf.fields.any { it.isRedacted }) {
         val redactableExtension = ExtensionSpec.builder(enumName)
-            .addSuperType(redactable)
-            .addType(TypeSpec.enumBuilder("RedactedKeys")
-                .addModifiers(PUBLIC)
-                .addSuperType(STRING)
-                .addSuperType(redactedKey)
-                .apply {
-                  oneOf.fields.forEach { field ->
-                    if (field.isRedacted) {
-                      addEnumCase(field.name)
-                    }
+          .addSuperType(redactable)
+          .addType(
+            TypeSpec.enumBuilder("RedactedKeys")
+              .addModifiers(PUBLIC)
+              .addSuperType(STRING)
+              .addSuperType(redactedKey)
+              .apply {
+                oneOf.fields.forEach { field ->
+                  if (field.isRedacted) {
+                    addEnumCase(field.name)
                   }
                 }
-                .build())
-            .build()
+              }
+              .build()
+          )
+          .build()
         fileMembers += FileMemberSpec.builder(redactableExtension)
-            .addGuard("!$FLAG_REMOVE_REDACTABLE")
-            .build()
+          .addGuard("!$FLAG_REMOVE_REDACTABLE")
+          .build()
       }
     }
   }
@@ -828,7 +890,7 @@ class SwiftGenerator private constructor(
       when (self.rawType) {
         ARRAY -> return self.typeArguments[0].needsJsonString()
         DICTIONARY -> return self.typeArguments[0].needsJsonString() ||
-            self.typeArguments[1].needsJsonString()
+          self.typeArguments[1].needsJsonString()
       }
     }
     return false
@@ -840,44 +902,53 @@ class SwiftGenerator private constructor(
   ): TypeSpec {
     val enumName = type.typeName
     return TypeSpec.enumBuilder(enumName)
-        .addModifiers(PUBLIC)
-        .addSuperType(UINT32)
-        .addSuperType(CASE_ITERABLE)
-        .addSuperType(codable)
-        .apply {
-          if (type.documentation.isNotBlank()) {
-            addDoc("%L\n", type.documentation.sanitizeDoc())
-          }
-          type.constants.forEach { constant ->
-            addEnumCase(EnumerationCaseSpec.builder(constant.name, constant.tag)
-                .apply {
-                  if (constant.documentation.isNotBlank()) {
-                    addDoc("%L\n", constant.documentation.sanitizeDoc())
-                  }
-                  if (constant.isDeprecated) {
-                    addAttribute(deprecated)
-                  }
+      .addModifiers(PUBLIC)
+      .addSuperType(UINT32)
+      .addSuperType(CASE_ITERABLE)
+      .addSuperType(codable)
+      .apply {
+        if (type.documentation.isNotBlank()) {
+          addDoc("%L\n", type.documentation.sanitizeDoc())
+        }
+        type.constants.forEach { constant ->
+          addEnumCase(
+            EnumerationCaseSpec.builder(constant.name, constant.tag)
+              .apply {
+                if (constant.documentation.isNotBlank()) {
+                  addDoc("%L\n", constant.documentation.sanitizeDoc())
                 }
-                .build())
-          }
-          // Swift won't synthesize CaseIterable conformance if any constants contain an availability
-          // attribute. https://bugs.swift.org/browse/SR-7151
-          if (type.constants.any { it.isDeprecated }) {
-            addProperty(PropertySpec.varBuilder("allCases", ARRAY.parameterizedBy(enumName))
-                .addModifiers(PUBLIC, STATIC)
-                .getter(FunctionSpec.getterBuilder()
-                    .addStatement("return [%L]", type.constants.map { CodeBlock.of(".%N", it.name) }
-                        .joinToCode(",%W"))
-                    .build())
-                .build())
-          }
-          type.nestedTypes.forEach { nestedType ->
-            generateType(nestedType, fileMembers).forEach {
-              addType(it)
-            }
+                if (constant.isDeprecated) {
+                  addAttribute(deprecated)
+                }
+              }
+              .build()
+          )
+        }
+        // Swift won't synthesize CaseIterable conformance if any constants contain an availability
+        // attribute. https://bugs.swift.org/browse/SR-7151
+        if (type.constants.any { it.isDeprecated }) {
+          addProperty(
+            PropertySpec.varBuilder("allCases", ARRAY.parameterizedBy(enumName))
+              .addModifiers(PUBLIC, STATIC)
+              .getter(
+                FunctionSpec.getterBuilder()
+                  .addStatement(
+                    "return [%L]",
+                    type.constants.map { CodeBlock.of(".%N", it.name) }
+                      .joinToCode(",%W")
+                  )
+                  .build()
+              )
+              .build()
+          )
+        }
+        type.nestedTypes.forEach { nestedType ->
+          generateType(nestedType, fileMembers).forEach {
+            addType(it)
           }
         }
-        .build()
+      }
+      .build()
   }
 
   private fun generateEnclosing(
@@ -885,39 +956,41 @@ class SwiftGenerator private constructor(
     fileMembers: MutableList<FileMemberSpec>
   ): TypeSpec {
     return TypeSpec.enumBuilder(type.typeName)
-        .addModifiers(PUBLIC)
-        .addDoc("%N\n",
-            "*Note:* This type only exists to maintain class structure for its nested types and " +
-                "is not an actual message.")
-        .apply {
-          type.nestedTypes.forEach { nestedType ->
-            generateType(nestedType, fileMembers).forEach {
-              addType(it)
-            }
+      .addModifiers(PUBLIC)
+      .addDoc(
+        "%N\n",
+        "*Note:* This type only exists to maintain class structure for its nested types and " +
+          "is not an actual message."
+      )
+      .apply {
+        type.nestedTypes.forEach { nestedType ->
+          generateType(nestedType, fileMembers).forEach {
+            addType(it)
           }
         }
-        .build()
+      }
+      .build()
   }
 
   companion object {
     fun builtInType(protoType: ProtoType): Boolean = protoType in BUILT_IN_TYPES.keys
 
     private val BUILT_IN_TYPES = mapOf(
-        ProtoType.BOOL to BOOL,
-        ProtoType.BYTES to DATA,
-        ProtoType.DOUBLE to DOUBLE,
-        ProtoType.FLOAT to FLOAT,
-        ProtoType.FIXED32 to UINT32,
-        ProtoType.FIXED64 to UINT64,
-        ProtoType.INT32 to INT32,
-        ProtoType.INT64 to INT64,
-        ProtoType.SFIXED32 to INT32,
-        ProtoType.SFIXED64 to INT64,
-        ProtoType.SINT32 to INT32,
-        ProtoType.SINT64 to INT64,
-        ProtoType.STRING to STRING,
-        ProtoType.UINT32 to UINT32,
-        ProtoType.UINT64 to UINT64
+      ProtoType.BOOL to BOOL,
+      ProtoType.BYTES to DATA,
+      ProtoType.DOUBLE to DOUBLE,
+      ProtoType.FLOAT to FLOAT,
+      ProtoType.FIXED32 to UINT32,
+      ProtoType.FIXED64 to UINT64,
+      ProtoType.INT32 to INT32,
+      ProtoType.INT64 to INT64,
+      ProtoType.SFIXED32 to INT32,
+      ProtoType.SFIXED64 to INT64,
+      ProtoType.SINT32 to INT32,
+      ProtoType.SINT64 to INT64,
+      ProtoType.STRING to STRING,
+      ProtoType.UINT32 to UINT32,
+      ProtoType.UINT64 to UINT64
 //        ProtoType.ANY to ClassName("com.squareup.wire", "AnyMessage"),
 //        Options.FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
 //        Options.MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
@@ -978,18 +1051,18 @@ class SwiftGenerator private constructor(
       val indirections = mutableMapOf<ProtoType, MutableSet<ProtoType>>()
 
       var nodes = schema.protoFiles
-          .flatMap { it.typesAndNestedTypes() }
-          .map { it.type }
-          // Ignore types which were already generated. We cannot form a cycle with them.
-          .filter { it !in existingTypes }
-          .toSet()
+        .flatMap { it.typesAndNestedTypes() }
+        .map { it.type }
+        // Ignore types which were already generated. We cannot form a cycle with them.
+        .filter { it !in existingTypes }
+        .toSet()
       while (true) {
         val dagChecker = DagChecker(nodes) { protoType ->
           when (val type = schema.getType(protoType)!!) {
             is MessageType -> {
               type.fieldsAndOneOfFields.map { it.type!! }
-                  // Remove edges known to need an indirection to break an already-seen cycle.
-                  .filter { it !in (indirections[protoType] ?: emptySet<ProtoType>()) }
+                // Remove edges known to need an indirection to break an already-seen cycle.
+                .filter { it !in (indirections[protoType] ?: emptySet<ProtoType>()) }
             }
             is EnumType -> emptyList()
             is EnclosingType -> emptyList()

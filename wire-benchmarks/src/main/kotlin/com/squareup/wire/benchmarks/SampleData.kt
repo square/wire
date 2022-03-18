@@ -26,16 +26,16 @@ object SampleData {
       |> On Thursday, July 22, 2021, at 8:01 AM, dentist@example.com wrote:
       |>
       |> 23-JULY-2021
-      |> 
+      |>
       |> Dear Mr. Wilson,
-      |> 
+      |>
       |> This is confirmation of your eye appointment for: MONDAY JULY 26TH@ 9:30A.M
-      |> 
-      |> Please give us a quick call or email us to confirm you will be attending this appointment. 
-      |> 
+      |>
+      |> Please give us a quick call or email us to confirm you will be attending this appointment.
+      |>
       |> We look forward to seeing you.
-      |> 
-      |> 
+      |>
+      |>
       |> Sincerely,
       |>
       |> Sandy Winchester

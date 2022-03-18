@@ -44,8 +44,8 @@ class EmittingRulesTest {
   @Test
   fun includeType() {
     val rules = EmittingRules.Builder()
-        .include("a.b.Message")
-        .build()
+      .include("a.b.Message")
+      .build()
     assertThat(rules.includes(ProtoType.get("a.b.Message"))).isTrue()
     assertThat(rules.includes(ProtoType.get("a.b.Message.Nested"))).isFalse()
     assertThat(rules.includes(ProtoType.get("a.b.Another"))).isFalse()
@@ -54,8 +54,8 @@ class EmittingRulesTest {
   @Test
   fun includePackage() {
     val rules = EmittingRules.Builder()
-        .include("a.b.*")
-        .build()
+      .include("a.b.*")
+      .build()
     assertThat(rules.includes(ProtoType.get("a.b.Message"))).isTrue()
     assertThat(rules.includes(ProtoType.get("a.b.c.Message"))).isTrue()
     assertThat(rules.includes(ProtoType.get("a.c.Another"))).isFalse()
@@ -64,16 +64,16 @@ class EmittingRulesTest {
   @Test
   fun includeAll() {
     val rules = EmittingRules.Builder()
-        .include("*")
-        .build()
+      .include("*")
+      .build()
     assertThat(rules.includes(ProtoType.get("a.b.Message"))).isTrue()
   }
 
   @Test
   fun excludeType() {
     val rules = EmittingRules.Builder()
-        .exclude("a.b.Message")
-        .build()
+      .exclude("a.b.Message")
+      .build()
     assertThat(rules.includes(ProtoType.get("a.b.Message"))).isFalse()
     assertThat(rules.includes(ProtoType.get("a.b.Another"))).isTrue()
   }
@@ -81,8 +81,8 @@ class EmittingRulesTest {
   @Test
   fun excludePackage() {
     val rules = EmittingRules.Builder()
-        .exclude("a.b.*")
-        .build()
+      .exclude("a.b.*")
+      .build()
     assertThat(rules.includes(ProtoType.get("a.b.Message"))).isFalse()
     assertThat(rules.includes(ProtoType.get("a.b.c.Message"))).isFalse()
     assertThat(rules.includes(ProtoType.get("a.c.Another"))).isTrue()
@@ -91,9 +91,9 @@ class EmittingRulesTest {
   @Test
   fun mostPreciseIncludeTakesPrecedenceOverExclude() {
     val rules = EmittingRules.Builder()
-        .exclude("a.b.*")
-        .include("a.b.Message")
-        .build()
+      .exclude("a.b.*")
+      .include("a.b.Message")
+      .build()
     assertThat(rules.includes(ProtoType.get("a.b.Message"))).isTrue()
     assertThat(rules.includes(ProtoType.get("a.b.Another"))).isFalse()
     assertThat(rules.includes(ProtoType.get("a.c.YetAnother"))).isFalse()
@@ -102,9 +102,9 @@ class EmittingRulesTest {
   @Test
   fun mostPreciseExcludeTakesPrecedenceOverInclude() {
     val rules = EmittingRules.Builder()
-        .exclude("a.b.Message")
-        .include("a.b.*")
-        .build()
+      .exclude("a.b.Message")
+      .include("a.b.*")
+      .build()
     assertThat(rules.includes(ProtoType.get("a.b.Message"))).isFalse()
     assertThat(rules.includes(ProtoType.get("a.b.Another"))).isTrue()
     assertThat(rules.includes(ProtoType.get("a.c.YetAnother"))).isFalse()
@@ -113,9 +113,9 @@ class EmittingRulesTest {
   @Test
   fun trackingUnusedIncludes() {
     val rules = EmittingRules.Builder()
-        .include("a.*")
-        .include("b.IncludedType")
-        .build()
+      .include("a.*")
+      .include("b.IncludedType")
+      .build()
     assertThat(rules.unusedIncludes()).containsExactly("a.*", "b.IncludedType")
 
     rules.includes(ProtoType.get("a.*"))
@@ -128,9 +128,9 @@ class EmittingRulesTest {
   @Test
   fun trackingUnusedExcludes() {
     val rules = EmittingRules.Builder()
-        .exclude("a.*")
-        .exclude("b.ExcludedType")
-        .build()
+      .exclude("a.*")
+      .exclude("b.ExcludedType")
+      .build()
     assertThat(rules.unusedExcludes()).containsExactly("a.*", "b.ExcludedType")
 
     rules.includes(ProtoType.get("a.*"))
@@ -143,9 +143,9 @@ class EmittingRulesTest {
   @Test
   fun trackingUnusedIncludesPrecedence() {
     val rules = EmittingRules.Builder()
-        .include("a.*")
-        .include("a.IncludedType")
-        .build()
+      .include("a.*")
+      .include("a.IncludedType")
+      .build()
     rules.includes(ProtoType.get("a.IncludedType.NestedType"))
     assertThat(rules.unusedIncludes()).containsExactly("a.IncludedType")
   }
@@ -153,9 +153,9 @@ class EmittingRulesTest {
   @Test
   fun trackingUnusedExcludesPrecedence() {
     val rules = EmittingRules.Builder()
-        .exclude("a.*")
-        .exclude("a.IncludedType")
-        .build()
+      .exclude("a.*")
+      .exclude("a.IncludedType")
+      .build()
     rules.includes(ProtoType.get("a.IncludedType.NestedType"))
     assertThat(rules.unusedExcludes()).containsExactly("a.IncludedType")
   }
@@ -164,9 +164,9 @@ class EmittingRulesTest {
   fun crashForConflictingRules() {
     try {
       EmittingRules.Builder()
-          .include("a.*")
-          .exclude("a.*")
-          .build()
+        .include("a.*")
+        .exclude("a.*")
+        .build()
       fail()
     } catch (exception: IllegalStateException) {
       assertThat(exception).hasMessage("same rule(s) defined in both includes and excludes: a.*")

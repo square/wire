@@ -57,17 +57,19 @@ import squareup.proto3.kotlin.interop.TestProto3Optional.InteropOptional as Inte
 class InteropTest {
   @Test fun duration() {
     val checker = InteropChecker(
-        protocMessage = InteropDurationP3.newBuilder()
-            .setValue(Duration.newBuilder()
-                .setSeconds(99L)
-                .setNanos(987_654_321)
-                .build())
-            .build(),
-        canonicalJson = """{"value":"99.987654321s"}""",
-        wireAlternateJsons = listOf(
-            // TODO: move to alternateJsons once we can use ignoringUnknownFields().
-            """{"unused": false, "value":"99.987654321s"}""",
-        ),
+      protocMessage = InteropDurationP3.newBuilder()
+        .setValue(
+          Duration.newBuilder()
+            .setSeconds(99L)
+            .setNanos(987_654_321)
+            .build()
+        )
+        .build(),
+      canonicalJson = """{"value":"99.987654321s"}""",
+      wireAlternateJsons = listOf(
+        // TODO: move to alternateJsons once we can use ignoringUnknownFields().
+        """{"unused": false, "value":"99.987654321s"}""",
+      ),
     )
 
     checker.check(InteropDurationK3(durationOfSeconds(99, 987_654_321L)))
@@ -78,41 +80,41 @@ class InteropTest {
 
   @Test fun uint64() {
     val zero = InteropChecker(
-        protocMessage = InteropUint64P3.newBuilder()
-            .setValue(0L)
-            .build(),
-        canonicalJson = """{}""",
-        alternateJsons = listOf(
-            """{"value":"0"}""",
-            """{"value":0}""",
-            """{"value":"-0"}""",
-        ),
+      protocMessage = InteropUint64P3.newBuilder()
+        .setValue(0L)
+        .build(),
+      canonicalJson = """{}""",
+      alternateJsons = listOf(
+        """{"value":"0"}""",
+        """{"value":0}""",
+        """{"value":"-0"}""",
+      ),
     )
     zero.check(InteropUint64K3(0L))
     zero.check(InteropUint64J3(0L))
 
     val one = InteropChecker(
-        protocMessage = InteropUint64P3.newBuilder()
-            .setValue(1L)
-            .build(),
-        canonicalJson = """{"value":"1"}""",
-        alternateJsons = listOf(
-            """{"value":1}""",
-            """{"value":"1"}""",
-            """{"value":"1.0"}""",
-        ),
+      protocMessage = InteropUint64P3.newBuilder()
+        .setValue(1L)
+        .build(),
+      canonicalJson = """{"value":"1"}""",
+      alternateJsons = listOf(
+        """{"value":1}""",
+        """{"value":"1"}""",
+        """{"value":"1.0"}""",
+      ),
     )
     one.check(InteropUint64K3(1L))
     one.check(InteropUint64J3(1L))
 
     val max = InteropChecker(
-        protocMessage = InteropUint64P3.newBuilder()
-            .setValue(-1L)
-            .build(),
-        canonicalJson = """{"value":"18446744073709551615"}""",
-        wireAlternateJsons = listOf(
-            """{"value":"-1"}"""
-        ),
+      protocMessage = InteropUint64P3.newBuilder()
+        .setValue(-1L)
+        .build(),
+      canonicalJson = """{"value":"18446744073709551615"}""",
+      wireAlternateJsons = listOf(
+        """{"value":"-1"}"""
+      ),
     )
     max.check(InteropUint64K3(-1L))
     max.check(InteropUint64J3(-1L))
@@ -120,18 +122,18 @@ class InteropTest {
 
   @Test fun `uint64 proto 2`() {
     val max = InteropChecker(
-        protocMessage = InteropUint64P2.newBuilder()
-            .setValue(-1L)
-            .build(),
-        canonicalJson = """{"value":"18446744073709551615"}""",
-        wireCanonicalJson = """{"value":18446744073709551615}""",
-        alternateJsons = listOf(
-            """{"value":"18446744073709551615"}""",
-            """{"value":18446744073709551615}""",
-        ),
-        wireAlternateJsons = listOf(
-            """{"value":"-1"}"""
-        ),
+      protocMessage = InteropUint64P2.newBuilder()
+        .setValue(-1L)
+        .build(),
+      canonicalJson = """{"value":"18446744073709551615"}""",
+      wireCanonicalJson = """{"value":18446744073709551615}""",
+      alternateJsons = listOf(
+        """{"value":"18446744073709551615"}""",
+        """{"value":18446744073709551615}""",
+      ),
+      wireAlternateJsons = listOf(
+        """{"value":"-1"}"""
+      ),
     )
     max.check(InteropUint64K2(-1L))
     max.check(InteropUint64J2(-1L))
@@ -139,21 +141,21 @@ class InteropTest {
 
   @Test fun `camel case`() {
     val checker = InteropChecker(
-        protocMessage = InteropCamelCaseP3.newBuilder()
-            .setHelloWorld("1")
-            .setAB("2")
-            .setCccDdd("3")
-            .setEEeeFfGGg("4")
-            .setABC("5")
-            .setGHI("6")
-            .setKLM("7")
-            .setTUV("8")
-            .setXYZ("9")
-            .build(),
-        canonicalJson = """{"helloWorld":"1","aB":"2","CccDdd":"3","EEeeFfGGg":"4","aBC":"5","GHI":"6","KLM":"7","TUV":"8","XYZ":"9"}""",
-        alternateJsons = listOf(
-            """{"hello_world": "1", "a__b": "2", "_Ccc_ddd": "3", "EEee_ff_gGg": "4", "a_b_c": "5", "GHI": "6", "K_L_M": "7", "__T__U__V__": "8", "_x_y_z_": "9"}""",
-        ),
+      protocMessage = InteropCamelCaseP3.newBuilder()
+        .setHelloWorld("1")
+        .setAB("2")
+        .setCccDdd("3")
+        .setEEeeFfGGg("4")
+        .setABC("5")
+        .setGHI("6")
+        .setKLM("7")
+        .setTUV("8")
+        .setXYZ("9")
+        .build(),
+      canonicalJson = """{"helloWorld":"1","aB":"2","CccDdd":"3","EEeeFfGGg":"4","aBC":"5","GHI":"6","KLM":"7","TUV":"8","XYZ":"9"}""",
+      alternateJsons = listOf(
+        """{"hello_world": "1", "a__b": "2", "_Ccc_ddd": "3", "EEee_ff_gGg": "4", "a_b_c": "5", "GHI": "6", "K_L_M": "7", "__T__U__V__": "8", "_x_y_z_": "9"}""",
+      ),
     )
 
     checker.check(InteropCamelCaseK3("1", "2", "3", "4", "5", "6", "7", "8", "9"))
@@ -162,23 +164,23 @@ class InteropTest {
 
   @Test fun `camel case proto 2`() {
     val checker = InteropChecker(
-        protocMessage = InteropCamelCaseP2.newBuilder()
-            .setHelloWorld("1")
-            .setAB("2")
-            .setCccDdd("3")
-            .setEEeeFfGGg("4")
-            .setABC("5")
-            .setGHI("6")
-            .setKLM("7")
-            .setTUV("8")
-            .setXYZ("9")
-            .build(),
-        canonicalJson = """{"helloWorld":"1","aB":"2","CccDdd":"3","EEeeFfGGg":"4","aBC":"5","GHI":"6","KLM":"7","TUV":"8","XYZ":"9"}""",
-        """{"hello_world":"1","a__b":"2","_Ccc_ddd":"3","EEee_ff_gGg":"4","a_b_c":"5","GHI":"6","K_L_M":"7","__T__U__V__":"8","_x_y_z_":"9"}""",
-        alternateJsons = listOf(
-            // TODO(bquenaudon): support reading camelCase proto2 messages.
-            // """{"helloWorld":"1","aB":"2","CccDdd":"3","eEeeFfGGg":"4"}""",
-        )
+      protocMessage = InteropCamelCaseP2.newBuilder()
+        .setHelloWorld("1")
+        .setAB("2")
+        .setCccDdd("3")
+        .setEEeeFfGGg("4")
+        .setABC("5")
+        .setGHI("6")
+        .setKLM("7")
+        .setTUV("8")
+        .setXYZ("9")
+        .build(),
+      canonicalJson = """{"helloWorld":"1","aB":"2","CccDdd":"3","EEeeFfGGg":"4","aBC":"5","GHI":"6","KLM":"7","TUV":"8","XYZ":"9"}""",
+      """{"hello_world":"1","a__b":"2","_Ccc_ddd":"3","EEee_ff_gGg":"4","a_b_c":"5","GHI":"6","K_L_M":"7","__T__U__V__":"8","_x_y_z_":"9"}""",
+      alternateJsons = listOf(
+        // TODO(bquenaudon): support reading camelCase proto2 messages.
+        // """{"helloWorld":"1","aB":"2","CccDdd":"3","eEeeFfGGg":"4"}""",
+      )
     )
 
     checker.check(InteropCamelCaseK2("1", "2", "3", "4", "5", "6", "7", "8", "9"))
@@ -187,15 +189,15 @@ class InteropTest {
 
   @Test fun `json names`() {
     val checked = InteropChecker(
-        protocMessage = InteropJsonNameP3.newBuilder()
-            .setA("1")
-            .setPublic("2")
-            .setCamelCase("3")
-            .build(),
-        canonicalJson = """{"one":"1","two":"2","three":"3"}""",
-        alternateJsons = listOf(
-            """{"a":"1","public":"2","camel_case":"3"}""",
-        ),
+      protocMessage = InteropJsonNameP3.newBuilder()
+        .setA("1")
+        .setPublic("2")
+        .setCamelCase("3")
+        .build(),
+      canonicalJson = """{"one":"1","two":"2","three":"3"}""",
+      alternateJsons = listOf(
+        """{"a":"1","public":"2","camel_case":"3"}""",
+      ),
     )
 
     checked.check(InteropJsonNameJ3("1", "2", "3"))
@@ -204,15 +206,15 @@ class InteropTest {
 
   @Test fun `json names proto2`() {
     val checked = InteropChecker(
-        protocMessage = InteropJsonNameP2.newBuilder()
-            .setA("1")
-            .setPublic("2")
-            .setCamelCase("3")
-            .build(),
-        canonicalJson = """{"one":"1","two":"2","three":"3"}""",
-        alternateJsons = listOf(
-            """{"a":"1","public":"2","camel_case":"3"}""",
-        ),
+      protocMessage = InteropJsonNameP2.newBuilder()
+        .setA("1")
+        .setPublic("2")
+        .setCamelCase("3")
+        .build(),
+      canonicalJson = """{"one":"1","two":"2","three":"3"}""",
+      alternateJsons = listOf(
+        """{"a":"1","public":"2","camel_case":"3"}""",
+      ),
     )
 
     checked.check(InteropJsonNameJ2("1", "2", "3"))
@@ -221,13 +223,13 @@ class InteropTest {
 
   @Test fun optionalNonIdentity() {
     val checker = InteropChecker(
-        protocMessage = InteropOptionalP3.newBuilder()
-            .setValue("hello")
-            .build(),
-        canonicalJson = """{"value":"hello"}""",
-        wireAlternateJsons = listOf(
-            """{"unused": false, "value":"hello"}""",
-        ),
+      protocMessage = InteropOptionalP3.newBuilder()
+        .setValue("hello")
+        .build(),
+      canonicalJson = """{"value":"hello"}""",
+      wireAlternateJsons = listOf(
+        """{"unused": false, "value":"hello"}""",
+      ),
     )
 
     checker.check(InteropOptionalK3("hello"))
@@ -236,13 +238,13 @@ class InteropTest {
 
   @Test fun optionalIdentity() {
     val checker = InteropChecker(
-        protocMessage = InteropOptionalP3.newBuilder()
-            .setValue("")
-            .build(),
-        canonicalJson = """{"value":""}""",
-        wireAlternateJsons = listOf(
-            """{"unused": false, "value":""}""",
-        ),
+      protocMessage = InteropOptionalP3.newBuilder()
+        .setValue("")
+        .build(),
+      canonicalJson = """{"value":""}""",
+      wireAlternateJsons = listOf(
+        """{"unused": false, "value":""}""",
+      ),
     )
 
     checker.check(InteropOptionalK3(""))
@@ -256,12 +258,16 @@ class InteropTest {
         .build(),
       canonicalJson = """{"a":"Hello"}""",
     )
-    checker.check(InteropBoxOneOfK2.Builder()
-      .option(OneOf(InteropBoxOneOfK2.OPTION_A, "Hello"))
-      .build())
-    checker.check(InteropBoxOneOfK3.Builder()
-      .option(OneOf(InteropBoxOneOfK3.OPTION_A, "Hello"))
-      .build())
+    checker.check(
+      InteropBoxOneOfK2.Builder()
+        .option(OneOf(InteropBoxOneOfK2.OPTION_A, "Hello"))
+        .build()
+    )
+    checker.check(
+      InteropBoxOneOfK3.Builder()
+        .option(OneOf(InteropBoxOneOfK3.OPTION_A, "Hello"))
+        .build()
+    )
   }
 
   @Ignore("Needs to implement boxed oneofs in Java.")
@@ -371,4 +377,3 @@ class InteropTest {
     )
   }
 }
-

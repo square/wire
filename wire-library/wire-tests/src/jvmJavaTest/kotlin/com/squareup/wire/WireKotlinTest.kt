@@ -33,14 +33,14 @@ class WireKotlinTest {
   @Test fun unmodifiedMutableListReusesImmutableInstance() {
     val phone = PhoneNumber.Builder().number("555-1212").type(PhoneType.WORK).build()
     val personWithPhone = Person.Builder()
-        .id(1)
-        .name("Joe Schmoe")
-        .phone(listOf(phone))
-        .build()
+      .id(1)
+      .name("Joe Schmoe")
+      .phone(listOf(phone))
+      .build()
     val personNoPhone = Person.Builder()
-        .id(1)
-        .name("Joe Schmoe")
-        .build()
+      .id(1)
+      .name("Joe Schmoe")
+      .build()
     try {
       personWithPhone.phone[0] = null
       fail()
@@ -56,27 +56,27 @@ class WireKotlinTest {
 
   @Test fun optionsOnMessageType() {
     val myMessageOptionTwo = MessageWithOptions::class.annotations
-        .filterIsInstance<MyMessageOptionTwoOption>()
-        .first()
+      .filterIsInstance<MyMessageOptionTwoOption>()
+      .first()
     assertThat(myMessageOptionTwo.value).isEqualTo(91011.0f)
     val myMessageOptionFour = MessageWithOptions::class.annotations
-        .filterIsInstance<MyMessageOptionFourOption>()
-        .first()
+      .filterIsInstance<MyMessageOptionFourOption>()
+      .first()
     assertThat(myMessageOptionFour.value).isEqualTo(FooBar.FooBarBazEnum.FOO)
   }
 
   @Test fun optionsOnField() {
     val myFieldOptionOne = FooBar::class.members.first { it.name == "foo" }.annotations
-        .filterIsInstance<MyFieldOptionOneOption>()
-        .first()
+      .filterIsInstance<MyFieldOptionOneOption>()
+      .first()
     assertThat(myFieldOptionOne.value).isEqualTo(17)
     val myFieldOptionTwo = FooBar::class.members.first { it.name == "bar" }.annotations
-        .filterIsInstance<MyFieldOptionTwoOption>()
-        .first()
+      .filterIsInstance<MyFieldOptionTwoOption>()
+      .first()
     assertThat(myFieldOptionTwo.value).isEqualTo(33.5f)
     val myFieldOptionThree = FooBar::class.members.first { it.name == "baz" }.annotations
-        .filterIsInstance<MyFieldOptionThreeOption>()
-        .first()
+      .filterIsInstance<MyFieldOptionThreeOption>()
+      .first()
     assertThat(myFieldOptionThree.value).isEqualTo(FooBar.FooBarBazEnum.BAR)
   }
 }

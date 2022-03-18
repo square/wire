@@ -24,9 +24,9 @@ import kotlin.test.Test
 class ProtoAdapterTest {
   @Test fun fromClass() {
     val person = Person.Builder()
-        .id(99)
-        .name("Omar Little")
-        .build()
+      .id(99)
+      .name("Omar Little")
+      .build()
     val encoded = "0a0b4f6d6172204c6974746c651063".decodeHex()
     val personAdapter = ProtoAdapter.get(Person::class.java)
     assertThat(personAdapter.encode(person).toByteString()).isEqualTo(encoded)
@@ -35,9 +35,9 @@ class ProtoAdapterTest {
 
   @Test fun fromInstanceSameAsFromClass() {
     val person = Person.Builder()
-        .id(99)
-        .name("Omar Little")
-        .build()
+      .id(99)
+      .name("Omar Little")
+      .build()
     val instanceAdapter = ProtoAdapter.get(person)
     val classAdapter = ProtoAdapter.get(Person::class.java)
     assertThat(instanceAdapter).isSameAs(classAdapter)

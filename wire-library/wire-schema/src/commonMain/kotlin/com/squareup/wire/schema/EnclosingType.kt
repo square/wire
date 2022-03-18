@@ -51,8 +51,8 @@ data class EnclosingType(
   }
 
   fun toElement() = MessageElement(
-      location = location,
-      name = type.simpleName,
-      nestedTypes = toElements(nestedTypes)
+    location = location,
+    name = type.simpleName,
+    nestedTypes = toElements(nestedTypes)
   )
 }

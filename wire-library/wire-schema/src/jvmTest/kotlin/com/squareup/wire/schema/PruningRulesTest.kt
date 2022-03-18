@@ -47,8 +47,8 @@ class PruningRulesTest {
   @Test
   fun includeType() {
     val set = PruningRules.Builder()
-        .addRoot("a.b.Message")
-        .build()
+      .addRoot("a.b.Message")
+      .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Message.Nested")).isEqualTo(Policy.UNSPECIFIED)
@@ -59,8 +59,8 @@ class PruningRulesTest {
   @Test
   fun includeMember() {
     val set = PruningRules.Builder()
-        .addRoot("a.b.Message#member")
-        .build()
+      .addRoot("a.b.Message#member")
+      .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.UNSPECIFIED)
     assertThat(policy(set, "a.b.Message.Nested")).isEqualTo(Policy.UNSPECIFIED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED)
@@ -72,8 +72,8 @@ class PruningRulesTest {
   @Test
   fun includePackage() {
     val set = PruningRules.Builder()
-        .addRoot("a.b.*")
-        .build()
+      .addRoot("a.b.*")
+      .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.c.Message")).isEqualTo(Policy.INCLUDED)
@@ -85,8 +85,8 @@ class PruningRulesTest {
   @Test
   fun includeAll() {
     val set = PruningRules.Builder()
-        .addRoot("*")
-        .build()
+      .addRoot("*")
+      .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED)
   }
@@ -94,8 +94,8 @@ class PruningRulesTest {
   @Test
   fun excludeType() {
     val set = PruningRules.Builder()
-        .prune("a.b.Message")
-        .build()
+      .prune("a.b.Message")
+      .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.EXCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED)
     assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.INCLUDED)
@@ -105,8 +105,8 @@ class PruningRulesTest {
   @Test
   fun excludeMember() {
     val set = PruningRules.Builder()
-        .prune("a.b.Message#member")
-        .build()
+      .prune("a.b.Message#member")
+      .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED)
     assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.INCLUDED)
@@ -117,8 +117,8 @@ class PruningRulesTest {
   @Test
   fun excludePackage() {
     val set = PruningRules.Builder()
-        .prune("a.b.*")
-        .build()
+      .prune("a.b.*")
+      .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.EXCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED)
     assertThat(policy(set, "a.b.c.Message")).isEqualTo(Policy.EXCLUDED)
@@ -130,9 +130,9 @@ class PruningRulesTest {
   @Test
   fun excludePackageDoesNotTakePrecedenceOverIncludeType() {
     val set = PruningRules.Builder()
-        .prune("a.b.*")
-        .addRoot("a.b.Message")
-        .build()
+      .prune("a.b.*")
+      .addRoot("a.b.Message")
+      .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.EXCLUDED)
@@ -144,9 +144,9 @@ class PruningRulesTest {
   @Test
   fun excludeTypeDoesNotTakePrecedenceOverIncludeMember() {
     val set = PruningRules.Builder()
-        .prune("a.b.Message")
-        .addRoot("a.b.Message#member")
-        .build()
+      .prune("a.b.Message")
+      .addRoot("a.b.Message#member")
+      .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.EXCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.EXCLUDED)
@@ -157,9 +157,9 @@ class PruningRulesTest {
   @Test
   fun excludeMemberTakesPrecedenceOverIncludeType() {
     val set = PruningRules.Builder()
-        .prune("a.b.Message#member")
-        .addRoot("a.b.Message")
-        .build()
+      .prune("a.b.Message#member")
+      .addRoot("a.b.Message")
+      .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED)
     assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.INCLUDED)
@@ -170,10 +170,10 @@ class PruningRulesTest {
   @Test
   fun mostPreciseRuleTakesPrecedence() {
     val set = PruningRules.Builder()
-        .prune("a.b.Message#member")
-        .addRoot("a.b.Message")
-        .prune("a.b.*")
-        .build()
+      .prune("a.b.Message#member")
+      .addRoot("a.b.Message")
+      .prune("a.b.*")
+      .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED)
     assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.INCLUDED)
@@ -184,12 +184,14 @@ class PruningRulesTest {
   @Test
   fun trackingUnusedIncludes() {
     val set = PruningRules.Builder()
-        .addRoot("a.*")
-        .addRoot("b.IncludedType")
-        .addRoot("c.IncludedMember#member")
-        .build()
-    assertThat(set.unusedRoots()).containsExactly("a.*", "b.IncludedType",
-        "c.IncludedMember#member")
+      .addRoot("a.*")
+      .addRoot("b.IncludedType")
+      .addRoot("c.IncludedMember#member")
+      .build()
+    assertThat(set.unusedRoots()).containsExactly(
+      "a.*", "b.IncludedType",
+      "c.IncludedMember#member"
+    )
 
     set.isRoot(ProtoType.get("a.*"))
     assertThat(set.unusedRoots()).containsExactly("b.IncludedType", "c.IncludedMember#member")
@@ -204,12 +206,14 @@ class PruningRulesTest {
   @Test
   fun trackingUnusedExcludes() {
     val set = PruningRules.Builder()
-        .prune("a.*")
-        .prune("b.ExcludedType")
-        .prune("c.ExcludedMember#member")
-        .build()
-    assertThat(set.unusedPrunes()).containsExactly("a.*", "b.ExcludedType",
-        "c.ExcludedMember#member")
+      .prune("a.*")
+      .prune("b.ExcludedType")
+      .prune("c.ExcludedMember#member")
+      .build()
+    assertThat(set.unusedPrunes()).containsExactly(
+      "a.*", "b.ExcludedType",
+      "c.ExcludedMember#member"
+    )
 
     set.isRoot(ProtoType.get("a.*"))
     assertThat(set.unusedPrunes()).containsExactly("b.ExcludedType", "c.ExcludedMember#member")
@@ -224,9 +228,9 @@ class PruningRulesTest {
   @Test
   fun trackingUnusedIncludesPrecedence() {
     val set = PruningRules.Builder()
-        .addRoot("a.*")
-        .addRoot("a.IncludedType")
-        .build()
+      .addRoot("a.*")
+      .addRoot("a.IncludedType")
+      .build()
     set.isRoot(ProtoMember.get("a.IncludedType#member"))
     assertThat(set.unusedRoots()).containsExactly("a.*")
   }
@@ -234,9 +238,9 @@ class PruningRulesTest {
   @Test
   fun trackingUnusedExcludesPrecedence() {
     val set = PruningRules.Builder()
-        .prune("a.*")
-        .prune("a.IncludedType")
-        .build()
+      .prune("a.*")
+      .prune("a.IncludedType")
+      .build()
     set.isRoot(ProtoMember.get("a.IncludedType#member"))
     assertThat(set.unusedPrunes()).containsExactly("a.*")
   }
@@ -245,9 +249,9 @@ class PruningRulesTest {
   fun crashForConflictingRules() {
     try {
       PruningRules.Builder()
-          .addRoot("a.*")
-          .prune("a.*")
-          .build()
+        .addRoot("a.*")
+        .prune("a.*")
+        .build()
       fail()
     } catch (exception: IllegalStateException) {
       assertThat(exception).hasMessage("same rule(s) defined in both roots and prunes: a.*")
@@ -258,9 +262,9 @@ class PruningRulesTest {
   fun onlyCannotBeSetAlongSideSince() {
     try {
       PruningRules.Builder()
-          .only("3")
-          .since("3")
-          .build()
+        .only("3")
+        .since("3")
+        .build()
       fail()
     } catch (exception: IllegalStateException) {
       assertThat(exception).hasMessage("only cannot be set along side since and until")
@@ -271,9 +275,9 @@ class PruningRulesTest {
   fun onlyCannotBeSetAlongSideUntil() {
     try {
       PruningRules.Builder()
-          .only("3")
-          .until("3.1")
-          .build()
+        .only("3")
+        .until("3.1")
+        .build()
       fail()
     } catch (exception: IllegalStateException) {
       assertThat(exception).hasMessage("only cannot be set along side since and until")

@@ -50,27 +50,27 @@ actual abstract class ProtoAdapter<E> actual constructor(
 
   // Obsolete; for Java classes generated before syntax was added.
   constructor(fieldEncoding: FieldEncoding, type: Class<*>, typeUrl: String?) :
-      this(fieldEncoding, type.kotlin, typeUrl, Syntax.PROTO_2)
+    this(fieldEncoding, type.kotlin, typeUrl, Syntax.PROTO_2)
 
   // Obsolete; for Java classes generated before identity was added.
   constructor(fieldEncoding: FieldEncoding, type: Class<*>, typeUrl: String?, syntax: Syntax) :
-      this(fieldEncoding, type.kotlin, typeUrl, syntax)
+    this(fieldEncoding, type.kotlin, typeUrl, syntax)
 
   // Obsolete; for Java classes generated before sourceFile was added.
   constructor(fieldEncoding: FieldEncoding, type: Class<*>, typeUrl: String?, syntax: Syntax, identity: E?) :
-      this(fieldEncoding, type.kotlin, typeUrl, syntax, identity, null)
+    this(fieldEncoding, type.kotlin, typeUrl, syntax, identity, null)
 
   // Obsolete; for Kotlin classes generated before typeUrl was added.
   constructor(fieldEncoding: FieldEncoding, type: KClass<*>?) :
-      this(fieldEncoding, type, null, Syntax.PROTO_2)
+    this(fieldEncoding, type, null, Syntax.PROTO_2)
 
   // Obsolete; for Kotlin classes generated before syntax was added.
   constructor(fieldEncoding: FieldEncoding, type: KClass<*>?, typeUrl: String?) :
-      this(fieldEncoding, type, typeUrl, Syntax.PROTO_2)
+    this(fieldEncoding, type, typeUrl, Syntax.PROTO_2)
 
   // Obsolete; for Kotlin classes generated before identity was added.
   constructor(fieldEncoding: FieldEncoding, type: KClass<*>?, typeUrl: String?, syntax: Syntax) :
-      this(fieldEncoding, type, typeUrl, syntax, null)
+    this(fieldEncoding, type, typeUrl, syntax, null)
 
   // Obsolete; for Kotlin classes generated before sourceFile was added.
   constructor(
@@ -80,7 +80,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     syntax: Syntax,
     identity: E?
   ) :
-      this(fieldEncoding, type, typeUrl, syntax, identity, null)
+    this(fieldEncoding, type, typeUrl, syntax, identity, null)
 
   constructor(
     fieldEncoding: FieldEncoding,
@@ -171,12 +171,14 @@ actual abstract class ProtoAdapter<E> actual constructor(
       "Unable to pack a length-delimited type."
     }
     return packedAdapter ?: throw UnsupportedOperationException(
-        "Can't create a packed adapter from a packed or repeated adapter.")
+      "Can't create a packed adapter from a packed or repeated adapter."
+    )
   }
 
   actual fun asRepeated(): ProtoAdapter<List<E>> {
     return repeatedAdapter ?: throw UnsupportedOperationException(
-        "Can't create a repeated adapter from a repeated or packed adapter.")
+      "Can't create a repeated adapter from a repeated or packed adapter."
+    )
   }
 
   internal val isStruct: Boolean
@@ -307,18 +309,20 @@ actual abstract class ProtoAdapter<E> actual constructor(
      * such as [Duration] and [Instant]. This proto adapter is used when the corresponding
      * `java.time` type is missing from the JVM classpath.
      */
-    class UnsupportedTypeProtoAdapter : ProtoAdapter<Nothing>(FieldEncoding.LENGTH_DELIMITED,
-        Nothing::class) {
+    class UnsupportedTypeProtoAdapter : ProtoAdapter<Nothing>(
+      FieldEncoding.LENGTH_DELIMITED,
+      Nothing::class
+    ) {
       override fun redact(value: Nothing) =
-          throw IllegalStateException("Operation not supported.")
+        throw IllegalStateException("Operation not supported.")
       override fun encodedSize(value: Nothing) =
-          throw IllegalStateException("Operation not supported.")
+        throw IllegalStateException("Operation not supported.")
       override fun encode(writer: ProtoWriter, value: Nothing) =
-          throw IllegalStateException("Operation not supported.")
+        throw IllegalStateException("Operation not supported.")
       override fun encode(writer: ReverseProtoWriter, value: Nothing) =
         throw IllegalStateException("Operation not supported.")
       override fun decode(reader: ProtoReader): Nothing =
-          throw IllegalStateException("Operation not supported.")
+        throw IllegalStateException("Operation not supported.")
     }
   }
 }

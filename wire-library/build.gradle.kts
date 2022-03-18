@@ -46,11 +46,13 @@ allprojects {
 subprojects {
   apply(plugin = "com.diffplug.spotless")
   configure<SpotlessExtension> {
+    setEnforceCheck(false)
     kotlin {
       target("**/*.kt")
       ktlint(versions.ktlint).userData(kotlin.collections.mapOf("indent_size" to "2"))
       trimTrailingWhitespace()
       endWithNewline()
+      toggleOffOn()
     }
   }
 

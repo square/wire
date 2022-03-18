@@ -95,11 +95,11 @@ class SyntaxReader(
         c = data[pos++]
         when (c) {
           'a' -> c = '\u0007' // Alert.
-          'b' -> c = '\b'     // Backspace.
+          'b' -> c = '\b' // Backspace.
           'f' -> c = '\u000c' // Form feed.
-          'n' -> c = '\n'     // Newline.
-          'r' -> c = '\r'     // Carriage return.
-          't' -> c = '\t'     // Horizontal tab.
+          'n' -> c = '\n' // Newline.
+          'r' -> c = '\r' // Carriage return.
+          't' -> c = '\t' // Horizontal tab.
           'v' -> c = '\u000b' // Vertical tab.
           'x', 'X' -> c = readNumericEscape(16, 2)
           '0', '1', '2', '3', '4', '5', '6', '7' -> {

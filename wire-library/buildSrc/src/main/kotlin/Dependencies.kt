@@ -21,6 +21,7 @@ object versions {
   val junit = "4.12"
   val kotlin = "1.6.10"
   val kotlinpoet = "1.10.2"
+  val ktlint = "0.42.1"
   val moshi = "1.13.0"
   val okhttp = "4.9.3"
   val protobuf = "3.19.4"
@@ -34,6 +35,7 @@ object deps {
     val kotlinSerialization = "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
     val shadow = "com.github.jengelman.gradle.plugins:shadow:4.0.1"
     val japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.3.1"
+    val spotless = "com.diffplug.spotless:spotless-plugin-gradle:6.3.0"
   }
 
   val android = "com.google.android:android:${versions.android}"

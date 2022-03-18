@@ -107,14 +107,16 @@ class MarkSet(
 
     // We do not contain non-root members whose referenced type is excluded.
     if (!rootMemberTypes.containsKey(protoMember) &&
-        memberType != null && pruningRules.prunes(memberType)) {
+      memberType != null && pruningRules.prunes(memberType)
+    ) {
       return false
     }
 
     // A member cannot be included if its referencing type is excluded unless a root member of this
     // referenced type exists.
     if (pruningRules.prunes(protoMember.type) &&
-        rootMemberTypes.containsValue(protoMember.type)) {
+      rootMemberTypes.containsValue(protoMember.type)
+    ) {
       return true
     }
 

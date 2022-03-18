@@ -35,22 +35,22 @@ class UnknownFieldsTest {
   fun testUnknownFields() {
     val v1_obj = NestedVersionOne(i = 111)
     val v2_obj = NestedVersionTwo(
-        i = 111,
-        v2_i = 12345,
-        v2_s = "222",
-        v2_f32 = 67890,
-        v2_f64 = 98765L,
-        v2_rs = listOf("1", "2")
+      i = 111,
+      v2_i = 12345,
+      v2_s = "222",
+      v2_f32 = 67890,
+      v2_f64 = 98765L,
+      v2_rs = listOf("1", "2")
     )
 
     val v2 = VersionTwo(
-        i = 111,
-        v2_i = 12345,
-        v2_s = "222",
-        v2_f32 = 67890,
-        v2_f64 = 98765L,
-        v2_rs = listOf("1", "2"),
-        obj = v2_obj
+      i = 111,
+      v2_i = 12345,
+      v2_s = "222",
+      v2_f32 = 67890,
+      v2_f64 = 98765L,
+      v2_rs = listOf("1", "2"),
+      obj = v2_obj
     )
     assertEquals(111, v2.i)
     assertEquals(v2.obj!!.copy(), v2.obj)
@@ -79,8 +79,8 @@ class UnknownFieldsTest {
 
     // Unknown fields can be removed for equals() and hashCode();
     val v1Known = v1.copy(
-        obj = v1.obj.copy(unknownFields = ByteString.EMPTY),
-        unknownFields = ByteString.EMPTY
+      obj = v1.obj.copy(unknownFields = ByteString.EMPTY),
+      unknownFields = ByteString.EMPTY
     )
     assertEquals(v1Simple, v1Known)
     assertEquals(v1Simple.hashCode(), v1Known.hashCode())

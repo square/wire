@@ -39,7 +39,7 @@ object ImplBaseGenerator {
       TypeSpec.classBuilder("${service.name}ImplBase")
         .addModifiers(KModifier.ABSTRACT)
         .addSuperinterface(ClassName("io.grpc", "BindableService"))
-        .apply { addImplBaseBody(generator,this, service) }
+        .apply { addImplBaseBody(generator, this, service) }
         .build()
     )
 
@@ -51,19 +51,21 @@ object ImplBaseGenerator {
     val requestType = generator.classNameFor(rpc.requestType!!)
     val responseType = generator.classNameFor(rpc.responseType!!)
     return when {
-      rpc.requestStreaming -> builder
-        .addParameter(
-          "response", ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(responseType)
-        )
-        .returns(
-          ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(requestType)
-        )
-      else -> builder
-        .addParameter("request", requestType)
-        .addParameter(
-          "response", ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(responseType)
-        )
-        .returns(UNIT)
+      rpc.requestStreaming ->
+        builder
+          .addParameter(
+            "response", ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(responseType)
+          )
+          .returns(
+            ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(requestType)
+          )
+      else ->
+        builder
+          .addParameter("request", requestType)
+          .addParameter(
+            "response", ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(responseType)
+          )
+          .returns(UNIT)
     }
   }
 
@@ -133,7 +135,8 @@ object ImplBaseGenerator {
         """.addMethod(
           get${it.name}Method(),
           %M(this@${service.name}ImplBase::${it.name})
-        )""".trimIndent(),
+        )
+        """.trimIndent(),
         MemberName(ClassName("io.grpc.stub", "ServerCalls"), bindServiceCallType(it))
       )
     }

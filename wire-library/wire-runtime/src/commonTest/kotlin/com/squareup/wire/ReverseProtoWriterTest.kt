@@ -19,7 +19,6 @@ import com.squareup.wire.FieldEncoding.LENGTH_DELIMITED
 import com.squareup.wire.ProtoAdapter.Companion.newMapAdapter
 import com.squareup.wire.Syntax.PROTO_2
 import okio.Buffer
-import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.encodeUtf8
 import okio.utf8Size
 import kotlin.test.Test
@@ -261,7 +260,7 @@ class ReverseProtoWriterTest {
           Person.ADAPTER.encodeWithTag(writer, 2, value.assignee)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: Task): Unit {
+        public override fun encode(writer: ReverseProtoWriter, `value`: Task) {
           Person.ADAPTER.encodeWithTag(writer, 2, value.assignee)
           STRING.encodeWithTag(writer, 1, value.description)
         }

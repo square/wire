@@ -17,9 +17,9 @@ package com.squareup.wire
 
 import com.squareup.wire.internal.RealGrpcCall
 import com.squareup.wire.internal.RealGrpcStreamingCall
-import kotlin.reflect.KClass
 import okhttp3.Call
 import okhttp3.OkHttpClient
+import kotlin.reflect.KClass
 
 actual class GrpcClient private constructor(
   internal val client: Call.Factory,
@@ -74,22 +74,24 @@ actual class GrpcClient private constructor(
     requestMetadata: Map<String, String>,
     requestBody: GrpcRequestBody
   ): Call {
-    return client.newCall(GrpcRequestBuilder()
-      .url(baseUrl.resolve(method.path)!!)
-      .addHeader("te", "trailers")
-      .addHeader("grpc-trace-bin", "")
-      .addHeader("grpc-accept-encoding", "gzip")
-      .apply {
-        if (minMessageToCompress < Long.MAX_VALUE) {
-          addHeader("grpc-encoding", "gzip")
+    return client.newCall(
+      GrpcRequestBuilder()
+        .url(baseUrl.resolve(method.path)!!)
+        .addHeader("te", "trailers")
+        .addHeader("grpc-trace-bin", "")
+        .addHeader("grpc-accept-encoding", "gzip")
+        .apply {
+          if (minMessageToCompress < Long.MAX_VALUE) {
+            addHeader("grpc-encoding", "gzip")
+          }
+          for ((key, value) in requestMetadata) {
+            addHeader(key, value)
+          }
         }
-        for ((key, value) in requestMetadata) {
-          addHeader(key, value)
-        }
-      }
-      .tag(GrpcMethod::class.java, method)
-      .method("POST", requestBody)
-      .build())
+        .tag(GrpcMethod::class.java, method)
+        .method("POST", requestBody)
+        .build()
+    )
   }
 
   class Builder {

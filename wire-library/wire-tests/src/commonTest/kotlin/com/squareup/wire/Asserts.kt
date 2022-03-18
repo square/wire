@@ -22,8 +22,10 @@ fun assertFloatEquals(expected: Float, actual: Float, delta: Float = 0.01f) {
   require(delta >= 0) { "delta can't be negative, was $delta." }
   val diff = abs(expected - actual)
   if (diff > delta) {
-    fail("Expected difference between <$expected> and <$actual> to not be greater than <$delta>," +
-        " but was <$diff>.")
+    fail(
+      "Expected difference between <$expected> and <$actual> to not be greater than <$delta>," +
+        " but was <$diff>."
+    )
   }
 }
 
