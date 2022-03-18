@@ -1,3 +1,4 @@
+import com.diffplug.gradle.spotless.SpotlessExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -9,6 +10,7 @@ buildscript {
     classpath(deps.animalSniffer.gradle)
     classpath(deps.plugins.android)
     classpath(deps.protobuf.gradlePlugin)
+    classpath(deps.plugins.spotless)
   }
 
   repositories {
@@ -39,6 +41,16 @@ allprojects {
 }
 
 subprojects {
+  apply(plugin = "com.diffplug.spotless")
+  configure<SpotlessExtension> {
+    kotlin {
+      target("**/*.kt")
+      ktlint(versions.ktlint).userData(kotlin.collections.mapOf("indent_size" to "2"))
+      trimTrailingWhitespace()
+      endWithNewline()
+    }
+  }
+
   tasks.withType<KotlinCompile> {
     kotlinOptions {
       jvmTarget = "1.8"
