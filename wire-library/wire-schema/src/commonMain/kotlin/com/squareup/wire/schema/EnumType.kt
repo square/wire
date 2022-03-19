@@ -86,22 +86,24 @@ data class EnumType(
 
   private fun validateTagNameAmbiguity(allowAlias: Boolean, linker: Linker) {
     val nameToConstants: Map<String, List<EnumConstant>> =
-        constants.groupBy {
-          buildString(it.name.length) {
-            for (char in it.name) {
-              if (char in 'A'..'Z') append(char - ('A' - 'a'))
-              else append(char)
-            }
+      constants.groupBy {
+        buildString(it.name.length) {
+          for (char in it.name) {
+            if (char in 'A'..'Z') append(char - ('A' - 'a'))
+            else append(char)
           }
         }
+      }
 
     for ((_, constants) in nameToConstants) {
       if (constants.size > 1) {
         if (allowAlias && constants.groupBy { it.tag }.size == 1) continue
 
         val error = buildString {
-          append("Ambiguous constant names (if you are using allow_alias, use the same value for " +
-              "these constants):")
+          append(
+            "Ambiguous constant names (if you are using allow_alias, use the same value for " +
+              "these constants):"
+          )
           constants.forEach { it ->
             append("\n  ${it.name}:${it.tag} (${it.location})")
           }
@@ -115,8 +117,8 @@ data class EnumType(
     val tagToConstants = linkedMapOf<Int, MutableList<EnumConstant>>()
     constants.forEach {
       tagToConstants
-          .getOrPut(it.tag) { mutableListOf() }
-          .add(it)
+        .getOrPut(it.tag) { mutableListOf() }
+        .add(it)
     }
 
     for ((tag, constants) in tagToConstants) {
@@ -137,8 +139,8 @@ data class EnumType(
     if (!markSet.contains(type)) return null
 
     val retainedConstants = constants
-        .filter { markSet.contains(ProtoMember.get(type, it.name)) }
-        .map { it.retainAll(schema, markSet) }
+      .filter { markSet.contains(ProtoMember.get(type, it.name)) }
+      .map { it.retainAll(schema, markSet) }
 
     val result = EnumType(
       type = type,

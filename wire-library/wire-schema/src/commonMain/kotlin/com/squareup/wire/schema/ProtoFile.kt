@@ -36,15 +36,15 @@ data class ProtoFile(
 
   fun toElement(): ProtoFileElement {
     return ProtoFileElement(
-        location,
-        packageName,
-        syntax,
-        imports,
-        publicImports,
-        Type.toElements(types),
-        Service.toElements(services),
-        Extend.toElements(extendList),
-        options.elements
+      location,
+      packageName,
+      syntax,
+      imports,
+      publicImports,
+      Type.toElements(types),
+      Service.toElements(services),
+      Extend.toElements(extendList),
+      options.elements
     )
   }
 
@@ -100,8 +100,10 @@ data class ProtoFile(
 
     val retainedOptions = options.retainAll(schema, markSet)
 
-    val result = ProtoFile(location, imports, publicImports, packageName, retainedTypes,
-        retainedServices, retainedExtends, retainedOptions, syntax)
+    val result = ProtoFile(
+      location, imports, publicImports, packageName, retainedTypes,
+      retainedServices, retainedExtends, retainedOptions, syntax
+    )
     result.javaPackage = javaPackage
     return result
   }
@@ -116,8 +118,10 @@ data class ProtoFile(
 
     val retainedOptions = options.retainLinked()
 
-    val result = ProtoFile(location, imports, publicImports, packageName, retainedTypes,
-        retainedServices, retainedExtends, retainedOptions, syntax)
+    val result = ProtoFile(
+      location, imports, publicImports, packageName, retainedTypes,
+      retainedServices, retainedExtends, retainedOptions, syntax
+    )
     result.javaPackage = javaPackage
     return result
   }
@@ -129,19 +133,23 @@ data class ProtoFile(
       val importedProtoFile = findProtoFile(retained, path) ?: continue
 
       if (path == "google/protobuf/descriptor.proto" &&
-          extendList.any { it.name.startsWith("google.protobuf.")}) {
+        extendList.any { it.name.startsWith("google.protobuf.") }
+      ) {
         // If we extend a google protobuf type, we should keep the import.
         retainedImports.add(path)
       } else if (importedProtoFile.types.isNotEmpty() ||
-          importedProtoFile.services.isNotEmpty() ||
-          importedProtoFile.extendList.isNotEmpty()) {
+        importedProtoFile.services.isNotEmpty() ||
+        importedProtoFile.extendList.isNotEmpty()
+      ) {
         retainedImports.add(path)
       }
     }
 
     return if (imports.size != retainedImports.size) {
-      val result = ProtoFile(location, retainedImports, publicImports, packageName, types, services,
-          extendList, options, syntax)
+      val result = ProtoFile(
+        location, retainedImports, publicImports, packageName, types, services,
+        extendList, options, syntax
+      )
       result.javaPackage = javaPackage
       result
     } else {
@@ -178,9 +186,11 @@ data class ProtoFile(
 
       val options = Options(Options.FILE_OPTIONS, protoFileElement.options)
 
-      return ProtoFile(protoFileElement.location, protoFileElement.imports,
-          protoFileElement.publicImports, packageName, types, services, wireExtends, options,
-          protoFileElement.syntax)
+      return ProtoFile(
+        protoFileElement.location, protoFileElement.imports,
+        protoFileElement.publicImports, packageName, types, services, wireExtends, options,
+        protoFileElement.syntax
+      )
     }
 
     private fun findProtoFile(protoFiles: List<ProtoFile>, path: String): ProtoFile? {

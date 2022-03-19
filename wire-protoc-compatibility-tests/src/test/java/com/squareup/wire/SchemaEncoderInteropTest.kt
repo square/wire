@@ -21,9 +21,9 @@ import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.SchemaLoader
 import com.squareup.wire.schema.internal.SchemaEncoder
-import java.nio.file.FileSystems
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import java.nio.file.FileSystems
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass as AllTypesOuterClassP2
 import squareup.proto2.kotlin.interop.InteropServiceOuterClass as InteropServiceOuterClassP2
 import squareup.proto2.kotlin.interop.InteropTest as InteropTestP2

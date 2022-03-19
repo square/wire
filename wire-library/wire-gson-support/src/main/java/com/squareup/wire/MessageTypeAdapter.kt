@@ -27,25 +27,25 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   private val jsonAdapters: List<TypeAdapter<Any?>>
 ) : TypeAdapter<M>() {
   private val nameToField = mutableMapOf<String, JsonField<M, B>>()
-      .also { map ->
-        for (index in jsonAdapters.indices) {
-          val fieldBinding = messageAdapter.fieldBindingsArray[index]
-          val jsonField = JsonField(jsonAdapters[index], fieldBinding)
-          map[messageAdapter.jsonNames[index]] = jsonField
-          val alternateName = messageAdapter.jsonAlternateNames[index]
-          if (alternateName != null) {
-            map[alternateName] = jsonField
-          }
+    .also { map ->
+      for (index in jsonAdapters.indices) {
+        val fieldBinding = messageAdapter.fieldBindingsArray[index]
+        val jsonField = JsonField(jsonAdapters[index], fieldBinding)
+        map[messageAdapter.jsonNames[index]] = jsonField
+        val alternateName = messageAdapter.jsonAlternateNames[index]
+        if (alternateName != null) {
+          map[alternateName] = jsonField
         }
       }
+    }
 
   @Throws(IOException::class)
   override fun write(out: JsonWriter, message: M?) {
     out.beginObject()
     messageAdapter.writeAllFields(
-        message = message,
-        jsonAdapters = jsonAdapters,
-        redactedFieldsAdapter = null
+      message = message,
+      jsonAdapters = jsonAdapters,
+      redactedFieldsAdapter = null
     ) { name, value, jsonAdapter ->
       out.name(name)
       jsonAdapter.write(out, value)

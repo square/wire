@@ -19,7 +19,8 @@ class SchemaEncoderTest {
   @Test fun `encode schema`() {
     val schema = RepoBuilder()
       .add(
-        "handle_service.proto", """
+        "handle_service.proto",
+        """
             |syntax = "proto2";
             |
             |import "google/protobuf/descriptor.proto";
@@ -56,78 +57,114 @@ class SchemaEncoderTest {
     val encoded = SchemaEncoder(schema).encode(handleServiceProto)
 
     val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
-    assertThat(fileDescriptorProto).isEqualTo(FileDescriptorProto.newBuilder()
-      .setName("handle_service.proto")
-      .addDependency("google/protobuf/descriptor.proto")
-      .addEnumType(EnumDescriptorProto.newBuilder()
-        .setName("GreekLetter")
-        .addValue(EnumValueDescriptorProto.newBuilder()
-          .setName("ALPHA")
-          .setNumber(1)
-          .build())
-        .addValue(EnumValueDescriptorProto.newBuilder()
-          .setName("BETA")
-          .setNumber(2)
-          .build())
-        .build())
-      .addMessageType(DescriptorProto.newBuilder()
-        .setName("HandleRequest")
-        .build())
-      .addMessageType(DescriptorProto.newBuilder()
-        .setName("HandleResponse")
-        .build())
-      .addService(ServiceDescriptorProto.newBuilder()
-        .setName("HandleService")
-        .addMethod(MethodDescriptorProto.newBuilder()
-          .setName("Handle")
-          .setInputType(".HandleRequest")
-          .setOutputType(".HandleResponse")
-          .setOptions(MethodOptions.newBuilder()
-            .setUnknownFields(UnknownFieldSet.newBuilder()
-              .addField(22000, UnknownFieldSet.Field.newBuilder()
-                .addFixed64(java.lang.Double.doubleToLongBits(2.1))
-                .build())
-              .addField(22001, UnknownFieldSet.Field.newBuilder()
-                .addVarint(2L)
-                .build())
-              .addField(22002, UnknownFieldSet.Field.newBuilder()
-                .addVarint(1L)
-                .addVarint(2L)
-                .addVarint(1L)
-                .build())
-              .build())
-          .build())
-        .build()))
-      .addExtension(FieldDescriptorProto.newBuilder()
-        .setName("timeout")
-        .setExtendee(".google.protobuf.MethodOptions")
-        .setNumber(22000)
-        .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
-        .setType(FieldDescriptorProto.Type.TYPE_DOUBLE)
-        .build())
-      .addExtension(FieldDescriptorProto.newBuilder()
-        .setName("greek_letter")
-        .setExtendee(".google.protobuf.MethodOptions")
-        .setNumber(22001)
-        .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
-        .setType(FieldDescriptorProto.Type.TYPE_ENUM)
-        .setTypeName(".GreekLetter")
-        .build())
-      .addExtension(FieldDescriptorProto.newBuilder()
-        .setName("fraternity")
-        .setExtendee(".google.protobuf.MethodOptions")
-        .setNumber(22002)
-        .setLabel(FieldDescriptorProto.Label.LABEL_REPEATED)
-        .setType(FieldDescriptorProto.Type.TYPE_ENUM)
-        .setTypeName(".GreekLetter")
-        .build())
-      .build())
+    assertThat(fileDescriptorProto).isEqualTo(
+      FileDescriptorProto.newBuilder()
+        .setName("handle_service.proto")
+        .addDependency("google/protobuf/descriptor.proto")
+        .addEnumType(
+          EnumDescriptorProto.newBuilder()
+            .setName("GreekLetter")
+            .addValue(
+              EnumValueDescriptorProto.newBuilder()
+                .setName("ALPHA")
+                .setNumber(1)
+                .build()
+            )
+            .addValue(
+              EnumValueDescriptorProto.newBuilder()
+                .setName("BETA")
+                .setNumber(2)
+                .build()
+            )
+            .build()
+        )
+        .addMessageType(
+          DescriptorProto.newBuilder()
+            .setName("HandleRequest")
+            .build()
+        )
+        .addMessageType(
+          DescriptorProto.newBuilder()
+            .setName("HandleResponse")
+            .build()
+        )
+        .addService(
+          ServiceDescriptorProto.newBuilder()
+            .setName("HandleService")
+            .addMethod(
+              MethodDescriptorProto.newBuilder()
+                .setName("Handle")
+                .setInputType(".HandleRequest")
+                .setOutputType(".HandleResponse")
+                .setOptions(
+                  MethodOptions.newBuilder()
+                    .setUnknownFields(
+                      UnknownFieldSet.newBuilder()
+                        .addField(
+                          22000,
+                          UnknownFieldSet.Field.newBuilder()
+                            .addFixed64(java.lang.Double.doubleToLongBits(2.1))
+                            .build()
+                        )
+                        .addField(
+                          22001,
+                          UnknownFieldSet.Field.newBuilder()
+                            .addVarint(2L)
+                            .build()
+                        )
+                        .addField(
+                          22002,
+                          UnknownFieldSet.Field.newBuilder()
+                            .addVarint(1L)
+                            .addVarint(2L)
+                            .addVarint(1L)
+                            .build()
+                        )
+                        .build()
+                    )
+                    .build()
+                )
+                .build()
+            )
+        )
+        .addExtension(
+          FieldDescriptorProto.newBuilder()
+            .setName("timeout")
+            .setExtendee(".google.protobuf.MethodOptions")
+            .setNumber(22000)
+            .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
+            .setType(FieldDescriptorProto.Type.TYPE_DOUBLE)
+            .build()
+        )
+        .addExtension(
+          FieldDescriptorProto.newBuilder()
+            .setName("greek_letter")
+            .setExtendee(".google.protobuf.MethodOptions")
+            .setNumber(22001)
+            .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
+            .setType(FieldDescriptorProto.Type.TYPE_ENUM)
+            .setTypeName(".GreekLetter")
+            .build()
+        )
+        .addExtension(
+          FieldDescriptorProto.newBuilder()
+            .setName("fraternity")
+            .setExtendee(".google.protobuf.MethodOptions")
+            .setNumber(22002)
+            .setLabel(FieldDescriptorProto.Label.LABEL_REPEATED)
+            .setType(FieldDescriptorProto.Type.TYPE_ENUM)
+            .setTypeName(".GreekLetter")
+            .build()
+        )
+        .build()
+    )
   }
 
   @Test fun `encode extension range`() {
     val schema = RepoBuilder()
       .add(
-        "test.proto", """
+        "test.proto",
+        """
             |syntax = "proto2";
             |
             |message TestMessage {
@@ -141,26 +178,35 @@ class SchemaEncoderTest {
     val encoded = SchemaEncoder(schema).encode(handleServiceProto)
 
     val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
-    assertThat(fileDescriptorProto).isEqualTo(FileDescriptorProto.newBuilder()
-      .setName("test.proto")
-      .addMessageType(DescriptorProto.newBuilder()
-        .setName("TestMessage")
-        .addExtensionRange(ExtensionRange.newBuilder()
-          .setStart(5)
-          .setEnd(6)
-          .build())
-        .addExtensionRange(ExtensionRange.newBuilder()
-          .setStart(1000)
-          .setEnd(MAX_TAG_VALUE + 1)
-          .build())
-        .build())
-      .build())
+    assertThat(fileDescriptorProto).isEqualTo(
+      FileDescriptorProto.newBuilder()
+        .setName("test.proto")
+        .addMessageType(
+          DescriptorProto.newBuilder()
+            .setName("TestMessage")
+            .addExtensionRange(
+              ExtensionRange.newBuilder()
+                .setStart(5)
+                .setEnd(6)
+                .build()
+            )
+            .addExtensionRange(
+              ExtensionRange.newBuilder()
+                .setStart(1000)
+                .setEnd(MAX_TAG_VALUE + 1)
+                .build()
+            )
+            .build()
+        )
+        .build()
+    )
   }
 
   @Test fun `oneof tag order`() {
     val schema = RepoBuilder()
       .add(
-        "test.proto", """
+        "test.proto",
+        """
             |syntax = "proto3";
             |
             |message AMessage {
@@ -179,35 +225,47 @@ class SchemaEncoderTest {
 
     val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
     assertThat(fileDescriptorProto).isNotNull
-    assertThat(fileDescriptorProto).isEqualTo(FileDescriptorProto.newBuilder()
-      .setName("test.proto")
-      .setSyntax("proto3")
-      .addMessageType(DescriptorProto.newBuilder()
-        .setName("AMessage")
-        .addField(FieldDescriptorProto.newBuilder()
-          .setType(FieldDescriptorProto.Type.TYPE_STRING)
-          .setName("two")
-          .setNumber(2)
-          .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
-          .build())
-        .addField(FieldDescriptorProto.newBuilder()
-          .setType(FieldDescriptorProto.Type.TYPE_STRING)
-          .setName("one")
-          .setNumber(1)
-          .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
-          .setOneofIndex(0)
-          .build())
-        .addField(FieldDescriptorProto.newBuilder()
-          .setType(FieldDescriptorProto.Type.TYPE_STRING)
-          .setName("three")
-          .setNumber(3)
-          .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
-          .setOneofIndex(0)
-          .build())
-        .addOneofDecl(DescriptorProtos.OneofDescriptorProto.newBuilder()
-          .setName("a_oneof")
-          .build())
-        .build())
-      .build())
+    assertThat(fileDescriptorProto).isEqualTo(
+      FileDescriptorProto.newBuilder()
+        .setName("test.proto")
+        .setSyntax("proto3")
+        .addMessageType(
+          DescriptorProto.newBuilder()
+            .setName("AMessage")
+            .addField(
+              FieldDescriptorProto.newBuilder()
+                .setType(FieldDescriptorProto.Type.TYPE_STRING)
+                .setName("two")
+                .setNumber(2)
+                .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
+                .build()
+            )
+            .addField(
+              FieldDescriptorProto.newBuilder()
+                .setType(FieldDescriptorProto.Type.TYPE_STRING)
+                .setName("one")
+                .setNumber(1)
+                .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
+                .setOneofIndex(0)
+                .build()
+            )
+            .addField(
+              FieldDescriptorProto.newBuilder()
+                .setType(FieldDescriptorProto.Type.TYPE_STRING)
+                .setName("three")
+                .setNumber(3)
+                .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
+                .setOneofIndex(0)
+                .build()
+            )
+            .addOneofDecl(
+              DescriptorProtos.OneofDescriptorProto.newBuilder()
+                .setName("a_oneof")
+                .build()
+            )
+            .build()
+        )
+        .build()
+    )
   }
 }

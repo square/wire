@@ -52,48 +52,50 @@ class RootTest {
     assertThat(roots.size == 1)
 
     assertThat(roots[0].resolve("squareup/dinosaurs/dinosaur.proto")?.location)
-        .isEqualTo(Location.get(sourceDir.toString(), "squareup/dinosaurs/dinosaur.proto"))
+      .isEqualTo(Location.get(sourceDir.toString(), "squareup/dinosaurs/dinosaur.proto"))
 
     assertThat(roots[0].resolve("squareup/dinosaurs/unknown.proto")).isNull()
 
     assertThat(roots[0].allProtoFiles().map { it.location }).containsExactlyInAnyOrder(
-        Location.get(sourceDir.toString(), "squareup/dinosaurs/dinosaur.proto"),
-        Location.get(sourceDir.toString(), "squareup/dinosaurs/geology.proto")
+      Location.get(sourceDir.toString(), "squareup/dinosaurs/dinosaur.proto"),
+      Location.get(sourceDir.toString(), "squareup/dinosaurs/geology.proto")
     )
   }
 
   @Test fun zip() {
     fs.addZip(
-        "lib/dinosaurs.zip",
-        "squareup/dinosaurs/dinosaur.proto" to "/* dinosaur.proto */",
-        "squareup/dinosaurs/geology.proto" to "/* geology.proto */")
+      "lib/dinosaurs.zip",
+      "squareup/dinosaurs/dinosaur.proto" to "/* dinosaur.proto */",
+      "squareup/dinosaurs/geology.proto" to "/* geology.proto */"
+    )
 
     val sourceZip = Location.get("lib/dinosaurs.zip")
     val roots = sourceZip.roots(fs)
     assertThat(roots.size == 1)
 
     assertThat(roots[0].resolve("squareup/dinosaurs/dinosaur.proto")?.location)
-        .isEqualTo(Location.get(sourceZip.toString(), "squareup/dinosaurs/dinosaur.proto"))
+      .isEqualTo(Location.get(sourceZip.toString(), "squareup/dinosaurs/dinosaur.proto"))
 
     assertThat(roots[0].resolve("squareup/dinosaurs/unknown.proto")).isNull()
 
     assertThat(roots[0].allProtoFiles().map { it.location }).containsExactlyInAnyOrder(
-        Location.get(sourceZip.toString(), "squareup/dinosaurs/dinosaur.proto"),
-        Location.get(sourceZip.toString(), "squareup/dinosaurs/geology.proto")
+      Location.get(sourceZip.toString(), "squareup/dinosaurs/dinosaur.proto"),
+      Location.get(sourceZip.toString(), "squareup/dinosaurs/geology.proto")
     )
   }
 
   @Test fun zipProtoFilesOnly() {
     fs.addZip(
-        "lib/dinosaurs.zip",
-        "squareup/dinosaurs/raptor.proto" to "/* raptor.proto */",
-        "squareup/dinosaurs/raptor.nba" to "/* raptor.nba */")
+      "lib/dinosaurs.zip",
+      "squareup/dinosaurs/raptor.proto" to "/* raptor.proto */",
+      "squareup/dinosaurs/raptor.nba" to "/* raptor.nba */"
+    )
 
     val sourceZip = Location.get("lib/dinosaurs.zip")
     val roots = sourceZip.roots(fs)
     assertThat(roots.size == 1)
     assertThat(roots[0].allProtoFiles().map { it.location })
-        .containsOnly(Location.get(sourceZip.toString(), "squareup/dinosaurs/raptor.proto"))
+      .containsOnly(Location.get(sourceZip.toString(), "squareup/dinosaurs/raptor.proto"))
   }
 
   @Test fun directoryProtoFilesOnly() {
@@ -104,7 +106,7 @@ class RootTest {
     val roots = sourceDir.roots(fs)
     assertThat(roots.size == 1)
     assertThat(roots[0].allProtoFiles().map { it.location })
-        .containsOnly(Location.get(sourceDir.toString(), "squareup/dinosaurs/raptor.proto"))
+      .containsOnly(Location.get(sourceDir.toString(), "squareup/dinosaurs/raptor.proto"))
   }
 
   @Test fun standaloneFileMustBeProtoOrZip() {
@@ -115,6 +117,6 @@ class RootTest {
       onlyFile.roots(fs)
     }
     assertThat(exception)
-        .hasMessage("expected a directory, archive (.zip / .jar / etc.), or .proto: $onlyFile")
+      .hasMessage("expected a directory, archive (.zip / .jar / etc.), or .proto: $onlyFile")
   }
 }

@@ -20,8 +20,8 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.Synchronized
 
 class GrpcStatus private constructor(
-    val name: String,
-    val code: Int
+  val name: String,
+  val code: Int
 ) {
   companion object {
     private val INSTANCES = mutableMapOf<Int, GrpcStatus>()

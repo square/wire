@@ -38,21 +38,21 @@ internal class SchemaProtoAdapterFactory(
   private val includeUnknown: Boolean
 ) {
   private val adapterMap = mutableMapOf<ProtoType?, ProtoAdapter<*>>(
-      ProtoType.BOOL to ProtoAdapter.BOOL,
-      ProtoType.BYTES to ProtoAdapter.BYTES,
-      ProtoType.DOUBLE to ProtoAdapter.DOUBLE,
-      ProtoType.FLOAT to ProtoAdapter.FLOAT,
-      ProtoType.FIXED32 to ProtoAdapter.FIXED32,
-      ProtoType.FIXED64 to ProtoAdapter.FIXED64,
-      ProtoType.INT32 to ProtoAdapter.INT32,
-      ProtoType.INT64 to ProtoAdapter.INT64,
-      ProtoType.SFIXED32 to ProtoAdapter.SFIXED32,
-      ProtoType.SFIXED64 to ProtoAdapter.SFIXED64,
-      ProtoType.SINT32 to ProtoAdapter.SINT32,
-      ProtoType.SINT64 to ProtoAdapter.SINT64,
-      ProtoType.STRING to ProtoAdapter.STRING,
-      ProtoType.UINT32 to ProtoAdapter.UINT32,
-      ProtoType.UINT64 to ProtoAdapter.UINT64
+    ProtoType.BOOL to ProtoAdapter.BOOL,
+    ProtoType.BYTES to ProtoAdapter.BYTES,
+    ProtoType.DOUBLE to ProtoAdapter.DOUBLE,
+    ProtoType.FLOAT to ProtoAdapter.FLOAT,
+    ProtoType.FIXED32 to ProtoAdapter.FIXED32,
+    ProtoType.FIXED64 to ProtoAdapter.FIXED64,
+    ProtoType.INT32 to ProtoAdapter.INT32,
+    ProtoType.INT64 to ProtoAdapter.INT64,
+    ProtoType.SFIXED32 to ProtoAdapter.SFIXED32,
+    ProtoType.SFIXED64 to ProtoAdapter.SFIXED64,
+    ProtoType.SINT32 to ProtoAdapter.SINT32,
+    ProtoType.SINT64 to ProtoAdapter.SINT64,
+    ProtoType.STRING to ProtoAdapter.STRING,
+    ProtoType.UINT32 to ProtoAdapter.UINT32,
+    ProtoType.UINT64 to ProtoAdapter.UINT64
   )
 
   operator fun get(protoType: ProtoType): ProtoAdapter<Any> {
@@ -185,7 +185,7 @@ internal class SchemaProtoAdapterFactory(
       fieldEncoding: FieldEncoding,
       value: Any?
     ) {
-      if (!includeUnknown|| value == null) return
+      if (!includeUnknown || value == null) return
       val name = tag.toString()
       val values = builder.getOrPut(name) { mutableListOf<Any>() } as MutableList<Any>
       values.add(value)
@@ -228,11 +228,11 @@ internal class SchemaProtoAdapterFactory(
     override fun value(builder: MutableMap<String, Any>, value: Any) {
       if (isMap) {
         val map = builder.getOrPut(field.name) { mutableMapOf<String, Any>() }
-            as MutableMap<String, Any>
+          as MutableMap<String, Any>
         map.putAll(value as Map<String, Any>)
       } else if (field.isRepeated) {
         val list = builder.getOrPut(field.name) { mutableListOf<Any>() }
-            as MutableList<Any>
+          as MutableList<Any>
         list += value
       } else {
         set(builder, value)

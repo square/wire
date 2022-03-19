@@ -27,8 +27,6 @@ import io.grpc.ServerCall.Listener
 import io.grpc.ServerCallHandler
 import io.grpc.ServerInterceptor
 import io.grpc.stub.StreamObserver
-import java.util.ArrayDeque
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
@@ -45,6 +43,8 @@ import routeguide.RouteGuideProto.Point
 import routeguide.RouteGuideProto.Rectangle
 import routeguide.RouteGuideProto.RouteNote
 import routeguide.RouteGuideProto.RouteSummary
+import java.util.ArrayDeque
+import java.util.concurrent.TimeUnit
 
 /**
  * An assertive scriptable implementation of the [RouteGuideGrpc] gRPC service. Receiving and
@@ -67,41 +67,65 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
   }
 
   fun enqueueReceiveNote(message: String) {
-    enqueue(Action.ReceiveMessage(RouteNote.newBuilder()
-        .setMessage(message)
-        .build()))
+    enqueue(
+      Action.ReceiveMessage(
+        RouteNote.newBuilder()
+          .setMessage(message)
+          .build()
+      )
+    )
   }
 
   fun enqueueReceivePoint(latitude: Int, longitude: Int) {
-    enqueue(Action.ReceiveMessage(Point.newBuilder()
-        .setLatitude(latitude)
-        .setLongitude(longitude)
-        .build()))
+    enqueue(
+      Action.ReceiveMessage(
+        Point.newBuilder()
+          .setLatitude(latitude)
+          .setLongitude(longitude)
+          .build()
+      )
+    )
   }
 
   fun enqueueReceiveRectangle(lo: routeguide.Point, hi: routeguide.Point) {
-    enqueue(Action.ReceiveMessage(Rectangle.newBuilder()
-        .setLo(Point.newBuilder().setLatitude(lo.latitude!!).setLongitude(lo.longitude!!).build())
-        .setHi(Point.newBuilder().setLatitude(hi.latitude!!).setLongitude(hi.longitude!!).build())
-        .build()))
+    enqueue(
+      Action.ReceiveMessage(
+        Rectangle.newBuilder()
+          .setLo(Point.newBuilder().setLatitude(lo.latitude!!).setLongitude(lo.longitude!!).build())
+          .setHi(Point.newBuilder().setLatitude(hi.latitude!!).setLongitude(hi.longitude!!).build())
+          .build()
+      )
+    )
   }
 
   fun enqueueSendFeature(name: String) {
-    enqueue(Action.SendMessage(Feature.newBuilder()
-        .setName(name)
-        .build()))
+    enqueue(
+      Action.SendMessage(
+        Feature.newBuilder()
+          .setName(name)
+          .build()
+      )
+    )
   }
 
   fun enqueueSendNote(message: String) {
-    enqueue(Action.SendMessage(RouteNote.newBuilder()
-        .setMessage(message)
-        .build()))
+    enqueue(
+      Action.SendMessage(
+        RouteNote.newBuilder()
+          .setMessage(message)
+          .build()
+      )
+    )
   }
 
   fun enqueueSendSummary(pointCount: Int) {
-    enqueue(Action.SendMessage(RouteSummary.newBuilder()
-        .setPointCount(pointCount)
-        .build()))
+    enqueue(
+      Action.SendMessage(
+        RouteSummary.newBuilder()
+          .setPointCount(pointCount)
+          .build()
+      )
+    )
   }
 
   fun enqueueSendError(error: Throwable) {
@@ -123,9 +147,9 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
     return object : Statement() {
       override fun evaluate() {
         server = ServerBuilder.forPort(0)
-            .intercept(this@MockRouteGuideService)
-            .addService(this@MockRouteGuideService)
-            .build()
+          .intercept(this@MockRouteGuideService)
+          .addService(this@MockRouteGuideService)
+          .build()
         server.start()
         try {
           base.evaluate()
@@ -140,10 +164,12 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
   override fun getFeature(point: Point, responseObserver: StreamObserver<Feature>) {
     streamObserver = responseObserver as StreamObserver<Any>
     assertNextActionAndProcessScript {
-      assertThat(it).isEqualTo(Action.ReceiveCall(
-        path = "/routeguide.RouteGuide/GetFeature",
-        requestHeaders = takeLastRequestHeaders(it),
-      ))
+      assertThat(it).isEqualTo(
+        Action.ReceiveCall(
+          path = "/routeguide.RouteGuide/GetFeature",
+          requestHeaders = takeLastRequestHeaders(it),
+        )
+      )
     }
     assertNextActionAndProcessScript {
       assertThat(it).isEqualTo(Action.ReceiveMessage(point))
@@ -156,10 +182,12 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
   override fun recordRoute(responseObserver: StreamObserver<RouteSummary>): StreamObserver<Point> {
     streamObserver = responseObserver as StreamObserver<Any>
     assertNextActionAndProcessScript {
-      assertThat(it).isEqualTo(Action.ReceiveCall(
-        path = "/routeguide.RouteGuide/RecordRoute",
-        requestHeaders = takeLastRequestHeaders(it),
-      ))
+      assertThat(it).isEqualTo(
+        Action.ReceiveCall(
+          path = "/routeguide.RouteGuide/RecordRoute",
+          requestHeaders = takeLastRequestHeaders(it),
+        )
+      )
     }
     return createAssertingStreamObserver()
   }
@@ -167,10 +195,12 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
   override fun listFeatures(rectangle: Rectangle, responseObserver: StreamObserver<Feature>) {
     streamObserver = responseObserver as StreamObserver<Any>
     assertNextActionAndProcessScript {
-      assertThat(it).isEqualTo(Action.ReceiveCall(
-        path = "/routeguide.RouteGuide/ListFeatures",
-        requestHeaders = takeLastRequestHeaders(it),
-      ))
+      assertThat(it).isEqualTo(
+        Action.ReceiveCall(
+          path = "/routeguide.RouteGuide/ListFeatures",
+          requestHeaders = takeLastRequestHeaders(it),
+        )
+      )
     }
     assertNextActionAndProcessScript {
       assertThat(it).isEqualTo(Action.ReceiveMessage(rectangle))
@@ -183,10 +213,12 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
   override fun routeChat(responseObserver: StreamObserver<RouteNote>): StreamObserver<RouteNote> {
     streamObserver = responseObserver as StreamObserver<Any>
     assertNextActionAndProcessScript {
-      assertThat(it).isEqualTo(Action.ReceiveCall(
-        path = "/routeguide.RouteGuide/RouteChat",
-        requestHeaders = takeLastRequestHeaders(it),
-      ))
+      assertThat(it).isEqualTo(
+        Action.ReceiveCall(
+          path = "/routeguide.RouteGuide/RouteChat",
+          requestHeaders = takeLastRequestHeaders(it),
+        )
+      )
     }
     return createAssertingStreamObserver()
   }
@@ -198,15 +230,18 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
     next: ServerCallHandler<ReqT, RespT>
   ): Listener<ReqT> {
     lastRequestHeaders = requestHeaders
-    return next.startCall(object : SimpleForwardingServerCall<ReqT, RespT>(call) {
-      override fun sendHeaders(responseHeaders: Metadata) {
-        for ((key, value) in nextResponseHeaders) {
-          responseHeaders.put(key.toKey(), value)
+    return next.startCall(
+      object : SimpleForwardingServerCall<ReqT, RespT>(call) {
+        override fun sendHeaders(responseHeaders: Metadata) {
+          for ((key, value) in nextResponseHeaders) {
+            responseHeaders.put(key.toKey(), value)
+          }
+          nextResponseHeaders = mapOf()
+          super.sendHeaders(responseHeaders)
         }
-        nextResponseHeaders = mapOf()
-        super.sendHeaders(responseHeaders)
-      }
-    }, requestHeaders)
+      },
+      requestHeaders
+    )
   }
 
   private fun <T : com.google.protobuf.Message> createAssertingStreamObserver(): StreamObserver<T> {

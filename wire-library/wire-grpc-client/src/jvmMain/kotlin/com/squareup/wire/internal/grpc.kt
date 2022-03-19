@@ -179,9 +179,10 @@ internal fun <R : Any> GrpcResponse.messageSource(
 private fun GrpcResponse.checkGrpcResponse() {
   val contentType = body!!.contentType()
   if (code != 200 ||
-      contentType == null ||
-      contentType.type != "application" ||
-      contentType.subtype != "grpc" && contentType.subtype != "grpc+proto") {
+    contentType == null ||
+    contentType.type != "application" ||
+    contentType.subtype != "grpc" && contentType.subtype != "grpc+proto"
+  ) {
     throw IOException("expected gRPC but was HTTP status=$code, content-type=$contentType")
   }
 }
@@ -201,17 +202,17 @@ internal fun GrpcResponse.grpcResponseToException(suppressed: IOException? = nul
 
   if (transportException != null) {
     return IOException(
-        "gRPC transport failure" +
-            " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)",
-        transportException
+      "gRPC transport failure" +
+        " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)",
+      transportException
     )
   }
 
   if (grpcStatus != "0") {
     val grpcStatusInt = grpcStatus?.toIntOrNull()
       ?: throw IOException(
-          "gRPC transport failure" +
-              " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)"
+        "gRPC transport failure" +
+          " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)"
       )
 
     return GrpcException(GrpcStatus.get(grpcStatusInt), grpcMessage)

@@ -95,8 +95,8 @@ data class Field(
 
   private fun isPackable(linker: Linker, type: ProtoType): Boolean {
     return type != ProtoType.STRING &&
-        type != ProtoType.BYTES &&
-        linker.get(type) !is MessageType
+      type != ProtoType.BYTES &&
+      linker.get(type) !is MessageType
   }
 
   fun link(linker: Linker) {
@@ -108,12 +108,12 @@ data class Field(
     options.link(linker, location, validate)
     deprecated = options.get(DEPRECATED)
     val packed = options.get(PACKED)
-        ?: if (syntaxRules.isPackedByDefault(type!!, label)) PACKED_OPTION_ELEMENT.value else null
+      ?: if (syntaxRules.isPackedByDefault(type!!, label)) PACKED_OPTION_ELEMENT.value else null
     // We allow any package name to be used as long as it ends with '.redacted'.
     isRedacted = options.optionMatches(".*\\.redacted", "true")
 
     encodeMode =
-        syntaxRules.getEncodeMode(type!!, label, isPacked = packed == "true", isOneOf = isOneOf)
+      syntaxRules.getEncodeMode(type!!, label, isPacked = packed == "true", isOneOf = isOneOf)
     jsonName = syntaxRules.jsonName(name, declaredJsonName)
   }
 
@@ -153,7 +153,8 @@ data class Field(
     val protoMember = ProtoMember.get(enclosingType, memberName)
 
     if (!markSet.contains(protoMember) &&
-        !(GOOGLE_PROTOBUF_OPTION_TYPES.contains(enclosingType) && !isExtension)) return null
+      !(GOOGLE_PROTOBUF_OPTION_TYPES.contains(enclosingType) && !isExtension)
+    ) return null
 
     return withOptions(options.retainAll(schema, markSet))
   }
@@ -161,18 +162,18 @@ data class Field(
   /** Returns a copy of this whose options is [options].  */
   private fun withOptions(options: Options): Field {
     val result = Field(
-        packageName = packageName,
-        location = location,
-        label = label,
-        name = name,
-        documentation = documentation,
-        tag = tag,
-        default = default,
-        elementType = elementType,
-        options = options,
-        isExtension = isExtension,
-        isOneOf = isOneOf,
-        declaredJsonName = declaredJsonName,
+      packageName = packageName,
+      location = location,
+      label = label,
+      name = name,
+      documentation = documentation,
+      tag = tag,
+      default = default,
+      elementType = elementType,
+      options = options,
+      isExtension = isExtension,
+      isOneOf = isOneOf,
+      declaredJsonName = declaredJsonName,
     )
     result.type = type
     result.deprecated = deprecated
@@ -225,40 +226,40 @@ data class Field(
       oneOf: Boolean
     ) = fieldElements.map {
       Field(
-          packageName = packageName,
-          location = it.location,
-          label = it.label,
-          name = it.name,
-          documentation = it.documentation,
-          tag = it.tag,
-          default = it.defaultValue,
-          elementType = it.type,
-          options = Options(FIELD_OPTIONS, it.options),
-          isExtension = extension,
-          isOneOf = oneOf,
-          declaredJsonName = it.jsonName,
+        packageName = packageName,
+        location = it.location,
+        label = it.label,
+        name = it.name,
+        documentation = it.documentation,
+        tag = it.tag,
+        default = it.defaultValue,
+        elementType = it.type,
+        options = Options(FIELD_OPTIONS, it.options),
+        isExtension = extension,
+        isOneOf = oneOf,
+        declaredJsonName = it.jsonName,
       )
     }
 
     @JvmStatic
     fun toElements(fields: List<Field>) = fields.map {
       FieldElement(
-          location = it.location,
-          label = it.label,
-          type = it.elementType,
-          name = it.name,
-          defaultValue = it.default,
-          jsonName = it.declaredJsonName,
-          tag = it.tag,
-          documentation = it.documentation,
-          options = it.options.elements
+        location = it.location,
+        label = it.label,
+        type = it.elementType,
+        name = it.name,
+        defaultValue = it.default,
+        jsonName = it.declaredJsonName,
+        tag = it.tag,
+        documentation = it.documentation,
+        options = it.options.elements
       )
     }
 
     @JvmStatic
     fun retainLinked(fields: List<Field>) = fields
-        .filter { it.type != null } // If the type is non-null, then the field has been linked.
-        .map { it.withOptions(it.options.retainLinked()) }
+      .filter { it.type != null } // If the type is non-null, then the field has been linked.
+      .map { it.withOptions(it.options.retainLinked()) }
 
     @JvmStatic
     fun retainAll(

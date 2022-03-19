@@ -2,8 +2,6 @@ package com.squareup.wire.android.app.variants
 
 import org.junit.Test
 
-import org.junit.Assert.*
-
 class CommonUnitTest {
   @Test
   fun commonType() {

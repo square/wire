@@ -18,11 +18,11 @@ package com.squareup.wire.internal
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Syntax
+import okio.ByteString
+import okio.ByteString.Companion.decodeBase64
 import java.lang.reflect.Type
 import java.math.BigDecimal
 import java.math.BigInteger
-import okio.ByteString
-import okio.ByteString.Companion.decodeBase64
 
 /**
  * Integrates a JSON library like Moshi or Gson into proto. This rigid interface attempts to make it
@@ -79,9 +79,9 @@ abstract class JsonIntegration<F, A> {
     return when {
       field.label.isRepeated -> listAdapter(singleAdapter)
       field.isMap -> mapAdapter(
-          framework = framework,
-          keyFormatter = mapKeyJsonFormatter(field.keyAdapter),
-          valueAdapter = singleAdapter
+        framework = framework,
+        keyFormatter = mapKeyJsonFormatter(field.keyAdapter),
+        valueAdapter = singleAdapter
       )
       else -> singleAdapter
     }
@@ -164,10 +164,10 @@ abstract class JsonIntegration<F, A> {
   /** Encodes an unsigned value with quotes, like `"123"`. */
   private object UnsignedLongAsStringJsonFormatter : JsonFormatter<Long> {
     override fun toStringOrNumber(value: Long) =
-        UnsignedLongAsNumberJsonFormatter.toStringOrNumber(value).toString()
+      UnsignedLongAsNumberJsonFormatter.toStringOrNumber(value).toString()
 
     override fun fromString(value: String) =
-        UnsignedLongAsNumberJsonFormatter.fromString(value)
+      UnsignedLongAsNumberJsonFormatter.fromString(value)
   }
 
   /** Encodes an signed value with quotes, like `"-123"`. */

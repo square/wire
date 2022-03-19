@@ -18,11 +18,11 @@ package com.squareup.wire
 import com.squareup.wire.internal.createRuntimeMessageAdapter
 import com.squareup.wire.protos.kotlin.map.Mappy
 import com.squareup.wire.protos.kotlin.map.Thing
+import okio.ByteString
+import okio.ByteString.Companion.decodeHex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import okio.ByteString
-import okio.ByteString.Companion.decodeHex
 
 class KotlinMapTest {
   private val adapter = createRuntimeMessageAdapter(Mappy::class.java, "square.github.io/wire/unknown", Syntax.PROTO_2)
@@ -42,14 +42,14 @@ class KotlinMapTest {
 
   companion object {
     private val BYTES =
-        "0a0c0a036f6e6512050a034f6e650a0c0a0374776f12050a0354776f0a100a05746872656512070a055468726565".decodeHex()
+      "0a0c0a036f6e6512050a034f6e650a0c0a0374776f12050a0354776f0a100a05746872656512070a055468726565".decodeHex()
     private val EMPTY = Mappy(things = emptyMap())
     private val THREE = Mappy(
-        things = mapOf(
-            "one" to Thing("One"),
-            "two" to Thing("Two"),
-            "three" to Thing("Three")
-        )
+      things = mapOf(
+        "one" to Thing("One"),
+        "two" to Thing("Two"),
+        "three" to Thing("Three")
+      )
     )
   }
 }

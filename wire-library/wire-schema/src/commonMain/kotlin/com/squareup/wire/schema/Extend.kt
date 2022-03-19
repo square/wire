@@ -78,20 +78,20 @@ data class Extend(
       extendElements: List<ExtendElement>
     ) = extendElements.map {
       Extend(
-          location = it.location,
-          documentation = it.documentation,
-          name = it.name,
-          fields = Field.fromElements(packageName, it.fields, extension = true, oneOf = false)
+        location = it.location,
+        documentation = it.documentation,
+        name = it.name,
+        fields = Field.fromElements(packageName, it.fields, extension = true, oneOf = false)
       )
     }
 
     @JvmStatic
     fun toElements(extendList: List<Extend>) = extendList.map {
       ExtendElement(
-          location = it.location,
-          name = it.name,
-          documentation = it.documentation,
-          fields = Field.toElements(it.fields)
+        location = it.location,
+        name = it.name,
+        documentation = it.documentation,
+        fields = Field.toElements(it.fields)
       )
     }
   }

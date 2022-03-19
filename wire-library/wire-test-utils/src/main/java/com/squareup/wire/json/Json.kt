@@ -22,5 +22,5 @@ import org.assertj.core.api.Assertions.assertThat
 
 fun assertJsonEquals(expected: String, value: String) {
   assertThat(JsonReader.of(Buffer().writeUtf8(value)).readJsonValue())
-      .isEqualTo(JsonReader.of(Buffer().writeUtf8(expected)).readJsonValue())
+    .isEqualTo(JsonReader.of(Buffer().writeUtf8(expected)).readJsonValue())
 }

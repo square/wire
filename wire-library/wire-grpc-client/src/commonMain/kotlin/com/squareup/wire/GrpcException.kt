@@ -19,7 +19,6 @@ package com.squareup.wire
 import okio.IOException
 
 class GrpcException(
-    val grpcStatus: GrpcStatus,
-    val grpcMessage: String?
+  val grpcStatus: GrpcStatus,
+  val grpcMessage: String?
 ) : IOException("grpc-status=${grpcStatus.code}, grpc-status-name=${grpcStatus.name}, grpc-message=$grpcMessage")
-

@@ -56,14 +56,14 @@ data class Rpc(
   fun retainAll(schema: Schema, markSet: MarkSet): Rpc? {
     if (requestType!! !in markSet || responseType!! !in markSet) return null
     val result = Rpc(
-        location = location,
-        name = name,
-        documentation = documentation,
-        requestTypeElement = requestTypeElement,
-        responseTypeElement = responseTypeElement,
-        requestStreaming = requestStreaming,
-        responseStreaming = responseStreaming,
-        options = options.retainAll(schema, markSet)
+      location = location,
+      name = name,
+      documentation = documentation,
+      requestTypeElement = requestTypeElement,
+      responseTypeElement = responseTypeElement,
+      requestStreaming = requestStreaming,
+      responseStreaming = responseStreaming,
+      options = options.retainAll(schema, markSet)
     )
     result.requestType = requestType
     result.responseType = responseType
@@ -75,14 +75,14 @@ data class Rpc(
     fun fromElements(elements: List<RpcElement>): List<Rpc> {
       return elements.map { element ->
         Rpc(
-            location = element.location,
-            name = element.name,
-            documentation = element.documentation,
-            requestTypeElement = element.requestType,
-            responseTypeElement = element.responseType,
-            requestStreaming = element.requestStreaming,
-            responseStreaming = element.responseStreaming,
-            options = Options(Options.METHOD_OPTIONS, element.options)
+          location = element.location,
+          name = element.name,
+          documentation = element.documentation,
+          requestTypeElement = element.requestType,
+          responseTypeElement = element.responseType,
+          requestStreaming = element.requestStreaming,
+          responseStreaming = element.responseStreaming,
+          options = Options(Options.METHOD_OPTIONS, element.options)
         )
       }
     }
@@ -91,14 +91,14 @@ data class Rpc(
     fun toElements(rpcs: List<Rpc>): List<RpcElement> {
       return rpcs.map { rpc ->
         RpcElement(
-            location = rpc.location,
-            name = rpc.name,
-            documentation = rpc.documentation,
-            requestType = rpc.requestTypeElement,
-            responseType = rpc.responseTypeElement,
-            requestStreaming = rpc.requestStreaming,
-            responseStreaming = rpc.responseStreaming,
-            options = rpc.options.elements
+          location = rpc.location,
+          name = rpc.name,
+          documentation = rpc.documentation,
+          requestType = rpc.requestTypeElement,
+          responseType = rpc.responseTypeElement,
+          requestStreaming = rpc.requestStreaming,
+          responseStreaming = rpc.responseStreaming,
+          options = rpc.options.elements
         )
       }
     }

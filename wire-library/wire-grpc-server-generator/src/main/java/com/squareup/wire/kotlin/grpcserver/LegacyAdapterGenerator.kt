@@ -59,7 +59,7 @@ object LegacyAdapterGenerator {
               .build()
           )
           .apply {
-            addRpcProperties(generator,this, service)
+            addRpcProperties(generator, this, service)
             addRpcAdapterCodeBlocks(generator, this, service)
           }
           .build()

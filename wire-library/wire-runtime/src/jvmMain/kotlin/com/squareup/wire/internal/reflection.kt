@@ -95,7 +95,7 @@ private fun <M : Message<M, B>, B : Message.Builder<M, B>> getBuilderType(
   return runCatching {
     Class.forName("${messageType.name}\$Builder") as Class<B>
   }
-      .getOrNull() ?: KotlinConstructorBuilder::class.java as Class<B>
+    .getOrNull() ?: KotlinConstructorBuilder::class.java as Class<B>
 }
 
 private class RuntimeMessageBinding<M : Message<M, B>, B : Message.Builder<M, B>>(
@@ -105,7 +105,7 @@ private class RuntimeMessageBinding<M : Message<M, B>, B : Message.Builder<M, B>
   override val fields: Map<Int, FieldOrOneOfBinding<M, B>>,
   override val typeUrl: String?,
   override val syntax: Syntax
-)  : MessageBinding<M, B> {
+) : MessageBinding<M, B> {
 
   override fun unknownFields(message: M) = message.unknownFields
 

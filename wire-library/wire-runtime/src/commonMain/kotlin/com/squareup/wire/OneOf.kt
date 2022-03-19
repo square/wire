@@ -108,7 +108,7 @@ data class OneOf<out K : OneOf.Key<T>, T>(
   val value: T
 ) {
   @Suppress("UNCHECKED_CAST") // We statically guarantee Keys and Values are of the same types.
-  fun <X> getOrNull(key: Key<X>) : X? {
+  fun <X> getOrNull(key: Key<X>): X? {
     if (this.key == key) return value as X
     return null
   }

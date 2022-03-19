@@ -34,14 +34,18 @@ class SerializableTest {
 
   @Test fun nestedMessage() {
     val person = Person.Builder()
-        .name("Omar")
-        .id(1234)
-        .email("omar@wire.com")
-        .phone(listOf(Person.PhoneNumber.Builder()
+      .name("Omar")
+      .id(1234)
+      .email("omar@wire.com")
+      .phone(
+        listOf(
+          Person.PhoneNumber.Builder()
             .number("410-555-0909")
             .type(Person.PhoneType.MOBILE)
-            .build()))
-        .build()
+            .build()
+        )
+      )
+      .build()
     assertThat(deserialize(serialize(person))).isEqualTo(person)
   }
 
@@ -52,10 +56,11 @@ class SerializableTest {
 
   @Test fun decodeGolden() {
     val goldenValue = SimpleMessage.Builder()
-        .required_int32(99)
-        .result("tacos")
-        .build()
-    val goldenSerialized = ("rO0ABXNyACdjb20uc3F1YXJldXAud2lyZS5NZXNzYWdlU2VyaWFsaXplZEZvcm0AAAAA" +
+      .required_int32(99)
+      .result("tacos")
+      .build()
+    val goldenSerialized = (
+      "rO0ABXNyACdjb20uc3F1YXJldXAud2lyZS5NZXNzYWdlU2VyaWFsaXplZEZvcm0AAAAA" +
         "AAAAAAIAAlsABWJ5dGVzdAACW0JMAAxtZXNzYWdlQ2xhc3N0ABFMamF2YS9sYW5nL0NsYXNzO3hwdXIAAltCrPMX" +
         "+AYIVOACAAB4cAAAAAkoY1IFdGFjb3N2cgA0Y29tLnNxdWFyZXVwLndpcmUucHJvdG9zLmtvdGxpbi5zaW1wbGUu" +
         "U2ltcGxlTWVzc2FnZQAAAAAAAAAAAgAMSQAOcmVxdWlyZWRfaW50MzJMABRkZWZhdWx0X2ZvcmVpZ25fZW51bXQA" +
@@ -67,7 +72,8 @@ class SerializableTest {
         "bmFsX25lc3RlZF9tc2d0AERMY29tL3NxdWFyZXVwL3dpcmUvcHJvdG9zL2tvdGxpbi9zaW1wbGUvU2ltcGxlTWVz" +
         "c2FnZSROZXN0ZWRNZXNzYWdlO0wABW90aGVycQB+AAlMAAhwYWNrYWdlX3EAfgAJTAAPcmVwZWF0ZWRfZG91Ymxl" +
         "dAAQTGphdmEvdXRpbC9MaXN0O0wABnJlc3VsdHEAfgAJeHIAGWNvbS5zcXVhcmV1cC53aXJlLk1lc3NhZ2UAAAAA" +
-        "AAAAAAIAAHhw").decodeBase64()
+        "AAAAAAIAAHhw"
+      ).decodeBase64()
     assertThat(deserialize(goldenSerialized!!)).isEqualTo(goldenValue)
     assertThat(serialize(goldenValue)).isEqualTo(goldenSerialized)
   }

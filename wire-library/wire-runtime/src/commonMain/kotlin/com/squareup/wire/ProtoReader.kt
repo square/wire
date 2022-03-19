@@ -116,9 +116,9 @@ class ProtoReader(private val source: BufferedSource) {
    */
   @Throws(IOException::class)
   @Deprecated(
-      level = DeprecationLevel.WARNING,
-      message = "prefer endMessageAndGetUnknownFields()",
-      replaceWith = ReplaceWith("endMessageAndGetUnknownFields(token)")
+    level = DeprecationLevel.WARNING,
+    message = "prefer endMessageAndGetUnknownFields()",
+    replaceWith = ReplaceWith("endMessageAndGetUnknownFields(token)")
   )
   fun endMessage(token: Long) {
     endMessageAndGetUnknownFields(token)
@@ -220,7 +220,7 @@ class ProtoReader(private val source: BufferedSource) {
       when (val groupOrFieldEncoding = tagAndFieldEncoding and FIELD_ENCODING_MASK) {
         STATE_START_GROUP -> skipGroup(tag) // Nested group.
         STATE_END_GROUP -> {
-          if (tag == expectedEndTag) return  // Success!
+          if (tag == expectedEndTag) return // Success!
           throw ProtocolException("Unexpected end group")
         }
         STATE_LENGTH_DELIMITED -> {

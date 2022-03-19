@@ -27,7 +27,6 @@ import grpc.reflection.v1alpha.ServerReflectionResponse
 import okio.ByteString.Companion.decodeBase64
 import okio.FileSystem
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
 import org.junit.Test
 
 // Reference golang reflection tests https://github.com/juliaogris/reflect

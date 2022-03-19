@@ -77,7 +77,6 @@ protected actual constructor(
     return adapter.encodeByteString(this as M)
   }
 
-
   /** Encode this message and write it to `stream`.  */
   @Throws(IOException::class)
   fun encode(stream: OutputStream) {

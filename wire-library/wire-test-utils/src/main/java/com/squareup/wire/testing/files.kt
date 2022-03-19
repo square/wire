@@ -52,9 +52,9 @@ fun FileSystem.readUtf8(pathString: String): String {
 
 fun FileSystem.findFiles(path: String): Set<String> {
   return listRecursively(path.withPlatformSlashes().toPath())
-      .filter { !metadata(it).isDirectory }
-      .map { it.toString() }
-      .toSet()
+    .filter { !metadata(it).isDirectory }
+    .map { it.toString() }
+    .toSet()
 }
 
 fun FileSystem.addZip(pathString: String, vararg contents: Pair<String, String>) {

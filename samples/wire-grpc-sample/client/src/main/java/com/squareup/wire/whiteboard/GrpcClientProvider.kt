@@ -35,27 +35,27 @@ import javax.net.ssl.X509TrustManager
 
 object GrpcClientProvider {
   private val okHttpClient = OkHttpClient.Builder()
-      .readTimeout(Duration.ofMinutes(1))
-      .writeTimeout(Duration.ofMinutes(1))
-      .callTimeout(Duration.ofMinutes(1))
-      .apply {
-        val (sslSocketFactory, trustManager) = socketFactoryAndTrustManager()
-        sslSocketFactory(sslSocketFactory, trustManager)
-      }
-      .protocols(listOf(HTTP_1_1, HTTP_2))
-      .build()
+    .readTimeout(Duration.ofMinutes(1))
+    .writeTimeout(Duration.ofMinutes(1))
+    .callTimeout(Duration.ofMinutes(1))
+    .apply {
+      val (sslSocketFactory, trustManager) = socketFactoryAndTrustManager()
+      sslSocketFactory(sslSocketFactory, trustManager)
+    }
+    .protocols(listOf(HTTP_1_1, HTTP_2))
+    .build()
 
   val grpcClient = GrpcClient.Builder()
-      .client(okHttpClient)
-      .baseUrl("https://10.0.2.2:8443")
-      .build()
+    .client(okHttpClient)
+    .baseUrl("https://10.0.2.2:8443")
+    .build()
 
   private fun socketFactoryAndTrustManager(): Pair<SSLSocketFactory, X509TrustManager> {
     val trustManager: X509TrustManager
     val sslSocketFactory: SSLSocketFactory
     try {
       trustManager = trustManagerForCertificates(
-          trustedCertificatesInputStream()
+        trustedCertificatesInputStream()
       )
       val sslContext = SSLContext.getInstance("TLS")
       sslContext.init(null, arrayOf(trustManager), null)
@@ -69,26 +69,26 @@ object GrpcClientProvider {
 
   private fun trustedCertificatesInputStream(): InputStream {
     val myCertificate = "-----BEGIN CERTIFICATE-----\n" +
-        "MIIC/DCCAeSgAwIBAgIBATANBgkqhkiG9w0BAQsFADAvMS0wKwYDVQQDEyRkNWY2\n" +
-        "NTRhNC0zOWJlLTQyYjEtOGNlYi1kYTI3MmJmNTI2ZTQwIBcNMTkwODEyMjEwMzIx\n" +
-        "WhgPMjExOTA3MTkyMTAzMjFaMC8xLTArBgNVBAMTJGQ1ZjY1NGE0LTM5YmUtNDJi\n" +
-        "MS04Y2ViLWRhMjcyYmY1MjZlNDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC\n" +
-        "ggEBAJQzrBa2Zp7lJ8vJ/EWrkGU2BAOublkMl5XI0cbSIfbvuITXgHX7W5sDeEwx\n" +
-        "6ultnUBVg6PmEbLAaZFtqg7gFPaVGbvP4h07FHSjRdf+y8W3QgoBIhc7/zuJiw1h\n" +
-        "CsJ9D7eGl2dnXO6FgdY6ISnPAfxzzrZPCJtKL+Ffm9UnfCA7AYaQQZoymqVTGIsC\n" +
-        "QAekkRkRia7gpUrTvR0hXST18KMcB7QKEv75rL8pEPHirJjyujBh+4VYVpLRDtbc\n" +
-        "QKxCCXcn/zhTsn+4TV/4SgO1IhU+TBv4/iffzLi/aXKEEoPJhgIbMOd5ri1XBsTe\n" +
-        "pGNaBOlYlEm8q8u1E3nGxzmkBtMCAwEAAaMhMB8wHQYDVR0RAQH/BBMwEYIJbG9j\n" +
-        "YWxob3N0hwQKAAICMA0GCSqGSIb3DQEBCwUAA4IBAQAjL/inUHQbYD6bosFDQfyL\n" +
-        "E9LOanO3ewiuZr5Sa4DJ5n8kNPdAO9M9urfmTbOUdvMfrH+fqiEwo6a7NTqT9bGk\n" +
-        "Ewz7/LdpvWIGMpnijLEPTDTur2VmjpjqtawvzbFiHhdzOZk3o6bKbY3qac7CxaaO\n" +
-        "MWZKF+o+YRCXVAJ2NQZLW2D9ee1qOXpK7VA360MFoyfo3cP8z6DDdNJm6gDAK+wI\n" +
-        "1pMCdrdwHuu+ExKKA8za4r6dThVQu5jp6d7GO+2qf9rGkm1idIgjGtsgC+hPmhLb\n" +
-        "7RK0ynU3Ai32elqwTDpD1WGuP2yacSWweh3GG6lG1NNY7n3tsccUWnsZztQ66Oh4\n" +
-        "-----END CERTIFICATE-----"
+      "MIIC/DCCAeSgAwIBAgIBATANBgkqhkiG9w0BAQsFADAvMS0wKwYDVQQDEyRkNWY2\n" +
+      "NTRhNC0zOWJlLTQyYjEtOGNlYi1kYTI3MmJmNTI2ZTQwIBcNMTkwODEyMjEwMzIx\n" +
+      "WhgPMjExOTA3MTkyMTAzMjFaMC8xLTArBgNVBAMTJGQ1ZjY1NGE0LTM5YmUtNDJi\n" +
+      "MS04Y2ViLWRhMjcyYmY1MjZlNDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC\n" +
+      "ggEBAJQzrBa2Zp7lJ8vJ/EWrkGU2BAOublkMl5XI0cbSIfbvuITXgHX7W5sDeEwx\n" +
+      "6ultnUBVg6PmEbLAaZFtqg7gFPaVGbvP4h07FHSjRdf+y8W3QgoBIhc7/zuJiw1h\n" +
+      "CsJ9D7eGl2dnXO6FgdY6ISnPAfxzzrZPCJtKL+Ffm9UnfCA7AYaQQZoymqVTGIsC\n" +
+      "QAekkRkRia7gpUrTvR0hXST18KMcB7QKEv75rL8pEPHirJjyujBh+4VYVpLRDtbc\n" +
+      "QKxCCXcn/zhTsn+4TV/4SgO1IhU+TBv4/iffzLi/aXKEEoPJhgIbMOd5ri1XBsTe\n" +
+      "pGNaBOlYlEm8q8u1E3nGxzmkBtMCAwEAAaMhMB8wHQYDVR0RAQH/BBMwEYIJbG9j\n" +
+      "YWxob3N0hwQKAAICMA0GCSqGSIb3DQEBCwUAA4IBAQAjL/inUHQbYD6bosFDQfyL\n" +
+      "E9LOanO3ewiuZr5Sa4DJ5n8kNPdAO9M9urfmTbOUdvMfrH+fqiEwo6a7NTqT9bGk\n" +
+      "Ewz7/LdpvWIGMpnijLEPTDTur2VmjpjqtawvzbFiHhdzOZk3o6bKbY3qac7CxaaO\n" +
+      "MWZKF+o+YRCXVAJ2NQZLW2D9ee1qOXpK7VA360MFoyfo3cP8z6DDdNJm6gDAK+wI\n" +
+      "1pMCdrdwHuu+ExKKA8za4r6dThVQu5jp6d7GO+2qf9rGkm1idIgjGtsgC+hPmhLb\n" +
+      "7RK0ynU3Ai32elqwTDpD1WGuP2yacSWweh3GG6lG1NNY7n3tsccUWnsZztQ66Oh4\n" +
+      "-----END CERTIFICATE-----"
     return Buffer()
-        .writeUtf8(myCertificate)
-        .inputStream()
+      .writeUtf8(myCertificate)
+      .inputStream()
   }
 
   @Throws(GeneralSecurityException::class)
@@ -109,17 +109,17 @@ object GrpcClientProvider {
 
     // Use it to build an X509 trust manager.
     val keyManagerFactory = KeyManagerFactory.getInstance(
-        KeyManagerFactory.getDefaultAlgorithm()
+      KeyManagerFactory.getDefaultAlgorithm()
     )
     keyManagerFactory.init(keyStore, password)
     val trustManagerFactory = TrustManagerFactory.getInstance(
-        TrustManagerFactory.getDefaultAlgorithm()
+      TrustManagerFactory.getDefaultAlgorithm()
     )
     trustManagerFactory.init(keyStore)
     val trustManagers = trustManagerFactory.trustManagers
     if (trustManagers.size != 1 || trustManagers[0] !is X509TrustManager) {
       throw IllegalStateException(
-          "Unexpected default trust managers:" + Arrays.toString(trustManagers)
+        "Unexpected default trust managers:" + Arrays.toString(trustManagers)
       )
     }
     return trustManagers[0] as X509TrustManager

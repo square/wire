@@ -26,17 +26,20 @@ import java.io.File
 
 class StubTest {
   @Test
-  fun addStub() {    val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
+  fun addStub() {
+    val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
     val service = repoBuilder.schema().getService("routeguide.RouteGuide")
 
     val code = FileSpec.builder("routeguide", "RouteGuide")
       .addType(
         TypeSpec.classBuilder("RouteGuideWireGrpc")
-          .apply { StubGenerator.addStub(
-            generator = ClassNameGenerator(buildClassMap(repoBuilder.schema(), service!!)),
-            builder = this,
-            service
-          ) }
+          .apply {
+            StubGenerator.addStub(
+              generator = ClassNameGenerator(buildClassMap(repoBuilder.schema(), service!!)),
+              builder = this,
+              service
+            )
+          }
           .build()
       )
       .build()

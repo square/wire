@@ -81,7 +81,7 @@ data class MessageType(
    * such field.
    */
   fun extensionField(qualifiedName: String): Field? =
-      extensionFields.firstOrNull { it.qualifiedName == qualifiedName }
+    extensionFields.firstOrNull { it.qualifiedName == qualifiedName }
 
   /** Returns the field tagged [tag], or null if this type has no such field.  */
   fun field(tag: Int): Field? {
@@ -202,33 +202,33 @@ data class MessageType(
     val retainedOneOfs = oneOfs.mapNotNull { it.retainLinked() }
 
     return MessageType(
-        type = type,
-        location = location,
-        documentation = documentation,
-        name = name,
-        declaredFields = retainLinked(declaredFields),
-        extensionFields = retainLinked(extensionFields).toMutableList(),
-        oneOfs = retainedOneOfs,
-        nestedTypes = retainedNestedTypes,
-        extensionsList = emptyList(),
-        reserveds = emptyList(),
-        options = options.retainLinked(),
-        syntax = syntax
+      type = type,
+      location = location,
+      documentation = documentation,
+      name = name,
+      declaredFields = retainLinked(declaredFields),
+      extensionFields = retainLinked(extensionFields).toMutableList(),
+      oneOfs = retainedOneOfs,
+      nestedTypes = retainedNestedTypes,
+      extensionsList = emptyList(),
+      reserveds = emptyList(),
+      options = options.retainLinked(),
+      syntax = syntax
     )
   }
 
   fun toElement(): MessageElement {
     return MessageElement(
-        location = location,
-        name = name,
-        documentation = documentation,
-        nestedTypes = toElements(nestedTypes),
-        options = options.elements,
-        reserveds = toElements(reserveds),
-        fields = toElements(declaredFields),
-        oneOfs = toElements(oneOfs),
-        extensions = toElements(extensionsList),
-        groups = emptyList()
+      location = location,
+      name = name,
+      documentation = documentation,
+      nestedTypes = toElements(nestedTypes),
+      options = options.elements,
+      reserveds = toElements(reserveds),
+      fields = toElements(declaredFields),
+      oneOfs = toElements(oneOfs),
+      extensions = toElements(extensionsList),
+      groups = emptyList()
     )
   }
 
@@ -245,21 +245,21 @@ data class MessageType(
         "${messageElement.groups[0].location}: 'group' is not supported"
       }
       val nestedTypes =
-          messageElement.nestedTypes.map { get(packageName, protoType.nestedType(it.name), it, syntax) }
+        messageElement.nestedTypes.map { get(packageName, protoType.nestedType(it.name), it, syntax) }
       return MessageType(
-          type = protoType,
-          location = messageElement.location,
-          documentation = messageElement.documentation,
-          name = messageElement.name,
-          declaredFields =
-              fromElements(packageName, messageElement.fields, extension = false, oneOf = false),
-          extensionFields = mutableListOf(), // Extension fields are populated during linking.
-          oneOfs = fromElements(packageName, messageElement.oneOfs, false),
-          nestedTypes = nestedTypes,
-          extensionsList = fromElements(messageElement.extensions),
-          reserveds = fromElements(messageElement.reserveds),
-          options = Options(Options.MESSAGE_OPTIONS, messageElement.options),
-          syntax = syntax
+        type = protoType,
+        location = messageElement.location,
+        documentation = messageElement.documentation,
+        name = messageElement.name,
+        declaredFields =
+        fromElements(packageName, messageElement.fields, extension = false, oneOf = false),
+        extensionFields = mutableListOf(), // Extension fields are populated during linking.
+        oneOfs = fromElements(packageName, messageElement.oneOfs, false),
+        nestedTypes = nestedTypes,
+        extensionsList = fromElements(messageElement.extensions),
+        reserveds = fromElements(messageElement.reserveds),
+        options = Options(Options.MESSAGE_OPTIONS, messageElement.options),
+        syntax = syntax
       )
     }
   }

@@ -33,7 +33,7 @@ class ProtoMember private constructor(
     get() = member.substringAfterLast('.') // Strip package prefix for extension fields.
 
   override fun equals(other: Any?) =
-      other is ProtoMember && type == other.type && member == other.member
+    other is ProtoMember && type == other.type && member == other.member
 
   override fun hashCode() = type.hashCode() * 37 + member.hashCode()
 
