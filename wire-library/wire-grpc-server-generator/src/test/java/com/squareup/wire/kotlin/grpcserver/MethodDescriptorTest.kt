@@ -34,12 +34,14 @@ class MethodDescriptorTest {
     val code = FileSpec.builder("routeguide", "RouteGuide")
       .addType(
         TypeSpec.classBuilder("RouteGuideWireGrpc")
-          .apply { MethodDescriptorGenerator.addMethodDescriptor(
-            generator = ClassNameGenerator(buildClassMap(repoBuilder.schema(), service!!)),
-            builder = this,
-            service = service,
-            rpc = service.rpc("GetFeature")!!
-          ) }
+          .apply {
+            MethodDescriptorGenerator.addMethodDescriptor(
+              generator = ClassNameGenerator(buildClassMap(repoBuilder.schema(), service!!)),
+              builder = this,
+              service = service,
+              rpc = service.rpc("GetFeature")!!
+            )
+          }
           .build()
       )
       .build()

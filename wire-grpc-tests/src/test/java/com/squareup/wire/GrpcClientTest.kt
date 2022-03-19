@@ -86,16 +86,16 @@ class GrpcClientTest {
   @Before
   fun setUp() {
     okhttpClient = OkHttpClient.Builder()
-        .addInterceptor { chain ->
-          callReference.set(chain.call())
-          interceptor.intercept(chain)
-        }
-        .protocols(listOf(Protocol.H2_PRIOR_KNOWLEDGE))
-        .build()
+      .addInterceptor { chain ->
+        callReference.set(chain.call())
+        interceptor.intercept(chain)
+      }
+      .protocols(listOf(Protocol.H2_PRIOR_KNOWLEDGE))
+      .build()
     grpcClient = GrpcClient.Builder()
-        .client(okhttpClient)
-        .baseUrl(mockService.url)
-        .build()
+      .client(okhttpClient)
+      .baseUrl(mockService.url)
+      .build()
     routeGuideService = grpcClient.create(RouteGuideClient::class)
     incompatibleRouteGuideService = IncompatibleRouteGuideClient(grpcClient)
   }
@@ -164,17 +164,19 @@ class GrpcClientTest {
     val grpcCall = routeGuideService.GetFeature()
     var feature: Feature? = null
     val latch = CountDownLatch(1)
-    grpcCall.enqueue(Point(latitude = 5, longitude = 6),
-        object : GrpcCall.Callback<Point, Feature> {
-          override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
-            throw AssertionError()
-          }
+    grpcCall.enqueue(
+      Point(latitude = 5, longitude = 6),
+      object : GrpcCall.Callback<Point, Feature> {
+        override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
+          throw AssertionError()
+        }
 
-          override fun onSuccess(call: GrpcCall<Point, Feature>, response: Feature) {
-            feature = response
-            latch.countDown()
-          }
-        })
+        override fun onSuccess(call: GrpcCall<Point, Feature>, response: Feature) {
+          feature = response
+          latch.countDown()
+        }
+      }
+    )
 
     mockService.awaitSuccessBlocking()
     latch.await()
@@ -834,17 +836,19 @@ class GrpcClientTest {
 
     var feature: Feature? = null
     val latch = CountDownLatch(1)
-    grpcCall.enqueue(Point(latitude = 5, longitude = 6),
-        object : GrpcCall.Callback<Point, Feature> {
-          override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
-            throw AssertionError()
-          }
+    grpcCall.enqueue(
+      Point(latitude = 5, longitude = 6),
+      object : GrpcCall.Callback<Point, Feature> {
+        override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
+          throw AssertionError()
+        }
 
-          override fun onSuccess(call: GrpcCall<Point, Feature>, response: Feature) {
-            feature = response
-            latch.countDown()
-          }
-        })
+        override fun onSuccess(call: GrpcCall<Point, Feature>, response: Feature) {
+          feature = response
+          latch.countDown()
+        }
+      }
+    )
     assertThat(grpcCall.isExecuted()).isTrue()
 
     mockService.awaitSuccessBlocking()
@@ -906,7 +910,7 @@ class GrpcClientTest {
         fail()
       } catch (expected: IOException) {
         assertThat(expected).hasMessage(
-            "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+          "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
         )
       }
     }
@@ -927,7 +931,7 @@ class GrpcClientTest {
       fail()
     } catch (expected: IOException) {
       assertThat(expected).hasMessage(
-          "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+        "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
       )
     }
   }
@@ -943,19 +947,21 @@ class GrpcClientTest {
 
     val grpcCall = routeGuideService.GetFeature()
     val latch = CountDownLatch(1)
-    grpcCall.enqueue(Point(latitude = 5, longitude = 6),
-        object : GrpcCall.Callback<Point, Feature> {
-          override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
-            assertThat(exception).hasMessage(
-                "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
-            )
-            latch.countDown()
-          }
+    grpcCall.enqueue(
+      Point(latitude = 5, longitude = 6),
+      object : GrpcCall.Callback<Point, Feature> {
+        override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
+          assertThat(exception).hasMessage(
+            "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+          )
+          latch.countDown()
+        }
 
-          override fun onSuccess(call: GrpcCall<Point, Feature>, response: Feature) {
-            throw AssertionError()
-          }
-        })
+        override fun onSuccess(call: GrpcCall<Point, Feature>, response: Feature) {
+          throw AssertionError()
+        }
+      }
+    )
 
     mockService.awaitSuccessBlocking()
     latch.await()
@@ -966,12 +972,12 @@ class GrpcClientTest {
     interceptor = object : Interceptor {
       override fun intercept(chain: Interceptor.Chain): Response {
         return Response.Builder()
-            .request(chain.request())
-            .protocol(HTTP_2)
-            .code(500)
-            .message("internal server error")
-            .body(ByteString.EMPTY.toResponseBody("application/grpc".toMediaType()))
-            .build()
+          .request(chain.request())
+          .protocol(HTTP_2)
+          .code(500)
+          .message("internal server error")
+          .body(ByteString.EMPTY.toResponseBody("application/grpc".toMediaType()))
+          .build()
       }
     }
 
@@ -982,7 +988,7 @@ class GrpcClientTest {
         fail()
       } catch (expected: IOException) {
         assertThat(expected).hasMessage(
-            "expected gRPC but was HTTP status=500, content-type=application/grpc"
+          "expected gRPC but was HTTP status=500, content-type=application/grpc"
         )
       }
     }
@@ -993,12 +999,12 @@ class GrpcClientTest {
     interceptor = object : Interceptor {
       override fun intercept(chain: Interceptor.Chain): Response {
         return Response.Builder()
-            .request(chain.request())
-            .protocol(HTTP_2)
-            .code(200)
-            .message("ok")
-            .body(ByteString.EMPTY.toResponseBody("text/plain".toMediaType()))
-            .build()
+          .request(chain.request())
+          .protocol(HTTP_2)
+          .code(200)
+          .message("ok")
+          .body(ByteString.EMPTY.toResponseBody("text/plain".toMediaType()))
+          .build()
       }
     }
 
@@ -1009,7 +1015,7 @@ class GrpcClientTest {
         fail()
       } catch (expected: IOException) {
         assertThat(expected).hasMessage(
-            "expected gRPC but was HTTP status=200, content-type=text/plain"
+          "expected gRPC but was HTTP status=200, content-type=text/plain"
         )
       }
     }
@@ -1022,12 +1028,12 @@ class GrpcClientTest {
       override fun intercept(chain: Interceptor.Chain): Response {
         val response = chain.proceed(chain.request())
         return response.newBuilder()
-            .body(object : ResponseBody() {
-              override fun contentLength() = response.body!!.contentLength()
-              override fun source() = response.body!!.source()
-              override fun contentType() = "application/grpc".toMediaType()
-            })
-            .build()
+          .body(object : ResponseBody() {
+            override fun contentLength() = response.body!!.contentLength()
+            override fun source() = response.body!!.source()
+            override fun contentType() = "application/grpc".toMediaType()
+          })
+          .build()
       }
     }
 
@@ -1041,12 +1047,12 @@ class GrpcClientTest {
       override fun intercept(chain: Interceptor.Chain): Response {
         val response = chain.proceed(chain.request())
         return response.newBuilder()
-            .body(object : ResponseBody() {
-              override fun contentLength() = response.body!!.contentLength()
-              override fun source() = response.body!!.source()
-              override fun contentType() = "application/grpc+proto".toMediaType()
-            })
-            .build()
+          .body(object : ResponseBody() {
+            override fun contentLength() = response.body!!.contentLength()
+            override fun source() = response.body!!.source()
+            override fun contentType() = "application/grpc+proto".toMediaType()
+          })
+          .build()
       }
     }
 
@@ -1067,7 +1073,7 @@ class GrpcClientTest {
       fail()
     } catch (expected: IOException) {
       assertThat(expected).hasMessage(
-          "gRPC transport failure (HTTP status=200, grpc-status=2, grpc-message=null)"
+        "gRPC transport failure (HTTP status=200, grpc-status=2, grpc-message=null)"
       )
       assertThat(expected.cause).hasMessage("expected 1 message but got none")
     }
@@ -1087,7 +1093,7 @@ class GrpcClientTest {
       fail()
     } catch (expected: IOException) {
       assertThat(expected).hasMessage(
-          "gRPC transport failure (HTTP status=200, grpc-status=13, grpc-message=boom)"
+        "gRPC transport failure (HTTP status=200, grpc-status=13, grpc-message=boom)"
       )
       assertThat(expected.cause).hasMessage("expected 1 message but got none")
     }
@@ -1110,7 +1116,7 @@ class GrpcClientTest {
     } catch (expected: GrpcException) {
       assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
       assertThat(expected).hasMessage(
-          "grpc-status=13, grpc-status-name=INTERNAL, grpc-message=boom"
+        "grpc-status=13, grpc-status-name=INTERNAL, grpc-message=boom"
       )
     }
   }
@@ -1131,7 +1137,7 @@ class GrpcClientTest {
       fail()
     } catch (expected: IOException) {
       assertThat(expected).hasMessage(
-          "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+        "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
       )
       assertThat(expected.cause).hasMessage("stream was reset: CANCEL")
     }
@@ -1155,8 +1161,8 @@ class GrpcClientTest {
     } catch (expected: IOException) {
       // It's racy whether we receive trailers first or close the response stream first.
       assertThat(expected.message).isIn(
-          "gRPC transport failure (HTTP status=200, grpc-status=0, grpc-message=null)",
-          "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+        "gRPC transport failure (HTTP status=200, grpc-status=0, grpc-message=null)",
+        "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
       )
       assertThat(expected.cause).hasMessage("expected 1 message but got multiple")
     }
@@ -1176,7 +1182,7 @@ class GrpcClientTest {
       fail()
     } catch (expected: IOException) {
       assertThat(expected).hasMessage(
-          "gRPC transport failure (HTTP status=200, grpc-status=0, grpc-message=null)"
+        "gRPC transport failure (HTTP status=200, grpc-status=0, grpc-message=null)"
       )
       assertThat(expected.cause).hasMessage("expected 1 message but got none")
     }
@@ -1530,14 +1536,14 @@ class GrpcClientTest {
       override fun intercept(chain: Interceptor.Chain): Response {
         val response = chain.proceed(chain.request())
         return noTrailersResponse.newBuilder()
-            .request(response.request)
-            .code(response.code)
-            .protocol(response.protocol)
-            .message(response.message)
-            .headers(response.headers)
-            .removeHeader("grpc-status")
-            .body(response.body)
-            .build()
+          .request(response.request)
+          .code(response.code)
+          .protocol(response.protocol)
+          .message(response.message)
+          .headers(response.headers)
+          .removeHeader("grpc-status")
+          .body(response.body)
+          .build()
       }
     }
   }
@@ -1550,8 +1556,8 @@ class GrpcClientTest {
    */
   private fun noTrailersResponse(): Response {
     val request = Request.Builder()
-        .url(mockService.url)
-        .build()
+      .url(mockService.url)
+      .build()
     val response = okhttpClient.newCall(request).execute()
     response.use {
       response.body!!.bytes()
@@ -1570,10 +1576,12 @@ class GrpcClientTest {
     private val client: GrpcClient
   ) {
     fun RouteChat(): GrpcCall<RouteNote, RouteNote> =
-        client.newCall(GrpcMethod(
-            path = "/routeguide.RouteGuide/RouteChat",
-            requestAdapter = RouteNote.ADAPTER,
-            responseAdapter = RouteNote.ADAPTER
-        ))
+      client.newCall(
+        GrpcMethod(
+          path = "/routeguide.RouteGuide/RouteChat",
+          requestAdapter = RouteNote.ADAPTER,
+          responseAdapter = RouteNote.ADAPTER
+        )
+      )
   }
 }

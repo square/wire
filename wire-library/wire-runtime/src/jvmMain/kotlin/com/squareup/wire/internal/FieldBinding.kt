@@ -37,7 +37,7 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   override val name: String = messageField.name
   override val wireFieldJsonName: String = wireField.jsonName
   override val declaredName: String =
-      if (wireField.declaredName.isEmpty()) messageField.name else wireField.declaredName
+    if (wireField.declaredName.isEmpty()) messageField.name else wireField.declaredName
   override val tag: Int = wireField.tag
   private val keyAdapterString = wireField.keyAdapter
   private val adapterString = wireField.adapter

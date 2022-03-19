@@ -154,20 +154,20 @@ internal class WireInput(var configuration: Configuration) {
     return if (dependency is FileCollectionDependency && dependency.files is SourceDirectorySet) {
       val srcDir = (dependency.files as SourceDirectorySet).srcDirs.first { startsWith(it.path) }
       listOf(
-          InputLocation.get(
-              project = project,
-              base = srcDir.path,
-              path = relativeTo(srcDir).toString()
-          )
+        InputLocation.get(
+          project = project,
+          base = srcDir.path,
+          path = relativeTo(srcDir).toString()
+        )
       )
     } else if (isJar) {
       val filters = dependencyFilters.getOrDefault(dependency, listOf())
-          .ifEmpty { return@toLocations listOf(InputLocation.get(project, path)) }
+        .ifEmpty { return@toLocations listOf(InputLocation.get(project, path)) }
 
       mutableListOf<InputLocation>().apply {
         project.zipTree(path)
-            .matching { pattern -> filters.forEach { it.act(pattern) } }
-            .visit { if (!it.isDirectory) add(InputLocation.get(project, path, it.path)) }
+          .matching { pattern -> filters.forEach { it.act(pattern) } }
+          .visit { if (!it.isDirectory) add(InputLocation.get(project, path, it.path)) }
       }
     } else {
       listOf(InputLocation.get(project, path))

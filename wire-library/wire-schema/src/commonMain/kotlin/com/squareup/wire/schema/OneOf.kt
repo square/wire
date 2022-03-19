@@ -64,9 +64,9 @@ data class OneOf(
       }
 
       return@map OneOf(
-          name = it.name,
-          documentation = it.documentation,
-          fields = Field.fromElements(packageName, it.fields, extension, oneOf = true)
+        name = it.name,
+        documentation = it.documentation,
+        fields = Field.fromElements(packageName, it.fields, extension, oneOf = true)
       )
     }
 
@@ -74,10 +74,10 @@ data class OneOf(
     fun toElements(oneOfs: List<OneOf>) =
       oneOfs.map {
         OneOfElement(
-            name = it.name,
-            documentation = it.documentation,
-            fields = Field.toElements(it.fields),
-            groups = emptyList()
+          name = it.name,
+          documentation = it.documentation,
+          fields = Field.toElements(it.fields),
+          groups = emptyList()
         )
       }
   }

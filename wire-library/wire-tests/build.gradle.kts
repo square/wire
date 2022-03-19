@@ -1,3 +1,5 @@
+import com.diffplug.gradle.spotless.SpotlessExtension
+
 plugins {
   kotlin("multiplatform")
   id("org.jetbrains.kotlin.plugin.serialization")
@@ -253,5 +255,24 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
       add("jvmJavaTestImplementation", deps.moshi)
       add("jvmJavaTestImplementation", deps.moshiKotlin)
     }
+  }
+}
+
+configure<SpotlessExtension> {
+  kotlin {
+    targetExclude(
+      "src/commonTest/proto-java/**/*.kt",
+      "src/commonTest/proto-kotlin/**/*.kt",
+      "src/jvmJavaAndroidCompactTest/proto-java/**/*.kt",
+      "src/jvmJavaAndroidTest/proto-java/**/*.kt",
+      "src/jvmJavaCompactTest/proto-java/**/*.kt",
+      "src/jvmJavaNoOptionsTest/proto-java/**/*.kt",
+      "src/jvmJavaPrunedTest/proto-java/**/*.kt",
+      "src/jvmJavaTest/proto-java/**/*.kt",
+      "src/jvmKotlinAndroidTest/proto-kotlin/**/*.kt",
+      "src/jvmKotlinInteropTest/proto-kotlin/**/*.kt",
+      "src/jvmJsonJavaTest/proto-java/**/*.kt",
+      "src/jvmJsonKotlinTest/proto-kotlin/**/*.kt",
+      )
   }
 }

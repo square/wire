@@ -90,14 +90,14 @@ data class OptionElement(
         append(""""$value"""")
       }
       is OptionPrimitive -> {
-           when (value.kind) {
-             BOOLEAN,
-             NUMBER,
-             ENUM -> {
-               append("${value.value}")
-             }
-             else -> append(formatOptionMapValue(value.value))
-           }
+        when (value.kind) {
+          BOOLEAN,
+          NUMBER,
+          ENUM -> {
+            append("${value.value}")
+          }
+          else -> append(formatOptionMapValue(value.value))
+        }
       }
       is Map<*, *> -> {
         append("{\n")
@@ -121,7 +121,7 @@ data class OptionElement(
 
   companion object {
     internal val PACKED_OPTION_ELEMENT =
-        OptionElement("packed", BOOLEAN, value = "true", isParenthesized = false)
+      OptionElement("packed", BOOLEAN, value = "true", isParenthesized = false)
 
     @JvmOverloads
     fun create(

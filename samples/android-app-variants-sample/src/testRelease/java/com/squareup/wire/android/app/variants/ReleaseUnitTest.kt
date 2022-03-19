@@ -1,8 +1,7 @@
 package com.squareup.wire.android.app.variants
 
+import org.junit.Assert.fail
 import org.junit.Test
-
-import org.junit.Assert.*
 
 class ReleaseUnitTest {
   @Test

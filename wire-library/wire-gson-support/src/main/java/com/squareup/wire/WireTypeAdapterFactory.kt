@@ -57,7 +57,8 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
     val newMap = typeUrlToAdapter.toMutableMap()
     for (adapter in adapters) {
       val key = adapter.typeUrl ?: throw IllegalArgumentException(
-          "recompile ${adapter.type} to use it with WireTypeAdapterFactory")
+        "recompile ${adapter.type} to use it with WireTypeAdapterFactory"
+      )
       newMap[key] = adapter
     }
     return WireTypeAdapterFactory(newMap, writeIdentityValues)

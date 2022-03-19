@@ -18,8 +18,6 @@ package com.squareup.wire.schema
 import com.squareup.wire.schema.internal.parser.ProtoParser
 import okio.FileSystem
 import okio.Path.Companion.toPath
-import okio.buffer
-import okio.source
 
 /**
  * A loader that can only load built-in `.proto` files:
@@ -64,13 +62,13 @@ actual object CoreLoader : Loader {
   /** Returns true if [path] is bundled in the wire runtime. */
   fun isWireRuntimeProto(path: String): Boolean {
     return path == ANY_PROTO ||
-        path == DESCRIPTOR_PROTO ||
-        path == DURATION_PROTO ||
-        path == EMPTY_PROTO ||
-        path == STRUCT_PROTO ||
-        path == TIMESTAMP_PROTO ||
-        path == WRAPPERS_PROTO ||
-        path == WIRE_EXTENSIONS_PROTO
+      path == DESCRIPTOR_PROTO ||
+      path == DURATION_PROTO ||
+      path == EMPTY_PROTO ||
+      path == STRUCT_PROTO ||
+      path == TIMESTAMP_PROTO ||
+      path == WRAPPERS_PROTO ||
+      path == WIRE_EXTENSIONS_PROTO
   }
 
   override fun withErrors(errors: ErrorCollector) = this

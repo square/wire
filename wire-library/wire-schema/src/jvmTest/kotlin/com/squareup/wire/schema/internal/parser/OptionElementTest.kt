@@ -42,13 +42,13 @@ class OptionElementTest {
   @Test
   fun listToSchema() {
     val option = OptionElement.create(
-        "foo",
-        LIST,
-        listOf(
-            OptionElement.create("ping", STRING, "pong", true),
-            OptionElement.create("kit", STRING, "kat")
-        ),
-        true
+      "foo",
+      LIST,
+      listOf(
+        OptionElement.create("ping", STRING, "pong", true),
+        OptionElement.create("kit", STRING, "kat")
+      ),
+      true
     )
     val expected = """
         |(foo) = [
@@ -62,7 +62,7 @@ class OptionElementTest {
   @Test
   fun mapToSchema() {
     val option = OptionElement.create(
-        "foo", MAP, mapOf("ping" to "pong", "kit" to listOf("kat", "kot"))
+      "foo", MAP, mapOf("ping" to "pong", "kit" to listOf("kat", "kot"))
     )
     val expected = """
         |foo = {

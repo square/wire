@@ -28,7 +28,8 @@ class OneOfTest {
   private val FOO_BYTES = byteArrayOf(8, 17)
   // (Tag #3 << 3 | LENGTH_DELIMITED) = 26, string length = 6.
   private val BAR_BYTES = byteArrayOf(
-      26, 6, 'b'.toByte(), 'a'.toByte(), 'r'.toByte(), 'b'.toByte(), 'a'.toByte(), 'r'.toByte())
+    26, 6, 'b'.toByte(), 'a'.toByte(), 'r'.toByte(), 'b'.toByte(), 'a'.toByte(), 'r'.toByte()
+  )
 
   private val adapter = OneOfMessage.ADAPTER
 
@@ -36,27 +37,31 @@ class OneOfTest {
   fun testOneOf() {
     val builder = OneOfMessage.Builder()
     builder.validate(
-        expectedFoo = null,
-        expectedBar = null,
-        expectedBytes = INITIAL_BYTES)
+      expectedFoo = null,
+      expectedBar = null,
+      expectedBytes = INITIAL_BYTES
+    )
 
     builder.foo(17)
     builder.validate(
-        expectedFoo = 17,
-        expectedBar = null,
-        expectedBytes = FOO_BYTES)
+      expectedFoo = 17,
+      expectedBar = null,
+      expectedBytes = FOO_BYTES
+    )
 
     builder.bar("barbar")
     builder.validate(
-        expectedFoo = null,
-        expectedBar = "barbar",
-        expectedBytes = BAR_BYTES)
+      expectedFoo = null,
+      expectedBar = "barbar",
+      expectedBytes = BAR_BYTES
+    )
 
     builder.foo(17)
     builder.validate(
-        expectedFoo = 17,
-        expectedBar = null,
-        expectedBytes = FOO_BYTES)
+      expectedFoo = 17,
+      expectedBar = null,
+      expectedBytes = FOO_BYTES
+    )
   }
 
   @Test

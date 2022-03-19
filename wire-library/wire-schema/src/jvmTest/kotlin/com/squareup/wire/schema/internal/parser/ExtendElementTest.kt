@@ -26,8 +26,8 @@ class ExtendElementTest {
   @Test
   fun emptyToSchema() {
     val extend = ExtendElement(
-        location = location,
-        name = "Name"
+      location = location,
+      name = "Name"
     )
     val expected = "extend Name {}\n"
     assertThat(extend.toSchema()).isEqualTo(expected)
@@ -36,17 +36,17 @@ class ExtendElementTest {
   @Test
   fun simpleToSchema() {
     val extend = ExtendElement(
-        location = location,
-        name = "Name",
-        fields = listOf(
-            FieldElement(
-                location = location,
-                label = REQUIRED,
-                type = "string",
-                name = "name",
-                tag = 1
-            )
+      location = location,
+      name = "Name",
+      fields = listOf(
+        FieldElement(
+          location = location,
+          label = REQUIRED,
+          type = "string",
+          name = "name",
+          tag = 1
         )
+      )
     )
     val expected = """
         |extend Name {
@@ -59,23 +59,23 @@ class ExtendElementTest {
   @Test
   fun addMultipleFields() {
     val firstName = FieldElement(
-        location = location,
-        label = REQUIRED,
-        type = "string",
-        name = "first_name",
-        tag = 1
+      location = location,
+      label = REQUIRED,
+      type = "string",
+      name = "first_name",
+      tag = 1
     )
     val lastName = FieldElement(
-        location = location,
-        label = REQUIRED,
-        type = "string",
-        name = "last_name",
-        tag = 2
+      location = location,
+      label = REQUIRED,
+      type = "string",
+      name = "last_name",
+      tag = 2
     )
     val extend = ExtendElement(
-        location = location,
-        name = "Name",
-        fields = listOf(firstName, lastName)
+      location = location,
+      name = "Name",
+      fields = listOf(firstName, lastName)
     )
     assertThat(extend.fields).hasSize(2)
   }
@@ -83,18 +83,18 @@ class ExtendElementTest {
   @Test
   fun simpleWithDocumentationToSchema() {
     val extend = ExtendElement(
-        location = location,
-        name = "Name",
-        documentation = "Hello",
-        fields = listOf(
-            FieldElement(
-                location = location,
-                label = REQUIRED,
-                type = "string",
-                name = "name",
-                tag = 1
-            )
+      location = location,
+      name = "Name",
+      documentation = "Hello",
+      fields = listOf(
+        FieldElement(
+          location = location,
+          label = REQUIRED,
+          type = "string",
+          name = "name",
+          tag = 1
         )
+      )
     )
     val expected = """
         |// Hello
@@ -108,18 +108,18 @@ class ExtendElementTest {
   @Test
   fun jsonNameToSchema() {
     val extend = ExtendElement(
-        location = location,
-        name = "Name",
-        fields = listOf(
-            FieldElement(
-                location = location,
-                label = REQUIRED,
-                type = "string",
-                name = "name",
-                jsonName = "my_json",
-                tag = 1
-            )
+      location = location,
+      name = "Name",
+      fields = listOf(
+        FieldElement(
+          location = location,
+          label = REQUIRED,
+          type = "string",
+          name = "name",
+          jsonName = "my_json",
+          tag = 1
         )
+      )
     )
     val expected = """
         |extend Name {
@@ -132,19 +132,19 @@ class ExtendElementTest {
   @Test
   fun defaultIsSetInProto2File() {
     val extend = ExtendElement(
-        location = location,
-        name = "Name",
-        documentation = "Hello",
-        fields = listOf(
-            FieldElement(
-                location = location,
-                label = REQUIRED,
-                type = "string",
-                name = "name",
-                tag = 1,
-                defaultValue = "defaultValue"
-            )
+      location = location,
+      name = "Name",
+      documentation = "Hello",
+      fields = listOf(
+        FieldElement(
+          location = location,
+          label = REQUIRED,
+          type = "string",
+          name = "name",
+          tag = 1,
+          defaultValue = "defaultValue"
         )
+      )
     )
     val expected = """
         |// Hello

@@ -1,3 +1,4 @@
+import com.diffplug.gradle.spotless.SpotlessExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -21,6 +22,7 @@ buildscript {
     classpath(deps.vanniktechPublishPlugin)
     classpath(deps.dokkaGradlePlugin)
     classpath(deps.dokkaCore)
+    classpath(deps.plugins.spotless)
   }
 
   repositories {
@@ -42,6 +44,18 @@ allprojects {
 }
 
 subprojects {
+  apply(plugin = "com.diffplug.spotless")
+  configure<SpotlessExtension> {
+    setEnforceCheck(false)
+    kotlin {
+      target("**/*.kt")
+      ktlint(versions.ktlint).userData(kotlin.collections.mapOf("indent_size" to "2"))
+      trimTrailingWhitespace()
+      endWithNewline()
+      toggleOffOn()
+    }
+  }
+
   // The `application` plugin internally applies the `distribution` plugin and
   // automatically adds tasks to create/publish tar and zip artifacts.
   // https://docs.gradle.org/current/userguide/application_plugin.html

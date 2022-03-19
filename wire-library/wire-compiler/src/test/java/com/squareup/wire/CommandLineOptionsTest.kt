@@ -41,7 +41,8 @@ class CommandLineOptionsTest {
     assertThat(compiler.protoPaths).containsOnly("foo/bar")
 
     compiler = parseArgs(
-        "--java_out=.", "--proto_path=foo/bar", "--proto_path=one/two", "--proto_path=three/four")
+      "--java_out=.", "--proto_path=foo/bar", "--proto_path=one/two", "--proto_path=three/four"
+    )
     assertThat(compiler.protoPaths).containsExactly("foo/bar", "one/two", "three/four")
   }
 
@@ -107,18 +108,21 @@ class CommandLineOptionsTest {
   @Test
   fun manifestModules() {
     val tmpFile = File.createTempFile("proto", ".yaml")
-    tmpFile.writeText("""
+    tmpFile.writeText(
+      """
       |a: {}
       |b:
       |  dependencies:
       |   - a
-      |""".trimMargin())
+      |""".trimMargin()
+    )
 
     val compiler =
       parseArgs("--java_out=.", "--experimental-module-manifest=${tmpFile.absolutePath}")
 
     assertThat(compiler.modules).isEqualTo(
-        mapOf("a" to WireRun.Module(), "b" to WireRun.Module(dependencies = setOf("a"))))
+      mapOf("a" to WireRun.Module(), "b" to WireRun.Module(dependencies = setOf("a")))
+    )
   }
 
   private fun parseArgs(vararg args: String) = WireCompiler.forArgs(args = *args)

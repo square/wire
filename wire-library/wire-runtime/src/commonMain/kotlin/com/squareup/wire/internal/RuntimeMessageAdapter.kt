@@ -102,7 +102,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
     for (field in fields.values) {
       if (field.redacted && field.label == WireField.Label.REQUIRED) {
         throw UnsupportedOperationException(
-            "Field '${field.name}' in $type is required and cannot be redacted."
+          "Field '${field.name}' in $type is required and cannot be redacted."
         )
       }
       val isMessage = field.isMessage
@@ -171,7 +171,6 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
         // An unknown Enum value was encountered, store it as an unknown field.
         binding.addUnknownField(builder, tag, FieldEncoding.VARINT, e.value.toLong())
       }
-
     }
     reader.endMessageAndGetUnknownFields(token) // Ignore return value
 

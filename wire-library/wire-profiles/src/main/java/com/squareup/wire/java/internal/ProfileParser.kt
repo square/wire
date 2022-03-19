@@ -44,10 +44,10 @@ class ProfileParser(
       val documentation = reader.readDocumentation()
       if (reader.exhausted()) {
         return ProfileFileElement(
-            location = location,
-            packageName = packageName,
-            imports = imports,
-            typeConfigs = typeConfigs
+          location = location,
+          packageName = packageName,
+          imports = imports,
+          typeConfigs = typeConfigs
         )
       }
 
@@ -111,12 +111,12 @@ class ProfileParser(
     }
 
     return TypeConfigElement(
-        location = location,
-        type = name,
-        documentation = documentation,
-        with = withOptions,
-        target = target,
-        adapter = adapter
+      location = location,
+      type = name,
+      documentation = documentation,
+      with = withOptions,
+      target = target,
+      adapter = adapter
     )
   }
 }

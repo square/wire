@@ -45,11 +45,11 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
 
   private fun clobberOtherIsOneOfs(field: WireField) {
     fieldValueMap.values
-        .map { it.first }
-        .filter { it.oneofName == field.oneofName && it.tag != field.tag }
-        .forEach {
-          fieldValueMap.remove(it.tag)
-        }
+      .map { it.first }
+      .filter { it.oneofName == field.oneofName && it.tag != field.tag }
+      .forEach {
+        fieldValueMap.remove(it.tag)
+      }
   }
 
   fun get(field: WireField): Any? {
@@ -104,11 +104,11 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
   }
 
   private fun Class<M>.declaredProtoFields(): List<ProtoField> = declaredFields
-      .mapNotNull { field ->
-        val wireField = field.declaredAnnotations.filterIsInstance(WireField::class.java)
-            .firstOrNull()
-        return@mapNotNull wireField?.let { ProtoField(field.type, wireField) }
-      }
+    .mapNotNull { field ->
+      val wireField = field.declaredAnnotations.filterIsInstance(WireField::class.java)
+        .firstOrNull()
+      return@mapNotNull wireField?.let { ProtoField(field.type, wireField) }
+    }
 
   private class ProtoField(
     val type: Class<*>,

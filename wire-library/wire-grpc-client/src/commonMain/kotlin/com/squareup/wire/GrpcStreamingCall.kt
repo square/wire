@@ -92,12 +92,12 @@ interface GrpcStreamingCall<S : Any, R : Any> {
    * [executeIn]. When its scope is canceled, resources held by the function will be released.
    */
   @Deprecated(
-      level = DeprecationLevel.WARNING,
-      message = "Provide a scope, preferably not GlobalScope",
-      replaceWith = ReplaceWith(
-          expression = "executeIn(GlobalScope)",
-          imports = ["kotlinx.coroutines.GlobalScope"]
-      )
+    level = DeprecationLevel.WARNING,
+    message = "Provide a scope, preferably not GlobalScope",
+    replaceWith = ReplaceWith(
+      expression = "executeIn(GlobalScope)",
+      imports = ["kotlinx.coroutines.GlobalScope"]
+    )
   )
   fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>>
 

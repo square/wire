@@ -32,7 +32,7 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
   ): TypeAdapter<Any?> = framework.getAdapter(TypeToken.get(type)).nullSafe() as TypeAdapter<Any?>
 
   override fun listAdapter(elementAdapter: TypeAdapter<Any?>): TypeAdapter<Any?> =
-      ListJsonAdapter(elementAdapter).nullSafe() as TypeAdapter<Any?>
+    ListJsonAdapter(elementAdapter).nullSafe() as TypeAdapter<Any?>
 
   override fun mapAdapter(
     framework: Gson,
@@ -61,10 +61,10 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
   }
 
   override fun structAdapter(framework: Gson): TypeAdapter<Any?> =
-      framework.getAdapter(Object::class.java).serializeNulls().nullSafe() as TypeAdapter<Any?>
+    framework.getAdapter(Object::class.java).serializeNulls().nullSafe() as TypeAdapter<Any?>
 
   override fun formatterAdapter(jsonFormatter: JsonFormatter<*>): TypeAdapter<Any?> =
-      FormatterJsonAdapter(jsonFormatter).nullSafe() as TypeAdapter<Any?>
+    FormatterJsonAdapter(jsonFormatter).nullSafe() as TypeAdapter<Any?>
 
   private class FormatterJsonAdapter<T : Any>(
     private val formatter: JsonFormatter<T>

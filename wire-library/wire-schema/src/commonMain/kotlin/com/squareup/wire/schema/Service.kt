@@ -106,8 +106,10 @@ data class Service(
       }
     }
 
-    return Service(type, location, documentation, name, retainedRpcs,
-        options.retainAll(schema, markSet))
+    return Service(
+      type, location, documentation, name, retainedRpcs,
+      options.retainAll(schema, markSet)
+    )
   }
 
   companion object {
@@ -118,8 +120,10 @@ data class Service(
       val rpcs = fromElements(element.rpcs)
       val options = Options(Options.SERVICE_OPTIONS, element.options)
 
-      return Service(protoType, element.location, element.documentation, element.name, rpcs,
-          options)
+      return Service(
+        protoType, element.location, element.documentation, element.name, rpcs,
+        options
+      )
     }
 
     @JvmStatic internal fun fromElements(
@@ -135,11 +139,11 @@ data class Service(
     @JvmStatic internal fun toElements(services: List<Service>): List<ServiceElement> {
       return services.map { service ->
         ServiceElement(
-            service.location,
-            service.name,
-            service.documentation,
-            Rpc.toElements(service.rpcs),
-            service.options.elements
+          service.location,
+          service.name,
+          service.documentation,
+          Rpc.toElements(service.rpcs),
+          service.options.elements
         )
       }
     }

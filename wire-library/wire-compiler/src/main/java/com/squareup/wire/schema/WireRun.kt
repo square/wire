@@ -225,9 +225,9 @@ data class WireRun(
 
     val targetToEmittingRules = targets.associateWith {
       EmittingRules.Builder()
-          .include(it.includes)
-          .exclude(it.excludes)
-          .build()
+        .include(it.includes)
+        .exclude(it.excludes)
+        .build()
     }
     val targetsExclusiveLast = targets.sortedBy { it.exclusive }
 
@@ -245,22 +245,23 @@ data class WireRun(
     for ((moduleName, partition) in partitions) {
       val targetToSchemaHandler = targets.associateWith {
         it.newHandler(
-            partition.schema, moduleName, partition.transitiveUpstreamTypes, fs, logger,
-            schemaLoader, errorCollector
+          partition.schema, moduleName, partition.transitiveUpstreamTypes, fs, logger,
+          schemaLoader, errorCollector
         )
       }
 
       // Call each target.
       for (protoFile in partition.schema.protoFiles) {
         if (protoFile.location.path !in sourceLocationPaths &&
-            protoFile.location.path !in moveTargetPaths) {
+          protoFile.location.path !in moveTargetPaths
+        ) {
           continue
         }
 
         // Remove types from the file which are not owned by this partition.
         val filteredProtoFile = protoFile.copy(
-            types = protoFile.types.filter { it.type in partition.types },
-            services = protoFile.services.filter { it.type in partition.types }
+          types = protoFile.types.filter { it.type in partition.types },
+          services = protoFile.services.filter { it.type in partition.types }
         )
 
         val claimedDefinitions = ClaimedDefinitions()
@@ -269,11 +270,12 @@ data class WireRun(
         for (target in targetsExclusiveLast) {
           val schemaHandler = targetToSchemaHandler.getValue(target)
           schemaHandler.handle(
-              filteredProtoFile,
-              targetToEmittingRules.getValue(target),
-              claimedDefinitions,
-              claimedPaths,
-              isExclusive = target.exclusive)
+            filteredProtoFile,
+            targetToEmittingRules.getValue(target),
+            claimedDefinitions,
+            claimedPaths,
+            isExclusive = target.exclusive
+          )
         }
       }
     }
@@ -294,20 +296,21 @@ data class WireRun(
   /** Returns a transformed schema with unwanted elements removed and moves applied. */
   private fun refactorSchema(schema: Schema, logger: WireLogger): Schema {
     if (treeShakingRoots == listOf("*") &&
-        treeShakingRubbish.isEmpty() &&
-        sinceVersion == null &&
-        untilVersion == null &&
-        moves.isEmpty()) {
+      treeShakingRubbish.isEmpty() &&
+      sinceVersion == null &&
+      untilVersion == null &&
+      moves.isEmpty()
+    ) {
       return schema
     }
 
     val pruningRules = PruningRules.Builder()
-        .addRoot(treeShakingRoots)
-        .prune(treeShakingRubbish)
-        .since(sinceVersion)
-        .until(untilVersion)
-        .only(onlyVersion)
-        .build()
+      .addRoot(treeShakingRoots)
+      .prune(treeShakingRubbish)
+      .since(sinceVersion)
+      .until(untilVersion)
+      .only(onlyVersion)
+      .build()
 
     val prunedSchema = schema.prune(pruningRules)
 

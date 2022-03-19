@@ -158,9 +158,9 @@ class SchemaLoader : Loader, ProfileLoader {
 
     // If the .proto was specified as a full path without a separate base directory that it's
     // relative to, confirm that the import path and file system path agree.
-    if (protoFilePath.location.base.isEmpty()
-      && protoFilePath.location.path != importPath
-      && !protoFilePath.location.path.endsWith("/$importPath")
+    if (protoFilePath.location.base.isEmpty() &&
+      protoFilePath.location.path != importPath &&
+      !protoFilePath.location.path.endsWith("/$importPath")
     ) {
       errors += "expected ${protoFilePath.location.path} to have a path ending with $importPath"
     }
@@ -224,7 +224,7 @@ class SchemaLoader : Loader, ProfileLoader {
         val requiredImport = resolvedType.location.path
         if (!profileFile.imports.contains(requiredImport)) {
           errors += "${typeConfig.location.path} needs to import $requiredImport " +
-              "(${typeConfig.location})"
+            "(${typeConfig.location})"
         }
       }
     }
