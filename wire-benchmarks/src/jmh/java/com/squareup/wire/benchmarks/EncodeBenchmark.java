@@ -17,9 +17,13 @@ package com.squareup.wire.benchmarks;
 
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.ReverseProtoWriter;
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import okio.Buffer;
+import okio.BufferedSource;
+import okio.Okio;
+import okio.Source;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -30,6 +34,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import squareup.wire.benchmarks.EmailSearchResponse;
+import squareup.wire.benchmarks.EmailSearchResponseProto;
 
 import static java.util.concurrent.TimeUnit.MICROSECONDS;
 import static org.openjdk.jmh.annotations.Mode.SampleTime;
@@ -42,38 +47,56 @@ import static org.openjdk.jmh.annotations.Mode.SampleTime;
 @OutputTimeUnit(MICROSECONDS)
 public class EncodeBenchmark {
   Buffer buffer = new Buffer();
+  byte[] bytes;
 
-  @Setup public void setup() {
+  @Setup public void setup() throws IOException {
+    // `medium_value.bytes` contains bytes for the message
+    // [squareup.wire.benchmarks.EmailSearchResponse].
+    File file = new File("src/main/resources/medium_value.bytes");
+    try (Source fileSource = Okio.source(file);
+         BufferedSource bufferedFileSource = Okio.buffer(fileSource)) {
+      bytes = bufferedFileSource.readByteArray();
+    }
   }
 
-  @Benchmark public void wire3x() throws IOException {
+  @Benchmark public void encodeWire3x() throws IOException {
     ProtoWriter writer = new ProtoWriter(buffer);
     EmailSearchResponse.ADAPTER.encode(writer, SampleData.newMediumValueWire());
     buffer.clear();
   }
 
-  @Benchmark public void wire4x() throws IOException {
+  @Benchmark public void encodeWire4x() throws IOException {
     ReverseProtoWriter writer = new ReverseProtoWriter();
     EmailSearchResponse.ADAPTER.encode(writer, SampleData.newMediumValueWire());
     writer.writeTo(buffer);
     buffer.clear();
   }
 
-  @Benchmark public void protobuf() throws IOException {
+  @Benchmark public void encodeProtobuf() throws IOException {
     SampleData.newMediumValueProtobuf().writeTo(buffer.outputStream());
     buffer.clear();
   }
 
-  /** Run encode for 10 seconds to capture a profile. */
+  @Benchmark public void decodeWire() throws IOException {
+    EmailSearchResponse.ADAPTER.decode(bytes);
+  }
+
+  @Benchmark public void decodeProtobuf() throws IOException {
+    EmailSearchResponseProto.EmailSearchResponse.parseFrom(bytes);
+  }
+
+  /**
+   * Run encode for 10 seconds to capture a profile.
+   */
   public static void main(String[] args) throws IOException {
     long now = System.nanoTime();
-    long done = now + TimeUnit.SECONDS.toNanos(20L);
+    long done = now + TimeUnit.SECONDS.toNanos(10L);
     EncodeBenchmark encodeBenchmark = new EncodeBenchmark();
     encodeBenchmark.setup();
     while (System.nanoTime() < done) {
       System.out.println(".");
       for (int i = 0; i < 1_000_000; i++) {
-        encodeBenchmark.wire4x();
+        encodeBenchmark.encodeWire4x();
       }
     }
   }
