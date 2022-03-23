@@ -45,7 +45,7 @@ import static org.openjdk.jmh.annotations.Mode.SampleTime;
 @State(Scope.Benchmark)
 @BenchmarkMode(SampleTime)
 @OutputTimeUnit(MICROSECONDS)
-public class EncodeBenchmark {
+public class SimpleMessageBenchmark {
   Buffer buffer = new Buffer();
   byte[] bytes;
 
@@ -91,12 +91,12 @@ public class EncodeBenchmark {
   public static void main(String[] args) throws IOException {
     long now = System.nanoTime();
     long done = now + TimeUnit.SECONDS.toNanos(10L);
-    EncodeBenchmark encodeBenchmark = new EncodeBenchmark();
-    encodeBenchmark.setup();
+    SimpleMessageBenchmark benchmark = new SimpleMessageBenchmark();
+    benchmark.setup();
     while (System.nanoTime() < done) {
       System.out.println(".");
       for (int i = 0; i < 1_000_000; i++) {
-        encodeBenchmark.encodeWire4x();
+        benchmark.encodeWire4x();
       }
     }
   }
