@@ -13,6 +13,13 @@ plugins {
   id("me.champeau.jmh").version("0.6.6")
 }
 
+sourceSets {
+  main {
+    // Adds protobuf generated classes to our source sets.
+    java.srcDir("$buildDir/generated/source/proto/main/java")
+  }
+}
+
 protobuf {
   protoc {
     artifact = deps.protobuf.protoc
@@ -26,8 +33,9 @@ wire {
 
 jmh {
   jvmArgs.addAll(listOf("-Djmh.separateClasspathJAR=true"))
-  includes.addAll(listOf("""com\.squareup\.wire\.benchmarks\.EncodeBenchmark.*"""))
+  includes.addAll(listOf("""com\.squareup\.wire\.benchmarks\..*MessageBenchmark.*"""))
   duplicateClassesStrategy.set(DuplicatesStrategy.WARN)
+  verbosity.set("EXTRA")
 }
 
 dependencies {
@@ -43,6 +51,8 @@ dependencies {
 
 tasks {
   val jmhJar by getting(ShadowJar::class) {
+    setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
     transform(DontIncludeResourceTransformer().apply {
       resource = "META-INF/BenchmarkList"
     })
