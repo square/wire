@@ -16,8 +16,8 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.internal.parser.ProtoParser
-import okio.FileSystem
 import okio.Path.Companion.toPath
+import okio.asResourceFileSystem
 
 /**
  * A loader that can only load built-in `.proto` files:
@@ -42,9 +42,13 @@ actual object CoreLoader : Loader {
   /** A special base directory used for Wire's built-in .proto files. */
   const val WIRE_RUNTIME_JAR = "wire-runtime.jar"
 
+  private val resourceFileSystem by lazy {
+    CoreLoader::class.java.classLoader.asResourceFileSystem()
+  }
+
   override fun load(path: String): ProtoFile {
     if (isWireRuntimeProto(path)) {
-      FileSystem.RESOURCES.read("/".toPath() / path) {
+      resourceFileSystem.read("/".toPath() / path) {
         val data = readUtf8()
         val location = Location.get(path)
         val element = ProtoParser.parse(location, data)
