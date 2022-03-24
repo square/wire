@@ -1,6 +1,19 @@
 Change Log
 ==========
 
+Version 4.3.0
+-------------
+
+_2022-03-24_
+
+* New: reserved tags and names in enum types are now honoured by Wire.
+* Fix: `max` keyword is now correctly parsed for enum types.
+* Fix: Wire now writes minus double zeros and minus float zeros on proto3.
+* Fix: Wire doesn't write google wrappers types' identity values anymore.
+* Fix: `CoreLoader` correctly loads `.proto` files present in the resources of the project.
+* Fix: Propagate `GrpcExceptions` in `GrpcCalls`.
+* Fix: Change `GrpcCall.isCanceled` to honor OkHttp cancellations.
+
 Version 4.2.0
 -------------
 
@@ -28,7 +41,7 @@ _2022-02-15_
  * Fix: Print target name in `ConsoleWireLogger`.
  * Fix: Throw early when field or constant names start with a digit.
  * Update: Bumped SwiftPoet to `1.3.1`.
- * Fix: Wire will not generate annotations for `repeated` options. 
+ * Fix: Wire will not generate annotations for `repeated` options.
 
 Version 4.1.0
 -------------
@@ -428,7 +441,7 @@ _2019-08-02_
  * New: Make `Message.unknownFields` a `val`.
  * Fix: Don't use `KClass.simpleName` to avoid needing `kotlin-reflect` dependency.
  * Fix: Use `kotlin.UnsupportedOperationException` in generated code.
- 
+
 ### gRPC
 
  * New: Introduce `MessageSource` and `MessageSink` interfaces in `wire-runtime`.
@@ -436,7 +449,7 @@ _2019-08-02_
  * New: Make `PipeDuplexRequestBody` internal.
  * Fix: Workaround for `@Generated` annotation on Java 9+.
  * Fix: Fix types for blocking APIs.
- 
+
 ### Misc
 
  * Fix: Fix deserializing null values in Gson adapter.
@@ -448,30 +461,30 @@ Version 3.0.0-alpha03
 _2019-06-22_
 
  * Similar to alpha02, but with proper `wire-runtime` multiplatform artifacts.
-	
+
 Version 3.0.0-alpha02
 ---------------------
 
 _2019-06-21_
 
  * New: Experimental multiplatform runtime.
- 
+
    Starting with this version, `wire-runtime` is published as a multiplatform Kotlin artifact. While
-   the JVM artifact is binary- and behavior-compatible with 3.0.0-alpha01, artifacts for other 
-   platforms may not work correctly at this point. The artifact name for the JVM artifact has been 
-   changed to `wire-runtime-jvm`: now, in order to depend on the multiplatform runtime, use the 
+   the JVM artifact is binary- and behavior-compatible with 3.0.0-alpha01, artifacts for other
+   platforms may not work correctly at this point. The artifact name for the JVM artifact has been
+   changed to `wire-runtime-jvm`: now, in order to depend on the multiplatform runtime, use the
    following Gradle dependency declaration:
-   
+
    ```groovy
    api "com.squareup.wire:wire-runtime:3.0.0-alpha02"
-   ``` 
-   
+   ```
+
    and if you want to depend on the JVM artifact only, use the following declaration:
-   
+
    ```groovy
    api "com.squareup.wire:wire-runtime-jvm:3.0.0-alpha02"
    ```
-   
+
  * New: Generate RPCs as Single Abstract Methods.
  * New: Add "singleMethod" Gradle plugin configuration for services.
  * New: Add "blockingServices" Gradle plugin configuration for services.
@@ -483,20 +496,19 @@ _2019-06-21_
  * Fix: Generate correct adapter names for WireField annotation.
  * Fix: Generate labels for WireField annotation.
  * Fix: Wrap oneof error message properly.
-	
+
 Version 3.0.0-alpha01
 ---------------------
 
 _2019-03-14_
 
  * New: Kotlin Generator
- 
-   Wire 3 can generate Kotlin data classes. To enable this feature via the command line API, pass in 
-   the `--kotlin_out` parameter that should specify the output directory for the generated `*.kt` 
-   files. 
-   
+
+   Wire 3 can generate Kotlin data classes. To enable this feature via the command line API, pass in
+   the `--kotlin_out` parameter that should specify the output directory for the generated `*.kt`
+   files.
    Given the following simple proto:
-   
+
    ```proto
    message Person {
      required string name = 1;
@@ -504,16 +516,16 @@ _2019-03-14_
      optional string email = 3;
    }
    ```
-   
+
    the generated Kotlin code will look like the following:
-   
+
    ```kotlin
    data class Person(
-     @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") 
+     @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING")
      val name: String,
-     @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32") 
+     @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32")
      val id: Int,
-     @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") 
+     @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING")
      val email: String? = null,
      val unknownFields: ByteString = ByteString.EMPTY
    ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
@@ -521,16 +533,16 @@ _2019-03-14_
        @JvmField
        val ADAPTER: ProtoAdapter<Person> = ... // code omitted for brevity
    ```
-   
-   The `copy()` method of a data class replaces most usages of the builder. If your code relies on 
-   the `Builder`, you can enable full `Builder` generation by passing the `--java_interop` parameter 
+
+   The `copy()` method of a data class replaces most usages of the builder. If your code relies on
+   the `Builder`, you can enable full `Builder` generation by passing the `--java_interop` parameter
    to the compiler.
- 
+
  * New: gRPC support
- 
+
    In addition to generating Kotlin code from proto messages, Wire can now generate code for gRPC
    endpoints. Here's an example schema:
-   
+
    ```proto
    service RouteGuide {
      // A simple RPC.
@@ -540,12 +552,12 @@ _2019-03-14_
      // A feature with an empty name is returned if there's no feature at the given
      // position.
      rpc GetFeature(Point) returns (Feature) {}
-   }    
+   }
    ```
-   
+
    The generated code will look like the following (message protos, referenced by the schema, are
    omitted):
-   
+
    ```kotlin
    interface RouteGuide : Service {
      @WireRpc(
@@ -556,43 +568,43 @@ _2019-03-14_
      suspend fun GetFeature(request: Point): Feature
    }
    ```
-   
+
    All four gRPC modes are supported: the generated code uses suspendable functions to implement
    non-blocking asynchronous execution. In streaming modes, `ReceiveChannel` and `SendChannel` are
    used to listen to asynchronous data in a non-blocking fashion.
-   
+
    This feature works out of the box in Wire 3 compiler as long as the input file contains a gRPC
    schema.
- 
+
  * New: Gradle plugin
- 
+
    Here's an example Gradle configuration:
-   
+
    ```groovy
    apply plugin: 'com.squareup.wire'
-   
+
    wire {
      // Keeps only 'Dinosaur#name' as the root of the object graph
      roots 'squareup.dinosaurs.Dinosaur#name'
-   
+
      // Keeps all fields, except 'name', in 'Dinosaur'
      prunes 'squareup.dinosaurs.Dinosaur#name'
-   
+
      // Both roots and prunes in an external file
      rules 'rules.txt'
-   
+
      kotlin {
        javaInterop true
        out "${buildDir}/generated/custom"
      }
    }
    ```
-   
+
    The `wire` extension introduces the concept of compilation targets, such as `kotlin` and `java`,
-   where each target has its own configuration properties. Multiple targets can be supplied, which 
+   where each target has its own configuration properties. Multiple targets can be supplied, which
    benefits use cases such as migrating Java protos to Kotlin.
-   
-  * New: Decouple the option of using Android annotations for nullability from the option of having messages implement Parcelable. 
+
+  * New: Decouple the option of using Android annotations for nullability from the option of having messages implement Parcelable.
   * New: Wire Moshi adapter for serializing proto JSON representation using the Moshi library.
   * New: Implement support for custom enum types.
   * New: Generate AndroidX nullability annotations instead of old support library annotations.
