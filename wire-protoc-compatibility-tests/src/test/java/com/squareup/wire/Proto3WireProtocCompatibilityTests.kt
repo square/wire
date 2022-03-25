@@ -51,6 +51,7 @@ import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtension as Re
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtensionMessage as RequiredExtensionMessageK
 import squareup.proto2.java.interop.type.MessageProto2 as MessageProto2J
 import squareup.proto2.kotlin.interop.type.MessageProto2 as MessageProto2K
+import squareup.proto3.kotlin.MapTypes as MapTypesK
 import squareup.proto3.java.alltypes.AllTypes as AllTypesJ
 import squareup.proto3.java.alltypes.AllWrappers as AllWrappersJ
 import squareup.proto3.java.interop.InteropMessage as InteropMessageJ
@@ -571,6 +572,33 @@ class Proto3WireProtocCompatibilityTests {
       .apply { jsonParser.merge(ALL_32_JSON_MIN_VALUE, this) }
       .build()
     assertThat(parsed).isEqualTo(value)
+  }
+
+  @Test fun validateMapTypesWithScalarKeyValueDeserializeOmittedKeyValue() {
+    val bytes = listOf(
+      0x0a, // MapType.map_string_string tag -> 1|010 -> 10 -> 0a
+      0x04, // length
+      0x0a, // map key tag 1 -> 1|010 -> 10 -> 0a
+      0x02, // length
+      0x64, 0x65, // de
+      0x0a, // MapType.map_string_string tag -> 1|010 -> 10 -> 0a
+      0x04, // length
+      0x12, // map key tag 1 -> 1|010 -> 10 -> 0a
+      0x02, // length
+      0x65, 0x64, // ed
+    ).map { it.toByte() }.toByteArray()
+
+    val mapTypeProtoc = MapTypesOuterClass.MapTypes.parseFrom(bytes)
+
+    assertThat(mapTypeProtoc.mapStringStringCount).isEqualTo(2)
+    assertThat(mapTypeProtoc.mapStringStringMap["de"]).isEqualTo("")
+    assertThat(mapTypeProtoc.mapStringStringMap[""]).isEqualTo("ed")
+
+    val mapTypeWire = MapTypesK.ADAPTER.decode(bytes)
+
+    assertThat(mapTypeWire.map_string_string.size).isEqualTo(2)
+    assertThat(mapTypeWire.map_string_string["de"]).isEqualTo("")
+    assertThat(mapTypeWire.map_string_string[""]).isEqualTo("ed")
   }
 
   @Test fun validateAll32MaxJson() {

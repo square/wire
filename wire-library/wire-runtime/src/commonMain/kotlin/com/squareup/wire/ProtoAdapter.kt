@@ -503,6 +503,10 @@ internal class MapProtoAdapter<K, V> internal constructor(
     }
     reader.endMessageAndGetUnknownFields(token)
 
+    // Default to identity for the sake of scalars.
+    key = key ?: entryAdapter.keyAdapter.identity
+    value = value ?: entryAdapter.valueAdapter.identity
+
     check(key != null) { "Map entry with null key" }
     check(value != null) { "Map entry with null value" }
     return mapOf(key to value)
