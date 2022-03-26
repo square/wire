@@ -21,12 +21,14 @@ import com.squareup.wire.proto2.RepeatedPackedAndMap;
 import com.squareup.wire.proto2.alltypes.AllTypes;
 import com.squareup.wire.proto2.kotlin.Getters;
 import com.squareup.wire.proto2.person.kotlin.Person;
+import com.squareup.wire.proto2.person.kotlin.Person.PhoneNumber;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import okio.ByteString;
 import okio.Okio;
+import org.assertj.core.util.Lists;
 import org.junit.Test;
 import squareup.proto2.keywords.KeywordJava;
 import squareup.proto2.keywords.KeywordJava.KeywordJavaEnum;
@@ -152,18 +154,46 @@ public class GsonTest {
 
   @Test public void kotlinWithoutBuilderFromJson() {
     Person person = gson.fromJson(
-        "{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\",\"is_canadian\":true}",
+        "{"
+          + "\"id\":1,"
+          + "\"name\":\"Jo\","
+          + "\"email\":\"foo@square.com\","
+          + "\"phone\":[{\"number\": \"555-555-5555\"}, {\"number\": \"444-444-4444\"}],"
+          + "\"is_canadian\":true,"
+          + "\"favorite_numbers\":[1, 2, 3]"
+          + "}",
         Person.class);
     assertThat(person).isEqualTo(
-        new Person("Jo", 1, "foo@square.com", Collections.emptyList(), true, ByteString.EMPTY));
+        new Person(
+          "Jo",
+          1,
+          "foo@square.com",
+          Lists.list(new PhoneNumber("555-555-5555", null, ByteString.EMPTY), new PhoneNumber("444-444-4444", null, ByteString.EMPTY)),
+          true,
+          Lists.list(1, 2, 3),
+          ByteString.EMPTY));
   }
 
   @Test public void kotlinWithoutBuilderToJson() {
     Person person =
-        new Person("Jo", 1, "foo@square.com", Collections.emptyList(), false, ByteString.EMPTY);
+        new Person(
+          "Jo",
+          1,
+          "foo@square.com",
+          Lists.list(new PhoneNumber("555-555-5555", null, ByteString.EMPTY), new PhoneNumber("444-444-4444", null, ByteString.EMPTY)),
+          false,
+          Lists.list(1, 2, 3),
+          ByteString.EMPTY);
     String json = gson.toJson(person);
     assertJsonEquals(
-        "{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\", \"phone\":[],\"is_canadian\":false}",
+      "{"
+        + "\"id\":1,"
+        + "\"name\":\"Jo\","
+        + "\"email\":\"foo@square.com\","
+        + "\"phone\":[{\"number\": \"555-555-5555\"}, {\"number\": \"444-444-4444\"}],"
+        + "\"is_canadian\":false,"
+        + "\"favorite_numbers\":[1, 2, 3]"
+        + "}",
         json);
   }
 

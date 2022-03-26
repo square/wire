@@ -68,6 +68,7 @@ public class Person(
     adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public val is_canadian: Boolean? = null,
+  favorite_numbers: List<Int> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Person, Nothing>(ADAPTER, unknownFields) {
   /**
@@ -79,6 +80,13 @@ public class Person(
     label = WireField.Label.REPEATED
   )
   public val phone: List<PhoneNumber> = immutableCopyOf("phone", phone)
+
+  @field:WireField(
+    tag = 6,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.PACKED
+  )
+  public val favorite_numbers: List<Int> = immutableCopyOf("favorite_numbers", favorite_numbers)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
@@ -96,6 +104,7 @@ public class Person(
     if (email != other.email) return false
     if (phone != other.phone) return false
     if (is_canadian != other.is_canadian) return false
+    if (favorite_numbers != other.favorite_numbers) return false
     return true
   }
 
@@ -108,6 +117,7 @@ public class Person(
       result = result * 37 + (email?.hashCode() ?: 0)
       result = result * 37 + phone.hashCode()
       result = result * 37 + (is_canadian?.hashCode() ?: 0)
+      result = result * 37 + favorite_numbers.hashCode()
       super.hashCode = result
     }
     return result
@@ -120,6 +130,7 @@ public class Person(
     if (email != null) result += """email=${sanitize(email)}"""
     if (phone.isNotEmpty()) result += """phone=$phone"""
     if (is_canadian != null) result += """is_canadian=$is_canadian"""
+    if (favorite_numbers.isNotEmpty()) result += """favorite_numbers=$favorite_numbers"""
     return result.joinToString(prefix = "Person{", separator = ", ", postfix = "}")
   }
 
@@ -129,8 +140,9 @@ public class Person(
     email: String? = this.email,
     phone: List<PhoneNumber> = this.phone,
     is_canadian: Boolean? = this.is_canadian,
+    favorite_numbers: List<Int> = this.favorite_numbers,
     unknownFields: ByteString = this.unknownFields
-  ): Person = Person(name, id, email, phone, is_canadian, unknownFields)
+  ): Person = Person(name, id, email, phone, is_canadian, favorite_numbers, unknownFields)
 
   public companion object {
     @JvmField
@@ -149,6 +161,7 @@ public class Person(
         size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
         size += PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone)
         size += ProtoAdapter.BOOL.encodedSizeWithTag(5, value.is_canadian)
+        size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(6, value.favorite_numbers)
         return size
       }
 
@@ -158,11 +171,13 @@ public class Person(
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
         PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone)
         ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.is_canadian)
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 6, value.favorite_numbers)
         writer.writeBytes(value.unknownFields)
       }
 
       public override fun encode(writer: ReverseProtoWriter, `value`: Person): Unit {
         writer.writeBytes(value.unknownFields)
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 6, value.favorite_numbers)
         ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.is_canadian)
         PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
@@ -176,6 +191,7 @@ public class Person(
         var email: String? = null
         val phone = mutableListOf<PhoneNumber>()
         var is_canadian: Boolean? = null
+        val favorite_numbers = mutableListOf<Int>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> name = ProtoAdapter.STRING.decode(reader)
@@ -183,6 +199,7 @@ public class Person(
             3 -> email = ProtoAdapter.STRING.decode(reader)
             4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
             5 -> is_canadian = ProtoAdapter.BOOL.decode(reader)
+            6 -> favorite_numbers.add(ProtoAdapter.INT32.decode(reader))
             else -> reader.readUnknownField(tag)
           }
         }
@@ -192,6 +209,7 @@ public class Person(
           email = email,
           phone = phone,
           is_canadian = is_canadian,
+          favorite_numbers = favorite_numbers,
           unknownFields = unknownFields
         )
       }

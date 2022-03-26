@@ -80,9 +80,7 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
     val fieldsWithSimpleProperties = ArrayDeque<ProtoField>()
     val fieldsWithPrimaryConstructorProperties = ArrayDeque<ProtoField>()
     for (protoField in protoFields) {
-      // TODO(egor): Repeated fields aren't the only ones for which no primary constructor property
-      // is generated. Need to extend this solution to cover other types.
-      if (protoField.wireField.label == REPEATED) {
+      if (protoField.wireField.label.isRepeated) {
         fieldsWithSimpleProperties += protoField
       } else {
         fieldsWithPrimaryConstructorProperties += protoField
