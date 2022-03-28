@@ -488,7 +488,7 @@ internal class MapProtoAdapter<K, V> internal constructor(
 
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Map<K, V> {
-    var (key: K?, value: V?) = when (syntax){
+    var (key: K?, value: V?) = when (syntax) {
       Syntax.PROTO_2 -> null to null
       // Default to identity for the sake of scalars.
       Syntax.PROTO_3 -> entryAdapter.keyAdapter.identity to entryAdapter.valueAdapter.identity
