@@ -15,30 +15,38 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.WireField.Label.REPEATED
+import kotlin.collections.set
 
 internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M, B>>(
   private val messageType: Class<M>,
 ) : Message.Builder<M, B>() {
   private val fieldValueMap: MutableMap<Int, Pair<WireField, Any?>>
   private val repeatedFieldValueMap: MutableMap<Int, Pair<WireField, MutableList<*>>>
+  private val mapFieldKeyValueMap: MutableMap<Int, Pair<WireField, MutableMap<*, *>>>
 
   init {
     val fieldCount = messageType.declaredFields.size
     fieldValueMap = LinkedHashMap(fieldCount)
     repeatedFieldValueMap = LinkedHashMap(fieldCount)
+    mapFieldKeyValueMap = LinkedHashMap(fieldCount)
   }
 
   fun set(
     field: WireField,
     value: Any?
   ) {
-    if (field.label.isRepeated) {
-      repeatedFieldValueMap[field.tag] = field to (value as MutableList<*>)
-    } else {
-      fieldValueMap[field.tag] = field to value
-      if (value != null && field.label.isOneOf) {
-        clobberOtherIsOneOfs(field)
+    when {
+      field.isMap -> {
+        mapFieldKeyValueMap[field.tag] = field to (value as MutableMap<*, *>)
+      }
+      field.label.isRepeated -> {
+        repeatedFieldValueMap[field.tag] = field to (value as MutableList<*>)
+      }
+      else -> {
+        fieldValueMap[field.tag] = field to value
+        if (value != null && field.label.isOneOf) {
+          clobberOtherIsOneOfs(field)
+        }
       }
     }
   }
@@ -53,8 +61,10 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
   }
 
   fun get(field: WireField): Any? {
-    return if (field.label.isRepeated) {
-      repeatedFieldValueMap[field.tag]?.second ?: emptyList<Any>()
+    return if (field.isMap) {
+      mapFieldKeyValueMap[field.tag]?.second ?: mapOf<Any, Any>()
+    } else if (field.label.isRepeated) {
+      repeatedFieldValueMap[field.tag]?.second ?: listOf<Any>()
     } else {
       fieldValueMap[field.tag]?.second
     }
@@ -69,20 +79,18 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
     //
     // - For certain types (group A), a primary constructor property is created
     // - For other types (group B), a primary constructor parameter and a simple property are
-    //   created
+    //   created; this concerns repeated and packed fields, as well as maps.
     //
     // This leads to a mismatch between the order in which proto fields annotated with WireField
     // appear in generated code (which matches the order in which they appear in the proto file) and
-    // the order of matching constructor parameters (https://github.com/square/wire/issues/2153).
-    // Therefore, we'll partition fields from groups A and B separately, where fields in each group
-    // will appear in the right order. This will allow us to iterate over the constructor parameters
-    // and retrieve the matching proto field based on the parameter type.
+    // the order of matching constructor parameters. Therefore, we'll partition fields from groups A
+    // and B separately, where fields in each group will appear in the right order. This will allow
+    // us to iterate over the constructor parameters and retrieve the matching proto field based on
+    // the parameter type.
     val fieldsWithSimpleProperties = ArrayDeque<ProtoField>()
     val fieldsWithPrimaryConstructorProperties = ArrayDeque<ProtoField>()
     for (protoField in protoFields) {
-      // TODO(egor): Repeated fields aren't the only ones for which no primary constructor property
-      // is generated. Need to extend this solution to cover other types.
-      if (protoField.wireField.label == REPEATED) {
+      if (protoField.wireField.label.isRepeated || protoField.wireField.isMap) {
         fieldsWithSimpleProperties += protoField
       } else {
         fieldsWithPrimaryConstructorProperties += protoField
@@ -95,7 +103,8 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
     }
     val args = constructor.parameters.mapIndexed { index, param ->
       when {
-        param.type == List::class.java -> get(fieldsWithSimpleProperties.removeFirst().wireField)
+        param.type == List::class.java || param.type == Map::class.java ->
+          get(fieldsWithSimpleProperties.removeFirst().wireField)
         index == protoFields.size -> buildUnknownFields()
         else -> get(fieldsWithPrimaryConstructorProperties.removeFirst().wireField)
       }
@@ -111,7 +120,11 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
     }
 
   private class ProtoField(
+    // TODO(Benoit) Delete if unused?
     val type: Class<*>,
     val wireField: WireField,
   )
 }
+
+private val WireField.isMap: Boolean
+  get() = keyAdapter.isNotEmpty()

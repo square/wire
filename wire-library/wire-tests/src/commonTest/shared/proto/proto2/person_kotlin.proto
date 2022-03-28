@@ -48,5 +48,11 @@ message Person {
   // A list of the customer's phone numbers.
   repeated PhoneNumber phone = 4;
 
-  optional bool is_canadian = 5;
+  repeated int32 favorite_numbers = 5 [packed = true];
+
+  map<int32, string> area_numbers = 6;
+
+  // This scalar field needs to be at the end so that we can verify ordering of field constructors
+  // doesn't break JSON serialization.
+  optional bool is_canadian = 7;
 }

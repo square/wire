@@ -28,8 +28,10 @@ import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
+import kotlin.collections.Map
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
+import kotlin.lazy
 import okio.ByteString
 
 /**
@@ -63,8 +65,14 @@ public class Person(
   )
   public val email: String? = null,
   phone: List<PhoneNumber> = emptyList(),
+  favorite_numbers: List<Int> = emptyList(),
+  area_numbers: Map<Int, String> = emptyMap(),
+  /**
+   * This scalar field needs to be at the end so that we can verify ordering of field constructors
+   * doesn't break JSON serialization.
+   */
   @field:WireField(
-    tag = 5,
+    tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public val is_canadian: Boolean? = null,
@@ -79,6 +87,20 @@ public class Person(
     label = WireField.Label.REPEATED
   )
   public val phone: List<PhoneNumber> = immutableCopyOf("phone", phone)
+
+  @field:WireField(
+    tag = 5,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.PACKED
+  )
+  public val favorite_numbers: List<Int> = immutableCopyOf("favorite_numbers", favorite_numbers)
+
+  @field:WireField(
+    tag = 6,
+    keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
+    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  public val area_numbers: Map<Int, String> = immutableCopyOf("area_numbers", area_numbers)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
@@ -95,6 +117,8 @@ public class Person(
     if (id != other.id) return false
     if (email != other.email) return false
     if (phone != other.phone) return false
+    if (favorite_numbers != other.favorite_numbers) return false
+    if (area_numbers != other.area_numbers) return false
     if (is_canadian != other.is_canadian) return false
     return true
   }
@@ -107,6 +131,8 @@ public class Person(
       result = result * 37 + id.hashCode()
       result = result * 37 + (email?.hashCode() ?: 0)
       result = result * 37 + phone.hashCode()
+      result = result * 37 + favorite_numbers.hashCode()
+      result = result * 37 + area_numbers.hashCode()
       result = result * 37 + (is_canadian?.hashCode() ?: 0)
       super.hashCode = result
     }
@@ -119,6 +145,8 @@ public class Person(
     result += """id=$id"""
     if (email != null) result += """email=${sanitize(email)}"""
     if (phone.isNotEmpty()) result += """phone=$phone"""
+    if (favorite_numbers.isNotEmpty()) result += """favorite_numbers=$favorite_numbers"""
+    if (area_numbers.isNotEmpty()) result += """area_numbers=$area_numbers"""
     if (is_canadian != null) result += """is_canadian=$is_canadian"""
     return result.joinToString(prefix = "Person{", separator = ", ", postfix = "}")
   }
@@ -128,9 +156,12 @@ public class Person(
     id: Int = this.id,
     email: String? = this.email,
     phone: List<PhoneNumber> = this.phone,
+    favorite_numbers: List<Int> = this.favorite_numbers,
+    area_numbers: Map<Int, String> = this.area_numbers,
     is_canadian: Boolean? = this.is_canadian,
     unknownFields: ByteString = this.unknownFields
-  ): Person = Person(name, id, email, phone, is_canadian, unknownFields)
+  ): Person = Person(name, id, email, phone, favorite_numbers, area_numbers, is_canadian,
+      unknownFields)
 
   public companion object {
     @JvmField
@@ -142,13 +173,18 @@ public class Person(
       null, 
       "person_kotlin.proto"
     ) {
+      private val area_numbersAdapter: ProtoAdapter<Map<Int, String>> by lazy {
+          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRING) }
+
       public override fun encodedSize(`value`: Person): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
         size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
         size += PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone)
-        size += ProtoAdapter.BOOL.encodedSizeWithTag(5, value.is_canadian)
+        size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(5, value.favorite_numbers)
+        size += area_numbersAdapter.encodedSizeWithTag(6, value.area_numbers)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(7, value.is_canadian)
         return size
       }
 
@@ -157,13 +193,17 @@ public class Person(
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
         PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone)
-        ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.is_canadian)
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 5, value.favorite_numbers)
+        area_numbersAdapter.encodeWithTag(writer, 6, value.area_numbers)
+        ProtoAdapter.BOOL.encodeWithTag(writer, 7, value.is_canadian)
         writer.writeBytes(value.unknownFields)
       }
 
       public override fun encode(writer: ReverseProtoWriter, `value`: Person): Unit {
         writer.writeBytes(value.unknownFields)
-        ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.is_canadian)
+        ProtoAdapter.BOOL.encodeWithTag(writer, 7, value.is_canadian)
+        area_numbersAdapter.encodeWithTag(writer, 6, value.area_numbers)
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 5, value.favorite_numbers)
         PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
@@ -175,6 +215,8 @@ public class Person(
         var id: Int? = null
         var email: String? = null
         val phone = mutableListOf<PhoneNumber>()
+        val favorite_numbers = mutableListOf<Int>()
+        val area_numbers = mutableMapOf<Int, String>()
         var is_canadian: Boolean? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -182,7 +224,9 @@ public class Person(
             2 -> id = ProtoAdapter.INT32.decode(reader)
             3 -> email = ProtoAdapter.STRING.decode(reader)
             4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
-            5 -> is_canadian = ProtoAdapter.BOOL.decode(reader)
+            5 -> favorite_numbers.add(ProtoAdapter.INT32.decode(reader))
+            6 -> area_numbers.putAll(area_numbersAdapter.decode(reader))
+            7 -> is_canadian = ProtoAdapter.BOOL.decode(reader)
             else -> reader.readUnknownField(tag)
           }
         }
@@ -191,6 +235,8 @@ public class Person(
           id = id ?: throw missingRequiredFields(id, "id"),
           email = email,
           phone = phone,
+          favorite_numbers = favorite_numbers,
+          area_numbers = area_numbers,
           is_canadian = is_canadian,
           unknownFields = unknownFields
         )

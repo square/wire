@@ -15,16 +15,17 @@
  */
 package com.squareup.wire;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.wire.proto2.RepeatedPackedAndMap;
 import com.squareup.wire.proto2.alltypes.AllTypes;
 import com.squareup.wire.proto2.kotlin.Getters;
 import com.squareup.wire.proto2.person.kotlin.Person;
+import com.squareup.wire.proto2.person.kotlin.Person.PhoneNumber;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import okio.ByteString;
 import okio.Okio;
 import org.junit.Test;
@@ -152,18 +153,50 @@ public class GsonTest {
 
   @Test public void kotlinWithoutBuilderFromJson() {
     Person person = gson.fromJson(
-        "{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\",\"is_canadian\":true}",
+        "{"
+          + "\"id\":1,"
+          + "\"name\":\"Jo\","
+          + "\"email\":\"foo@square.com\","
+          + "\"phone\":[{\"number\": \"555-555-5555\"}, {\"number\": \"444-444-4444\"}],"
+          + "\"favorite_numbers\":[1, 2, 3],"
+          + "\"area_numbers\":{\"519\":\"555-5555\"},"
+          + "\"is_canadian\":true"
+          + "}",
         Person.class);
     assertThat(person).isEqualTo(
-        new Person("Jo", 1, "foo@square.com", Collections.emptyList(), true, ByteString.EMPTY));
+        new Person(
+          "Jo",
+          1,
+          "foo@square.com",
+          Arrays.asList(new PhoneNumber("555-555-5555", null, ByteString.EMPTY), new PhoneNumber("444-444-4444", null, ByteString.EMPTY)),
+          Arrays.asList(1, 2, 3),
+          ImmutableMap.<Integer, String>builder().put(519, "555-5555").build(),
+          true,
+          ByteString.EMPTY));
   }
 
   @Test public void kotlinWithoutBuilderToJson() {
     Person person =
-        new Person("Jo", 1, "foo@square.com", Collections.emptyList(), false, ByteString.EMPTY);
+        new Person(
+          "Jo",
+          1,
+          "foo@square.com",
+          Arrays.asList(new PhoneNumber("555-555-5555", null, ByteString.EMPTY), new PhoneNumber("444-444-4444", null, ByteString.EMPTY)),
+          Arrays.asList(1, 2, 3),
+           ImmutableMap.<Integer, String>builder().put(519, "555-5555").build(),
+          false,
+          ByteString.EMPTY);
     String json = gson.toJson(person);
     assertJsonEquals(
-        "{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\", \"phone\":[],\"is_canadian\":false}",
+      "{"
+        + "\"id\":1,"
+        + "\"name\":\"Jo\","
+        + "\"email\":\"foo@square.com\","
+        + "\"phone\":[{\"number\": \"555-555-5555\"}, {\"number\": \"444-444-4444\"}],"
+        + "\"favorite_numbers\":[1, 2, 3],"
+        + "\"area_numbers\":{\"519\":\"555-5555\"},"
+        + "\"is_canadian\":false"
+        + "}",
         json);
   }
 
