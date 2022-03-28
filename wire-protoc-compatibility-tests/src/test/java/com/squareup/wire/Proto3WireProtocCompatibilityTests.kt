@@ -575,8 +575,9 @@ class Proto3WireProtocCompatibilityTests {
   }
 
   @Test fun mapKeysAndValuesDefaultsToTheirRespectiveIdentityValue() {
-    // Build a MapType message with map_string_string field only, 2 entries, first one with key only, than value only.
-    // Both protoc and Wire encodes such with explicit zero-length fields, so had to be hand-crafted.
+    // Bytes for the message `MapType` message with 2 entries on the field `map_string_string`. The
+    // first one has a key but not value, the second one has a value without key. Those are manually
+    // generated because Protoc and Wire don't write maps this way but can decode them though.
     val bytes = listOf(
       0x0a, // MapType.map_string_string tag -> 1|010 -> 10 -> 0a
       0x04, // length
