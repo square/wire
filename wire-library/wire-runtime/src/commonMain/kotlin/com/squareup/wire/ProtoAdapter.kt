@@ -488,8 +488,11 @@ internal class MapProtoAdapter<K, V> internal constructor(
 
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Map<K, V> {
-    var key: K? = null
-    var value: V? = null
+    var (key: K?, value: V?) = when (syntax){
+      Syntax.PROTO_2 -> null to null
+      // Default to identity for the sake of scalars.
+      Syntax.PROTO_3 -> entryAdapter.keyAdapter.identity to entryAdapter.valueAdapter.identity
+    }
 
     val token = reader.beginMessage()
     while (true) {
@@ -502,10 +505,6 @@ internal class MapProtoAdapter<K, V> internal constructor(
       }
     }
     reader.endMessageAndGetUnknownFields(token)
-
-    // Default to identity for the sake of scalars.
-    key = key ?: entryAdapter.keyAdapter.identity
-    value = value ?: entryAdapter.valueAdapter.identity
 
     check(key != null) { "Map entry with null key" }
     check(value != null) { "Map entry with null value" }

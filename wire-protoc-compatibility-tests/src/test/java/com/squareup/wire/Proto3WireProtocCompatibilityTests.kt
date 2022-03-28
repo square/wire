@@ -574,7 +574,9 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(parsed).isEqualTo(value)
   }
 
-  @Test fun validateMapTypesWithScalarKeyValueDeserializeOmittedKeyValue() {
+  @Test fun mapKeysAndValuesDefaultsToTheirRespectiveIdentityValue() {
+    // Build a MapType message with map_string_string field only, 2 entries, first one with key only, than value only.
+    // Both protoc and Wire encodes such with explicit zero-length fields, so had to be hand-crafted.
     val bytes = listOf(
       0x0a, // MapType.map_string_string tag -> 1|010 -> 10 -> 0a
       0x04, // length
