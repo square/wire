@@ -579,14 +579,14 @@ class Proto3WireProtocCompatibilityTests {
     // first one has a key but not value, the second one has a value without key. Those are manually
     // generated because Protoc and Wire don't write maps this way but can decode them though.
     val bytes = listOf(
-      0x0a, // MapType.map_string_string tag -> 1|010 -> 10 -> 0a
+      0x0a, // MapType.map_string_string tag -> 1|010 -> 10 -> 0x0a
       0x04, // length
-      0x0a, // map key tag 1 -> 1|010 -> 10 -> 0a
+      0x0a, // map key tag 1 -> 1|010 -> 10 -> 0x0a
       0x02, // length
       0x64, 0x65, // de
-      0x0a, // MapType.map_string_string tag -> 1|010 -> 10 -> 0a
+      0x0a, // MapType.map_string_string tag -> 1|010 -> 10 -> 0x0a
       0x04, // length
-      0x12, // map key tag 1 -> 1|010 -> 10 -> 0a
+      0x12, // map value tag 2 -> 10|010 -> 18 -> 0x12
       0x02, // length
       0x65, 0x64, // ed
     ).map { it.toByte() }.toByteArray()
