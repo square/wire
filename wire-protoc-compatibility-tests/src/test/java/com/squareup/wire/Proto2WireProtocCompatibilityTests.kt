@@ -49,6 +49,8 @@ import squareup.proto2.kotlin.interop.type.EnumProto2 as EnumProto2K
 import squareup.proto2.kotlin.interop.type.MessageProto2 as MessageProto2K
 import squareup.proto3.java.interop.type.EnumProto3 as EnumProto3J
 import squareup.proto3.java.interop.type.MessageProto3 as MessageProto3J
+import squareup.proto2.kotlin.MapTypes
+import squareup.proto2.kotlin.MapTypesOuterClass
 import squareup.proto3.kotlin.interop.type.EnumProto3 as EnumProto3K
 import squareup.proto3.kotlin.interop.type.MessageProto3 as MessageProto3K
 
@@ -122,6 +124,36 @@ class Proto2WireProtocCompatibilityTests {
     assertThat(InteropMessageK.ADAPTER.decode(byteArrayProtoc)).isEqualTo(interopWireK)
     assertThat(InteropMessageOuterClass.InteropMessage.parseFrom(byteArrayWireK, interopRegistry))
       .isEqualTo(interopProtoc)
+  }
+
+  @Test fun mapKeysAndValuesDefaultsToTheirRespectiveIdentityValue() {
+    // Bytes for the message `MapType` message with 2 entries on the field `map_string_string`. The
+    // first one has a key but not value, the second one has a value without key. Those are manually
+    // generated because Protoc and Wire don't write maps this way but can decode them though.
+    val bytes = listOf(
+      0x0a, // MapType.map_string_string tag -> 1|010 -> 10 -> x0a
+      0x04, // length
+      0x0a, // map key tag 1 -> 1|010 -> 10 -> x0a
+      0x02, // length
+      0x64, 0x65, // de
+      0x0a, // MapType.map_string_string tag -> 1|010 -> 10 -> x0a
+      0x04, // length
+      0x12, // map value tag 2 -> 10|010 -> 18 -> x12
+      0x02, // length
+      0x65, 0x64, // ed
+    ).map { it.toByte() }.toByteArray()
+
+    val mapTypeProtoc = MapTypesOuterClass.MapTypes.parseFrom(bytes)
+
+    assertThat(mapTypeProtoc.mapStringStringCount).isEqualTo(2)
+    assertThat(mapTypeProtoc.mapStringStringMap["de"]).isEqualTo("")
+    assertThat(mapTypeProtoc.mapStringStringMap[""]).isEqualTo("ed")
+
+    val mapTypeWire = MapTypes.ADAPTER.decode(bytes)
+
+    assertThat(mapTypeWire.map_string_string.size).isEqualTo(2)
+    assertThat(mapTypeWire.map_string_string["de"]).isEqualTo("")
+    assertThat(mapTypeWire.map_string_string[""]).isEqualTo("ed")
   }
 
   companion object {

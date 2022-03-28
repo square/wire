@@ -488,8 +488,8 @@ internal class MapProtoAdapter<K, V> internal constructor(
 
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Map<K, V> {
-    var key: K? = null
-    var value: V? = null
+    var key: K? = entryAdapter.keyAdapter.identity
+    var value: V? = entryAdapter.valueAdapter.identity
 
     val token = reader.beginMessage()
     while (true) {
