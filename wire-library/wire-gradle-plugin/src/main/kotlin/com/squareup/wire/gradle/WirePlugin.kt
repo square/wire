@@ -126,14 +126,12 @@ class WirePlugin : Plugin<Project> {
     val protoPathInput = WireInput(project.configurations.getByName("protoPath"))
     protoPathInput.addTrees(project, extension.protoTrees)
     protoPathInput.addJars(project, extension.protoJars)
-    protoPathInput.addProjects(project, extension.protoProjects)
     protoPathInput.addPaths(project, extension.protoPaths)
 
     sources.forEach { source ->
       val protoSourceInput = WireInput(project.configurations.getByName("protoSource").copy())
       protoSourceInput.addTrees(project, extension.sourceTrees)
       protoSourceInput.addJars(project, extension.sourceJars)
-      protoSourceInput.addProjects(project, extension.sourceProjects)
       protoSourceInput.addPaths(project, extension.sourcePaths)
       // TODO(Benoit) Should we add our default source folders everytime? Right now, someone could
       //  not combine a custom protoSource with our default using variants.

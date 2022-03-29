@@ -22,6 +22,7 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.DependencySet
 import org.gradle.api.artifacts.FileCollectionDependency
 import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
@@ -54,20 +55,14 @@ internal class WireInput(var configuration: Configuration) {
 
   fun addJars(project: Project, jars: Set<ProtoRootSet>) {
     for (jar in jars) {
-      jar.srcJar?.let { path ->
-        val dependency = resolveDependency(project, path)
-        dependencyFilters[dependency] = jar.filters
-        configuration.dependencies.add(dependency)
-      }
-    }
-  }
+      val unresolvedDependency = jar.srcJar
+        ?: jar.srcProject
+        ?: jar.srcJarAsExternalModuleDependency
+        ?: jar.srcProjectDependency
+        ?: continue
 
-  fun addProjects(project: Project, projects: Set<ProtoRootSet>) {
-    for (projectPath in projects) {
-      if (projectPath.srcProject == null) continue
-
-      val dependency = resolveDependency(project, projectPath.srcProject!!)
-      dependencyFilters[dependency] = projectPath.filters
+      val dependency = resolveDependency(project, unresolvedDependency)
+      dependencyFilters[dependency] = jar.filters
       configuration.dependencies.add(dependency)
     }
   }
@@ -82,43 +77,58 @@ internal class WireInput(var configuration: Configuration) {
     }
   }
 
-  private fun resolveDependency(project: Project, path: String): Dependency {
-    val parser = FileOrUriNotationConverter.parser()
+  private fun resolveDependency(project: Project, dependency: Any): Dependency {
+    when (dependency) {
+      is String -> {
+        val parser = FileOrUriNotationConverter.parser()
+        val converted = parser.parseNotation(dependency)
 
-    val converted = parser.parseNotation(path)
+        if (converted is File) {
+          val file =
+            if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
+          if (!dependency.mayBeProject) inputFiles.add(file)
 
-    if (converted is File) {
-      val file = if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
-      if (!path.mayBeProject) inputFiles.add(file)
-
-      return when {
-        file.isDirectory -> project.dependencies.create(project.files(path))
-        file.isJar -> project.dependencies.create(project.files(file.path))
-        path.mayBeProject -> {
-          // Keys can be either `path` or `configuration`.
-          // Example: "[path: ':someProj', configuration: 'someConf']"
-          return project.dependencies.project(mutableMapOf("path" to path))
+          return when {
+            file.isDirectory -> project.dependencies.create(project.files(dependency))
+            file.isJar -> project.dependencies.create(project.files(file.path))
+            dependency.mayBeProject -> {
+              // Keys can be either `path` or `configuration`.
+              // Example: "[path: ':someProj', configuration: 'someConf']"
+              return project.dependencies.project(mutableMapOf("path" to dependency))
+            }
+            else -> throw IllegalArgumentException(
+              """
+              |Invalid path string: "$dependency".
+              |For individual files, use the following syntax:
+              |wire {
+              |  sourcePath {
+              |    srcDir 'dirPath'
+              |    include 'relativePath'
+              |  }
+              |}
+              """.trimMargin()
+            )
+          }
+        } else if (converted is URI && isURL(converted)) {
+          throw IllegalArgumentException(
+            "Invalid path string: \"$dependency\". URL dependencies are not allowed."
+          )
+        } else {
+          // Assume it's a possible external dependency and let Gradle sort it out later.
+          return project.dependencies.create(dependency)
         }
-        else -> throw IllegalArgumentException(
-          """
-          |Invalid path string: "$path".
-          |For individual files, use the following syntax:
-          |wire {
-          |  sourcePath {
-          |    srcDir 'dirPath'
-          |    include 'relativePath'
-          |  }
-          |}
-          """.trimMargin()
-        )
       }
-    } else if (converted is URI && isURL(converted)) {
-      throw IllegalArgumentException(
-        "Invalid path string: \"$path\". URL dependencies are not allowed."
-      )
-    } else {
-      // Assume it's a possible external dependency and let Gradle sort it out later.
-      return project.dependencies.create(path)
+
+      // Projects via typesafe accessors.
+      is DelegatingProjectDependency -> {
+        return project.dependencies.create(dependency)
+      }
+
+      // Dependencies via Gradle catalogs.
+      is Provider<*> -> {
+        return project.dependencies.create(dependency.get())
+      }
+      else -> throw IllegalArgumentException("Unsupported dependency: $dependency")
     }
   }
 
