@@ -33,7 +33,7 @@ wire {
 
 jmh {
   jvmArgs.addAll(listOf("-Djmh.separateClasspathJAR=true"))
-  includes.addAll(listOf("""com\.squareup\.wire\.benchmarks\..*MessageBenchmark.*"""))
+  includes.addAll(listOf("""com\.squareup\.wire\.benchmarks\..*Benchmark.*"""))
   duplicateClassesStrategy.set(DuplicatesStrategy.WARN)
   verbosity.set("EXTRA")
 }
@@ -44,6 +44,7 @@ dependencies {
   jmh(deps.jmh.generator)
 
   protobuf(deps.wire.schema)
+  implementation(deps.wire.moshiAdapter)
   implementation(deps.wire.runtime)
   implementation(deps.okio.core)
   implementation(deps.protobuf.java)

@@ -51,12 +51,12 @@ import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtension as Re
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtensionMessage as RequiredExtensionMessageK
 import squareup.proto2.java.interop.type.MessageProto2 as MessageProto2J
 import squareup.proto2.kotlin.interop.type.MessageProto2 as MessageProto2K
-import squareup.proto3.kotlin.MapTypes as MapTypesK
 import squareup.proto3.java.alltypes.AllTypes as AllTypesJ
 import squareup.proto3.java.alltypes.AllWrappers as AllWrappersJ
 import squareup.proto3.java.interop.InteropMessage as InteropMessageJ
 import squareup.proto3.java.interop.type.EnumProto3 as EnumProto3J
 import squareup.proto3.java.interop.type.MessageProto3 as MessageProto3J
+import squareup.proto3.kotlin.MapTypes as MapTypesK
 import squareup.proto3.kotlin.alltypes.AllTypes as AllTypesK
 import squareup.proto3.kotlin.alltypes.AllWrappers as AllWrappersK
 import squareup.proto3.kotlin.interop.InteropMessage as InteropMessageK
