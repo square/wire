@@ -1,0 +1,7 @@
+dependencyResolutionManagement {
+  versionCatalogs {
+    create("libs") {
+      library("allprotos", "com.squareup.wire.dinosaur:all-protos:1.0")
+    }
+  }
+}

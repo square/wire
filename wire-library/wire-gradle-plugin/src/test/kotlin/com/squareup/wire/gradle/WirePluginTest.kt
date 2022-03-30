@@ -367,6 +367,57 @@ class WirePluginTest {
   }
 
   @Test
+  fun sourceJarRemoteViaVersionCatalog() {
+    val fixtureRoot = File("src/test/projects/sourcejar-remote-version-catalog")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { withDebug(true).build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull()
+    assertThat(result.output)
+      .contains("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcejar-remote-version-catalog/build/generated/source/wire".withPlatformSlashes()
+      )
+  }
+
+  @Test
+  fun projectDependencyViaTypesafeAccessor() {
+    val fixtureRoot = File("src/test/projects/project-dependencies-typesafe-accessor")
+
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("generateMainProtos", "--stacktrace", "--info").build()
+    }
+
+    assertThat(result.task(":dinosaurs:generateMainProtos")?.outcome)
+      .isIn(TaskOutcome.SUCCESS, TaskOutcome.UP_TO_DATE)
+    val generatedProto1 = File(
+      fixtureRoot,
+      "dinosaurs/build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt"
+    )
+    val generatedProto2 = File(
+      fixtureRoot,
+      "geology/build/generated/source/wire/com/squareup/geology/Period.kt"
+    )
+    val generatedProto3 = File(
+      fixtureRoot,
+      "dinosaurs/build/generated/source/wire/com/squareup/location/Continent.kt"
+    )
+    assertThat(generatedProto1).exists()
+    assertThat(generatedProto2).exists()
+    assertThat(generatedProto3).exists()
+
+    val notExpected = File(
+      fixtureRoot,
+      "dinosaurs/build/generated/source/wire/com/squareup/location/Planet.kt"
+    )
+    assertThat(notExpected).doesNotExist()
+
+    ZipFile(File(fixtureRoot, "geology/build/libs/geology.jar")).use {
+      assertThat(it.getEntry("squareup/geology/period.proto")).isNotNull()
+    }
+  }
+
+  @Test
   fun protoPathMavenCoordinates() {
     val fixtureRoot = File("src/test/projects/protopath-maven")
 
