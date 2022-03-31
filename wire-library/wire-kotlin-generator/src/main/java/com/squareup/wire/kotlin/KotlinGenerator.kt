@@ -1271,10 +1271,20 @@ class KotlinGenerator private constructor(
     }
   }
 
-  private fun defaultFieldInitializer(protoType: ProtoType, defaultValue: Any): CodeBlock {
+  private fun defaultFieldInitializer(
+    protoType: ProtoType,
+    defaultValue: Any,
+    annotation: Boolean = false,
+  ): CodeBlock {
     val typeName = protoType.typeName
     return when {
-      defaultValue is List<*> -> defaultValue.toListFieldInitializer(protoType)
+      defaultValue is List<*> -> {
+        if (annotation){
+          defaultValue.toArrayFieldInitializer(protoType)
+        }else {
+          defaultValue.toListFieldInitializer(protoType)
+        }
+      }
       defaultValue is Map<*, *> -> defaultValue.toMapFieldInitializer(protoType)
       typeName == BOOLEAN -> CodeBlock.of("%L", defaultValue)
       typeName == INT -> defaultValue.toIntFieldInitializer()
@@ -1301,6 +1311,17 @@ class KotlinGenerator private constructor(
       add("\n⇥%L⇤", defaultFieldInitializer(protoType, it!!))
     }
     add("\n)")
+  }
+
+  private fun List<*>.toArrayFieldInitializer(protoType: ProtoType): CodeBlock = buildCodeBlock {
+    add("[")
+    var first = true
+    forEach {
+      if (!first) add(",")
+      first = false
+      add("\n⇥%L⇤", defaultFieldInitializer(protoType, it!!))
+    }
+    add("\n]")
   }
 
   private fun Map<*, *>.toMapFieldInitializer(protoType: ProtoType): CodeBlock = buildCodeBlock {
@@ -2039,7 +2060,23 @@ class KotlinGenerator private constructor(
     if (!emitDeclaredOptions) return null
 
     if (!eligibleAsAnnotationMember(schema, field)) return null
-    val returnType = field.type!!.typeName
+    val returnType = when (field.label) {
+      Field.Label.REPEATED -> when {
+        field.type!!.isScalar -> when(field.type!!.typeName) {
+          LONG -> LongArray::class.asClassName()
+          INT -> IntArray::class.asClassName()
+          FLOAT -> FloatArray::class.asClassName()
+          DOUBLE -> DoubleArray::class.asClassName()
+          BOOLEAN -> BooleanArray::class.asClassName()
+          // String::class.asClassName() -> Array::class.parameterizedBy(String::class)
+          String::class.asClassName() -> Array::class.asClassName().parameterizedBy(field.type!!.typeName)
+          else -> throw IllegalStateException("Unsupported annotation for ${field.type}")
+        }
+        schema.getType(field.type!!) is EnumType -> Array::class.asClassName().parameterizedBy(field.type!!.typeName)
+        else -> throw IllegalStateException("Unsupported annotation for ${field.type}")
+      }
+      else -> field.type!!.typeName
+    }
 
     val kotlinType = generatedTypeName(field)
 
@@ -2207,7 +2244,7 @@ class KotlinGenerator private constructor(
     val protoFile: ProtoFile = schema.protoFile(field.location.path) ?: return null
     val simpleName = camelCase(field.name, upperCamel = true) + "Option"
     val type = ClassName(javaPackage(protoFile), simpleName)
-    val fieldValue = defaultFieldInitializer(field.type!!, value)
+    val fieldValue = defaultFieldInitializer(field.type!!, value, annotation = true)
 
     return AnnotationSpec.builder(type)
       .addMember(fieldValue)
