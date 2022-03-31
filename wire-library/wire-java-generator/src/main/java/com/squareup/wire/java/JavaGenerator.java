@@ -1971,7 +1971,8 @@ public final class JavaGenerator {
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
         ProtoMember protoMember = (ProtoMember) entry.getKey();
         Field field = schema.getField(protoMember);
-        CodeBlock valueInitializer = fieldInitializer(field.getType(), entry.getValue(), annotation);
+        CodeBlock valueInitializer =
+          fieldInitializer(field.getType(), entry.getValue(), annotation);
         builder.add("\n$>$>.$L($L)$<$<", fieldName(type, field), valueInitializer);
       }
       builder.add("\n$>$>.build()$<$<");
@@ -2097,19 +2098,13 @@ public final class JavaGenerator {
     TypeName returnType;
     if (field.getLabel().equals(Field.Label.REPEATED)) {
       TypeName typeName = typeName(field.getType());
-      if (typeName.equals(TypeName.LONG)) {
-        returnType = ArrayTypeName.of(typeName);
-      } else if (typeName.equals(TypeName.INT)) {
-        returnType = ArrayTypeName.of(typeName);
-      } else if (typeName.equals(TypeName.FLOAT)) {
-        returnType = ArrayTypeName.of(typeName);
-      } else if (typeName.equals(TypeName.DOUBLE)) {
-        returnType = ArrayTypeName.of(typeName);
-      } else if (typeName.equals(TypeName.BOOLEAN)) {
-        returnType = ArrayTypeName.of(typeName);
-      } else if (typeName.equals(ClassName.get(String.class))) {
-        returnType = ArrayTypeName.of(typeName);
-      } else if (isEnum(field.getType())) {
+      if (typeName.equals(TypeName.LONG)
+        || typeName.equals(TypeName.INT)
+        || typeName.equals(TypeName.FLOAT)
+        || typeName.equals(TypeName.DOUBLE)
+        || typeName.equals(TypeName.BOOLEAN)
+        || typeName.equals(ClassName.get(String.class))
+        || isEnum(field.getType())) {
         returnType = ArrayTypeName.of(typeName);
       } else {
         throw new IllegalStateException("Unsupported annotation for " + field.getType());

@@ -1279,9 +1279,9 @@ class KotlinGenerator private constructor(
     val typeName = protoType.typeName
     return when {
       defaultValue is List<*> -> {
-        if (annotation){
+        if (annotation) {
           defaultValue.toArrayFieldInitializer(protoType)
-        }else {
+        } else {
           defaultValue.toListFieldInitializer(protoType)
         }
       }
@@ -2062,13 +2062,12 @@ class KotlinGenerator private constructor(
     if (!eligibleAsAnnotationMember(schema, field)) return null
     val returnType = when (field.label) {
       Field.Label.REPEATED -> when {
-        field.type!!.isScalar -> when(field.type!!.typeName) {
+        field.type!!.isScalar -> when (field.type!!.typeName) {
           LONG -> LongArray::class.asClassName()
           INT -> IntArray::class.asClassName()
           FLOAT -> FloatArray::class.asClassName()
           DOUBLE -> DoubleArray::class.asClassName()
           BOOLEAN -> BooleanArray::class.asClassName()
-          // String::class.asClassName() -> Array::class.parameterizedBy(String::class)
           String::class.asClassName() -> Array::class.asClassName().parameterizedBy(field.type!!.typeName)
           else -> throw IllegalStateException("Unsupported annotation for ${field.type}")
         }
