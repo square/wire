@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.protos.kotlin.foreign.ForeignEnum
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -20,6 +21,16 @@ import okio.ByteString
 
 @MyMessageOptionTwoOption(91011.0f)
 @MyMessageOptionFourOption(FooBar.FooBarBazEnum.FOO)
+@MyMessageOptionSevenOption([
+  33
+])
+@MyMessageOptionEightOption([
+  "g",
+  "h"
+])
+@MyMessageOptionNineOption([
+  ForeignEnum.BAV
+])
 public class MessageWithOptions(
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MessageWithOptions, MessageWithOptions.Builder>(ADAPTER, unknownFields) {

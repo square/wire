@@ -15,6 +15,7 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.sanitize
+import com.squareup.wire.protos.kotlin.foreign.ForeignEnum
 import com.squareup.wire.protos.kotlin.foreign.ForeignEnumValueOptionOption
 import kotlin.Any
 import kotlin.AssertionError
@@ -54,6 +55,17 @@ public class FooBar(
   public val baz: Nested? = null,
   @MyFieldOptionOneOption(18)
   @MyFieldOptionTwoOption(34.5f)
+  @MyFieldOptionFiveOption([
+    3
+  ])
+  @MyFieldOptionSixOption([
+    "a",
+    "b"
+  ])
+  @MyFieldOptionSevenOption([
+    ForeignEnum.BAV,
+    ForeignEnum.BAX
+  ])
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64"
@@ -474,9 +486,16 @@ public class FooBar(
     @EnumValueOptionOption(17)
     FOO(1),
     @ForeignEnumValueOptionOption(true)
+    @RepeatedEnumValueOptionOneOption([
+      3
+    ])
     BAR(2),
     @EnumValueOptionOption(18)
     @ForeignEnumValueOptionOption(false)
+    @RepeatedEnumValueOptionTwoOption([
+      "c",
+      "d"
+    ])
     BAZ(3),
     ;
 
