@@ -390,6 +390,7 @@ class Options(
     @JvmField val FILE_OPTIONS = ProtoType.get("google.protobuf.FileOptions")
     @JvmField val MESSAGE_OPTIONS = ProtoType.get("google.protobuf.MessageOptions")
     @JvmField val FIELD_OPTIONS = ProtoType.get("google.protobuf.FieldOptions")
+    @JvmField val ONEOF_OPTIONS = ProtoType.get("google.protobuf.OneofOptions")
     @JvmField val ENUM_OPTIONS = ProtoType.get("google.protobuf.EnumOptions")
     @JvmField val ENUM_VALUE_OPTIONS = ProtoType.get("google.protobuf.EnumValueOptions")
     @JvmField val SERVICE_OPTIONS = ProtoType.get("google.protobuf.ServiceOptions")
@@ -398,6 +399,7 @@ class Options(
       FILE_OPTIONS,
       MESSAGE_OPTIONS,
       FIELD_OPTIONS,
+      ONEOF_OPTIONS,
       ENUM_OPTIONS,
       ENUM_VALUE_OPTIONS,
       SERVICE_OPTIONS,
