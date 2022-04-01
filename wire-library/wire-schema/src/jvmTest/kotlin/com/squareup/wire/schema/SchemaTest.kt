@@ -1993,6 +1993,33 @@ class SchemaTest {
   }
 
   @Test
+  fun oneofOption() {
+    val schema = RepoBuilder()
+      .add(
+        "test.proto",
+        """
+            |syntax = "proto3";
+            |import "google/protobuf/descriptor.proto";
+            |
+            |extend google.protobuf.OneofOptions {
+            |  string my_oneof_option = 22101;
+            |}
+            |message Message {
+            |  oneof choice {
+            |    option (my_oneof_option) = "Well done";
+            |
+            |    string one = 1;
+            |    string two = 2;
+            |  }
+            |}
+            """.trimMargin()
+      )
+      .schema()
+    val fieldOptions = schema.getType("google.protobuf.OneofOptions") as MessageType
+    assertThat(fieldOptions.extensionField("my_oneof_option")!!.type).isEqualTo(ProtoType.get("string"))
+  }
+
+  @Test
   fun proto3CannotExtendNonCustomOption() {
     try {
       RepoBuilder()
