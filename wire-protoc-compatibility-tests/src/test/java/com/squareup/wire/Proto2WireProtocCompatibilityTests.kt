@@ -20,6 +20,8 @@ import com.squareup.wire.proto2.kotlin.simple.SimpleMessageOuterClass
 import okio.ByteString
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import squareup.proto2.kotlin.MapTypes
+import squareup.proto2.kotlin.MapTypesOuterClass
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extOptBool
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extPackBool
@@ -49,8 +51,6 @@ import squareup.proto2.kotlin.interop.type.EnumProto2 as EnumProto2K
 import squareup.proto2.kotlin.interop.type.MessageProto2 as MessageProto2K
 import squareup.proto3.java.interop.type.EnumProto3 as EnumProto3J
 import squareup.proto3.java.interop.type.MessageProto3 as MessageProto3J
-import squareup.proto2.kotlin.MapTypes
-import squareup.proto2.kotlin.MapTypesOuterClass
 import squareup.proto3.kotlin.interop.type.EnumProto3 as EnumProto3K
 import squareup.proto3.kotlin.interop.type.MessageProto3 as MessageProto3K
 

@@ -1,0 +1,106 @@
+/*
+ * Copyright 2020 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto3";
+package squareup.wire.benchmarks.proto3;
+
+message AllTypes {
+  enum NestedEnum {
+    UNKNOWN = 0;
+    A = 1;
+  }
+
+  message NestedMessage {
+    int32 a = 1;
+  }
+
+  int32 my_int32 = 1;
+  uint32 my_uint32 = 2;
+  sint32 my_sint32 = 3;
+  fixed32 my_fixed32 = 4;
+  sfixed32 my_sfixed32 = 5;
+  int64 my_int64 = 6;
+  uint64 my_uint64 = 7;
+  sint64 my_sint64 = 8;
+  fixed64 my_fixed64 = 9;
+  sfixed64 my_sfixed64 = 10;
+  bool my_bool = 11;
+  float my_float = 12;
+  double my_double = 13;
+  string my_string = 14;
+  bytes my_bytes = 15;
+  NestedEnum nested_enum = 16;
+  NestedMessage nested_message = 17;
+
+  optional int32 opt_int32 = 101;
+  optional uint32 opt_uint32 = 102;
+  optional sint32 opt_sint32 = 103;
+  optional fixed32 opt_fixed32 = 104;
+  optional sfixed32 opt_sfixed32 = 105;
+  optional int64 opt_int64 = 106;
+  optional uint64 opt_uint64 = 107;
+  optional sint64 opt_sint64 = 108;
+  optional fixed64 opt_fixed64 = 109;
+  optional sfixed64 opt_sfixed64 = 110;
+  optional bool opt_bool = 111;
+  optional float opt_float = 112;
+  optional double opt_double = 113;
+  optional string opt_string = 114;
+  optional bytes opt_bytes = 115;
+
+  repeated int32 rep_int32 = 201 [packed = false];
+  repeated uint32 rep_uint32 = 202 [packed = false];
+  repeated sint32 rep_sint32 = 203 [packed = false];
+  repeated fixed32 rep_fixed32 = 204 [packed = false];
+  repeated sfixed32 rep_sfixed32 = 205 [packed = false];
+  repeated int64 rep_int64 = 206 [packed = false];
+  repeated uint64 rep_uint64 = 207 [packed = false];
+  repeated sint64 rep_sint64 = 208 [packed = false];
+  repeated fixed64 rep_fixed64 = 209 [packed = false];
+  repeated sfixed64 rep_sfixed64 = 210 [packed = false];
+  repeated bool rep_bool = 211 [packed = false];
+  repeated float rep_float = 212 [packed = false];
+  repeated double rep_double = 213 [packed = false];
+  repeated string rep_string = 214 [packed = false];
+  repeated bytes rep_bytes = 215 [packed = false];
+  repeated NestedEnum rep_nested_enum = 216 [packed = false];
+  repeated NestedMessage rep_nested_message = 217 [packed = false];
+
+  repeated int32 pack_int32 = 301 [packed = true];
+  repeated uint32 pack_uint32 = 302 [packed = true];
+  repeated sint32 pack_sint32 = 303 [packed = true];
+  repeated fixed32 pack_fixed32 = 304 [packed = true];
+  repeated sfixed32 pack_sfixed32 = 305 [packed = true];
+  repeated int64 pack_int64 = 306 [packed = true];
+  repeated uint64 pack_uint64 = 307 [packed = true];
+  repeated sint64 pack_sint64 = 308 [packed = true];
+  repeated fixed64 pack_fixed64 = 309 [packed = true];
+  repeated sfixed64 pack_sfixed64 = 310 [packed = true];
+  repeated bool pack_bool = 311 [packed = true];
+  repeated float pack_float = 312 [packed = true];
+  repeated double pack_double = 313 [packed = true];
+  repeated NestedEnum pack_nested_enum = 316 [packed = true];
+
+  map<int32, int32> map_int32_int32 = 501;
+  map<string, string> map_string_string = 502;
+  map<string, NestedMessage> map_string_message = 503;
+  map<string, NestedEnum> map_string_enum = 504;
+
+  oneof choice {
+    string oneof_string = 601;
+    int32 oneof_int32 = 602;
+    NestedMessage oneof_nested_message = 603;
+  }
+}
