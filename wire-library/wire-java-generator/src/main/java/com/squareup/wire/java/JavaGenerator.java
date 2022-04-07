@@ -23,6 +23,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ordering;
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
@@ -1939,25 +1940,29 @@ public final class JavaGenerator {
     }
 
     if (field.getType().isScalar() || defaultValue != null) {
-      return fieldInitializer(field.getType(), defaultValue);
+      return fieldInitializer(field.getType(), defaultValue, false);
     }
 
     throw new IllegalStateException("Field " + field + " cannot have default value");
   }
 
-  private CodeBlock fieldInitializer(ProtoType type, @Nullable Object value) {
+  private CodeBlock fieldInitializer(ProtoType type, @Nullable Object value, boolean annotation) {
     TypeName javaType = typeName(type);
 
     if (value instanceof List) {
       CodeBlock.Builder builder = CodeBlock.builder();
-      builder.add("$T.asList(", Arrays.class);
+      if (annotation) {
+        builder.add("{");
+      } else {
+        builder.add("$T.asList(", Arrays.class);
+      }
       boolean first = true;
       for (Object o : (List<?>) value) {
         if (!first) builder.add(",");
         first = false;
-        builder.add("\n$>$>$L$<$<", fieldInitializer(type, o));
+        builder.add("\n$>$>$L$<$<", fieldInitializer(type, o, annotation));
       }
-      builder.add(")");
+      builder.add(annotation ? "}" : ")");
       return builder.build();
 
     } else if (value instanceof Map) {
@@ -1966,7 +1971,8 @@ public final class JavaGenerator {
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
         ProtoMember protoMember = (ProtoMember) entry.getKey();
         Field field = schema.getField(protoMember);
-        CodeBlock valueInitializer = fieldInitializer(field.getType(), entry.getValue());
+        CodeBlock valueInitializer =
+          fieldInitializer(field.getType(), entry.getValue(), annotation);
         builder.add("\n$>$>.$L($L)$<$<", fieldName(type, field), valueInitializer);
       }
       builder.add("\n$>$>.build()$<$<");
@@ -2089,7 +2095,23 @@ public final class JavaGenerator {
     if (elementType == null) return null;
 
     if (!eligibleAsAnnotationMember(schema, field)) return null;
-    TypeName returnType = typeName(field.getType());
+    TypeName returnType;
+    if (field.getLabel().equals(Field.Label.REPEATED)) {
+      TypeName typeName = typeName(field.getType());
+      if (typeName.equals(TypeName.LONG)
+        || typeName.equals(TypeName.INT)
+        || typeName.equals(TypeName.FLOAT)
+        || typeName.equals(TypeName.DOUBLE)
+        || typeName.equals(TypeName.BOOLEAN)
+        || typeName.equals(ClassName.get(String.class))
+        || isEnum(field.getType())) {
+        returnType = ArrayTypeName.of(typeName);
+      } else {
+        throw new IllegalStateException("Unsupported annotation for " + field.getType());
+      }
+    } else {
+      returnType = typeName(field.getType());
+    }
 
     ClassName javaType = generatedTypeName(field);
 
@@ -2135,7 +2157,7 @@ public final class JavaGenerator {
     ProtoFile protoFile = schema.protoFile(field.getLocation().getPath());
     String simpleName = camelCase(field.getName(), true) + "Option";
     ClassName type = ClassName.get(javaPackage(protoFile), simpleName);
-    CodeBlock fieldValue = fieldInitializer(field.getType(), value);
+    CodeBlock fieldValue = fieldInitializer(field.getType(), value, true);
 
     return AnnotationSpec.builder(type)
         .addMember("value", fieldValue)
