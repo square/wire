@@ -17,6 +17,7 @@
 
 package com.squareup.wire
 
+import java.util.Collections
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
@@ -26,7 +27,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import java.util.Collections
 
 class WireCompilerTest {
   @Rule @JvmField val temp = TemporaryFolder()
@@ -208,14 +208,22 @@ class WireCompilerTest {
       "com/squareup/wire/protos/custom_options/EnumOptionOption.java",
       "com/squareup/wire/protos/custom_options/EnumValueOptionOption.java",
       "com/squareup/wire/protos/custom_options/FooBar.java",
-      "com/squareup/wire/protos/custom_options/MethodOptionOneOption.java",
       "com/squareup/wire/protos/custom_options/MessageWithOptions.java",
+      "com/squareup/wire/protos/custom_options/MethodOptionOneOption.java",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionFiveOption.java",
       "com/squareup/wire/protos/custom_options/MyFieldOptionOneOption.java",
-      "com/squareup/wire/protos/custom_options/MyFieldOptionTwoOption.java",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionSevenOption.java",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionSixOption.java",
       "com/squareup/wire/protos/custom_options/MyFieldOptionThreeOption.java",
-      "com/squareup/wire/protos/custom_options/MyMessageOptionTwoOption.java",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionTwoOption.java",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionEightOption.java",
       "com/squareup/wire/protos/custom_options/MyMessageOptionFourOption.java",
-      "com/squareup/wire/protos/custom_options/ServiceOptionOneOption.java"
+      "com/squareup/wire/protos/custom_options/MyMessageOptionNineOption.java",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionSevenOption.java",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionTwoOption.java",
+      "com/squareup/wire/protos/custom_options/RepeatedEnumValueOptionOneOption.java",
+      "com/squareup/wire/protos/custom_options/RepeatedEnumValueOptionTwoOption.java",
+      "com/squareup/wire/protos/custom_options/ServiceOptionOneOption.java",
     )
     assertJavaOutputs(outputs)
   }
@@ -539,13 +547,21 @@ class WireCompilerTest {
       "com/squareup/wire/protos/custom_options/GrpcServiceWithOptionsClient.kt",
       "com/squareup/wire/protos/custom_options/MessageWithOptions.kt",
       "com/squareup/wire/protos/custom_options/MethodOptionOneOption.kt",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionFiveOption.kt",
       "com/squareup/wire/protos/custom_options/MyFieldOptionOneOption.kt",
-      "com/squareup/wire/protos/custom_options/MyFieldOptionTwoOption.kt",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionSevenOption.kt",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionSixOption.kt",
       "com/squareup/wire/protos/custom_options/MyFieldOptionThreeOption.kt",
-      "com/squareup/wire/protos/custom_options/MyMessageOptionTwoOption.kt",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionTwoOption.kt",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionEightOption.kt",
       "com/squareup/wire/protos/custom_options/MyMessageOptionFourOption.kt",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionNineOption.kt",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionSevenOption.kt",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionTwoOption.kt",
+      "com/squareup/wire/protos/custom_options/RepeatedEnumValueOptionOneOption.kt",
+      "com/squareup/wire/protos/custom_options/RepeatedEnumValueOptionTwoOption.kt",
       "com/squareup/wire/protos/custom_options/ServiceOptionOneOption.kt",
-      "com/squareup/wire/protos/custom_options/ServiceWithOptionsClient.kt"
+      "com/squareup/wire/protos/custom_options/ServiceWithOptionsClient.kt",
     )
     assertKotlinOutputs(outputs)
   }

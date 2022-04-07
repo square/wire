@@ -15,6 +15,7 @@ kotlin {
           implementation(compilations["main"].compileDependencyFiles)
           implementation(deps.kotlin.test.junit)
           implementation(deps.assertj)
+          implementation(deps.kotlin.reflect)
         }
       }
       val jvmKotlinInteropTest by tasks.creating(Test::class) {

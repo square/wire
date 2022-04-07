@@ -13,6 +13,7 @@ import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
+import com.squareup.wire.protos.foreign.ForeignEnum;
 import com.squareup.wire.protos.foreign.ForeignEnumValueOptionOption;
 import java.io.IOException;
 import java.lang.Double;
@@ -65,6 +66,14 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
   @MyFieldOptionOneOption(18)
   @MyFieldOptionTwoOption(34.5f)
+  @MyFieldOptionFiveOption({
+          3})
+  @MyFieldOptionSixOption({
+          "a",
+          "b"})
+  @MyFieldOptionSevenOption({
+          ForeignEnum.BAV,
+          ForeignEnum.BAX})
   @WireField(
       tag = 4,
       adapter = "com.squareup.wire.ProtoAdapter#UINT64"
@@ -539,10 +548,15 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     FOO(1),
 
     @ForeignEnumValueOptionOption(true)
+    @RepeatedEnumValueOptionOneOption({
+            3})
     BAR(2),
 
     @EnumValueOptionOption(18)
     @ForeignEnumValueOptionOption(false)
+    @RepeatedEnumValueOptionTwoOption({
+            "c",
+            "d"})
     BAZ(3);
 
     public static final ProtoAdapter<FooBarBazEnum> ADAPTER = new ProtoAdapter_FooBarBazEnum();
