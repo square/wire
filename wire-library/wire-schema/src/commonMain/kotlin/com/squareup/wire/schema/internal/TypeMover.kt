@@ -70,10 +70,12 @@ class TypeMover(
       val movedType = sourceTypes.removeAt(typeIndex)
 
       pathToFile[sourcePath] = oldSourceProtoFile.copy(types = sourceTypes)
+        .apply { this.loadedOnSourcePath = oldSourceProtoFile.loadedOnSourcePath }
 
       val targetProtoFile = pathToFile[targetPath]
         ?: oldSourceProtoFile.emptyCopy(targetPath)
       pathToFile[targetPath] = targetProtoFile.copy(types = targetProtoFile.types + movedType)
+        .apply { this.loadedOnSourcePath = targetProtoFile.loadedOnSourcePath }
 
       sourceAndTargetPaths += sourcePath
       sourceAndTargetPaths += targetPath
@@ -159,7 +161,7 @@ class TypeMover(
     return copy(
       imports = newImports,
       publicImports = newPublicImports
-    )
+    ).apply { this.loadedOnSourcePath = this@fixImports.loadedOnSourcePath }
   }
 
   /** Returns the type that moved. */
@@ -223,7 +225,7 @@ class TypeMover(
       types = listOf(),
       services = listOf(),
       extendList = listOf()
-    )
+    ).apply { this.loadedOnSourcePath = this@emptyCopy.loadedOnSourcePath }
   }
 
   private fun checkForErrors() {

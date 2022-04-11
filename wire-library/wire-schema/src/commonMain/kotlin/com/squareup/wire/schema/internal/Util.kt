@@ -111,7 +111,7 @@ fun Schema.withStubs(typesToStub: Set<ProtoType>): Schema {
   }
   return Schema(
     protoFiles.map { protoFile ->
-      protoFile.copy(
+      val result = protoFile.copy(
         types = protoFile.types.map { type ->
           if (type.type in typesToStub) type.asStub() else type
         },
@@ -119,6 +119,8 @@ fun Schema.withStubs(typesToStub: Set<ProtoType>): Schema {
           if (service.type in typesToStub) service.asStub() else service
         }
       )
+      result.loadedOnSourcePath = protoFile.loadedOnSourcePath
+      return@map result
     }
   )
 }

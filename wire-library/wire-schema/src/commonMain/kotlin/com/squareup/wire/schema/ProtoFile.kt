@@ -30,8 +30,13 @@ data class ProtoFile(
   val services: List<Service>,
   val extendList: List<Extend>,
   val options: Options,
-  val syntax: Syntax?
+  val syntax: Syntax?,
 ) {
+  /**
+   * True if this [ProtoFile] has been loaded on the `sourcePath`, in opposition to the `protoPath`.
+   */
+  var loadedOnSourcePath: Boolean = false
+
   private var javaPackage: Any? = null
 
   fun toElement(): ProtoFileElement {
@@ -104,6 +109,7 @@ data class ProtoFile(
       location, imports, publicImports, packageName, retainedTypes,
       retainedServices, retainedExtends, retainedOptions, syntax
     )
+    result.loadedOnSourcePath = loadedOnSourcePath
     result.javaPackage = javaPackage
     return result
   }
@@ -122,6 +128,7 @@ data class ProtoFile(
       location, imports, publicImports, packageName, retainedTypes,
       retainedServices, retainedExtends, retainedOptions, syntax
     )
+    result.loadedOnSourcePath = loadedOnSourcePath
     result.javaPackage = javaPackage
     return result
   }
@@ -150,6 +157,7 @@ data class ProtoFile(
         location, retainedImports, publicImports, packageName, types, services,
         extendList, options, syntax
       )
+      result.loadedOnSourcePath = loadedOnSourcePath
       result.javaPackage = javaPackage
       result
     } else {
