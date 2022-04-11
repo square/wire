@@ -217,7 +217,6 @@ data class WireRun(
 
     // Validate the schema and resolve references
     val fullSchema = schemaLoader.loadSchema()
-    val sourceLocationPaths = schemaLoader.sourcePathFiles.map { it.location.path }
     val moveTargetPaths = moves.map { it.targetPath }
 
     // Refactor the schema.
@@ -252,9 +251,7 @@ data class WireRun(
 
       // Call each target.
       for (protoFile in partition.schema.protoFiles) {
-        if (protoFile.location.path !in sourceLocationPaths &&
-          protoFile.location.path !in moveTargetPaths
-        ) {
+        if (!protoFile.loadedOnSourcePath && protoFile.location.path !in moveTargetPaths) {
           continue
         }
 
