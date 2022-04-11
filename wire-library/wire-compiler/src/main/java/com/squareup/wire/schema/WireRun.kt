@@ -217,7 +217,6 @@ data class WireRun(
 
     // Validate the schema and resolve references
     val fullSchema = schemaLoader.loadSchema()
-    val moveTargetPaths = moves.map { it.targetPath }
 
     // Refactor the schema.
     val schema = refactorSchema(fullSchema, logger)
@@ -251,15 +250,13 @@ data class WireRun(
 
       // Call each target.
       for (protoFile in partition.schema.protoFiles) {
-        if (!protoFile.loadedOnSourcePath && protoFile.location.path !in moveTargetPaths) {
-          continue
-        }
+        if (!protoFile.loadedOnSourcePath) continue
 
         // Remove types from the file which are not owned by this partition.
         val filteredProtoFile = protoFile.copy(
           types = protoFile.types.filter { it.type in partition.types },
           services = protoFile.services.filter { it.type in partition.types }
-        )
+        ).apply { this.loadedOnSourcePath = true }
 
         val claimedDefinitions = ClaimedDefinitions()
         claimedDefinitions.claim(ProtoType.ANY)
