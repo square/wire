@@ -238,7 +238,7 @@ data class WireRun(
       mapOf(null to Partition(schema))
     }
 
-    val claimedPaths = mutableMapOf<Path, String>()
+    val claimedPaths = ClaimedPaths()
     val errorCollector = ErrorCollector()
     for ((moduleName, partition) in partitions) {
       val targetToSchemaHandler = targets.associateWith {
