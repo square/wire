@@ -15,37 +15,53 @@
  */
 package com.squareup.wire.schema
 
+/**
+ * [ClaimedDefinitions] tracks handled objects: [Type]s, [Service]s, and [Field]s. A
+ * [SchemaHandler] is to first check if an object has already been claimed; if yes, it is not to
+ * handle it. Otherwise, the [SchemaHandler] is to handle the object and [claim] it. It is an error
+ * for a [SchemaHandler] to handle an object which has already been claimed.
+ */
 class ClaimedDefinitions {
   private val types = mutableSetOf<ProtoType>()
   private val members = mutableSetOf<ProtoMember>()
 
+  /** Tracks that [type] has been handled. */
   fun claim(type: ProtoType) {
-    types.add(type)
+    check(types.add(type)) { "Type $type already claimed" }
   }
 
+  /** Tracks that [member] has been handled. */
   fun claim(member: ProtoMember) {
-    members.add(member)
+    check(members.add(member)) { "member $member already claimed" }
   }
 
+  /** Tracks that [type] has been handled. */
   fun claim(type: Type) {
     claim(type.type)
   }
 
+  /** Tracks that [service] has been handled. */
   fun claim(service: Service) {
     claim(service.type)
   }
 
+  /** Tracks that [field] has been handled. */
   fun claim(field: Field) {
     claim(field.member)
   }
 
+  /** Returns true if [type] has already been handled. */
   operator fun contains(type: ProtoType) = type in types
 
+  /** Returns true if [member] has already been handled. */
   operator fun contains(member: ProtoMember) = member in members
 
+  /** Returns true if [type] has already been handled. */
   operator fun contains(type: Type) = contains(type.type)
 
+  /** Returns true if [service] has already been handled. */
   operator fun contains(service: Service) = contains(service.type)
 
+  /** Returns true if [field] has already been handled. */
   operator fun contains(field: Field) = contains(field.member)
 }
