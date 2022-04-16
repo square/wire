@@ -35,6 +35,7 @@ includeBuild("wire-library") {
     substitute(module("com.squareup.wire:wire-profiles")).with(project(":wire-profiles"))
     substitute(module("com.squareup.wire:wire-runtime")).with(project(":wire-runtime"))
     substitute(module("com.squareup.wire:wire-schema")).with(project(":wire-schema"))
+    substitute(module("com.squareup.wire:wire-schema-tests")).with(project(":wire-schema-tests"))
     substitute(module("com.squareup.wire:wire-test-utils")).with(project(":wire-test-utils"))
   }
 }

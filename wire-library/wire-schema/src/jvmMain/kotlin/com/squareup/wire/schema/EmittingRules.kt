@@ -40,6 +40,8 @@ package com.squareup.wire.schema
  * exclude unwanted types and members without also including everything else.
  */
 class EmittingRules private constructor(builder: Builder) {
+  constructor() : this(Builder())
+
   private val includes = builder.includes.toSet()
   private val excludes = builder.excludes.toSet()
   private val usedIncludes = mutableSetOf<String>()
