@@ -15,14 +15,15 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.WireRun.Module
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class ManifestPartitionTest {
   @Test fun upstreamPruneIsNotGeneratedDownstream() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "example.proto",
         """
           |syntax = "proto2";
@@ -37,7 +38,7 @@ class ManifestPartitionTest {
           |}
           |""".trimMargin()
       )
-      .schema()
+    }
 
     val modules = mapOf(
       "common" to Module(
@@ -68,8 +69,8 @@ class ManifestPartitionTest {
   }
 
   @Test fun upstreamPruneIsNotPrunedDownstream() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "example.proto",
         """
           |syntax = "proto2";
@@ -85,7 +86,7 @@ class ManifestPartitionTest {
           |}
           |""".trimMargin()
       )
-      .schema()
+    }
 
     val modules = mapOf(
       "common" to Module(
@@ -118,8 +119,8 @@ class ManifestPartitionTest {
   }
 
   @Test fun duplicatedTypesReportedOnce() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "example.proto",
         """
           |syntax = "proto2";
@@ -135,7 +136,7 @@ class ManifestPartitionTest {
           |}
           |""".trimMargin()
       )
-      .schema()
+    }
 
     val modules = mapOf(
       "common" to Module(

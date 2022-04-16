@@ -17,6 +17,7 @@
 
 package com.squareup.wire.schema
 
+import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.internal.isValidTag
 import com.squareup.wire.schema.internal.parser.OptionElement
@@ -28,8 +29,8 @@ import org.junit.Test
 class SchemaTest {
   @Test
   fun linkService() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "service.proto",
         """
             |import "request.proto";
@@ -39,21 +40,21 @@ class SchemaTest {
             |}
             """.trimMargin()
       )
-      .add(
+      add(
         "request.proto",
         """
             |message Request {
             |}
             """.trimMargin()
       )
-      .add(
+      add(
         "response.proto",
         """
             |message Response {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
 
     val service = schema.getService("Service")!!
     val call = service.rpc("Call")!!
@@ -63,8 +64,8 @@ class SchemaTest {
 
   @Test
   fun linkMessage() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "message.proto",
         """
             |import "foo.proto";
@@ -74,7 +75,7 @@ class SchemaTest {
             |}
             """.trimMargin()
       )
-      .add(
+      add(
         "foo.proto",
         """
             |package foo_package;
@@ -84,7 +85,7 @@ class SchemaTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
 
     val message = schema.getType("Message") as MessageType
     val field = message.field("field")!!
@@ -97,8 +98,8 @@ class SchemaTest {
   @Ignore("Resolution happens from the root not from inside Outer and so this fails.")
   @Test
   fun linkExtendTypeInOuterMessage() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "foo.proto",
         """
             |message Other {
@@ -115,7 +116,7 @@ class SchemaTest {
             |  }
             """.trimMargin()
       )
-      .schema()
+    }
 
     val message = schema.getType("Other") as MessageType
     val field = message.field("choice")!!
@@ -136,8 +137,8 @@ class SchemaTest {
   @Test
   fun fieldInvalidTag() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
             |message Message {
@@ -152,7 +153,7 @@ class SchemaTest {
             |}
             """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo(
@@ -177,8 +178,8 @@ class SchemaTest {
   @Test
   fun extensionsInvalidTag() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -192,7 +193,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -213,8 +214,8 @@ class SchemaTest {
 
   @Test
   fun scalarFieldIsPacked() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "message.proto",
         """
              |message Message {
@@ -224,7 +225,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
 
     val message = schema.getType("Message") as MessageType
     assertThat(message.field("a")!!.isPacked).isFalse()
@@ -234,8 +235,8 @@ class SchemaTest {
 
   @Test
   fun enumFieldIsPacked() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "message.proto",
         """
              |message Message {
@@ -246,7 +247,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val message = schema.getType("Message") as MessageType
     assertThat(message.field("home_planet")!!.isPacked).isTrue()
   }
@@ -254,8 +255,8 @@ class SchemaTest {
   @Test
   fun fieldIsPackedButShouldntBe() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -272,7 +273,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -296,8 +297,8 @@ class SchemaTest {
 
   @Test
   fun fieldIsDeprecated() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "message.proto",
         """
              |message Message {
@@ -307,7 +308,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
 
     val message = schema.getType("Message") as MessageType
     assertThat(message.field("a")!!.isDeprecated).isFalse()
@@ -317,8 +318,8 @@ class SchemaTest {
 
   @Test
   fun fieldDefault() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "message.proto",
         """
              |message Message {
@@ -335,7 +336,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
 
     val message = schema.getType("Message") as MessageType
     assertThat(message.field("a")!!.default).isNull()
@@ -347,8 +348,8 @@ class SchemaTest {
 
   @Test
   fun fieldOptions() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "message.proto",
         """
              |import "google/protobuf/descriptor.proto";
@@ -361,7 +362,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val message = schema.getType("Message") as MessageType
 
     val aOptions = message.field("a")!!.options
@@ -378,8 +379,8 @@ class SchemaTest {
   @Test
   fun duplicateOption() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |import "google/protobuf/descriptor.proto";
@@ -391,7 +392,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -407,8 +408,8 @@ class SchemaTest {
   @Test
   fun messageFieldTypeUnknown() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -416,7 +417,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -432,8 +433,8 @@ class SchemaTest {
   @Test
   fun oneOfFieldTypeUnknown() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -444,7 +445,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -460,8 +461,8 @@ class SchemaTest {
   @Test
   fun serviceTypesMustBeNamed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "service.proto",
           """
                |service Service {
@@ -471,7 +472,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -484,8 +485,8 @@ class SchemaTest {
     }
 
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "service.proto",
           """
                |service Service {
@@ -495,7 +496,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -511,8 +512,8 @@ class SchemaTest {
   @Test
   fun serviceTypesUnknown() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "service.proto",
           """
                |service Service {
@@ -522,7 +523,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -535,8 +536,8 @@ class SchemaTest {
     }
 
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "service.proto",
           """
                |service Service {
@@ -546,7 +547,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -562,15 +563,15 @@ class SchemaTest {
   @Test
   fun extendedTypeUnknown() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "extend.proto",
           """
                |extend foo_package.Foo {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -585,8 +586,8 @@ class SchemaTest {
   @Test
   fun extendedTypeMustBeNamed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "extend.proto",
           """
                |extend string {
@@ -596,7 +597,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -611,8 +612,8 @@ class SchemaTest {
   @Test
   fun extendFieldTypeUnknown() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -622,7 +623,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -638,8 +639,8 @@ class SchemaTest {
   @Test
   fun multipleErrors() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -648,7 +649,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -667,8 +668,8 @@ class SchemaTest {
   @Test
   fun duplicateMessageTagDisallowed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -677,7 +678,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -694,8 +695,8 @@ class SchemaTest {
   @Test
   fun duplicateTagValueDisallowedInOneOf() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -706,7 +707,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -723,8 +724,8 @@ class SchemaTest {
   @Test
   fun duplicateExtendTagDisallowed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -735,7 +736,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -752,8 +753,8 @@ class SchemaTest {
   @Test
   fun messageNameCollisionDisallowed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -762,7 +763,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -778,8 +779,8 @@ class SchemaTest {
 
   @Test
   fun messageAndExtensionNameCollision() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "message.proto",
         """
              |message Message {
@@ -787,7 +788,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "extend.proto",
         """
              |package p;
@@ -797,7 +798,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val messageType = schema.getType("Message") as MessageType
 
     assertThat(messageType.field("a")!!.tag).isEqualTo(1)
@@ -807,15 +808,15 @@ class SchemaTest {
   @Test
   fun extendNameCollisionInSamePackageDisallowed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
                |}
                """.trimMargin()
         )
-        .add(
+        add(
           "extend1.proto",
           """
                |import "message.proto";
@@ -824,7 +825,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .add(
+        add(
           "extend2.proto",
           """
                |import "message.proto";
@@ -833,7 +834,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -849,15 +850,15 @@ class SchemaTest {
 
   @Test
   fun extendNameCollisionInDifferentPackagesAllowed() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "message.proto",
         """
              |message Message {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "extend1.proto",
         """
              |package p1;
@@ -867,7 +868,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "extend2.proto",
         """
              |package p2;
@@ -877,7 +878,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val messageType = schema.getType("Message") as MessageType
 
     assertThat(messageType.field("a")).isNull()
@@ -888,8 +889,8 @@ class SchemaTest {
   @Test
   fun extendEnumDisallowed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "enum.proto",
           """
                |enum Enum {
@@ -898,7 +899,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .add(
+        add(
           "extend.proto",
           """
                |import "enum.proto";
@@ -907,7 +908,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -922,8 +923,8 @@ class SchemaTest {
   @Test
   fun requiredExtendFieldDisallowed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -933,7 +934,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -949,8 +950,8 @@ class SchemaTest {
   @Test
   fun oneOfLabelDisallowed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -958,7 +959,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: IllegalStateException) {
       assertThat(expected).hasMessage("Syntax error in /source/message.proto:2:17: expected '{'")
@@ -968,8 +969,8 @@ class SchemaTest {
   @Test
   fun duplicateEnumValueTagInScopeDisallowed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -982,7 +983,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -999,8 +1000,8 @@ class SchemaTest {
   @Test
   fun duplicateEnumConstantTagWithoutAllowAliasDisallowed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |enum Enum {
@@ -1009,7 +1010,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -1026,8 +1027,8 @@ class SchemaTest {
   @Test
   fun duplicateEnumConstantTagWithAllowAliasFalseDisallowed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |enum Enum {
@@ -1037,7 +1038,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -1053,8 +1054,8 @@ class SchemaTest {
 
   @Test
   fun duplicateEnumConstantTagWithAllowAliasTrueAllowed() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "message.proto",
         """
              |enum Enum {
@@ -1064,7 +1065,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val enumType = schema.getType("Enum") as EnumType
     assertThat(enumType.constant("A")!!.tag).isEqualTo(1)
     assertThat(enumType.constant("B")!!.tag).isEqualTo(1)
@@ -1072,8 +1073,8 @@ class SchemaTest {
 
   @Test
   fun fieldTypeImported() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "a.proto",
         """
              |package pa;
@@ -1083,7 +1084,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "b.proto",
         """
              |package pb;
@@ -1091,7 +1092,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val a = schema.getType("pa.A") as MessageType
     val b = schema.getType("pb.B") as MessageType
     assertThat(a.field("b")!!.type).isEqualTo(b.type)
@@ -1099,8 +1100,8 @@ class SchemaTest {
 
   @Test
   fun fieldMapTypeImported() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "a.proto",
         """
              |package pa;
@@ -1110,7 +1111,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "b.proto",
         """
              |package pb;
@@ -1118,7 +1119,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val a = schema.getType("pa.A") as MessageType
     val b = schema.getType("pb.B") as MessageType
     assertThat(a.field("b")!!.type!!.valueType).isEqualTo(b.type)
@@ -1127,8 +1128,8 @@ class SchemaTest {
   @Test
   fun fieldTypeNotImported() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "a.proto",
           """
                |package pa;
@@ -1137,7 +1138,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .add(
+        add(
           "b.proto",
           """
                |package pb;
@@ -1145,7 +1146,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo(
@@ -1161,8 +1162,8 @@ class SchemaTest {
   @Test
   fun fieldMapTypeNotImported() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "a.proto",
           """
                |package pa;
@@ -1171,7 +1172,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .add(
+        add(
           "b.proto",
           """
                |package pb;
@@ -1179,7 +1180,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo(
@@ -1194,8 +1195,8 @@ class SchemaTest {
 
   @Test
   fun rpcTypeImported() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "a.proto",
         """
              |package pa;
@@ -1205,7 +1206,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "b.proto",
         """
              |package pb;
@@ -1213,7 +1214,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val service = schema.getService("pa.Service")!!
     val b = schema.getType("pb.B") as MessageType
     assertThat(service.rpcs[0].requestType).isEqualTo(b.type)
@@ -1223,8 +1224,8 @@ class SchemaTest {
   @Test
   fun rpcTypeNotImported() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "a.proto",
           """
                |package pa;
@@ -1233,7 +1234,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .add(
+        add(
           "b.proto",
           """
                |package pb;
@@ -1241,7 +1242,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo(
@@ -1259,8 +1260,8 @@ class SchemaTest {
 
   @Test
   fun extendTypeImported() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "a.proto",
         """
              |package pa;
@@ -1270,7 +1271,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "b.proto",
         """
              |package pb;
@@ -1279,7 +1280,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val extendB = schema.protoFiles[0].extendList[0]
     val b = schema.getType("pb.B") as MessageType
     assertThat(extendB.type).isEqualTo(b.type)
@@ -1288,8 +1289,8 @@ class SchemaTest {
   @Test
   fun extendTypeNotImported() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "a.proto",
           """
                |package pa;
@@ -1298,7 +1299,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .add(
+        add(
           "b.proto",
           """
                |package pb;
@@ -1307,7 +1308,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo(
@@ -1322,8 +1323,8 @@ class SchemaTest {
   @Test
   fun transitiveImportNotFollowed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "a.proto",
           """
                |package pa;
@@ -1333,7 +1334,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .add(
+        add(
           "b.proto",
           """
                |package pb;
@@ -1342,7 +1343,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .add(
+        add(
           "c.proto",
           """
                |package pc;
@@ -1350,7 +1351,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo(
@@ -1365,8 +1366,8 @@ class SchemaTest {
 
   @Test
   fun transitivePublicImportFollowed() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "a.proto",
         """
              |package pa;
@@ -1376,7 +1377,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "b.proto",
         """
              |package pb;
@@ -1385,7 +1386,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "c.proto",
         """
              |package pc;
@@ -1393,7 +1394,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val a = schema.getType("pa.A") as MessageType
     val c = schema.getType("pc.C") as MessageType
     assertThat(a.field("c")!!.type).isEqualTo(c.type)
@@ -1401,8 +1402,8 @@ class SchemaTest {
 
   @Test
   fun importSamePackageDifferentFile() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "a_b_1.proto",
         """
              |package a.b;
@@ -1417,7 +1418,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "a_b_2.proto",
         """
              |package a.b;
@@ -1426,7 +1427,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val messageC = schema.getType("a.b.MessageB") as MessageType
     assertThat(messageC.field("c1")!!.type).isEqualTo(ProtoType.get("a.b.MessageC"))
     assertThat(messageC.field("c2")!!.type).isEqualTo(ProtoType.get("a.b.MessageC"))
@@ -1436,8 +1437,8 @@ class SchemaTest {
 
   @Test
   fun importResolvesEnclosingPackageSuffix() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "a_b.proto",
         """
              |package a.b;
@@ -1446,7 +1447,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "a_b_c.proto",
         """
              |package a.b.c;
@@ -1458,15 +1459,15 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val messageC = schema.getType("a.b.c.MessageC") as MessageType
     assertThat(messageC.field("message_b")!!.type).isEqualTo(ProtoType.get("a.b.MessageB"))
   }
 
   @Test
   fun importResolvesNestedPackageSuffix() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "a_b.proto",
         """
              |package a.b;
@@ -1478,7 +1479,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "a_b_c.proto",
         """
              |package a.b.c;
@@ -1487,15 +1488,15 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val messageC = schema.getType("a.b.MessageB") as MessageType
     assertThat(messageC.field("message_c")!!.type).isEqualTo(ProtoType.get("a.b.c.MessageC"))
   }
 
   @Test
   fun nestedPackagePreferredOverEnclosingPackage() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "a.proto",
         """
              |package a;
@@ -1504,7 +1505,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "a_b.proto",
         """
              |package a.b;
@@ -1517,7 +1518,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "a_b_a.proto",
         """
              |package a.b.a;
@@ -1526,15 +1527,15 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val messageC = schema.getType("a.b.MessageB") as MessageType
     assertThat(messageC.field("message_a")!!.type).isEqualTo(ProtoType.get("a.b.a.MessageA"))
   }
 
   @Test
   fun dotPrefixRefersToRootPackage() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "a.proto",
         """
              |package a;
@@ -1543,7 +1544,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "a_b.proto",
         """
              |package a.b;
@@ -1556,7 +1557,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "a_b_a.proto",
         """
              |package a.b.a;
@@ -1565,7 +1566,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val messageC = schema.getType("a.b.MessageB") as MessageType
     assertThat(messageC.field("message_a")!!.type).isEqualTo(ProtoType.get("a.MessageA"))
   }
@@ -1573,8 +1574,8 @@ class SchemaTest {
   @Test
   fun dotPrefixMustBeRoot() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "a_b.proto",
           """
                |package a.b;
@@ -1583,7 +1584,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .add(
+        add(
           "a_b_c.proto",
           """
                |package a.b.c;
@@ -1595,7 +1596,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -1611,8 +1612,8 @@ class SchemaTest {
   @Test
   fun groupsThrow() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "test.proto",
           """
                |message SearchResponse {
@@ -1624,7 +1625,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: IllegalStateException) {
       assertThat(expected).hasMessage("/source/test.proto:2:3: 'group' is not supported")
@@ -1634,8 +1635,8 @@ class SchemaTest {
   @Test
   fun oneOfGroupsThrow() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "test.proto",
           """
                |message Message {
@@ -1650,7 +1651,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: IllegalStateException) {
       assertThat(expected).hasMessage("/source/test.proto:5:5: 'group' is not supported")
@@ -1660,8 +1661,8 @@ class SchemaTest {
   @Test
   fun reservedTagThrowsWhenUsed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "test.proto",
           """
                |message Message {
@@ -1670,7 +1671,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -1686,8 +1687,8 @@ class SchemaTest {
   @Test
   fun reservedTagThrowsWhenUsedForMessageWithMax() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "test.proto",
           """
                |message Message {
@@ -1696,7 +1697,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -1712,8 +1713,8 @@ class SchemaTest {
   @Test
   fun reservedTagThrowsWhenUsedForEnums() {
     try {
-      val schema = RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "test.proto",
           """
                |enum Enum {
@@ -1723,7 +1724,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -1742,8 +1743,8 @@ class SchemaTest {
   @Test
   fun reservedTagRangeThrowsWhenUsed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "test.proto",
           """
                |message Message {
@@ -1752,7 +1753,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -1768,8 +1769,8 @@ class SchemaTest {
   @Test
   fun reservedNameThrowsWhenUsed() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "test.proto",
           """
                |message Message {
@@ -1778,7 +1779,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -1794,8 +1795,8 @@ class SchemaTest {
   @Test
   fun reservedTagAndNameBothReported() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "test.proto",
           """
                |message Message {
@@ -1805,7 +1806,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -1823,8 +1824,8 @@ class SchemaTest {
 
   @Test
   fun proto3EnumShouldHaveZeroValueAtFirstPosition() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "period.proto",
         """
             |syntax = "proto3";
@@ -1837,7 +1838,7 @@ class SchemaTest {
             |}
             |""".trimMargin()
       )
-      .schema()
+    }
     val enum = schema.getType("Period") as EnumType
     assertThat(enum.constant("ZERO")).isNotNull
     assertThat(enum.constant("CRETACEOUS")).isNotNull
@@ -1848,8 +1849,8 @@ class SchemaTest {
   @Test
   fun proto3EnumMustHaveZeroValue() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "period.proto",
           """
               |syntax = "proto3";
@@ -1861,7 +1862,7 @@ class SchemaTest {
               |}
               |""".trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -1876,8 +1877,8 @@ class SchemaTest {
   @Test
   fun proto3EnumMustHaveZeroValueAtFirstPosition() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "period.proto",
           """
               |syntax = "proto3";
@@ -1890,7 +1891,7 @@ class SchemaTest {
               |}
               |""".trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -1905,8 +1906,8 @@ class SchemaTest {
   @Test
   fun proto3EnumMustNotBeEmpty() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "period.proto",
           """
               |syntax = "proto3";
@@ -1914,7 +1915,7 @@ class SchemaTest {
               |enum Period {}
               |""".trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -1928,8 +1929,8 @@ class SchemaTest {
 
   @Test
   fun proto2EnumNeedNotHaveZeroValue() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "period.proto",
         """
             |syntax = "proto2";
@@ -1941,7 +1942,7 @@ class SchemaTest {
             |}
             |""".trimMargin()
       )
-      .schema()
+    }
     val enum = schema.getType("Period") as EnumType
     assertThat(enum.constant("ZERO")).isNull()
     assertThat(enum.constant("CRETACEOUS")).isNotNull
@@ -1951,8 +1952,8 @@ class SchemaTest {
 
   @Test
   fun proto2EnumNeedNotHaveZeroValueWithoutSyntax() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "period.proto",
         """
             |enum Period {
@@ -1962,7 +1963,7 @@ class SchemaTest {
             |}
             |""".trimMargin()
       )
-      .schema()
+    }
     val enum = schema.getType("Period") as EnumType
     assertThat(enum.constant("ZERO")).isNull()
     assertThat(enum.constant("CRETACEOUS")).isNotNull
@@ -1972,8 +1973,8 @@ class SchemaTest {
 
   @Test
   fun proto3CanExtendCustomOption() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "test.proto",
         """
             |syntax = "proto3";
@@ -1987,15 +1988,15 @@ class SchemaTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val fieldOptions = schema.getType("google.protobuf.FieldOptions") as MessageType
     assertThat(fieldOptions.extensionField("a")!!.type).isEqualTo(ProtoType.get("string"))
   }
 
   @Test
   fun oneofOption() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "test.proto",
         """
             |syntax = "proto3";
@@ -2014,16 +2015,18 @@ class SchemaTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val fieldOptions = schema.getType("google.protobuf.OneofOptions") as MessageType
-    assertThat(fieldOptions.extensionField("my_oneof_option")!!.type).isEqualTo(ProtoType.get("string"))
+    assertThat(fieldOptions.extensionField("my_oneof_option")!!.type).isEqualTo(
+      ProtoType.get("string")
+    )
   }
 
   @Test
   fun proto3CannotExtendNonCustomOption() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "dinosaur.proto",
           """
               |syntax = "proto3";
@@ -2037,7 +2040,7 @@ class SchemaTest {
               |}
               |""".trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -2052,8 +2055,8 @@ class SchemaTest {
   @Test
   fun proto3DoesNotAllowUserDefinedDefaultValue() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "dinosaur.proto",
           """
               |syntax = "proto3";
@@ -2063,7 +2066,7 @@ class SchemaTest {
               |}
               |""".trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -2078,8 +2081,8 @@ class SchemaTest {
 
   @Test
   fun repeatedNumericScalarsShouldBePackedByDefaultForProto3() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "message.proto",
         """
             |syntax = "proto3";
@@ -2109,7 +2112,8 @@ class SchemaTest {
             |
             |message OtherMessage {}
             |""".trimMargin()
-      ).schema()
+      )
+    }
 
     val messageType = schema.getType("Message") as MessageType
     // Default to false.
@@ -2143,8 +2147,8 @@ class SchemaTest {
       kind = OptionElement.Kind.BOOLEAN, value = "true", isParenthesized = false
     )
 
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "message.proto",
         """
             |option deprecated = true;
@@ -2168,7 +2172,8 @@ class SchemaTest {
             |message Request {}
             |message Response {}
             |""".trimMargin()
-      ).schema()
+      )
+    }
 
     assertThat(schema.protoFile("message.proto")!!.options.elements)
       .contains(deprecatedOptionElement)
@@ -2189,8 +2194,8 @@ class SchemaTest {
   @Test
   fun forbidConflictingCamelCasedNamesInProto3() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "dinosaur.proto",
           """
               |syntax = "proto3";
@@ -2200,7 +2205,8 @@ class SchemaTest {
               |  string my_name = 2;
               |}
               |""".trimMargin()
-        ).schema()
+        )
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -2218,8 +2224,8 @@ class SchemaTest {
   fun noConflictWhenJsonNameResolvesItInProto3() {
     // Both fields' camel-cased name would conflict but since `json_name` takes precedence, there
     // shouldn't be any conflict here.
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "dinosaur.proto",
         """
               |syntax = "proto3";
@@ -2229,15 +2235,16 @@ class SchemaTest {
               |  string my_name = 2 [json_name = "two"];
               |}
               |""".trimMargin()
-      ).schema()
+      )
+    }
     assertThat(schema).isNotNull()
   }
 
   @Test
   fun forbidConflictingJsonNames() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "dinosaur.proto",
           """
               |message Dinosaur {
@@ -2245,7 +2252,8 @@ class SchemaTest {
               |  optional string my_name = 2 [json_name = "JsonName"];
               |}
               |""".trimMargin()
-        ).schema()
+        )
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -2261,8 +2269,8 @@ class SchemaTest {
 
   @Test
   fun allowConflictingCamelCasedNamesInProto2() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "dinosaur.proto",
         """
               |syntax = "proto2";
@@ -2272,14 +2280,15 @@ class SchemaTest {
               |  optional string my_name = 2;
               |}
               |""".trimMargin()
-      ).schema()
+      )
+    }
     assertThat(schema.getType("Dinosaur")).isNotNull()
   }
 
   @Test
   fun nestedOptionSetting() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "dinosaur.proto",
         """
               |package wire;
@@ -2296,15 +2305,15 @@ class SchemaTest {
               |}
               |""".trimMargin()
       )
-      .schema()
+    }
     assertThat(schema.getType("wire.Foo")).isNotNull()
   }
 
   @Test
   fun unresolvedFieldOption() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -2312,7 +2321,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -2328,8 +2337,8 @@ class SchemaTest {
   @Test
   fun unimportedOptionShouldBeUnresolved() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "cashapp/pii.proto",
           """
               |package cashapp;
@@ -2339,7 +2348,7 @@ class SchemaTest {
               |}
               |""".trimMargin()
         )
-        .add(
+        add(
           "message.proto",
           """
               |message Message {
@@ -2347,7 +2356,7 @@ class SchemaTest {
               |}
               """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -2364,8 +2373,8 @@ class SchemaTest {
   @Test
   fun unresolvedEnumValueOption() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "enum.proto",
           """
                |enum Enum {
@@ -2373,7 +2382,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -2389,8 +2398,8 @@ class SchemaTest {
   @Test
   fun unresolvedMessageOption() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -2398,7 +2407,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -2413,8 +2422,8 @@ class SchemaTest {
   @Test
   fun unresolvedFileOption() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |
@@ -2422,7 +2431,7 @@ class SchemaTest {
                |message Message {}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -2436,8 +2445,8 @@ class SchemaTest {
 
   @Test
   fun resolveOptionsWithRelativePath() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "squareup/common/options.proto",
         """
              |syntax = "proto2";
@@ -2449,7 +2458,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "squareup/domain/message.proto",
         """
              |syntax = "proto2";
@@ -2460,14 +2469,14 @@ class SchemaTest {
              |message Message{}
              """.trimMargin()
       )
-      .schema()
+    }
     assertThat(schema.protoFile("squareup/domain/message.proto")).isNotNull()
   }
 
   @Test
   fun optionsWithRelativePathUsedInExtensions() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "squareup/domain/message.proto",
         """
              |syntax = "proto2";
@@ -2476,7 +2485,7 @@ class SchemaTest {
              |message Message{}
              """.trimMargin()
       )
-      .add(
+      add(
         "squareup/common/options.proto",
         """
              |syntax = "proto2";
@@ -2494,15 +2503,15 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     assertThat(schema.protoFile("squareup/domain/message.proto")).isNotNull()
   }
 
   @Test
   fun optionsWithRelativePathUsedInExtensionsAmbiguous() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "squareup/domain/message.proto",
           """
              |syntax = "proto2";
@@ -2511,7 +2520,7 @@ class SchemaTest {
              |message Message{}
              """.trimMargin()
         )
-        .add(
+        add(
           "squareup/common/options.proto",
           """
              |syntax = "proto2";
@@ -2526,7 +2535,7 @@ class SchemaTest {
              |}
              """.trimMargin()
         )
-        .add(
+        add(
           "squareup/options1/special.proto",
           """
              |syntax = "proto2";
@@ -2539,7 +2548,7 @@ class SchemaTest {
              |}
              """.trimMargin()
         )
-        .add(
+        add(
           "squareup/options2/special.proto",
           """
              |syntax = "proto2";
@@ -2552,7 +2561,7 @@ class SchemaTest {
              |}
              """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -2571,8 +2580,8 @@ class SchemaTest {
   @Test
   fun optionsWithRelativePathUsedInExtensionsShouldUseClosest() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "squareup/domain/message.proto",
           """
              |syntax = "proto2";
@@ -2581,7 +2590,7 @@ class SchemaTest {
              |message Message{}
              """.trimMargin()
         )
-        .add(
+        add(
           "squareup/common/options.proto",
           """
              |syntax = "proto2";
@@ -2599,7 +2608,7 @@ class SchemaTest {
              |}
              """.trimMargin()
         )
-        .add(
+        add(
           "squareup/options/special.proto",
           """
              |syntax = "proto2";
@@ -2612,7 +2621,7 @@ class SchemaTest {
              |}
              """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -2629,8 +2638,8 @@ class SchemaTest {
 
   @Test
   fun optionsWithRelativePathUsedInExtensionsResolvable() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "squareup/domain/message.proto",
         """
              |syntax = "proto2";
@@ -2639,7 +2648,7 @@ class SchemaTest {
              |message Message{}
              """.trimMargin()
       )
-      .add(
+      add(
         "squareup/common/options.proto",
         """
              |syntax = "proto2";
@@ -2654,7 +2663,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "squareup/options1/special.proto",
         """
              |syntax = "proto2";
@@ -2667,7 +2676,7 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .add(
+      add(
         "squareup/options2/special.proto",
         """
              |syntax = "proto2";
@@ -2680,15 +2689,15 @@ class SchemaTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     assertThat(schema.protoFile("squareup/domain/message.proto")).isNotNull()
   }
 
   @Test
   fun mapsCannotBeExtensions() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {}
@@ -2697,7 +2706,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -2713,8 +2722,8 @@ class SchemaTest {
   @Test
   fun missingZeroTagAtFirstPositionInMapValue() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -2725,7 +2734,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -2741,8 +2750,8 @@ class SchemaTest {
   @Test
   fun zeroNotFirstConstantInMapValue() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
                |message Message {
@@ -2754,7 +2763,7 @@ class SchemaTest {
                |}
                """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
@@ -2770,8 +2779,8 @@ class SchemaTest {
   @Test
   fun duplicateMessagesWithMembers() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
           |message Message {
@@ -2782,7 +2791,7 @@ class SchemaTest {
           |}
         """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (exception: IllegalStateException) {
       assertThat(exception).hasMessage(
@@ -2794,8 +2803,8 @@ class SchemaTest {
   @Test
   fun duplicateServicesWithRpcs() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "service.proto",
           """
           |service Service {
@@ -2807,7 +2816,7 @@ class SchemaTest {
           |message Data {}
         """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (exception: IllegalStateException) {
       assertThat(exception).hasMessage(
@@ -2819,8 +2828,8 @@ class SchemaTest {
   @Test
   fun duplicateRpcsInSameService() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "service.proto",
           """
           |service Service {
@@ -2830,7 +2839,7 @@ class SchemaTest {
           |message Data {}
         """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (exception: SchemaException) {
       assertThat(exception).hasMessage(
@@ -2847,8 +2856,8 @@ class SchemaTest {
   @Test
   fun cannotUseProto2EnumsInProto3Message() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "proto2.proto",
           """
             |syntax = "proto2";
@@ -2858,7 +2867,7 @@ class SchemaTest {
             |}
           """.trimMargin()
         )
-        .add(
+        add(
           "proto3.proto",
           """
             |syntax = "proto3";
@@ -2868,7 +2877,7 @@ class SchemaTest {
             |}
           """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (exception: SchemaException) {
       assertThat(exception).hasMessage(
@@ -2883,8 +2892,8 @@ class SchemaTest {
 
   @Test fun ambiguousEnumConstants() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
             |enum Foo {
@@ -2893,7 +2902,7 @@ class SchemaTest {
             |}
           """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (e: SchemaException) {
       assertThat(e).hasMessage(
@@ -2907,8 +2916,8 @@ class SchemaTest {
   }
 
   @Test fun typeAliasAllowsAmbiguousEnumConstantsIfSameTag() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "message.proto",
         """
             |enum Foo {
@@ -2918,7 +2927,7 @@ class SchemaTest {
             |}
           """.trimMargin()
       )
-      .schema()
+    }
 
     val enumType = schema.getType("Foo") as EnumType
     assertThat(enumType.constant("ZERO")!!.tag).isEqualTo(0)
@@ -2927,8 +2936,8 @@ class SchemaTest {
 
   @Test fun typeAliasDoesNotAllowAmbiguousEnumConstantsIfDifferentTag() {
     try {
-      RepoBuilder()
-        .add(
+      buildSchema {
+        add(
           "message.proto",
           """
             |enum Foo {
@@ -2938,7 +2947,7 @@ class SchemaTest {
             |}
           """.trimMargin()
         )
-        .schema()
+      }
       fail()
     } catch (e: SchemaException) {
       assertThat(e).hasMessage(

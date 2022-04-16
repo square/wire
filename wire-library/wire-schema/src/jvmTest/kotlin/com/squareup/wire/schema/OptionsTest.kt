@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.buildSchema
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -22,8 +23,8 @@ class OptionsTest {
   @Test
   fun structuredAndUnstructuredOptions() {
     // From https://developers.google.com/protocol-buffers/docs/proto#options
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "foo.proto",
         """
             |import "google/protobuf/descriptor.proto";
@@ -42,7 +43,7 @@ class OptionsTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
 
     val fooOptions = ProtoMember.get(Options.FIELD_OPTIONS, "foo_options")
     val opt1 = ProtoMember.get(ProtoType.get("FooOptions"), "opt1")
@@ -57,8 +58,8 @@ class OptionsTest {
 
   @Test
   fun textFormatCanOmitMapValueSeparator() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "foo.proto",
         """
             |import "google/protobuf/descriptor.proto";
@@ -78,7 +79,7 @@ class OptionsTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
 
     val foo = ProtoMember.get(Options.FIELD_OPTIONS, "foo")
     val bar = ProtoMember.get(ProtoType.get("FooOptions"), "bar")
@@ -91,8 +92,8 @@ class OptionsTest {
 
   @Test
   fun testOptionsToSchema() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "foo.proto",
         """
             |import "google/protobuf/descriptor.proto";
@@ -133,12 +134,13 @@ class OptionsTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
 
     val protoFile = schema.protoFile("foo.proto")
 
-    val optionElements = protoFile!!.types.stream().filter { it is MessageType && it.toElement().name == "Message" }
-      .findFirst().get().options.elements
+    val optionElements =
+      protoFile!!.types.stream().filter { it is MessageType && it.toElement().name == "Message" }
+        .findFirst().get().options.elements
 
     assertThat(optionElements[0].toSchema())
       .isEqualTo(
@@ -175,8 +177,8 @@ class OptionsTest {
 
   @Test
   fun fullyQualifiedOptionFields() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "a/b/more_options.proto",
         """
             |syntax = "proto2";
@@ -193,7 +195,7 @@ class OptionsTest {
             |}
             """.trimMargin()
       )
-      .add(
+      add(
         "a/c/event_more_options.proto",
         """
             |syntax = "proto2";
@@ -210,7 +212,7 @@ class OptionsTest {
             |}
             """.trimMargin()
       )
-      .add(
+      add(
         "a/d/message.proto",
         """
             |syntax = "proto2";
@@ -226,7 +228,7 @@ class OptionsTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val moreOptionsType = ProtoType.get("a.b.MoreOptions")
     val evenMoreOptionsType = ProtoType.get("a.c.EvenMoreOptions")
     val moreOptions = ProtoMember.get(Options.MESSAGE_OPTIONS, "a.b.more_options")

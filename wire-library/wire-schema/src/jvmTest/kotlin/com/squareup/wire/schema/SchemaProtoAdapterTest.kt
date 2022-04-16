@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.buildSchema
 import okio.Buffer
 import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.toByteString
@@ -26,8 +27,8 @@ import java.io.IOException
 import java.net.ProtocolException
 
 class SchemaProtoAdapterTest {
-  private val coffeeSchema = RepoBuilder()
-    .add(
+  private val coffeeSchema = buildSchema {
+    add(
       "coffee.proto",
       """
           |message CafeDrink {
@@ -54,7 +55,7 @@ class SchemaProtoAdapterTest {
           |}
           """.trimMargin()
     )
-    .schema()
+  }
 
   // Golden data emitted by protoc using the schema above.
   private val dansCoffee = mapOf(
@@ -103,8 +104,8 @@ class SchemaProtoAdapterTest {
   @Test
   @Throws(IOException::class)
   fun groupsIgnored() {
-    val adapter = RepoBuilder()
-      .add(
+    val adapter = buildSchema {
+      add(
         "message.proto",
         """
             |message Message {
@@ -119,7 +120,7 @@ class SchemaProtoAdapterTest {
             |}
             """.trimMargin()
       )
-      .protoAdapter("Message")
+    }.protoAdapter("Message")
     val encoded = (
       "0a0161135a02080114135a02100214135a090803720568656c6c" +
         "6f141baa010208011c1baa010210021c1baa01090803720568656c6c6f1c220162"
@@ -132,8 +133,8 @@ class SchemaProtoAdapterTest {
   @Test
   @Throws(IOException::class)
   fun startGroupWithoutEndGroup() {
-    val adapter = RepoBuilder()
-      .add(
+    val adapter = buildSchema {
+      add(
         "message.proto",
         """
             |message Message {
@@ -141,7 +142,7 @@ class SchemaProtoAdapterTest {
             |}
             """.trimMargin()
       )
-      .protoAdapter("Message")
+    }.protoAdapter("Message")
     val encoded = "130a0161".decodeHex()
     try {
       adapter.decode(Buffer().write(encoded))
@@ -153,8 +154,8 @@ class SchemaProtoAdapterTest {
   @Test
   @Throws(IOException::class)
   fun unexpectedEndGroup() {
-    val adapter = RepoBuilder()
-      .add(
+    val adapter = buildSchema {
+      add(
         "message.proto",
         """
             |message Message {
@@ -162,7 +163,7 @@ class SchemaProtoAdapterTest {
             |}
             """.trimMargin()
       )
-      .protoAdapter("Message")
+    }.protoAdapter("Message")
     val encoded = "0a01611c".decodeHex()
     try {
       adapter.decode(Buffer().write(encoded))
@@ -175,8 +176,8 @@ class SchemaProtoAdapterTest {
   @Test
   @Throws(IOException::class)
   fun endGroupDoesntMatchStartGroup() {
-    val adapter = RepoBuilder()
-      .add(
+    val adapter = buildSchema {
+      add(
         "message.proto",
         """
             |message Message {
@@ -184,7 +185,7 @@ class SchemaProtoAdapterTest {
             |}
             """.trimMargin()
       )
-      .protoAdapter("Message")
+    }.protoAdapter("Message")
     val encoded = "130a01611c".decodeHex()
     try {
       adapter.decode(Buffer().write(encoded))
@@ -197,8 +198,8 @@ class SchemaProtoAdapterTest {
   @Test
   @Throws(IOException::class)
   fun decodeToUnpacked() {
-    val adapter = RepoBuilder()
-      .add(
+    val adapter = buildSchema {
+      add(
         "message.proto",
         """
             |message Message {
@@ -206,7 +207,7 @@ class SchemaProtoAdapterTest {
             |}
             """.trimMargin()
       )
-      .protoAdapter("Message")
+    }.protoAdapter("Message")
     val expected = mapOf("a" to listOf(601, 701))
 
     val packedEncoded = "d20504d904bd05".decodeHex()
@@ -219,8 +220,8 @@ class SchemaProtoAdapterTest {
   @Test
   @Throws(IOException::class)
   fun decodeToPacked() {
-    val adapter = RepoBuilder()
-      .add(
+    val adapter = buildSchema {
+      add(
         "message.proto",
         """
             |message Message {
@@ -228,7 +229,7 @@ class SchemaProtoAdapterTest {
             |}
             """.trimMargin()
       )
-      .protoAdapter("Message")
+    }.protoAdapter("Message")
     val expected = mapOf("a" to listOf(601, 701))
 
     val unpackedEncoded = "d005d904d005bd05".decodeHex()
@@ -241,8 +242,8 @@ class SchemaProtoAdapterTest {
   @Test
   @Throws(IOException::class)
   fun recursiveMessage() {
-    val adapter = RepoBuilder()
-      .add(
+    val adapter = buildSchema {
+      add(
         "tree.proto",
         """
             |message BinaryTreeNode {
@@ -252,7 +253,7 @@ class SchemaProtoAdapterTest {
             |}
             """.trimMargin()
       )
-      .protoAdapter("BinaryTreeNode")
+    }.protoAdapter("BinaryTreeNode")
     val value = mapOf(
       "value" to "D",
       "left" to mapOf(
@@ -273,8 +274,8 @@ class SchemaProtoAdapterTest {
 
   @Test
   fun includeUnknowns() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "coffee.proto",
         """
              |message CafeDrink {
@@ -283,7 +284,7 @@ class SchemaProtoAdapterTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
 
     val dansCoffeeWithUnknowns = mapOf(
       "customer_name" to "Dan",
@@ -299,8 +300,8 @@ class SchemaProtoAdapterTest {
 
   @Test
   fun omitUnknowns() {
-    val schema = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "coffee.proto",
         """
             |message CafeDrink {
@@ -309,7 +310,7 @@ class SchemaProtoAdapterTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
 
     val dansCoffeeWithoutUnknowns = mapOf("customer_name" to "Dan", "size_ounces" to 16)
 

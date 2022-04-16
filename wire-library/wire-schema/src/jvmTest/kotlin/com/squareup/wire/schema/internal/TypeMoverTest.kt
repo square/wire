@@ -15,8 +15,8 @@
  */
 package com.squareup.wire.schema.internal
 
+import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.ProtoType
-import com.squareup.wire.schema.RepoBuilder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
@@ -32,8 +32,8 @@ class TypeMoverTest {
    *  * Adding an import to the target file required by the target type (roast.proto).
    */
   @Test fun `move type to new file`() {
-    val oldSchema = RepoBuilder()
-      .add(
+    val oldSchema = buildSchema {
+      add(
         "cafe/cafe.proto",
         """
             |syntax = "proto2";
@@ -53,7 +53,7 @@ class TypeMoverTest {
             |}
             """.trimMargin()
       )
-      .add(
+      add(
         "cafe/roast.proto",
         """
             |syntax = "proto2";
@@ -66,7 +66,7 @@ class TypeMoverTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
 
     val newSchema = TypeMover(
       oldSchema,
@@ -112,8 +112,8 @@ class TypeMoverTest {
   }
 
   @Test fun `move type to existing file`() {
-    val oldSchema = RepoBuilder()
-      .add(
+    val oldSchema = buildSchema {
+      add(
         "cafe/cafe.proto",
         """
             |syntax = "proto2";
@@ -133,7 +133,7 @@ class TypeMoverTest {
             |}
             """.trimMargin()
       )
-      .add(
+      add(
         "cafe/roast.proto",
         """
             |syntax = "proto2";
@@ -146,7 +146,7 @@ class TypeMoverTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
 
     val newSchema = TypeMover(
       oldSchema,
@@ -195,8 +195,8 @@ class TypeMoverTest {
   }
 
   @Test fun `multiple moves from single source`() {
-    val oldSchema = RepoBuilder()
-      .add(
+    val oldSchema = buildSchema {
+      add(
         "abc.proto",
         """
             |syntax = "proto2";
@@ -214,7 +214,7 @@ class TypeMoverTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
 
     val newSchema = TypeMover(
       oldSchema = oldSchema,
@@ -280,8 +280,8 @@ class TypeMoverTest {
   }
 
   @Test fun `move with service dependency`() {
-    val oldSchema = RepoBuilder()
-      .add(
+    val oldSchema = buildSchema {
+      add(
         "abc.proto",
         """
             |syntax = "proto2";
@@ -297,7 +297,7 @@ class TypeMoverTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
 
     val newSchema = TypeMover(
       oldSchema = oldSchema,
@@ -325,8 +325,8 @@ class TypeMoverTest {
   }
 
   @Test fun `swap types`() {
-    val oldSchema = RepoBuilder()
-      .add(
+    val oldSchema = buildSchema {
+      add(
         "a.proto",
         """
             |syntax = "proto2";
@@ -338,7 +338,7 @@ class TypeMoverTest {
             |}
             """.trimMargin()
       )
-      .add(
+      add(
         "b.proto",
         """
             |syntax = "proto2";
@@ -347,7 +347,7 @@ class TypeMoverTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
 
     val newSchema = TypeMover(
       oldSchema = oldSchema,
@@ -384,8 +384,8 @@ class TypeMoverTest {
   }
 
   @Test fun `unrelated unused imports not pruned`() {
-    val oldSchema = RepoBuilder()
-      .add(
+    val oldSchema = buildSchema {
+      add(
         "a.proto",
         """
             |syntax = "proto2";
@@ -396,13 +396,13 @@ class TypeMoverTest {
             |}
             """.trimMargin()
       )
-      .add(
+      add(
         "b.proto",
         """
             |syntax = "proto2";
             |""".trimMargin()
       )
-      .schema()
+    }
 
     val newSchema = TypeMover(
       oldSchema = oldSchema,
@@ -424,8 +424,8 @@ class TypeMoverTest {
   }
 
   @Test fun `move inexistent type`() {
-    val oldSchema = RepoBuilder()
-      .add(
+    val oldSchema = buildSchema {
+      add(
         "a.proto",
         """
             |syntax = "proto2";
@@ -434,7 +434,7 @@ class TypeMoverTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
 
     try {
       TypeMover(

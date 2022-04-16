@@ -16,7 +16,8 @@
 package com.squareup.wire.reflector
 
 import com.google.protobuf.DescriptorProtos
-import com.squareup.wire.schema.RepoBuilder
+import com.squareup.wire.buildSchema
+import com.squareup.wire.schema.addLocal
 import grpc.reflection.v1alpha.ListServiceResponse
 import grpc.reflection.v1alpha.ServerReflectionRequest
 import grpc.reflection.v1alpha.ServerReflectionResponse
@@ -27,8 +28,9 @@ import org.junit.Test
 internal class SchemaReflectorTest {
   @Test
   fun `outputs a list of services`() {
-    val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
-    val schema = repoBuilder.schema()
+    val schema = buildSchema {
+      addLocal("src/test/proto/RouteGuideProto.proto")
+    }
     val request = ServerReflectionRequest(list_services = "*")
     assertThat(
       SchemaReflector(schema, includeDependencies = true).process(request)
@@ -44,8 +46,9 @@ internal class SchemaReflectorTest {
 
   @Test
   fun `gets a file descriptor for a filename`() {
-    val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
-    val schema = repoBuilder.schema()
+    val schema = buildSchema {
+      addLocal("src/test/proto/RouteGuideProto.proto")
+    }
 
     assertThat(
       SchemaReflector(schema, includeDependencies = true).process(
@@ -58,8 +61,9 @@ internal class SchemaReflectorTest {
 
   @Test
   fun `gets a file descriptor for a specific symbol`() {
-    val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
-    val schema = repoBuilder.schema()
+    val schema = buildSchema {
+      addLocal("src/test/proto/RouteGuideProto.proto")
+    }
 
     assertThat(
       SchemaReflector(schema, includeDependencies = true).process(
@@ -72,8 +76,8 @@ internal class SchemaReflectorTest {
 
   @Test
   fun `transitive dependencies included`() {
-    val repoBuilder = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "/source/a.proto",
         """
                 |import "b.proto";
@@ -82,13 +86,13 @@ internal class SchemaReflectorTest {
                 |}
                 |""".trimMargin()
       )
-      .add(
+      add(
         "/source/b.proto",
         """
                 |message B { }
                 |""".trimMargin()
       )
-    val schema = repoBuilder.schema()
+    }
 
     val response = SchemaReflector(schema, includeDependencies = true)
       .process(ServerReflectionRequest(file_containing_symbol = ".A"))
@@ -109,8 +113,8 @@ internal class SchemaReflectorTest {
 
   @Test
   fun `transitive dependencies included once`() {
-    val repoBuilder = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "/source/a.proto",
         """
                 |import "b.proto";
@@ -121,19 +125,19 @@ internal class SchemaReflectorTest {
                 |}
                 |""".trimMargin()
       )
-      .add(
+      add(
         "/source/b.proto",
         """
                 |message B { }
                 |""".trimMargin()
       )
-      .add(
+      add(
         "/source/c.proto",
         """
                 |message C { }
                 |""".trimMargin()
       )
-    val schema = repoBuilder.schema()
+    }
 
     val response = SchemaReflector(schema, includeDependencies = true)
       .process(ServerReflectionRequest(file_containing_symbol = ".A"))
@@ -146,8 +150,8 @@ internal class SchemaReflectorTest {
 
   @Test
   fun `transitive dependencies included ordered`() {
-    val repoBuilder = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "/source/a.proto",
         """
                 |import "b.proto";
@@ -158,7 +162,7 @@ internal class SchemaReflectorTest {
                 |}
                 |""".trimMargin()
       )
-      .add(
+      add(
         "/source/b.proto",
         """
                 |import "c.proto";
@@ -167,13 +171,13 @@ internal class SchemaReflectorTest {
                 | }
                 |""".trimMargin()
       )
-      .add(
+      add(
         "/source/c.proto",
         """
                 |message C { }
                 |""".trimMargin()
       )
-    val schema = repoBuilder.schema()
+    }
 
     val response = SchemaReflector(schema, includeDependencies = true)
       .process(ServerReflectionRequest(file_containing_symbol = ".A"))
@@ -186,8 +190,8 @@ internal class SchemaReflectorTest {
 
   @Test
   fun `transitive dependencies with public import`() {
-    val repoBuilder = RepoBuilder()
-      .add(
+    val schema = buildSchema {
+      add(
         "/source/a.proto",
         """
                 |import "b.proto";
@@ -196,13 +200,13 @@ internal class SchemaReflectorTest {
                 |}
                 |""".trimMargin()
       )
-      .add(
+      add(
         "/source/b.proto",
         """
                 |import public "b-new.proto";
                 |""".trimMargin()
       )
-      .add(
+      add(
         "/source/b-new.proto",
         """
                 |import "c.proto";
@@ -211,13 +215,13 @@ internal class SchemaReflectorTest {
                 | }
                 |""".trimMargin()
       )
-      .add(
+      add(
         "/source/c.proto",
         """
                 |message C { }
                 |""".trimMargin()
       )
-    val schema = repoBuilder.schema()
+    }
 
     val response = SchemaReflector(schema, includeDependencies = true)
       .process(ServerReflectionRequest(file_containing_symbol = ".A"))
