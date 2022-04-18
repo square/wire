@@ -17,9 +17,15 @@ package com.squareup.wire.schema
 
 import okio.Path
 
+/**
+ * [ClaimedPaths] tracks generated files' [Path]s. [Schema handlers][SchemaHandler] who generate
+ * files are to [claim] each generated file's path. It is an error to generate different [Type]s or
+ * [Service]s to the same file and [ClaimedPaths] will throw when generation conflicts happen.
+ */
 class ClaimedPaths {
   private val paths = mutableMapOf<Path, String>()
 
+  /** Tracks that [type] has been generated to [path]. */
   fun claim(path: Path, type: Type) {
     val existingEntry = paths.putIfAbsent(path, type.asErrorMessage())
     if (existingEntry != null) {
@@ -29,6 +35,7 @@ class ClaimedPaths {
     }
   }
 
+  /** Tracks that [service] has been generated to [path]. */
   fun claim(path: Path, service: Service) {
     val existingEntry = paths.putIfAbsent(path, service.asErrorMessage())
     if (existingEntry != null) {
