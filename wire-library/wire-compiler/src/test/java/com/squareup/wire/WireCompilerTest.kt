@@ -17,7 +17,6 @@
 
 package com.squareup.wire
 
-import java.util.Collections
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
@@ -27,6 +26,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import java.util.Collections
 
 class WireCompilerTest {
   @Rule @JvmField val temp = TemporaryFolder()

@@ -107,7 +107,7 @@ class SchemaLoader : Loader, ProfileLoader {
     val result = mutableListOf<ProtoFile>()
     for (sourceRoot in sourcePathRoots!!) {
       for (locationAndPath in sourceRoot.allProtoFiles()) {
-        result += load(locationAndPath, loadedOnSourcePath = true)
+        result += load(locationAndPath)
       }
     }
 
@@ -133,7 +133,7 @@ class SchemaLoader : Loader, ProfileLoader {
     }
 
     if (loadFrom != null) {
-      return load(loadFrom, loadedOnSourcePath = false)
+      return load(loadFrom)
     }
 
     if (isWireRuntimeProto(path)) {
@@ -148,7 +148,7 @@ class SchemaLoader : Loader, ProfileLoader {
     return ProtoFile.get(ProtoFileElement.empty(path))
   }
 
-  private fun load(protoFilePath: ProtoFilePath, loadedOnSourcePath: Boolean): ProtoFile {
+  private fun load(protoFilePath: ProtoFilePath): ProtoFile {
     if (isWireRuntimeProto(protoFilePath.location)) {
       return CoreLoader.load(protoFilePath.location.path)
     }
@@ -165,7 +165,6 @@ class SchemaLoader : Loader, ProfileLoader {
       errors += "expected ${protoFilePath.location.path} to have a path ending with $importPath"
     }
 
-    protoFile.loadedOnSourcePath = loadedOnSourcePath
     return protoFile
   }
 

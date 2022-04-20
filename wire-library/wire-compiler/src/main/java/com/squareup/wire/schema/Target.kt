@@ -20,16 +20,12 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.WireCompiler
-import com.squareup.wire.WireLogger
 import com.squareup.wire.java.JavaGenerator
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
-import com.squareup.wire.schema.Target.SchemaHandler
 import com.squareup.wire.swift.SwiftGenerator
-import okio.FileSystem
 import okio.Path
-import okio.Path.Companion.toPath
 import java.io.IOException
 import java.io.Serializable
 import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
@@ -70,6 +66,8 @@ sealed class Target : Serializable {
   /**
    * Returns a new Target object that is a copy of this one, but with the given fields updated.
    */
+  // TODO(Benoit) We're only ever copying outDirectory, maybe we can remove other fields and rename
+  //  the method?
   abstract fun copyTarget(
     includes: List<String> = this.includes,
     excludes: List<String> = this.excludes,
@@ -77,83 +75,10 @@ sealed class Target : Serializable {
     outDirectory: String = this.outDirectory,
   ): Target
 
-  /**
-   * @param moduleName The module name for source generation which should correspond to a
-   * subdirectory in the target's output directory. If null, generation should occur directly into
-   * the root output directory.
-   * @param upstreamTypes Types and their associated module name which were already generated. The
-   * returned handler will be invoked only for types in [schema] which are NOT present in this map.
-   */
-  internal abstract fun newHandler(
-    schema: Schema,
-    moduleName: String?,
-    upstreamTypes: Map<ProtoType, String>,
-    fs: FileSystem,
-    logger: WireLogger,
-    profileLoader: ProfileLoader,
-    errorCollector: ErrorCollector,
-  ): SchemaHandler
-
-  interface SchemaHandler {
-    /** Returns the [Path] of the file which [type] will have been generated into. */
-    fun handle(type: Type): Path?
-    /** Returns the [Path]s of the files which [service] will have been generated into. */
-    fun handle(service: Service): List<Path>
-    /** Returns the [Path] of the files which [field] will have been generated into. */
-    fun handle(extend: Extend, field: Field): Path?
-    /**
-     * This will handle all [Type]s and [Service]s of the `protoFile` in respect to the emitting
-     * rules. If exclusive, the handled [Type]s and [Service]s should be added to the consumed set.
-     * Consumed types and services themselves are to be omitted by this handler.
-     */
-    fun handle(
-      protoFile: ProtoFile,
-      emittingRules: EmittingRules,
-      claimedDefinitions: ClaimedDefinitions,
-      claimedPaths: ClaimedPaths,
-      isExclusive: Boolean,
-    ) {
-      protoFile.types
-        .filter { it !in claimedDefinitions && emittingRules.includes(it.type) }
-        .forEach { type ->
-          val generatedFilePath = handle(type)
-
-          if (generatedFilePath != null) {
-            claimedPaths.claim(generatedFilePath, type)
-          }
-
-          // We don't let other targets handle this one.
-          if (isExclusive) claimedDefinitions.claim(type)
-        }
-
-      protoFile.services
-        .filter { it !in claimedDefinitions && emittingRules.includes(it.type) }
-        .forEach { service ->
-          val generatedFilePaths = handle(service)
-
-          for (generatedFilePath in generatedFilePaths) {
-            claimedPaths.claim(generatedFilePath, service)
-          }
-
-          // We don't let other targets handle this one.
-          if (isExclusive) claimedDefinitions.claim(service)
-        }
-
-      // TODO(jwilson): extend emitting rules to support include/exclude of extension fields.
-      protoFile.extendList
-        .flatMap { extend -> extend.fields.map { field -> extend to field } }
-        .filter { it.second !in claimedDefinitions }
-        .forEach { extendToField ->
-          val (extend, field) = extendToField
-          handle(extend, field)
-
-          // We don't let other targets handle this one.
-          if (isExclusive) claimedDefinitions.claim(field)
-        }
-    }
-  }
+  abstract fun newHandler(): SchemaHandler
 }
 
+// TODO(Benoit) Get JavaGenerator to expose a factory from its module. Code should not be here.
 /** Generate `.java` sources. */
 data class JavaTarget(
   override val includes: List<String> = listOf("*"),
@@ -181,79 +106,71 @@ data class JavaTarget(
   /** True to emit annotations for options applied on messages, fields, etc. */
   val emitAppliedOptions: Boolean = true
 ) : Target() {
-  override fun newHandler(
-    schema: Schema,
-    moduleName: String?,
-    upstreamTypes: Map<ProtoType, String>,
-    fs: FileSystem,
-    logger: WireLogger,
-    profileLoader: ProfileLoader,
-    errorCollector: ErrorCollector,
-  ): SchemaHandler {
-    val profileName = if (android) "android" else "java"
-    val profile = profileLoader.loadProfile(profileName, schema)
-    val modulePath = run {
-      val outPath = outDirectory.toPath()
-      if (moduleName != null) {
-        outPath / moduleName
-      } else {
-        outPath
+  override fun newHandler(): SchemaHandler {
+    return object : AbstractSchemaHandler() {
+      private lateinit var javaGenerator: JavaGenerator
+
+      override fun handle(schema: Schema, context: SchemaHandler.Context) {
+        val profileName = if (android) "android" else "java"
+        val profile = context.profileLoader!!.loadProfile(profileName, schema)
+        javaGenerator = JavaGenerator.get(schema)
+          .withProfile(profile)
+          .withAndroid(android)
+          .withAndroidAnnotations(androidAnnotations)
+          .withCompact(compact)
+          .withOptions(emitDeclaredOptions, emitAppliedOptions)
+
+        context.fileSystem.createDirectories(context.outDirectory)
+
+        super.handle(schema, context)
       }
-    }
-    fs.createDirectories(modulePath)
 
-    val javaGenerator = JavaGenerator.get(schema)
-      .withProfile(profile)
-      .withAndroid(android)
-      .withAndroidAnnotations(androidAnnotations)
-      .withCompact(compact)
-      .withOptions(emitDeclaredOptions, emitAppliedOptions)
-
-    return object : SchemaHandler {
-      override fun handle(type: Type): Path? {
+      override fun handle(type: Type, context: SchemaHandler.Context): Path? {
         if (JavaGenerator.builtInType(type.type)) return null
 
         val typeSpec = javaGenerator.generateType(type)
         val javaTypeName = javaGenerator.generatedTypeName(type)
-        return write(javaTypeName, typeSpec, type.type, type.location)
+        return write(javaTypeName, typeSpec, type.type, type.location, context)
       }
 
-      override fun handle(service: Service): List<Path> {
+      override fun handle(service: Service, context: SchemaHandler.Context): List<Path> {
         // Service handling isn't supporting in Java.
         return emptyList()
       }
 
-      override fun handle(extend: Extend, field: Field): Path? {
+      override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? {
         val typeSpec = javaGenerator.generateOptionType(extend, field) ?: return null
         val javaTypeName = javaGenerator.generatedTypeName(field)
-        return write(javaTypeName, typeSpec, field.qualifiedName, field.location)
+        return write(javaTypeName, typeSpec, field.qualifiedName, field.location, context)
       }
 
       private fun write(
         javaTypeName: com.squareup.javapoet.ClassName,
         typeSpec: com.squareup.javapoet.TypeSpec,
         source: Any,
-        location: Location
+        location: Location,
+        context: SchemaHandler.Context,
       ): Path {
+        val outDirectory = context.outDirectory
         val javaFile = JavaFile.builder(javaTypeName.packageName(), typeSpec)
           .addFileComment("\$L", WireCompiler.CODE_GENERATED_BY_WIRE)
           .addFileComment("\nSource: \$L in \$L", source, location.withPathOnly())
           .build()
-        val filePath = modulePath /
+        val filePath = outDirectory /
           javaFile.packageName.replace(".", "/") /
           "${javaTypeName.simpleName()}.java"
 
-        logger.artifactHandled(modulePath, "${javaFile.packageName}.${javaFile.typeSpec.name}", "Java")
+        context.logger.artifactHandled(
+          outDirectory, "${javaFile.packageName}.${javaFile.typeSpec.name}", "Java"
+        )
         try {
-          fs.createDirectories(filePath.parent!!)
-          fs.write(filePath) {
+          context.fileSystem.createDirectories(filePath.parent!!)
+          context.fileSystem.write(filePath) {
             writeUtf8(javaFile.toString())
           }
         } catch (e: IOException) {
           throw IOException(
-            "Error emitting ${javaFile.packageName}.${javaFile.typeSpec.name} " +
-              "to $outDirectory",
-            e
+            "Error emitting ${javaFile.packageName}.${javaFile.typeSpec.name} to $outDirectory", e
           )
         }
         return filePath
@@ -276,6 +193,7 @@ data class JavaTarget(
   }
 }
 
+// TODO(Benoit) Get kotlinGenerator to expose a factory from its module. Code should not be here.
 /** Generate `.kt` sources. */
 data class KotlinTarget(
   override val includes: List<String> = listOf("*"),
@@ -321,52 +239,39 @@ data class KotlinTarget(
    */
   val nameSuffix: String? = null,
 ) : Target() {
-  override fun newHandler(
-    schema: Schema,
-    moduleName: String?,
-    upstreamTypes: Map<ProtoType, String>,
-    fs: FileSystem,
-    logger: WireLogger,
-    profileLoader: ProfileLoader,
-    errorCollector: ErrorCollector,
-  ): SchemaHandler {
-    val profileName = if (android) "android" else "java"
-    val profile = profileLoader.loadProfile(profileName, schema)
+  override fun newHandler(): SchemaHandler {
+    return object : AbstractSchemaHandler() {
+      private lateinit var kotlinGenerator: KotlinGenerator
 
-    val modulePath = run {
-      val outPath = outDirectory.toPath()
-      if (moduleName != null) {
-        outPath / moduleName
-      } else {
-        outPath
+      override fun handle(schema: Schema, context: SchemaHandler.Context) {
+        val profileName = if (android) "android" else "java"
+        val profile = context.profileLoader!!.loadProfile(profileName, schema)
+        kotlinGenerator = KotlinGenerator(
+          schema = schema,
+          profile = profile,
+          emitAndroid = android,
+          javaInterop = javaInterop,
+          emitDeclaredOptions = emitDeclaredOptions,
+          emitAppliedOptions = emitAppliedOptions,
+          rpcCallStyle = rpcCallStyle,
+          rpcRole = rpcRole,
+          boxOneOfsMinSize = boxOneOfsMinSize,
+          grpcServerCompatible = grpcServerCompatible,
+          nameSuffix = nameSuffix,
+        )
+        context.fileSystem.createDirectories(context.outDirectory)
+        super.handle(schema, context)
       }
-    }
-    fs.createDirectories(modulePath)
 
-    val kotlinGenerator = KotlinGenerator(
-      schema = schema,
-      profile = profile,
-      emitAndroid = android,
-      javaInterop = javaInterop,
-      emitDeclaredOptions = emitDeclaredOptions,
-      emitAppliedOptions = emitAppliedOptions,
-      rpcCallStyle = rpcCallStyle,
-      rpcRole = rpcRole,
-      boxOneOfsMinSize = boxOneOfsMinSize,
-      grpcServerCompatible = grpcServerCompatible,
-      nameSuffix = nameSuffix,
-    )
-
-    return object : SchemaHandler {
-      override fun handle(type: Type): Path? {
+      override fun handle(type: Type, context: SchemaHandler.Context): Path? {
         if (KotlinGenerator.builtInType(type.type)) return null
 
         val typeSpec = kotlinGenerator.generateType(type)
         val className = kotlinGenerator.generatedTypeName(type)
-        return write(className, typeSpec, type.type, type.location)
+        return write(className, typeSpec, type.type, type.location, context)
       }
 
-      override fun handle(service: Service): List<Path> {
+      override fun handle(service: Service, context: SchemaHandler.Context): List<Path> {
         if (rpcRole === RpcRole.NONE) return emptyList()
 
         val generatedPaths = mutableListOf<Path>()
@@ -375,31 +280,35 @@ data class KotlinTarget(
           service.rpcs.forEach { rpc ->
             val map = kotlinGenerator.generateServiceTypeSpecs(service, rpc)
             for ((className, typeSpec) in map) {
-              generatedPaths.add(write(className, typeSpec, service.type, service.location))
+              generatedPaths.add(
+                write(className, typeSpec, service.type, service.location, context)
+              )
             }
           }
         } else {
           val map = kotlinGenerator.generateServiceTypeSpecs(service, null)
           for ((className, typeSpec) in map) {
-            generatedPaths.add(write(className, typeSpec, service.type, service.location))
+            generatedPaths.add(write(className, typeSpec, service.type, service.location, context))
           }
         }
 
         return generatedPaths
       }
 
-      override fun handle(extend: Extend, field: Field): Path? {
+      override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? {
         val typeSpec = kotlinGenerator.generateOptionType(extend, field) ?: return null
         val name = kotlinGenerator.generatedTypeName(field)
-        return write(name, typeSpec, field.qualifiedName, field.location)
+        return write(name, typeSpec, field.qualifiedName, field.location, context)
       }
 
       private fun write(
         name: ClassName,
         typeSpec: TypeSpec,
         source: Any,
-        location: Location
+        location: Location,
+        context: SchemaHandler.Context,
       ): Path {
+        val modulePath = context.outDirectory
         val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
           .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
           .addComment("\nSource: %L in %L", source, location.withPathOnly())
@@ -408,12 +317,14 @@ data class KotlinTarget(
         val filePath = modulePath /
           kotlinFile.packageName.replace(".", "/") /
           "${kotlinFile.name}.kt"
-        val path = outDirectory.toPath()
 
-        logger.artifactHandled(path, "${kotlinFile.packageName}.${(kotlinFile.members.first() as TypeSpec).name}", "Kotlin")
+        context.logger.artifactHandled(
+          modulePath, "${kotlinFile.packageName}.${(kotlinFile.members.first() as TypeSpec).name}",
+          "Kotlin"
+        )
         try {
-          fs.createDirectories(filePath.parent!!)
-          fs.write(filePath) {
+          context.fileSystem.createDirectories(filePath.parent!!)
+          context.fileSystem.write(filePath) {
             writeUtf8(kotlinFile.toString())
           }
         } catch (e: IOException) {
@@ -439,36 +350,27 @@ data class KotlinTarget(
   }
 }
 
+// TODO(Benoit) Get SwiftGenerator to expose a factory from its module. Code should not be here.
 data class SwiftTarget(
   override val includes: List<String> = listOf("*"),
   override val excludes: List<String> = listOf(),
   override val exclusive: Boolean = true,
   override val outDirectory: String
 ) : Target() {
-  override fun newHandler(
-    schema: Schema,
-    moduleName: String?,
-    upstreamTypes: Map<ProtoType, String>,
-    fs: FileSystem,
-    logger: WireLogger,
-    profileLoader: ProfileLoader,
-    errorCollector: ErrorCollector,
-  ): SchemaHandler {
-    val modulePath = run {
-      val outPath = outDirectory.toPath()
-      if (moduleName != null) {
-        outPath / moduleName
-      } else {
-        outPath
-      }
-    }
-    fs.createDirectories(modulePath)
+  override fun newHandler(): SchemaHandler {
+    return object : AbstractSchemaHandler() {
+      private lateinit var generator: SwiftGenerator
 
-    val generator = SwiftGenerator(schema, upstreamTypes)
-    return object : SchemaHandler {
-      override fun handle(type: Type): Path? {
+      override fun handle(schema: Schema, context: SchemaHandler.Context) {
+        generator = SwiftGenerator(schema, context.module?.upstreamTypes ?: mapOf())
+        context.fileSystem.createDirectories(context.outDirectory)
+        super.handle(schema, context)
+      }
+
+      override fun handle(type: Type, context: SchemaHandler.Context): Path? {
         if (SwiftGenerator.builtInType(type.type)) return null
 
+        val modulePath = context.outDirectory
         val typeName = generator.generatedTypeName(type)
         val swiftFile = SwiftFileSpec.builder(typeName.moduleName, typeName.simpleName)
           .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
@@ -481,7 +383,7 @@ data class SwiftTarget(
 
         val filePath = modulePath / "${swiftFile.name}.swift"
         try {
-          fs.write(filePath) {
+          context.fileSystem.write(filePath) {
             writeUtf8(swiftFile.toString())
           }
         } catch (e: IOException) {
@@ -490,12 +392,18 @@ data class SwiftTarget(
           )
         }
 
-        logger.artifactHandled(modulePath, "${swiftFile.moduleName}.${typeName.canonicalName}", "Swift")
+        context.logger.artifactHandled(
+          modulePath, "${swiftFile.moduleName}.${typeName.canonicalName}", "Swift"
+        )
         return filePath
       }
 
-      override fun handle(service: Service) = emptyList<Path>()
-      override fun handle(extend: Extend, field: Field): Path? = null
+      override fun handle(service: Service, context: SchemaHandler.Context) = emptyList<Path>()
+      override fun handle(
+        extend: Extend,
+        field: Field,
+        context: SchemaHandler.Context
+      ): Path? = null
     }
   }
 
@@ -521,57 +429,35 @@ data class ProtoTarget(
   override val excludes: List<String> = listOf()
   override val exclusive: Boolean = false
 
-  override fun newHandler(
-    schema: Schema,
-    moduleName: String?,
-    upstreamTypes: Map<ProtoType, String>,
-    fs: FileSystem,
-    logger: WireLogger,
-    profileLoader: ProfileLoader,
-    errorCollector: ErrorCollector,
-  ): SchemaHandler {
-    val modulePath = run {
-      val outPath = outDirectory.toPath()
-      if (moduleName != null) {
-        outPath / moduleName
-      } else {
-        outPath
-      }
-    }
-    fs.createDirectories(modulePath)
-
+  override fun newHandler(): SchemaHandler {
     return object : SchemaHandler {
-      override fun handle(type: Type): Path? = null
-      override fun handle(service: Service): List<Path> = emptyList()
-      override fun handle(extend: Extend, field: Field) = null
-      override fun handle(
-        protoFile: ProtoFile,
-        emittingRules: EmittingRules,
-        claimedDefinitions: ClaimedDefinitions,
-        claimedPaths: ClaimedPaths,
-        isExclusive: Boolean
-      ) {
-        if (protoFile.isEmpty()) return
+      override fun handle(schema: Schema, context: SchemaHandler.Context) {
+        context.fileSystem.createDirectories(context.outDirectory)
+        val outDirectory = context.outDirectory
 
-        val relativePath = protoFile.location.path
-          .substringBeforeLast("/", missingDelimiterValue = ".")
-        val outputDirectory = modulePath / relativePath
-        val outputFilePath = outputDirectory / "${protoFile.name()}.proto"
-        logger.artifactHandled(outputDirectory, protoFile.location.path, "Proto")
+        for (protoFile in schema.protoFiles) {
+          if (!context.inSourcePath(protoFile) || protoFile.isEmpty()) continue
 
-        try {
-          fs.createDirectories(outputFilePath.parent!!)
-          fs.write(outputFilePath) {
-            writeUtf8(protoFile.toSchema())
+          val relativePath = protoFile.location.path
+            .substringBeforeLast("/", missingDelimiterValue = ".")
+          val outputDirectory = outDirectory / relativePath
+          val outputFilePath = outputDirectory / "${protoFile.name()}.proto"
+          context.logger.artifactHandled(outputDirectory, protoFile.location.path, "Proto")
+
+          try {
+            context.fileSystem.createDirectories(outputFilePath.parent!!)
+            context.fileSystem.write(outputFilePath) {
+              writeUtf8(protoFile.toSchema())
+            }
+          } catch (e: IOException) {
+            throw IOException("Error emitting $outputFilePath to $outDirectory", e)
           }
-        } catch (e: IOException) {
-          throw IOException("Error emitting $outputFilePath to $outDirectory", e)
         }
       }
+
+      private fun ProtoFile.isEmpty() = types.isEmpty() && services.isEmpty() && extendList.isEmpty()
     }
   }
-
-  private fun ProtoFile.isEmpty() = types.isEmpty() && services.isEmpty() && extendList.isEmpty()
 
   override fun copyTarget(
     includes: List<String>,
@@ -585,130 +471,75 @@ data class ProtoTarget(
   }
 }
 
-/**
- * Generate something custom defined by an external class.
- *
- * This API is currently unstable. We will be changing this API in the future.
- */
-data class CustomTargetBeta(
+data class CustomTarget(
   override val includes: List<String> = listOf("*"),
   override val excludes: List<String> = listOf(),
   override val exclusive: Boolean = true,
   override val outDirectory: String,
-  val customHandler: CustomHandlerBeta,
+  val schemaHandlerFactory: SchemaHandler.Factory,
 ) : Target() {
-  override fun newHandler(
-    schema: Schema,
-    moduleName: String?,
-    upstreamTypes: Map<ProtoType, String>,
-    fs: FileSystem,
-    logger: WireLogger,
-    profileLoader: ProfileLoader,
-    errorCollector: ErrorCollector,
-  ): SchemaHandler {
-    return customHandler.newHandler(schema, fs, outDirectory, logger, profileLoader, errorCollector)
-  }
-
   override fun copyTarget(
     includes: List<String>,
     excludes: List<String>,
     exclusive: Boolean,
     outDirectory: String
   ): Target {
-    return copy(
+    return this.copy(
       includes = includes,
       excludes = excludes,
       exclusive = exclusive,
       outDirectory = outDirectory,
     )
   }
+
+  override fun newHandler(): SchemaHandler {
+    return schemaHandlerFactory.create()
+  }
 }
 
 /**
- * Implementations of this interface must have a no-arguments public constructor.
+ * Create and return an instance of [SchemaHandler.Factory].
  *
- * This API is currently unstable. We will be changing this API in the future.
+ * @param schemaHandlerFactoryClass a fully qualified class name for a class that implements
+ *     [SchemaHandler.Factory]. The class must have a no-arguments public constructor.
  */
-interface CustomHandlerBeta {
-  fun newHandler(
-    schema: Schema,
-    fs: FileSystem,
-    outDirectory: String,
-    logger: WireLogger,
-    profileLoader: ProfileLoader
-  ): Target.SchemaHandler
-
-  // TODO: move to SchemaHandler as part of https://github.com/square/wire/issues/2077
-  fun newHandler(
-    schema: Schema,
-    fs: FileSystem,
-    outDirectory: String,
-    logger: WireLogger,
-    profileLoader: ProfileLoader,
-    errorCollector: ErrorCollector,
-  ): Target.SchemaHandler = newHandler(schema, fs, outDirectory, logger, profileLoader)
+fun newSchemaHandler(schemaHandlerFactoryClass: String): SchemaHandler.Factory {
+  return ClassNameSchemaHandlerFactory(schemaHandlerFactoryClass)
 }
 
 /**
- * Create and return an instance of [customHandlerClass].
- *
- * @param customHandlerClass a fully qualified class name for a class that implements
- *     [CustomHandlerBeta]. The class must have a no-arguments public constructor.
+ * This schema handler factory is serializable (so Gradle can cache targets that use it). It works
+ * even if the delegate handler class is itself not serializable.
  */
-fun newCustomHandler(customHandlerClass: String): CustomHandlerBeta {
-  return ClassNameCustomHandlerBeta(customHandlerClass)
-}
+private class ClassNameSchemaHandlerFactory(
+  private val schemaHandlerFactoryClass: String
+) : SchemaHandler.Factory {
+  @Transient private var cachedDelegate: SchemaHandler.Factory? = null
 
-/**
- * This custom handler is serializable (so Gradle can cache targets that use it). It works even if
- * the delegate handler class is itself not serializable.
- */
-private class ClassNameCustomHandlerBeta(
-  val customHandlerClass: String
-) : CustomHandlerBeta, Serializable {
-  @Transient private var cachedDelegate: CustomHandlerBeta? = null
-
-  private val delegate: CustomHandlerBeta
+  private val delegate: SchemaHandler.Factory
     get() {
       val cachedResult = cachedDelegate
       if (cachedResult != null) return cachedResult
 
-      val customHandlerType = try {
-        Class.forName(customHandlerClass)
+      val schemaHandlerType = try {
+        Class.forName(schemaHandlerFactoryClass)
       } catch (exception: ClassNotFoundException) {
-        throw IllegalArgumentException("Couldn't find CustomHandlerClass '$customHandlerClass'")
+        throw IllegalArgumentException("Couldn't find SchemaHandlerClass '$schemaHandlerFactoryClass'")
       }
 
       val constructor = try {
-        customHandlerType.getConstructor()
+        schemaHandlerType.getConstructor()
       } catch (exception: NoSuchMethodException) {
-        throw IllegalArgumentException("No public constructor on $customHandlerClass")
+        throw IllegalArgumentException("No public constructor on $schemaHandlerFactoryClass")
       }
 
-      val result = constructor.newInstance() as? CustomHandlerBeta
-        ?: throw IllegalArgumentException(
-          "$customHandlerClass does not implement CustomHandlerBeta"
-        )
+      val result = constructor.newInstance() as? SchemaHandler.Factory
+        ?: throw IllegalArgumentException("$schemaHandlerFactoryClass does not implement SchemaHandler.Factory")
       this.cachedDelegate = result
       return result
     }
 
-  override fun newHandler(
-    schema: Schema,
-    fs: FileSystem,
-    outDirectory: String,
-    logger: WireLogger,
-    profileLoader: ProfileLoader
-  ): SchemaHandler {
-    error("unexpected call")
+  override fun create(): SchemaHandler {
+    return delegate.create()
   }
-
-  override fun newHandler(
-    schema: Schema,
-    fs: FileSystem,
-    outDirectory: String,
-    logger: WireLogger,
-    profileLoader: ProfileLoader,
-    errorCollector: ErrorCollector,
-  ): SchemaHandler = delegate.newHandler(schema, fs, outDirectory, logger, profileLoader, errorCollector)
 }

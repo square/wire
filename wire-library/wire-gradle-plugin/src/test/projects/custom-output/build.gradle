@@ -1,26 +1,13 @@
-import java.io.Serializable
-import com.squareup.wire.WireLogger
-import com.squareup.wire.schema.CustomHandlerBeta
-import com.squareup.wire.schema.ErrorCollector
-import com.squareup.wire.schema.ProfileLoader
-import com.squareup.wire.schema.Schema
-import com.squareup.wire.schema.Target
-import okio.FileSystem
+import com.squareup.wire.schema.SchemaHandler
 
 plugins {
   id 'application'
   id 'com.squareup.wire'
 }
 
-class MyCustomHandler implements CustomHandlerBeta, Serializable {
-  public Target.SchemaHandler newHandler(Schema schema, FileSystem fs,
-          String outDirectory, WireLogger logger, ProfileLoader profileLoader) {
-    throw new RuntimeException("custom handler is running!!")
-  }
-  public Target.SchemaHandler newHandler(Schema schema, FileSystem fs,
-          String outDirectory, WireLogger logger, ProfileLoader profileLoader,
-          ErrorCollector errorCollector) {
-    throw new RuntimeException("custom handler is running!!")
+class MyCustomHandlerFactory implements SchemaHandler.Factory {
+  @Override public SchemaHandler create() {
+    throw new RuntimeException("custom handler is running!!");
   }
 }
 
@@ -28,6 +15,6 @@ wire {
   sourcePath 'src/main/proto'
 
   custom {
-    customHandler = new MyCustomHandler()
+    schemaHandlerFactory = new MyCustomHandlerFactory()
   }
 }

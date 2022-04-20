@@ -23,7 +23,7 @@ import com.squareup.wire.schema.internal.parser.MessageElement
 import com.squareup.wire.schema.internal.parser.TypeElement
 import kotlin.jvm.JvmStatic
 
-abstract class Type {
+sealed class Type {
   abstract val location: Location
   abstract val type: ProtoType
   abstract val documentation: String

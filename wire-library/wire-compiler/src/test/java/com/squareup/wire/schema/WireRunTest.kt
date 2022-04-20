@@ -19,15 +19,14 @@ import com.squareup.wire.StringWireLogger
 import com.squareup.wire.WireLogger
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
-import com.squareup.wire.schema.Target.SchemaHandler
 import com.squareup.wire.schema.WireRun.Module
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.containsRelativePaths
 import com.squareup.wire.testing.findFiles
 import com.squareup.wire.testing.readUtf8
 import okio.Buffer
-import okio.FileSystem
 import okio.Path
+import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
@@ -540,9 +539,9 @@ class WireRunTest {
       sourcePath = listOf(Location.get("colors/src/main/proto")),
       protoPath = listOf(Location.get("polygons/src/main/proto")),
       targets = listOf(
-        CustomTargetBeta(
+        CustomTarget(
           outDirectory = "generated/markdown",
-          customHandler = MarkdownHandler()
+          schemaHandlerFactory = MarkdownHandlerFactory(),
         )
       )
     )
@@ -572,16 +571,16 @@ class WireRunTest {
   fun noSuchClass() {
     assertThat(
       assertFailsWith<IllegalArgumentException> {
-        callCustomHandler(newCustomHandler("foo"))
+        callCustomHandler(newSchemaHandler("foo"))
       }
-    ).hasMessage("Couldn't find CustomHandlerClass 'foo'")
+    ).hasMessage("Couldn't find SchemaHandlerClass 'foo'")
   }
 
   @Test
   fun noPublicConstructor() {
     assertThat(
       assertFailsWith<IllegalArgumentException> {
-        callCustomHandler(newCustomHandler("java.lang.Void"))
+        callCustomHandler(newSchemaHandler("java.lang.Void"))
       }
     ).hasMessage("No public constructor on java.lang.Void")
   }
@@ -590,59 +589,16 @@ class WireRunTest {
   fun classDoesNotImplementCustomHandlerInterface() {
     assertThat(
       assertFailsWith<IllegalArgumentException> {
-        callCustomHandler(newCustomHandler("java.lang.Object"))
+        callCustomHandler(newSchemaHandler("java.lang.Object"))
       }
-    ).hasMessage("java.lang.Object does not implement CustomHandlerBeta")
+    ).hasMessage("java.lang.Object does not implement SchemaHandler.Factory")
   }
 
-  class NotSerializableCustomHandler : CustomHandlerBeta {
-    override fun newHandler(
-      schema: Schema,
-      fs: FileSystem,
-      outDirectory: String,
-      logger: WireLogger,
-      profileLoader: ProfileLoader
-    ): SchemaHandler {
-      throw Exception("hello! this was not serialized")
-    }
-  }
-
-  /** Confirm that custom handlers don't have to be serialized. */
-  @Test
-  fun newCustomHandlerIsSerializableEvenIfTargetClassIsNot() {
-    val customHandlerA = newCustomHandler(
-      "${WireRunTest::class.qualifiedName}${"$"}NotSerializableCustomHandler"
-    )
-    val customHandlerB = reserialize(customHandlerA)
-
-    assertThat(
-      assertFailsWith<Exception> {
-        callCustomHandler(customHandlerB)
-      }
-    ).hasMessage("hello! this was not serialized")
-  }
-
-  class ErrorReportingCustomHandler : CustomHandlerBeta {
-    override fun newHandler(
-      schema: Schema,
-      fs: FileSystem,
-      outDirectory: String,
-      logger: WireLogger,
-      profileLoader: ProfileLoader
-    ): SchemaHandler {
-      error("unexpected call")
-    }
-
-    override fun newHandler(
-      schema: Schema,
-      fs: FileSystem,
-      outDirectory: String,
-      logger: WireLogger,
-      profileLoader: ProfileLoader,
-      errorCollector: ErrorCollector,
-    ): SchemaHandler {
-      return object : SchemaHandler {
-        override fun handle(type: Type): Path? {
+  class ErrorReportingCustomHandler : SchemaHandler.Factory {
+    override fun create(): SchemaHandler {
+      return object : AbstractSchemaHandler() {
+        override fun handle(type: Type, context: SchemaHandler.Context): Path? {
+          val errorCollector = context.errorCollector
           if ("descriptor.proto" in type.location.path) return null // Don't report errors on built-in stuff.
           if (type is MessageType) {
             for (field in type.fields) {
@@ -654,16 +610,16 @@ class WireRunTest {
           return null
         }
 
-        override fun handle(service: Service): List<Path> = listOf()
+        override fun handle(service: Service, context: SchemaHandler.Context): List<Path> = listOf()
 
-        override fun handle(extend: Extend, field: Field): Path? = null
+        override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? = null
       }
     }
   }
 
   @Test
   fun errorReportingCustomHandler() {
-    val customHandler = newCustomHandler(
+    val customHandler = newSchemaHandler(
       "${WireRunTest::class.qualifiedName}${"$"}ErrorReportingCustomHandler"
     )
 
@@ -689,18 +645,22 @@ class WireRunTest {
     }
   }
 
-  private fun callCustomHandler(customHandler: CustomHandlerBeta) {
+  private fun callCustomHandler(schemaHandlerFactory: SchemaHandler.Factory) {
     writeTriangleProto()
     val schemaLoader = SchemaLoader(fs)
     schemaLoader.initRoots(listOf(Location.get("polygons/src/main/proto")))
     val schema = schemaLoader.loadSchema()
     val errorCollector = ErrorCollector()
-    val schemaHandler = customHandler.newHandler(
-      schema, fs, "out", StringWireLogger(), schemaLoader, errorCollector
+    schemaHandlerFactory.create().handle(
+      schema = schema,
+      context = SchemaHandler.Context(
+        fileSystem = fs,
+        outDirectory = "out".toPath(),
+        logger = NULL_LOGGER,
+        errorCollector = errorCollector,
+        claimedPaths = ClaimedPaths(),
+      )
     )
-    for (type in schema.types) {
-      schemaHandler.handle(schema.getType(type)!!)
-    }
 
     errorCollector.throwIfNonEmpty()
   }
@@ -904,7 +864,7 @@ class WireRunTest {
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("routes/src/main/proto")),
       protoPath = listOf(Location.get("colors/src/main/proto")),
-      targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt", exclusive = false))
     )
 
     try {
@@ -1274,5 +1234,21 @@ class WireRunTest {
         |}
         """.trimMargin()
     )
+  }
+
+  companion object {
+    private val NULL_LOGGER = object : WireLogger {
+      override fun artifactHandled(
+        outputPath: Path,
+        qualifiedName: String,
+        targetName: String
+      ) = Unit
+
+      override fun artifactSkipped(type: ProtoType, targetName: String) = Unit
+      override fun unusedRoots(unusedRoots: Set<String>) = Unit
+      override fun unusedPrunes(unusedPrunes: Set<String>) = Unit
+      override fun unusedIncludesInTarget(unusedIncludes: Set<String>) = Unit
+      override fun unusedExcludesInTarget(unusedExcludes: Set<String>) = Unit
+    }
   }
 }

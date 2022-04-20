@@ -7,6 +7,6 @@ wire {
   sourcePath 'src/main/proto'
 
   custom {
-    customHandlerClass = "NoSuchClass"
+    schemaHandlerFactoryClass = "NoSuchClass"
   }
 }
