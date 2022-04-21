@@ -22,7 +22,6 @@ import okio.Path
 
 /**
  * A [SchemaHandler] [handle]s [Schema]!
- * Implementations of this interface must have a no-arguments public constructor. TODO(Benoit) Is it still true?
  *
  * Consider using [AbstractSchemaHandler] for default logic around handling [Schema] and delegating
  * individual calls on [Type]s and [Service]s.
@@ -37,6 +36,7 @@ interface SchemaHandler {
    */
   fun handle(schema: Schema, context: Context)
 
+  /** Implementations of this interface must have a no-arguments public constructor. */
   interface Factory : Serializable {
     fun create(): SchemaHandler
   }

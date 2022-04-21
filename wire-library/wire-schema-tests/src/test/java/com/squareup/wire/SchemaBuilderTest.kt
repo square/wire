@@ -17,10 +17,10 @@ package com.squareup.wire
 
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.SchemaException
-import kotlin.test.assertFailsWith
 import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import kotlin.test.assertFailsWith
 
 class SchemaBuilderTest {
   @Test fun emptySchema() {
