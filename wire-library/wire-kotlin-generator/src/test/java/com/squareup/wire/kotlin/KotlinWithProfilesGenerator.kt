@@ -13,23 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema
+package com.squareup.wire.kotlin
 
-import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.wire.java.JavaGenerator
 import com.squareup.wire.java.Profile
 import com.squareup.wire.java.internal.ProfileParser
-import com.squareup.wire.kotlin.KotlinGenerator
-import com.squareup.wire.kotlin.RpcCallStyle
-import com.squareup.wire.kotlin.RpcRole
-import java.io.IOException
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.Schema
 
-// TODO(Benoit) Maybe just have static method? and pass the profile in params.
-/** Helper class to run Java and Kotlin code generation. */
-class JvmGenerator(
-  private val schema: Schema
-) {
+/** Helper class to run Kotlin code generation. */
+internal class KotlinWithProfilesGenerator(private val schema: Schema) {
   private val profiles = mutableMapOf<String, Profile>()
 
   /**
@@ -37,7 +30,7 @@ class JvmGenerator(
    * @param name The qualified name of the file. This can contain slashes.
    * @param profileFile The content of the file.
    */
-  fun withProfile(name: String, profileFile: String): JvmGenerator {
+  fun withProfile(name: String, profileFile: String): KotlinWithProfilesGenerator {
     require(name.endsWith(".wire")) {
       "unexpected file extension for $name. Profile files should use the '.wire' extension"
     }
@@ -51,18 +44,6 @@ class JvmGenerator(
 
   private fun profile(profileName: String?): Profile {
     return if (profileName == null) Profile() else profiles["$profileName.wire"]!!
-  }
-
-  @Throws(IOException::class)
-  @JvmOverloads fun generateJava(typeName: String, profileName: String? = null): String {
-    val javaGenerator = JavaGenerator.get(schema)
-      .withProfile(profile(profileName))
-    val type = schema.getType(typeName)
-    val typeSpec = javaGenerator.generateType(type)
-    val packageName = javaGenerator.generatedTypeName(type).packageName()
-    val javaFile = JavaFile.builder(packageName, typeSpec)
-      .build()
-    return javaFile.toString()
   }
 
   fun generateKotlin(

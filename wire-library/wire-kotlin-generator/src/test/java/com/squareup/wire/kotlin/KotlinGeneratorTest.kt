@@ -19,7 +19,6 @@ import com.google.common.truth.Truth.assertThat
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.buildSchema
 import com.squareup.wire.kotlin.KotlinGenerator.Companion.sanitizeKdoc
-import com.squareup.wire.schema.JvmGenerator
 import com.squareup.wire.schema.PruningRules
 import com.squareup.wire.schema.addFromTest
 import kotlin.test.Test
@@ -52,7 +51,7 @@ class KotlinGeneratorTest {
         |}""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("Person").replace("\n", "")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Person").replace("\n", "")
     assertTrue(code.contains("class Person"))
     assertTrue(code.contains("object : ProtoAdapter<PhoneNumber>("))
     assertTrue(code.contains("FieldEncoding.LENGTH_DELIMITED"))
@@ -90,7 +89,7 @@ class KotlinGeneratorTest {
         |}""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("Message")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
     assertTrue(code.contains("const val DEFAULT_A: Int = 10"))
     assertTrue(code.contains("const val DEFAULT_B: Int = 32"))
     assertTrue(code.contains("const val DEFAULT_C: Long = 11L"))
@@ -121,7 +120,7 @@ class KotlinGeneratorTest {
         |}""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("Message")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
     assertTrue(code.contains("val when_: Float"))
     assertTrue(code.contains("val ADAPTER_: Int"))
     assertTrue(code.contains("val adapter_: Long?"))
@@ -213,7 +212,7 @@ class KotlinGeneratorTest {
     }
     assertEquals(
       listOf(expectedInterface, expectedImplementation),
-      JvmGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")
     )
   }
 
@@ -261,7 +260,7 @@ class KotlinGeneratorTest {
     }
     assertEquals(
       listOf(expected),
-      JvmGenerator(schema).generateGrpcKotlin(
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER
       )
@@ -313,7 +312,7 @@ class KotlinGeneratorTest {
     }
     assertEquals(
       listOf(expected),
-      JvmGenerator(schema).generateGrpcKotlin(
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER
       )
@@ -367,7 +366,7 @@ class KotlinGeneratorTest {
     }
     assertEquals(
       listOf(expected),
-      JvmGenerator(schema).generateGrpcKotlin(
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER
       )
@@ -424,7 +423,7 @@ class KotlinGeneratorTest {
     }
     assertEquals(
       listOf(expected),
-      JvmGenerator(schema).generateGrpcKotlin(
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER
       )
@@ -482,7 +481,7 @@ class KotlinGeneratorTest {
     }
     assertEquals(
       listOf(expected),
-      JvmGenerator(schema).generateGrpcKotlin(
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER
       )
@@ -544,7 +543,7 @@ class KotlinGeneratorTest {
     }
     assertEquals(
       listOf(expectedInterface, expectedImplementation),
-      JvmGenerator(schema).generateGrpcKotlin("RouteGuide")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("RouteGuide")
     )
   }
 
@@ -609,7 +608,7 @@ class KotlinGeneratorTest {
     }
     assertEquals(
       listOf(expectedInterface, expectedImplementation),
-      JvmGenerator(schema).generateGrpcKotlin("routeguide.grpc.RouteGuide")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.grpc.RouteGuide")
     )
   }
 
@@ -675,7 +674,7 @@ class KotlinGeneratorTest {
     }
     assertEquals(
       listOf(expectedInterface, expectedImplementation),
-      JvmGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")
     )
   }
 
@@ -742,7 +741,7 @@ class KotlinGeneratorTest {
     }
     assertEquals(
       listOf(expectedInterface, expectedImplementation),
-      JvmGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")
     )
   }
 
@@ -912,28 +911,28 @@ class KotlinGeneratorTest {
 
     assertEquals(
       listOf(blockingClientInterface, blockingClientImplementation),
-      JvmGenerator(schema).generateGrpcKotlin(
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.CLIENT
       )
     )
     assertEquals(
       listOf(blockingServer),
-      JvmGenerator(schema).generateGrpcKotlin(
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER
       )
     )
     assertEquals(
       listOf(suspendingClientInterface, suspendingClientImplementation),
-      JvmGenerator(schema).generateGrpcKotlin(
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.SUSPENDING, rpcRole = RpcRole.CLIENT
       )
     )
     assertEquals(
       listOf(suspendingServer),
-      JvmGenerator(schema).generateGrpcKotlin(
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.SUSPENDING, rpcRole = RpcRole.SERVER
       )
@@ -1021,7 +1020,7 @@ class KotlinGeneratorTest {
     }
     assertEquals(
       listOf(expectedInterface, expectedImplementation),
-      JvmGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")
     )
   }
 
@@ -1073,7 +1072,7 @@ class KotlinGeneratorTest {
 
     assertEquals(
       listOf(expectedGetFeatureInterface, expectedGetFeatureImplementation),
-      JvmGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide", "GetFeature")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide", "GetFeature")
     )
 
     val expectedRouteChatInterface = """
@@ -1107,7 +1106,7 @@ class KotlinGeneratorTest {
 
     assertEquals(
       listOf(expectedRouteChatInterface, expectedRouteChatImplementation),
-      JvmGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide", "RouteChat")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide", "RouteChat")
     )
   }
 
@@ -1181,7 +1180,7 @@ class KotlinGeneratorTest {
 
     assertEquals(
       listOf(suspendingInterface),
-      JvmGenerator(schema).generateGrpcKotlin(
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         serviceName = "routeguide.RouteGuide",
         rpcRole = RpcRole.SERVER,
         rpcCallStyle = RpcCallStyle.SUSPENDING,
@@ -1191,7 +1190,7 @@ class KotlinGeneratorTest {
 
     assertEquals(
       listOf(blockingInterface),
-      JvmGenerator(schema).generateGrpcKotlin(
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         serviceName = "routeguide.RouteGuide",
         rpcRole = RpcRole.SERVER,
         rpcCallStyle = RpcCallStyle.BLOCKING,
@@ -1210,7 +1209,7 @@ class KotlinGeneratorTest {
         |}""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("Message")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
     assertTrue(code.contains("val unknownFields = reader.forEachTag { tag_ ->"))
     assertTrue(code.contains("when (tag_)"))
     assertTrue(code.contains("1 -> tag = ProtoAdapter.FLOAT.decode(reader)"))
@@ -1227,7 +1226,7 @@ class KotlinGeneratorTest {
         |}""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("Message")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
     assertTrue(code.contains("throw missingRequiredFields(var_, \"var\")"))
   }
 
@@ -1246,7 +1245,7 @@ class KotlinGeneratorTest {
         |}""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("common.proto.Person")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.Person")
     assertTrue(code.contains("val common_proto_Gender: Gender"))
   }
 
@@ -1273,7 +1272,7 @@ class KotlinGeneratorTest {
         |}""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("common.proto.A")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.A")
     assertTrue(code.contains("val common_proto_Status: AnotherStatus"))
   }
 
@@ -1289,7 +1288,7 @@ class KotlinGeneratorTest {
         |}""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("common.proto.Message")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.Message")
     assertTrue(code.contains("import com.squareup.wire.AnyMessage"))
   }
 
@@ -1315,7 +1314,7 @@ class KotlinGeneratorTest {
         |}""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("Person").replace("\n", "")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Person").replace("\n", "")
     assertTrue(code.contains("class Person"))
     assertTrue(code.contains("object : ProtoAdapter<PhoneNumber>("))
     assertTrue(code.contains("FieldEncoding.LENGTH_DELIMITED"))
@@ -1351,7 +1350,7 @@ class KotlinGeneratorTest {
         |}""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("Person")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Person")
     assertTrue(code.contains("import com.squareup.wire.`internal`.sanitize"))
     assertTrue(code.contains("result += \"\"\"name=\${sanitize(name)}\"\"\""))
     assertTrue(code.contains("result += \"\"\"id=\$id\"\"\""))
@@ -1387,7 +1386,7 @@ class KotlinGeneratorTest {
         |}""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin(longType)
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin(longType)
     val expectedEqualsConditionImplementation = """
           |        ($longMember
           |        !=
@@ -1429,7 +1428,7 @@ class KotlinGeneratorTest {
         |""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("common.proto.LabelMessage")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.LabelMessage")
     assertTrue(code.contains("""val text: String = "","""))
     assertTrue(code.contains("""val author: Author? = null,"""))
     assertTrue(code.contains("""val enum_: Enum = Enum.UNKNOWN,"""))
@@ -1456,7 +1455,7 @@ class KotlinGeneratorTest {
         |""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("proto_package.Person")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
     assertTrue(code.contains("package wire_package"))
     assertTrue(code.contains("class Person"))
   }
@@ -1477,7 +1476,7 @@ class KotlinGeneratorTest {
         |""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("proto_package.Person")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
     assertTrue(code.contains("package wire_package"))
     assertTrue(code.contains("class Person"))
   }
@@ -1509,7 +1508,7 @@ class KotlinGeneratorTest {
         |""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("city_package.Home")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("city_package.Home")
     assertTrue(code.contains("package city_package"))
     assertTrue(code.contains("import wire_package.Person"))
   }
@@ -1535,10 +1534,10 @@ class KotlinGeneratorTest {
       """.trimMargin()
       )
     }
-    val messageCode = JvmGenerator(schema).generateKotlin("Message")
+    val messageCode = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
     assertThat(messageCode).contains("""* a \[b\]""")
     assertThat(messageCode).contains("""* c \[d..e\]""")
-    val enumCode = JvmGenerator(schema).generateKotlin("Enum")
+    val enumCode = KotlinWithProfilesGenerator(schema).generateKotlin("Enum")
     assertThat(enumCode).contains("""* \[f\]""")
     assertThat(enumCode).contains("""* g \[h.i.j\] k""")
   }
@@ -1608,7 +1607,7 @@ class KotlinGeneratorTest {
     }
     assertEquals(
       listOf(expectedInterface, expectedImplementation),
-      JvmGenerator(schema)
+      KotlinWithProfilesGenerator(schema)
         .withProfile(
           "java.wire",
           """
@@ -1641,7 +1640,7 @@ class KotlinGeneratorTest {
       )
     }
 
-    val kotlin = JvmGenerator(schema)
+    val kotlin = KotlinWithProfilesGenerator(schema)
       .withProfile(
         "java.wire",
         """
@@ -1720,7 +1719,7 @@ class KotlinGeneratorTest {
          |""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("proto_package.Direction")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Direction")
     assertThat(code).contains(
       """|@Deprecated(message = "Direction is deprecated")
          |public enum class Direction(
@@ -1743,7 +1742,7 @@ class KotlinGeneratorTest {
         |""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("proto_package.Direction")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Direction")
     assertThat(code).contains(
       """|  @Deprecated(message = "EAST is deprecated")
          |  EAST(2),
@@ -1767,7 +1766,7 @@ class KotlinGeneratorTest {
         |""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("proto_package.Person")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
     assertThat(code).contains(
       """|  @Deprecated(message = "name is deprecated")
          |  @field:WireField(
@@ -1792,7 +1791,7 @@ class KotlinGeneratorTest {
         |""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("proto_package.Person")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
     assertThat(code).contains(
       """|@Deprecated(message = "Person is deprecated")
          |public class Person(
@@ -1823,7 +1822,7 @@ class KotlinGeneratorTest {
       )
       addFromTest("option_redacted.proto".toPath())
     }
-    val code = JvmGenerator(schema).generateKotlin("RedactedFields")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("RedactedFields")
     println(code)
     assertThat(code).contains("""public val a: String = "",""")
     assertThat(code).contains("""public val b: Int = 0,""")
@@ -1876,7 +1875,7 @@ class KotlinGeneratorTest {
         |""".trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("SomeMessage", boxOneOfsMinSize = 3)
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("SomeMessage", boxOneOfsMinSize = 3)
     println(code)
     assertThat(code).contains(
       """
@@ -1961,7 +1960,7 @@ class KotlinGeneratorTest {
         """.trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("SomeText")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("SomeText")
     assertContains(code, "result = result * 37 + stringValue.hashCode()")
     assertContains(code, "result = result * 37 + intValue.hashCode()")
     assertContains(code, "result = result * 37 + boolValue.hashCode()")
@@ -1987,7 +1986,7 @@ class KotlinGeneratorTest {
         """.trimMargin()
       )
     }
-    val code = JvmGenerator(schema).generateKotlin("ConflictingEnumConstants")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("ConflictingEnumConstants")
     assertThat(code).contains(
       """
        |public enum class ConflictingEnumConstants(
