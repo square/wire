@@ -17,17 +17,21 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.SchemaBuilder
+import java.io.File
+import okio.Path
 import okio.buffer
 import okio.source
-import java.io.File
 
-fun Schema.protoAdapter(messageTypeName: String): ProtoAdapter<Any> {
-  return protoAdapter(messageTypeName, true)
+fun Schema.protoAdapter(
+  messageTypeName: String,
+  includeUnknown: Boolean = true
+): ProtoAdapter<Any> {
+  return protoAdapter(messageTypeName, includeUnknown = includeUnknown)
 }
 
 /** This will read the content of [path] and add it to the [SchemaBuilder]. */
-fun SchemaBuilder.addLocal(path: String): SchemaBuilder {
-  val file = File(path)
+fun SchemaBuilder.addLocal(path: Path): SchemaBuilder {
+  val file = File(path.toString())
   file.source().use { source ->
     val protoFile = source.buffer().readUtf8()
     return add(path, protoFile)
@@ -38,7 +42,7 @@ fun SchemaBuilder.addLocal(path: String): SchemaBuilder {
  * This will read the content of [path] in the context of `../wire-tests/src/commonTest/proto/java/`
  * and add it to the [SchemaBuilder].
  */
-fun SchemaBuilder.addFromTest(path: String): SchemaBuilder {
+fun SchemaBuilder.addFromTest(path: Path): SchemaBuilder {
   val file = File("../wire-tests/src/commonTest/proto/java/$path")
   file.source().use { source ->
     val protoFile = source.buffer().readUtf8()

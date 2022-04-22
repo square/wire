@@ -22,6 +22,7 @@ import grpc.reflection.v1alpha.ListServiceResponse
 import grpc.reflection.v1alpha.ServerReflectionRequest
 import grpc.reflection.v1alpha.ServerReflectionResponse
 import grpc.reflection.v1alpha.ServiceResponse
+import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -29,7 +30,7 @@ internal class SchemaReflectorTest {
   @Test
   fun `outputs a list of services`() {
     val schema = buildSchema {
-      addLocal("src/test/proto/RouteGuideProto.proto")
+      addLocal("src/test/proto/RouteGuideProto.proto".toPath())
     }
     val request = ServerReflectionRequest(list_services = "*")
     assertThat(
@@ -47,7 +48,7 @@ internal class SchemaReflectorTest {
   @Test
   fun `gets a file descriptor for a filename`() {
     val schema = buildSchema {
-      addLocal("src/test/proto/RouteGuideProto.proto")
+      addLocal("src/test/proto/RouteGuideProto.proto".toPath())
     }
 
     assertThat(
@@ -62,7 +63,7 @@ internal class SchemaReflectorTest {
   @Test
   fun `gets a file descriptor for a specific symbol`() {
     val schema = buildSchema {
-      addLocal("src/test/proto/RouteGuideProto.proto")
+      addLocal("src/test/proto/RouteGuideProto.proto".toPath())
     }
 
     assertThat(
@@ -78,7 +79,7 @@ internal class SchemaReflectorTest {
   fun `transitive dependencies included`() {
     val schema = buildSchema {
       add(
-        "/source/a.proto",
+        "/source/a.proto".toPath(),
         """
                 |import "b.proto";
                 |message A {
@@ -87,7 +88,7 @@ internal class SchemaReflectorTest {
                 |""".trimMargin()
       )
       add(
-        "/source/b.proto",
+        "/source/b.proto".toPath(),
         """
                 |message B { }
                 |""".trimMargin()
@@ -115,7 +116,7 @@ internal class SchemaReflectorTest {
   fun `transitive dependencies included once`() {
     val schema = buildSchema {
       add(
-        "/source/a.proto",
+        "/source/a.proto".toPath(),
         """
                 |import "b.proto";
                 |import "c.proto";
@@ -126,13 +127,13 @@ internal class SchemaReflectorTest {
                 |""".trimMargin()
       )
       add(
-        "/source/b.proto",
+        "/source/b.proto".toPath(),
         """
                 |message B { }
                 |""".trimMargin()
       )
       add(
-        "/source/c.proto",
+        "/source/c.proto".toPath(),
         """
                 |message C { }
                 |""".trimMargin()
@@ -152,7 +153,7 @@ internal class SchemaReflectorTest {
   fun `transitive dependencies included ordered`() {
     val schema = buildSchema {
       add(
-        "/source/a.proto",
+        "/source/a.proto".toPath(),
         """
                 |import "b.proto";
                 |import "c.proto";
@@ -163,7 +164,7 @@ internal class SchemaReflectorTest {
                 |""".trimMargin()
       )
       add(
-        "/source/b.proto",
+        "/source/b.proto".toPath(),
         """
                 |import "c.proto";
                 |message B {
@@ -172,7 +173,7 @@ internal class SchemaReflectorTest {
                 |""".trimMargin()
       )
       add(
-        "/source/c.proto",
+        "/source/c.proto".toPath(),
         """
                 |message C { }
                 |""".trimMargin()
@@ -192,7 +193,7 @@ internal class SchemaReflectorTest {
   fun `transitive dependencies with public import`() {
     val schema = buildSchema {
       add(
-        "/source/a.proto",
+        "/source/a.proto".toPath(),
         """
                 |import "b.proto";
                 |message A {
@@ -201,13 +202,13 @@ internal class SchemaReflectorTest {
                 |""".trimMargin()
       )
       add(
-        "/source/b.proto",
+        "/source/b.proto".toPath(),
         """
                 |import public "b-new.proto";
                 |""".trimMargin()
       )
       add(
-        "/source/b-new.proto",
+        "/source/b-new.proto".toPath(),
         """
                 |import "c.proto";
                 |message B {
@@ -216,7 +217,7 @@ internal class SchemaReflectorTest {
                 |""".trimMargin()
       )
       add(
-        "/source/c.proto",
+        "/source/c.proto".toPath(),
         """
                 |message C { }
                 |""".trimMargin()

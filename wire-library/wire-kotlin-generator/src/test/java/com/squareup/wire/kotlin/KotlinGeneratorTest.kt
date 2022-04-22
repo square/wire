@@ -27,12 +27,13 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
+import okio.Path.Companion.toPath
 
 class KotlinGeneratorTest {
   @Test fun basic() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
         |message Person {
         |	required string name = 1;
@@ -67,7 +68,7 @@ class KotlinGeneratorTest {
   @Test fun defaultValues() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
         |message Message {
         |  optional int32 a = 1 [default = 10 ];
@@ -111,7 +112,7 @@ class KotlinGeneratorTest {
   @Test fun nameAllocatorIsUsed() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
         |message Message {
         |  required float when = 1;
@@ -134,7 +135,7 @@ class KotlinGeneratorTest {
   @Test fun enclosing() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
           |message A {
           |  message B {
@@ -196,7 +197,7 @@ class KotlinGeneratorTest {
 
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide;
           |
@@ -244,7 +245,7 @@ class KotlinGeneratorTest {
 
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide;
           |
@@ -296,7 +297,7 @@ class KotlinGeneratorTest {
 
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide;
           |
@@ -349,7 +350,7 @@ class KotlinGeneratorTest {
 
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide;
           |
@@ -404,7 +405,7 @@ class KotlinGeneratorTest {
 
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide;
           |
@@ -459,7 +460,7 @@ class KotlinGeneratorTest {
 
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide;
           |
@@ -527,7 +528,7 @@ class KotlinGeneratorTest {
 
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |/** RouteGuide service interface. */
           |service RouteGuide {
@@ -590,7 +591,7 @@ class KotlinGeneratorTest {
 
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide.grpc;
           |
@@ -656,7 +657,7 @@ class KotlinGeneratorTest {
 
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide;
           |
@@ -722,7 +723,7 @@ class KotlinGeneratorTest {
 
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide;
           |
@@ -892,7 +893,7 @@ class KotlinGeneratorTest {
 
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide;
           |
@@ -999,7 +1000,7 @@ class KotlinGeneratorTest {
 
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide;
           |
@@ -1027,7 +1028,7 @@ class KotlinGeneratorTest {
   @Test fun multipleRpcsAsSingleMethodInterface() {
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide;
           |
@@ -1161,7 +1162,7 @@ class KotlinGeneratorTest {
 
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide;
           |
@@ -1202,7 +1203,7 @@ class KotlinGeneratorTest {
   @Test fun nameAllocatorIsUsedInDecodeForReaderTag() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
         |message Message {
         |  required float tag = 1;
@@ -1219,7 +1220,7 @@ class KotlinGeneratorTest {
   @Test fun someFieldNameIsKeyword() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
         |message Message {
         |  required float var  = 1;
@@ -1233,7 +1234,7 @@ class KotlinGeneratorTest {
   @Test fun generateTypeUsesPackageNameOnFieldAndClassNameClash() {
     val schema = buildSchema {
       add(
-        "person.proto",
+        "person.proto".toPath(),
         """
         |package common.proto;
         |enum Gender {
@@ -1252,7 +1253,7 @@ class KotlinGeneratorTest {
   @Test fun generateTypeUsesPackageNameOnFieldAndClassNameClashWithinPackage() {
     val schema = buildSchema {
       add(
-        "a.proto",
+        "a.proto".toPath(),
         """
         |package common.proto;
         |enum Status {
@@ -1279,7 +1280,7 @@ class KotlinGeneratorTest {
   @Test fun usesAny() {
     val schema = buildSchema {
       add(
-        "a.proto",
+        "a.proto".toPath(),
         """
         |package common.proto;
         |import "google/protobuf/any.proto";
@@ -1295,7 +1296,7 @@ class KotlinGeneratorTest {
   @Test fun wildCommentsAreEscaped() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
         |message Person {
         |	required string name = 1;
@@ -1330,7 +1331,7 @@ class KotlinGeneratorTest {
   @Test fun sanitizeStringOnPrinting() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
         |message Person {
         |	required string name = 1;
@@ -1379,7 +1380,7 @@ class KotlinGeneratorTest {
       "member_with_name_which_is_longer_then_100_chars_00000000000000000000000000000000000000000000000000000"
     val schema = buildSchema {
       add(
-        "$longType.proto",
+        "$longType.proto".toPath(),
         """
         |message $longType {
         |  required string $longMember = 1;
@@ -1402,7 +1403,7 @@ class KotlinGeneratorTest {
   @Test fun constructorForProto3() {
     val schema = buildSchema {
       add(
-        "label.proto",
+        "label.proto".toPath(),
         """
         |syntax = "proto3";
         |package common.proto;
@@ -1441,7 +1442,7 @@ class KotlinGeneratorTest {
   @Test fun wirePackageTakesPrecedenceOverJavaPackage() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto",
+        "proto_package/person.proto".toPath(),
         """
         |package proto_package;
         |import "wire/extensions.proto";
@@ -1463,7 +1464,7 @@ class KotlinGeneratorTest {
   @Test fun wirePackageTakesPrecedenceOverProtoPackage() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto",
+        "proto_package/person.proto".toPath(),
         """
         |package proto_package;
         |import "wire/extensions.proto";
@@ -1484,7 +1485,7 @@ class KotlinGeneratorTest {
   @Test fun wirePackageUsedInImport() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto",
+        "proto_package/person.proto".toPath(),
         """
         |package proto_package;
         |import "wire/extensions.proto";
@@ -1497,7 +1498,7 @@ class KotlinGeneratorTest {
         |""".trimMargin()
       )
       add(
-        "city_package/home.proto",
+        "city_package/home.proto".toPath(),
         """
         |package city_package;
         |import "proto_package/person.proto";
@@ -1516,7 +1517,7 @@ class KotlinGeneratorTest {
   @Test fun documentationEscapesBrackets() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
         |syntax = "proto3";
         |
@@ -1591,7 +1592,7 @@ class KotlinGeneratorTest {
 
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide;
           |
@@ -1630,7 +1631,7 @@ class KotlinGeneratorTest {
   @Test fun profileHonoredInMessage() {
     val schema = buildSchema {
       add(
-        "routeguide.proto",
+        "routeguide.proto".toPath(),
         """
           |package routeguide;
           |
@@ -1706,7 +1707,7 @@ class KotlinGeneratorTest {
   @Test fun deprecatedEnum() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto",
+        "proto_package/person.proto".toPath(),
         """
          |package proto_package;
          |enum Direction {
@@ -1730,7 +1731,7 @@ class KotlinGeneratorTest {
   @Test fun deprecatedEnumConstant() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto",
+        "proto_package/person.proto".toPath(),
         """
         |package proto_package;
         |enum Direction {
@@ -1757,7 +1758,7 @@ class KotlinGeneratorTest {
   @Test fun deprecatedField() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto",
+        "proto_package/person.proto".toPath(),
         """
         |package proto_package;
         |message Person {
@@ -1781,7 +1782,7 @@ class KotlinGeneratorTest {
   @Test fun deprecatedMessage() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto",
+        "proto_package/person.proto".toPath(),
         """
         |package proto_package;
         |message Person {
@@ -1803,7 +1804,7 @@ class KotlinGeneratorTest {
   fun redactedNonNullableFieldsForProto3() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
         |syntax = "proto3";
         |import "option_redacted.proto";
@@ -1820,7 +1821,7 @@ class KotlinGeneratorTest {
         |message SecretData {}
         |""".trimMargin()
       )
-      addFromTest("option_redacted.proto")
+      addFromTest("option_redacted.proto".toPath())
     }
     val code = JvmGenerator(schema).generateKotlin("RedactedFields")
     println(code)
@@ -1847,7 +1848,7 @@ class KotlinGeneratorTest {
   fun fieldsDeclarationOrderIsRespected() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
         |syntax = "proto2";
         |message SomeMessage {
@@ -1937,7 +1938,7 @@ class KotlinGeneratorTest {
   @Test fun hashCodeFunctionImplementation() {
     val schema = buildSchema {
       add(
-        "text.proto",
+        "text.proto".toPath(),
         """
         |syntax = "proto3";
         |
@@ -1975,7 +1976,7 @@ class KotlinGeneratorTest {
   fun enumConstantConflictingDeclaration() {
     val schema = buildSchema {
       add(
-        "text.proto",
+        "text.proto".toPath(),
         """
         |enum ConflictingEnumConstants {
         |  hello = 0;

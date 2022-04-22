@@ -20,6 +20,7 @@ package com.squareup.wire.schema
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.MESSAGE_OPTIONS
+import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -28,7 +29,7 @@ class PrunerTest {
   fun retainType() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |message MessageA {
              |}
@@ -50,7 +51,7 @@ class PrunerTest {
   fun retainMap() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |message MessageA {
             |  map<string, MessageB> maps = 1;
@@ -73,7 +74,7 @@ class PrunerTest {
   fun excludeMap() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |message MessageA {
             |  map<string, MessageB> maps = 1;
@@ -97,7 +98,7 @@ class PrunerTest {
   fun retainTypeRetainsEnclosingButNotNested() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |message A {
             |  message B {
@@ -125,7 +126,7 @@ class PrunerTest {
   fun retainTypeRetainsFieldTypesTransitively() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |message MessageA {
             |  optional MessageB b = 1;
@@ -155,7 +156,7 @@ class PrunerTest {
   fun retainRpcRetainsRequestAndResponseTypes() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |message RequestA {
             |}
@@ -189,7 +190,7 @@ class PrunerTest {
   fun retainField() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |message MessageA {
             |  optional string b = 1;
@@ -214,7 +215,7 @@ class PrunerTest {
   fun retainFieldRetainsFieldTypesTransitively() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |message MessageA {
             |  optional MessageB b = 1;
@@ -247,7 +248,7 @@ class PrunerTest {
   fun oneOf() {
     val schema = buildSchema {
       add(
-        "one_of_message.proto",
+        "one_of_message.proto".toPath(),
         """
              |package oneof;
              |
@@ -275,7 +276,7 @@ class PrunerTest {
   fun retainFieldPrunesOneOf() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |message Message {
             |  oneof selection {
@@ -299,7 +300,7 @@ class PrunerTest {
   fun retainFieldRetainsOneOf() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |message Message {
             |  oneof selection {
@@ -328,7 +329,7 @@ class PrunerTest {
   fun typeWithRetainedMembersOnlyHasThoseMembersRetained() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |message MessageA {
             |  optional MessageB b = 1;
@@ -363,7 +364,7 @@ class PrunerTest {
   fun retainEnumConstant() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |enum Roshambo {
             |  ROCK = 0;
@@ -387,7 +388,7 @@ class PrunerTest {
   fun enumWithRetainedConstantHasThatConstantRetained() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |message Message {
             |  optional Roshambo roshambo = 1;
@@ -418,7 +419,7 @@ class PrunerTest {
   fun retainedOptionRetainsOptionsType() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |import "google/protobuf/descriptor.proto";
             |extend google.protobuf.FieldOptions {
@@ -443,7 +444,7 @@ class PrunerTest {
   fun prunedExtensionOptionDoesNotRetainExtension() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
               |import "google/protobuf/descriptor.proto";
               |extend google.protobuf.FieldOptions {
@@ -473,7 +474,7 @@ class PrunerTest {
   fun optionRetainsField() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |message SomeFieldOptions {
@@ -506,7 +507,7 @@ class PrunerTest {
   fun optionRetainsType() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |message SomeFieldOptions {
@@ -538,7 +539,7 @@ class PrunerTest {
   fun retainExtension() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |message Message {
              |  optional string a = 1;
@@ -562,7 +563,7 @@ class PrunerTest {
   fun retainExtensionMembers() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |message Message {
              |  optional string a = 1;
@@ -593,7 +594,7 @@ class PrunerTest {
   fun retainingTypeRetainsExtensionMembers() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |message Message {
              |  optional string a = 1;
@@ -623,7 +624,7 @@ class PrunerTest {
   fun includeExtensionMemberPrunesPeerMembers() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |message Message {
              |  optional string a = 1;
@@ -653,7 +654,7 @@ class PrunerTest {
   fun namespacedExtensionFieldsAreRetained() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |package squareup;
              |
@@ -692,7 +693,7 @@ class PrunerTest {
   fun excludeWithoutInclude() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |message MessageA {
              |  optional string b = 1;
@@ -714,7 +715,7 @@ class PrunerTest {
   fun excludeField() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |message MessageA {
              |  optional string b = 1;
@@ -737,7 +738,7 @@ class PrunerTest {
   fun excludeTypeExcludesField() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |message MessageA {
              |  optional MessageB b = 1;
@@ -766,7 +767,7 @@ class PrunerTest {
   fun excludeTypeExcludesRpc() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |service ServiceA {
              |  rpc CallB (MessageB) returns (MessageB);
@@ -795,7 +796,7 @@ class PrunerTest {
   fun excludeRpcExcludesTypes() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |service ServiceA {
              |  rpc CallB (MessageB) returns (MessageB);
@@ -824,7 +825,7 @@ class PrunerTest {
   fun excludeFieldExcludesTypes() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |message MessageA {
              |  optional MessageB b = 1;
@@ -859,7 +860,7 @@ class PrunerTest {
   fun excludeEnumExcludesOptions() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
               |import "google/protobuf/descriptor.proto";
               |enum Enum {
@@ -890,7 +891,7 @@ class PrunerTest {
   fun excludedFieldPrunesTopLevelOption() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
               |import "google/protobuf/descriptor.proto";
               |extend google.protobuf.FieldOptions {
@@ -917,7 +918,7 @@ class PrunerTest {
   fun excludedTypePrunesTopLevelOption() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
               |import "google/protobuf/descriptor.proto";
               |message SomeFieldOptions {
@@ -949,7 +950,7 @@ class PrunerTest {
   fun excludedFieldPrunesNestedOption() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |message SomeFieldOptions {
@@ -983,7 +984,7 @@ class PrunerTest {
   fun prunedFieldDocumentationsGetPruned() {
     val schema = buildSchema {
       add(
-        "period.proto",
+        "period.proto".toPath(),
         """
              |enum Period {
              |  /* This is A. */
@@ -1010,7 +1011,7 @@ class PrunerTest {
   fun excludedTypePrunesNestedOption() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |message SomeFieldOptions {
@@ -1051,7 +1052,7 @@ class PrunerTest {
   fun excludeOptions() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |extend google.protobuf.FieldOptions {
@@ -1077,7 +1078,7 @@ class PrunerTest {
   fun excludeRepeatedOptions() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |extend google.protobuf.MessageOptions {
@@ -1109,7 +1110,7 @@ class PrunerTest {
   fun includePackage() {
     val schema = buildSchema {
       add(
-        "a/b/messages.proto",
+        "a/b/messages.proto".toPath(),
         """
              |package a.b;
              |message MessageAB {
@@ -1117,7 +1118,7 @@ class PrunerTest {
              """.trimMargin()
       )
       add(
-        "a/c/messages.proto",
+        "a/c/messages.proto".toPath(),
         """
              |package a.c;
              |message MessageAC {
@@ -1138,7 +1139,7 @@ class PrunerTest {
   fun excludePackage() {
     val schema = buildSchema {
       add(
-        "a/b/messages.proto",
+        "a/b/messages.proto".toPath(),
         """
              |package a.b;
              |message MessageAB {
@@ -1146,7 +1147,7 @@ class PrunerTest {
              """.trimMargin()
       )
       add(
-        "a/c/messages.proto",
+        "a/c/messages.proto".toPath(),
         """
              |package a.c;
              |message MessageAC {
@@ -1167,7 +1168,7 @@ class PrunerTest {
   fun specialOptionsNotPruned() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |option java_package = "p";
              |
@@ -1207,7 +1208,7 @@ class PrunerTest {
   fun excludeUnusedImports() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |import 'footer.proto';
              |import 'title.proto';
@@ -1218,7 +1219,7 @@ class PrunerTest {
              """.trimMargin()
       )
       add(
-        "title.proto",
+        "title.proto".toPath(),
         """
              |message Title {
              |  optional string label = 1;
@@ -1226,7 +1227,7 @@ class PrunerTest {
              """.trimMargin()
       )
       add(
-        "footer.proto",
+        "footer.proto".toPath(),
         """
              |message Footer {
              |  optional string label = 1;
@@ -1251,7 +1252,7 @@ class PrunerTest {
   fun enumsAreKeptsIfUsed() {
     val schema = buildSchema {
       add(
-        "currency_code.proto",
+        "currency_code.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |
@@ -1294,7 +1295,7 @@ class PrunerTest {
   fun markingExtensionFieldDoesNotMarkPeerFields() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |
@@ -1328,7 +1329,7 @@ class PrunerTest {
   fun markingNonExtensionFieldDoesMarkPeerFields() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |
@@ -1366,7 +1367,7 @@ class PrunerTest {
   fun markingNonExtensionFieldDoesMarkPeerFieldsIfTypesMembersAreBeingPruned() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |
@@ -1403,7 +1404,7 @@ class PrunerTest {
   fun includingFieldDoesNotIncludePeerFields() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |message Message {
              |  optional string a = 1;
@@ -1427,7 +1428,7 @@ class PrunerTest {
   fun excludingGoogleProtobufPrunesAllOptionsOnEnums() {
     val schema = buildSchema {
       add(
-        "currency_code.proto",
+        "currency_code.proto".toPath(),
         """
              |package squareup;
              |
@@ -1483,7 +1484,7 @@ class PrunerTest {
   fun excludingGoogleProtobufPrunesAllOptionsOnMessages() {
     val schema = buildSchema {
       add(
-        "currency_code.proto",
+        "currency_code.proto".toPath(),
         """
              |package squareup;
              |
@@ -1547,7 +1548,7 @@ class PrunerTest {
   fun sinceAndUntilRetainOlder() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1573,7 +1574,7 @@ class PrunerTest {
   fun onlyRetainOlder() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1598,7 +1599,7 @@ class PrunerTest {
   fun sinceAndUntilRetainNewer() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1624,7 +1625,7 @@ class PrunerTest {
   fun onlyRetainNewer() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1649,7 +1650,7 @@ class PrunerTest {
   fun sinceRetainedWhenLessThanOrEqualToUntil() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1685,7 +1686,7 @@ class PrunerTest {
   fun untilRetainedWhenGreaterThanSince() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1720,7 +1721,7 @@ class PrunerTest {
   fun sinceRetainedWhenLessThanOrEqualToOnly() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1755,7 +1756,7 @@ class PrunerTest {
   fun untilRetainedWhenGreaterThanOnly() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1789,7 +1790,7 @@ class PrunerTest {
   fun sinceAndUntilDoNothingWithoutVersionPruning() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1810,7 +1811,7 @@ class PrunerTest {
   fun versionPruningDoesNotImpactFieldsWithoutSinceAndUntil() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1834,7 +1835,7 @@ class PrunerTest {
   fun onlyVersionPruningDoesNotImpactFieldsWithoutSinceAndUntil() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1857,7 +1858,7 @@ class PrunerTest {
   fun sinceUntilOnEnumConstant() {
     val schema = buildSchema {
       add(
-        "roshambo.proto",
+        "roshambo.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1885,7 +1886,7 @@ class PrunerTest {
   fun onlyOnEnumConstant() {
     val schema = buildSchema {
       add(
-        "roshambo.proto",
+        "roshambo.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1912,7 +1913,7 @@ class PrunerTest {
   fun semVer() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1944,7 +1945,7 @@ class PrunerTest {
   fun typeIsRetainedIfMorePreciseRuleExists() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |package wire;
             |
@@ -1969,7 +1970,7 @@ class PrunerTest {
   fun fieldIsRetainedIfMorePreciseRuleExists() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |message MyMessage {
             |  optional string a = 1;
@@ -1994,7 +1995,7 @@ class PrunerTest {
   fun enumConstantIsRetainedIfMorePreciseRuleExists() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |enum MyEnum {
             |  A = 1;
@@ -2019,7 +2020,7 @@ class PrunerTest {
   fun optionFieldIsRetainedIfMorePreciseRuleExists() {
     val schema = buildSchema {
       add(
-        "lecture.proto",
+        "lecture.proto".toPath(),
         """
              |package wire;
              |
@@ -2061,7 +2062,7 @@ class PrunerTest {
   fun nestedInclusion() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |message MyMessage {
             |  optional string a = 1;
@@ -2096,7 +2097,7 @@ class PrunerTest {
   fun includeMemberOfExcludedType() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |message MessageA {
             |  optional string a = 1;

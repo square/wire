@@ -17,6 +17,7 @@ package com.squareup.wire.schema.internal
 
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.ProtoType
+import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
@@ -34,7 +35,7 @@ class TypeMoverTest {
   @Test fun `move type to new file`() {
     val oldSchema = buildSchema {
       add(
-        "cafe/cafe.proto",
+        "cafe/cafe.proto".toPath(),
         """
             |syntax = "proto2";
             |
@@ -54,7 +55,7 @@ class TypeMoverTest {
             """.trimMargin()
       )
       add(
-        "cafe/roast.proto",
+        "cafe/roast.proto".toPath(),
         """
             |syntax = "proto2";
             |
@@ -114,7 +115,7 @@ class TypeMoverTest {
   @Test fun `move type to existing file`() {
     val oldSchema = buildSchema {
       add(
-        "cafe/cafe.proto",
+        "cafe/cafe.proto".toPath(),
         """
             |syntax = "proto2";
             |
@@ -134,7 +135,7 @@ class TypeMoverTest {
             """.trimMargin()
       )
       add(
-        "cafe/roast.proto",
+        "cafe/roast.proto".toPath(),
         """
             |syntax = "proto2";
             |
@@ -197,7 +198,7 @@ class TypeMoverTest {
   @Test fun `multiple moves from single source`() {
     val oldSchema = buildSchema {
       add(
-        "abc.proto",
+        "abc.proto".toPath(),
         """
             |syntax = "proto2";
             |
@@ -282,7 +283,7 @@ class TypeMoverTest {
   @Test fun `move with service dependency`() {
     val oldSchema = buildSchema {
       add(
-        "abc.proto",
+        "abc.proto".toPath(),
         """
             |syntax = "proto2";
             |
@@ -327,7 +328,7 @@ class TypeMoverTest {
   @Test fun `swap types`() {
     val oldSchema = buildSchema {
       add(
-        "a.proto",
+        "a.proto".toPath(),
         """
             |syntax = "proto2";
             |
@@ -339,7 +340,7 @@ class TypeMoverTest {
             """.trimMargin()
       )
       add(
-        "b.proto",
+        "b.proto".toPath(),
         """
             |syntax = "proto2";
             |
@@ -386,7 +387,7 @@ class TypeMoverTest {
   @Test fun `unrelated unused imports not pruned`() {
     val oldSchema = buildSchema {
       add(
-        "a.proto",
+        "a.proto".toPath(),
         """
             |syntax = "proto2";
             |
@@ -397,7 +398,7 @@ class TypeMoverTest {
             """.trimMargin()
       )
       add(
-        "b.proto",
+        "b.proto".toPath(),
         """
             |syntax = "proto2";
             |""".trimMargin()
@@ -426,7 +427,7 @@ class TypeMoverTest {
   @Test fun `move inexistent type`() {
     val oldSchema = buildSchema {
       add(
-        "a.proto",
+        "a.proto".toPath(),
         """
             |syntax = "proto2";
             |

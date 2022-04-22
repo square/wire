@@ -20,16 +20,17 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.buildSchema
 import com.squareup.wire.kotlin.grpcserver.LegacyAdapterGenerator.addLegacyAdapter
 import com.squareup.wire.schema.addLocal
+import java.io.File
+import okio.Path.Companion.toPath
 import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions
 import org.junit.Test
-import java.io.File
 
 class LegacyAdapterTest {
   @Test
   fun legacyAdapter() {
-    val schema = buildSchema { addLocal("src/test/proto/RouteGuideProto.proto") }
+    val schema = buildSchema { addLocal("src/test/proto/RouteGuideProto.proto".toPath()) }
     val service = schema.getService("routeguide.RouteGuide")
 
     val code = FileSpec.builder("routeguide", "RouteGuide")

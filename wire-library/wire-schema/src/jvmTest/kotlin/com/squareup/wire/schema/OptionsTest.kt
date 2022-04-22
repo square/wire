@@ -16,6 +16,7 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.buildSchema
+import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -25,7 +26,7 @@ class OptionsTest {
     // From https://developers.google.com/protocol-buffers/docs/proto#options
     val schema = buildSchema {
       add(
-        "foo.proto",
+        "foo.proto".toPath(),
         """
             |import "google/protobuf/descriptor.proto";
             |message FooOptions {
@@ -60,7 +61,7 @@ class OptionsTest {
   fun textFormatCanOmitMapValueSeparator() {
     val schema = buildSchema {
       add(
-        "foo.proto",
+        "foo.proto".toPath(),
         """
             |import "google/protobuf/descriptor.proto";
             |message FooOptions {
@@ -94,7 +95,7 @@ class OptionsTest {
   fun testOptionsToSchema() {
     val schema = buildSchema {
       add(
-        "foo.proto",
+        "foo.proto".toPath(),
         """
             |import "google/protobuf/descriptor.proto";
             |enum FooParameterType {
@@ -179,7 +180,7 @@ class OptionsTest {
   fun fullyQualifiedOptionFields() {
     val schema = buildSchema {
       add(
-        "a/b/more_options.proto",
+        "a/b/more_options.proto".toPath(),
         """
             |syntax = "proto2";
             |package a.b;
@@ -196,7 +197,7 @@ class OptionsTest {
             """.trimMargin()
       )
       add(
-        "a/c/event_more_options.proto",
+        "a/c/event_more_options.proto".toPath(),
         """
             |syntax = "proto2";
             |package a.c;
@@ -213,7 +214,7 @@ class OptionsTest {
             """.trimMargin()
       )
       add(
-        "a/d/message.proto",
+        "a/d/message.proto".toPath(),
         """
             |syntax = "proto2";
             |package a.d;

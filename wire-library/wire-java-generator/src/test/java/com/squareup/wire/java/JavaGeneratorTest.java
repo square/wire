@@ -23,6 +23,7 @@ import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.PruningRules;
 import com.squareup.wire.schema.Schema;
 import java.io.IOException;
+import okio.Path;
 import org.junit.Test;
 
 import static com.squareup.wire.schema.SchemaHelpersKt.addFromTest;
@@ -50,7 +51,7 @@ public final class JavaGeneratorTest {
 
   @Test public void generateTypeUsesNameAllocatorInMessageBuilderBuild() throws Exception {
     Schema schema = new SchemaBuilder()
-        .add("message.proto", ""
+        .add(Path.get("message.proto"), ""
             + "message Message {\n"
             + "  required float long = 1;\n"
             + "}\n")
@@ -72,7 +73,7 @@ public final class JavaGeneratorTest {
       s.append("  repeated int32 field_" + i + " = " + i + ";\n");
     }
     Schema schema = new SchemaBuilder()
-        .add("message.proto", ""
+        .add(Path.get("message.proto"), ""
             + "message Message {\n"
             + s.toString()
             + "    oneof oneof_name {\n"
@@ -88,7 +89,7 @@ public final class JavaGeneratorTest {
 
   @Test public void map() throws Exception {
     Schema schema = new SchemaBuilder()
-        .add("message.proto", ""
+        .add(Path.get("message.proto"), ""
             + "message Message {\n"
             + "  map<string, CdnResource> templates = 1;\n"
             + "  message CdnResource {\n"
@@ -109,7 +110,7 @@ public final class JavaGeneratorTest {
 
   @Test public void generateAbstractAdapter() throws Exception {
     Schema schema = new SchemaBuilder()
-        .add("message.proto", ""
+        .add(Path.get("message.proto"), ""
             + "package original.proto;\n"
             + "option java_package = \"original.java\";\n"
             + "import \"foo.proto\";\n"
@@ -119,7 +120,7 @@ public final class JavaGeneratorTest {
             + "  optional foo.proto.CoinFlip coin_flip = 4;\n"
             + "  map<string, foo.proto.Bar> bars = 2;\n"
             + "}\n")
-        .add("foo.proto", ""
+        .add(Path.get("foo.proto"), ""
             + "package foo.proto;\n"
             + "option java_package = \"foo.java\";\n"
             + "message Foo {\n"
@@ -250,7 +251,7 @@ public final class JavaGeneratorTest {
 
   @Test public void generateAbstractAdapterForEnum() throws Exception {
     Schema schema = new SchemaBuilder()
-        .add("message.proto", ""
+        .add(Path.get("message.proto"), ""
             + "package original.proto;\n"
             + "message ProtoMessage {\n"
             + "  optional CoinFlip coin_flip = 1;\n"
@@ -344,12 +345,12 @@ public final class JavaGeneratorTest {
 
   @Test public void generateAbstractAdapterWithRedactedField() throws IOException {
     SchemaBuilder builder = new SchemaBuilder()
-        .add("message.proto", ""
+        .add(Path.get("message.proto"), ""
             + "import \"option_redacted.proto\";\n"
             + "message ProtoMessage {\n"
             + "  optional string secret = 1 [(squareup.protos.redacted_option.redacted) = true];\n"
             + "}\n");
-    addFromTest(builder, "option_redacted.proto");
+    addFromTest(builder, Path.get("option_redacted.proto"));
     Schema schema = builder.build();
     assertThat(new JvmGenerator(schema)
       .withProfile("android.wire", ""
@@ -367,7 +368,7 @@ public final class JavaGeneratorTest {
 
   @Test public void nestedAbstractAdapterIsStatic() throws IOException {
     Schema schema = new SchemaBuilder()
-        .add("message.proto", ""
+        .add(Path.get("message.proto"), ""
             + "message A {\n"
             + "  message B {\n"
             + "    optional string c = 1;\n"
@@ -387,7 +388,7 @@ public final class JavaGeneratorTest {
   /** https://github.com/square/wire/issues/655 */
   @Test public void defaultValues() throws IOException {
     Schema schema = new SchemaBuilder()
-        .add("message.proto", ""
+        .add(Path.get("message.proto"), ""
             + "message Message {\n"
             + "  optional int32 a = 1 [default = 10 ];\n"
             + "  optional int32 b = 2 [default = 0x20 ];\n"
@@ -413,7 +414,7 @@ public final class JavaGeneratorTest {
 
   @Test public void defaultValuesMustNotBeOctal() throws IOException {
     Schema schema = new SchemaBuilder()
-        .add("message.proto", ""
+        .add(Path.get("message.proto"), ""
             + "message Message {\n"
             + "  optional int32 a = 1 [default = 020 ];\n"
             + "  optional int64 b = 2 [default = 021 ];\n"
@@ -430,7 +431,7 @@ public final class JavaGeneratorTest {
 
   @Test public void nullableFieldsWithoutParcelable() throws IOException {
     Schema schema = new SchemaBuilder()
-        .add("message.proto", ""
+        .add(Path.get("message.proto"), ""
             + "message A {\n"
             + "  message B {\n"
             + "    optional string c = 1;\n"
@@ -451,7 +452,7 @@ public final class JavaGeneratorTest {
 
   @Test public void androidSupport() throws IOException {
     Schema schema = new SchemaBuilder()
-        .add("message.proto", ""
+        .add(Path.get("message.proto"), ""
             + "message A {\n"
             + "  message B {\n"
             + "    optional string c = 1;\n"
@@ -475,7 +476,7 @@ public final class JavaGeneratorTest {
   @Test
   public void enclosingTypeIsNotMessage() throws IOException {
     Schema schema = new SchemaBuilder()
-        .add("message.proto", ""
+        .add(Path.get("message.proto"), ""
             + "message A {\n"
             + "  message B {\n"
             + "  }\n"
@@ -501,7 +502,7 @@ public final class JavaGeneratorTest {
   @Test
   public void generateTypeUsesPackageNameOnFieldAndClassNameClash() throws Exception {
     Schema schema = new SchemaBuilder()
-        .add("person.proto", ""
+        .add(Path.get("person.proto"), ""
             + "package common.proto;\n"
             + "enum Gender {\n"
             + "  Gender_Male = 0;\n"
@@ -519,7 +520,7 @@ public final class JavaGeneratorTest {
   @Test
   public void generateTypeUsesPackageNameOnFieldAndClassNameClashWithinPackage() throws Exception {
     Schema schema = new SchemaBuilder()
-        .add("a.proto", ""
+        .add(Path.get("a.proto"), ""
             + "package common.proto;\n"
             + "enum Status {\n"
             + "  Status_Approved = 0;\n"
@@ -544,7 +545,7 @@ public final class JavaGeneratorTest {
 
   @Test public void fieldHasScalarName() throws Exception {
     Schema schema = new SchemaBuilder()
-        .add("example.proto", ""
+        .add(Path.get("example.proto"), ""
             + "package squareup.testing.wire;\n"
             + "\n"
             + "option java_package = \"com.squareup.testing.wire\";\n"
@@ -564,7 +565,7 @@ public final class JavaGeneratorTest {
 
   @Test public void sanitizeStringsOnPrinting() throws Exception {
     Schema schema = new SchemaBuilder()
-        .add("example.proto", ""
+        .add(Path.get("example.proto"), ""
             + "message Person {\n"
             + "  required string name = 1;\n"
             + "  required int32 id = 2;\n"
@@ -604,7 +605,7 @@ public final class JavaGeneratorTest {
 
   @Test public void wirePackageTakesPrecedenceOverJavaPackage() throws IOException {
     Schema schema = new SchemaBuilder()
-        .add("proto_package/person.proto",
+        .add(Path.get("proto_package/person.proto"),
             "package proto_package;\n"
                 + "import \"wire/extensions.proto\";\n"
                 + "\n"
@@ -623,7 +624,7 @@ public final class JavaGeneratorTest {
 
   @Test public void wirePackageTakesPrecedenceOverProtoPackage() throws IOException {
     Schema schema = new SchemaBuilder()
-        .add("proto_package/person.proto",
+        .add(Path.get("proto_package/person.proto"),
             "package proto_package;\n"
             + "import \"wire/extensions.proto\";\n"
             + "\n"
@@ -641,13 +642,13 @@ public final class JavaGeneratorTest {
 
   @Test public void packageNameUsedIfFieldNameIsSameAsNonScalarTypeName() throws IOException {
     Schema schema = new SchemaBuilder()
-        .add("common/common_message.proto",
+        .add(Path.get("common/common_message.proto"),
             "package a.Common;\n"
           + "option java_package = \"a.common\";"
           + "message CommonMessage {\n"
           + "   required string First = 1;\n"
           + "}\n")
-        .add("example.proto",
+        .add(Path.get("example.proto"),
             "package a;\n"
           + "import \"common/common_message.proto\";\n"
           + "\n"
@@ -664,7 +665,7 @@ public final class JavaGeneratorTest {
 
   @Test public void wirePackageUsedInImport() throws IOException {
     Schema schema = new SchemaBuilder()
-        .add("proto_package/person.proto",
+        .add(Path.get("proto_package/person.proto"),
         "package proto_package;\n"
             + "import \"wire/extensions.proto\";\n"
             + "\n"
@@ -673,7 +674,7 @@ public final class JavaGeneratorTest {
             + "message Person {\n"
             + "	required string name = 1;\n"
             + "}\n")
-        .add("city_package/home.proto",
+        .add(Path.get("city_package/home.proto"),
             "package city_package;\n"
             + "import \"proto_package/person.proto\";\n"
             + "\n"
@@ -689,7 +690,7 @@ public final class JavaGeneratorTest {
 
   @Test public void deprecatedEnum() throws IOException {
     Schema schema = new SchemaBuilder()
-        .add("proto_package/person.proto",
+        .add(Path.get("proto_package/person.proto"),
             "package proto_package;\n"
                 + "enum Direction {\n"
                 + "  option deprecated = true;\n"
@@ -706,7 +707,7 @@ public final class JavaGeneratorTest {
 
   @Test public void deprecatedEnumConstant() throws IOException {
     Schema schema = new SchemaBuilder()
-        .add("proto_package/person.proto",
+        .add(Path.get("proto_package/person.proto"),
             "package proto_package;\n"
                 + "enum Direction {\n"
                 + "  NORTH = 1;\n"
@@ -722,7 +723,7 @@ public final class JavaGeneratorTest {
 
   @Test public void deprecatedField() throws IOException {
     Schema schema = new SchemaBuilder()
-        .add("proto_package/person.proto",
+        .add(Path.get("proto_package/person.proto"),
             "package proto_package;\n"
                 + "message Person {\n"
                 + "  optional string name = 1 [deprecated = true];\n"
@@ -735,7 +736,7 @@ public final class JavaGeneratorTest {
 
   @Test public void deprecatedMessage() throws IOException {
     Schema schema = new SchemaBuilder()
-        .add("proto_package/person.proto",
+        .add(Path.get("proto_package/person.proto"),
             "package proto_package;\n"
                 + "message Person {\n"
                 + "  option deprecated = true;\n"

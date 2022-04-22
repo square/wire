@@ -18,16 +18,17 @@ package com.squareup.wire.kotlin.grpcserver
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.addLocal
+import java.io.File
+import okio.Path.Companion.toPath
 import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.io.File
 
 internal class KotlinGrpcGeneratorTest {
   @Test
   fun fullFile() {
-    val schema = buildSchema { addLocal("src/test/proto/RouteGuideProto.proto") }
+    val schema = buildSchema { addLocal("src/test/proto/RouteGuideProto.proto".toPath()) }
     val service = schema.getService("routeguide.RouteGuide")
 
     val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(schema, service!!))

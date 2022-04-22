@@ -1,11 +1,11 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
 plugins {
-  application
   kotlin("jvm")
+  id("org.jetbrains.dokka")
+  id("com.vanniktech.maven.publish.base")
 }
 
 dependencies {
@@ -21,4 +21,10 @@ dependencies {
   testImplementation(deps.assertj)
   testImplementation(deps.kotlin.test.junit)
   testImplementation(project(":wire-test-utils"))
+}
+
+configure<MavenPublishBaseExtension> {
+  configure(
+    KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
+  )
 }

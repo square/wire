@@ -25,11 +25,12 @@ import org.junit.Test
 import java.io.EOFException
 import java.io.IOException
 import java.net.ProtocolException
+import okio.Path.Companion.toPath
 
 class SchemaProtoAdapterTest {
   private val coffeeSchema = buildSchema {
     add(
-      "coffee.proto",
+      "coffee.proto".toPath(),
       """
           |message CafeDrink {
           |  optional string customer_name = 1;
@@ -106,7 +107,7 @@ class SchemaProtoAdapterTest {
   fun groupsIgnored() {
     val adapter = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |message Message {
             |  optional string a = 1;
@@ -135,7 +136,7 @@ class SchemaProtoAdapterTest {
   fun startGroupWithoutEndGroup() {
     val adapter = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |message Message {
             |  optional string a = 1;
@@ -156,7 +157,7 @@ class SchemaProtoAdapterTest {
   fun unexpectedEndGroup() {
     val adapter = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |message Message {
             |  optional string a = 1;
@@ -178,7 +179,7 @@ class SchemaProtoAdapterTest {
   fun endGroupDoesntMatchStartGroup() {
     val adapter = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |message Message {
             |  optional string a = 1;
@@ -200,7 +201,7 @@ class SchemaProtoAdapterTest {
   fun decodeToUnpacked() {
     val adapter = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |message Message {
             |  repeated int32 a = 90 [packed = false];
@@ -222,7 +223,7 @@ class SchemaProtoAdapterTest {
   fun decodeToPacked() {
     val adapter = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |message Message {
             |  repeated int32 a = 90 [packed = true];
@@ -244,7 +245,7 @@ class SchemaProtoAdapterTest {
   fun recursiveMessage() {
     val adapter = buildSchema {
       add(
-        "tree.proto",
+        "tree.proto".toPath(),
         """
             |message BinaryTreeNode {
             |  optional BinaryTreeNode left = 1;
@@ -276,7 +277,7 @@ class SchemaProtoAdapterTest {
   fun includeUnknowns() {
     val schema = buildSchema {
       add(
-        "coffee.proto",
+        "coffee.proto".toPath(),
         """
              |message CafeDrink {
              |  optional string customer_name = 1;
@@ -302,7 +303,7 @@ class SchemaProtoAdapterTest {
   fun omitUnknowns() {
     val schema = buildSchema {
       add(
-        "coffee.proto",
+        "coffee.proto".toPath(),
         """
             |message CafeDrink {
             |  optional string customer_name = 1;

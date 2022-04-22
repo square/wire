@@ -21,6 +21,7 @@ import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.internal.isValidTag
 import com.squareup.wire.schema.internal.parser.OptionElement
+import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Ignore
@@ -31,7 +32,7 @@ class SchemaTest {
   fun linkService() {
     val schema = buildSchema {
       add(
-        "service.proto",
+        "service.proto".toPath(),
         """
             |import "request.proto";
             |import "response.proto";
@@ -41,14 +42,14 @@ class SchemaTest {
             """.trimMargin()
       )
       add(
-        "request.proto",
+        "request.proto".toPath(),
         """
             |message Request {
             |}
             """.trimMargin()
       )
       add(
-        "response.proto",
+        "response.proto".toPath(),
         """
             |message Response {
             |}
@@ -66,7 +67,7 @@ class SchemaTest {
   fun linkMessage() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |import "foo.proto";
             |message Message {
@@ -76,7 +77,7 @@ class SchemaTest {
             """.trimMargin()
       )
       add(
-        "foo.proto",
+        "foo.proto".toPath(),
         """
             |package foo_package;
             |message Foo {
@@ -100,7 +101,7 @@ class SchemaTest {
   fun linkExtendTypeInOuterMessage() {
     val schema = buildSchema {
       add(
-        "foo.proto",
+        "foo.proto".toPath(),
         """
             |message Other {
             |  extensions 1;
@@ -139,7 +140,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
             |message Message {
             |  optional int32 a = 0;
@@ -180,7 +181,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |  extensions 0;
@@ -216,7 +217,7 @@ class SchemaTest {
   fun scalarFieldIsPacked() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |message Message {
              |  repeated int32 a = 1;
@@ -237,7 +238,7 @@ class SchemaTest {
   fun enumFieldIsPacked() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |message Message {
              |  repeated HabitablePlanet home_planet = 1 [packed=true];
@@ -257,7 +258,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |  repeated bytes a = 1 [packed=false];
@@ -299,7 +300,7 @@ class SchemaTest {
   fun fieldIsDeprecated() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |message Message {
              |  optional int32 a = 1;
@@ -320,7 +321,7 @@ class SchemaTest {
   fun fieldDefault() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |message Message {
              |  optional int32 a = 1;
@@ -350,7 +351,7 @@ class SchemaTest {
   fun fieldOptions() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |message Message {
@@ -381,7 +382,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |import "google/protobuf/descriptor.proto";
                |message Message {
@@ -410,7 +411,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |  optional foo_package.Foo unknown = 1;
@@ -435,7 +436,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |  oneof selection {
@@ -463,7 +464,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "service.proto",
+          "service.proto".toPath(),
           """
                |service Service {
                |  rpc Call (string) returns (Response);
@@ -487,7 +488,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "service.proto",
+          "service.proto".toPath(),
           """
                |service Service {
                |  rpc Call (Request) returns (string);
@@ -514,7 +515,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "service.proto",
+          "service.proto".toPath(),
           """
                |service Service {
                |  rpc Call (foo_package.Foo) returns (Response);
@@ -538,7 +539,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "service.proto",
+          "service.proto".toPath(),
           """
                |service Service {
                |  rpc Call (Request) returns (foo_package.Foo);
@@ -565,7 +566,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "extend.proto",
+          "extend.proto".toPath(),
           """
                |extend foo_package.Foo {
                |}
@@ -588,7 +589,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "extend.proto",
+          "extend.proto".toPath(),
           """
                |extend string {
                |  optional Value value = 1000;
@@ -614,7 +615,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |}
@@ -641,7 +642,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |  optional foo_package.Foo unknown = 1;
@@ -670,7 +671,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |  required string name1 = 1;
@@ -697,7 +698,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |  required string name1 = 1;
@@ -726,7 +727,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |}
@@ -755,7 +756,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |  optional string a = 1;
@@ -781,7 +782,7 @@ class SchemaTest {
   fun messageAndExtensionNameCollision() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |message Message {
              |  optional string a = 1;
@@ -789,7 +790,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "extend.proto",
+        "extend.proto".toPath(),
         """
              |package p;
              |import "message.proto";
@@ -810,14 +811,14 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |}
                """.trimMargin()
         )
         add(
-          "extend1.proto",
+          "extend1.proto".toPath(),
           """
                |import "message.proto";
                |extend Message {
@@ -826,7 +827,7 @@ class SchemaTest {
                """.trimMargin()
         )
         add(
-          "extend2.proto",
+          "extend2.proto".toPath(),
           """
                |import "message.proto";
                |extend Message {
@@ -852,14 +853,14 @@ class SchemaTest {
   fun extendNameCollisionInDifferentPackagesAllowed() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |message Message {
              |}
              """.trimMargin()
       )
       add(
-        "extend1.proto",
+        "extend1.proto".toPath(),
         """
              |package p1;
              |import "message.proto";
@@ -869,7 +870,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "extend2.proto",
+        "extend2.proto".toPath(),
         """
              |package p2;
              |import "message.proto";
@@ -891,7 +892,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "enum.proto",
+          "enum.proto".toPath(),
           """
                |enum Enum {
                |  A = 1;
@@ -900,7 +901,7 @@ class SchemaTest {
                """.trimMargin()
         )
         add(
-          "extend.proto",
+          "extend.proto".toPath(),
           """
                |import "enum.proto";
                |extend Enum {
@@ -925,7 +926,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |}
@@ -952,7 +953,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |  oneof string s = 1;
@@ -971,7 +972,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |  enum Enum1 {
@@ -1002,7 +1003,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |enum Enum {
                |  A = 1;
@@ -1029,7 +1030,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |enum Enum {
                |  option allow_alias = false;
@@ -1056,7 +1057,7 @@ class SchemaTest {
   fun duplicateEnumConstantTagWithAllowAliasTrueAllowed() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
              |enum Enum {
              |  option allow_alias = true;
@@ -1075,7 +1076,7 @@ class SchemaTest {
   fun fieldTypeImported() {
     val schema = buildSchema {
       add(
-        "a.proto",
+        "a.proto".toPath(),
         """
              |package pa;
              |import "b.proto";
@@ -1085,7 +1086,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "b.proto",
+        "b.proto".toPath(),
         """
              |package pb;
              |message B {
@@ -1102,7 +1103,7 @@ class SchemaTest {
   fun fieldMapTypeImported() {
     val schema = buildSchema {
       add(
-        "a.proto",
+        "a.proto".toPath(),
         """
              |package pa;
              |import "b.proto";
@@ -1112,7 +1113,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "b.proto",
+        "b.proto".toPath(),
         """
              |package pb;
              |message B {
@@ -1130,7 +1131,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "a.proto",
+          "a.proto".toPath(),
           """
                |package pa;
                |message A {
@@ -1139,7 +1140,7 @@ class SchemaTest {
                """.trimMargin()
         )
         add(
-          "b.proto",
+          "b.proto".toPath(),
           """
                |package pb;
                |message B {
@@ -1164,7 +1165,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "a.proto",
+          "a.proto".toPath(),
           """
                |package pa;
                |message A {
@@ -1173,7 +1174,7 @@ class SchemaTest {
                """.trimMargin()
         )
         add(
-          "b.proto",
+          "b.proto".toPath(),
           """
                |package pb;
                |message B {
@@ -1197,7 +1198,7 @@ class SchemaTest {
   fun rpcTypeImported() {
     val schema = buildSchema {
       add(
-        "a.proto",
+        "a.proto".toPath(),
         """
              |package pa;
              |import "b.proto";
@@ -1207,7 +1208,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "b.proto",
+        "b.proto".toPath(),
         """
              |package pb;
              |message B {
@@ -1226,7 +1227,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "a.proto",
+          "a.proto".toPath(),
           """
                |package pa;
                |service Service {
@@ -1235,7 +1236,7 @@ class SchemaTest {
                """.trimMargin()
         )
         add(
-          "b.proto",
+          "b.proto".toPath(),
           """
                |package pb;
                |message B {
@@ -1262,7 +1263,7 @@ class SchemaTest {
   fun extendTypeImported() {
     val schema = buildSchema {
       add(
-        "a.proto",
+        "a.proto".toPath(),
         """
              |package pa;
              |import "b.proto";
@@ -1272,7 +1273,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "b.proto",
+        "b.proto".toPath(),
         """
              |package pb;
              |message B {
@@ -1291,7 +1292,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "a.proto",
+          "a.proto".toPath(),
           """
                |package pa;
                |extend pb.B {
@@ -1300,7 +1301,7 @@ class SchemaTest {
                """.trimMargin()
         )
         add(
-          "b.proto",
+          "b.proto".toPath(),
           """
                |package pb;
                |message B {
@@ -1325,7 +1326,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "a.proto",
+          "a.proto".toPath(),
           """
                |package pa;
                |import "b.proto";
@@ -1335,7 +1336,7 @@ class SchemaTest {
                """.trimMargin()
         )
         add(
-          "b.proto",
+          "b.proto".toPath(),
           """
                |package pb;
                |import "c.proto";
@@ -1344,7 +1345,7 @@ class SchemaTest {
                """.trimMargin()
         )
         add(
-          "c.proto",
+          "c.proto".toPath(),
           """
                |package pc;
                |message C {
@@ -1368,7 +1369,7 @@ class SchemaTest {
   fun transitivePublicImportFollowed() {
     val schema = buildSchema {
       add(
-        "a.proto",
+        "a.proto".toPath(),
         """
              |package pa;
              |import "b.proto";
@@ -1378,7 +1379,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "b.proto",
+        "b.proto".toPath(),
         """
              |package pb;
              |import public "c.proto";
@@ -1387,7 +1388,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "c.proto",
+        "c.proto".toPath(),
         """
              |package pc;
              |message C {
@@ -1404,7 +1405,7 @@ class SchemaTest {
   fun importSamePackageDifferentFile() {
     val schema = buildSchema {
       add(
-        "a_b_1.proto",
+        "a_b_1.proto".toPath(),
         """
              |package a.b;
              |
@@ -1419,7 +1420,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "a_b_2.proto",
+        "a_b_2.proto".toPath(),
         """
              |package a.b;
              |
@@ -1439,7 +1440,7 @@ class SchemaTest {
   fun importResolvesEnclosingPackageSuffix() {
     val schema = buildSchema {
       add(
-        "a_b.proto",
+        "a_b.proto".toPath(),
         """
              |package a.b;
              |
@@ -1448,7 +1449,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "a_b_c.proto",
+        "a_b_c.proto".toPath(),
         """
              |package a.b.c;
              |
@@ -1468,7 +1469,7 @@ class SchemaTest {
   fun importResolvesNestedPackageSuffix() {
     val schema = buildSchema {
       add(
-        "a_b.proto",
+        "a_b.proto".toPath(),
         """
              |package a.b;
              |
@@ -1480,7 +1481,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "a_b_c.proto",
+        "a_b_c.proto".toPath(),
         """
              |package a.b.c;
              |
@@ -1497,7 +1498,7 @@ class SchemaTest {
   fun nestedPackagePreferredOverEnclosingPackage() {
     val schema = buildSchema {
       add(
-        "a.proto",
+        "a.proto".toPath(),
         """
              |package a;
              |
@@ -1506,7 +1507,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "a_b.proto",
+        "a_b.proto".toPath(),
         """
              |package a.b;
              |
@@ -1519,7 +1520,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "a_b_a.proto",
+        "a_b_a.proto".toPath(),
         """
              |package a.b.a;
              |
@@ -1536,7 +1537,7 @@ class SchemaTest {
   fun dotPrefixRefersToRootPackage() {
     val schema = buildSchema {
       add(
-        "a.proto",
+        "a.proto".toPath(),
         """
              |package a;
              |
@@ -1545,7 +1546,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "a_b.proto",
+        "a_b.proto".toPath(),
         """
              |package a.b;
              |
@@ -1558,7 +1559,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "a_b_a.proto",
+        "a_b_a.proto".toPath(),
         """
              |package a.b.a;
              |
@@ -1576,7 +1577,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "a_b.proto",
+          "a_b.proto".toPath(),
           """
                |package a.b;
                |
@@ -1585,7 +1586,7 @@ class SchemaTest {
                """.trimMargin()
         )
         add(
-          "a_b_c.proto",
+          "a_b_c.proto".toPath(),
           """
                |package a.b.c;
                |
@@ -1614,7 +1615,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "test.proto",
+          "test.proto".toPath(),
           """
                |message SearchResponse {
                |  repeated group Result = 1 {
@@ -1637,7 +1638,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "test.proto",
+          "test.proto".toPath(),
           """
                |message Message {
                |  oneof hi {
@@ -1663,7 +1664,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "test.proto",
+          "test.proto".toPath(),
           """
                |message Message {
                |  reserved 1;
@@ -1689,7 +1690,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "test.proto",
+          "test.proto".toPath(),
           """
                |message Message {
                |  reserved 1 to max;
@@ -1715,7 +1716,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "test.proto",
+          "test.proto".toPath(),
           """
                |enum Enum {
                |  reserved 3 to max, 'FOO';
@@ -1745,7 +1746,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "test.proto",
+          "test.proto".toPath(),
           """
                |message Message {
                |  reserved 1 to 3;
@@ -1771,7 +1772,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "test.proto",
+          "test.proto".toPath(),
           """
                |message Message {
                |  reserved 'foo';
@@ -1797,7 +1798,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "test.proto",
+          "test.proto".toPath(),
           """
                |message Message {
                |  reserved 'foo';
@@ -1826,7 +1827,7 @@ class SchemaTest {
   fun proto3EnumShouldHaveZeroValueAtFirstPosition() {
     val schema = buildSchema {
       add(
-        "period.proto",
+        "period.proto".toPath(),
         """
             |syntax = "proto3";
             |
@@ -1851,7 +1852,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "period.proto",
+          "period.proto".toPath(),
           """
               |syntax = "proto3";
               |
@@ -1879,7 +1880,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "period.proto",
+          "period.proto".toPath(),
           """
               |syntax = "proto3";
               |
@@ -1908,7 +1909,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "period.proto",
+          "period.proto".toPath(),
           """
               |syntax = "proto3";
               |
@@ -1931,7 +1932,7 @@ class SchemaTest {
   fun proto2EnumNeedNotHaveZeroValue() {
     val schema = buildSchema {
       add(
-        "period.proto",
+        "period.proto".toPath(),
         """
             |syntax = "proto2";
             |
@@ -1954,7 +1955,7 @@ class SchemaTest {
   fun proto2EnumNeedNotHaveZeroValueWithoutSyntax() {
     val schema = buildSchema {
       add(
-        "period.proto",
+        "period.proto".toPath(),
         """
             |enum Period {
             |  CRETACEOUS = 1;
@@ -1975,7 +1976,7 @@ class SchemaTest {
   fun proto3CanExtendCustomOption() {
     val schema = buildSchema {
       add(
-        "test.proto",
+        "test.proto".toPath(),
         """
             |syntax = "proto3";
             |import "google/protobuf/descriptor.proto";
@@ -1997,7 +1998,7 @@ class SchemaTest {
   fun oneofOption() {
     val schema = buildSchema {
       add(
-        "test.proto",
+        "test.proto".toPath(),
         """
             |syntax = "proto3";
             |import "google/protobuf/descriptor.proto";
@@ -2027,7 +2028,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "dinosaur.proto",
+          "dinosaur.proto".toPath(),
           """
               |syntax = "proto3";
               |
@@ -2057,7 +2058,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "dinosaur.proto",
+          "dinosaur.proto".toPath(),
           """
               |syntax = "proto3";
               |
@@ -2083,7 +2084,7 @@ class SchemaTest {
   fun repeatedNumericScalarsShouldBePackedByDefaultForProto3() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |syntax = "proto3";
             |
@@ -2149,7 +2150,7 @@ class SchemaTest {
 
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |option deprecated = true;
             |
@@ -2196,7 +2197,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "dinosaur.proto",
+          "dinosaur.proto".toPath(),
           """
               |syntax = "proto3";
               |
@@ -2226,7 +2227,7 @@ class SchemaTest {
     // shouldn't be any conflict here.
     val schema = buildSchema {
       add(
-        "dinosaur.proto",
+        "dinosaur.proto".toPath(),
         """
               |syntax = "proto3";
               |
@@ -2245,7 +2246,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "dinosaur.proto",
+          "dinosaur.proto".toPath(),
           """
               |message Dinosaur {
               |  optional string myName = 1 [json_name = "JsonName"];
@@ -2271,7 +2272,7 @@ class SchemaTest {
   fun allowConflictingCamelCasedNamesInProto2() {
     val schema = buildSchema {
       add(
-        "dinosaur.proto",
+        "dinosaur.proto".toPath(),
         """
               |syntax = "proto2";
               |
@@ -2289,7 +2290,7 @@ class SchemaTest {
   fun nestedOptionSetting() {
     val schema = buildSchema {
       add(
-        "dinosaur.proto",
+        "dinosaur.proto".toPath(),
         """
               |package wire;
               |import 'google/protobuf/descriptor.proto';
@@ -2314,7 +2315,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |  optional string name = 1 [(unicorn) = true];
@@ -2339,7 +2340,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "cashapp/pii.proto",
+          "cashapp/pii.proto".toPath(),
           """
               |package cashapp;
               |import 'google/protobuf/descriptor.proto';
@@ -2349,7 +2350,7 @@ class SchemaTest {
               |""".trimMargin()
         )
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
               |message Message {
               |  optional string name = 1 [(cashapp.friday) = true];
@@ -2375,7 +2376,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "enum.proto",
+          "enum.proto".toPath(),
           """
                |enum Enum {
                |  A = 1 [(unicorn) = true];
@@ -2400,7 +2401,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |  option (unicorn) = true;
@@ -2424,7 +2425,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |
                |option (unicorn) = true;
@@ -2447,7 +2448,7 @@ class SchemaTest {
   fun resolveOptionsWithRelativePath() {
     val schema = buildSchema {
       add(
-        "squareup/common/options.proto",
+        "squareup/common/options.proto".toPath(),
         """
              |syntax = "proto2";
              |package squareup.common;
@@ -2459,7 +2460,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "squareup/domain/message.proto",
+        "squareup/domain/message.proto".toPath(),
         """
              |syntax = "proto2";
              |package squareup.domain;
@@ -2477,7 +2478,7 @@ class SchemaTest {
   fun optionsWithRelativePathUsedInExtensions() {
     val schema = buildSchema {
       add(
-        "squareup/domain/message.proto",
+        "squareup/domain/message.proto".toPath(),
         """
              |syntax = "proto2";
              |package squareup.domain;
@@ -2486,7 +2487,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "squareup/common/options.proto",
+        "squareup/common/options.proto".toPath(),
         """
              |syntax = "proto2";
              |package squareup.common;
@@ -2512,7 +2513,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "squareup/domain/message.proto",
+          "squareup/domain/message.proto".toPath(),
           """
              |syntax = "proto2";
              |package squareup.domain;
@@ -2521,7 +2522,7 @@ class SchemaTest {
              """.trimMargin()
         )
         add(
-          "squareup/common/options.proto",
+          "squareup/common/options.proto".toPath(),
           """
              |syntax = "proto2";
              |package squareup.common;
@@ -2536,7 +2537,7 @@ class SchemaTest {
              """.trimMargin()
         )
         add(
-          "squareup/options1/special.proto",
+          "squareup/options1/special.proto".toPath(),
           """
              |syntax = "proto2";
              |package squareup.options1;
@@ -2549,7 +2550,7 @@ class SchemaTest {
              """.trimMargin()
         )
         add(
-          "squareup/options2/special.proto",
+          "squareup/options2/special.proto".toPath(),
           """
              |syntax = "proto2";
              |package squareup.options2;
@@ -2582,7 +2583,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "squareup/domain/message.proto",
+          "squareup/domain/message.proto".toPath(),
           """
              |syntax = "proto2";
              |package squareup.domain;
@@ -2591,7 +2592,7 @@ class SchemaTest {
              """.trimMargin()
         )
         add(
-          "squareup/common/options.proto",
+          "squareup/common/options.proto".toPath(),
           """
              |syntax = "proto2";
              |package squareup.common;
@@ -2609,7 +2610,7 @@ class SchemaTest {
              """.trimMargin()
         )
         add(
-          "squareup/options/special.proto",
+          "squareup/options/special.proto".toPath(),
           """
              |syntax = "proto2";
              |package squareup.options;
@@ -2640,7 +2641,7 @@ class SchemaTest {
   fun optionsWithRelativePathUsedInExtensionsResolvable() {
     val schema = buildSchema {
       add(
-        "squareup/domain/message.proto",
+        "squareup/domain/message.proto".toPath(),
         """
              |syntax = "proto2";
              |package squareup.domain;
@@ -2649,7 +2650,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "squareup/common/options.proto",
+        "squareup/common/options.proto".toPath(),
         """
              |syntax = "proto2";
              |package squareup.common;
@@ -2664,7 +2665,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "squareup/options1/special.proto",
+        "squareup/options1/special.proto".toPath(),
         """
              |syntax = "proto2";
              |package squareup.options1;
@@ -2677,7 +2678,7 @@ class SchemaTest {
              """.trimMargin()
       )
       add(
-        "squareup/options2/special.proto",
+        "squareup/options2/special.proto".toPath(),
         """
              |syntax = "proto2";
              |package squareup.options2;
@@ -2698,7 +2699,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {}
                |extend Message {
@@ -2724,7 +2725,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |  map<int32, Enum> map = 1;
@@ -2752,7 +2753,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
                |message Message {
                |  map<int32, Enum> map = 1;
@@ -2781,7 +2782,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
           |message Message {
           |  optional string name = 1;
@@ -2805,7 +2806,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "service.proto",
+          "service.proto".toPath(),
           """
           |service Service {
           |  rpc Send (Data) returns (Data) {}
@@ -2830,7 +2831,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "service.proto",
+          "service.proto".toPath(),
           """
           |service Service {
           |  rpc Send (Data) returns (Data) {}
@@ -2858,7 +2859,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "proto2.proto",
+          "proto2.proto".toPath(),
           """
             |syntax = "proto2";
             |enum Bit {
@@ -2868,7 +2869,7 @@ class SchemaTest {
           """.trimMargin()
         )
         add(
-          "proto3.proto",
+          "proto3.proto".toPath(),
           """
             |syntax = "proto3";
             |import "proto2.proto";
@@ -2894,7 +2895,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
             |enum Foo {
             |  ZERO = 0;
@@ -2918,7 +2919,7 @@ class SchemaTest {
   @Test fun typeAliasAllowsAmbiguousEnumConstantsIfSameTag() {
     val schema = buildSchema {
       add(
-        "message.proto",
+        "message.proto".toPath(),
         """
             |enum Foo {
             |  option allow_alias = true;
@@ -2938,7 +2939,7 @@ class SchemaTest {
     try {
       buildSchema {
         add(
-          "message.proto",
+          "message.proto".toPath(),
           """
             |enum Foo {
             |  option allow_alias = true;
