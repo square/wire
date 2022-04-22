@@ -17,17 +17,19 @@
 
 package com.squareup.wire.schema
 
+import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.MESSAGE_OPTIONS
+import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class PrunerTest {
   @Test
   fun retainType() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |message MessageA {
              |}
@@ -35,7 +37,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("MessageA")
@@ -47,9 +49,9 @@ class PrunerTest {
 
   @Test
   fun retainMap() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |message MessageA {
             |  map<string, MessageB> maps = 1;
@@ -58,7 +60,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("MessageA")
@@ -70,9 +72,9 @@ class PrunerTest {
 
   @Test
   fun excludeMap() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |message MessageA {
             |  map<string, MessageB> maps = 1;
@@ -81,7 +83,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("MessageA")
@@ -94,9 +96,9 @@ class PrunerTest {
 
   @Test
   fun retainTypeRetainsEnclosingButNotNested() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |message A {
             |  message B {
@@ -108,7 +110,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("A.B")
@@ -122,9 +124,9 @@ class PrunerTest {
 
   @Test
   fun retainTypeRetainsFieldTypesTransitively() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |message MessageA {
             |  optional MessageB b = 1;
@@ -138,7 +140,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("MessageA")
@@ -152,9 +154,9 @@ class PrunerTest {
 
   @Test
   fun retainRpcRetainsRequestAndResponseTypes() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |message RequestA {
             |}
@@ -170,7 +172,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Service#CallA")
@@ -186,9 +188,9 @@ class PrunerTest {
 
   @Test
   fun retainField() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |message MessageA {
             |  optional string b = 1;
@@ -198,7 +200,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("MessageA#b")
@@ -211,9 +213,9 @@ class PrunerTest {
 
   @Test
   fun retainFieldRetainsFieldTypesTransitively() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |message MessageA {
             |  optional MessageB b = 1;
@@ -228,7 +230,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("MessageA#b")
@@ -244,9 +246,9 @@ class PrunerTest {
 
   @Test
   fun oneOf() {
-    val schema = RepoBuilder()
-      .add(
-        "one_of_message.proto",
+    val schema = buildSchema {
+      add(
+        "one_of_message.proto".toPath(),
         """
              |package oneof;
              |
@@ -259,7 +261,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("oneof.OneOfMessage")
@@ -272,9 +274,9 @@ class PrunerTest {
 
   @Test
   fun retainFieldPrunesOneOf() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |message Message {
             |  oneof selection {
@@ -285,7 +287,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message#c")
@@ -296,9 +298,9 @@ class PrunerTest {
 
   @Test
   fun retainFieldRetainsOneOf() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |message Message {
             |  oneof selection {
@@ -309,7 +311,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message#b")
@@ -325,9 +327,9 @@ class PrunerTest {
 
   @Test
   fun typeWithRetainedMembersOnlyHasThoseMembersRetained() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |message MessageA {
             |  optional MessageB b = 1;
@@ -342,7 +344,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("MessageA#b")
@@ -360,9 +362,9 @@ class PrunerTest {
 
   @Test
   fun retainEnumConstant() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |enum Roshambo {
             |  ROCK = 0;
@@ -371,7 +373,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Roshambo#SCISSORS")
@@ -384,9 +386,9 @@ class PrunerTest {
 
   @Test
   fun enumWithRetainedConstantHasThatConstantRetained() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |message Message {
             |  optional Roshambo roshambo = 1;
@@ -398,7 +400,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message")
@@ -415,9 +417,9 @@ class PrunerTest {
 
   @Test
   fun retainedOptionRetainsOptionsType() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |import "google/protobuf/descriptor.proto";
             |extend google.protobuf.FieldOptions {
@@ -428,7 +430,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message#f")
@@ -440,9 +442,9 @@ class PrunerTest {
 
   @Test
   fun prunedExtensionOptionDoesNotRetainExtension() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
               |import "google/protobuf/descriptor.proto";
               |extend google.protobuf.FieldOptions {
@@ -454,7 +456,7 @@ class PrunerTest {
               |}
               """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message#g")
@@ -470,9 +472,9 @@ class PrunerTest {
 
   @Test
   fun optionRetainsField() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |message SomeFieldOptions {
@@ -488,7 +490,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message")
@@ -503,9 +505,9 @@ class PrunerTest {
 
   @Test
   fun optionRetainsType() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |message SomeFieldOptions {
@@ -521,7 +523,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message")
@@ -535,9 +537,9 @@ class PrunerTest {
 
   @Test
   fun retainExtension() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |message Message {
              |  optional string a = 1;
@@ -547,7 +549,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message")
@@ -559,9 +561,9 @@ class PrunerTest {
 
   @Test
   fun retainExtensionMembers() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |message Message {
              |  optional string a = 1;
@@ -574,7 +576,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message#a")
@@ -590,9 +592,9 @@ class PrunerTest {
 
   @Test
   fun retainingTypeRetainsExtensionMembers() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |message Message {
              |  optional string a = 1;
@@ -605,7 +607,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message")
@@ -620,9 +622,9 @@ class PrunerTest {
 
   @Test
   fun includeExtensionMemberPrunesPeerMembers() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |message Message {
              |  optional string a = 1;
@@ -635,7 +637,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message#c")
@@ -650,9 +652,9 @@ class PrunerTest {
 
   @Test
   fun namespacedExtensionFieldsAreRetained() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
              |package squareup;
              |
@@ -672,7 +674,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("squareup.Message")
@@ -689,9 +691,9 @@ class PrunerTest {
   /** When we include excludes only, the mark phase is skipped.  */
   @Test
   fun excludeWithoutInclude() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |message MessageA {
              |  optional string b = 1;
@@ -699,7 +701,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .prune("MessageA#c")
@@ -711,9 +713,9 @@ class PrunerTest {
 
   @Test
   fun excludeField() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |message MessageA {
              |  optional string b = 1;
@@ -721,7 +723,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("MessageA")
@@ -734,9 +736,9 @@ class PrunerTest {
 
   @Test
   fun excludeTypeExcludesField() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |message MessageA {
              |  optional MessageB b = 1;
@@ -748,7 +750,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("MessageA")
@@ -763,9 +765,9 @@ class PrunerTest {
 
   @Test
   fun excludeTypeExcludesRpc() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |service ServiceA {
              |  rpc CallB (MessageB) returns (MessageB);
@@ -777,7 +779,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("ServiceA")
@@ -792,9 +794,9 @@ class PrunerTest {
 
   @Test
   fun excludeRpcExcludesTypes() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |service ServiceA {
              |  rpc CallB (MessageB) returns (MessageB);
@@ -806,7 +808,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("ServiceA")
@@ -821,9 +823,9 @@ class PrunerTest {
 
   @Test
   fun excludeFieldExcludesTypes() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
              |message MessageA {
              |  optional MessageB b = 1;
@@ -838,7 +840,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("MessageA")
@@ -856,9 +858,9 @@ class PrunerTest {
 
   @Test
   fun excludeEnumExcludesOptions() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
               |import "google/protobuf/descriptor.proto";
               |enum Enum {
@@ -873,7 +875,7 @@ class PrunerTest {
               |}
               """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Enum")
@@ -887,9 +889,9 @@ class PrunerTest {
 
   @Test
   fun excludedFieldPrunesTopLevelOption() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
               |import "google/protobuf/descriptor.proto";
               |extend google.protobuf.FieldOptions {
@@ -901,7 +903,7 @@ class PrunerTest {
               |}
               """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .prune("google.protobuf.FieldOptions#b")
@@ -914,9 +916,9 @@ class PrunerTest {
 
   @Test
   fun excludedTypePrunesTopLevelOption() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
               |import "google/protobuf/descriptor.proto";
               |message SomeFieldOptions {
@@ -931,7 +933,7 @@ class PrunerTest {
               |}
               """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .prune("SomeFieldOptions")
@@ -946,9 +948,9 @@ class PrunerTest {
 
   @Test
   fun excludedFieldPrunesNestedOption() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |message SomeFieldOptions {
@@ -963,7 +965,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .prune("SomeFieldOptions#b")
@@ -980,9 +982,9 @@ class PrunerTest {
 
   @Test
   fun prunedFieldDocumentationsGetPruned() {
-    val schema = RepoBuilder()
-      .add(
-        "period.proto",
+    val schema = buildSchema {
+      add(
+        "period.proto".toPath(),
         """
              |enum Period {
              |  /* This is A. */
@@ -996,7 +998,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
 
     val pruned = schema.prune(PruningRules.Builder().build())
 
@@ -1007,9 +1009,9 @@ class PrunerTest {
 
   @Test
   fun excludedTypePrunesNestedOption() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |message SomeFieldOptions {
@@ -1033,7 +1035,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .prune("Dimensions")
@@ -1048,9 +1050,9 @@ class PrunerTest {
 
   @Test
   fun excludeOptions() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |extend google.protobuf.FieldOptions {
@@ -1062,7 +1064,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .prune("google.protobuf.FieldOptions")
@@ -1074,9 +1076,9 @@ class PrunerTest {
 
   @Test
   fun excludeRepeatedOptions() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |extend google.protobuf.MessageOptions {
@@ -1092,7 +1094,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .prune("google.protobuf.MessageOptions#a")
@@ -1106,24 +1108,24 @@ class PrunerTest {
 
   @Test
   fun includePackage() {
-    val schema = RepoBuilder()
-      .add(
-        "a/b/messages.proto",
+    val schema = buildSchema {
+      add(
+        "a/b/messages.proto".toPath(),
         """
              |package a.b;
              |message MessageAB {
              |}
              """.trimMargin()
       )
-      .add(
-        "a/c/messages.proto",
+      add(
+        "a/c/messages.proto".toPath(),
         """
              |package a.c;
              |message MessageAC {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("a.b.*")
@@ -1135,24 +1137,24 @@ class PrunerTest {
 
   @Test
   fun excludePackage() {
-    val schema = RepoBuilder()
-      .add(
-        "a/b/messages.proto",
+    val schema = buildSchema {
+      add(
+        "a/b/messages.proto".toPath(),
         """
              |package a.b;
              |message MessageAB {
              |}
              """.trimMargin()
       )
-      .add(
-        "a/c/messages.proto",
+      add(
+        "a/c/messages.proto".toPath(),
         """
              |package a.c;
              |message MessageAC {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .prune("a.c.*")
@@ -1164,9 +1166,9 @@ class PrunerTest {
 
   @Test
   fun specialOptionsNotPruned() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
              |option java_package = "p";
              |
@@ -1181,7 +1183,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .prune("google.protobuf.*")
@@ -1204,9 +1206,9 @@ class PrunerTest {
 
   @Test
   fun excludeUnusedImports() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
              |import 'footer.proto';
              |import 'title.proto';
@@ -1216,23 +1218,23 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .add(
-        "title.proto",
+      add(
+        "title.proto".toPath(),
         """
              |message Title {
              |  optional string label = 1;
              |}
              """.trimMargin()
       )
-      .add(
-        "footer.proto",
+      add(
+        "footer.proto".toPath(),
         """
              |message Footer {
              |  optional string label = 1;
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message")
@@ -1248,9 +1250,9 @@ class PrunerTest {
 
   @Test
   fun enumsAreKeptsIfUsed() {
-    val schema = RepoBuilder()
-      .add(
-        "currency_code.proto",
+    val schema = buildSchema {
+      add(
+        "currency_code.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |
@@ -1275,7 +1277,7 @@ class PrunerTest {
              |
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("CurrencyCode")
@@ -1291,9 +1293,9 @@ class PrunerTest {
    */
   @Test
   fun markingExtensionFieldDoesNotMarkPeerFields() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |
@@ -1307,7 +1309,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message")
@@ -1325,9 +1327,9 @@ class PrunerTest {
    */
   @Test
   fun markingNonExtensionFieldDoesMarkPeerFields() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |
@@ -1345,7 +1347,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message")
@@ -1363,9 +1365,9 @@ class PrunerTest {
    */
   @Test
   fun markingNonExtensionFieldDoesMarkPeerFieldsIfTypesMembersAreBeingPruned() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
              |import "google/protobuf/descriptor.proto";
              |
@@ -1384,7 +1386,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message")
@@ -1400,9 +1402,9 @@ class PrunerTest {
 
   @Test
   fun includingFieldDoesNotIncludePeerFields() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
              |message Message {
              |  optional string a = 1;
@@ -1410,7 +1412,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("Message#a")
@@ -1424,9 +1426,9 @@ class PrunerTest {
 
   @Test
   fun excludingGoogleProtobufPrunesAllOptionsOnEnums() {
-    val schema = RepoBuilder()
-      .add(
-        "currency_code.proto",
+    val schema = buildSchema {
+      add(
+        "currency_code.proto".toPath(),
         """
              |package squareup;
              |
@@ -1458,7 +1460,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("squareup.Author")
@@ -1480,9 +1482,9 @@ class PrunerTest {
 
   @Test
   fun excludingGoogleProtobufPrunesAllOptionsOnMessages() {
-    val schema = RepoBuilder()
-      .add(
-        "currency_code.proto",
+    val schema = buildSchema {
+      add(
+        "currency_code.proto".toPath(),
         """
              |package squareup;
              |
@@ -1514,7 +1516,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("squareup.Letter")
@@ -1544,9 +1546,9 @@ class PrunerTest {
 
   @Test
   fun sinceAndUntilRetainOlder() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1556,7 +1558,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .since("1949")
@@ -1570,9 +1572,9 @@ class PrunerTest {
 
   @Test
   fun onlyRetainOlder() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1582,7 +1584,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .only("1949")
@@ -1595,9 +1597,9 @@ class PrunerTest {
 
   @Test
   fun sinceAndUntilRetainNewer() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1607,7 +1609,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .since("1950")
@@ -1621,9 +1623,9 @@ class PrunerTest {
 
   @Test
   fun onlyRetainNewer() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1633,7 +1635,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .only("1950")
@@ -1646,9 +1648,9 @@ class PrunerTest {
 
   @Test
   fun sinceRetainedWhenLessThanOrEqualToUntil() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1663,7 +1665,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .since("20")
@@ -1682,9 +1684,9 @@ class PrunerTest {
 
   @Test
   fun untilRetainedWhenGreaterThanSince() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1699,7 +1701,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .since("20")
@@ -1717,9 +1719,9 @@ class PrunerTest {
 
   @Test
   fun sinceRetainedWhenLessThanOrEqualToOnly() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1734,7 +1736,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .only("20")
@@ -1752,9 +1754,9 @@ class PrunerTest {
 
   @Test
   fun untilRetainedWhenGreaterThanOnly() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1769,7 +1771,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .only("20")
@@ -1786,9 +1788,9 @@ class PrunerTest {
 
   @Test
   fun sinceAndUntilDoNothingWithoutVersionPruning() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1798,7 +1800,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(PruningRules.Builder().build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("since_20")).isNotNull()
@@ -1807,9 +1809,9 @@ class PrunerTest {
 
   @Test
   fun versionPruningDoesNotImpactFieldsWithoutSinceAndUntil() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1818,7 +1820,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .since("20")
@@ -1831,9 +1833,9 @@ class PrunerTest {
 
   @Test
   fun onlyVersionPruningDoesNotImpactFieldsWithoutSinceAndUntil() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1842,7 +1844,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .only("20")
@@ -1854,9 +1856,9 @@ class PrunerTest {
 
   @Test
   fun sinceUntilOnEnumConstant() {
-    val schema = RepoBuilder()
-      .add(
-        "roshambo.proto",
+    val schema = buildSchema {
+      add(
+        "roshambo.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1867,7 +1869,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .since("29")
@@ -1882,9 +1884,9 @@ class PrunerTest {
 
   @Test
   fun onlyOnEnumConstant() {
-    val schema = RepoBuilder()
-      .add(
-        "roshambo.proto",
+    val schema = buildSchema {
+      add(
+        "roshambo.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1895,7 +1897,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .only("29")
@@ -1909,9 +1911,9 @@ class PrunerTest {
 
   @Test
   fun semVer() {
-    val schema = RepoBuilder()
-      .add(
-        "message.proto",
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
         """
             |import "wire/extensions.proto";
             |
@@ -1924,7 +1926,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .since("1.0.0-alpha.1")
@@ -1941,9 +1943,9 @@ class PrunerTest {
 
   @Test
   fun typeIsRetainedIfMorePreciseRuleExists() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |package wire;
             |
@@ -1953,7 +1955,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("wire.MessageA")
@@ -1966,9 +1968,9 @@ class PrunerTest {
 
   @Test
   fun fieldIsRetainedIfMorePreciseRuleExists() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |message MyMessage {
             |  optional string a = 1;
@@ -1976,7 +1978,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("MyMessage#a")
@@ -1991,9 +1993,9 @@ class PrunerTest {
 
   @Test
   fun enumConstantIsRetainedIfMorePreciseRuleExists() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |enum MyEnum {
             |  A = 1;
@@ -2001,7 +2003,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("MyEnum#A")
@@ -2016,9 +2018,9 @@ class PrunerTest {
 
   @Test
   fun optionFieldIsRetainedIfMorePreciseRuleExists() {
-    val schema = RepoBuilder()
-      .add(
-        "lecture.proto",
+    val schema = buildSchema {
+      add(
+        "lecture.proto".toPath(),
         """
              |package wire;
              |
@@ -2036,7 +2038,7 @@ class PrunerTest {
              |}
              """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("wire.Lecture")
@@ -2058,9 +2060,9 @@ class PrunerTest {
 
   @Test
   fun nestedInclusion() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |message MyMessage {
             |  optional string a = 1;
@@ -2073,7 +2075,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .prune("MyEnum#D")
@@ -2093,9 +2095,9 @@ class PrunerTest {
 
   @Test
   fun includeMemberOfExcludedType() {
-    val schema = RepoBuilder()
-      .add(
-        "service.proto",
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
         """
             |message MessageA {
             |  optional string a = 1;
@@ -2112,7 +2114,7 @@ class PrunerTest {
             |}
             """.trimMargin()
       )
-      .schema()
+    }
     val pruned = schema.prune(
       PruningRules.Builder()
         .addRoot("MessageA#book")

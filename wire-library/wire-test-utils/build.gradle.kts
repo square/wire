@@ -32,6 +32,7 @@ dependencies {
   api(deps.moshi)
   api(project(":wire-runtime"))
   api(project(":wire-schema"))
+  api(project(":wire-schema-tests"))
   implementation(project(":wire-compiler"))
   implementation(project(":wire-java-generator"))
   implementation(project(":wire-kotlin-generator"))

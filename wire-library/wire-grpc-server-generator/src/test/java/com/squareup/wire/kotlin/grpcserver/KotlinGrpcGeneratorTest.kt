@@ -16,20 +16,22 @@
 package com.squareup.wire.kotlin.grpcserver
 
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.wire.schema.RepoBuilder
+import com.squareup.wire.buildSchema
+import com.squareup.wire.schema.addLocal
+import java.io.File
+import okio.Path.Companion.toPath
 import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.io.File
 
 internal class KotlinGrpcGeneratorTest {
   @Test
   fun fullFile() {
-    val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
-    val service = repoBuilder.schema().getService("routeguide.RouteGuide")
+    val schema = buildSchema { addLocal("src/test/proto/RouteGuideProto.proto".toPath()) }
+    val service = schema.getService("routeguide.RouteGuide")
 
-    val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(repoBuilder.schema(), service!!))
+    val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(schema, service!!))
       .generateGrpcServer(service)
     val output = FileSpec.get("routeguide", typeSpec)
 

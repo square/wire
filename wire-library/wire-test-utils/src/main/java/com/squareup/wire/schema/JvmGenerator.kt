@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Square, Inc.
+ * Copyright (C) 2022 Block, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,94 +17,44 @@ package com.squareup.wire.schema
 
 import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.java.JavaGenerator
 import com.squareup.wire.java.Profile
+import com.squareup.wire.java.internal.ProfileParser
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
-import okio.Path.Companion.toPath
-import okio.buffer
-import okio.fakefilesystem.FakeFileSystem
-import okio.source
-import java.io.File
 import java.io.IOException
 
-/**
- * Builds a repository of `.proto` and `.wire` files to create schemas, profiles, and adapters for
- * testing.
- */
-class RepoBuilder {
-  private val fs = FakeFileSystem()
-  private val root = "/source".toPath()
-  private val schemaLoader = SchemaLoader(fs)
-  private var schema: Schema? = null
+// TODO(Benoit) Maybe just have static method? and pass the profile in params.
+/** Helper class to run Java and Kotlin code generation. */
+class JvmGenerator(
+  private val schema: Schema
+) {
+  private val profiles = mutableMapOf<String, Profile>()
 
-  fun add(name: String, protoFile: String): RepoBuilder {
-    require(name.endsWith(".proto") || name.endsWith(".wire")) {
-      "unexpected file extension: $name"
+  /**
+   * Load a [Profile] on the file system.
+   * @param name The qualified name of the file. This can contain slashes.
+   * @param profileFile The content of the file.
+   */
+  fun withProfile(name: String, profileFile: String): JvmGenerator {
+    require(name.endsWith(".wire")) {
+      "unexpected file extension for $name. Profile files should use the '.wire' extension"
     }
 
-    val relativePath = name.toPath()
-    try {
-      val resolvedPath = root / relativePath
-      val parent = resolvedPath.parent
-      if (parent != null) {
-        fs.createDirectories(parent)
-      }
-      fs.write(resolvedPath) {
-        writeUtf8(protoFile)
-      }
-    } catch (e: IOException) {
-      throw AssertionError(e)
-    }
+    val profile = Profile(listOf(ProfileParser(Location.get(""), profileFile).read()))
+    val existingEntry = profiles.putIfAbsent(name, profile)
+    check(existingEntry == null) { "A profile was already set: $name" }
 
     return this
   }
 
-  @Throws(IOException::class)
-  fun add(path: String): RepoBuilder {
-    val file = File("../wire-tests/src/commonTest/proto/java/$path")
-    file.source().use { source ->
-      val protoFile = source.buffer().readUtf8()
-      return add(path, protoFile)
-    }
-  }
-
-  @Throws(IOException::class)
-  fun addLocal(path: String): RepoBuilder {
-    val file = File(path)
-    file.source().use { source ->
-      val protoFile = source.buffer().readUtf8()
-      return add(path, protoFile)
-    }
-  }
-
-  @Throws(IOException::class)
-  fun schema(): Schema {
-    var result = schema
-    if (result == null) {
-      schemaLoader.initRoots(sourcePath = listOf(Location.get("/source")))
-      result = schemaLoader.loadSchema()
-      schema = result
-    }
-    return result
-  }
-
-  @Throws(IOException::class)
   private fun profile(profileName: String?): Profile {
-    if (profileName == null) return Profile()
-    return schemaLoader.loadProfile(profileName, schema())
-  }
-
-  @Throws(IOException::class)
-  fun protoAdapter(messageTypeName: String): ProtoAdapter<Any> {
-    return schema().protoAdapter(messageTypeName, true)
+    return if (profileName == null) Profile() else profiles["$profileName.wire"]!!
   }
 
   @Throws(IOException::class)
   @JvmOverloads fun generateJava(typeName: String, profileName: String? = null): String {
-    val schema = schema()
     val javaGenerator = JavaGenerator.get(schema)
       .withProfile(profile(profileName))
     val type = schema.getType(typeName)
@@ -120,7 +70,6 @@ class RepoBuilder {
     profileName: String? = null,
     boxOneOfsMinSize: Int = 5_000,
   ): String {
-    val schema = schema()
     val kotlinGenerator = KotlinGenerator(
       schema,
       profile = profile(profileName),
@@ -146,7 +95,6 @@ class RepoBuilder {
   ): List<String> {
     if (rpcRole === RpcRole.NONE) return emptyList()
 
-    val schema = schema()
     val grpcGenerator = KotlinGenerator(
       schema = schema,
       profile = profile(profileName),

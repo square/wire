@@ -43,6 +43,7 @@ kotlin {
     }
     val jvmTest by getting {
       dependencies {
+        implementation(project(":wire-schema-tests"))
         implementation(project(":wire-test-utils"))
         implementation(deps.assertj)
         implementation(deps.jimfs)

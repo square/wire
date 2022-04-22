@@ -11,15 +11,16 @@ import com.google.protobuf.DescriptorProtos.MethodDescriptorProto
 import com.google.protobuf.DescriptorProtos.MethodOptions
 import com.google.protobuf.DescriptorProtos.ServiceDescriptorProto
 import com.google.protobuf.UnknownFieldSet
-import com.squareup.wire.schema.RepoBuilder
+import com.squareup.wire.buildSchema
+import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class SchemaEncoderTest {
   @Test fun `encode schema`() {
-    val schema = RepoBuilder()
-      .add(
-        "handle_service.proto",
+    val schema = buildSchema {
+      add(
+        "handle_service.proto".toPath(),
         """
             |syntax = "proto2";
             |
@@ -51,7 +52,7 @@ class SchemaEncoderTest {
             |}
             |""".trimMargin()
       )
-      .schema()
+    }
 
     val handleServiceProto = schema.protoFile("handle_service.proto")!!
     val encoded = SchemaEncoder(schema).encode(handleServiceProto)
@@ -161,9 +162,9 @@ class SchemaEncoderTest {
   }
 
   @Test fun `encode extension range`() {
-    val schema = RepoBuilder()
-      .add(
-        "test.proto",
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
         """
             |syntax = "proto2";
             |
@@ -172,7 +173,7 @@ class SchemaEncoderTest {
             |}
             |""".trimMargin()
       )
-      .schema()
+    }
 
     val handleServiceProto = schema.protoFile("test.proto")!!
     val encoded = SchemaEncoder(schema).encode(handleServiceProto)
@@ -203,9 +204,9 @@ class SchemaEncoderTest {
   }
 
   @Test fun `oneof tag order`() {
-    val schema = RepoBuilder()
-      .add(
-        "test.proto",
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
         """
             |syntax = "proto3";
             |
@@ -219,7 +220,7 @@ class SchemaEncoderTest {
             |}
             |""".trimMargin()
       )
-      .schema()
+    }
     val handleServiceProto = schema.protoFile("test.proto")!!
     val encoded = SchemaEncoder(schema).encode(handleServiceProto)
 

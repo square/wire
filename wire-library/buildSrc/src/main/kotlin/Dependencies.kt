@@ -18,7 +18,7 @@ object versions {
   val jimfs = "1.0"
   val jmh = "1.34"
   val jsr305 = "3.0.2"
-  val junit = "4.12"
+  val junit = "4.13.2"
   val kotlin = "1.6.10"
   val kotlinpoet = "1.10.2"
   val ktlint = "0.42.1"
@@ -135,6 +135,7 @@ object deps {
     val moshiAdapter = "com.squareup.wire:wire-moshi-adapter"
     val runtime = "com.squareup.wire:wire-runtime"
     val schema = "com.squareup.wire:wire-schema"
+    val schemaHandlerTests = "com.squareup.wire:wire-schema-tests"
     val testUtils = "com.squareup.wire:wire-test-utils"
   }
 }

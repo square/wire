@@ -15,15 +15,17 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.WireRun.Module
+import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class ManifestPartitionTest {
   @Test fun upstreamPruneIsNotGeneratedDownstream() {
-    val schema = RepoBuilder()
-      .add(
-        "example.proto",
+    val schema = buildSchema {
+      add(
+        "example.proto".toPath(),
         """
           |syntax = "proto2";
           |
@@ -37,7 +39,7 @@ class ManifestPartitionTest {
           |}
           |""".trimMargin()
       )
-      .schema()
+    }
 
     val modules = mapOf(
       "common" to Module(
@@ -68,9 +70,9 @@ class ManifestPartitionTest {
   }
 
   @Test fun upstreamPruneIsNotPrunedDownstream() {
-    val schema = RepoBuilder()
-      .add(
-        "example.proto",
+    val schema = buildSchema {
+      add(
+        "example.proto".toPath(),
         """
           |syntax = "proto2";
           |
@@ -85,7 +87,7 @@ class ManifestPartitionTest {
           |}
           |""".trimMargin()
       )
-      .schema()
+    }
 
     val modules = mapOf(
       "common" to Module(
@@ -118,9 +120,9 @@ class ManifestPartitionTest {
   }
 
   @Test fun duplicatedTypesReportedOnce() {
-    val schema = RepoBuilder()
-      .add(
-        "example.proto",
+    val schema = buildSchema {
+      add(
+        "example.proto".toPath(),
         """
           |syntax = "proto2";
           |
@@ -135,7 +137,7 @@ class ManifestPartitionTest {
           |}
           |""".trimMargin()
       )
-      .schema()
+    }
 
     val modules = mapOf(
       "common" to Module(
