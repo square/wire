@@ -933,7 +933,7 @@ class WirePluginTest {
 
     val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
     assertThat(result.output)
-      .contains("Couldn't find CustomHandlerClass 'NoSuchClass'")
+      .contains("Couldn't find SchemaHandlerClass 'NoSuchClass'")
   }
 
   @Test

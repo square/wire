@@ -21,7 +21,7 @@ import com.squareup.wire.schema.PartitionedSchema.Partition
 import com.squareup.wire.schema.internal.DagChecker
 import com.squareup.wire.schema.internal.TypeMover
 import okio.FileSystem
-import okio.Path
+import okio.Path.Companion.toPath
 
 /**
  * An invocation of the Wire compiler. Each invocation performs the following operations:
@@ -221,56 +221,57 @@ data class WireRun(
     // Refactor the schema.
     val schema = refactorSchema(fullSchema, logger)
 
+    val targetsExclusiveLast = targets.sortedBy { it.exclusive }
+    val sourcePathPaths = (schemaLoader.sourcePathFiles.map { it.location.path } + moves.map { it.targetPath }).toSet()
+    val claimedPaths = ClaimedPaths()
+    val errorCollector = ErrorCollector()
+    // We keep a reference to all rules so that we can log unused elements later.
     val targetToEmittingRules = targets.associateWith {
       EmittingRules.Builder()
         .include(it.includes)
         .exclude(it.excludes)
         .build()
     }
-    val targetsExclusiveLast = targets.sortedBy { it.exclusive }
 
     val partitions = if (modules.isNotEmpty()) {
       val partitionedSchema = schema.partition(modules)
-      // TODO handle errors and warnings
+      // TODO handle errors and warnings. Errors could be added to ErrorCollector but need a test.
       partitionedSchema.partitions
     } else {
       // Synthesize a single partition that includes everything from the schema.
       mapOf(null to Partition(schema))
     }
 
-    val claimedPaths = ClaimedPaths()
-    val errorCollector = ErrorCollector()
     for ((moduleName, partition) in partitions) {
-      val targetToSchemaHandler = targets.associateWith {
-        it.newHandler(
-          partition.schema, moduleName, partition.transitiveUpstreamTypes, fs, logger,
-          schemaLoader, errorCollector
+      val claimedDefinitions = ClaimedDefinitions().apply { claim(ProtoType.ANY) }
+
+      for (target in targetsExclusiveLast) {
+        val handler = target.newHandler()
+        val module =
+          if (moduleName == null) {
+            null
+          } else {
+            SchemaHandler.Module(moduleName, partition.types, partition.transitiveUpstreamTypes)
+          }
+        val outDirectory =
+          if (moduleName == null) {
+            target.outDirectory.toPath()
+          } else {
+            target.outDirectory.toPath() / moduleName
+          }
+        val context = SchemaHandler.Context(
+          fileSystem = fs,
+          outDirectory = outDirectory,
+          logger = logger,
+          errorCollector = errorCollector,
+          emittingRules = targetToEmittingRules.getValue(target),
+          claimedDefinitions = if (target.exclusive) claimedDefinitions else null,
+          claimedPaths = claimedPaths,
+          sourcePathPaths = sourcePathPaths,
+          module = module,
+          profileLoader = schemaLoader,
         )
-      }
-
-      // Call each target.
-      for (protoFile in partition.schema.protoFiles) {
-        if (!protoFile.loadedOnSourcePath) continue
-
-        // Remove types from the file which are not owned by this partition.
-        val filteredProtoFile = protoFile.copy(
-          types = protoFile.types.filter { it.type in partition.types },
-          services = protoFile.services.filter { it.type in partition.types }
-        ).apply { this.loadedOnSourcePath = true }
-
-        val claimedDefinitions = ClaimedDefinitions()
-        claimedDefinitions.claim(ProtoType.ANY)
-
-        for (target in targetsExclusiveLast) {
-          val schemaHandler = targetToSchemaHandler.getValue(target)
-          schemaHandler.handle(
-            filteredProtoFile,
-            targetToEmittingRules.getValue(target),
-            claimedDefinitions,
-            claimedPaths,
-            isExclusive = target.exclusive
-          )
-        }
+        handler.handle(partition.schema, context)
       }
     }
 

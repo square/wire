@@ -380,12 +380,6 @@ class Options(
     }
   }
 
-  /** Returns true if these options assigns a value to [protoMember].  */
-  fun assignsMember(protoMember: ProtoMember?): Boolean {
-    // TODO(jwilson): remove the null check; this shouldn't be called until linking completes.
-    return entries?.any { it.protoMember == protoMember } ?: false
-  }
-
   companion object {
     @JvmField val FILE_OPTIONS = ProtoType.get("google.protobuf.FileOptions")
     @JvmField val MESSAGE_OPTIONS = ProtoType.get("google.protobuf.MessageOptions")

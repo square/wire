@@ -119,7 +119,6 @@ fun Schema.withStubs(typesToStub: Set<ProtoType>): Schema {
           if (service.type in typesToStub) service.asStub() else service
         }
       )
-      result.loadedOnSourcePath = protoFile.loadedOnSourcePath
       return@map result
     }
   )
