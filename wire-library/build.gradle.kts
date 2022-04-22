@@ -142,9 +142,24 @@ allprojects {
 
   plugins.withId("com.vanniktech.maven.publish.base") {
     configure<PublishingExtension> {
-      repositories.maven {
-        name = "test"
-        setUrl("file://${project.rootProject.buildDir}/localMaven")
+      repositories {
+        maven {
+          name = "test"
+          setUrl("file://${project.rootProject.buildDir}/localMaven")
+        }
+        /**
+         * Want to push to an internal repository for testing?
+         * Set the following properties in ~/.gradle/gradle.properties.
+         *
+         * internalUrl=YOUR_INTERNAL_URL
+         * internalUsername=YOUR_USERNAME
+         * internalPassword=YOUR_PASSWORD
+         */
+        maven {
+          name = "internal"
+          setUrl(providers.gradleProperty("internalUrl"))
+          credentials(PasswordCredentials::class)
+        }
       }
     }
 
