@@ -18,7 +18,6 @@ package com.squareup.wire.java;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.wire.SchemaBuilder;
-import com.squareup.wire.schema.JvmGenerator;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.PruningRules;
 import com.squareup.wire.schema.Schema;
@@ -56,7 +55,7 @@ public final class JavaGeneratorTest {
             + "  required float long = 1;\n"
             + "}\n")
       .build();
-    assertThat(new JvmGenerator(schema)
+    assertThat(new JavaWithProfilesGenerator(schema)
       .generateJava("Message")).contains(""
         + "    @Override\n"
         + "    public Message build() {\n"
@@ -82,7 +81,7 @@ public final class JavaGeneratorTest {
             + "    }\n"
             + "}\n")
       .build();
-    assertThat(new JvmGenerator(schema)
+    assertThat(new JavaWithProfilesGenerator(schema)
       .generateJava("Message")).contains(""
         + "public Message(Builder builder, ByteString unknownFields)");
   }
@@ -132,7 +131,7 @@ public final class JavaGeneratorTest {
             + "  TAILS = 2;\n"
             + "}\n")
       .build();
-    assertThat(new JvmGenerator(schema)
+    assertThat(new JavaWithProfilesGenerator(schema)
       .withProfile("android.wire", ""
         + "syntax = \"wire2\";\n"
         + "import \"message.proto\";\n"
@@ -262,7 +261,7 @@ public final class JavaGeneratorTest {
             + "  TAILS = 2;\n"
             + "}\n")
       .build();
-    assertThat(new JvmGenerator(schema)
+    assertThat(new JavaWithProfilesGenerator(schema)
       .withProfile("android.wire", ""
         + "syntax = \"wire2\";\n"
         + "import \"message.proto\";\n"
@@ -352,7 +351,7 @@ public final class JavaGeneratorTest {
             + "}\n");
     addFromTest(builder, Path.get("option_redacted.proto"));
     Schema schema = builder.build();
-    assertThat(new JvmGenerator(schema)
+    assertThat(new JavaWithProfilesGenerator(schema)
       .withProfile("android.wire", ""
         + "syntax = \"wire2\";\n"
         + "import \"message.proto\";\n"
@@ -375,7 +374,7 @@ public final class JavaGeneratorTest {
             + "  }\n"
             + "}\n")
       .build();
-    assertThat(new JvmGenerator(schema)
+    assertThat(new JavaWithProfilesGenerator(schema)
       .withProfile("android.wire", ""
         + "syntax = \"wire2\";\n"
         + "import \"message.proto\";\n"
@@ -400,7 +399,7 @@ public final class JavaGeneratorTest {
             + "  optional double h = 8 [default = -nan ];\n"
             + "}\n")
       .build();
-    String code = new JvmGenerator(schema)
+    String code = new JavaWithProfilesGenerator(schema)
       .generateJava("Message");
     assertThat(code).contains("  public static final Integer DEFAULT_A = 10;");
     assertThat(code).contains("  public static final Integer DEFAULT_B = 32;");
@@ -421,7 +420,7 @@ public final class JavaGeneratorTest {
             + "}\n")
       .build();
     try {
-      new JvmGenerator(schema)
+      new JavaWithProfilesGenerator(schema)
         .generateJava("Message");
       fail();
     } catch (IllegalStateException expected) {
@@ -512,7 +511,7 @@ public final class JavaGeneratorTest {
             + "  optional Gender Gender = 1;\n"
             + "}\n")
       .build();
-    assertThat(new JvmGenerator(schema)
+    assertThat(new JavaWithProfilesGenerator(schema)
       .generateJava("common.proto.Person"))
         .contains("public final Gender common_proto_Gender;");
   }
@@ -538,7 +537,7 @@ public final class JavaGeneratorTest {
             + "  optional AnotherStatus Status = 2;\n"
             + "}\n")
       .build();
-    assertThat(new JvmGenerator(schema)
+    assertThat(new JavaWithProfilesGenerator(schema)
       .generateJava("common.proto.A"))
         .contains("public final AnotherStatus common_proto_Status;");
   }
@@ -555,7 +554,7 @@ public final class JavaGeneratorTest {
             + "  repeated string values = 2;\n"
             + "}\n")
       .build();
-    assertThat(new JvmGenerator(schema)
+    assertThat(new JavaWithProfilesGenerator(schema)
       .generateJava("squareup.testing.wire.Data")).contains(""
         + "    public Builder string(String string) {\n"
         + "      this.string = string;\n"
@@ -583,7 +582,7 @@ public final class JavaGeneratorTest {
             + "  }\n"
             + "}\n")
       .build();
-    String generatedCode = new JvmGenerator(schema)
+    String generatedCode = new JavaWithProfilesGenerator(schema)
       .generateJava("Person");
     assertThat(generatedCode).contains(""
         + "  public String toString() {\n"
@@ -616,7 +615,7 @@ public final class JavaGeneratorTest {
                 + "	required string name = 1;\n"
                 + "}\n")
       .build();
-    String code = new JvmGenerator(schema)
+    String code = new JavaWithProfilesGenerator(schema)
       .generateJava("proto_package.Person");
     assertThat(code).contains("package wire_package");
     assertThat(code).contains("class Person");
@@ -634,7 +633,7 @@ public final class JavaGeneratorTest {
             + "	required string name = 1;\n"
             + "}\n")
       .build();
-    String code = new JvmGenerator(schema)
+    String code = new JavaWithProfilesGenerator(schema)
       .generateJava("proto_package.Person");
     assertThat(code).contains("package wire_package");
     assertThat(code).contains("class Person");
@@ -656,7 +655,7 @@ public final class JavaGeneratorTest {
           + "   required Common.CommonMessage CommonMessage = 1;\n"
           + "}\n")
       .build();
-    String code = new JvmGenerator(schema)
+    String code = new JavaWithProfilesGenerator(schema)
       .generateJava("a.Example");
     assertThat(code).contains("package a");
     assertThat(code).contains("import a.common.CommonMessage");
@@ -682,7 +681,7 @@ public final class JavaGeneratorTest {
             + "	repeated proto_package.Person person = 1;\n"
             + "}\n")
       .build();
-    String code = new JvmGenerator(schema)
+    String code = new JavaWithProfilesGenerator(schema)
       .generateJava("city_package.Home");
     assertThat(code).contains("package city_package");
     assertThat(code).contains("import wire_package.Person");
@@ -700,7 +699,7 @@ public final class JavaGeneratorTest {
                 + "  WEST = 4;\n"
                 + "}\n")
       .build();
-    String code = new JvmGenerator(schema)
+    String code = new JavaWithProfilesGenerator(schema)
       .generateJava("proto_package.Direction");
     assertThat(code).contains("@Deprecated\npublic enum Direction");
   }
@@ -716,7 +715,7 @@ public final class JavaGeneratorTest {
                 + "  WEST = 4;\n"
                 + "}\n")
       .build();
-    String code = new JvmGenerator(schema)
+    String code = new JavaWithProfilesGenerator(schema)
       .generateJava("proto_package.Direction");
     assertThat(code).contains("  @Deprecated\n  EAST(2)");
   }
@@ -729,7 +728,7 @@ public final class JavaGeneratorTest {
                 + "  optional string name = 1 [deprecated = true];\n"
                 + "}\n")
       .build();
-    String code = new JvmGenerator(schema)
+    String code = new JavaWithProfilesGenerator(schema)
       .generateJava("proto_package.Person");
     assertThat(code).contains("  @Deprecated\n  public final String name;");
   }
@@ -743,7 +742,7 @@ public final class JavaGeneratorTest {
                 + "  optional string name = 1;\n"
                 + "}\n")
       .build();
-    String code = new JvmGenerator(schema)
+    String code = new JavaWithProfilesGenerator(schema)
       .generateJava("proto_package.Person");
     assertThat(code).contains("@Deprecated\npublic final class Person");
   }
