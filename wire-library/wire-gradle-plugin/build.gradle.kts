@@ -45,6 +45,7 @@ dependencies {
 
   testImplementation(deps.junit)
   testImplementation(deps.assertj)
+  testImplementation(project(":wire-test-utils"))
 }
 
 val versionWriterTaskProvider = tasks.register("writeVersion", VersionWriterTask::class)

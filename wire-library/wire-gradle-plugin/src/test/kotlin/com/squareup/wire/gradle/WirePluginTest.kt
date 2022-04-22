@@ -3,7 +3,7 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.VERSION
-import okio.Path
+import com.squareup.wire.testing.withPlatformSlashes
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
@@ -1365,18 +1365,6 @@ class WirePluginTest {
         for (c in f.listFiles()!!) unsafeDelete(c)
       }
       f.delete()
-    }
-
-    // TODO(Benoit) The same code lives in `wire-test-utils`, find why we cannot use the code there
-    // instead of duplicating this.
-    private val slash = Path.DIRECTORY_SEPARATOR
-    private val otherSlash = if (slash == "/") "\\" else "/"
-    /**
-     * This returns a string where all other slashes are replaced with the slash of the local platform.
-     * On Windows, `/` will be replaced with `\`. On other platforms, `\` will be replaced with `/`.
-     */
-    private fun String.withPlatformSlashes(): String {
-      return replace(otherSlash, slash)
     }
   }
 }

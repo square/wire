@@ -19,13 +19,13 @@ import com.squareup.wire.buildSchema
 import okio.Buffer
 import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.toByteString
+import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
 import java.io.EOFException
 import java.io.IOException
 import java.net.ProtocolException
-import okio.Path.Companion.toPath
 
 class SchemaProtoAdapterTest {
   private val coffeeSchema = buildSchema {

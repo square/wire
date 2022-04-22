@@ -21,12 +21,12 @@ import com.squareup.wire.buildSchema
 import com.squareup.wire.kotlin.KotlinGenerator.Companion.sanitizeKdoc
 import com.squareup.wire.schema.PruningRules
 import com.squareup.wire.schema.addFromTest
+import okio.Path.Companion.toPath
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
-import okio.Path.Companion.toPath
 
 class KotlinGeneratorTest {
   @Test fun basic() {

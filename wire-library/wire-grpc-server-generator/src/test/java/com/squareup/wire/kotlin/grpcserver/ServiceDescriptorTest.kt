@@ -19,12 +19,12 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.addLocal
-import java.io.File
 import okio.Path.Companion.toPath
 import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import java.io.File
 
 class ServiceDescriptorTest {
   @Test

@@ -17,10 +17,10 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.SchemaBuilder
-import java.io.File
 import okio.Path
 import okio.buffer
 import okio.source
+import java.io.File
 
 fun Schema.protoAdapter(
   messageTypeName: String,
