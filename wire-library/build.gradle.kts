@@ -155,10 +155,13 @@ allprojects {
          * internalUsername=YOUR_USERNAME
          * internalPassword=YOUR_PASSWORD
          */
-        maven {
-          name = "internal"
-          setUrl(providers.gradleProperty("internalUrl"))
-          credentials(PasswordCredentials::class)
+        val internalUrl = providers.gradleProperty("internalUrl")
+        if (internalUrl.isPresent) {
+          maven {
+            name = "internal"
+            setUrl(internalUrl)
+            credentials(PasswordCredentials::class)
+          }
         }
       }
     }
