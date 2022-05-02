@@ -37,6 +37,7 @@ kotlin {
     // Required to generate tests tasks: https://youtrack.jetbrains.com/issue/KT-26547
     linuxX64()
     macosX64()
+    macosArm64()
   }
   sourceSets {
     val commonMain by getting {
@@ -60,7 +61,8 @@ kotlin {
       val iosSimulatorArm64Main by getting
       val linuxX64Main by getting
       val macosX64Main by getting
-      for (it in listOf(iosX64Main, iosArm64Main, iosSimulatorArm64Main, linuxX64Main, macosX64Main)) {
+      val macosArm64Main by getting
+      for (it in listOf(iosX64Main, iosArm64Main, iosSimulatorArm64Main, linuxX64Main, macosX64Main, macosArm64Main)) {
         it.dependsOn(nativeMain)
       }
     }
