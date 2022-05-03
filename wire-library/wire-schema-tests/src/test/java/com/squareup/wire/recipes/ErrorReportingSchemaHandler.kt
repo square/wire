@@ -25,7 +25,7 @@ import com.squareup.wire.schema.Type
 import okio.Path
 
 /** Sample schema validator that enforces a field naming pattern. */
-class ErrorReportingCustomHandler : AbstractSchemaHandler() {
+class ErrorReportingSchemaHandler : AbstractSchemaHandler() {
   override fun handle(type: Type, context: SchemaHandler.Context): Path? {
     val errorCollector = context.errorCollector
 
