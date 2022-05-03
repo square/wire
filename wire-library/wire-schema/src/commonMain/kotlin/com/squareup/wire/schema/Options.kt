@@ -101,7 +101,7 @@ class Options(
         // Retry with one upper level package to resolve relative paths.
         if (path == null) {
           packageName = packageName.substringBeforeLast(".", missingDelimiterValue = "")
-          if (packageName.isNullOrBlank() && !checkedExtensionFields) {
+          if (packageName.isBlank() && !checkedExtensionFields) {
             checkedExtensionFields = true
             val extensionFields = type.extensionFields.filter { it.name == option.name }
             if (extensionFields.size > 1) {
@@ -145,11 +145,13 @@ class Options(
       }
 
       last = nested
-      field = linker.dereference(field, path[i]) ?: return null // Unable to dereference segment.
+      field =
+        linker.dereference(field.type!!, path[i]) ?: return null // Unable to dereference segment.
       linker.request(field)
     }
 
-    last[get(lastProtoType!!, field!!)] = canonicalizeValue(linker, field, option.value)
+    last[get(lastProtoType!!, field!!)] =
+      canonicalizeValue(linker, field.type!!, field.isRepeated, option.value)
 
     check(result.size == 1) // TODO(benoit) might be safe to remove
     val (protoMember, value) = result.entries.first()
@@ -158,7 +160,8 @@ class Options(
 
   private fun canonicalizeValue(
     linker: Linker,
-    context: Field,
+    context: ProtoType,
+    isRepeated: Boolean,
     value: Any
   ): Any {
     when (value) {
@@ -166,43 +169,63 @@ class Options(
         val result = mutableMapOf<ProtoMember, Any>()
         val field = linker.dereference(context, value.name)
         if (field == null) {
-          linker.errors += "unable to resolve option ${value.name} on ${context.type}"
+          linker.errors += "unable to resolve option ${value.name} on $context"
         } else {
-          val protoMember = get(context.type!!, field)
-          result[protoMember] = canonicalizeValue(linker, field, value.value)
+          val protoMember = get(context, field)
+          result[protoMember] =
+            canonicalizeValue(linker, field.type!!, field.isRepeated, value.value)
         }
-        return coerceValueForField(context, result)
+        return coerceValueForField(context, result, isRepeated)
       }
 
       is Map<*, *> -> {
-        val result = mutableMapOf<ProtoMember, Any>()
-        for (entry in value) {
-          val name = entry.key as String
-          val field = linker.dereference(context, name)
-          if (field == null) {
-            linker.errors += "unable to resolve option $name on ${context.type}"
-          } else {
-            val protoMember = get(context.type!!, field)
-            result[protoMember] = canonicalizeValue(linker, field, entry.value!!)
+        if (context.isMap) {
+          // Map fields are defined with two optional entries: `key` and 'value'.
+          val mapFieldKeyAsString = value["key"]
+          val mapFieldValueAsString = value["value"]
+          val mapFieldKey =
+            if (mapFieldKeyAsString == null) null
+            else canonicalizeValue(
+              linker, context.keyType!!, isRepeated = false, mapFieldKeyAsString
+            )
+          val mapFieldValue =
+            if (mapFieldValueAsString == null) null
+            else canonicalizeValue(
+              linker, context.valueType!!, isRepeated = false, mapFieldValueAsString
+            )
+          return coerceValueForField(context, mapOf(mapFieldKey to mapFieldValue), isRepeated)
+
+        } else {
+          val result = mutableMapOf<ProtoMember, Any>()
+          for (entry in value) {
+            val name = entry.key as String
+            val field = linker.dereference(context, name)
+            if (field == null) {
+              linker.errors += "unable to resolve option $name on $context"
+            } else {
+              val protoMember = get(context, field)
+              result[protoMember] =
+                canonicalizeValue(linker, field.type!!, field.isRepeated, entry.value!!)
+            }
           }
+          return coerceValueForField(context, result, isRepeated)
         }
-        return coerceValueForField(context, result)
       }
 
       is List<*> -> {
         val result = mutableListOf<Any>()
         for (element in value) {
-          result.addAll(canonicalizeValue(linker, context, element!!) as List<Any>)
+          result.addAll(canonicalizeValue(linker, context, isRepeated, element!!) as List<Any>)
         }
-        return coerceValueForField(context, result)
+        return coerceValueForField(context, result, isRepeated)
       }
 
       is String -> {
-        return coerceValueForField(context, value)
+        return coerceValueForField(context, value, isRepeated)
       }
 
       is OptionElement.OptionPrimitive -> {
-        return canonicalizeValue(linker, context, value.value)
+        return canonicalizeValue(linker, context, isRepeated, value.value)
       }
 
       else -> {
@@ -211,9 +234,9 @@ class Options(
     }
   }
 
-  private fun coerceValueForField(context: Field, value: Any): Any {
+  private fun coerceValueForField(context: ProtoType, value: Any, isRepeated: Boolean): Any {
     return when {
-      context.isRepeated -> value as? List<*> ?: listOf(value)
+      isRepeated || context.isMap -> value as? List<*> ?: listOf(value)
       value is List<*> -> value.single()!!
       else -> value
     }

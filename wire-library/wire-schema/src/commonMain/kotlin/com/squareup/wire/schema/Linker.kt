@@ -348,9 +348,9 @@ class Linker {
     requestedFields.add(field)
   }
 
-  /** Returns the field named [field] on the message type of [self]. */
+  /** Returns the field named [field] on the message type of [protoType]. */
   fun dereference(
-    self: Field,
+    protoType: ProtoType,
     field: String
   ): Field? {
     @Suppress("NAME_SHADOWING") var field = field
@@ -358,7 +358,7 @@ class Linker {
       field = field.substring(1, field.length - 1)
     }
 
-    val type = getForOptions(self.type!!)
+    val type = getForOptions(protoType)
     if (type is MessageType) {
       val messageField = type.field(field)
       if (messageField != null) return messageField

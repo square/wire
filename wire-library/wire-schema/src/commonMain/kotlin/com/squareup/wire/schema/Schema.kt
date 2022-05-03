@@ -17,6 +17,7 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.ProtoAdapter
 import kotlin.collections.set
+import okio.Path
 
 /**
  * A collection of .proto files that describe a set of messages. A schema is *linked*: each
@@ -41,6 +42,9 @@ class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
 
   /** Returns the proto file at [path], or null if this schema has no such file.  */
   fun protoFile(path: String): ProtoFile? = protoFiles.firstOrNull { it.location.path == path }
+
+  /** Returns the proto file at [path], or null if this schema has no such file.  */
+  fun protoFile(path: Path): ProtoFile? = protoFile(path.toString())
 
   /** Returns the proto file containing this [protoType], or null if there isn't such file.  */
   fun protoFile(protoType: ProtoType): ProtoFile? = protoFilesIndex[protoType]
