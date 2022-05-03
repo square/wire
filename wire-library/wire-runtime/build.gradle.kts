@@ -99,7 +99,6 @@ kotlin {
       val macosX64Test by getting
       val macosArm64Test by getting
 
-
       for (it in listOf(iosX64Main, iosArm64Main, iosSimulatorArm64Main, linuxX64Main, macosX64Main, macosArm64Main)) {
         it.dependsOn(nativeMain)
       }
