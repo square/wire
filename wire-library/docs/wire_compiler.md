@@ -490,10 +490,12 @@ wire {
 
 ### Custom Handlers
 
-Wire has an unstable API to generate code or other artifacts from a proto schema.
+With a custom schema handler, you can handle a proto schema in any way you want, including code
+generation or other side effects such as validation, logging, etc.
 
-You'll need to implement the [CustomHandlerBeta] interface. See our [MarkdownHandler] for a sample
-implementation. Note that this interface is subject to change.
+You'll need to first implement the [SchemaHandler] interface, and then the [SchemaHandler.Factory]
+interface which is to return an instance of the former. See our [recipes][SchemaHandlerRecipes] for
+different use cases' implementations.
 
 Build that into an `jar` artifact and add that as a buildscript dependency to your Gradle project.
 
@@ -515,8 +517,8 @@ wire {
    //  * be in the buildscript dependencies for this Gradle project
    //  * be a public class
    //  * have a public no-arguments constructor
-   //  * implement the com.squareup.wire.schema.CustomHandlerBeta interface
-   customHandlerClass = "com.example.MyCustomHandler"
+   //  * implement the com.squareup.wire.schema.SchemaHandler.Factory interface
+   schemaHandlerFactoryClass = "com.example.MyCustomHandlerFactory"
 
    // These options work the same as the java and kotlin targets above.
    includes = ['com.example.pizza.*']
@@ -527,8 +529,9 @@ wire {
 }
 ```
 
- [CustomHandlerBeta]: https://github.com/square/wire/blob/5fac94f86879fdd7e412cddbeb51e09a708b2b64/wire-library/wire-compiler/src/main/java/com/squareup/wire/schema/Target.kt#L583-L596
- [MarkdownHandler]: https://github.com/square/wire/blob/ebacb88b1c487a7e7d97ff3729c67907e1f95616/wire-library/wire-compiler/src/test/java/com/squareup/wire/schema/MarkdownHandler.kt
+ [SchemaHandler]: https://github.com/square/wire/blob/1e791a64ec34a2e4fe0da240d6fad7266285a307/wire-library/wire-compiler/src/main/java/com/squareup/wire/schema/SchemaHandler.kt#L23-L29
+ [SchemaHandler.Factory]: https://github.com/square/wire/blob/1e791a64ec34a2e4fe0da240d6fad7266285a307/wire-library/wire-compiler/src/main/java/com/squareup/wire/schema/SchemaHandler.kt#L40-L42
+ [SchemaHandlerRecipes]: https://github.com/square/wire/blob/1e791a64ec34a2e4fe0da240d6fad7266285a307/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
  [gradle]: https://gradle.org/
  [kotlinpoet]: https://github.com/square/kotlinpoet
  [maven_coordinates]: https://maven.apache.org/pom.html#Maven_Coordinates

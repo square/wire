@@ -26,7 +26,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import kotlin.test.assertFailsWith
 
-class ErrorReportingCustomHandlerTest {
+class ErrorReportingSchemaHandlerTest {
   @Test fun errorsWhenStartsWithA() {
     val schema = buildSchema {
       add(
@@ -61,7 +61,7 @@ class ErrorReportingCustomHandlerTest {
       errorCollector = errorCollector,
     )
 
-    ErrorReportingCustomHandler().handle(schema, context)
+    ErrorReportingSchemaHandler().handle(schema, context)
     val exception = assertFailsWith<SchemaException> {
       errorCollector.throwIfNonEmpty()
     }
