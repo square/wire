@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.java
+package com.squareup.wire.schema
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
-import com.squareup.wire.java.internal.ProfileFileElement
-import com.squareup.wire.schema.ProtoType
 import com.squareup.kotlinpoet.ClassName as KClassName
 import com.squareup.kotlinpoet.TypeName as KTypeName
+import com.squareup.wire.schema.internal.ProfileFileElement
 
 /**
  * Describes how to map `.proto` to `.java`. A single repository of `.proto` files
  * may have multiple profiles; for example a project may target both Android and Java.
  */
-class Profile(
+actual class Profile(
   private val profileFiles: List<ProfileFileElement> = emptyList()
 ) {
   fun javaTarget(type: ProtoType): TypeName? {
