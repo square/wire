@@ -11,7 +11,6 @@ plugins {
 
 dependencies {
   api(project(":wire-schema"))
-  implementation(project(":wire-profiles"))
   implementation(project(":wire-runtime"))
   implementation(project(":wire-grpc-client"))
   implementation(project(":wire-grpc-server-generator"))

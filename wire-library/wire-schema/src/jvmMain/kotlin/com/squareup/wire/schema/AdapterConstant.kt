@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.java
+package com.squareup.wire.schema
 
 import com.squareup.javapoet.ClassName
 import com.squareup.kotlinpoet.ClassName as KClassName

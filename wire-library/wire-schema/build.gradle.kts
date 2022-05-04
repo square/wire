@@ -39,6 +39,8 @@ kotlin {
       dependencies {
         implementation(deps.okio.core)
         api(deps.guava)
+        api(deps.javapoet)
+        api(deps.kotlinpoet)
       }
     }
     val jvmTest by getting {
@@ -50,6 +52,7 @@ kotlin {
         implementation(deps.junit)
         implementation(deps.kotlin.test.junit)
         implementation(deps.protobuf.java)
+        implementation(deps.okio.fakefilesystem)
       }
     }
     if (kmpJsEnabled) {

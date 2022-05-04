@@ -16,7 +16,8 @@
 package com.squareup.wire.java
 
 import com.squareup.javapoet.JavaFile
-import com.squareup.wire.java.internal.ProfileParser
+import com.squareup.wire.schema.internal.ProfileParser
+import com.squareup.wire.schema.Profile
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Schema
 import java.io.IOException

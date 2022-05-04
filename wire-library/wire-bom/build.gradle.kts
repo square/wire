@@ -15,10 +15,10 @@ dependencies {
     api(project(":wire-java-generator"))
     api(project(":wire-kotlin-generator"))
     api(project(":wire-moshi-adapter"))
-    api(project(":wire-profiles"))
     api(project(":wire-reflector"))
     api(project(":wire-runtime"))
     api(project(":wire-schema"))
+    api(project(":wire-schema-tests"))
     api(project(":wire-swift-generator"))
   }
 }
