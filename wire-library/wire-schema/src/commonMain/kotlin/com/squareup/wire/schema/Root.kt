@@ -15,16 +15,13 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.wire.java.internal.ProfileFileElement
-import com.squareup.wire.java.internal.ProfileParser
-import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
-import com.squareup.wire.schema.internal.parser.ProtoParser
+import com.squareup.wire.schema.internal.ProfileFileElement
+import com.squareup.wire.schema.internal.ProfileParser
 import com.squareup.wire.schema.internal.withUnixSlashes
 import okio.FileSystem
 import okio.IOException
 import okio.Path
 import okio.Path.Companion.toPath
-import okio.openZip
 
 internal sealed class Root {
   abstract val base: String?
@@ -50,8 +47,8 @@ internal fun Location.roots(
     // Handle descriptor.proto, etc. by returning a placeholder path.
     return listOf(ProtoFilePath(this, fs, path.toPath()))
   } else if (base.isNotEmpty()) {
-    val roots = baseToRoots.computeIfAbsent(base) {
-      Location.get(it).roots(fs)
+    val roots = baseToRoots.getOrPut(base) {
+      Location.get(base).roots(fs)
     }
     for (root in roots) {
       val resolved = root.resolve(path) ?: continue
@@ -60,38 +57,21 @@ internal fun Location.roots(
     throw IllegalArgumentException("unable to resolve $this")
   } else {
     val path = path.toPath()
-    return baseToRoots.computeIfAbsent(this.path) {
+    return baseToRoots.getOrPut(this.path) {
       path.roots(fs, this)
     }
   }
 }
 
-/** Returns this path's roots. */
-private fun Path.roots(fileSystem: FileSystem, location: Location): List<Root> {
-  val symlinkTarget = fileSystem.metadataOrNull(this)?.symlinkTarget
-  val path = symlinkTarget ?: this
-  return when {
-    fileSystem.metadataOrNull(path)?.isDirectory == true -> {
-      check(location.base.isEmpty())
-      listOf(DirectoryRoot(location.path, fileSystem, path))
-    }
+internal expect fun Path.roots(fileSystem: FileSystem, location: Location): List<Root>
 
-    path.toString().endsWith(".proto") -> listOf(ProtoFilePath(location, fileSystem, path))
-
-    // Handle a .zip or .jar file by adding all .proto files within.
-    else -> {
-      try {
-        check(location.base.isEmpty())
-        val sourceFs = fileSystem.openZip(path)
-        listOf(DirectoryRoot(location.path, sourceFs, "/".toPath()))
-      } catch (_: IOException) {
-        throw IllegalArgumentException(
-          "expected a directory, archive (.zip / .jar / etc.), or .proto: $this"
-        )
-      }
-    }
-  }
-}
+/**
+ * Returns the parsed proto file and the path that should be used to import it.
+ *
+ * This is a path like `squareup/dinosaurs/Dinosaur.proto` for a file based on its package name
+ * (like `squareup.dinosaurs`) and its file name (like `Dinosaur.proto`).
+ */
+internal expect fun ProtoFilePath.parse(): ProtoFile
 
 /**
  * A logical location (the base location and path to the file), plus the physical path to load.
@@ -110,25 +90,6 @@ internal class ProtoFilePath(
   override fun resolve(import: String): ProtoFilePath? {
     if (import == location.path) return this
     return null
-  }
-
-  /**
-   * Returns the parsed proto file and the path that should be used to import it.
-   *
-   * This is a path like `squareup/dinosaurs/Dinosaur.proto` for a file based on its package name
-   * (like `squareup.dinosaurs`) and its file name (like `Dinosaur.proto`).
-   */
-  fun parse(): ProtoFile {
-    try {
-      fileSystem.read(path) {
-        val charset = readBomAsCharset()
-        val data = readString(charset)
-        val element = ProtoParser.parse(location, data)
-        return ProtoFile.get(element)
-      }
-    } catch (e: IOException) {
-      throw IOException("Failed to load $path", e)
-    }
   }
 
   fun parseProfile(): ProfileFileElement {
