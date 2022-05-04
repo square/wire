@@ -32,6 +32,19 @@ fun FileSystem.findFiles(path: String): Set<String> {
     .toSet()
 }
 
+fun FileSystem.add(
+  pathString: String,
+  contents: String,
+) {
+  val path = pathString.toPath()
+  if (path.parent != null) {
+    createDirectories(path.parent!!)
+  }
+  write(path) {
+    writeUtf8(contents)
+  }
+}
+
 internal val slash = Path.DIRECTORY_SEPARATOR
 internal val otherSlash = if (slash == "/") "\\" else "/"
 

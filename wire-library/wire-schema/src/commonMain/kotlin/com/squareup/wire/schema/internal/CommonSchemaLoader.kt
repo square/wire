@@ -107,7 +107,7 @@ internal class CommonSchemaLoader : Loader, ProfileLoader {
 
   /** Returns the files in the source path. */
   @Throws(IOException::class)
-  internal fun loadSourcePathFiles(): List<ProtoFile> {
+  private fun loadSourcePathFiles(): List<ProtoFile> {
     check(sourcePathRoots != null && protoPathRoots != null) {
       "call initRoots() before calling loadSourcePathFiles()"
     }
@@ -187,10 +187,6 @@ internal class CommonSchemaLoader : Loader, ProfileLoader {
       }
     }
     return result
-  }
-
-  internal fun reportLoadingErrors() {
-    errors.throwIfNonEmpty()
   }
 
   override fun loadProfile(name: String, schema: Schema): Profile {

@@ -35,6 +35,13 @@ kotlin {
         api(project(":wire-runtime"))
       }
     }
+    val commonTest by getting {
+      dependencies {
+        implementation(project(":wire-test-utils"))
+        implementation(deps.okio.fakefilesystem)
+        implementation(deps.kotlin.test.junit)
+      }
+    }
     val jvmMain by getting {
       dependencies {
         implementation(deps.okio.core)
