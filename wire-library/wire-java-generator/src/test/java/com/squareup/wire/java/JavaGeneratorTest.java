@@ -25,7 +25,7 @@ import java.io.IOException;
 import okio.Path;
 import org.junit.Test;
 
-import static com.squareup.wire.schema.SchemaHelpersKt.addFromTest;
+import static com.squareup.wire.schema.SchemaHelperUtils.addFromTest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
