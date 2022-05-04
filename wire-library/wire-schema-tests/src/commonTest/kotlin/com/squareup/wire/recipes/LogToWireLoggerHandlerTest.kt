@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("UsePropertyAccessSyntax")
+
 package com.squareup.wire.recipes
 
 import com.squareup.wire.WireTestLogger
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.SchemaHandler
-import okio.BufferedSource
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
-class LogToFileHandlerTest {
-  @Test fun loggingTypes() {
+class LogToWireLoggerHandlerTest {
+  @Test fun loggingArtifacts() {
     val schema = buildSchema {
       add(
         name = "test/message.proto".toPath(),
@@ -55,21 +57,18 @@ class LogToFileHandlerTest {
           """.trimMargin()
       )
     }
-
+    val logger = WireTestLogger()
     val context = SchemaHandler.Context(
       fileSystem = FakeFileSystem(),
-      outDirectory = "/".toPath(),
-      logger = WireTestLogger(),
+      outDirectory = "out".toPath(),
+      logger = logger,
       sourcePathPaths = setOf("test/message.proto", "test/service.proto"),
     )
-    LogToFileHandler().handle(schema, context)
+    LogToWireLoggerHandler().handle(schema, context)
 
-    val content = context.fileSystem.read("log.txt".toPath(), BufferedSource::readUtf8)
-    val expected = """
-        |Generating type: test.Request
-        |Generating type: test.Response
-        |Generating service: test.MyService
-        |""".trimMargin()
-    assertEquals(expected, content)
+    assertEquals(Triple("out".toPath(), "test", "Request"), logger.artifactHandled.removeFirst())
+    assertEquals(Triple("out".toPath(), "test", "Response"), logger.artifactHandled.removeFirst())
+    assertEquals(Triple("out".toPath(), "test", "MyService"), logger.artifactHandled.removeFirst())
+    assertTrue(logger.artifactHandled.isEmpty())
   }
 }
