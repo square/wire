@@ -10,7 +10,7 @@ actual class SchemaLoader : Loader, ProfileLoader {
 
   constructor(fileSystem: NioFileSystem) : this(fileSystem.toOkioFileSystem())
 
-  constructor(fileSystem: FileSystem) {
+  actual constructor(fileSystem: FileSystem) {
     delegate = CommonSchemaLoader(fileSystem)
   }
 

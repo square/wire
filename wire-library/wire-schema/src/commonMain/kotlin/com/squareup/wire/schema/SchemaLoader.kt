@@ -15,13 +15,14 @@
  */
 package com.squareup.wire.schema
 
+import okio.FileSystem
 import okio.IOException
 
 /**
  * Load proto files and their transitive dependencies and parse them. Keep track of which files were
  * loaded from where so that we can use that information later when deciding what to generate.
  */
-expect class SchemaLoader : Loader, ProfileLoader {
+expect class SchemaLoader(fileSystem: FileSystem) : Loader, ProfileLoader {
   /** Strict by default. Note that golang cannot build protos with package cycles. */
   var permitPackageCycles: Boolean
 
