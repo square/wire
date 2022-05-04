@@ -21,6 +21,11 @@ import com.squareup.wire.schema.SchemaHandler
 import com.squareup.wire.testing.containsRelativePaths
 import com.squareup.wire.testing.findFiles
 import com.squareup.wire.testing.readUtf8
+import com.squareup.wire.testing.findFiles
+import com.squareup.wire.testing.readUtf8
+import com.squareup.wire.testing.withPlatformSlashes
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat

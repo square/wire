@@ -2,8 +2,6 @@ import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
-// TODO(Benoit) this module can be multiplatform.
-
 plugins {
   kotlin("jvm")
   id("org.jetbrains.dokka")
@@ -11,17 +9,13 @@ plugins {
 }
 
 dependencies {
-  api(deps.junit)
-  api(project(":wire-compiler"))
   api(project(":wire-schema"))
-  implementation(project(":wire-kotlin-generator"))
-  implementation(project(":wire-java-generator"))
-  implementation(project(":wire-swift-generator"))
-  implementation(deps.okio.core)
+  api(deps.okio.core)
+  implementation(deps.junit)
   implementation(deps.okio.fakefilesystem)
+  testImplementation(project(":wire-test-utils"))
   testImplementation(deps.assertj)
   testImplementation(deps.kotlin.test.junit)
-  testImplementation(project(":wire-test-utils"))
 }
 
 configure<MavenPublishBaseExtension> {
