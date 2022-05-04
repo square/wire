@@ -1,46 +1,47 @@
-/*
- * Copyright 2021 Square Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-import com.google.protobuf.gradle.protobuf
-import com.google.protobuf.gradle.protoc
+import com.vanniktech.maven.publish.JavadocJar.Dokka
+import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
 plugins {
-  id("java-library")
-  kotlin("jvm")
-  id("com.google.protobuf")
+  kotlin("multiplatform")
 }
 
-protobuf {
-  protoc {
-    artifact = deps.protobuf.protoc
+kotlin {
+  jvm {
+    withJava()
   }
-}
+  if (kmpJsEnabled) {
+    js {
+      configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
+        tasks.getByName(compileKotlinTaskName) {
+          kotlinOptions {
+            moduleKind = "umd"
+            sourceMap = true
+            metaInfo = true
+          }
+        }
+      }
+      nodejs()
+      // TODO(jwilson): fix Okio for JS to support browser() by polyfilling OS.
+      // browser()
+    }
+  }
 
-dependencies {
-  api(deps.moshi)
-  api(project(":wire-runtime"))
-  api(project(":wire-schema"))
-  api(project(":wire-schema-tests"))
-  implementation(project(":wire-compiler"))
-  implementation(project(":wire-java-generator"))
-  implementation(project(":wire-kotlin-generator"))
-  implementation(deps.assertj)
-  implementation(deps.guava)
-  implementation(deps.jimfs)
-  implementation(deps.junit)
-  implementation(deps.protobuf.java)
-  implementation(deps.okio.core)
-  implementation(deps.okio.fakefilesystem)
+  sourceSets {
+    val commonMain by getting {
+      dependencies {
+        api(deps.okio.core)
+        api(project(":wire-runtime"))
+        api(project(":wire-schema"))
+        api(project(":wire-schema-tests"))
+      }
+    }
+    val jvmMain by getting {
+      dependencies {
+        api(deps.moshi)
+        api(deps.protobuf.java)
+        api(deps.assertj)
+      }
+    }
+  }
 }

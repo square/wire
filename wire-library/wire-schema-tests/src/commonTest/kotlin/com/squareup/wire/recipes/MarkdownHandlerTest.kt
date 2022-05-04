@@ -18,10 +18,11 @@ package com.squareup.wire.recipes
 import com.squareup.wire.WireTestLogger
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.SchemaHandler
+import com.squareup.wire.testing.findFiles
+import com.squareup.wire.testing.readUtf8
+import com.squareup.wire.testing.withPlatformSlashes
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import okio.FileSystem
-import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 
@@ -102,29 +103,4 @@ class MarkdownHandlerTest {
       fileSystem.readUtf8("generated/markdown/squareup/colors/Red.md"),
     )
   }
-}
-
-// TODO(Benoit) Some of this logic also lives in wire-test-utils. Let's find a way to share that.
-private val slash = Path.DIRECTORY_SEPARATOR
-private val otherSlash = if (slash == "/") "\\" else "/"
-
-/**
- * This returns a string where all other slashes are replaced with the slash of the local platform.
- * On Windows, `/` will be replaced with `\`. On other platforms, `\` will be replaced with `/`.
- */
-private fun String.withPlatformSlashes(): String {
-  return replace(otherSlash, slash)
-}
-
-private fun FileSystem.readUtf8(pathString: String): String {
-  read(pathString.toPath()) {
-    return readUtf8()
-  }
-}
-
-private fun FileSystem.findFiles(path: String): Set<String> {
-  return listRecursively(path.withPlatformSlashes().toPath())
-    .filter { !metadata(it).isDirectory }
-    .map { it.toString() }
-    .toSet()
 }

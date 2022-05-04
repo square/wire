@@ -40,6 +40,7 @@ kotlin {
     }
     val commonTest by getting {
       dependencies {
+        implementation(project(":wire-test-utils"))
         implementation(deps.assertj)
         implementation(deps.kotlin.test.junit)
       }
