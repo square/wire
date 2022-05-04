@@ -16,8 +16,8 @@
 package com.squareup.wire.schema
 
 import com.squareup.javapoet.ClassName
-import com.squareup.wire.java.AdapterConstant
-import com.squareup.wire.java.Profile
+import com.squareup.wire.schema.AdapterConstant
+import com.squareup.wire.schema.Profile
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
 import okio.Path
@@ -27,6 +27,7 @@ import org.junit.Assert.fail
 import org.junit.Test
 import java.io.IOException
 
+// TODO(Benoit) Move to `commonTest`.
 class ProfileLoaderTest {
   private val fs = FakeFileSystem().apply {
     if (Path.DIRECTORY_SEPARATOR == "\\") emulateWindows() else emulateUnix()

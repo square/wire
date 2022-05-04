@@ -15,14 +15,14 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.schema.CoreLoader.WIRE_RUNTIME_JAR
-import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.JavaTarget
 import com.squareup.wire.schema.KotlinTarget
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.SwiftTarget
 import com.squareup.wire.schema.Target
+import com.squareup.wire.schema.WIRE_RUNTIME_JAR
 import com.squareup.wire.schema.WireRun
+import com.squareup.wire.schema.isWireRuntimeProto
 import com.squareup.wire.schema.toOkioFileSystem
 import okio.FileNotFoundException
 import okio.FileSystem
