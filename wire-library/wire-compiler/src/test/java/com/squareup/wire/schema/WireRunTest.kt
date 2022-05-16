@@ -1111,6 +1111,49 @@ class WireRunTest {
     }
   }
 
+  /** We had a bug where extension fields names needed to be globally unique. */
+  @Test
+  fun conflictingExtends() {
+    writeSquareProto()
+    writeTriangleProto()
+    fs.add(
+      "polygons/src/main/proto/squareup/polygons/conflicting_extends.proto",
+      """
+        |syntax = "proto2";
+        |package squareup.options;
+        |import "squareup/polygons/square.proto";
+        |import "squareup/polygons/triangle.proto";
+        |
+        |extend squareup.polygons.Square {
+        |  optional string documentation_url = 22201;
+        |}
+        |
+        |extend squareup.polygons.Triangle {
+        |  optional string documentation_url = 22202;
+        |}
+        """.trimMargin()
+    )
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("polygons/src/main/proto")),
+      targets = listOf(
+        KotlinTarget(
+          outDirectory = "generated/kt",
+          emitAppliedOptions = false,
+          exclusive = false
+        )
+      )
+    )
+    wireRun.execute(fs, logger)
+    assertThat(fs.findFiles("generated")).containsRelativePaths(
+      "generated/kt/com/squareup/polygons/Square.kt",
+      "generated/kt/squareup/polygons/Triangle.kt",
+    )
+    assertThat(fs.readUtf8("generated/kt/com/squareup/polygons/Square.kt"))
+      .contains("public val documentation_url: String")
+    assertThat(fs.readUtf8("generated/kt/squareup/polygons/Triangle.kt"))
+      .contains("public val documentation_url: String")
+  }
+
   private fun writeOrangeProto() {
     fs.add(
       "colors/src/main/proto/squareup/colors/orange.proto",
