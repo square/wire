@@ -80,7 +80,6 @@ import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
 import okio.ByteString;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.squareup.wire.internal._PlatformKt.camelCase;
 import static com.squareup.wire.schema.internal.JvmLanguages.annotationTargetType;
@@ -311,7 +310,7 @@ public final class JavaGenerator {
         for (Field field : extend.getFields()) {
           if (!eligibleAsAnnotationMember(schema, field)) continue;
 
-          ProtoMember protoMember = field.getMember();
+          ProtoMember protoMember = extend.member(field);
           String simpleName = camelCase(protoMember.getSimpleName(), true) + "Option";
           ClassName className = ClassName.get(javaPackage, simpleName);
           memberToJavaName.put(protoMember, className);
@@ -2074,9 +2073,9 @@ public final class JavaGenerator {
         nameAllocators.getUnchecked(enumType).get(constantZero));
   }
 
-  /** Returns the full name of the class generated for {@code field}. */
-  public ClassName generatedTypeName(Field field) {
-    return (ClassName) memberToJavaName.get(field.getMember());
+  /** Returns the full name of the class generated for {@code member}. */
+  public ClassName generatedTypeName(ProtoMember member) {
+    return (ClassName) memberToJavaName.get(member);
   }
 
   // Example:
@@ -2113,7 +2112,7 @@ public final class JavaGenerator {
       returnType = typeName(field.getType());
     }
 
-    ClassName javaType = generatedTypeName(field);
+    ClassName javaType = generatedTypeName(extend.member(field));
 
     TypeSpec.Builder builder = TypeSpec.annotationBuilder(javaType.simpleName())
         .addModifiers(PUBLIC)

@@ -140,7 +140,7 @@ data class JavaTarget(
 
       override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? {
         val typeSpec = javaGenerator.generateOptionType(extend, field) ?: return null
-        val javaTypeName = javaGenerator.generatedTypeName(field)
+        val javaTypeName = javaGenerator.generatedTypeName(extend.member(field))
         return write(javaTypeName, typeSpec, field.qualifiedName, field.location, context)
       }
 
@@ -297,7 +297,7 @@ data class KotlinTarget(
 
       override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? {
         val typeSpec = kotlinGenerator.generateOptionType(extend, field) ?: return null
-        val name = kotlinGenerator.generatedTypeName(field)
+        val name = kotlinGenerator.generatedTypeName(extend.member(field))
         return write(name, typeSpec, field.qualifiedName, field.location, context)
       }
 

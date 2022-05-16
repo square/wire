@@ -45,11 +45,6 @@ class ClaimedDefinitions {
     claim(service.type)
   }
 
-  /** Tracks that [field] has been handled. */
-  fun claim(field: Field) {
-    claim(field.member)
-  }
-
   /** Returns true if [type] has already been handled. */
   operator fun contains(type: ProtoType) = type in types
 
@@ -61,7 +56,4 @@ class ClaimedDefinitions {
 
   /** Returns true if [service] has already been handled. */
   operator fun contains(service: Service) = contains(service.type)
-
-  /** Returns true if [field] has already been handled. */
-  operator fun contains(field: Field) = contains(field.member)
 }
