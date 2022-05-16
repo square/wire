@@ -29,6 +29,8 @@ data class Extend(
   var type: ProtoType? = null
     private set
 
+  fun member(field: Field): ProtoMember = ProtoMember.get(type!!, field)
+
   fun link(linker: Linker) {
     val linker = linker.withContext(this)
     type = linker.resolveMessageType(name)

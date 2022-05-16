@@ -88,14 +88,15 @@ abstract class AbstractSchemaHandler : SchemaHandler {
     // TODO(jwilson): extend emitting rules to support include/exclude of extension fields.
     protoFile.extendList
       .flatMap { extend -> extend.fields.map { field -> extend to field } }
-      .filter { if (claimedDefinitions != null) it.second !in claimedDefinitions else true }
-      .forEach { extendToField ->
-        val (extend, field) = extendToField
+      .filter { (extend, field) ->
+        claimedDefinitions == null || extend.member(field) !in claimedDefinitions
+      }
+      .forEach { (extend, field) ->
         // TODO(Benoît) claim path.
         handle(extend, field, context)
 
         // We don't let other targets handle this one.
-        claimedDefinitions?.claim(field)
+        claimedDefinitions?.claim(extend.member(field))
       }
   }
 

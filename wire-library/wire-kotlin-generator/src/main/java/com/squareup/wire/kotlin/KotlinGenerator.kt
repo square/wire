@@ -102,11 +102,11 @@ import com.squareup.wire.schema.internal.eligibleAsAnnotationMember
 import com.squareup.wire.schema.internal.javaPackage
 import com.squareup.wire.schema.internal.optionValueToInt
 import com.squareup.wire.schema.internal.optionValueToLong
+import java.util.Locale
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.ByteString
 import okio.ByteString.Companion.encode
-import java.util.Locale
 
 class KotlinGenerator private constructor(
   val schema: Schema,
@@ -153,8 +153,8 @@ class KotlinGenerator private constructor(
   /** Returns the full name of the class generated for [type].  */
   fun generatedTypeName(type: Type) = type.typeName as ClassName
 
-  /** Returns the full name of the class generated for [field].  */
-  fun generatedTypeName(field: Field) = memberToKotlinName[field.member] as ClassName
+  /** Returns the full name of the class generated for [member].  */
+  fun generatedTypeName(member: ProtoMember) = memberToKotlinName[member] as ClassName
 
   /**
    * Returns the full name of the class generated for [service]#[rpc]. This returns a name like
@@ -2077,7 +2077,7 @@ class KotlinGenerator private constructor(
       else -> field.type!!.typeName
     }
 
-    val kotlinType = generatedTypeName(field)
+    val kotlinType = generatedTypeName(extend.member(field))
 
     val builder = TypeSpec.annotationBuilder(kotlinType)
       .addModifiers(PUBLIC)
@@ -2527,7 +2527,7 @@ class KotlinGenerator private constructor(
           if (extend.annotationTargets.isEmpty()) continue
           for (field in extend.fields) {
             if (!eligibleAsAnnotationMember(schema, field)) continue
-            val protoMember = field.member
+            val protoMember = extend.member(field)
             val simpleName = camelCase(protoMember.simpleName, upperCamel = true) + "Option"
             val className = ClassName(kotlinPackage, simpleName)
             memberToKotlinName[protoMember] = className
