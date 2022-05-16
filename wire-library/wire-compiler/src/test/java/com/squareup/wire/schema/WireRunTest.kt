@@ -1135,13 +1135,7 @@ class WireRunTest {
     )
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("polygons/src/main/proto")),
-      targets = listOf(
-        KotlinTarget(
-          outDirectory = "generated/kt",
-          emitAppliedOptions = false,
-          exclusive = false
-        )
-      )
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
     )
     wireRun.execute(fs, logger)
     assertThat(fs.findFiles("generated")).containsRelativePaths(
