@@ -461,6 +461,7 @@ class KotlinGenerator private constructor(
               }
             }
           }
+          else -> {}
         }
       }
     }
