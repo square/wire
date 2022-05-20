@@ -32,6 +32,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
+import java.lang.reflect.Array as JavaArray
 import java.util.concurrent.atomic.AtomicBoolean
 
 class WirePlugin : Plugin<Project> {
@@ -159,17 +160,22 @@ class WirePlugin : Plugin<Project> {
       // Even though we add the Wire output directories into the corresponding sourceSets, the
       // compilation tasks won't know about them so we fix that here.
       if (hasJavaOutput) {
-        project.tasks.matching { it.name == "compileJava" }.configureEach {
-          (it as JavaCompile).source(generatedSourcesDirectories)
-        }
+        project.tasks
+          .withType(JavaCompile::class.java)
+          .matching { it.name == "compileJava" }
+          .configureEach {
+            it.source(generatedSourcesDirectories)
+          }
       }
       if (hasJavaOutput || hasKotlinOutput) {
-        project.tasks.matching {
-          it.name == "compileKotlin" || it.name == "compile${source.name.capitalize()}Kotlin"
-        }.configureEach {
-          // Note that [KotlinCompile.source] will process files but will ignore strings.
-          (it as KotlinCompile).source(generatedSourcesDirectories)
-        }
+        project.tasks
+          .withType(KotlinCompile::class.java)
+          .matching {
+            it.name == "compileKotlin" || it.name == "compile${source.name.capitalize()}Kotlin"
+          }.configureEach {
+            // Note that [KotlinCompile.source] will process files but will ignore strings.
+            SOURCE_FUNCTION.invoke(it, arrayOf(generatedSourcesDirectories))
+          }
       }
 
       // TODO: pair up generatedSourceDirectories with their targets so we can be precise.
@@ -276,5 +282,11 @@ class WirePlugin : Plugin<Project> {
   internal companion object {
     const val PARENT_TASK = "generateProtos"
     const val GROUP = "wire"
+    // The signature of this function changed in Kotlin 1.7, so we invoke it reflectively
+    // to support both.
+    // 1.6.x: `fun source(vararg sources: Any): SourceTask
+    // 1.7.x: `fun source(vararg sources: Any)
+    private val SOURCE_FUNCTION = KotlinCompile::class.java
+      .getMethod("source", JavaArray.newInstance(Any::class.java, 0).javaClass)
   }
 }
