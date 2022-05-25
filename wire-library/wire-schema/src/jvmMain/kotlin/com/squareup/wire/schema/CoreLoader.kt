@@ -30,18 +30,6 @@ import okio.asResourceFileSystem
  * If the user has provided their own version of these protos, those are preferred.
  */
 actual object CoreLoader : Loader {
-  private const val ANY_PROTO = "google/protobuf/any.proto"
-  private const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
-  private const val DURATION_PROTO = "google/protobuf/duration.proto"
-  private const val EMPTY_PROTO = "google/protobuf/empty.proto"
-  private const val STRUCT_PROTO = "google/protobuf/struct.proto"
-  private const val TIMESTAMP_PROTO = "google/protobuf/timestamp.proto"
-  private const val WRAPPERS_PROTO = "google/protobuf/wrappers.proto"
-  private const val WIRE_EXTENSIONS_PROTO = "wire/extensions.proto"
-
-  /** A special base directory used for Wire's built-in .proto files. */
-  const val WIRE_RUNTIME_JAR = "wire-runtime.jar"
-
   private val resourceFileSystem by lazy {
     CoreLoader::class.java.classLoader.asResourceFileSystem()
   }
@@ -57,22 +45,6 @@ actual object CoreLoader : Loader {
     }
 
     throw error("unexpected load: $path")
-  }
-
-  fun isWireRuntimeProto(location: Location): Boolean {
-    return location.base == WIRE_RUNTIME_JAR && isWireRuntimeProto(location.path)
-  }
-
-  /** Returns true if [path] is bundled in the wire runtime. */
-  fun isWireRuntimeProto(path: String): Boolean {
-    return path == ANY_PROTO ||
-      path == DESCRIPTOR_PROTO ||
-      path == DURATION_PROTO ||
-      path == EMPTY_PROTO ||
-      path == STRUCT_PROTO ||
-      path == TIMESTAMP_PROTO ||
-      path == WRAPPERS_PROTO ||
-      path == WIRE_EXTENSIONS_PROTO
   }
 
   override fun withErrors(errors: ErrorCollector) = this
