@@ -21,7 +21,7 @@ import okio.FileSystem
 actual class SchemaLoader : Loader, ProfileLoader {
   private val delegate: CommonSchemaLoader
 
-  actual constructor(fileSystem: FileSystem) {
+  constructor(fileSystem: FileSystem) {
     delegate = CommonSchemaLoader(fileSystem)
   }
 

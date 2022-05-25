@@ -17,17 +17,17 @@ package com.squareup.wire
 
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.SchemaException
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import okio.Path.Companion.toPath
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
+import kotlin.test.assertFailsWith
 
 class SchemaBuilderTest {
   @Test fun emptySchema() {
     val exception = assertFailsWith<SchemaException> {
       buildSchema {}
     }
-    assertEquals("no sources", exception.message)
+    assertThat(exception.message).isEqualTo("no sources")
   }
 
   @Test fun sourcePathOnly() {
@@ -57,13 +57,10 @@ class SchemaBuilderTest {
           |""".trimMargin()
       )
     }
-    assertEquals(
-      listOf(
-        Location.get("/source", "example1.proto"),
-        Location.get("/source", "example2.proto"),
-        Location.get("google/protobuf/descriptor.proto"),
-      ),
-      schema.protoFiles.map { it.location },
+    assertThat(schema.protoFiles.map { it.location }).containsExactlyInAnyOrder(
+      Location.get("/source", "example1.proto"),
+      Location.get("/source", "example2.proto"),
+      Location.get("google/protobuf/descriptor.proto"),
     )
   }
 }

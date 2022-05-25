@@ -22,10 +22,9 @@ import com.squareup.wire.schema.SchemaException
 import com.squareup.wire.schema.SchemaHandler
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
 
 class ErrorReportingSchemaHandlerTest {
   @Test fun errorsWhenStartsWithA() {
@@ -67,6 +66,6 @@ class ErrorReportingSchemaHandlerTest {
       errorCollector.throwIfNonEmpty()
     }
 
-    assertTrue(exception.message!!.startsWith("field starts with 'a'"))
+    assertThat(exception.message).startsWith("field starts with 'a'")
   }
 }

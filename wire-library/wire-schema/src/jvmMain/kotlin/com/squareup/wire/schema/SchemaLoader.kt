@@ -25,7 +25,7 @@ actual class SchemaLoader : Loader, ProfileLoader {
 
   constructor(fileSystem: NioFileSystem) : this(fileSystem.toOkioFileSystem())
 
-  actual constructor(fileSystem: FileSystem) {
+  constructor(fileSystem: FileSystem) {
     delegate = CommonSchemaLoader(fileSystem)
   }
 
