@@ -15,8 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.wire.java.Profile
-
 // TODO: merge this interface with Loader.
 interface ProfileLoader {
   fun loadProfile(name: String, schema: Schema): Profile
