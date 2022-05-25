@@ -23,6 +23,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import kotlin.test.assertFailsWith
 
+// TODO(Benoit) Move to `commonTest`.
 class RootTest {
   private val fs = FakeFileSystem().apply {
     if (Path.DIRECTORY_SEPARATOR == "\\") emulateWindows() else emulateUnix()
