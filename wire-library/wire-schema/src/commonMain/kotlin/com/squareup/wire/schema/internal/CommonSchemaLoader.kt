@@ -13,22 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema
+package com.squareup.wire.schema.internal
 
-import com.squareup.wire.java.Profile
-import com.squareup.wire.java.internal.ProfileFileElement
-import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
+import com.squareup.wire.schema.CoreLoader
+import com.squareup.wire.schema.ErrorCollector
+import com.squareup.wire.schema.Linker
+import com.squareup.wire.schema.Loader
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.Profile
+import com.squareup.wire.schema.ProfileLoader
+import com.squareup.wire.schema.ProtoFile
+import com.squareup.wire.schema.ProtoFilePath
+import com.squareup.wire.schema.ProtoType
+import com.squareup.wire.schema.Root
+import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
+import com.squareup.wire.schema.isWireRuntimeProto
+import com.squareup.wire.schema.parse
+import com.squareup.wire.schema.roots
 import okio.FileSystem
-import java.io.IOException
-import java.util.ArrayDeque
-import java.nio.file.FileSystem as NioFileSystem
+import okio.IOException
 
 /**
  * Load proto files and their transitive dependencies and parse them. Keep track of which files were
  * loaded from where so that we can use that information later when deciding what to generate.
  */
-class SchemaLoader : Loader, ProfileLoader {
+internal class CommonSchemaLoader : Loader, ProfileLoader {
   private val fileSystem: FileSystem
 
   /** Errors accumulated by this load. */
@@ -56,8 +66,6 @@ class SchemaLoader : Loader, ProfileLoader {
   /** Keys are a [Location.base]; values are the roots that those locations loaded from. */
   private val baseToRoots: MutableMap<String, List<Root>>
 
-  constructor(fileSystem: NioFileSystem) : this(fileSystem.toOkioFileSystem())
-
   constructor(fileSystem: FileSystem) {
     this.fileSystem = fileSystem
     this.errors = ErrorCollector()
@@ -67,7 +75,7 @@ class SchemaLoader : Loader, ProfileLoader {
     this.baseToRoots = mutableMapOf()
   }
 
-  private constructor(enclosing: SchemaLoader, errors: ErrorCollector) {
+  internal constructor(enclosing: CommonSchemaLoader, errors: ErrorCollector) {
     this.fileSystem = enclosing.fileSystem
     this.errors = errors
     this.sourcePathRoots = enclosing.sourcePathRoots
@@ -76,7 +84,7 @@ class SchemaLoader : Loader, ProfileLoader {
     this.baseToRoots = enclosing.baseToRoots
   }
 
-  override fun withErrors(errors: ErrorCollector) = SchemaLoader(this, errors)
+  override fun withErrors(errors: ErrorCollector) = CommonSchemaLoader(this, errors)
 
   /** Initialize the [WireRun.sourcePath] and [WireRun.protoPath] from which files are loaded. */
   fun initRoots(
@@ -249,7 +257,7 @@ class SchemaLoader : Loader, ProfileLoader {
 
     val result = mutableSetOf<Location>()
     while (true) {
-      val protoLocation = queue.poll() ?: break
+      val protoLocation = queue.removeFirstOrNull() ?: break
       val lastSlash = protoLocation.path.lastIndexOf("/")
       val parentPath = protoLocation.path.substring(0, lastSlash + 1)
       val profileLocation = protoLocation.copy(path = "$parentPath$name.wire")
