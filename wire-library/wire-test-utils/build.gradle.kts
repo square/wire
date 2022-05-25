@@ -36,7 +36,6 @@ dependencies {
   implementation(project(":wire-compiler"))
   implementation(project(":wire-java-generator"))
   implementation(project(":wire-kotlin-generator"))
-  implementation(project(":wire-profiles"))
   implementation(deps.assertj)
   implementation(deps.guava)
   implementation(deps.jimfs)

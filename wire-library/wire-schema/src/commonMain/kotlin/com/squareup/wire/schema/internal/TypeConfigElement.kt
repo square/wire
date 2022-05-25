@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.java.internal
+package com.squareup.wire.schema.internal
 
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.appendDocumentation
