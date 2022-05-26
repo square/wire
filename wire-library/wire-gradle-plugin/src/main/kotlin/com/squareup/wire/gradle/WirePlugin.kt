@@ -94,7 +94,7 @@ class WirePlugin : Plugin<Project> {
       "Missing either the Java, Kotlin, or Android plugin"
     }
 
-    project.tasks.register(PARENT_TASK) {
+    project.tasks.register(ROOT_TASK) {
       it.group = GROUP
       it.description = "Aggregation task which runs every generation task for every given source"
     }
@@ -222,7 +222,7 @@ class WirePlugin : Plugin<Project> {
         }
       }
 
-      project.tasks.named(PARENT_TASK).configure {
+      project.tasks.named(ROOT_TASK).configure {
         it.dependsOn(task)
       }
       if (extension.protoLibrary) {
@@ -280,12 +280,12 @@ class WirePlugin : Plugin<Project> {
   }
 
   internal companion object {
-    const val PARENT_TASK = "generateProtos"
+    const val ROOT_TASK = "generateProtos"
     const val GROUP = "wire"
-    // The signature of this function changed in Kotlin 1.7, so we invoke it reflectively
-    // to support both.
-    // 1.6.x: `fun source(vararg sources: Any): SourceTask
-    // 1.7.x: `fun source(vararg sources: Any)
+    // The signature of this function changed in Kotlin 1.7, so we invoke it reflectively to support
+    // both.
+    // 1.6.x: `fun source(vararg sources: Any): SourceTask`
+    // 1.7.x: `fun source(vararg sources: Any)`
     private val SOURCE_FUNCTION = KotlinCompile::class.java
       .getMethod("source", JavaArray.newInstance(Any::class.java, 0).javaClass)
   }
