@@ -596,7 +596,7 @@ class WireRunTest {
 
   class ErrorReportingCustomHandler : SchemaHandler.Factory {
     override fun create(): SchemaHandler {
-      return object : AbstractSchemaHandler() {
+      return object : SchemaHandler() {
         override fun handle(type: Type, context: SchemaHandler.Context): Path? {
           val errorCollector = context.errorCollector
           if ("descriptor.proto" in type.location.path) return null // Don't report errors on built-in stuff.

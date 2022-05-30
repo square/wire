@@ -194,7 +194,6 @@ class Options(
               linker, context.valueType!!, isRepeated = false, mapFieldValueAsString
             )
           return coerceValueForField(context, mapOf(mapFieldKey to mapFieldValue), isRepeated)
-
         } else {
           val result = mutableMapOf<ProtoMember, Any>()
           for (entry in value) {

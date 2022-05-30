@@ -107,10 +107,10 @@ data class JavaTarget(
   val emitAppliedOptions: Boolean = true
 ) : Target() {
   override fun newHandler(): SchemaHandler {
-    return object : AbstractSchemaHandler() {
+    return object : SchemaHandler() {
       private lateinit var javaGenerator: JavaGenerator
 
-      override fun handle(schema: Schema, context: SchemaHandler.Context) {
+      override fun handle(schema: Schema, context: Context) {
         val profileName = if (android) "android" else "java"
         val profile = context.profileLoader!!.loadProfile(profileName, schema)
         javaGenerator = JavaGenerator.get(schema)
@@ -125,7 +125,7 @@ data class JavaTarget(
         super.handle(schema, context)
       }
 
-      override fun handle(type: Type, context: SchemaHandler.Context): Path? {
+      override fun handle(type: Type, context: Context): Path? {
         if (JavaGenerator.builtInType(type.type)) return null
 
         val typeSpec = javaGenerator.generateType(type)
@@ -133,12 +133,12 @@ data class JavaTarget(
         return write(javaTypeName, typeSpec, type.type, type.location, context)
       }
 
-      override fun handle(service: Service, context: SchemaHandler.Context): List<Path> {
+      override fun handle(service: Service, context: Context): List<Path> {
         // Service handling isn't supporting in Java.
         return emptyList()
       }
 
-      override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? {
+      override fun handle(extend: Extend, field: Field, context: Context): Path? {
         val typeSpec = javaGenerator.generateOptionType(extend, field) ?: return null
         val javaTypeName = javaGenerator.generatedTypeName(extend.member(field))
         return write(javaTypeName, typeSpec, field.qualifiedName, field.location, context)
@@ -149,7 +149,7 @@ data class JavaTarget(
         typeSpec: com.squareup.javapoet.TypeSpec,
         source: Any,
         location: Location,
-        context: SchemaHandler.Context,
+        context: Context,
       ): Path {
         val outDirectory = context.outDirectory
         val javaFile = JavaFile.builder(javaTypeName.packageName(), typeSpec)
@@ -240,10 +240,10 @@ data class KotlinTarget(
   val nameSuffix: String? = null,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
-    return object : AbstractSchemaHandler() {
+    return object : SchemaHandler() {
       private lateinit var kotlinGenerator: KotlinGenerator
 
-      override fun handle(schema: Schema, context: SchemaHandler.Context) {
+      override fun handle(schema: Schema, context: Context) {
         val profileName = if (android) "android" else "java"
         val profile = context.profileLoader!!.loadProfile(profileName, schema)
         kotlinGenerator = KotlinGenerator(
@@ -263,7 +263,7 @@ data class KotlinTarget(
         super.handle(schema, context)
       }
 
-      override fun handle(type: Type, context: SchemaHandler.Context): Path? {
+      override fun handle(type: Type, context: Context): Path? {
         if (KotlinGenerator.builtInType(type.type)) return null
 
         val typeSpec = kotlinGenerator.generateType(type)
@@ -271,7 +271,7 @@ data class KotlinTarget(
         return write(className, typeSpec, type.type, type.location, context)
       }
 
-      override fun handle(service: Service, context: SchemaHandler.Context): List<Path> {
+      override fun handle(service: Service, context: Context): List<Path> {
         if (rpcRole === RpcRole.NONE) return emptyList()
 
         val generatedPaths = mutableListOf<Path>()
@@ -295,7 +295,7 @@ data class KotlinTarget(
         return generatedPaths
       }
 
-      override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? {
+      override fun handle(extend: Extend, field: Field, context: Context): Path? {
         val typeSpec = kotlinGenerator.generateOptionType(extend, field) ?: return null
         val name = kotlinGenerator.generatedTypeName(extend.member(field))
         return write(name, typeSpec, field.qualifiedName, field.location, context)
@@ -306,7 +306,7 @@ data class KotlinTarget(
         typeSpec: TypeSpec,
         source: Any,
         location: Location,
-        context: SchemaHandler.Context,
+        context: Context,
       ): Path {
         val modulePath = context.outDirectory
         val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
@@ -358,16 +358,16 @@ data class SwiftTarget(
   override val outDirectory: String
 ) : Target() {
   override fun newHandler(): SchemaHandler {
-    return object : AbstractSchemaHandler() {
+    return object : SchemaHandler() {
       private lateinit var generator: SwiftGenerator
 
-      override fun handle(schema: Schema, context: SchemaHandler.Context) {
+      override fun handle(schema: Schema, context: Context) {
         generator = SwiftGenerator(schema, context.module?.upstreamTypes ?: mapOf())
         context.fileSystem.createDirectories(context.outDirectory)
         super.handle(schema, context)
       }
 
-      override fun handle(type: Type, context: SchemaHandler.Context): Path? {
+      override fun handle(type: Type, context: Context): Path? {
         if (SwiftGenerator.builtInType(type.type)) return null
 
         val modulePath = context.outDirectory
@@ -398,11 +398,11 @@ data class SwiftTarget(
         return filePath
       }
 
-      override fun handle(service: Service, context: SchemaHandler.Context) = emptyList<Path>()
+      override fun handle(service: Service, context: Context) = emptyList<Path>()
       override fun handle(
         extend: Extend,
         field: Field,
-        context: SchemaHandler.Context
+        context: Context
       ): Path? = null
     }
   }
@@ -430,8 +430,8 @@ data class ProtoTarget(
   override val exclusive: Boolean = false
 
   override fun newHandler(): SchemaHandler {
-    return object : SchemaHandler {
-      override fun handle(schema: Schema, context: SchemaHandler.Context) {
+    return object : SchemaHandler() {
+      override fun handle(schema: Schema, context: Context) {
         context.fileSystem.createDirectories(context.outDirectory)
         val outDirectory = context.outDirectory
 
@@ -456,6 +456,12 @@ data class ProtoTarget(
       }
 
       private fun ProtoFile.isEmpty() = types.isEmpty() && services.isEmpty() && extendList.isEmpty()
+
+      override fun handle(type: Type, context: Context): Path? = null
+
+      override fun handle(service: Service, context: Context): List<Path> = listOf()
+
+      override fun handle(extend: Extend, field: Field, context: Context): Path? = null
     }
   }
 

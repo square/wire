@@ -17,9 +17,9 @@ package com.squareup.wire.schema
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
+import com.squareup.wire.schema.internal.ProfileFileElement
 import com.squareup.kotlinpoet.ClassName as KClassName
 import com.squareup.kotlinpoet.TypeName as KTypeName
-import com.squareup.wire.schema.internal.ProfileFileElement
 
 /**
  * Describes how to map `.proto` to `.java`. A single repository of `.proto` files

@@ -15,11 +15,11 @@
  */
 package com.squareup.wire.schema.internal
 
+import okio.BufferedSource
+import okio.ByteString.Companion.decodeHex
 import java.nio.charset.Charset
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
-import okio.BufferedSource
-import okio.ByteString.Companion.decodeHex
 
 internal fun FileSystem.toOkioFileSystem(): okio.FileSystem {
   return when {
@@ -47,4 +47,3 @@ internal fun BufferedSource.readBomAsCharset(default: Charset = Charsets.UTF_8):
     else -> throw AssertionError()
   }
 }
-

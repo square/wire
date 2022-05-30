@@ -16,10 +16,10 @@
 package com.squareup.wire.kotlin
 
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.wire.schema.Profile
-import com.squareup.wire.schema.internal.ProfileParser
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.Profile
 import com.squareup.wire.schema.Schema
+import com.squareup.wire.schema.internal.ProfileParser
 
 /** Helper class to run Kotlin code generation. */
 internal class KotlinWithProfilesGenerator(private val schema: Schema) {

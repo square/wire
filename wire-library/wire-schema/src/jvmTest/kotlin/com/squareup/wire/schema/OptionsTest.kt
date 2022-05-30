@@ -278,7 +278,9 @@ class OptionsTest {
   @Test
   fun mapFieldEntriesLinking() {
     val schema = buildSchema {
-      add("my_package/some_enum.proto".toPath(), """
+      add(
+        "my_package/some_enum.proto".toPath(),
+        """
         |syntax = "proto2";
         |import "google/protobuf/descriptor.proto";
         |package my_package;
@@ -328,7 +330,8 @@ class OptionsTest {
         |extend google.protobuf.EnumValueOptions {
         |  optional MyOption my_option = 1000;
         |}
-      """.trimMargin())
+      """.trimMargin()
+      )
     }
 
     val enumType = schema.getType(ProtoType.get("my_package.SomeEnum")) as EnumType
@@ -356,7 +359,9 @@ class OptionsTest {
   fun mapFieldEntriesWriting() {
     val path = "my_package/some_enum.proto".toPath()
     val schema = buildSchema {
-      add(path, """
+      add(
+        path,
+        """
         |syntax = "proto3";
         |import "google/protobuf/descriptor.proto";
         |package my_package;
@@ -393,11 +398,12 @@ class OptionsTest {
         |extend google.protobuf.EnumValueOptions {
         |  MyOption my_option = 1000;
         |}
-      """.trimMargin())
+      """.trimMargin()
+      )
     }
 
     val enumType = schema.getType(ProtoType.get("my_package.SomeEnum")) as EnumType
-    val optionElement=  enumType.constant(tag = 0)!!.options.elements.first()
+    val optionElement = enumType.constant(tag = 0)!!.options.elements.first()
     // We do print "key" and "value" keys for map fields, even though the linked schema doesn't
     // know about them.
     val expected = """

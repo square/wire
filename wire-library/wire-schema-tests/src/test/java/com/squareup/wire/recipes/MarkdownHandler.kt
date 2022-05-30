@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.recipes
 
-import com.squareup.wire.schema.AbstractSchemaHandler
 import com.squareup.wire.schema.Extend
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.ProtoType
@@ -25,7 +24,7 @@ import com.squareup.wire.schema.Type
 import okio.Path
 
 /** Sample schema handler which generate Markdown files for types and services. */
-class MarkdownHandler : AbstractSchemaHandler() {
+class MarkdownHandler : SchemaHandler() {
   override fun handle(type: Type, context: SchemaHandler.Context): Path {
     return writeMarkdownFile(type.type, toMarkdown(type), context)
   }

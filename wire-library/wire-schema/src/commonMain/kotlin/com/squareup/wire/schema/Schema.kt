@@ -16,8 +16,8 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.ProtoAdapter
-import kotlin.collections.set
 import okio.Path
+import kotlin.collections.set
 
 /**
  * A collection of .proto files that describe a set of messages. A schema is *linked*: each

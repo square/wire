@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.recipes
 
-import com.squareup.wire.schema.AbstractSchemaHandler
 import com.squareup.wire.schema.Extend
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
@@ -25,7 +24,7 @@ import com.squareup.wire.schema.Type
 import okio.Path
 
 /** Sample schema validator that enforces a field naming pattern. */
-class ErrorReportingSchemaHandler : AbstractSchemaHandler() {
+class ErrorReportingSchemaHandler : SchemaHandler() {
   override fun handle(type: Type, context: SchemaHandler.Context): Path? {
     val errorCollector = context.errorCollector
 

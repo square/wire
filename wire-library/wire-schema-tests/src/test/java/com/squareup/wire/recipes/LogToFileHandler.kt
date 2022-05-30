@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.recipes
 
-import com.squareup.wire.schema.AbstractSchemaHandler
 import com.squareup.wire.schema.Extend
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.SchemaHandler
@@ -26,7 +25,7 @@ import okio.Path.Companion.toPath
 import okio.buffer
 
 /** Sample schema handler which writes to disk generated artifacts. */
-class LogToFileHandler : AbstractSchemaHandler() {
+class LogToFileHandler : SchemaHandler() {
   private val filePath = "log.txt".toPath()
 
   override fun handle(type: Type, context: SchemaHandler.Context): Path? {

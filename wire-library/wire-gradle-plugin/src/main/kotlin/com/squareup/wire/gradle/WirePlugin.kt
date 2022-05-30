@@ -32,8 +32,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
-import java.lang.reflect.Array as JavaArray
 import java.util.concurrent.atomic.AtomicBoolean
+import java.lang.reflect.Array as JavaArray
 
 class WirePlugin : Plugin<Project> {
   private val android = AtomicBoolean(false)
