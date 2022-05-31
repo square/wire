@@ -20,26 +20,46 @@ import com.squareup.wire.internal.Serializable
 import okio.FileSystem
 import okio.Path
 
-/**
- * A [SchemaHandler] [handle]s [Schema]!
- *
- * Consider using [AbstractSchemaHandler] for default logic around handling [Schema] and delegating
- * individual calls on [Type]s and [Service]s.
- */
-interface SchemaHandler {
+/** A [SchemaHandler] [handle]s [Schema]! */
+abstract class SchemaHandler {
   /**
-   * Entry point for the [SchemaHandler] to handle [schema]. It is the responsibility of the
-   * [SchemaHandler] to respect the [context].
-   *
-   * This function is invoked at most once per [SchemaHandler] instance. When a single type can
-   * handle multiple schemas, a new handler should be created for each schema.
+   * This will handle all [ProtoFile]s which are part of the `sourcePath`. If a [Module] is set in
+   * the [context], it will handle only [Type]s and [Service]s the module defines respecting the
+   * [context] rules. Override this method if you have specific needs the default implementation
+   * doesn't address.
    */
-  fun handle(schema: Schema, context: Context)
+  open fun handle(schema: Schema, context: Context) {
+    val moduleTypes = context.module?.types
+    for (protoFile in schema.protoFiles) {
+      if (!context.inSourcePath(protoFile)) continue
 
-  /** Implementations of this interface must have a no-arguments public constructor. */
-  interface Factory : Serializable {
-    fun create(): SchemaHandler
+      // Remove types from the file which are not owned by this partition.
+      val filteredProtoFile = protoFile.copy(
+        types = protoFile.types.filter { if (moduleTypes != null) it.type in moduleTypes else true },
+        services = protoFile.services.filter { if (moduleTypes != null) it.type in moduleTypes else true }
+      )
+
+      handle(filteredProtoFile, context)
+    }
   }
+
+  /**
+   * Returns the [Path] of the file which [type] will have been generated into. Null if nothing has
+   * been generated.
+   */
+  abstract fun handle(type: Type, context: Context): Path?
+
+  /**
+   * Returns the [Path]s of the files which [service] will have been generated into. Null if
+   * nothing has been generated.
+   */
+  abstract fun handle(service: Service, context: Context): List<Path>
+
+  /**
+   * Returns the [Path] of the files which [field] will have been generated into. Null if nothing
+   * has been generated.
+   */
+  abstract fun handle(extend: Extend, field: Field, context: Context): Path?
 
   /**
    * A [Context] holds the information necessary for a [SchemaHandler] to do its job. It contains
@@ -109,4 +129,67 @@ interface SchemaHandler {
     /** These are the types depended upon by [types] associated with their module name. */
     val upstreamTypes: Map<ProtoType, String> = mapOf(),
   )
+
+  /**
+   * This will handle all [Type]s and [Service]s of the [protoFile] in respect to the emitting
+   * rules defined by the [context]. If exclusive, the handled [Type]s and [Service]s should be
+   * added to the [ClaimedDefinitions]. Already consumed types and services themselves will be
+   * omitted by this handler.
+   */
+  private fun handle(
+    protoFile: ProtoFile,
+    context: Context,
+  ) {
+    val claimedDefinitions = context.claimedDefinitions
+    val emittingRules = context.emittingRules
+    val claimedPaths = context.claimedPaths
+    val types = protoFile.types
+      .filter { if (claimedDefinitions != null) it !in claimedDefinitions else true }
+      .filter { emittingRules.includes(it.type) }
+
+    for (type in types) {
+      val generatedFilePath = handle(type, context)
+
+      if (generatedFilePath != null) {
+        claimedPaths.claim(generatedFilePath, type)
+      }
+
+      // We don't let other targets handle this one.
+      claimedDefinitions?.claim(type)
+    }
+
+    val services = protoFile.services
+      .filter { if (claimedDefinitions != null) it !in claimedDefinitions else true }
+      .filter { emittingRules.includes(it.type) }
+
+    for (service in services) {
+      val generatedFilePaths = handle(service, context)
+
+      for (generatedFilePath in generatedFilePaths) {
+        claimedPaths.claim(generatedFilePath, service)
+      }
+
+      // We don't let other targets handle this one.
+      claimedDefinitions?.claim(service)
+    }
+
+    // TODO(jwilson): extend emitting rules to support include/exclude of extension fields.
+    protoFile.extendList
+      .flatMap { extend -> extend.fields.map { field -> extend to field } }
+      .filter { (extend, field) ->
+        claimedDefinitions == null || extend.member(field) !in claimedDefinitions
+      }
+      .forEach { (extend, field) ->
+        // TODO(Benoît) claim path.
+        handle(extend, field, context)
+
+        // We don't let other targets handle this one.
+        claimedDefinitions?.claim(extend.member(field))
+      }
+  }
+
+  /** Implementations of this interface must have a no-arguments public constructor. */
+  interface Factory : Serializable {
+    fun create(): SchemaHandler
+  }
 }

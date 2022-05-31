@@ -17,8 +17,8 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.schema.internal.CommonSchemaLoader
 import com.squareup.wire.schema.internal.toOkioFileSystem
-import java.nio.file.FileSystem as NioFileSystem
 import okio.FileSystem
+import java.nio.file.FileSystem as NioFileSystem
 
 actual class SchemaLoader : Loader, ProfileLoader {
   private val delegate: CommonSchemaLoader

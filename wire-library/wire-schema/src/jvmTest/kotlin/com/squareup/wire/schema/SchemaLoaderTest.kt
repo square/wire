@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.schema.internal.CommonSchemaLoader
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
 import okio.ByteString.Companion.decodeHex
@@ -29,7 +30,6 @@ import kotlin.text.Charsets.UTF_16LE
 import kotlin.text.Charsets.UTF_32BE
 import kotlin.text.Charsets.UTF_32LE
 import kotlin.text.Charsets.UTF_8
-import com.squareup.wire.schema.internal.CommonSchemaLoader
 
 // TODO(Benoit) Move this class to commonTest, and test `SchemaLoader` instead of `CommonSchemaLoader`.
 class SchemaLoaderTest {

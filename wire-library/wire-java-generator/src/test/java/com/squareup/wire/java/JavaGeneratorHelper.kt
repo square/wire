@@ -16,10 +16,10 @@
 package com.squareup.wire.java
 
 import com.squareup.javapoet.JavaFile
-import com.squareup.wire.schema.internal.ProfileParser
-import com.squareup.wire.schema.Profile
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.Profile
 import com.squareup.wire.schema.Schema
+import com.squareup.wire.schema.internal.ProfileParser
 import java.io.IOException
 
 /** Helper class to run Java code generation. */

@@ -22,7 +22,7 @@ class MarkdownHandlerFactory : SchemaHandler.Factory {
 }
 
 /** This is a sample handler that writes text files that describe types. */
-private class MarkdownHandler : AbstractSchemaHandler() {
+private class MarkdownHandler : SchemaHandler() {
   override fun handle(type: Type, context: SchemaHandler.Context): Path {
     return writeMarkdownFile(type.type, toMarkdown(type), context)
   }

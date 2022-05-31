@@ -16,8 +16,6 @@
 package com.squareup.wire.schema.internal
 
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.internal.appendDocumentation
-import com.squareup.wire.schema.internal.appendIndented
 import com.squareup.wire.schema.internal.parser.OptionElement
 
 /**

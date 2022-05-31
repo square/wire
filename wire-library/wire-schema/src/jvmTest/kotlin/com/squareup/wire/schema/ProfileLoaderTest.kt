@@ -16,8 +16,6 @@
 package com.squareup.wire.schema
 
 import com.squareup.javapoet.ClassName
-import com.squareup.wire.schema.AdapterConstant
-import com.squareup.wire.schema.Profile
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
 import okio.Path
