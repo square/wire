@@ -121,7 +121,7 @@ object deps {
   }
 
   val truth = "com.google.truth:truth:1.1.3"
-  val vanniktechPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.18.0"
+  val vanniktechPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.20.0"
 
   object wire {
     val compiler = "com.squareup.wire:wire-compiler"
