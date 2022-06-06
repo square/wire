@@ -48,7 +48,7 @@ kotlin {
     val commonMain by getting {
       kotlin.srcDir(versionWriterTaskProvider)
       dependencies {
-        api(deps.okio.core)
+        api(libs.okio.core)
       }
     }
     val commonTest by getting {

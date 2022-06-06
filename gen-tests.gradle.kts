@@ -6,8 +6,8 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 buildscript {
   dependencies {
     classpath(deps.plugins.kotlin)
-    classpath(platform(deps.okio.bom))
-    classpath(deps.okio.core)
+    classpath(platform(libs.okio.bom))
+    classpath(libs.okio.core)
   }
   repositories {
     mavenCentral()

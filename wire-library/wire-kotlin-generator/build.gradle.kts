@@ -14,7 +14,7 @@ dependencies {
   implementation(project(":wire-runtime"))
   implementation(project(":wire-grpc-client"))
   implementation(project(":wire-grpc-server-generator"))
-  implementation(deps.okio.core)
+  implementation(libs.okio.core)
   api(deps.kotlinpoet)
   implementation(deps.guava)
   testImplementation(project(":wire-test-utils"))

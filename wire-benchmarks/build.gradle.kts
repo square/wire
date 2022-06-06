@@ -46,7 +46,7 @@ dependencies {
   protobuf(deps.wire.schema)
   implementation(deps.wire.moshiAdapter)
   implementation(deps.wire.runtime)
-  implementation(deps.okio.core)
+  implementation(libs.okio.core)
   implementation(deps.protobuf.java)
 }
 

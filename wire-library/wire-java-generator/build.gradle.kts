@@ -12,7 +12,7 @@ plugins {
 dependencies {
   api(project(":wire-schema"))
   implementation(project(":wire-runtime"))
-  implementation(deps.okio.core)
+  implementation(libs.okio.core)
   implementation(deps.guava)
   api(deps.javapoet)
   compileOnly(deps.jsr305)

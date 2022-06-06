@@ -43,7 +43,7 @@ kotlin {
     val commonMain by getting {
       dependencies {
         api(project(":wire-runtime"))
-        api(deps.okio.core)
+        api(libs.okio.core)
         api(deps.kotlin.coroutines.core)
       }
     }

@@ -7,7 +7,7 @@ dependencies {
   implementation(deps.wire.schema)
   implementation(deps.wire.javaGenerator)
   implementation(deps.wire.compiler)
-  implementation(deps.okio.core)
+  implementation(libs.okio.core)
   implementation(deps.guava)
   implementation(deps.javapoet)
   testImplementation(deps.junit)

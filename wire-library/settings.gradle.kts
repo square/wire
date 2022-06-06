@@ -23,3 +23,9 @@ if (startParameter.projectProperties.get("swift") != "false") {
   include(":wire-tests-swift")
   include(":wire-tests-proto3-swift")
 }
+
+dependencyResolutionManagement {
+  versionCatalogs {
+    create("libs").from(files("../gradle/libs.versions.toml"))
+  }
+}
