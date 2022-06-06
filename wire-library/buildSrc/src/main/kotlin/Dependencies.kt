@@ -116,20 +116,4 @@ object deps {
 
   val truth = "com.google.truth:truth:1.1.3"
   val vanniktechPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.20.0"
-
-  object wire {
-    val compiler = "com.squareup.wire:wire-compiler"
-    val gradlePlugin = "com.squareup.wire:wire-gradle-plugin"
-    val grpcClient = "com.squareup.wire:wire-grpc-client"
-    val grpcServer = "com.squareup.wire:wire-grpc-server"
-    val grpcMockWebServer = "com.squareup.wire:wire-grpc-mockwebserver"
-    val gsonSupport = "com.squareup.wire:wire-gson-support"
-    val javaGenerator = "com.squareup.wire:wire-java-generator"
-    val kotlinGenerator = "com.squareup.wire:wire-kotlin-generator"
-    val moshiAdapter = "com.squareup.wire:wire-moshi-adapter"
-    val runtime = "com.squareup.wire:wire-runtime"
-    val schema = "com.squareup.wire:wire-schema"
-    val schemaHandlerTests = "com.squareup.wire:wire-schema-tests"
-    val testUtils = "com.squareup.wire:wire-test-utils"
-  }
 }

@@ -5,7 +5,7 @@ buildscript {
   dependencies {
     classpath(deps.plugins.kotlin)
     classpath(deps.plugins.shadow)
-    classpath(deps.wire.gradlePlugin)
+    classpath(libs.wire.gradlePlugin)
     classpath(deps.plugins.japicmp)
     classpath(deps.animalSniffer.gradle)
     classpath(deps.plugins.android)

@@ -23,7 +23,7 @@ dependencies {
   implementation(deps.kotlin.coroutines.android)
   implementation(deps.androidx.appcompat)
   implementation(deps.androidx.ktx)
-  implementation(deps.wire.grpcClient)
+  implementation(libs.wire.grpcClient)
   implementation(deps.androidx.appcompat)
   implementation(deps.androidx.constraintLayout)
 }

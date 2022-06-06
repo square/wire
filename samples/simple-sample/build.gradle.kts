@@ -8,7 +8,7 @@ application {
 }
 
 dependencies {
-  implementation(deps.wire.runtime)
+  implementation(libs.wire.runtime)
 }
 
 wire{
