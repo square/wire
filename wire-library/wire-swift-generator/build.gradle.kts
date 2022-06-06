@@ -10,7 +10,7 @@ plugins {
 }
 
 dependencies {
-  api(deps.swiftpoet)
+  api(libs.swiftpoet)
   api(project(":wire-schema"))
 }
 

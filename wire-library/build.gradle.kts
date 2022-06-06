@@ -20,8 +20,8 @@ buildscript {
     // https://github.com/melix/japicmp-gradle-plugin/issues/36
     classpath("com.google.guava:guava:28.2-jre")
     classpath(deps.vanniktechPublishPlugin)
-    classpath(deps.dokkaGradlePlugin)
-    classpath(deps.dokkaCore)
+    classpath(libs.dokka.gradlePlugin)
+    classpath(libs.dokka.core)
     classpath(deps.plugins.spotless)
   }
 

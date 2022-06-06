@@ -21,9 +21,9 @@ android {
 dependencies {
   implementation(project(":samples:wire-grpc-sample:protos"))
   implementation(deps.kotlin.coroutines.android)
-  implementation(deps.androidx.appcompat)
-  implementation(deps.androidx.ktx)
+  implementation(libs.androidx.appcompat)
+  implementation(libs.androidx.ktx)
   implementation(libs.wire.grpcClient)
-  implementation(deps.androidx.appcompat)
-  implementation(deps.androidx.constraintLayout)
+  implementation(libs.androidx.appcompat)
+  implementation(libs.androidx.constraintLayout)
 }

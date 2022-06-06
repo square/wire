@@ -19,7 +19,7 @@ dependencies {
   api(project(":wire-runtime"))
   api(project(":wire-schema"))
   implementation(libs.okio.core)
-  api(deps.guava)
+  api(libs.guava)
   implementation("io.grpc:grpc-protobuf:1.21.0")
   implementation("com.google.protobuf:protoc:3.6.1")
 

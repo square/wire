@@ -38,9 +38,9 @@ kotlin {
     val jvmMain by getting {
       dependencies {
         implementation(libs.okio.core)
-        api(deps.guava)
-        api(deps.javapoet)
-        api(deps.kotlinpoet)
+        api(libs.guava)
+        api(libs.javapoet)
+        api(libs.kotlinpoet)
       }
     }
     val jvmTest by getting {

@@ -38,32 +38,11 @@ object deps {
     val spotless = "com.diffplug.spotless:spotless-plugin-gradle:6.3.0"
   }
 
-  val android = "com.google.android:android:${versions.android}"
-
-  object androidx {
-    val annotations = "androidx.annotation:annotation:1.1.0"
-    val appcompat = "androidx.appcompat:appcompat:1.0.2"
-    val constraintLayout = "androidx.constraintlayout:constraintlayout:1.1.3"
-    val ktx = "androidx.core:core-ktx:1.0.2"
-  }
-
-  val dokkaGradlePlugin = "org.jetbrains.dokka:dokka-gradle-plugin:${versions.dokka}"
-  val dokkaCore = "org.jetbrains.dokka:dokka-core:${versions.dokka}"
-  val guava = "com.google.guava:guava:${versions.guava}"
-
-  val jsr305 = "com.google.code.findbugs:jsr305:${versions.jsr305}"
-
   object grpc {
+    // TODO(Benoit) this cannot be passed to the `protobuf` Gradle plugin via versionCatalogs.
+    //  See https://github.com/google/protobuf-gradle-plugin/issues/563
     val genJava = "io.grpc:protoc-gen-grpc-java:${versions.grpc}"
-    val netty = "io.grpc:grpc-netty:${versions.grpc}"
-    val protobuf = "io.grpc:grpc-protobuf:${versions.grpc}"
-    val stub = "io.grpc:grpc-stub:${versions.grpc}"
   }
-
-  val gson = "com.google.code.gson:gson:${versions.gson}"
-  val javapoet = "com.squareup:javapoet:${versions.javapoet}"
-  val kotlinpoet = "com.squareup:kotlinpoet:${versions.kotlinpoet}"
-  val swiftpoet = "io.outfoxx:swiftpoet:1.3.1"
 
   object okhttp {
     val mockwebserver = "com.squareup.okhttp3:mockwebserver"

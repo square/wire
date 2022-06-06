@@ -59,7 +59,7 @@ kotlin {
     }
     val jvmMain by getting {
       dependencies {
-        compileOnly(deps.android)
+        compileOnly(libs.android)
       }
     }
     val jvmTest by getting {

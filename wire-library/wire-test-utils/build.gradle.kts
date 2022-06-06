@@ -37,7 +37,7 @@ dependencies {
   implementation(project(":wire-java-generator"))
   implementation(project(":wire-kotlin-generator"))
   implementation(deps.assertj)
-  implementation(deps.guava)
+  implementation(libs.guava)
   implementation(deps.jimfs)
   implementation(deps.junit)
   implementation(deps.protobuf.java)

@@ -31,7 +31,7 @@ kotlin {
         kotlin.srcDir("src/jvmKotlinAndroidTest/proto-kotlin")
         dependencies {
           implementation(compilations["main"].compileDependencyFiles)
-          compileOnly(deps.android)
+          compileOnly(libs.android)
           implementation(deps.kotlin.test.junit)
           implementation(deps.assertj)
         }
@@ -233,10 +233,10 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
       add("jsonJavaTestImplementation", project(":wire-runtime"))
       add("jsonKotlinTestImplementation", project(":wire-runtime"))
 
-      add("javaAndroidTestCompileOnly", deps.android)
-      add("javaAndroidCompactTestCompileOnly", deps.android)
-      add("javaAndroidTestCompileOnly", deps.androidx.annotations)
-      add("javaAndroidCompactTestCompileOnly", deps.androidx.annotations)
+      add("javaAndroidTestCompileOnly", libs.android)
+      add("javaAndroidCompactTestCompileOnly", libs.android)
+      add("javaAndroidTestCompileOnly", libs.androidx.annotations)
+      add("javaAndroidCompactTestCompileOnly", libs.androidx.annotations)
 
       add("javaTestImplementation", deps.kotlin.test.junit)
       add("javaTestImplementation", deps.assertj)
