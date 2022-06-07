@@ -37,7 +37,7 @@ kotlin {
     }
     val jvmMain by getting {
       dependencies {
-        implementation(deps.okio.core)
+        implementation(libs.okio.core)
         api(deps.guava)
         api(deps.javapoet)
         api(deps.kotlinpoet)
@@ -52,7 +52,7 @@ kotlin {
         implementation(deps.junit)
         implementation(deps.kotlin.test.junit)
         implementation(deps.protobuf.java)
-        implementation(deps.okio.fakefilesystem)
+        implementation(libs.okio.fakefilesystem)
       }
     }
     if (kmpJsEnabled) {

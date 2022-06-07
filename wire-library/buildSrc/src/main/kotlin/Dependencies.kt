@@ -51,12 +51,6 @@ object deps {
   val dokkaCore = "org.jetbrains.dokka:dokka-core:${versions.dokka}"
   val guava = "com.google.guava:guava:${versions.guava}"
 
-  object okio {
-    val bom = "com.squareup.okio:okio-bom:3.0.0"
-    val core = "com.squareup.okio:okio"
-    val fakefilesystem = "com.squareup.okio:okio-fakefilesystem"
-  }
-
   val jsr305 = "com.google.code.findbugs:jsr305:${versions.jsr305}"
 
   object grpc {

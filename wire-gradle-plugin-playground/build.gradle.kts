@@ -15,7 +15,7 @@ wire {
 
 dependencies {
   implementation(deps.wire.grpcClient)
-  implementation(deps.okio.core)
+  implementation(libs.okio.core)
   implementation(deps.wire.compiler)
   implementation(deps.wire.gsonSupport)
   implementation(deps.wire.moshiAdapter)
