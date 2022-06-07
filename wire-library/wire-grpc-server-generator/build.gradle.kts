@@ -15,7 +15,7 @@ dependencies {
   implementation(project(":wire-runtime"))
   implementation(project(":wire-grpc-client"))
   implementation(libs.okio.core)
-  api(deps.kotlinpoet)
+  api(libs.kotlinpoet)
   testImplementation(project(":wire-test-utils"))
   testImplementation(deps.kotlin.test.junit)
   testImplementation(deps.truth)

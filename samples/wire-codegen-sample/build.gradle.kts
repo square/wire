@@ -8,8 +8,8 @@ dependencies {
   implementation(libs.wire.javaGenerator)
   implementation(libs.wire.compiler)
   implementation(libs.okio.core)
-  implementation(deps.guava)
-  implementation(deps.javapoet)
+  implementation(libs.guava)
+  implementation(libs.javapoet)
   testImplementation(deps.junit)
   testImplementation(deps.assertj)
 }

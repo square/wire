@@ -22,7 +22,7 @@ dependencies {
   implementation(project(":wire-java-generator"))
   implementation(project(":wire-swift-generator"))
   implementation(libs.okio.core)
-  implementation(deps.guava)
+  implementation(libs.guava)
   implementation(deps.kotlin.serialization)
   implementation(deps.kaml)
   testImplementation(deps.junit)

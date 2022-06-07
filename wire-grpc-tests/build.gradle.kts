@@ -73,12 +73,12 @@ dependencies {
     // see: https://github.com/grpc/grpc-java/issues/3633
     implementation("javax.annotation:javax.annotation-api:1.3.1")
   }
-  compileOnly(deps.android)
+  compileOnly(libs.android)
   testImplementation(deps.junit)
   testImplementation(deps.assertj)
-  testImplementation(deps.grpc.netty)
-  testImplementation(deps.grpc.protobuf)
-  testImplementation(deps.grpc.stub)
+  testImplementation(libs.grpc.netty)
+  testImplementation(libs.grpc.protobuf)
+  testImplementation(libs.grpc.stub)
 }
 
 val test by tasks.getting(Test::class) {
