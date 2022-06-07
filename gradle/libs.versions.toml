@@ -5,3 +5,17 @@ okio = "3.0.0"
 okio-bom = { module = "com.squareup.okio:okio-bom", version.ref = "okio" }
 okio-core = { module = "com.squareup.okio:okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem" }
+
+wire-compiler = { module =  "com.squareup.wire:wire-compiler" }
+wire-gradlePlugin = { module =  "com.squareup.wire:wire-gradle-plugin" }
+wire-grpcClient = { module =  "com.squareup.wire:wire-grpc-client" }
+wire-grpcServer = { module =  "com.squareup.wire:wire-grpc-server" }
+wire-grpcMockWebServer = { module =  "com.squareup.wire:wire-grpc-mockwebserver" }
+wire-gsonSupport = { module =  "com.squareup.wire:wire-gson-support" }
+wire-javaGenerator = { module =  "com.squareup.wire:wire-java-generator" }
+wire-kotlinGenerator = { module =  "com.squareup.wire:wire-kotlin-generator" }
+wire-moshiAdapter = { module =  "com.squareup.wire:wire-moshi-adapter" }
+wire-runtime = { module =  "com.squareup.wire:wire-runtime" }
+wire-schema = { module =  "com.squareup.wire:wire-schema" }
+wire-schemaHandlerTests = { module =  "com.squareup.wire:wire-schema-tests" }
+wire-testUtils = { module =  "com.squareup.wire:wire-test-utils" }

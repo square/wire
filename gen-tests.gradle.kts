@@ -30,8 +30,9 @@ val wire by configurations.creating {
   }
 }
 
+val versionCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
 dependencies {
-  wire(deps.wire.compiler)
+  wire(versionCatalog.findLibrary("wire-compiler").get())
 }
 
 // JAVA
