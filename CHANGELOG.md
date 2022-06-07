@@ -1,6 +1,31 @@
 Change Log
 ==========
 
+Version 4.4.0
+-------------
+
+_2022-06-07_
+
+* New: Custom schema handlers! Wire lets you now plug in your own logic to deal with the protobuf
+    schema the way you want. Check [our documentation][custom-handlers-doc] for details. You can
+    also check our [recipe directory][custom-handlers-recipes] for examples.
+    Note that this API obsoletes the `CustomHandlerBeta` type Wire had until now.
+* New: You can now easily create an in-memory protobuf schema with the new `SchemaBuilder` class.
+    This lives in the new `wire-schema-tests` artifact. For usage examples, check the tests in
+    [custom handler recipes][custom-handlers-recipes].
+* Breaking: the `wire-profiles` artifact has been removed and is now inlined in `wire-schema`.
+* Breaking: `CoreLoader` 's `isWireRuntimeProto` methods are now static.
+* Breaking: `SchemaLoader` and related classes have been moved from `wire-compiler` to
+    `wire-schema`.
+* New: Support packed and map fields when converting to/from JSON with Kotlin.
+* New: Support typesafe accessors and version catalogs in Wire plugin.
+* New: Generate annotations for repeated options.
+* New: Allow parsing of `oneof` options.
+* New: Support map fields in options.
+* New: Add macosArm64 support to the KMP projects supporting mac.
+* Fix: Properly deal with maps of scalar types, deserializing missing scala key/value into identity.
+* Fix: Fix a crash where ProtoMember was populated with the wrong data.
+
 Version 4.3.0
 -------------
 
@@ -966,11 +991,13 @@ Initial version.
 
 
  [bom]: https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import
- [jimfs]: https://github.com/google/jimfs
+ [custom-handlers-doc]: https://square.github.io/wire/wire_compiler/#custom-handlers
+ [custom-handlers-recipes]: https://github.com/square/wire/tree/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
  [javapoet]: https://github.com/square/javapoet
- [wire-customizing-output]: https://square.github.io/wire/wire_compiler/#customizing-output
+ [jimfs]: https://github.com/google/jimfs
+ [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
  [okio_3_0_0]: https://square.github.io/okio/changelog/#version-300
  [okio_3_0_0_a_3]: https://square.github.io/okio/changelog/#version-300-alpha3
- [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
  [reflect]: https://github.com/grpc/grpc/blob/master/doc/server-reflection.md
  [swiftblogpost]: https://cashapp.github.io/2020-08-19/wire-support-for-swift-part-1
+ [wire-customizing-output]: https://square.github.io/wire/wire_compiler/#customizing-output

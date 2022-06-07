@@ -493,7 +493,7 @@ wire {
 With a custom schema handler, you can handle a proto schema in any way you want, including code
 generation or other side effects such as validation, logging, etc.
 
-You'll need to first implement the [SchemaHandler] interface, and then the [SchemaHandler.Factory]
+You'll need to first extend the [SchemaHandler] class, and then the [SchemaHandler.Factory]
 interface which is to return an instance of the former. See our [recipes][SchemaHandlerRecipes] for
 different use cases' implementations.
 
@@ -529,11 +529,11 @@ wire {
 }
 ```
 
- [SchemaHandler]: https://github.com/square/wire/blob/1e791a64ec34a2e4fe0da240d6fad7266285a307/wire-library/wire-compiler/src/main/java/com/squareup/wire/schema/SchemaHandler.kt#L23-L29
- [SchemaHandler.Factory]: https://github.com/square/wire/blob/1e791a64ec34a2e4fe0da240d6fad7266285a307/wire-library/wire-compiler/src/main/java/com/squareup/wire/schema/SchemaHandler.kt#L40-L42
- [SchemaHandlerRecipes]: https://github.com/square/wire/blob/1e791a64ec34a2e4fe0da240d6fad7266285a307/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
+ [SchemaHandler.Factory]: https://github.com/square/wire/blob/fd0a00ff5b6033ed9d8c2d392ff06338467a026f/wire-library/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L192-L194
+ [SchemaHandlerRecipes]: https://github.com/square/wire/blob/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
+ [SchemaHandler]: https://github.com/square/wire/blob/fd0a00ff5b6033ed9d8c2d392ff06338467a026f/wire-library/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L24
  [gradle]: https://gradle.org/
  [kotlinpoet]: https://github.com/square/kotlinpoet
  [maven_coordinates]: https://maven.apache.org/pom.html#Maven_Coordinates
- [r8]: https://developer.android.com/studio/build/shrink-code
  [proguard]: https://www.guardsquare.com/en/products/proguard
+ [r8]: https://developer.android.com/studio/build/shrink-code
