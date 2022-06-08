@@ -10,6 +10,6 @@ dependencies {
   implementation(libs.okio.core)
   implementation(libs.guava)
   implementation(libs.javapoet)
-  testImplementation(deps.junit)
-  testImplementation(deps.assertj)
+  testImplementation(libs.junit)
+  testImplementation(libs.assertj)
 }

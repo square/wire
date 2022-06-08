@@ -19,7 +19,7 @@ dependencies {
   implementation(libs.guava)
   testImplementation(project(":wire-test-utils"))
   testImplementation(libs.kotlin.test.junit)
-  testImplementation(deps.truth)
+  testImplementation(libs.truth)
 }
 
 configure<MavenPublishBaseExtension> {

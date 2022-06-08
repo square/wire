@@ -18,8 +18,8 @@ dependencies {
   implementation("com.google.guava:guava:21.0")
   testImplementation(project(":wire-test-utils"))
   testImplementation(libs.kotlin.test.junit)
-  testImplementation(deps.truth)
-  testImplementation(deps.assertj)
+  testImplementation(libs.truth)
+  testImplementation(libs.assertj)
 }
 
 sourceSets {

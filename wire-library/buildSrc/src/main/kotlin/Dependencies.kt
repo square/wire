@@ -44,26 +44,9 @@ object deps {
     val genJava = "io.grpc:protoc-gen-grpc-java:${versions.grpc}"
   }
 
-  val kaml = "com.charleskorn.kaml:kaml:0.20.0"
-  val misk = "com.squareup.misk:misk:0.11.0"
-  val moshi = "com.squareup.moshi:moshi:${versions.moshi}"
-  val moshiKotlin = "com.squareup.moshi:moshi-kotlin:${versions.moshi}"
-  val junit = "junit:junit:${versions.junit}"
-  val assertj = "org.assertj:assertj-core:${versions.assertj}"
-  val jimfs = "com.google.jimfs:jimfs:${versions.jimfs}"
-
-  object animalSniffer {
-    val gradle = "ru.vyarus:gradle-animalsniffer-plugin:${versions.animalSnifferGradle}"
-    val annotations = "org.codehaus.mojo:animal-sniffer-annotations:${versions.animalSniffer}"
-  }
-
   object protobuf {
-    val gradlePlugin = "com.google.protobuf:protobuf-gradle-plugin:${versions.protobufGradlePlugin}"
-    val java = "com.google.protobuf:protobuf-java:${versions.protobuf}"
-    val javaUtil = "com.google.protobuf:protobuf-java-util:${versions.protobuf}"
+    // TODO(Benoit) this cannot be passed to the `protobuf` Gradle plugin via versionCatalogs.
+    //  See https://github.com/google/protobuf-gradle-plugin/issues/563
     val protoc = "com.google.protobuf:protoc:${versions.protobuf}"
   }
-
-  val truth = "com.google.truth:truth:1.1.3"
-  val vanniktechPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.20.0"
 }

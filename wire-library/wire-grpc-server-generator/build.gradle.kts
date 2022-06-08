@@ -18,8 +18,8 @@ dependencies {
   api(libs.kotlinpoet)
   testImplementation(project(":wire-test-utils"))
   testImplementation(libs.kotlin.test.junit)
-  testImplementation(deps.truth)
-  testImplementation(deps.assertj)
+  testImplementation(libs.truth)
+  testImplementation(libs.assertj)
 }
 
 sourceSets {

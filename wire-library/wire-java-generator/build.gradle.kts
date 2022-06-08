@@ -17,10 +17,10 @@ dependencies {
   api(libs.javapoet)
   compileOnly(libs.jsr305)
   testImplementation(project(":wire-test-utils"))
-  testImplementation(deps.junit)
+  testImplementation(libs.junit)
   testImplementation(libs.kotlin.test.junit)
-  testImplementation(deps.assertj)
-  testImplementation(deps.jimfs)
+  testImplementation(libs.assertj)
+  testImplementation(libs.jimfs)
 }
 
 configure<MavenPublishBaseExtension> {

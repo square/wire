@@ -11,7 +11,7 @@ plugins {
 }
 
 dependencies {
-  api(deps.junit)
+  api(libs.junit)
   api(project(":wire-compiler"))
   api(project(":wire-schema"))
   implementation(project(":wire-kotlin-generator"))
@@ -19,7 +19,7 @@ dependencies {
   implementation(project(":wire-swift-generator"))
   implementation(libs.okio.core)
   implementation(libs.okio.fakefilesystem)
-  testImplementation(deps.assertj)
+  testImplementation(libs.assertj)
   testImplementation(libs.kotlin.test.junit)
   testImplementation(project(":wire-test-utils"))
 }

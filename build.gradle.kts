@@ -7,9 +7,9 @@ buildscript {
     classpath(deps.plugins.shadow)
     classpath(libs.wire.gradlePlugin)
     classpath(deps.plugins.japicmp)
-    classpath(deps.animalSniffer.gradle)
+    classpath(libs.animalSniffer.gradle)
     classpath(deps.plugins.android)
-    classpath(deps.protobuf.gradlePlugin)
+    classpath(libs.protobuf.gradlePlugin)
     classpath(deps.plugins.spotless)
   }
 
