@@ -3,14 +3,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
   dependencies {
-    classpath(deps.plugins.kotlin)
-    classpath(deps.plugins.shadow)
+    classpath(libs.pluginz.kotlin)
+    classpath(libs.pluginz.shadow)
     classpath(libs.wire.gradlePlugin)
-    classpath(deps.plugins.japicmp)
+    classpath(libs.pluginz.japicmp)
     classpath(libs.animalSniffer.gradle)
-    classpath(deps.plugins.android)
+    classpath(libs.pluginz.android)
     classpath(libs.protobuf.gradlePlugin)
-    classpath(deps.plugins.spotless)
+    classpath(libs.pluginz.spotless)
   }
 
   repositories {
@@ -46,7 +46,7 @@ subprojects {
     setEnforceCheck(false)
     kotlin {
       target("**/*.kt")
-      ktlint(versions.ktlint).userData(kotlin.collections.mapOf("indent_size" to "2"))
+      ktlint(libs.versions.ktlint.get()).userData(kotlin.collections.mapOf("indent_size" to "2"))
       trimTrailingWhitespace()
       endWithNewline()
     }

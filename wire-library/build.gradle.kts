@@ -11,10 +11,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
   dependencies {
-    classpath(deps.plugins.kotlin)
-    classpath(deps.plugins.kotlinSerialization)
-    classpath(deps.plugins.shadow)
-    classpath(deps.plugins.japicmp)
+    classpath(libs.pluginz.kotlin)
+    classpath(libs.pluginz.kotlinSerialization)
+    classpath(libs.pluginz.shadow)
+    classpath(libs.pluginz.japicmp)
     classpath(libs.protobuf.gradlePlugin)
     classpath(libs.animalSniffer.gradle)
     // https://github.com/melix/japicmp-gradle-plugin/issues/36
@@ -22,7 +22,7 @@ buildscript {
     classpath(libs.vanniktechPublishPlugin)
     classpath(libs.dokka.gradlePlugin)
     classpath(libs.dokka.core)
-    classpath(deps.plugins.spotless)
+    classpath(libs.pluginz.spotless)
   }
 
   repositories {
@@ -49,7 +49,7 @@ subprojects {
     setEnforceCheck(false)
     kotlin {
       target("**/*.kt")
-      ktlint(versions.ktlint).userData(kotlin.collections.mapOf("indent_size" to "2"))
+      ktlint(libs.versions.ktlint.get()).userData(kotlin.collections.mapOf("indent_size" to "2"))
       trimTrailingWhitespace()
       endWithNewline()
       toggleOffOn()

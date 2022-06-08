@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 buildscript {
   dependencies {
-    classpath(deps.plugins.kotlin)
+    classpath(libs.pluginz.kotlin)
   }
   repositories {
     mavenCentral()
