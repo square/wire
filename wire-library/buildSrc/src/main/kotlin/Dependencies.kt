@@ -44,35 +44,6 @@ object deps {
     val genJava = "io.grpc:protoc-gen-grpc-java:${versions.grpc}"
   }
 
-  object okhttp {
-    val mockwebserver = "com.squareup.okhttp3:mockwebserver"
-    val core = "com.squareup.okhttp3:okhttp"
-    val bom = "com.squareup.okhttp3:okhttp-bom:${versions.okhttp}"
-  }
-
-  object jmh {
-    val core = "org.openjdk.jmh:jmh-core:${versions.jmh}"
-    val generator = "org.openjdk.jmh:jmh-generator-annprocess:${versions.jmh}"
-  }
-
-  object kotlin {
-    object test {
-      val common = "org.jetbrains.kotlin:kotlin-test-common"
-      val annotations = "org.jetbrains.kotlin:kotlin-test-annotations-common"
-      val junit = "org.jetbrains.kotlin:kotlin-test-junit"
-      val js = "org.jetbrains.kotlin:kotlin-test-js"
-    }
-
-    object coroutines {
-      val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
-      val android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
-    }
-
-    val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.1"
-    val reflect = "org.jetbrains.kotlin:kotlin-reflect:${versions.kotlin}"
-    val stdlib = "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
-  }
-
   val kaml = "com.charleskorn.kaml:kaml:0.20.0"
   val misk = "com.squareup.misk:misk:0.11.0"
   val moshi = "com.squareup.moshi:moshi:${versions.moshi}"

@@ -17,7 +17,7 @@ dependencies {
   implementation(libs.okio.core)
   api(libs.kotlinpoet)
   testImplementation(project(":wire-test-utils"))
-  testImplementation(deps.kotlin.test.junit)
+  testImplementation(libs.kotlin.test.junit)
   testImplementation(deps.truth)
   testImplementation(deps.assertj)
 }

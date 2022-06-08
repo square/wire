@@ -39,9 +39,9 @@ jmh {
 }
 
 dependencies {
-  api(deps.jmh.core)
-  jmh(deps.jmh.core)
-  jmh(deps.jmh.generator)
+  api(libs.jmh.core)
+  jmh(libs.jmh.core)
+  jmh(libs.jmh.generator)
 
   protobuf(libs.wire.schema)
   implementation(libs.wire.moshiAdapter)

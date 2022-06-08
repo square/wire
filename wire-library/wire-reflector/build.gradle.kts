@@ -25,7 +25,7 @@ dependencies {
 
   testImplementation(project(":wire-test-utils"))
   testImplementation(deps.junit)
-  testImplementation(deps.kotlin.test.junit)
+  testImplementation(libs.kotlin.test.junit)
   testImplementation(deps.assertj)
   testImplementation(deps.jimfs)
 }

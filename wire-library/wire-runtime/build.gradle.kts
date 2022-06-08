@@ -53,8 +53,8 @@ kotlin {
     }
     val commonTest by getting {
       dependencies {
-        implementation(deps.kotlin.test.common)
-        implementation(deps.kotlin.test.annotations)
+        implementation(libs.kotlin.test.common)
+        implementation(libs.kotlin.test.annotations)
       }
     }
     val jvmMain by getting {
@@ -65,13 +65,13 @@ kotlin {
     val jvmTest by getting {
       dependencies {
         implementation(deps.assertj)
-        implementation(deps.kotlin.test.junit)
+        implementation(libs.kotlin.test.junit)
       }
     }
     if (kmpJsEnabled) {
       val jsTest by getting {
         dependencies {
-          implementation(deps.kotlin.test.js)
+          implementation(libs.kotlin.test.js)
         }
       }
     }

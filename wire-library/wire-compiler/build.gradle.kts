@@ -23,12 +23,12 @@ dependencies {
   implementation(project(":wire-swift-generator"))
   implementation(libs.okio.core)
   implementation(libs.guava)
-  implementation(deps.kotlin.serialization)
+  implementation(libs.kotlin.serialization)
   implementation(deps.kaml)
   testImplementation(deps.junit)
   testImplementation(deps.assertj)
   testImplementation(libs.okio.fakefilesystem)
-  testImplementation(deps.kotlin.test.junit)
+  testImplementation(libs.kotlin.test.junit)
   testImplementation(project(":wire-test-utils"))
 }
 

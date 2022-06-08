@@ -50,7 +50,7 @@ kotlin {
         implementation(deps.assertj)
         implementation(deps.jimfs)
         implementation(deps.junit)
-        implementation(deps.kotlin.test.junit)
+        implementation(libs.kotlin.test.junit)
         implementation(deps.protobuf.java)
         implementation(libs.okio.fakefilesystem)
       }
@@ -58,7 +58,7 @@ kotlin {
     if (kmpJsEnabled) {
       val jsTest by getting {
         dependencies {
-          implementation(deps.kotlin.test.js)
+          implementation(libs.kotlin.test.js)
         }
       }
     }
