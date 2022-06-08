@@ -29,18 +29,18 @@ protobuf {
 }
 
 dependencies {
-  api(deps.moshi)
+  api(libs.moshi)
   api(project(":wire-runtime"))
   api(project(":wire-schema"))
   api(project(":wire-schema-tests"))
   implementation(project(":wire-compiler"))
   implementation(project(":wire-java-generator"))
   implementation(project(":wire-kotlin-generator"))
-  implementation(deps.assertj)
+  implementation(libs.assertj)
   implementation(libs.guava)
-  implementation(deps.jimfs)
-  implementation(deps.junit)
-  implementation(deps.protobuf.java)
+  implementation(libs.jimfs)
+  implementation(libs.junit)
+  implementation(libs.protobuf.java)
   implementation(libs.okio.core)
   implementation(libs.okio.fakefilesystem)
 }

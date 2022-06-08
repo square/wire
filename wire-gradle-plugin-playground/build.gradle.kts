@@ -19,8 +19,8 @@ dependencies {
   implementation(libs.wire.compiler)
   implementation(libs.wire.gsonSupport)
   implementation(libs.wire.moshiAdapter)
-  implementation(deps.assertj)
-  implementation(deps.junit)
-  implementation(deps.protobuf.javaUtil)
+  implementation(libs.assertj)
+  implementation(libs.junit)
+  implementation(libs.protobuf.javaUtil)
   implementation(libs.wire.testUtils)
 }

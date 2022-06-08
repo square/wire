@@ -20,8 +20,8 @@ dependencies {
   implementation(project(":wire-runtime"))
   api(libs.gson)
   api(libs.okio.core)
-  testImplementation(deps.junit)
-  testImplementation(deps.assertj)
+  testImplementation(libs.junit)
+  testImplementation(libs.assertj)
   testImplementation(project(":wire-test-utils"))
 }
 

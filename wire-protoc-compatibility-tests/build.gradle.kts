@@ -21,7 +21,7 @@ wire {
   }
 
   sourcePath {
-    srcJar(deps.protobuf.java)
+    srcJar(libs.protobuf.java)
     include("google/protobuf/descriptor.proto")
   }
 
@@ -59,13 +59,13 @@ dependencies {
   protobuf(libs.wire.schema)
   implementation(libs.wire.grpcClient)
   implementation(libs.okio.core)
-  implementation(deps.protobuf.java)
+  implementation(libs.protobuf.java)
   testImplementation(libs.wire.compiler)
   testImplementation(libs.wire.gsonSupport)
   testImplementation(libs.wire.moshiAdapter)
-  testImplementation(deps.assertj)
-  testImplementation(deps.junit)
-  testImplementation(deps.protobuf.javaUtil)
+  testImplementation(libs.assertj)
+  testImplementation(libs.junit)
+  testImplementation(libs.protobuf.javaUtil)
   testImplementation(libs.wire.testUtils)
 }
 

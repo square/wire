@@ -24,10 +24,10 @@ dependencies {
   implementation("com.google.protobuf:protoc:3.6.1")
 
   testImplementation(project(":wire-test-utils"))
-  testImplementation(deps.junit)
+  testImplementation(libs.junit)
   testImplementation(libs.kotlin.test.junit)
-  testImplementation(deps.assertj)
-  testImplementation(deps.jimfs)
+  testImplementation(libs.assertj)
+  testImplementation(libs.jimfs)
 }
 
 val generateReflectionProtosClasspath by configurations.creating

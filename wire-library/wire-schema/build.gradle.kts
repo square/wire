@@ -47,11 +47,11 @@ kotlin {
       dependencies {
         implementation(project(":wire-schema-tests"))
         implementation(project(":wire-test-utils"))
-        implementation(deps.assertj)
-        implementation(deps.jimfs)
-        implementation(deps.junit)
+        implementation(libs.assertj)
+        implementation(libs.jimfs)
+        implementation(libs.junit)
         implementation(libs.kotlin.test.junit)
-        implementation(deps.protobuf.java)
+        implementation(libs.protobuf.java)
         implementation(libs.okio.fakefilesystem)
       }
     }

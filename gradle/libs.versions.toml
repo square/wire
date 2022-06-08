@@ -28,6 +28,9 @@ androidx-annotations = { module = "androidx.annotation:annotation", version = "1
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.0.2" }
 androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version = "1.1.3" }
 androidx-ktx = { module = "androidx.core:core-ktx", version = "1.0.2" }
+animalSniffer-annotations = { module = "org.codehaus.mojo:animal-sniffer-annotations", version.ref = "animalSniffer" }
+animalSniffer-gradle = { module = "ru.vyarus:gradle-animalsniffer-plugin", version.ref = "animalSnifferGradle" }
+assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 dokka-core = { module = "org.jetbrains.dokka:dokka-core", version.ref = "dokka" }
 dokka-gradlePlugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 grpc-netty = { module = "io.grpc:grpc-netty", version.ref = "grpc" }
@@ -36,9 +39,12 @@ grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 javapoet = { module = "com.squareup:javapoet", version.ref = "javapoet" }
+jimfs = { module = "com.google.jimfs:jimfs", version.ref = "jimfs" }
 jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
 jmh-generator = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "jmh" }
 jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
+junit = { module = "junit:junit", version.ref = "junit" }
+kaml = { module = "com.charleskorn.kaml:kaml", version = "0.20.0" }
 kotlin-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
@@ -49,13 +55,22 @@ kotlin-test-common = { module = "org.jetbrains.kotlin:kotlin-test-common" }
 kotlin-test-js = { module = "org.jetbrains.kotlin:kotlin-test-js" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
+misk = { module = "com.squareup.misk:misk", version = "0.11.0" }
+moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
+moshiKotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }
 okhttp-core = { module = "com.squareup.okhttp3:okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver" }
 okio-bom = { module = "com.squareup.okio:okio-bom", version.ref = "okio" }
 okio-core = { module = "com.squareup.okio:okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem" }
+protobuf-gradlePlugin = { module = "com.google.protobuf:protobuf-gradle-plugin", version.ref = "protobufGradlePlugin" }
+protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
+protobuf-javaUtil = { module = "com.google.protobuf:protobuf-java-util", version.ref = "protobuf" }
+protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
 swiftpoet = { module = "io.outfoxx:swiftpoet", version = "1.3.1" }
+truth = { module = "com.google.truth:truth", version = "1.1.3" }
+vanniktechPublishPlugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.20.0" }
 wire-compiler = { module = "com.squareup.wire:wire-compiler" }
 wire-gradlePlugin = { module = "com.squareup.wire:wire-gradle-plugin" }
 wire-grpcClient = { module = "com.squareup.wire:wire-grpc-client" }

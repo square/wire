@@ -22,5 +22,5 @@ wire {
 dependencies {
   implementation(project(":samples:wire-grpc-sample:protos"))
   implementation(libs.wire.runtime)
-  implementation(deps.misk)
+  implementation(libs.misk)
 }

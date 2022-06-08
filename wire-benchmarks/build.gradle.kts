@@ -47,7 +47,7 @@ dependencies {
   implementation(libs.wire.moshiAdapter)
   implementation(libs.wire.runtime)
   implementation(libs.okio.core)
-  implementation(deps.protobuf.java)
+  implementation(libs.protobuf.java)
 }
 
 tasks {

@@ -43,8 +43,8 @@ dependencies {
   implementation(deps.plugins.kotlin)
   compileOnly(deps.plugins.android)
 
-  testImplementation(deps.junit)
-  testImplementation(deps.assertj)
+  testImplementation(libs.junit)
+  testImplementation(libs.assertj)
   testImplementation(project(":wire-test-utils"))
 }
 

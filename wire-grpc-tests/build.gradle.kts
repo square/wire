@@ -9,7 +9,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 buildscript {
   dependencies {
-    classpath(deps.protobuf.gradlePlugin)
+    classpath(libs.protobuf.gradlePlugin)
   }
 
   repositories {
@@ -74,8 +74,8 @@ dependencies {
     implementation("javax.annotation:javax.annotation-api:1.3.1")
   }
   compileOnly(libs.android)
-  testImplementation(deps.junit)
-  testImplementation(deps.assertj)
+  testImplementation(libs.junit)
+  testImplementation(libs.assertj)
   testImplementation(libs.grpc.netty)
   testImplementation(libs.grpc.protobuf)
   testImplementation(libs.grpc.stub)
