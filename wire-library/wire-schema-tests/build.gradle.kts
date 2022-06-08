@@ -20,7 +20,7 @@ dependencies {
   implementation(libs.okio.core)
   implementation(libs.okio.fakefilesystem)
   testImplementation(deps.assertj)
-  testImplementation(deps.kotlin.test.junit)
+  testImplementation(libs.kotlin.test.junit)
   testImplementation(project(":wire-test-utils"))
 }
 

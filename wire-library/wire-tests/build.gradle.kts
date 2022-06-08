@@ -13,9 +13,9 @@ kotlin {
         kotlin.srcDir("src/jvmKotlinInteropTest/proto-kotlin")
         dependencies {
           implementation(compilations["main"].compileDependencyFiles)
-          implementation(deps.kotlin.test.junit)
+          implementation(libs.kotlin.test.junit)
           implementation(deps.assertj)
-          implementation(deps.kotlin.reflect)
+          implementation(libs.kotlin.reflect)
         }
       }
       val jvmKotlinInteropTest by tasks.creating(Test::class) {
@@ -32,7 +32,7 @@ kotlin {
         dependencies {
           implementation(compilations["main"].compileDependencyFiles)
           compileOnly(libs.android)
-          implementation(deps.kotlin.test.junit)
+          implementation(libs.kotlin.test.junit)
           implementation(deps.assertj)
         }
       }
@@ -81,8 +81,8 @@ kotlin {
     val commonTest by getting {
       kotlin.srcDir("src/commonTest/proto-kotlin")
       dependencies {
-        implementation(deps.kotlin.test.common)
-        implementation(deps.kotlin.test.annotations)
+        implementation(libs.kotlin.test.common)
+        implementation(libs.kotlin.test.annotations)
       }
     }
     val jvmTest by getting {
@@ -91,14 +91,14 @@ kotlin {
       dependencies {
         implementation(project(":wire-test-utils"))
         implementation(deps.assertj)
-        implementation(deps.kotlin.test.junit)
+        implementation(libs.kotlin.test.junit)
         implementation(deps.jimfs)
       }
     }
     if (kmpJsEnabled) {
       val jsTest by getting {
         dependencies {
-          implementation(deps.kotlin.test.js)
+          implementation(libs.kotlin.test.js)
         }
       }
     }
@@ -238,24 +238,24 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
       add("javaAndroidTestCompileOnly", libs.androidx.annotations)
       add("javaAndroidCompactTestCompileOnly", libs.androidx.annotations)
 
-      add("javaTestImplementation", deps.kotlin.test.junit)
+      add("javaTestImplementation", libs.kotlin.test.junit)
       add("javaTestImplementation", deps.assertj)
       add("javaTestImplementation", deps.jimfs)
       add("jsonJavaTestImplementation", project(":wire-moshi-adapter"))
       add("jsonJavaTestImplementation", project(":wire-gson-support"))
       add("jsonJavaTestImplementation", project(":wire-test-utils"))
-      add("jsonJavaTestImplementation", deps.kotlin.test.junit)
+      add("jsonJavaTestImplementation", libs.kotlin.test.junit)
       add("jsonJavaTestImplementation", deps.assertj)
       add("jsonJavaTestImplementation", deps.jimfs)
       add("jsonKotlinTestImplementation", project(":wire-moshi-adapter"))
       add("jsonKotlinTestImplementation", project(":wire-gson-support"))
       add("jsonKotlinTestImplementation", project(":wire-test-utils"))
-      add("jsonKotlinTestImplementation", deps.kotlin.test.junit)
+      add("jsonKotlinTestImplementation", libs.kotlin.test.junit)
       add("jsonKotlinTestImplementation", deps.assertj)
       add("jsonKotlinTestImplementation", deps.jimfs)
 
       add("jvmJavaTestImplementation", project(":wire-moshi-adapter"))
-      add("jvmJavaTestImplementation", deps.kotlin.reflect)
+      add("jvmJavaTestImplementation", libs.kotlin.reflect)
       add("jvmJavaTestImplementation", deps.moshi)
       add("jvmJavaTestImplementation", deps.moshiKotlin)
     }

@@ -18,7 +18,7 @@ dependencies {
   api(libs.kotlinpoet)
   implementation(libs.guava)
   testImplementation(project(":wire-test-utils"))
-  testImplementation(deps.kotlin.test.junit)
+  testImplementation(libs.kotlin.test.junit)
   testImplementation(deps.truth)
 }
 

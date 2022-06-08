@@ -32,7 +32,7 @@ allprojects {
     configuration.dependencies.all {
       val bom = when (group) {
         "com.squareup.okio" -> libs.okio.bom.get()
-        "com.squareup.okhttp3" -> deps.okhttp.bom
+        "com.squareup.okhttp3" -> libs.okhttp.bom.get()
         else -> return@all
       }
       configuration.dependencies.add(project.dependencies.platform(bom))

@@ -44,12 +44,12 @@ kotlin {
       dependencies {
         api(project(":wire-runtime"))
         api(libs.okio.core)
-        api(deps.kotlin.coroutines.core)
+        api(libs.kotlin.coroutines.core)
       }
     }
     val jvmMain by getting {
       dependencies {
-        api(deps.okhttp.core)
+        api(libs.okhttp.core)
       }
     }
     if (kmpNativeEnabled) {
