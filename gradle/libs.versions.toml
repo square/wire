@@ -64,6 +64,15 @@ okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver" }
 okio-bom = { module = "com.squareup.okio:okio-bom", version.ref = "okio" }
 okio-core = { module = "com.squareup.okio:okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem" }
+# `plugins` is a keyword in version catalogs.
+# Check https://docs.gradle.org/current/userguide/platforms.html#sec:version-catalog-plugin
+#  if we ever wanna migrate to this.
+pluginz-android = { module = "com.android.tools.build:gradle", version = "7.1.2" }
+pluginz-japicmp = { module = "me.champeau.gradle:japicmp-gradle-plugin", version = "0.3.1" }
+pluginz-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+pluginz-kotlinSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+pluginz-shadow = { module = "com.github.jengelman.gradle.plugins:shadow", version = "4.0.1" }
+pluginz-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version = "6.3.0" }
 protobuf-gradlePlugin = { module = "com.google.protobuf:protobuf-gradle-plugin", version.ref = "protobufGradlePlugin" }
 protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
 protobuf-javaUtil = { module = "com.google.protobuf:protobuf-java-util", version.ref = "protobuf" }

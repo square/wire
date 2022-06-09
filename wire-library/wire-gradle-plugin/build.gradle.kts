@@ -40,8 +40,8 @@ dependencies {
   implementation(libs.swiftpoet)
 
   compileOnly(gradleApi())
-  implementation(deps.plugins.kotlin)
-  compileOnly(deps.plugins.android)
+  implementation(libs.pluginz.kotlin)
+  compileOnly(libs.pluginz.android)
 
   testImplementation(libs.junit)
   testImplementation(libs.assertj)

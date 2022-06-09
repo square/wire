@@ -31,7 +31,7 @@ buildscript {
     google()
   }
   dependencies {
-    classpath(deps.plugins.android)
+    classpath(libs.pluginz.android)
     classpath("com.squareup.wire:wire-gradle-plugin")
   }
 }
