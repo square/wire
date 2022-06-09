@@ -32,7 +32,7 @@ kotlin {
   sourceSets {
     val commonMain by getting {
       dependencies {
-        api(project(":wire-runtime"))
+        api(projects.wireRuntime)
       }
     }
     val jvmMain by getting {
@@ -45,8 +45,8 @@ kotlin {
     }
     val jvmTest by getting {
       dependencies {
-        implementation(project(":wire-schema-tests"))
-        implementation(project(":wire-test-utils"))
+        implementation(projects.wireSchemaTests)
+        implementation(projects.wireTestUtils)
         implementation(libs.assertj)
         implementation(libs.jimfs)
         implementation(libs.junit)

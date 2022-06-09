@@ -10,13 +10,13 @@ plugins {
 }
 
 dependencies {
-  implementation(project(":wire-runtime"))
+  implementation(projects.wireRuntime)
   // io.grpc.stub relies on guava-android. This module relies on a -jre version of guava.
   implementation(libs.grpc.stub) {
     exclude(group = "com.google.guava", module = "guava")
   }
   implementation("com.google.guava:guava:21.0")
-  testImplementation(project(":wire-test-utils"))
+  testImplementation(projects.wireTestUtils)
   testImplementation(libs.kotlin.test.junit)
   testImplementation(libs.truth)
   testImplementation(libs.assertj)

@@ -17,9 +17,9 @@ configure<AnimalSnifferExtension> {
 }
 
 dependencies {
-  implementation(project(":wire-runtime"))
+  implementation(projects.wireRuntime)
   api(libs.moshi)
-  testImplementation(project(":wire-test-utils"))
+  testImplementation(projects.wireTestUtils)
   testImplementation(libs.assertj)
   testImplementation(libs.junit)
   testImplementation(libs.moshiKotlin)

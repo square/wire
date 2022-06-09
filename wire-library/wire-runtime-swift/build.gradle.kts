@@ -16,7 +16,7 @@ val wire by configurations.creating {
 }
 
 dependencies {
-  wire(project(":wire-compiler"))
+  wire(projects.wireCompiler)
 }
 
 val generateSwiftProtos by tasks.creating(JavaExec::class) {

@@ -12,16 +12,16 @@ plugins {
 
 dependencies {
   api(libs.junit)
-  api(project(":wire-compiler"))
-  api(project(":wire-schema"))
-  implementation(project(":wire-kotlin-generator"))
-  implementation(project(":wire-java-generator"))
-  implementation(project(":wire-swift-generator"))
+  api(projects.wireCompiler)
+  api(projects.wireSchema)
+  implementation(projects.wireKotlinGenerator)
+  implementation(projects.wireJavaGenerator)
+  implementation(projects.wireSwiftGenerator)
   implementation(libs.okio.core)
   implementation(libs.okio.fakefilesystem)
   testImplementation(libs.assertj)
   testImplementation(libs.kotlin.test.junit)
-  testImplementation(project(":wire-test-utils"))
+  testImplementation(projects.wireTestUtils)
 }
 
 configure<MavenPublishBaseExtension> {

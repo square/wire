@@ -17,10 +17,10 @@ application {
 }
 
 dependencies {
-  api(project(":wire-schema"))
-  implementation(project(":wire-kotlin-generator"))
-  implementation(project(":wire-java-generator"))
-  implementation(project(":wire-swift-generator"))
+  api(projects.wireSchema)
+  implementation(projects.wireKotlinGenerator)
+  implementation(projects.wireJavaGenerator)
+  implementation(projects.wireSwiftGenerator)
   implementation(libs.okio.core)
   implementation(libs.guava)
   implementation(libs.kotlin.serialization)
@@ -29,7 +29,7 @@ dependencies {
   testImplementation(libs.assertj)
   testImplementation(libs.okio.fakefilesystem)
   testImplementation(libs.kotlin.test.junit)
-  testImplementation(project(":wire-test-utils"))
+  testImplementation(projects.wireTestUtils)
 }
 
 val shadowJar by tasks.getting(ShadowJar::class) {

@@ -34,7 +34,7 @@ dependencies {
     isTransitive = false
     isForce = true
   }
-  latest(project(":wire-runtime"))
+  latest(projects.wireRuntime)
 }
 
 val japicmp by tasks.creating(JapicmpTask::class) {

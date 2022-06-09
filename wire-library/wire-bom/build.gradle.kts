@@ -5,21 +5,21 @@ plugins {
 
 dependencies {
   constraints {
-    api(project(":wire-compiler"))
-    api(project(":wire-gradle-plugin"))
-    api(project(":wire-grpc-client"))
-    api(project(":wire-grpc-server"))
-    api(project(":wire-grpc-server-generator"))
-    api(project(":wire-grpc-mockwebserver"))
-    api(project(":wire-gson-support"))
-    api(project(":wire-java-generator"))
-    api(project(":wire-kotlin-generator"))
-    api(project(":wire-moshi-adapter"))
-    api(project(":wire-reflector"))
-    api(project(":wire-runtime"))
-    api(project(":wire-schema"))
-    api(project(":wire-schema-tests"))
-    api(project(":wire-swift-generator"))
+    api(projects.wireCompiler)
+    api(projects.wireGradlePlugin)
+    api(projects.wireGrpcClient)
+    api(projects.wireGrpcServer)
+    api(projects.wireGrpcServerGenerator)
+    api(projects.wireGrpcMockwebserver)
+    api(projects.wireGsonSupport)
+    api(projects.wireJavaGenerator)
+    api(projects.wireKotlinGenerator)
+    api(projects.wireMoshiAdapter)
+    api(projects.wireReflector)
+    api(projects.wireRuntime)
+    api(projects.wireSchema)
+    api(projects.wireSchemaTests)
+    api(projects.wireSwiftGenerator)
   }
 }
 

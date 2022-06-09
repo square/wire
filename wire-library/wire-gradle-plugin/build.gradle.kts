@@ -35,8 +35,8 @@ pluginBundle {
 }
 
 dependencies {
-  implementation(project(":wire-compiler"))
-  implementation(project(":wire-kotlin-generator"))
+  implementation(projects.wireCompiler)
+  implementation(projects.wireKotlinGenerator)
   implementation(libs.swiftpoet)
 
   compileOnly(gradleApi())
@@ -45,7 +45,7 @@ dependencies {
 
   testImplementation(libs.junit)
   testImplementation(libs.assertj)
-  testImplementation(project(":wire-test-utils"))
+  testImplementation(projects.wireTestUtils)
 }
 
 val versionWriterTaskProvider = tasks.register("writeVersion", VersionWriterTask::class)

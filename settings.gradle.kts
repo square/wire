@@ -14,6 +14,8 @@ include(":wire-gradle-plugin-playground")
 include(":wire-grpc-tests")
 include(":wire-protoc-compatibility-tests")
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 includeBuild("wire-library") {
   // Declaring dependency substitutions explicitly ensures that references to types declared inside
   // wire-library are resolved properly by the IDE. It's unclear to me why this is the case: it
@@ -24,18 +26,18 @@ includeBuild("wire-library") {
   // TODO(egor): Find out what the underlying issue is and what is the best fix/workaround.
 
   dependencySubstitution {
-    substitute(module("com.squareup.wire:wire-compiler")).with(project(":wire-compiler"))
-    substitute(module("com.squareup.wire:wire-gradle-plugin")).with(project(":wire-gradle-plugin"))
-    substitute(module("com.squareup.wire:wire-grpc-client")).with(project(":wire-grpc-client"))
-    substitute(module("com.squareup.wire:wire-grpc-mockwebserver")).with(project(":wire-grpc-mockwebserver"))
-    substitute(module("com.squareup.wire:wire-grpc-server")).with(project(":wire-grpc-server"))
-    substitute(module("com.squareup.wire:wire-gson-support")).with(project(":wire-gson-support"))
-    substitute(module("com.squareup.wire:wire-java-generator")).with(project(":wire-java-generator"))
-    substitute(module("com.squareup.wire:wire-kotlin-generator")).with(project(":wire-kotlin-generator"))
-    substitute(module("com.squareup.wire:wire-moshi-adapter")).with(project(":wire-moshi-adapter"))
-    substitute(module("com.squareup.wire:wire-runtime")).with(project(":wire-runtime"))
-    substitute(module("com.squareup.wire:wire-schema")).with(project(":wire-schema"))
-    substitute(module("com.squareup.wire:wire-schema-tests")).with(project(":wire-schema-tests"))
-    substitute(module("com.squareup.wire:wire-test-utils")).with(project(":wire-test-utils"))
+    substitute(module("com.squareup.wire:wire-compiler")).using(project(":wire-compiler"))
+    substitute(module("com.squareup.wire:wire-gradle-plugin")).using(project(":wire-gradle-plugin"))
+    substitute(module("com.squareup.wire:wire-grpc-client")).using(project(":wire-grpc-client"))
+    substitute(module("com.squareup.wire:wire-grpc-mockwebserver")).using(project(":wire-grpc-mockwebserver"))
+    substitute(module("com.squareup.wire:wire-grpc-server")).using(project(":wire-grpc-server"))
+    substitute(module("com.squareup.wire:wire-gson-support")).using(project(":wire-gson-support"))
+    substitute(module("com.squareup.wire:wire-java-generator")).using(project(":wire-java-generator"))
+    substitute(module("com.squareup.wire:wire-kotlin-generator")).using(project(":wire-kotlin-generator"))
+    substitute(module("com.squareup.wire:wire-moshi-adapter")).using(project(":wire-moshi-adapter"))
+    substitute(module("com.squareup.wire:wire-runtime")).using(project(":wire-runtime"))
+    substitute(module("com.squareup.wire:wire-schema")).using(project(":wire-schema"))
+    substitute(module("com.squareup.wire:wire-schema-tests")).using(project(":wire-schema-tests"))
+    substitute(module("com.squareup.wire:wire-test-utils")).using(project(":wire-test-utils"))
   }
 }
