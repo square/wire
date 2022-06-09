@@ -6,7 +6,7 @@ plugins {
 
 library {
   dependencies {
-    api(project(":wire-runtime-swift"))
+    api(projects.wireRuntimeSwift)
   }
 
   module.set("WireTestsProto3")

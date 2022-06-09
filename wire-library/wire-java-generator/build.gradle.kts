@@ -10,13 +10,13 @@ plugins {
 }
 
 dependencies {
-  api(project(":wire-schema"))
-  implementation(project(":wire-runtime"))
+  api(projects.wireSchema)
+  implementation(projects.wireRuntime)
   implementation(libs.okio.core)
   implementation(libs.guava)
   api(libs.javapoet)
   compileOnly(libs.jsr305)
-  testImplementation(project(":wire-test-utils"))
+  testImplementation(projects.wireTestUtils)
   testImplementation(libs.junit)
   testImplementation(libs.kotlin.test.junit)
   testImplementation(libs.assertj)

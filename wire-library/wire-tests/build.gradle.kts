@@ -74,8 +74,8 @@ kotlin {
   sourceSets {
     val commonMain by getting {
       dependencies {
-        api(project(":wire-runtime"))
-        api(project(":wire-grpc-client"))
+        api(projects.wireRuntime)
+        api(projects.wireGrpcClient)
       }
     }
     val commonTest by getting {
@@ -89,7 +89,7 @@ kotlin {
       kotlin.srcDir("src/jvmTest/proto-kotlin")
       kotlin.srcDir("src/jvmTest/proto-java")
       dependencies {
-        implementation(project(":wire-test-utils"))
+        implementation(projects.wireTestUtils)
         implementation(libs.assertj)
         implementation(libs.kotlin.test.junit)
         implementation(libs.jimfs)
@@ -224,14 +224,14 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
     jvmTest.dependsOn(jvmJsonKotlinTest)
 
     dependencies {
-      add("javaTestImplementation", project(":wire-runtime"))
-      add("javaNoOptionsTestImplementation", project(":wire-runtime"))
-      add("javaCompactTestImplementation", project(":wire-runtime"))
-      add("javaPrunedTestImplementation", project(":wire-runtime"))
-      add("javaAndroidTestImplementation", project(":wire-runtime"))
-      add("javaAndroidCompactTestImplementation", project(":wire-runtime"))
-      add("jsonJavaTestImplementation", project(":wire-runtime"))
-      add("jsonKotlinTestImplementation", project(":wire-runtime"))
+      add("javaTestImplementation", projects.wireRuntime)
+      add("javaNoOptionsTestImplementation", projects.wireRuntime)
+      add("javaCompactTestImplementation", projects.wireRuntime)
+      add("javaPrunedTestImplementation", projects.wireRuntime)
+      add("javaAndroidTestImplementation", projects.wireRuntime)
+      add("javaAndroidCompactTestImplementation", projects.wireRuntime)
+      add("jsonJavaTestImplementation", projects.wireRuntime)
+      add("jsonKotlinTestImplementation", projects.wireRuntime)
 
       add("javaAndroidTestCompileOnly", libs.android)
       add("javaAndroidCompactTestCompileOnly", libs.android)
@@ -241,20 +241,20 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
       add("javaTestImplementation", libs.kotlin.test.junit)
       add("javaTestImplementation", libs.assertj)
       add("javaTestImplementation", libs.jimfs)
-      add("jsonJavaTestImplementation", project(":wire-moshi-adapter"))
-      add("jsonJavaTestImplementation", project(":wire-gson-support"))
-      add("jsonJavaTestImplementation", project(":wire-test-utils"))
+      add("jsonJavaTestImplementation", projects.wireMoshiAdapter)
+      add("jsonJavaTestImplementation", projects.wireGsonSupport)
+      add("jsonJavaTestImplementation", projects.wireTestUtils)
       add("jsonJavaTestImplementation", libs.kotlin.test.junit)
       add("jsonJavaTestImplementation", libs.assertj)
       add("jsonJavaTestImplementation", libs.jimfs)
-      add("jsonKotlinTestImplementation", project(":wire-moshi-adapter"))
-      add("jsonKotlinTestImplementation", project(":wire-gson-support"))
-      add("jsonKotlinTestImplementation", project(":wire-test-utils"))
+      add("jsonKotlinTestImplementation", projects.wireMoshiAdapter)
+      add("jsonKotlinTestImplementation", projects.wireGsonSupport)
+      add("jsonKotlinTestImplementation", projects.wireTestUtils)
       add("jsonKotlinTestImplementation", libs.kotlin.test.junit)
       add("jsonKotlinTestImplementation", libs.assertj)
       add("jsonKotlinTestImplementation", libs.jimfs)
 
-      add("jvmJavaTestImplementation", project(":wire-moshi-adapter"))
+      add("jvmJavaTestImplementation", projects.wireMoshiAdapter)
       add("jvmJavaTestImplementation", libs.kotlin.reflect)
       add("jvmJavaTestImplementation", libs.moshi)
       add("jvmJavaTestImplementation", libs.moshiKotlin)

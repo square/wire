@@ -11,12 +11,12 @@ plugins {
 }
 
 dependencies {
-  api(project(":wire-schema"))
-  implementation(project(":wire-runtime"))
-  implementation(project(":wire-grpc-client"))
+  api(projects.wireSchema)
+  implementation(projects.wireRuntime)
+  implementation(projects.wireGrpcClient)
   implementation(libs.okio.core)
   api(libs.kotlinpoet)
-  testImplementation(project(":wire-test-utils"))
+  testImplementation(projects.wireTestUtils)
   testImplementation(libs.kotlin.test.junit)
   testImplementation(libs.truth)
   testImplementation(libs.assertj)

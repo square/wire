@@ -30,12 +30,12 @@ protobuf {
 
 dependencies {
   api(libs.moshi)
-  api(project(":wire-runtime"))
-  api(project(":wire-schema"))
-  api(project(":wire-schema-tests"))
-  implementation(project(":wire-compiler"))
-  implementation(project(":wire-java-generator"))
-  implementation(project(":wire-kotlin-generator"))
+  api(projects.wireRuntime)
+  api(projects.wireSchema)
+  api(projects.wireSchemaTests)
+  implementation(projects.wireCompiler)
+  implementation(projects.wireJavaGenerator)
+  implementation(projects.wireKotlinGenerator)
   implementation(libs.assertj)
   implementation(libs.guava)
   implementation(libs.jimfs)

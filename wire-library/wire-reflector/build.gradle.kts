@@ -14,16 +14,16 @@ val main by sourceSets.getting {
 }
 
 dependencies {
-  api(project(":wire-compiler"))
-  api(project(":wire-grpc-client"))
-  api(project(":wire-runtime"))
-  api(project(":wire-schema"))
+  api(projects.wireCompiler)
+  api(projects.wireGrpcClient)
+  api(projects.wireRuntime)
+  api(projects.wireSchema)
   implementation(libs.okio.core)
   api(libs.guava)
   implementation("io.grpc:grpc-protobuf:1.21.0")
   implementation("com.google.protobuf:protoc:3.6.1")
 
-  testImplementation(project(":wire-test-utils"))
+  testImplementation(projects.wireTestUtils)
   testImplementation(libs.junit)
   testImplementation(libs.kotlin.test.junit)
   testImplementation(libs.assertj)
@@ -33,7 +33,7 @@ dependencies {
 val generateReflectionProtosClasspath by configurations.creating
 
 dependencies {
-  generateReflectionProtosClasspath(project(":wire-compiler"))
+  generateReflectionProtosClasspath(projects.wireCompiler)
 }
 
 val generateReflectionProtos by tasks.creating(JavaExec::class) {

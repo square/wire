@@ -11,7 +11,7 @@ plugins {
 
 dependencies {
   api(libs.swiftpoet)
-  api(project(":wire-schema"))
+  api(projects.wireSchema)
 }
 
 configure<MavenPublishBaseExtension> {

@@ -17,12 +17,12 @@ configure<AnimalSnifferExtension> {
 }
 
 dependencies {
-  implementation(project(":wire-runtime"))
+  implementation(projects.wireRuntime)
   api(libs.gson)
   api(libs.okio.core)
   testImplementation(libs.junit)
   testImplementation(libs.assertj)
-  testImplementation(project(":wire-test-utils"))
+  testImplementation(projects.wireTestUtils)
 }
 
 configure<MavenPublishBaseExtension> {
