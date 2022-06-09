@@ -26,8 +26,7 @@ kotlin {
         }
       }
       nodejs()
-      // TODO(jwilson): fix Okio for JS to support browser() by polyfilling OS.
-      // browser()
+      browser()
     }
   }
   if (kmpNativeEnabled) {

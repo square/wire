@@ -24,8 +24,7 @@ kotlin {
         }
       }
       nodejs()
-      // TODO(jwilson): fix Okio for JS to support browser() by polyfilling OS.
-      // browser()
+      browser()
     }
   }
 
@@ -37,7 +36,7 @@ kotlin {
     }
     val jvmMain by getting {
       dependencies {
-        implementation(libs.okio.core)
+        api(libs.okio.core)
         api(libs.guava)
         api(libs.javapoet)
         api(libs.kotlinpoet)
