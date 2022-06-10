@@ -52,7 +52,7 @@ class WhiteboardGrpcAction : WebAction, WhiteboardWhiteboardBlockingServer {
 
         commands.consumeEachAndClose { command ->
           when {
-            command.add_point != null -> points += command.add_point!!.point
+            command.add_point != null -> points += command.add_point.point
             command.clear_board != null -> points.clear()
             else -> throw IllegalArgumentException("Unexpected command $command")
           }
