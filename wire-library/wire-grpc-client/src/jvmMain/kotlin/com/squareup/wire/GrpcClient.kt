@@ -19,6 +19,8 @@ import com.squareup.wire.internal.RealGrpcCall
 import com.squareup.wire.internal.RealGrpcStreamingCall
 import okhttp3.Call
 import okhttp3.OkHttpClient
+import okhttp3.Protocol.H2_PRIOR_KNOWLEDGE
+import okhttp3.Protocol.HTTP_2
 import kotlin.reflect.KClass
 
 actual class GrpcClient private constructor(
@@ -99,7 +101,12 @@ actual class GrpcClient private constructor(
     private var baseUrl: GrpcHttpUrl? = null
     private var minMessageToCompress: Long = 0L
 
-    fun client(client: OkHttpClient): Builder = callFactory(client)
+    fun client(client: OkHttpClient): Builder {
+      require(client.protocols.contains(HTTP_2) || client.protocols.contains(H2_PRIOR_KNOWLEDGE)) {
+        "OkHttpClient is not configured with a HTTP/2 protocol which is required for gRPC connections."
+      }
+      return callFactory(client)
+    }
 
     fun callFactory(client: Call.Factory): Builder = apply {
       this.client = client
