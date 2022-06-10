@@ -65,6 +65,9 @@ import java.io.IOException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
+import okhttp3.Protocol.H2_PRIOR_KNOWLEDGE
+import okhttp3.Protocol.HTTP_1_1
+import org.junit.Assert.assertThrows
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
@@ -90,7 +93,7 @@ class GrpcClientTest {
         callReference.set(chain.call())
         interceptor.intercept(chain)
       }
-      .protocols(listOf(Protocol.H2_PRIOR_KNOWLEDGE))
+      .protocols(listOf(H2_PRIOR_KNOWLEDGE))
       .build()
     grpcClient = GrpcClient.Builder()
       .client(okhttpClient)
@@ -103,6 +106,42 @@ class GrpcClientTest {
   @After
   fun tearDown() {
     okhttpClient.dispatcher.executorService.shutdown()
+  }
+
+  @Test
+  fun grpcClientBuilderThrowsIfHttp2ProtocolMissing() {
+    val okHttpClient = OkHttpClient.Builder()
+      .protocols(listOf(HTTP_1_1))
+      .build()
+    val exception = assertThrows(IllegalArgumentException::class.java) {
+      GrpcClient.Builder().client(okHttpClient)
+    }
+    assertThat(exception.message)
+      .isEqualTo(
+        "OkHttpClient is not configured with a HTTP/2 protocol which is required for gRPC connections."
+      )
+  }
+
+  @Test
+  fun grpcClientBuilderDoesNotThrowIfHttp2ProtocolIsSet() {
+    val okHttpClient = OkHttpClient.Builder()
+      .protocols(listOf(HTTP_1_1, HTTP_2))
+      .build()
+    GrpcClient.Builder()
+      .client(okHttpClient)
+      .baseUrl("https://square.github.io/wire/")
+      .build()
+  }
+
+  @Test
+  fun grpcClientBuilderDoesNotThrowIfH2PriorKnowledgeProtocolIsSet() {
+    val okHttpClient = OkHttpClient.Builder()
+      .protocols(listOf(H2_PRIOR_KNOWLEDGE))
+      .build()
+    GrpcClient.Builder()
+      .client(okHttpClient)
+      .baseUrl("https://square.github.io/wire/")
+      .build()
   }
 
   @Suppress("ReplaceCallWithBinaryOperator") // We are explicitly testing this behavior.
