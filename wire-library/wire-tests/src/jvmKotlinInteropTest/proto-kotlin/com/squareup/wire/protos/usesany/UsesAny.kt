@@ -27,17 +27,17 @@ import okio.ByteString
 public class UsesAny(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.AnyMessage#ADAPTER"
+    adapter = "com.squareup.wire.AnyMessage#ADAPTER",
   )
   @JvmField
   public val just_one: AnyMessage? = null,
   many_anys: List<AnyMessage> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<UsesAny, UsesAny.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val many_anys: List<AnyMessage> = immutableCopyOf("many_anys", many_anys)
@@ -80,7 +80,7 @@ public class UsesAny(
   public fun copy(
     just_one: AnyMessage? = this.just_one,
     many_anys: List<AnyMessage> = this.many_anys,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): UsesAny = UsesAny(just_one, many_anys, unknownFields)
 
   public class Builder : Message.Builder<UsesAny, Builder>() {

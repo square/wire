@@ -48,12 +48,12 @@ public class AllStructs(
   map_int32_list: Map<Int, List<*>?> = emptyMap(),
   map_int32_value_a: Map<Int, Any?> = emptyMap(),
   map_int32_null_value: Map<Int, Nothing?> = emptyMap(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<AllStructs, AllStructs.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   @JvmField
   public val struct: Map<String, *>? = immutableCopyOfStruct("struct", struct)
@@ -61,7 +61,7 @@ public class AllStructs(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   @JvmField
   public val list: List<*>? = immutableCopyOfStruct("list", list)
@@ -70,7 +70,7 @@ public class AllStructs(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "nullValue"
+    jsonName = "nullValue",
   )
   @JvmField
   public val null_value: Nothing? = immutableCopyOfStruct("null_value", null_value)
@@ -79,7 +79,7 @@ public class AllStructs(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "valueA"
+    jsonName = "valueA",
   )
   @JvmField
   public val value_a: Any? = immutableCopyOfStruct("value_a", value_a)
@@ -88,7 +88,7 @@ public class AllStructs(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "valueB"
+    jsonName = "valueB",
   )
   @JvmField
   public val value_b: Any? = immutableCopyOfStruct("value_b", value_b)
@@ -97,7 +97,7 @@ public class AllStructs(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "valueC"
+    jsonName = "valueC",
   )
   @JvmField
   public val value_c: Any? = immutableCopyOfStruct("value_c", value_c)
@@ -106,7 +106,7 @@ public class AllStructs(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "valueD"
+    jsonName = "valueD",
   )
   @JvmField
   public val value_d: Any? = immutableCopyOfStruct("value_d", value_d)
@@ -115,7 +115,7 @@ public class AllStructs(
     tag = 8,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "valueE"
+    jsonName = "valueE",
   )
   @JvmField
   public val value_e: Any? = immutableCopyOfStruct("value_e", value_e)
@@ -124,7 +124,7 @@ public class AllStructs(
     tag = 9,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "valueF"
+    jsonName = "valueF",
   )
   @JvmField
   public val value_f: Any? = immutableCopyOfStruct("value_f", value_f)
@@ -133,7 +133,7 @@ public class AllStructs(
     tag = 101,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
     label = WireField.Label.REPEATED,
-    jsonName = "repStruct"
+    jsonName = "repStruct",
   )
   @JvmField
   public val rep_struct: List<Map<String, *>?> = immutableCopyOfStruct("rep_struct", rep_struct)
@@ -142,7 +142,7 @@ public class AllStructs(
     tag = 102,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
     label = WireField.Label.REPEATED,
-    jsonName = "repList"
+    jsonName = "repList",
   )
   @JvmField
   public val rep_list: List<List<*>?> = immutableCopyOfStruct("rep_list", rep_list)
@@ -151,7 +151,7 @@ public class AllStructs(
     tag = 103,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
     label = WireField.Label.REPEATED,
-    jsonName = "repValueA"
+    jsonName = "repValueA",
   )
   @JvmField
   public val rep_value_a: List<Any?> = immutableCopyOfStruct("rep_value_a", rep_value_a)
@@ -160,7 +160,7 @@ public class AllStructs(
     tag = 104,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
     label = WireField.Label.REPEATED,
-    jsonName = "repNullValue"
+    jsonName = "repNullValue",
   )
   @JvmField
   public val rep_null_value: List<Nothing?> = immutableCopyOfStruct("rep_null_value",
@@ -170,7 +170,7 @@ public class AllStructs(
     tag = 201,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
     jsonName = "oneofStruct",
-    oneofName = "choice"
+    oneofName = "choice",
   )
   @JvmField
   public val oneof_struct: Map<String, *>? = immutableCopyOfStruct("oneof_struct", oneof_struct)
@@ -179,7 +179,7 @@ public class AllStructs(
     tag = 202,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
     jsonName = "oneofList",
-    oneofName = "choice"
+    oneofName = "choice",
   )
   @JvmField
   public val oneof_list: List<*>? = immutableCopyOfStruct("oneof_list", oneof_list)
@@ -188,7 +188,7 @@ public class AllStructs(
     tag = 301,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    jsonName = "mapInt32Struct"
+    jsonName = "mapInt32Struct",
   )
   @JvmField
   public val map_int32_struct: Map<Int, Map<String, *>?> =
@@ -198,7 +198,7 @@ public class AllStructs(
     tag = 302,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-    jsonName = "mapInt32List"
+    jsonName = "mapInt32List",
   )
   @JvmField
   public val map_int32_list: Map<Int, List<*>?> =
@@ -208,7 +208,7 @@ public class AllStructs(
     tag = 303,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    jsonName = "mapInt32ValueA"
+    jsonName = "mapInt32ValueA",
   )
   @JvmField
   public val map_int32_value_a: Map<Int, Any?> =
@@ -218,7 +218,7 @@ public class AllStructs(
     tag = 304,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
-    jsonName = "mapInt32NullValue"
+    jsonName = "mapInt32NullValue",
   )
   @JvmField
   public val map_int32_null_value: Map<Int, Nothing?> =
@@ -354,7 +354,7 @@ public class AllStructs(
     map_int32_list: Map<Int, List<*>?> = this.map_int32_list,
     map_int32_value_a: Map<Int, Any?> = this.map_int32_value_a,
     map_int32_null_value: Map<Int, Nothing?> = this.map_int32_null_value,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): AllStructs = AllStructs(struct, list, null_value, value_a, value_b, value_c, value_d, value_e,
       value_f, rep_struct, rep_list, rep_value_a, rep_null_value, oneof_struct, oneof_list,
       map_int32_struct, map_int32_list, map_int32_value_a, map_int32_null_value, unknownFields)

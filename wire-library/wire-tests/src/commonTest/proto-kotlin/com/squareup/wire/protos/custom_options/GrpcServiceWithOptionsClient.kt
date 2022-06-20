@@ -7,7 +7,7 @@ import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
 
 public class GrpcServiceWithOptionsClient(
-  private val client: GrpcClient
+  private val client: GrpcClient,
 ) : ServiceWithOptionsClient {
   public override fun MethodWithOptions(): GrpcCall<FooBar, FooBar> = client.newCall(GrpcMethod(
       path = "/squareup.protos.custom_options.ServiceWithOptions/MethodWithOptions",

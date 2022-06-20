@@ -26,14 +26,14 @@ import okio.ByteString
 public class RedactedCycleB(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedCycleA#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedCycleA#ADAPTER",
   )
   public val a: RedactedCycleA? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<RedactedCycleB, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")

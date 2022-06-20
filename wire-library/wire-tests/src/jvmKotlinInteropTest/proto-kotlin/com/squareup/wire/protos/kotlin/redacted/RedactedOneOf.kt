@@ -24,7 +24,7 @@ public class RedactedOneOf(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    oneofName = "a"
+    oneofName = "a",
   )
   @JvmField
   public val b: Int? = null,
@@ -32,11 +32,11 @@ public class RedactedOneOf(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     redacted = true,
-    oneofName = "a"
+    oneofName = "a",
   )
   @JvmField
   public val c: String? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<RedactedOneOf, RedactedOneOf.Builder>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(b, c) <= 1) {
@@ -82,7 +82,7 @@ public class RedactedOneOf(
   public fun copy(
     b: Int? = this.b,
     c: String? = this.c,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): RedactedOneOf = RedactedOneOf(b, c, unknownFields)
 
   public class Builder : Message.Builder<RedactedOneOf, Builder>() {

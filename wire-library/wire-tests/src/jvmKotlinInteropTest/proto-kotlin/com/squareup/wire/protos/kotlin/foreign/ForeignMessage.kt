@@ -22,7 +22,7 @@ import okio.ByteString
 public class ForeignMessage(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   @JvmField
   public val i: Int? = null,
@@ -31,11 +31,11 @@ public class ForeignMessage(
    */
   @field:WireField(
     tag = 100,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   @JvmField
   public val j: Int? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<ForeignMessage, ForeignMessage.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -75,7 +75,7 @@ public class ForeignMessage(
   public fun copy(
     i: Int? = this.i,
     j: Int? = this.j,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): ForeignMessage = ForeignMessage(i, j, unknownFields)
 
   public class Builder : Message.Builder<ForeignMessage, Builder>() {

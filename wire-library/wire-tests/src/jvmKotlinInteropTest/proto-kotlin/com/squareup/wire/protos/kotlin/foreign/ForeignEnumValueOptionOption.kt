@@ -11,8 +11,8 @@ import kotlin.`annotation`.Target
 @Retention(AnnotationRetention.RUNTIME)
 @Target(
   AnnotationTarget.PROPERTY,
-  AnnotationTarget.FIELD
+  AnnotationTarget.FIELD,
 )
 public annotation class ForeignEnumValueOptionOption(
-  public val `value`: Boolean
+  public val `value`: Boolean,
 )

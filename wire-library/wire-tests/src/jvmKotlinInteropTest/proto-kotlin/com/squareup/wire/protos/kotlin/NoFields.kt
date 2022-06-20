@@ -21,7 +21,7 @@ import okio.ByteString
 
 @Deprecated(message = "NoFields is deprecated")
 public class NoFields(
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<NoFields, NoFields.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()

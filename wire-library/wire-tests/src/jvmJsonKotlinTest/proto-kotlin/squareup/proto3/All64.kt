@@ -33,7 +33,7 @@ public class All64(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myInt64"
+    jsonName = "myInt64",
   )
   @JvmField
   public val my_int64: Long = 0L,
@@ -41,7 +41,7 @@ public class All64(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myUint64"
+    jsonName = "myUint64",
   )
   @JvmField
   public val my_uint64: Long = 0L,
@@ -49,7 +49,7 @@ public class All64(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "mySint64"
+    jsonName = "mySint64",
   )
   @JvmField
   public val my_sint64: Long = 0L,
@@ -57,7 +57,7 @@ public class All64(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myFixed64"
+    jsonName = "myFixed64",
   )
   @JvmField
   public val my_fixed64: Long = 0L,
@@ -65,7 +65,7 @@ public class All64(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "mySfixed64"
+    jsonName = "mySfixed64",
   )
   @JvmField
   public val my_sfixed64: Long = 0L,
@@ -83,7 +83,7 @@ public class All64(
     tag = 401,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     jsonName = "oneofInt64",
-    oneofName = "choice"
+    oneofName = "choice",
   )
   @JvmField
   public val oneof_int64: Long? = null,
@@ -91,7 +91,7 @@ public class All64(
     tag = 402,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     jsonName = "oneofSfixed64",
-    oneofName = "choice"
+    oneofName = "choice",
   )
   @JvmField
   public val oneof_sfixed64: Long? = null,
@@ -100,13 +100,13 @@ public class All64(
   map_int64_sint64: Map<Long, Long> = emptyMap(),
   map_int64_fixed64: Map<Long, Long> = emptyMap(),
   map_int64_sfixed64: Map<Long, Long> = emptyMap(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<All64, All64.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 201,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.REPEATED,
-    jsonName = "repInt64"
+    jsonName = "repInt64",
   )
   @JvmField
   public val rep_int64: List<Long> = immutableCopyOf("rep_int64", rep_int64)
@@ -115,7 +115,7 @@ public class All64(
     tag = 202,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.REPEATED,
-    jsonName = "repUint64"
+    jsonName = "repUint64",
   )
   @JvmField
   public val rep_uint64: List<Long> = immutableCopyOf("rep_uint64", rep_uint64)
@@ -124,7 +124,7 @@ public class All64(
     tag = 203,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.REPEATED,
-    jsonName = "repSint64"
+    jsonName = "repSint64",
   )
   @JvmField
   public val rep_sint64: List<Long> = immutableCopyOf("rep_sint64", rep_sint64)
@@ -133,7 +133,7 @@ public class All64(
     tag = 204,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.REPEATED,
-    jsonName = "repFixed64"
+    jsonName = "repFixed64",
   )
   @JvmField
   public val rep_fixed64: List<Long> = immutableCopyOf("rep_fixed64", rep_fixed64)
@@ -142,7 +142,7 @@ public class All64(
     tag = 205,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.REPEATED,
-    jsonName = "repSfixed64"
+    jsonName = "repSfixed64",
   )
   @JvmField
   public val rep_sfixed64: List<Long> = immutableCopyOf("rep_sfixed64", rep_sfixed64)
@@ -151,7 +151,7 @@ public class All64(
     tag = 301,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.PACKED,
-    jsonName = "packInt64"
+    jsonName = "packInt64",
   )
   @JvmField
   public val pack_int64: List<Long> = immutableCopyOf("pack_int64", pack_int64)
@@ -160,7 +160,7 @@ public class All64(
     tag = 302,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.PACKED,
-    jsonName = "packUint64"
+    jsonName = "packUint64",
   )
   @JvmField
   public val pack_uint64: List<Long> = immutableCopyOf("pack_uint64", pack_uint64)
@@ -169,7 +169,7 @@ public class All64(
     tag = 303,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.PACKED,
-    jsonName = "packSint64"
+    jsonName = "packSint64",
   )
   @JvmField
   public val pack_sint64: List<Long> = immutableCopyOf("pack_sint64", pack_sint64)
@@ -178,7 +178,7 @@ public class All64(
     tag = 304,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.PACKED,
-    jsonName = "packFixed64"
+    jsonName = "packFixed64",
   )
   @JvmField
   public val pack_fixed64: List<Long> = immutableCopyOf("pack_fixed64", pack_fixed64)
@@ -187,7 +187,7 @@ public class All64(
     tag = 305,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.PACKED,
-    jsonName = "packSfixed64"
+    jsonName = "packSfixed64",
   )
   @JvmField
   public val pack_sfixed64: List<Long> = immutableCopyOf("pack_sfixed64", pack_sfixed64)
@@ -196,7 +196,7 @@ public class All64(
     tag = 501,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
-    jsonName = "mapInt64Int64"
+    jsonName = "mapInt64Int64",
   )
   @JvmField
   public val map_int64_int64: Map<Long, Long> = immutableCopyOf("map_int64_int64", map_int64_int64)
@@ -205,7 +205,7 @@ public class All64(
     tag = 502,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-    jsonName = "mapInt64Uint64"
+    jsonName = "mapInt64Uint64",
   )
   @JvmField
   public val map_int64_uint64: Map<Long, Long> = immutableCopyOf("map_int64_uint64",
@@ -215,7 +215,7 @@ public class All64(
     tag = 503,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-    jsonName = "mapInt64Sint64"
+    jsonName = "mapInt64Sint64",
   )
   @JvmField
   public val map_int64_sint64: Map<Long, Long> = immutableCopyOf("map_int64_sint64",
@@ -225,7 +225,7 @@ public class All64(
     tag = 504,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-    jsonName = "mapInt64Fixed64"
+    jsonName = "mapInt64Fixed64",
   )
   @JvmField
   public val map_int64_fixed64: Map<Long, Long> = immutableCopyOf("map_int64_fixed64",
@@ -235,7 +235,7 @@ public class All64(
     tag = 505,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-    jsonName = "mapInt64Sfixed64"
+    jsonName = "mapInt64Sfixed64",
   )
   @JvmField
   public val map_int64_sfixed64: Map<Long, Long> = immutableCopyOf("map_int64_sfixed64",
@@ -385,7 +385,7 @@ public class All64(
     map_int64_sint64: Map<Long, Long> = this.map_int64_sint64,
     map_int64_fixed64: Map<Long, Long> = this.map_int64_fixed64,
     map_int64_sfixed64: Map<Long, Long> = this.map_int64_sfixed64,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): All64 = All64(my_int64, my_uint64, my_sint64, my_fixed64, my_sfixed64, rep_int64, rep_uint64,
       rep_sint64, rep_fixed64, rep_sfixed64, pack_int64, pack_uint64, pack_sint64, pack_fixed64,
       pack_sfixed64, oneof_int64, oneof_sfixed64, map_int64_int64, map_int64_uint64,

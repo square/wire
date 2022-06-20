@@ -14,8 +14,8 @@ import kotlin.`annotation`.Target
 @Retention(AnnotationRetention.RUNTIME)
 @Target(
   AnnotationTarget.PROPERTY,
-  AnnotationTarget.FIELD
+  AnnotationTarget.FIELD,
 )
 public annotation class EnumValueOptionOption(
-  public val `value`: Int
+  public val `value`: Int,
 )

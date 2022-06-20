@@ -36,7 +36,7 @@ public class RouteSummary(
    */
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val point_count: Int? = null,
   /**
@@ -44,7 +44,7 @@ public class RouteSummary(
    */
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val feature_count: Int? = null,
   /**
@@ -52,7 +52,7 @@ public class RouteSummary(
    */
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val distance: Int? = null,
   /**
@@ -60,14 +60,14 @@ public class RouteSummary(
    */
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val elapsed_time: Int? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<RouteSummary, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -110,7 +110,7 @@ public class RouteSummary(
     feature_count: Int? = this.feature_count,
     distance: Int? = this.distance,
     elapsed_time: Int? = this.elapsed_time,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): RouteSummary = RouteSummary(point_count, feature_count, distance, elapsed_time, unknownFields)
 
   public companion object {

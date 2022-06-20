@@ -34,14 +34,14 @@ public class PizzaDelivery(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "phoneNumber"
+    jsonName = "phoneNumber",
   )
   @JvmField
   public val phone_number: String = "",
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   @JvmField
   public val address: String = "",
@@ -49,7 +49,7 @@ public class PizzaDelivery(
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   @JvmField
   public val promotion: AnyMessage? = null,
@@ -57,7 +57,7 @@ public class PizzaDelivery(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#DURATION",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "deliveredWithinOrFree"
+    jsonName = "deliveredWithinOrFree",
   )
   @JvmField
   public val delivered_within_or_free: Duration? = null,
@@ -66,16 +66,16 @@ public class PizzaDelivery(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "orderedAt"
+    jsonName = "orderedAt",
   )
   @JvmField
   public val ordered_at: Instant? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<PizzaDelivery, PizzaDelivery.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 3,
     adapter = "squareup.proto3.Pizza#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val pizzas: List<Pizza> = immutableCopyOf("pizzas", pizzas)
@@ -83,7 +83,7 @@ public class PizzaDelivery(
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   @JvmField
   public val loyalty: Map<String, *>? = immutableCopyOfStruct("loyalty", loyalty)
@@ -152,7 +152,7 @@ public class PizzaDelivery(
     delivered_within_or_free: Duration? = this.delivered_within_or_free,
     loyalty: Map<String, *>? = this.loyalty,
     ordered_at: Instant? = this.ordered_at,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): PizzaDelivery = PizzaDelivery(phone_number, address, pizzas, promotion,
       delivered_within_or_free, loyalty, ordered_at, unknownFields)
 

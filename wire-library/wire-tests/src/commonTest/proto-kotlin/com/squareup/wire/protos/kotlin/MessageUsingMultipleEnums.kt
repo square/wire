@@ -29,19 +29,19 @@ import okio.ByteString
 public class MessageUsingMultipleEnums(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.protos.kotlin.MessageWithStatus${'$'}Status#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.MessageWithStatus${'$'}Status#ADAPTER",
   )
   public val a: MessageWithStatus.Status? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.protos.kotlin.OtherMessageWithStatus${'$'}Status#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.OtherMessageWithStatus${'$'}Status#ADAPTER",
   )
   public val b: OtherMessageWithStatus.Status? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MessageUsingMultipleEnums, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -77,7 +77,7 @@ public class MessageUsingMultipleEnums(
   public fun copy(
     a: MessageWithStatus.Status? = this.a,
     b: OtherMessageWithStatus.Status? = this.b,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): MessageUsingMultipleEnums = MessageUsingMultipleEnums(a, b, unknownFields)
 
   public companion object {

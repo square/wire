@@ -26,7 +26,7 @@ import okio.ByteString
 public class ExternalMessage(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
+    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
   )
   @JvmField
   public val f: Float? = null,
@@ -36,7 +36,7 @@ public class ExternalMessage(
    */
   @field:WireField(
     tag = 126,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   @JvmField
   public val barext: Int? = null,
@@ -45,7 +45,7 @@ public class ExternalMessage(
    */
   @field:WireField(
     tag = 127,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   @JvmField
   public val bazext: Int? = null,
@@ -54,7 +54,7 @@ public class ExternalMessage(
    */
   @field:WireField(
     tag = 128,
-    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER",
   )
   @JvmField
   public val nested_message_ext: SimpleMessage.NestedMessage? = null,
@@ -63,11 +63,11 @@ public class ExternalMessage(
    */
   @field:WireField(
     tag = 129,
-    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER",
   )
   @JvmField
   public val nested_enum_ext: SimpleMessage.NestedEnum? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<ExternalMessage, ExternalMessage.Builder>(ADAPTER, unknownFields) {
   /**
    * Extension source: simple_message.proto
@@ -75,7 +75,7 @@ public class ExternalMessage(
   @field:WireField(
     tag = 125,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val fooext: List<Int> = immutableCopyOf("fooext", fooext)
@@ -138,7 +138,7 @@ public class ExternalMessage(
     bazext: Int? = this.bazext,
     nested_message_ext: SimpleMessage.NestedMessage? = this.nested_message_ext,
     nested_enum_ext: SimpleMessage.NestedEnum? = this.nested_enum_ext,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): ExternalMessage = ExternalMessage(f, fooext, barext, bazext, nested_message_ext,
       nested_enum_ext, unknownFields)
 

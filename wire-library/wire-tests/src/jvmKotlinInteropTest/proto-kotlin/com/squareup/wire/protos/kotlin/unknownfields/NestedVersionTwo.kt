@@ -26,41 +26,41 @@ import okio.ByteString
 public class NestedVersionTwo(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   @JvmField
   public val i: Int? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   @JvmField
   public val v2_i: Int? = null,
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   @JvmField
   public val v2_s: String? = null,
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
   )
   @JvmField
   public val v2_f32: Int? = null,
   @field:WireField(
     tag = 5,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
   )
   @JvmField
   public val v2_f64: Long? = null,
   v2_rs: List<String> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<NestedVersionTwo, NestedVersionTwo.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val v2_rs: List<String> = immutableCopyOf("v2_rs", v2_rs)
@@ -123,7 +123,7 @@ public class NestedVersionTwo(
     v2_f32: Int? = this.v2_f32,
     v2_f64: Long? = this.v2_f64,
     v2_rs: List<String> = this.v2_rs,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): NestedVersionTwo = NestedVersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, unknownFields)
 
   public class Builder : Message.Builder<NestedVersionTwo, Builder>() {

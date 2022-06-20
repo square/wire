@@ -34,26 +34,26 @@ public class Dinosaur(
    */
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   public val name: String? = null,
   picture_urls: List<String> = emptyList(),
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
   )
   public val length_meters: Double? = null,
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
   )
   public val mass_kilograms: Double? = null,
   @field:WireField(
     tag = 5,
-    adapter = "com.squareup.geology.Period#ADAPTER"
+    adapter = "com.squareup.geology.Period#ADAPTER",
   )
   public val period: Period? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Dinosaur, Nothing>(ADAPTER, unknownFields) {
   /**
    * URLs with images of this dinosaur.
@@ -61,13 +61,13 @@ public class Dinosaur(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   public val picture_urls: List<String> = immutableCopyOf("picture_urls", picture_urls)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -114,7 +114,7 @@ public class Dinosaur(
     length_meters: Double? = this.length_meters,
     mass_kilograms: Double? = this.mass_kilograms,
     period: Period? = this.period,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): Dinosaur = Dinosaur(name, picture_urls, length_meters, mass_kilograms, period, unknownFields)
 
   public companion object {

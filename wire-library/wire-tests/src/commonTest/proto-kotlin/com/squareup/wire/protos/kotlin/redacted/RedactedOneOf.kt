@@ -28,17 +28,17 @@ public class RedactedOneOf(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    oneofName = "a"
+    oneofName = "a",
   )
   public val b: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     redacted = true,
-    oneofName = "a"
+    oneofName = "a",
   )
   public val c: String? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<RedactedOneOf, Nothing>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(b, c) <= 1) {
@@ -48,7 +48,7 @@ public class RedactedOneOf(
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -83,7 +83,7 @@ public class RedactedOneOf(
   public fun copy(
     b: Int? = this.b,
     c: String? = this.c,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): RedactedOneOf = RedactedOneOf(b, c, unknownFields)
 
   public companion object {

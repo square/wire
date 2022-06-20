@@ -26,19 +26,19 @@ import okio.ByteString
 public class OuterMessage(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val outer_number_before: Int? = null,
   @field:WireField(
     tag = 2,
-    adapter = "squareup.protos.packed_encoding.EmbeddedMessage#ADAPTER"
+    adapter = "squareup.protos.packed_encoding.EmbeddedMessage#ADAPTER",
   )
   public val embedded_message: EmbeddedMessage? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<OuterMessage, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -73,7 +73,7 @@ public class OuterMessage(
   public fun copy(
     outer_number_before: Int? = this.outer_number_before,
     embedded_message: EmbeddedMessage? = this.embedded_message,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): OuterMessage = OuterMessage(outer_number_before, embedded_message, unknownFields)
 
   public companion object {

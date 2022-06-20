@@ -22,23 +22,23 @@ import okio.ByteString
 public class VersionOne(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   @JvmField
   public val i: Int? = null,
   @field:WireField(
     tag = 7,
-    adapter = "com.squareup.wire.protos.kotlin.unknownfields.NestedVersionOne#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.unknownfields.NestedVersionOne#ADAPTER",
   )
   @JvmField
   public val obj: NestedVersionOne? = null,
   @field:WireField(
     tag = 8,
-    adapter = "com.squareup.wire.protos.kotlin.unknownfields.EnumVersionOne#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.unknownfields.EnumVersionOne#ADAPTER",
   )
   @JvmField
   public val en: EnumVersionOne? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<VersionOne, VersionOne.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -83,7 +83,7 @@ public class VersionOne(
     i: Int? = this.i,
     obj: NestedVersionOne? = this.obj,
     en: EnumVersionOne? = this.en,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): VersionOne = VersionOne(i, obj, en, unknownFields)
 
   public class Builder : Message.Builder<VersionOne, Builder>() {

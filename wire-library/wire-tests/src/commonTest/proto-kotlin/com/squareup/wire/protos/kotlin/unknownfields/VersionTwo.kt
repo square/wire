@@ -29,52 +29,52 @@ import okio.ByteString
 public class VersionTwo(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val i: Int? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val v2_i: Int? = null,
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   public val v2_s: String? = null,
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
   )
   public val v2_f32: Int? = null,
   @field:WireField(
     tag = 5,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
   )
   public val v2_f64: Long? = null,
   v2_rs: List<String> = emptyList(),
   @field:WireField(
     tag = 7,
-    adapter = "com.squareup.wire.protos.kotlin.unknownfields.NestedVersionTwo#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.unknownfields.NestedVersionTwo#ADAPTER",
   )
   public val obj: NestedVersionTwo? = null,
   @field:WireField(
     tag = 8,
-    adapter = "com.squareup.wire.protos.kotlin.unknownfields.EnumVersionTwo#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.unknownfields.EnumVersionTwo#ADAPTER",
   )
   public val en: EnumVersionTwo? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<VersionTwo, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   public val v2_rs: List<String> = immutableCopyOf("v2_rs", v2_rs)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -133,7 +133,7 @@ public class VersionTwo(
     v2_rs: List<String> = this.v2_rs,
     obj: NestedVersionTwo? = this.obj,
     en: EnumVersionTwo? = this.en,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): VersionTwo = VersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, obj, en, unknownFields)
 
   public companion object {

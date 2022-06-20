@@ -35,7 +35,7 @@ public class KeywordKotlin(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    declaredName = "object"
+    declaredName = "object",
   )
   @JvmField
   public val object_: String? = null,
@@ -43,20 +43,20 @@ public class KeywordKotlin(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REQUIRED,
-    declaredName = "when"
+    declaredName = "when",
   )
   @JvmField
   public val when_: Int,
   fun_: Map<String, String> = emptyMap(),
   return_: List<Boolean> = emptyList(),
   enums: List<KeywordKotlinEnum> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<KeywordKotlin, KeywordKotlin.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 3,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    declaredName = "fun"
+    declaredName = "fun",
   )
   @JvmField
   public val fun_: Map<String, String> = immutableCopyOf("fun_", fun_)
@@ -65,7 +65,7 @@ public class KeywordKotlin(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.REPEATED,
-    declaredName = "return"
+    declaredName = "return",
   )
   @JvmField
   public val return_: List<Boolean> = immutableCopyOf("return_", return_)
@@ -73,7 +73,7 @@ public class KeywordKotlin(
   @field:WireField(
     tag = 5,
     adapter = "squareup.proto2.keywords.KeywordKotlin${'$'}KeywordKotlinEnum#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val enums: List<KeywordKotlinEnum> = immutableCopyOf("enums", enums)
@@ -131,7 +131,7 @@ public class KeywordKotlin(
     fun_: Map<String, String> = this.fun_,
     return_: List<Boolean> = this.return_,
     enums: List<KeywordKotlinEnum> = this.enums,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): KeywordKotlin = KeywordKotlin(object_, when_, fun_, return_, enums, unknownFields)
 
   public class Builder : Message.Builder<KeywordKotlin, Builder>() {
@@ -267,7 +267,7 @@ public class KeywordKotlin(
   }
 
   public enum class KeywordKotlinEnum(
-    public override val `value`: Int
+    public override val `value`: Int,
   ) : WireEnum {
     @WireEnumConstant(declaredName = "object")
     object_(0),

@@ -7,7 +7,7 @@ import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
 
 public class GrpcNoPackageServiceClient(
-  private val client: GrpcClient
+  private val client: GrpcClient,
 ) : NoPackageServiceClient {
   public override fun NoPackageMethod(): GrpcCall<NoPackageRequest, NoPackageResponse> =
       client.newCall(GrpcMethod(

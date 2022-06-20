@@ -24,11 +24,11 @@ public class FreeGarlicBreadPromotion(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "isExtraCheesey"
+    jsonName = "isExtraCheesey",
   )
   @JvmField
   public val is_extra_cheesey: Boolean = false,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<FreeGarlicBreadPromotion, FreeGarlicBreadPromotion.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()

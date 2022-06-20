@@ -12,5 +12,5 @@ import kotlin.`annotation`.Target
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
 public annotation class MyMessageOptionNineOption(
-  public val `value`: Array<ForeignEnum>
+  public val `value`: Array<ForeignEnum>,
 )

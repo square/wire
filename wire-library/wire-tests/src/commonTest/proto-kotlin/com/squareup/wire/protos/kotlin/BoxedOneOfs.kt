@@ -27,11 +27,11 @@ import okio.ByteString
 
 public class BoxedOneOfs(
   public val OneOf: OneOf<OneOf_<*>, *>? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<BoxedOneOfs, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -66,7 +66,7 @@ public class BoxedOneOfs(
   public class OneOf_<T>(
     tag: Int,
     adapter: ProtoAdapter<T>,
-    declaredName: String
+    declaredName: String,
   ) : OneOf.Key<T>(tag, adapter, declaredName) {
     public fun create(`value`: T) = OneOf(this, value)
 

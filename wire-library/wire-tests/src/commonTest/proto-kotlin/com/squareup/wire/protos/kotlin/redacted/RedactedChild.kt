@@ -27,24 +27,24 @@ import okio.ByteString
 public class RedactedChild(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   public val a: String? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedFields#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedFields#ADAPTER",
   )
   public val b: RedactedFields? = null,
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.protos.kotlin.redacted.NotRedacted#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.redacted.NotRedacted#ADAPTER",
   )
   public val c: NotRedacted? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<RedactedChild, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -83,7 +83,7 @@ public class RedactedChild(
     a: String? = this.a,
     b: RedactedFields? = this.b,
     c: NotRedacted? = this.c,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): RedactedChild = RedactedChild(a, b, c, unknownFields)
 
   public companion object {

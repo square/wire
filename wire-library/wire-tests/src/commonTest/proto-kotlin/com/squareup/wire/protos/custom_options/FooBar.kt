@@ -38,19 +38,19 @@ public class FooBar(
   @MyFieldOptionOneOption(17)
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val foo: Int? = null,
   @MyFieldOptionTwoOption(33.5f)
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   public val bar: String? = null,
   @MyFieldOptionThreeOption(FooBarBazEnum.BAR)
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}Nested#ADAPTER"
+    adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}Nested#ADAPTER",
   )
   public val baz: Nested? = null,
   @MyFieldOptionOneOption(18)
@@ -68,13 +68,13 @@ public class FooBar(
   ])
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.ProtoAdapter#UINT64"
+    adapter = "com.squareup.wire.ProtoAdapter#UINT64",
   )
   public val qux: Long? = null,
   fred: List<Float> = emptyList(),
   @field:WireField(
     tag = 6,
-    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
   )
   public val daisy: Double? = null,
   nested: List<FooBar> = emptyList(),
@@ -83,17 +83,17 @@ public class FooBar(
    */
   @field:WireField(
     tag = 101,
-    adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER"
+    adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER",
   )
   public val ext: FooBarBazEnum? = null,
   rep: List<FooBarBazEnum> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<FooBar, Nothing>(ADAPTER, unknownFields) {
   @MyFieldOptionTwoOption(99.9f)
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   public val fred: List<Float> = immutableCopyOf("fred", fred)
 
@@ -101,7 +101,7 @@ public class FooBar(
     tag = 7,
     adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER",
     label = WireField.Label.REPEATED,
-    redacted = true
+    redacted = true,
   )
   public val nested: List<FooBar> = immutableCopyOf("nested", nested)
 
@@ -111,13 +111,13 @@ public class FooBar(
   @field:WireField(
     tag = 102,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   public val rep: List<FooBarBazEnum> = immutableCopyOf("rep", rep)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -180,7 +180,7 @@ public class FooBar(
     nested: List<FooBar> = this.nested,
     ext: FooBarBazEnum? = this.ext,
     rep: List<FooBarBazEnum> = this.rep,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): FooBar = FooBar(foo, bar, baz, qux, fred, daisy, nested, ext, rep, unknownFields)
 
   public companion object {
@@ -293,14 +293,14 @@ public class FooBar(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER",
-      declaredName = "value"
+      declaredName = "value",
     )
     public val value_: FooBarBazEnum? = null,
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<Nested, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+      level = DeprecationLevel.HIDDEN,
     )
     public override fun newBuilder(): Nothing = throw
         AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -387,18 +387,18 @@ public class FooBar(
 
   public class More(
     serial: List<Int> = emptyList(),
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<More, Nothing>(ADAPTER, unknownFields) {
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
     )
     public val serial: List<Int> = immutableCopyOf("serial", serial)
 
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+      level = DeprecationLevel.HIDDEN,
     )
     public override fun newBuilder(): Nothing = throw
         AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -481,7 +481,7 @@ public class FooBar(
 
   @EnumOptionOption(true)
   public enum class FooBarBazEnum(
-    public override val `value`: Int
+    public override val `value`: Int,
   ) : WireEnum {
     @EnumValueOptionOption(17)
     FOO(1),

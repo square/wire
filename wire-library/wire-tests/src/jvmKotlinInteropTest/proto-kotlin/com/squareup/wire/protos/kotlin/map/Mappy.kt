@@ -25,12 +25,12 @@ import okio.ByteString
 
 public class Mappy(
   things: Map<String, Thing> = emptyMap(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Mappy, Mappy.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-    adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER",
   )
   @JvmField
   public val things: Map<String, Thing> = immutableCopyOf("things", things)

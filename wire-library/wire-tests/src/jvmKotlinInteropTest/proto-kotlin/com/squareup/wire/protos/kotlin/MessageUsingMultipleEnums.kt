@@ -25,17 +25,17 @@ import okio.ByteString
 public class MessageUsingMultipleEnums(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.protos.kotlin.MessageWithStatus${'$'}Status#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.MessageWithStatus${'$'}Status#ADAPTER",
   )
   @JvmField
   public val a: MessageWithStatus.Status? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.protos.kotlin.OtherMessageWithStatus${'$'}Status#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.OtherMessageWithStatus${'$'}Status#ADAPTER",
   )
   @JvmField
   public val b: OtherMessageWithStatus.Status? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MessageUsingMultipleEnums, MessageUsingMultipleEnums.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -76,7 +76,7 @@ public class MessageUsingMultipleEnums(
   public fun copy(
     a: MessageWithStatus.Status? = this.a,
     b: OtherMessageWithStatus.Status? = this.b,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): MessageUsingMultipleEnums = MessageUsingMultipleEnums(a, b, unknownFields)
 
   public class Builder : Message.Builder<MessageUsingMultipleEnums, Builder>() {

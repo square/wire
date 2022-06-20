@@ -32,7 +32,7 @@ import okio.ByteString
   ForeignEnum.BAV
 ])
 public class MessageWithOptions(
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MessageWithOptions, MessageWithOptions.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()

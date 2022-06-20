@@ -29,13 +29,13 @@ import okio.ByteString
 public class RedactedRepeated(
   a: List<String> = emptyList(),
   b: List<RedactedFields> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<RedactedRepeated, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
-    redacted = true
+    redacted = true,
   )
   public val a: List<String> = immutableCopyOf("a", a)
 
@@ -45,13 +45,13 @@ public class RedactedRepeated(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedFields#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   public val b: List<RedactedFields> = immutableCopyOf("b", b)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -86,7 +86,7 @@ public class RedactedRepeated(
   public fun copy(
     a: List<String> = this.a,
     b: List<RedactedFields> = this.b,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): RedactedRepeated = RedactedRepeated(a, b, unknownFields)
 
   public companion object {

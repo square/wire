@@ -33,7 +33,7 @@ public class All32(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myInt32"
+    jsonName = "myInt32",
   )
   @JvmField
   public val my_int32: Int = 0,
@@ -41,7 +41,7 @@ public class All32(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myUint32"
+    jsonName = "myUint32",
   )
   @JvmField
   public val my_uint32: Int = 0,
@@ -49,7 +49,7 @@ public class All32(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "mySint32"
+    jsonName = "mySint32",
   )
   @JvmField
   public val my_sint32: Int = 0,
@@ -57,7 +57,7 @@ public class All32(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myFixed32"
+    jsonName = "myFixed32",
   )
   @JvmField
   public val my_fixed32: Int = 0,
@@ -65,7 +65,7 @@ public class All32(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "mySfixed32"
+    jsonName = "mySfixed32",
   )
   @JvmField
   public val my_sfixed32: Int = 0,
@@ -83,7 +83,7 @@ public class All32(
     tag = 401,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     jsonName = "oneofInt32",
-    oneofName = "choice"
+    oneofName = "choice",
   )
   @JvmField
   public val oneof_int32: Int? = null,
@@ -91,7 +91,7 @@ public class All32(
     tag = 402,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     jsonName = "oneofSfixed32",
-    oneofName = "choice"
+    oneofName = "choice",
   )
   @JvmField
   public val oneof_sfixed32: Int? = null,
@@ -100,13 +100,13 @@ public class All32(
   map_int32_sint32: Map<Int, Int> = emptyMap(),
   map_int32_fixed32: Map<Int, Int> = emptyMap(),
   map_int32_sfixed32: Map<Int, Int> = emptyMap(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<All32, All32.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 201,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REPEATED,
-    jsonName = "repInt32"
+    jsonName = "repInt32",
   )
   @JvmField
   public val rep_int32: List<Int> = immutableCopyOf("rep_int32", rep_int32)
@@ -115,7 +115,7 @@ public class All32(
     tag = 202,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.REPEATED,
-    jsonName = "repUint32"
+    jsonName = "repUint32",
   )
   @JvmField
   public val rep_uint32: List<Int> = immutableCopyOf("rep_uint32", rep_uint32)
@@ -124,7 +124,7 @@ public class All32(
     tag = 203,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.REPEATED,
-    jsonName = "repSint32"
+    jsonName = "repSint32",
   )
   @JvmField
   public val rep_sint32: List<Int> = immutableCopyOf("rep_sint32", rep_sint32)
@@ -133,7 +133,7 @@ public class All32(
     tag = 204,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.REPEATED,
-    jsonName = "repFixed32"
+    jsonName = "repFixed32",
   )
   @JvmField
   public val rep_fixed32: List<Int> = immutableCopyOf("rep_fixed32", rep_fixed32)
@@ -142,7 +142,7 @@ public class All32(
     tag = 205,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.REPEATED,
-    jsonName = "repSfixed32"
+    jsonName = "repSfixed32",
   )
   @JvmField
   public val rep_sfixed32: List<Int> = immutableCopyOf("rep_sfixed32", rep_sfixed32)
@@ -151,7 +151,7 @@ public class All32(
     tag = 301,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.PACKED,
-    jsonName = "packInt32"
+    jsonName = "packInt32",
   )
   @JvmField
   public val pack_int32: List<Int> = immutableCopyOf("pack_int32", pack_int32)
@@ -160,7 +160,7 @@ public class All32(
     tag = 302,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.PACKED,
-    jsonName = "packUint32"
+    jsonName = "packUint32",
   )
   @JvmField
   public val pack_uint32: List<Int> = immutableCopyOf("pack_uint32", pack_uint32)
@@ -169,7 +169,7 @@ public class All32(
     tag = 303,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.PACKED,
-    jsonName = "packSint32"
+    jsonName = "packSint32",
   )
   @JvmField
   public val pack_sint32: List<Int> = immutableCopyOf("pack_sint32", pack_sint32)
@@ -178,7 +178,7 @@ public class All32(
     tag = 304,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.PACKED,
-    jsonName = "packFixed32"
+    jsonName = "packFixed32",
   )
   @JvmField
   public val pack_fixed32: List<Int> = immutableCopyOf("pack_fixed32", pack_fixed32)
@@ -187,7 +187,7 @@ public class All32(
     tag = 305,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.PACKED,
-    jsonName = "packSfixed32"
+    jsonName = "packSfixed32",
   )
   @JvmField
   public val pack_sfixed32: List<Int> = immutableCopyOf("pack_sfixed32", pack_sfixed32)
@@ -196,7 +196,7 @@ public class All32(
     tag = 501,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    jsonName = "mapInt32Int32"
+    jsonName = "mapInt32Int32",
   )
   @JvmField
   public val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32", map_int32_int32)
@@ -205,7 +205,7 @@ public class All32(
     tag = 502,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-    jsonName = "mapInt32Uint32"
+    jsonName = "mapInt32Uint32",
   )
   @JvmField
   public val map_int32_uint32: Map<Int, Int> = immutableCopyOf("map_int32_uint32", map_int32_uint32)
@@ -214,7 +214,7 @@ public class All32(
     tag = 503,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-    jsonName = "mapInt32Sint32"
+    jsonName = "mapInt32Sint32",
   )
   @JvmField
   public val map_int32_sint32: Map<Int, Int> = immutableCopyOf("map_int32_sint32", map_int32_sint32)
@@ -223,7 +223,7 @@ public class All32(
     tag = 504,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-    jsonName = "mapInt32Fixed32"
+    jsonName = "mapInt32Fixed32",
   )
   @JvmField
   public val map_int32_fixed32: Map<Int, Int> = immutableCopyOf("map_int32_fixed32",
@@ -233,7 +233,7 @@ public class All32(
     tag = 505,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-    jsonName = "mapInt32Sfixed32"
+    jsonName = "mapInt32Sfixed32",
   )
   @JvmField
   public val map_int32_sfixed32: Map<Int, Int> = immutableCopyOf("map_int32_sfixed32",
@@ -383,7 +383,7 @@ public class All32(
     map_int32_sint32: Map<Int, Int> = this.map_int32_sint32,
     map_int32_fixed32: Map<Int, Int> = this.map_int32_fixed32,
     map_int32_sfixed32: Map<Int, Int> = this.map_int32_sfixed32,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): All32 = All32(my_int32, my_uint32, my_sint32, my_fixed32, my_sfixed32, rep_int32, rep_uint32,
       rep_sint32, rep_fixed32, rep_sfixed32, pack_int32, pack_uint32, pack_sint32, pack_fixed32,
       pack_sfixed32, oneof_int32, oneof_sfixed32, map_int32_int32, map_int32_uint32,
