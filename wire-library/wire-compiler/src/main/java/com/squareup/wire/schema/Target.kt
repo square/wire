@@ -310,8 +310,8 @@ data class KotlinTarget(
       ): Path {
         val modulePath = context.outDirectory
         val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
-          .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
-          .addComment("\nSource: %L in %L", source, location.withPathOnly())
+          .addFileComment(WireCompiler.CODE_GENERATED_BY_WIRE)
+          .addFileComment("\nSource: %L in %L", source, location.withPathOnly())
           .addType(typeSpec)
           .build()
         val filePath = modulePath /
