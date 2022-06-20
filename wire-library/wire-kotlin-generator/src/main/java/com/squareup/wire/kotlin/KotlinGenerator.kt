@@ -1873,7 +1873,7 @@ class KotlinGenerator private constructor(
     val valueName = "value"
 
     val primaryConstructor = FunSpec.constructorBuilder()
-      .addParameter(valueName, Int::class, OVERRIDE)
+      .addParameter(valueName, Int::class)
 
     val builder = TypeSpec.enumBuilder(type.simpleName)
       .apply {
@@ -1893,7 +1893,7 @@ class KotlinGenerator private constructor(
       }
       .addSuperinterface(WireEnum::class)
       .addProperty(
-        PropertySpec.builder(valueName, Int::class)
+        PropertySpec.builder(valueName, Int::class, OVERRIDE)
           .initializer(valueName)
           .build()
       )
