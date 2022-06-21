@@ -29,18 +29,18 @@ import okio.ByteString
 
 public class Mappy(
   things: Map<String, Thing> = emptyMap(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Mappy, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-    adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER",
   )
   public val things: Map<String, Thing> = immutableCopyOf("things", things)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")

@@ -26,7 +26,7 @@ import okio.ByteString
 public class ForeignMessage(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val i: Int? = null,
   /**
@@ -34,14 +34,14 @@ public class ForeignMessage(
    */
   @field:WireField(
     tag = 100,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val j: Int? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<ForeignMessage, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -76,7 +76,7 @@ public class ForeignMessage(
   public fun copy(
     i: Int? = this.i,
     j: Int? = this.j,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): ForeignMessage = ForeignMessage(i, j, unknownFields)
 
   public companion object {

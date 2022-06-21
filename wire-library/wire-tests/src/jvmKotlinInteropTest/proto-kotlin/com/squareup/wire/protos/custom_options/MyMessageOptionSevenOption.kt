@@ -14,5 +14,5 @@ import kotlin.`annotation`.Target
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
 public annotation class MyMessageOptionSevenOption(
-  public val `value`: IntArray
+  public val `value`: IntArray,
 )

@@ -39,7 +39,7 @@ public class Person(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REQUIRED
+    label = WireField.Label.REQUIRED,
   )
   @JvmField
   public val name: String,
@@ -49,7 +49,7 @@ public class Person(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.REQUIRED
+    label = WireField.Label.REQUIRED,
   )
   @JvmField
   public val id: Int,
@@ -58,12 +58,12 @@ public class Person(
    */
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   @JvmField
   public val email: String? = null,
   phone: List<PhoneNumber> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
   /**
    * A list of the customer's phone numbers.
@@ -71,7 +71,7 @@ public class Person(
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.proto2.person.javainteropkotlin.Person${'$'}PhoneNumber#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val phone: List<PhoneNumber> = immutableCopyOf("phone", phone)
@@ -124,7 +124,7 @@ public class Person(
     id: Int = this.id,
     email: String? = this.email,
     phone: List<PhoneNumber> = this.phone,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): Person = Person(name, id, email, phone, unknownFields)
 
   public class Builder : Message.Builder<Person, Builder>() {
@@ -253,7 +253,7 @@ public class Person(
    * Represents the type of the phone number: mobile, home or work.
    */
   public enum class PhoneType(
-    public override val `value`: Int
+    public override val `value`: Int,
   ) : WireEnum {
     MOBILE(0),
     HOME(1),
@@ -290,7 +290,7 @@ public class Person(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REQUIRED
+      label = WireField.Label.REQUIRED,
     )
     @JvmField
     public val number: String,
@@ -299,11 +299,11 @@ public class Person(
      */
     @field:WireField(
       tag = 2,
-      adapter = "com.squareup.wire.proto2.person.javainteropkotlin.Person${'$'}PhoneType#ADAPTER"
+      adapter = "com.squareup.wire.proto2.person.javainteropkotlin.Person${'$'}PhoneType#ADAPTER",
     )
     @JvmField
     public val type: PhoneType? = null,
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -343,7 +343,7 @@ public class Person(
     public fun copy(
       number: String = this.number,
       type: PhoneType? = this.type,
-      unknownFields: ByteString = this.unknownFields
+      unknownFields: ByteString = this.unknownFields,
     ): PhoneNumber = PhoneNumber(number, type, unknownFields)
 
     public class Builder : Message.Builder<PhoneNumber, Builder>() {

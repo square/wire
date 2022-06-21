@@ -30,14 +30,14 @@ import okio.ByteString
 public class OptionalEnumUser(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.protos.kotlin.OptionalEnumUser${'$'}OptionalEnum#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.OptionalEnumUser${'$'}OptionalEnum#ADAPTER",
   )
   public val optional_enum: OptionalEnum? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<OptionalEnumUser, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -122,7 +122,7 @@ public class OptionalEnumUser(
   }
 
   public enum class OptionalEnum(
-    public override val `value`: Int
+    public override val `value`: Int,
   ) : WireEnum {
     FOO(1),
     BAR(2),

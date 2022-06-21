@@ -23,7 +23,7 @@ import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 public class OtherMessageWithStatus(
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<OtherMessageWithStatus, OtherMessageWithStatus.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -93,7 +93,7 @@ public class OtherMessageWithStatus(
   }
 
   public enum class Status(
-    public override val `value`: Int
+    public override val `value`: Int,
   ) : WireEnum {
     A(1),
     ;

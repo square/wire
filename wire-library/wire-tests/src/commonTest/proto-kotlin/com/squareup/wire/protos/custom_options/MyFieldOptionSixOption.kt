@@ -12,8 +12,8 @@ import kotlin.`annotation`.Target
 @Retention(AnnotationRetention.RUNTIME)
 @Target(
   AnnotationTarget.PROPERTY,
-  AnnotationTarget.FIELD
+  AnnotationTarget.FIELD,
 )
 public annotation class MyFieldOptionSixOption(
-  public val `value`: Array<String>
+  public val `value`: Array<String>,
 )

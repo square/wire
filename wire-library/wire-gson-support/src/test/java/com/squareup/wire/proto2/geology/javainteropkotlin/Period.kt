@@ -11,7 +11,7 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 
 public enum class Period(
-  public override val `value`: Int
+  public override val `value`: Int,
 ) : WireEnum {
   /**
    * 145.5 million years ago — 66.0 million years ago.

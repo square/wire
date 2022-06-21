@@ -25,12 +25,12 @@ import okio.ByteString
 
 public class Repeated(
   things: List<Thing> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Repeated, Repeated.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.repeated.Thing#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val things: List<Thing> = immutableCopyOf("things", things)

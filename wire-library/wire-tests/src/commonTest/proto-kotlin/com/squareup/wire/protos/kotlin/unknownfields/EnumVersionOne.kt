@@ -11,7 +11,7 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 
 public enum class EnumVersionOne(
-  public override val `value`: Int
+  public override val `value`: Int,
 ) : WireEnum {
   SHREK_V1(1),
   DONKEY_V1(2),

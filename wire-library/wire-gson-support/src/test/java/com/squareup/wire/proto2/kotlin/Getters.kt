@@ -32,7 +32,7 @@ public class Getters(
    */
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val isa: Int? = null,
   /**
@@ -40,7 +40,7 @@ public class Getters(
    */
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val isA: Int? = null,
   /**
@@ -48,7 +48,7 @@ public class Getters(
    */
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val is_a: Int? = null,
   /**
@@ -56,7 +56,7 @@ public class Getters(
    */
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val is32: Int? = null,
   /**
@@ -64,14 +64,14 @@ public class Getters(
    */
   @field:WireField(
     tag = 5,
-    adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+    adapter = "com.squareup.wire.ProtoAdapter#BOOL",
   )
   public val isb: Boolean? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Getters, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -118,7 +118,7 @@ public class Getters(
     is_a: Int? = this.is_a,
     is32: Int? = this.is32,
     isb: Boolean? = this.isb,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): Getters = Getters(isa, isA, is_a, is32, isb, unknownFields)
 
   public companion object {

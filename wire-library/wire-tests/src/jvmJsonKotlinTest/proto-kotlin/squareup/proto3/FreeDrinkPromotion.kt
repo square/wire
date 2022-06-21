@@ -27,11 +27,11 @@ public class FreeDrinkPromotion(
   @field:WireField(
     tag = 1,
     adapter = "squareup.proto3.FreeDrinkPromotion${'$'}Drink#ADAPTER",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   @JvmField
   public val drink: Drink = Drink.UNKNOWN,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<FreeDrinkPromotion, FreeDrinkPromotion.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -136,7 +136,7 @@ public class FreeDrinkPromotion(
   }
 
   public enum class Drink(
-    public override val `value`: Int
+    public override val `value`: Int,
   ) : WireEnum {
     UNKNOWN(0),
     PEPSI(1),

@@ -35,7 +35,7 @@ public class OneOfMessage(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    oneofName = "choice"
+    oneofName = "choice",
   )
   public val foo: Int? = null,
   /**
@@ -44,7 +44,7 @@ public class OneOfMessage(
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    oneofName = "choice"
+    oneofName = "choice",
   )
   public val bar: String? = null,
   /**
@@ -53,10 +53,10 @@ public class OneOfMessage(
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    oneofName = "choice"
+    oneofName = "choice",
   )
   public val baz: String? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<OneOfMessage, Nothing>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(foo, bar, baz) <= 1) {
@@ -66,7 +66,7 @@ public class OneOfMessage(
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -105,7 +105,7 @@ public class OneOfMessage(
     foo: Int? = this.foo,
     bar: String? = this.bar,
     baz: String? = this.baz,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): OneOfMessage = OneOfMessage(foo, bar, baz, unknownFields)
 
   public companion object {

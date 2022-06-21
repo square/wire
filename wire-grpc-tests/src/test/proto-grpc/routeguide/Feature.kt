@@ -35,7 +35,7 @@ public class Feature(
    */
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   public val name: String? = null,
   /**
@@ -43,14 +43,14 @@ public class Feature(
    */
   @field:WireField(
     tag = 2,
-    adapter = "routeguide.Point#ADAPTER"
+    adapter = "routeguide.Point#ADAPTER",
   )
   public val location: Point? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Feature, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -85,7 +85,7 @@ public class Feature(
   public fun copy(
     name: String? = this.name,
     location: Point? = this.location,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): Feature = Feature(name, location, unknownFields)
 
   public companion object {

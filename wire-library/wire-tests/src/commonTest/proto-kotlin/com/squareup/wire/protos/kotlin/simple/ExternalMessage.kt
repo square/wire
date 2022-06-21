@@ -29,7 +29,7 @@ import okio.ByteString
 public class ExternalMessage(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
+    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
   )
   public val f: Float? = null,
   fooext: List<Int> = emptyList(),
@@ -38,7 +38,7 @@ public class ExternalMessage(
    */
   @field:WireField(
     tag = 126,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val barext: Int? = null,
   /**
@@ -46,7 +46,7 @@ public class ExternalMessage(
    */
   @field:WireField(
     tag = 127,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val bazext: Int? = null,
   /**
@@ -54,7 +54,7 @@ public class ExternalMessage(
    */
   @field:WireField(
     tag = 128,
-    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER",
   )
   public val nested_message_ext: SimpleMessage.NestedMessage? = null,
   /**
@@ -62,10 +62,10 @@ public class ExternalMessage(
    */
   @field:WireField(
     tag = 129,
-    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER",
   )
   public val nested_enum_ext: SimpleMessage.NestedEnum? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<ExternalMessage, Nothing>(ADAPTER, unknownFields) {
   /**
    * Extension source: simple_message.proto
@@ -73,13 +73,13 @@ public class ExternalMessage(
   @field:WireField(
     tag = 125,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   public val fooext: List<Int> = immutableCopyOf("fooext", fooext)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -130,7 +130,7 @@ public class ExternalMessage(
     bazext: Int? = this.bazext,
     nested_message_ext: SimpleMessage.NestedMessage? = this.nested_message_ext,
     nested_enum_ext: SimpleMessage.NestedEnum? = this.nested_enum_ext,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): ExternalMessage = ExternalMessage(f, fooext, barext, bazext, nested_message_ext,
       nested_enum_ext, unknownFields)
 

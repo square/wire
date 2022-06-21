@@ -11,8 +11,8 @@ import kotlin.`annotation`.Target
 @Retention(AnnotationRetention.RUNTIME)
 @Target(
   AnnotationTarget.PROPERTY,
-  AnnotationTarget.FIELD
+  AnnotationTarget.FIELD,
 )
 public annotation class MyFieldOptionFiveOption(
-  public val `value`: IntArray
+  public val `value`: IntArray,
 )

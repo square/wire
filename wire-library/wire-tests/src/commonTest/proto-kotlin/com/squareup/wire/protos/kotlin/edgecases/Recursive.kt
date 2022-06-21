@@ -27,19 +27,19 @@ public class Recursive(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    declaredName = "value"
+    declaredName = "value",
   )
   public val value_: Int? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.protos.kotlin.edgecases.Recursive#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.edgecases.Recursive#ADAPTER",
   )
   public val recursive: Recursive? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Recursive, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -74,7 +74,7 @@ public class Recursive(
   public fun copy(
     value_: Int? = this.value_,
     recursive: Recursive? = this.recursive,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): Recursive = Recursive(value_, recursive, unknownFields)
 
   public companion object {

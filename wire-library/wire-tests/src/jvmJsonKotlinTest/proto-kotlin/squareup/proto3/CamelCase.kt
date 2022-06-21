@@ -31,7 +31,7 @@ public class CamelCase(
     tag = 1,
     adapter = "squareup.proto3.CamelCase${'$'}NestedCamelCase#ADAPTER",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "nestedMessage"
+    jsonName = "nestedMessage",
   )
   @JvmField
   public val nested__message: NestedCamelCase? = null,
@@ -40,18 +40,18 @@ public class CamelCase(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "IDitItMyWAy"
+    jsonName = "IDitItMyWAy",
   )
   @JvmField
   public val IDitIt_my_wAy: String = "",
   map_int32_Int32: Map<Int, Int> = emptyMap(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<CamelCase, CamelCase.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.PACKED,
-    jsonName = "RepInt32"
+    jsonName = "RepInt32",
   )
   @JvmField
   public val _Rep_int32: List<Int> = immutableCopyOf("_Rep_int32", _Rep_int32)
@@ -60,7 +60,7 @@ public class CamelCase(
     tag = 4,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    jsonName = "mapInt32Int32"
+    jsonName = "mapInt32Int32",
   )
   @JvmField
   public val map_int32_Int32: Map<Int, Int> = immutableCopyOf("map_int32_Int32", map_int32_Int32)
@@ -113,7 +113,7 @@ public class CamelCase(
     _Rep_int32: List<Int> = this._Rep_int32,
     IDitIt_my_wAy: String = this.IDitIt_my_wAy,
     map_int32_Int32: Map<Int, Int> = this.map_int32_Int32,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): CamelCase = CamelCase(nested__message, _Rep_int32, IDitIt_my_wAy, map_int32_Int32,
       unknownFields)
 
@@ -241,11 +241,11 @@ public class CamelCase(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "oneInt32"
+      jsonName = "oneInt32",
     )
     @JvmField
     public val one_int32: Int = 0,
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<NestedCamelCase, NestedCamelCase.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()

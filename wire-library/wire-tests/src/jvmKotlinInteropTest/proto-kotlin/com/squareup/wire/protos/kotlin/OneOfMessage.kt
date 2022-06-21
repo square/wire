@@ -31,7 +31,7 @@ public class OneOfMessage(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    oneofName = "choice"
+    oneofName = "choice",
   )
   @JvmField
   public val foo: Int? = null,
@@ -41,7 +41,7 @@ public class OneOfMessage(
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    oneofName = "choice"
+    oneofName = "choice",
   )
   @JvmField
   public val bar: String? = null,
@@ -51,11 +51,11 @@ public class OneOfMessage(
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    oneofName = "choice"
+    oneofName = "choice",
   )
   @JvmField
   public val baz: String? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(foo, bar, baz) <= 1) {
@@ -106,7 +106,7 @@ public class OneOfMessage(
     foo: Int? = this.foo,
     bar: String? = this.bar,
     baz: String? = this.baz,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): OneOfMessage = OneOfMessage(foo, bar, baz, unknownFields)
 
   public class Builder : Message.Builder<OneOfMessage, Builder>() {

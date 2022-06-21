@@ -41,23 +41,23 @@ import okio.ByteString
 public class ModelEvaluation(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   @JvmField
   public val name: String? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
   )
   @JvmField
   public val score: Double? = null,
   models: Map<String, ModelEvaluation> = emptyMap(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<ModelEvaluation, ModelEvaluation.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 3,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-    adapter = "ModelEvaluation#ADAPTER"
+    adapter = "ModelEvaluation#ADAPTER",
   )
   @JvmField
   public val models: Map<String, ModelEvaluation> = immutableCopyOf("models", models)
@@ -105,7 +105,7 @@ public class ModelEvaluation(
     name: String? = this.name,
     score: Double? = this.score,
     models: Map<String, ModelEvaluation> = this.models,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): ModelEvaluation = ModelEvaluation(name, score, models, unknownFields)
 
   public class Builder : Message.Builder<ModelEvaluation, Builder>() {

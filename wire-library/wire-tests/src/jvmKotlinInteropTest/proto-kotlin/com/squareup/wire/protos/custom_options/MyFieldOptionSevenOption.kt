@@ -12,8 +12,8 @@ import kotlin.`annotation`.Target
 @Retention(AnnotationRetention.RUNTIME)
 @Target(
   AnnotationTarget.PROPERTY,
-  AnnotationTarget.FIELD
+  AnnotationTarget.FIELD,
 )
 public annotation class MyFieldOptionSevenOption(
-  public val `value`: Array<ForeignEnum>
+  public val `value`: Array<ForeignEnum>,
 )

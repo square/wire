@@ -40,7 +40,7 @@ public class SimpleMessage(
    */
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   @JvmField
   public val optional_int32: Int? = null,
@@ -50,7 +50,7 @@ public class SimpleMessage(
   @Deprecated(message = "optional_nested_msg is deprecated")
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER",
   )
   @JvmField
   public val optional_nested_msg: NestedMessage? = null,
@@ -59,13 +59,13 @@ public class SimpleMessage(
    */
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.protos.kotlin.simple.ExternalMessage#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.simple.ExternalMessage#ADAPTER",
   )
   @JvmField
   public val optional_external_msg: ExternalMessage? = null,
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER",
   )
   @JvmField
   public val default_nested_enum: NestedEnum? = null,
@@ -75,7 +75,7 @@ public class SimpleMessage(
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.REQUIRED
+    label = WireField.Label.REQUIRED,
   )
   @JvmField
   public val required_int32: Int,
@@ -85,7 +85,7 @@ public class SimpleMessage(
    */
   @field:WireField(
     tag = 7,
-    adapter = "com.squareup.wire.protos.kotlin.foreign.ForeignEnum#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.foreign.ForeignEnum#ADAPTER",
   )
   @JvmField
   public val default_foreign_enum: ForeignEnum? = null,
@@ -94,7 +94,7 @@ public class SimpleMessage(
    */
   @field:WireField(
     tag = 8,
-    adapter = "com.squareup.wire.protos.kotlin.foreign.ForeignEnum#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.foreign.ForeignEnum#ADAPTER",
   )
   @JvmField
   public val no_default_foreign_enum: ForeignEnum? = null,
@@ -104,7 +104,7 @@ public class SimpleMessage(
   @field:WireField(
     tag = 9,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    declaredName = "package"
+    declaredName = "package",
   )
   @JvmField
   public val package_: String? = null,
@@ -113,7 +113,7 @@ public class SimpleMessage(
    */
   @field:WireField(
     tag = 10,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   @JvmField
   public val result: String? = null,
@@ -122,7 +122,7 @@ public class SimpleMessage(
    */
   @field:WireField(
     tag = 11,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   @JvmField
   public val other: String? = null,
@@ -131,11 +131,11 @@ public class SimpleMessage(
    */
   @field:WireField(
     tag = 12,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   @JvmField
   public val o: String? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<SimpleMessage, SimpleMessage.Builder>(ADAPTER, unknownFields) {
   /**
    * A repeated double, deprecated
@@ -144,7 +144,7 @@ public class SimpleMessage(
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val repeated_double: List<Double> = immutableCopyOf("repeated_double", repeated_double)
@@ -238,7 +238,7 @@ public class SimpleMessage(
     result: String? = this.result,
     other: String? = this.other,
     o: String? = this.o,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): SimpleMessage = SimpleMessage(optional_int32, optional_nested_msg, optional_external_msg,
       default_nested_enum, required_int32, repeated_double, default_foreign_enum,
       no_default_foreign_enum, package_, result, other, o, unknownFields)
@@ -539,11 +539,11 @@ public class SimpleMessage(
      */
     @field:WireField(
       tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
     )
     @JvmField
     public val bb: Int? = null,
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<NestedMessage, NestedMessage.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -647,7 +647,7 @@ public class SimpleMessage(
   }
 
   public enum class NestedEnum(
-    public override val `value`: Int
+    public override val `value`: Int,
   ) : WireEnum {
     FOO(1),
     BAR(2),

@@ -28,17 +28,17 @@ public class RedactedFields(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    redacted = true
+    redacted = true,
   )
   public val a: String? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   public val b: String? = null,
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   public val c: String? = null,
   /**
@@ -46,14 +46,14 @@ public class RedactedFields(
    */
   @field:WireField(
     tag = 10,
-    adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedExtension#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedExtension#ADAPTER",
   )
   public val extension: RedactedExtension? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<RedactedFields, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -96,7 +96,7 @@ public class RedactedFields(
     b: String? = this.b,
     c: String? = this.c,
     extension: RedactedExtension? = this.extension,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): RedactedFields = RedactedFields(a, b, c, extension, unknownFields)
 
   public companion object {

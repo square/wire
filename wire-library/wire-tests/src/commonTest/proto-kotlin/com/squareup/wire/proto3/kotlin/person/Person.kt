@@ -42,7 +42,7 @@ public class Person(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   public val name: String = "",
   /**
@@ -51,7 +51,7 @@ public class Person(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   public val id: Int = 0,
   /**
@@ -60,7 +60,7 @@ public class Person(
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   public val email: String = "",
   phones: List<PhoneNumber> = emptyList(),
@@ -68,16 +68,16 @@ public class Person(
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    oneofName = "choice"
+    oneofName = "choice",
   )
   public val foo: Int? = null,
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    oneofName = "choice"
+    oneofName = "choice",
   )
   public val bar: String? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Person, Nothing>(ADAPTER, unknownFields) {
   /**
    * A list of the customer's phone numbers.
@@ -85,14 +85,14 @@ public class Person(
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.proto3.kotlin.person.Person${'$'}PhoneNumber#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   public val phones: List<PhoneNumber> = immutableCopyOf("phones", phones)
 
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   public val aliases: List<String> = immutableCopyOf("aliases", aliases)
 
@@ -104,7 +104,7 @@ public class Person(
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   public override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -159,7 +159,7 @@ public class Person(
     aliases: List<String> = this.aliases,
     foo: Int? = this.foo,
     bar: String? = this.bar,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): Person = Person(name, id, email, phones, aliases, foo, bar, unknownFields)
 
   public companion object {
@@ -251,7 +251,7 @@ public class Person(
    * Represents the type of the phone number: mobile, home or work.
    */
   public enum class PhoneType(
-    public override val `value`: Int
+    public override val `value`: Int,
   ) : WireEnum {
     MOBILE(0),
     HOME(1),
@@ -288,7 +288,7 @@ public class Person(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.OMIT_IDENTITY
+      label = WireField.Label.OMIT_IDENTITY,
     )
     public val number: String = "",
     /**
@@ -297,14 +297,14 @@ public class Person(
     @field:WireField(
       tag = 2,
       adapter = "com.squareup.wire.proto3.kotlin.person.Person${'$'}PhoneType#ADAPTER",
-      label = WireField.Label.OMIT_IDENTITY
+      label = WireField.Label.OMIT_IDENTITY,
     )
     public val type: PhoneType = PhoneType.MOBILE,
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<PhoneNumber, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+      level = DeprecationLevel.HIDDEN,
     )
     public override fun newBuilder(): Nothing = throw
         AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
@@ -339,7 +339,7 @@ public class Person(
     public fun copy(
       number: String = this.number,
       type: PhoneType = this.type,
-      unknownFields: ByteString = this.unknownFields
+      unknownFields: ByteString = this.unknownFields,
     ): PhoneNumber = PhoneNumber(number, type, unknownFields)
 
     public companion object {

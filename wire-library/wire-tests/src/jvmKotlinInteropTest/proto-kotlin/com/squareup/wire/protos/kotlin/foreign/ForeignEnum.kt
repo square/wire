@@ -11,7 +11,7 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 
 public enum class ForeignEnum(
-  public override val `value`: Int
+  public override val `value`: Int,
 ) : WireEnum {
   BAV(0),
   BAX(1),

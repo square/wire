@@ -30,7 +30,7 @@ public class Form(
   public val choice: OneOf<Choice<*>, *>? = null,
   @JvmField
   public val decision: OneOf<Decision<*>, *>? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Form, Form.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -70,7 +70,7 @@ public class Form(
   public fun copy(
     choice: OneOf<Choice<*>, *>? = this.choice,
     decision: OneOf<Decision<*>, *>? = this.decision,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): Form = Form(choice, decision, unknownFields)
 
   public class Builder : Message.Builder<Form, Builder>() {
@@ -100,7 +100,7 @@ public class Form(
   public class Choice<T>(
     tag: Int,
     adapter: ProtoAdapter<T>,
-    declaredName: String
+    declaredName: String,
   ) : OneOf.Key<T>(tag, adapter, declaredName) {
     public fun create(`value`: T) = OneOf(this, value)
 
@@ -110,7 +110,7 @@ public class Form(
   public class Decision<T>(
     tag: Int,
     adapter: ProtoAdapter<T>,
-    declaredName: String
+    declaredName: String,
   ) : OneOf.Key<T>(tag, adapter, declaredName) {
     public fun create(`value`: T) = OneOf(this, value)
 
@@ -261,7 +261,7 @@ public class Form(
   }
 
   public class ButtonElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<ButtonElement, ButtonElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -329,7 +329,7 @@ public class Form(
   }
 
   public class LocalImageElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<LocalImageElement, LocalImageElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -398,7 +398,7 @@ public class Form(
   }
 
   public class RemoteImageElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<RemoteImageElement, RemoteImageElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -467,7 +467,7 @@ public class Form(
   }
 
   public class MoneyElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<MoneyElement, MoneyElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -535,7 +535,7 @@ public class Form(
   }
 
   public class SpacerElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<SpacerElement, SpacerElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -605,11 +605,11 @@ public class Form(
   public class TextElement(
     @field:WireField(
       tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
     )
     @JvmField
     public val text: String? = null,
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<TextElement, TextElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -710,7 +710,7 @@ public class Form(
   }
 
   public class CustomizedCardElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<CustomizedCardElement, CustomizedCardElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -781,7 +781,7 @@ public class Form(
   }
 
   public class AddressElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<AddressElement, AddressElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -849,7 +849,7 @@ public class Form(
   }
 
   public class TextInputElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<TextInputElement, TextInputElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -917,7 +917,7 @@ public class Form(
   }
 
   public class OptionPickerElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<OptionPickerElement, OptionPickerElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -986,7 +986,7 @@ public class Form(
   }
 
   public class DetailRowElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<DetailRowElement, DetailRowElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -1054,7 +1054,7 @@ public class Form(
   }
 
   public class CurrencyConversionFlagsElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<CurrencyConversionFlagsElement, CurrencyConversionFlagsElement.Builder>(ADAPTER,
       unknownFields) {
     public override fun newBuilder(): Builder {

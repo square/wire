@@ -26,16 +26,16 @@ public class EmbeddedMessage(
   inner_repeated_number: List<Int> = emptyList(),
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   @JvmField
   public val inner_number_after: Int? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<EmbeddedMessage, EmbeddedMessage.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.PACKED
+    label = WireField.Label.PACKED,
   )
   @JvmField
   public val inner_repeated_number: List<Int> = immutableCopyOf("inner_repeated_number",
@@ -80,7 +80,7 @@ public class EmbeddedMessage(
   public fun copy(
     inner_repeated_number: List<Int> = this.inner_repeated_number,
     inner_number_after: Int? = this.inner_number_after,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): EmbeddedMessage = EmbeddedMessage(inner_repeated_number, inner_number_after, unknownFields)
 
   public class Builder : Message.Builder<EmbeddedMessage, Builder>() {

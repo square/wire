@@ -12,7 +12,7 @@ public class RouteGuideWireGrpc {
     private val GetFeature: () -> RouteGuideGetFeatureBlockingServer,
     private val ListFeatures: () -> RouteGuideListFeaturesBlockingServer,
     private val RecordRoute: () -> RouteGuideRecordRouteBlockingServer,
-    private val RouteChat: () -> RouteGuideRouteChatBlockingServer
+    private val RouteChat: () -> RouteGuideRouteChatBlockingServer,
   ) : RouteGuideWireGrpc.RouteGuideImplBase() {
     public override fun GetFeature(request: Point, response: StreamObserver<Feature>): Unit {
       response.onNext(GetFeature().GetFeature(request))

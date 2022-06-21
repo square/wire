@@ -115,7 +115,7 @@ class WireRunTest {
       )
     assertThat(fs.readUtf8("generated/kt/squareup/routes/GrpcRouteClient.kt"))
       .contains(
-        "class GrpcRouteClient(\n  private val client: GrpcClient\n) : RouteClient",
+        "class GrpcRouteClient(\n  private val client: GrpcClient,\n) : RouteClient",
         "override fun GetUpdatedBlue()"
       )
   }
@@ -185,12 +185,12 @@ class WireRunTest {
       .contains("interface RouteGetUpdatedRedClient : Service")
     assertThat(fs.readUtf8("generated/kt/squareup/routes/GrpcRouteGetUpdatedBlueClient.kt"))
       .contains(
-        "class GrpcRouteGetUpdatedBlueClient(\n  private val client: GrpcClient\n) : RouteGetUpdatedBlueClient"
+        "class GrpcRouteGetUpdatedBlueClient(\n  private val client: GrpcClient,\n) : RouteGetUpdatedBlueClient"
       )
       .doesNotContain("RouteGetUpdatedRedClient")
     assertThat(fs.readUtf8("generated/kt/squareup/routes/GrpcRouteGetUpdatedRedClient.kt"))
       .contains(
-        "class GrpcRouteGetUpdatedRedClient(\n  private val client: GrpcClient\n) : RouteGetUpdatedRedClient"
+        "class GrpcRouteGetUpdatedRedClient(\n  private val client: GrpcClient,\n) : RouteGetUpdatedRedClient"
       )
       .doesNotContain("RouteGetUpdatedBlueClient")
   }

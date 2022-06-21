@@ -10,8 +10,8 @@ import kotlin.`annotation`.Target
 @Retention(AnnotationRetention.RUNTIME)
 @Target(
   AnnotationTarget.PROPERTY,
-  AnnotationTarget.FIELD
+  AnnotationTarget.FIELD,
 )
 public annotation class MyFieldOptionThreeOption(
-  public val `value`: FooBar.FooBarBazEnum
+  public val `value`: FooBar.FooBarBazEnum,
 )
