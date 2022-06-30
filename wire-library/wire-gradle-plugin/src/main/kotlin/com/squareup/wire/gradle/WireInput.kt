@@ -155,7 +155,8 @@ internal class WireInput(var configuration: Configuration) {
     // configuration time.
     return project.provider {
       configuration.dependencies.flatMap { dep ->
-        configuration.files(dep).flatMap { file -> file.toLocations(project, dep) }
+        val sortedFiles = configuration.files(dep).sortedWith(compareBy { it.name })
+        sortedFiles.flatMap { file -> file.toLocations(project, dep) }
       }
     }
   }
