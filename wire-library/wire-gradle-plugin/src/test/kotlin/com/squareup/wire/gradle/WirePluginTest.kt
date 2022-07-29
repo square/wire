@@ -4,6 +4,11 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.VERSION
 import com.squareup.wire.testing.withPlatformSlashes
+import java.io.File
+import java.io.IOException
+import java.util.zip.ZipFile
+import kotlin.text.RegexOption.DOT_MATCHES_ALL
+import kotlin.text.RegexOption.MULTILINE
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
@@ -14,11 +19,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import java.io.File
-import java.io.IOException
-import java.util.zip.ZipFile
-import kotlin.text.RegexOption.DOT_MATCHES_ALL
-import kotlin.text.RegexOption.MULTILINE
 
 class WirePluginTest {
 
@@ -34,14 +34,14 @@ class WirePluginTest {
       .withPluginClasspath()
       // Ensure individual tests are isolated and not reusing each other's previous outputs
       // by setting project dir and gradle home directly.
-      .withProjectDir(tmpFolder.newFolder("project-dir"))
+//      .withProjectDir(tmpFolder.newFolder("project-dir"))
       .withArguments(
         "-g",
         tmpFolder.newFolder("gradle-home").absolutePath,
         "generateProtos",
         "--stacktrace",
         "--info",
-        "--configuration-cache",
+//        "--configuration-cache",
       )
       .withDebug(true)
   }
@@ -1305,6 +1305,41 @@ class WirePluginTest {
     assertThat(File(modifiedFixtureRoot, generatedDinosaurProto)).exists()
 
     buildCacheDir.deleteRecursively()
+  }
+
+  /**
+   * This project has a protoSource .jar
+   *   caveman.jar
+   *
+   * It depends on another .jar,
+   *   all-protos.jar
+   *
+   * We expect sources to be generated from cavemen.jar, but not all-protos.jar.
+   */
+  @Test
+  fun sourcePathTransitiveDependenciesPulledAsProtoPathDependencies() {
+    val fixtureRoot = File("src/test/projects/sourcepath-dependencies-not-generated")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+      .contains("Writing com.squareup.caveman.Caveman")
+      .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
+      .doesNotContain("Writing com.squareup.geology.Period")
+
+    assertThat(
+      File(
+        fixtureRoot,
+        "dinosaurs/build/generated/source/wire/com/squareup/caveman/Caveman.java"
+      )
+    ).exists()
+    assertThat(
+      File(
+        fixtureRoot,
+        "dinosaurs/build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.java"
+      )
+    ).doesNotExist()
   }
 
   private fun GradleRunner.runFixture(
