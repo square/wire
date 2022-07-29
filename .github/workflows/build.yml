@@ -36,13 +36,13 @@ jobs:
 
       - name: Check test files
         run: |
-          ./gradlew clean generateTests
+          ./gradlew clean generateTests --stacktrace
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
       - name: Test
         run: |
           ./gradlew -p wire-library -Dkjs=false -Dknative=false build --stacktrace -Pswift=false
-          ./gradlew build
+          ./gradlew build --stacktrace
 
   multiplatform:
     runs-on: macos-latest
@@ -65,7 +65,7 @@ jobs:
 
       - name: Check test files
         run: |
-          ./gradlew clean generateTests
+          ./gradlew clean generateTests --stacktrace
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
       - name: Install Chrome
@@ -100,7 +100,7 @@ jobs:
 
       - name: Check test files
         run: |
-          ./gradlew clean generateTests
+          ./gradlew clean generateTests --stacktrace
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
         shell: bash
 
@@ -136,7 +136,7 @@ jobs:
         # currently checked into the repo both for the runtime itself and for its tests, and runs
         # the tests.
         run: |
-          ./gradlew -p wire-library :wire-runtime-swift:build
+          ./gradlew -p wire-library :wire-runtime-swift:build --stacktrace
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nGenerated files changed. Did you run ./gradlew generateSwiftProtos?"; exit 1; fi
 
       - name: Generate Swift from golden proto files
@@ -146,9 +146,9 @@ jobs:
         # reviewed manually.
         # Finally, run the associated unit tests.
         run: |
-          ./gradlew generateSwiftTests
+          ./gradlew generateSwiftTests --stacktrace
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nGenerated files changed. Did you run ./gradlew generateSwiftProtos and generateSwiftTests?"; exit 1; fi
-          ./gradlew -p wire-library :wire-tests-swift:build
+          ./gradlew -p wire-library :wire-tests-swift:build --stacktrace
 
   publish:
     runs-on: macos-latest
