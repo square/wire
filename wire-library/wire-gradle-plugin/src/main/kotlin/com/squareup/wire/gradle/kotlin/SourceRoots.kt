@@ -83,7 +83,8 @@ internal fun WirePlugin.sourceRoots(kotlin: Boolean, java: Boolean): List<Source
   return listOf(
     Source(
       type = KotlinPlatformType.jvm,
-      kotlinSourceDirectorySet = WireSourceDirectorySet.of(main.kotlin!!),
+      kotlinSourceDirectorySet = WireSourceDirectorySet.of(main.kotlin
+        ?: project.objects.sourceDirectorySet("empty", "Empty kotlin source set")),
       javaSourceDirectorySet = WireSourceDirectorySet.of(main.java),
       name = "main",
       sourceSets = listOf("main"),
@@ -146,7 +147,7 @@ private fun BaseExtension.sourceRoots(project: Project, kotlin: Boolean): List<S
     val kotlinSourceDirectSet = when {
       kotlin -> {
         val sourceDirectorySet = sourceSets!![variant.name]
-          ?: throw IllegalStateException("Couldn't find ${variant.name} in $sourceSets")
+          ?: project.objects.sourceDirectorySet(variant.name, "Empty kotlin source set")
         WireSourceDirectorySet.of(sourceDirectorySet)
       }
       else -> null
