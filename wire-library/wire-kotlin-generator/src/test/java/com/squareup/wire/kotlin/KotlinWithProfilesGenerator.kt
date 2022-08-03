@@ -50,11 +50,13 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
     typeName: String,
     profileName: String? = null,
     boxOneOfsMinSize: Int = 5_000,
+    buildersOnly: Boolean = false,
   ): String {
     val kotlinGenerator = KotlinGenerator(
       schema,
       profile = profile(profileName),
-      boxOneOfsMinSize = boxOneOfsMinSize
+      boxOneOfsMinSize = boxOneOfsMinSize,
+      buildersOnly = buildersOnly,
     )
     val type = schema.getType(typeName)!!
     val typeSpec = kotlinGenerator.generateType(type)

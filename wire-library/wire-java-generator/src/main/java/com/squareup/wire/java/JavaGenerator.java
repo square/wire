@@ -82,6 +82,7 @@ import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
 import okio.ByteString;
+
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.squareup.wire.internal._PlatformKt.camelCase;
 import static com.squareup.wire.schema.internal.JvmLanguages.annotationTargetType;
@@ -252,11 +253,12 @@ public final class JavaGenerator {
   private final boolean emitCompact;
   private final boolean emitDeclaredOptions;
   private final boolean emitAppliedOptions;
+  private final boolean buildersOnly;
 
   private JavaGenerator(Schema schema, Map<ProtoType, TypeName> typeToJavaName,
       Map<ProtoMember, TypeName> memberToJavaName, Profile profile, boolean emitAndroid,
       boolean emitAndroidAnnotations, boolean emitCompact, boolean emitDeclaredOptions,
-      boolean emitAppliedOptions) {
+      boolean emitAppliedOptions, boolean buildersOnly) {
     this.schema = schema;
     this.typeToJavaName = ImmutableMap.copyOf(typeToJavaName);
     this.memberToJavaName = ImmutableMap.copyOf(memberToJavaName);
@@ -266,31 +268,37 @@ public final class JavaGenerator {
     this.emitCompact = emitCompact;
     this.emitDeclaredOptions = emitDeclaredOptions;
     this.emitAppliedOptions = emitAppliedOptions;
+    this.buildersOnly = buildersOnly;
   }
 
   public JavaGenerator withAndroid(boolean emitAndroid) {
     return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
-        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
+        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions, buildersOnly);
   }
 
   public JavaGenerator withAndroidAnnotations(boolean emitAndroidAnnotations) {
     return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
-        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
+        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions, buildersOnly);
   }
 
   public JavaGenerator withCompact(boolean emitCompact) {
     return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
-        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
+        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions, buildersOnly);
   }
 
   public JavaGenerator withProfile(Profile profile) {
     return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
-        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
+        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions, buildersOnly);
   }
 
   public JavaGenerator withOptions(boolean emitDeclaredOptions, boolean emitAppliedOptions) {
     return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
-        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
+      emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions, buildersOnly);
+  }
+
+  public JavaGenerator withBuildersOnly(boolean buildersOnly) {
+    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
+      emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions, buildersOnly);
   }
 
   public static JavaGenerator get(Schema schema) {
@@ -324,7 +332,7 @@ public final class JavaGenerator {
 
     return new JavaGenerator(schema, nameToJavaName, memberToJavaName, new Profile(),
         false /* emitAndroid */, false /* emitAndroidAnnotations */, false /* emitCompact */,
-        false /* emitDeclaredOptions */, false /* emitAppliedOptions */);
+        false /* emitDeclaredOptions */, false /* emitAppliedOptions */, false /* buildersOnly */);
   }
 
   private static void putAll(Map<ProtoType, TypeName> wireToJava, String javaPackage,
@@ -1435,7 +1443,7 @@ public final class JavaGenerator {
   //
   private MethodSpec messageFieldsConstructor(NameAllocator nameAllocator, MessageType type) {
     MethodSpec.Builder result = MethodSpec.constructorBuilder();
-    result.addModifiers(PUBLIC);
+    if (!buildersOnly) result.addModifiers(PUBLIC);
     result.addCode("this(");
     for (Field field : type.getFieldsAndOneOfFields()) {
       TypeName javaType = fieldType(field);
@@ -1479,8 +1487,8 @@ public final class JavaGenerator {
     String unknownFieldsName = localNameAllocator.newName("unknownFields");
     String builderName = localNameAllocator.newName("builder");
     MethodSpec.Builder result = MethodSpec.constructorBuilder()
-        .addModifiers(PUBLIC)
         .addStatement("super($N, $N)", adapterName, unknownFieldsName);
+    if (!buildersOnly) result.addModifiers(PUBLIC);
 
     for (OneOf oneOf : type.getOneOfs()) {
       if (oneOf.getFields().size() < 2) continue;

@@ -104,7 +104,10 @@ data class JavaTarget(
   val emitDeclaredOptions: Boolean = true,
 
   /** True to emit annotations for options applied on messages, fields, etc. */
-  val emitAppliedOptions: Boolean = true
+  val emitAppliedOptions: Boolean = true,
+
+  /** If true, the constructor of all generated types will be non-public. */
+  val buildersOnly : Boolean = false,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
     return object : SchemaHandler() {
@@ -119,6 +122,7 @@ data class JavaTarget(
           .withAndroidAnnotations(androidAnnotations)
           .withCompact(compact)
           .withOptions(emitDeclaredOptions, emitAppliedOptions)
+          .withBuildersOnly(buildersOnly)
 
         context.fileSystem.createDirectories(context.outDirectory)
 
@@ -238,6 +242,9 @@ data class KotlinTarget(
    * from the [rpcRole].
    */
   val nameSuffix: String? = null,
+
+  /** If true, the constructor of all generated types will be non-public. */
+  val buildersOnly : Boolean = false,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
     return object : SchemaHandler() {
@@ -258,6 +265,7 @@ data class KotlinTarget(
           boxOneOfsMinSize = boxOneOfsMinSize,
           grpcServerCompatible = grpcServerCompatible,
           nameSuffix = nameSuffix,
+          buildersOnly = buildersOnly,
         )
         context.fileSystem.createDirectories(context.outDirectory)
         super.handle(schema, context)

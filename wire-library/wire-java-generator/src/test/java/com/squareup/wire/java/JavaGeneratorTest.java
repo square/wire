@@ -25,8 +25,8 @@ import java.io.IOException;
 import okio.Path;
 import org.junit.Test;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.squareup.wire.schema.SchemaHelpersKt.addFromTest;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class JavaGeneratorTest {
@@ -424,7 +424,7 @@ public final class JavaGeneratorTest {
         .generateJava("Message");
       fail();
     } catch (IllegalStateException expected) {
-      assertThat(expected).hasMessage("Octal literal unsupported: 020");
+      assertThat(expected).hasMessageThat().contains("Octal literal unsupported: 020");
     }
   }
 
@@ -461,15 +461,15 @@ public final class JavaGeneratorTest {
     MessageType message = (MessageType) schema.getType("A");
     JavaGenerator javaGenerator = JavaGenerator.get(schema).withAndroid(true);
     TypeSpec typeSpec = javaGenerator.generateType(message);
-    assertThat(JavaFile.builder("", typeSpec).build().toString()).contains(""
+    String javaOutput = JavaFile.builder("", typeSpec).build().toString();
+    assertThat(javaOutput).contains(""
         + " @WireField(\n"
         + "        tag = 1,\n"
         + "        adapter = \"com.squareup.wire.ProtoAdapter#STRING\"\n"
         + "    )\n"
-        + "    public final String c;")
-        .contains(""
+        + "    public final String c;");
+    assertThat(javaOutput).contains(""
         + "public static final Parcelable.Creator<B> CREATOR = AndroidMessage.newCreator(ADAPTER)");
-        ;
   }
 
   @Test
@@ -489,13 +489,14 @@ public final class JavaGeneratorTest {
 
     JavaGenerator javaGenerator = JavaGenerator.get(schema);
     TypeSpec typeSpec = javaGenerator.generateType(pruned.getType("A"));
-    assertThat(JavaFile.builder("", typeSpec).build().toString())
+    String javaOutput = JavaFile.builder("", typeSpec).build().toString();
+    assertThat(javaOutput)
         .contains(""
             + "public final class A {\n"
             + "  private A() {\n"
             + "    throw new AssertionError();\n"
-            + "  }")
-        .contains("public static final class B extends Message<B, B.Builder> {");
+            + "  }");
+    assertThat(javaOutput).contains("public static final class B extends Message<B, B.Builder> {");
   }
 
   @Test
@@ -514,6 +515,29 @@ public final class JavaGeneratorTest {
     assertThat(new JavaWithProfilesGenerator(schema)
       .generateJava("common.proto.Person"))
         .contains("public final Gender common_proto_Gender;");
+  }
+
+  @Test
+  public void buildersOnlyGeneratesNonPublicConstructors() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add(Path.get("message.proto"), ""
+        + "syntax = \"proto2\";\n"
+        + "message SomeMessage {\n"
+        + "  optional string a = 1;\n"
+        + "  optional string b = 2;\n"
+        + "  message InnerMessage {\n"
+        + "    optional string c = 3;\n"
+        + "    optional string d = 8;\n"
+        + "  }\n"
+        + "}\n"
+      )
+      .build();
+    String javaOutput = new JavaWithProfilesGenerator(schema)
+      .generateJava("SomeMessage", null /* profileName */, true /* buildersOnly */);
+    assertThat(javaOutput).contains("  SomeMessage(");
+    assertThat(javaOutput).contains("  InnerMessage(");
+    assertThat(javaOutput).doesNotContain("public SomeMessage(");
+    assertThat(javaOutput).doesNotContain("public InnerMessage(");
   }
 
   @Test

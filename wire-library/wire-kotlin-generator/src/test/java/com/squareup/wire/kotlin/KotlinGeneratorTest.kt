@@ -1844,6 +1844,32 @@ class KotlinGeneratorTest {
   }
 
   @Test
+  fun buildersOnlyGeneratesNonPublicConstructors() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message SomeMessage {
+        |  optional string a = 1;
+        |  optional string b = 2;
+        |  message InnerMessage {
+        |    optional string c = 3;
+        |    optional string d = 8;
+        |  }
+        |}
+        |""".trimMargin()
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("SomeMessage", boxOneOfsMinSize = 3, buildersOnly = true)
+    assertThat(code).contains("SomeMessage internal constructor(")
+    assertThat(code).contains("InnerMessage internal constructor(")
+    assertThat(code).doesNotContain("SomeMessage public constructor(")
+    assertThat(code).doesNotContain("InnerMessage public constructor(")
+  }
+
+  @Test
   fun fieldsDeclarationOrderIsRespected() {
     val schema = buildSchema {
       add(
