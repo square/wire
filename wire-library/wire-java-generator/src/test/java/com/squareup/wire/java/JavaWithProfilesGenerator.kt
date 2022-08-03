@@ -47,15 +47,18 @@ internal class JavaWithProfilesGenerator(private val schema: Schema) {
     return if (profileName == null) Profile() else profiles["$profileName.wire"]!!
   }
 
-  @Throws(IOException::class)
-  @JvmOverloads fun generateJava(typeName: String, profileName: String? = null): String {
+  @Throws(IOException::class) @JvmOverloads fun generateJava(
+    typeName: String,
+    profileName: String? = null,
+    buildersOnly: Boolean = false,
+  ): String {
     val javaGenerator = JavaGenerator.get(schema)
       .withProfile(profile(profileName))
+      .withBuildersOnly(buildersOnly)
     val type = schema.getType(typeName)
     val typeSpec = javaGenerator.generateType(type)
     val packageName = javaGenerator.generatedTypeName(type).packageName()
-    val javaFile = JavaFile.builder(packageName, typeSpec)
-      .build()
+    val javaFile = JavaFile.builder(packageName, typeSpec).build()
     return javaFile.toString()
   }
 }

@@ -28,6 +28,7 @@ import com.squareup.kotlinpoet.INT
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.KModifier.ABSTRACT
 import com.squareup.kotlinpoet.KModifier.CONST
+import com.squareup.kotlinpoet.KModifier.INTERNAL
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.KModifier.PUBLIC
@@ -102,11 +103,11 @@ import com.squareup.wire.schema.internal.eligibleAsAnnotationMember
 import com.squareup.wire.schema.internal.javaPackage
 import com.squareup.wire.schema.internal.optionValueToInt
 import com.squareup.wire.schema.internal.optionValueToLong
+import java.util.Locale
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.ByteString
 import okio.ByteString.Companion.encode
-import java.util.Locale
 
 class KotlinGenerator private constructor(
   val schema: Schema,
@@ -122,6 +123,7 @@ class KotlinGenerator private constructor(
   private val boxOneOfsMinSize: Int,
   private val grpcServerCompatible: Boolean,
   private val nameSuffix: String?,
+  private val buildersOnly: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -971,6 +973,8 @@ class KotlinGenerator private constructor(
     val constructorBuilder = FunSpec.constructorBuilder()
     val nameAllocator = nameAllocator(message)
     val byteClass = ProtoType.BYTES.typeName
+
+    if (buildersOnly) constructorBuilder.addModifiers(INTERNAL)
 
     val parametersAndProperties = parametersAndProperties(message, nameAllocator)
     for ((parameter, property) in parametersAndProperties) {
@@ -2502,6 +2506,7 @@ class KotlinGenerator private constructor(
       boxOneOfsMinSize: Int = 5_000,
       grpcServerCompatible: Boolean = false,
       nameSuffix: String? = null,
+      buildersOnly: Boolean = false,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -2552,6 +2557,7 @@ class KotlinGenerator private constructor(
         boxOneOfsMinSize = boxOneOfsMinSize,
         grpcServerCompatible = grpcServerCompatible,
         nameSuffix = nameSuffix,
+        buildersOnly = buildersOnly,
       )
     }
 
