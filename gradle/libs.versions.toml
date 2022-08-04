@@ -18,7 +18,7 @@ kotlinpoet = "1.12.0"
 ktlint = "0.42.1"
 moshi = "1.13.0"
 okhttp = "4.9.3"
-okio = "3.0.0"
+okio = "3.2.0"
 protobuf = "3.19.4"
 protobufGradlePlugin = "0.8.18"
 
