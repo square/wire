@@ -29,7 +29,7 @@ pluginBundle {
   (plugins) {
     "wire" {
       displayName = "Wire"
-      tags = listOf("wire", "protobuf", "plugin")
+      tags = listOf("wire", "protobuf")
     }
   }
 }
