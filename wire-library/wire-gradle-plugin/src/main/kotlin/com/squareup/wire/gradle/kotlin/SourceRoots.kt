@@ -29,6 +29,7 @@ import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMetadataTarget
@@ -78,14 +79,13 @@ internal fun WirePlugin.sourceRoots(kotlin: Boolean, java: Boolean): List<Source
   }
 
   // Kotlin project.
-  val sourceSets = project.property("sourceSets") as SourceSetContainer
-  val main = sourceSets.getByName("main")
+  val sourceSets = (project.extensions.getByName("kotlin") as KotlinProjectExtension).sourceSets
+  val sourceDirectorySet = WireSourceDirectorySet.of(sourceDirectorySet = sourceSets.getByName("main").kotlin)
   return listOf(
     Source(
       type = KotlinPlatformType.jvm,
-      kotlinSourceDirectorySet = WireSourceDirectorySet.of(main.kotlin
-        ?: project.objects.sourceDirectorySet("empty", "Empty kotlin source set")),
-      javaSourceDirectorySet = WireSourceDirectorySet.of(main.java),
+      kotlinSourceDirectorySet = sourceDirectorySet,
+      javaSourceDirectorySet = sourceDirectorySet,
       name = "main",
       sourceSets = listOf("main"),
       registerTaskDependency = { task ->
@@ -146,8 +146,7 @@ private fun BaseExtension.sourceRoots(project: Project, kotlin: Boolean): List<S
   return variants.map { variant ->
     val kotlinSourceDirectSet = when {
       kotlin -> {
-        val sourceDirectorySet = sourceSets!![variant.name]
-          ?: project.objects.sourceDirectorySet(variant.name, "Empty kotlin source set")
+        val sourceDirectorySet = sourceSets!!.getValue(variant.name)!!
         WireSourceDirectorySet.of(sourceDirectorySet)
       }
       else -> null
