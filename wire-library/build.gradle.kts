@@ -7,6 +7,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.STARTED
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -41,6 +43,12 @@ allprojects {
     mavenCentral()
     google()
   }
+}
+
+rootProject.plugins.withType<NodeJsRootPlugin> {
+  // 16+ required for Apple Silicon support
+  // https://youtrack.jetbrains.com/issue/KT-49109#focus=Comments-27-5259190.0-0
+  rootProject.the<NodeJsRootExtension>().nodeVersion = "18.0.0"
 }
 
 subprojects {
