@@ -27,6 +27,7 @@ import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
 import java.io.File
+import java.io.RandomAccessFile
 import java.net.URI
 
 /**
@@ -90,7 +91,7 @@ internal class WireInput(var configuration: Configuration) {
 
           return when {
             file.isDirectory -> project.dependencies.create(project.files(dependency))
-            file.isJar -> project.dependencies.create(project.files(file.path))
+            file.isZip -> project.dependencies.create(project.files(file.path))
             dependency.mayBeProject -> {
               // Keys can be either `path` or `configuration`.
               // Example: "[path: ':someProj', configuration: 'someConf']"
@@ -171,7 +172,7 @@ internal class WireInput(var configuration: Configuration) {
           path = relativeTo(srcDir).toString()
         )
       )
-    } else if (isJar) {
+    } else if (isZip) {
       val filters = dependencyFilters.getOrDefault(dependency, listOf())
         .ifEmpty { return@toLocations listOf(InputLocation.get(project, path)) }
 
@@ -185,8 +186,15 @@ internal class WireInput(var configuration: Configuration) {
     }
   }
 
-  private val File.isJar
-    get() = path.endsWith(".jar")
+  private val File.isZip: Boolean
+    get() {
+      if (!exists()) {
+        return false
+      }
+      // See "magic numbers": https://en.wikipedia.org/wiki/ZIP_(file_format)
+      val signature = RandomAccessFile(this, "r").use { it.readInt() }
+      return signature == 0x504B0304 || signature == 0x504B0506 || signature == 0x504B0708
+    }
 
   private val String.mayBeProject: Boolean
     get() = startsWith(":")
