@@ -1,5 +1,6 @@
 include(":wire-bom")
 include(":wire-compiler")
+include(":wire-descriptor")
 include(":wire-gradle-plugin")
 include(":wire-grpc-client")
 include(":wire-grpc-server")
