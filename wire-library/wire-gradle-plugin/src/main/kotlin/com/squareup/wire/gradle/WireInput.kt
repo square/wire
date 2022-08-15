@@ -16,6 +16,10 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.gradle.WireExtension.ProtoRootSet
+import java.io.EOFException
+import java.io.File
+import java.io.RandomAccessFile
+import java.net.URI
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
@@ -26,9 +30,6 @@ import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
-import java.io.File
-import java.io.RandomAccessFile
-import java.net.URI
 
 /**
  * Builds Wire's inputs (expressed as [InputLocation] lists) from Gradle's objects (expressed as
@@ -188,12 +189,19 @@ internal class WireInput(var configuration: Configuration) {
 
   private val File.isZip: Boolean
     get() {
-      if (!exists()) {
+      if (!exists() || !isFile) {
         return false
       }
-      // See "magic numbers": https://en.wikipedia.org/wiki/ZIP_(file_format)
-      val signature = RandomAccessFile(this, "r").use { it.readInt() }
-      return signature == 0x504B0304 || signature == 0x504B0506 || signature == 0x504B0708
+      if (path.endsWith(".jar") || path.endsWith(".zip")) {
+        return true
+      }
+      return try {
+        // See "magic numbers": https://en.wikipedia.org/wiki/ZIP_(file_format)
+        val signature = RandomAccessFile(this, "r").use { it.readInt() }
+        signature == 0x504B0304 || signature == 0x504B0506 || signature == 0x504B0708
+      } catch (_: EOFException) {
+        false
+      }
     }
 
   private val String.mayBeProject: Boolean
