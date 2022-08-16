@@ -1,0 +1,10 @@
+version: v1
+managed:
+  enabled: true
+plugins:
+  - name: protoc-gen-wire-kotlin
+    out: gen/proto/kotlinout
+    path: ./protoc-gen-wire-kotlin
+  - name: protoc-gen-wire-java
+    out: gen/proto/javaout
+    path: ./protoc-gen-wire-java
