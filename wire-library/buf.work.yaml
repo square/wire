@@ -1,0 +1,3 @@
+version: v1
+directories:
+  - wire-tests/src/commonTest/shared/proto/proto3/

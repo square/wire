@@ -94,7 +94,7 @@ public interface CodeGenerator {
    * <br>Based on the initial work of:
    * @author kenton@google.com Kenton Varda
    */
-  public static class GeneratorException extends Exception {
+  class GeneratorException extends Exception {
     private static final long serialVersionUID = -4317369502082361194L;
 
     public GeneratorException(FileDescriptor fileToGenerate, String message) {

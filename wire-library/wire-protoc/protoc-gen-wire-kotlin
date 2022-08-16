@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd `dirname $0`
+exec java -jar build/libs/wire-protoc-4.5.0-SNAPSHOT-standalone.jar

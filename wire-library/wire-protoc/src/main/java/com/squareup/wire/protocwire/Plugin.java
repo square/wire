@@ -93,7 +93,7 @@ public final class Plugin {
    *
    * @see DefaultEnvironment
    */
-  public static interface Environment {
+  public interface Environment {
     /**
      * Returns the input stream to read the protoc code generation request
      * from.
@@ -123,7 +123,7 @@ public final class Plugin {
     }
   }
 
-  static abstract class AbstractContext implements CodeGenerator.Context {
+  abstract static class AbstractContext implements CodeGenerator.Context {
 
     private class GeneratorResponseFileWriter extends StringWriter {
 
@@ -211,7 +211,7 @@ public final class Plugin {
 
     private final CodedOutputStream output;
 
-    public StreamingContext(List<FileDescriptor> parsedFiles,
+    StreamingContext(List<FileDescriptor> parsedFiles,
                             CodedOutputStream output) {
       super(parsedFiles);
       this.output = output;
@@ -310,7 +310,8 @@ public final class Plugin {
    * Runs the generator for each parsed file in the given context.
    */
   private static void generate(CodeGenerator generator, String parameter,
-                               CodeGenerator.Context context) throws CodeGenerator.GeneratorException {
+                               CodeGenerator.Context context)
+    throws CodeGenerator.GeneratorException {
 
     for (FileDescriptor fileToGenerate : context.getParsedFiles()) {
       generator.generate(fileToGenerate, parameter, context);
@@ -333,10 +334,10 @@ public final class Plugin {
         FileDescriptor dependency = filesByName.get(
           protoFile.getDependency(i));
         if (dependency == null) {
-          throw new PluginException("protoc asked plugin to generate a file " +
-            "but did not provide a descriptor for a dependency (or " +
-            "provided it after the file that depends on it): " +
-            protoFile.getDependency(i));
+          throw new PluginException("protoc asked plugin to generate a file "
+             + "but did not provide a descriptor for a dependency (or "
+             + "provided it after the file that depends on it): "
+            + protoFile.getDependency(i));
         }
         dependencies[i] = dependency;
       }
@@ -353,9 +354,9 @@ public final class Plugin {
     for (String fileToGenerate : request.getFileToGenerateList()) {
       FileDescriptor file = filesByName.get(fileToGenerate);
       if (file == null) {
-        throw new PluginException("protoc asked plugin to generate a file " +
-          "but did not provide a descriptor for the file: " +
-          fileToGenerate);
+        throw new PluginException("protoc asked plugin to generate a file "
+          + "but did not provide a descriptor for the file: "
+          + fileToGenerate);
       }
 
       filesToGenerate.add(file);
