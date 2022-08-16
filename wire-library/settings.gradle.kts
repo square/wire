@@ -9,6 +9,7 @@ include(":wire-gson-support")
 include(":wire-java-generator")
 include(":wire-kotlin-generator")
 include(":wire-moshi-adapter")
+include(":wire-protoc")
 include(":wire-reflector")
 include(":wire-runtime:japicmp")
 include(":wire-runtime")
@@ -25,6 +26,7 @@ if (startParameter.projectProperties.get("swift") != "false") {
 }
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+enableFeaturePreview("VERSION_CATALOGS")
 
 dependencyResolutionManagement {
   versionCatalogs {
