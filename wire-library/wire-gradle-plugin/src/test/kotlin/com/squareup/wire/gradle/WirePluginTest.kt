@@ -381,6 +381,36 @@ class WirePluginTest {
   }
 
   @Test
+  fun sourceZipLocalOneZipWithProtoPath() {
+    val fixtureRoot = File("src/test/projects/sourcezip-local-protopath")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { withDebug(true).build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .doesNotContain("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourcezip-local-protopath/build/generated/source/wire".withPlatformSlashes()
+      )
+  }
+
+  @Test
+  fun sourceAarLocalOneAarWithProtoPath() {
+    val fixtureRoot = File("src/test/projects/sourceaar-local-protopath")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { withDebug(true).build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .doesNotContain("Writing com.squareup.geology.Period")
+      .contains(
+        "src/test/projects/sourceaar-local-protopath/build/generated/source/wire".withPlatformSlashes()
+      )
+  }
+
+  @Test
   fun projectDependencyViaTypesafeAccessor() {
     val fixtureRoot = File("src/test/projects/project-dependencies-typesafe-accessor")
 
