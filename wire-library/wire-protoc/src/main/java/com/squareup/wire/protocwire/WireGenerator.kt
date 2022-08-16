@@ -1,12 +1,12 @@
 package com.squareup.wire.protocwire
 
 import com.google.protobuf.Descriptors
-import com.squareup.wire.schema.ProtoFile
 
 class WireGenerator : CodeGenerator {
     override fun generate(fileToGenerate: Descriptors.FileDescriptor, parameter: String, context: CodeGenerator.Context) {
-      // Call wire code?
-      ProtoFile
+      println("++++++++++++++++++++++++++++")
+      context.addFile("hello.txt", "hello world")
+      println("++++++++++++++++++++++++++++")
     }
 
     companion object {

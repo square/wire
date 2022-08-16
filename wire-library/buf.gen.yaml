@@ -1,0 +1,13 @@
+version: v1
+managed:
+  enabled: true
+  optimize_for: LITE_RUNTIME
+  go_package_prefix:
+    default: plugins/protoc-gen-connect-kotlin
+plugins:
+  - name: connect-kotlin
+    out: gen/proto/connectkotlin
+    path: ./wire-protoc/protoc-gen-wire-kotlin
+    opt:
+      - paths=source_relative
+

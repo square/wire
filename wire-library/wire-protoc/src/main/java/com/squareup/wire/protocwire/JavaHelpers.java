@@ -150,7 +150,7 @@ public final class JavaHelpers {
     } else {
       fullName = JavaHelpers.getClassName(descriptor.getFile());
     }
-    return fullName.replace('.', '/') +".java";
+    return fullName.replace('.', '/') + ".java";
   }
 
   /**
