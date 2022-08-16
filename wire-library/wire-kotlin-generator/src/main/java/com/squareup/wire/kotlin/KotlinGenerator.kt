@@ -2549,7 +2549,7 @@ class KotlinGenerator private constructor(
         typeToKotlinName = typeToKotlinName,
         memberToKotlinName = memberToKotlinName,
         emitAndroid = emitAndroid,
-        javaInterOp = javaInterop,
+        javaInterOp = javaInterop || buildersOnly,
         emitDeclaredOptions = emitDeclaredOptions,
         emitAppliedOptions = emitAppliedOptions,
         rpcCallStyle = rpcCallStyle,

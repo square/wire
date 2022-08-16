@@ -1862,11 +1862,37 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema)
-      .generateKotlin("SomeMessage", boxOneOfsMinSize = 3, buildersOnly = true)
+      .generateKotlin("SomeMessage", buildersOnly = true)
     assertThat(code).contains("SomeMessage internal constructor(")
     assertThat(code).contains("InnerMessage internal constructor(")
     assertThat(code).doesNotContain("SomeMessage public constructor(")
     assertThat(code).doesNotContain("InnerMessage public constructor(")
+  }
+
+  @Test
+  fun javaInteropAndBuildersOnly() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message SomeMessage {
+        |  optional string a = 1;
+        |}
+        |""".trimMargin()
+      )
+    }
+    assertThat(KotlinWithProfilesGenerator(schema)
+      .generateKotlin("SomeMessage", javaInterop = false))
+      .contains("Builders are deprecated and only available in a javaInterop build")
+    assertThat(KotlinWithProfilesGenerator(schema)
+      .generateKotlin("SomeMessage", javaInterop = true))
+      .doesNotContain("Builders are deprecated and only available in a javaInterop build")
+    // If `buildersOnly` is set to true, it takes precedence over `javaInterop` for it would
+    // otherwise create non-instantiable types.
+    assertThat(KotlinWithProfilesGenerator(schema)
+      .generateKotlin("SomeMessage", javaInterop = false, buildersOnly = true))
+      .doesNotContain("Builders are deprecated and only available in a javaInterop build")
   }
 
   @Test
