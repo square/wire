@@ -243,7 +243,10 @@ data class KotlinTarget(
    */
   val nameSuffix: String? = null,
 
-  /** If true, the constructor of all generated types will be non-public. */
+  /**
+   * If true, the constructor of all generated types will be non-public, and they will be
+   * instantiable via their builders, regardless of the value of [javaInterop].
+   */
   val buildersOnly : Boolean = false,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
