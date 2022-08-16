@@ -17,7 +17,6 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.WireLogger
 import com.squareup.wire.internal.Serializable
-import okio.FileSystem
 import okio.Path
 
 /** A [SchemaHandler] [handle]s [Schema]! */
@@ -65,11 +64,9 @@ abstract class SchemaHandler {
    * A [Context] holds the information necessary for a [SchemaHandler] to do its job. It contains
    * both helping objects such as [logger], and constraining objects such as [emittingRules].
    */
-  data class Context(
-    /** To be used by the [SchemaHandler] for reading/writing operations on disk. */
-    val fileSystem: FileSystem,
-    /** Location on [fileSystem] where the [SchemaHandler] is to write files, if it needs to. */
-    val outDirectory: Path,
+  data class Context constructor(
+    /** File writer which the [SchemaHandler] will use to write generated files. **/
+    val fileWriter: FileWriter,
     /** Event-listener like logger with which [SchemaHandler] can notify handled artifacts. */
     val logger: WireLogger,
     /**

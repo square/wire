@@ -22,31 +22,29 @@ import com.squareup.wire.schema.SchemaHandler
 import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
 import okio.Path
+import okio.Path.Companion.toPath
 
 /** Sample schema handler which generate Markdown files for types and services. */
 class MarkdownHandler : SchemaHandler() {
-  override fun handle(type: Type, context: SchemaHandler.Context): Path {
+  override fun handle(type: Type, context: Context): Path {
     return writeMarkdownFile(type.type, toMarkdown(type), context)
   }
 
-  override fun handle(service: Service, context: SchemaHandler.Context): List<Path> {
+  override fun handle(service: Service, context: Context): List<Path> {
     return listOf(writeMarkdownFile(service.type, toMarkdown(service), context))
   }
 
-  override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? {
+  override fun handle(extend: Extend, field: Field, context: Context): Path? {
     return null
   }
 
   private fun writeMarkdownFile(
     protoType: ProtoType,
     markdown: String,
-    context: SchemaHandler.Context
+    context: Context
   ): Path {
-    val path = context.outDirectory / toPath(protoType).joinToString(separator = "/")
-    context.fileSystem.createDirectories(path.parent!!)
-    context.fileSystem.write(path) {
-      writeUtf8(markdown)
-    }
+    val path = toPath(protoType).joinToString(separator = "/").toPath()
+    context.fileWriter.write(path, markdown)
     return path
   }
 

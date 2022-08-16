@@ -260,8 +260,10 @@ data class WireRun(
             target.outDirectory.toPath() / moduleName
           }
         val context = SchemaHandler.Context(
-          fileSystem = fs,
-          outDirectory = outDirectory,
+          fileWriter = FileSystemWriter(
+            fs,
+            outDirectory,
+          ),
           logger = logger,
           errorCollector = errorCollector,
           emittingRules = targetToEmittingRules.getValue(target),
@@ -271,6 +273,8 @@ data class WireRun(
           module = module,
           profileLoader = schemaLoader,
         )
+        // Ensure the out directory is created.
+        fs.createDirectories(outDirectory)
         handler.handle(partition.schema, context)
       }
     }

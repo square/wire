@@ -17,6 +17,7 @@ package com.squareup.wire.recipes
 
 import com.squareup.wire.WireTestLogger
 import com.squareup.wire.buildSchema
+import com.squareup.wire.schema.FileSystemWriter
 import com.squareup.wire.schema.SchemaHandler
 import com.squareup.wire.testing.containsRelativePaths
 import com.squareup.wire.testing.findFiles
@@ -72,8 +73,10 @@ class MarkdownHandlerTest {
 
     val fileSystem = FakeFileSystem()
     val context = SchemaHandler.Context(
-      fileSystem = fileSystem,
-      outDirectory = "generated/markdown".toPath(),
+      fileWriter = FileSystemWriter(
+        fileSystem = fileSystem,
+        outDirectory = "generated/markdown".toPath(),
+      ),
       logger = WireTestLogger(),
       sourcePathPaths = setOf("squareup/colors/red.proto", "squareup/colors/blue.proto"),
     )

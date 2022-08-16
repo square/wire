@@ -17,6 +17,7 @@ package com.squareup.wire.recipes
 
 import com.squareup.wire.WireTestLogger
 import com.squareup.wire.buildSchema
+import com.squareup.wire.schema.FileSystemWriter
 import com.squareup.wire.schema.SchemaHandler
 import okio.BufferedSource
 import okio.Path.Companion.toPath
@@ -56,15 +57,18 @@ class LogToFileHandlerTest {
       )
     }
 
+    val fileSystem = FakeFileSystem()
     val context = SchemaHandler.Context(
-      fileSystem = FakeFileSystem(),
-      outDirectory = "/".toPath(),
+      fileWriter = FileSystemWriter(
+        fileSystem = fileSystem,
+        outDirectory = "/".toPath(),
+      ),
       logger = WireTestLogger(),
       sourcePathPaths = setOf("test/message.proto", "test/service.proto"),
     )
-    LogToFileHandler().handle(schema, context)
+    LogToFileHandler(fileSystem).handle(schema, context)
 
-    val content = context.fileSystem.read("log.txt".toPath(), BufferedSource::readUtf8)
+    val content = fileSystem.read("log.txt".toPath(), BufferedSource::readUtf8)
     val expected = """
         |Generating type: test.Request
         |Generating type: test.Response

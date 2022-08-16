@@ -18,6 +18,7 @@ package com.squareup.wire.recipes
 import com.squareup.wire.WireTestLogger
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.ErrorCollector
+import com.squareup.wire.schema.FileSystemWriter
 import com.squareup.wire.schema.SchemaException
 import com.squareup.wire.schema.SchemaHandler
 import okio.Path.Companion.toPath
@@ -55,8 +56,10 @@ class ErrorReportingSchemaHandlerTest {
 
     val errorCollector = ErrorCollector()
     val context = SchemaHandler.Context(
-      fileSystem = FakeFileSystem(),
-      outDirectory = "out".toPath(),
+      fileWriter = FileSystemWriter(
+        fileSystem = FakeFileSystem(),
+        outDirectory = "out".toPath(),
+      ),
       logger = WireTestLogger(),
       errorCollector = errorCollector,
     )
