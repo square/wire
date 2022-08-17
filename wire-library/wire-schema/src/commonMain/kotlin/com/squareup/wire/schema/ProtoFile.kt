@@ -21,7 +21,7 @@ import com.squareup.wire.schema.Service.Companion.fromElements
 import com.squareup.wire.schema.Type.Companion.fromElements
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
 
-data class ProtoFile(
+data class ProtoFile constructor(
   val location: Location,
   val imports: List<String>,
   val publicImports: List<String>,

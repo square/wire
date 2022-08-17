@@ -264,8 +264,7 @@ public final class Plugin {
   /**
    * Runs the given code generator in the given environment.
    */
-  public static void run(CodeGenerator generator, Environment environment)
-    throws PluginException {
+  public static void run(CodeGenerator generator, Environment environment) {
     CodeGeneratorRequest request;
     try {
       request = CodeGeneratorRequest.parseFrom(environment.getInputStream());
@@ -277,45 +276,8 @@ public final class Plugin {
     List<FileDescriptor> filesToGenerate = parseFiles(request);
     CodedOutputStream output = CodedOutputStream.newInstance(
       environment.getOutputStream());
-    try {
-      generate(generator, request.getParameter(),
+    generator.generate(request, request.getParameter(),
         new StreamingContext(filesToGenerate, output));
-    } catch (CodeGenerator.GeneratorException ge) {
-      try {
-        CodeGeneratorResponse.newBuilder().setError(ge.getMessage()).build()
-          .writeTo(output);
-        output.flush();
-      } catch (IOException ioe) {
-        throw new PluginException("Error writing to stdout.", ioe);
-      }
-    }
-  }
-
-  /**
-   * Runs the generator with the given request and response.
-   */
-  public static void run(CodeGenerator generator, CodeGeneratorRequest request,
-                         CodeGeneratorResponse.Builder response) throws PluginException {
-
-    List<FileDescriptor> filesToGenerate = parseFiles(request);
-    try {
-      generate(generator, request.getParameter(),
-        new CodeGeneratorResponseContext(filesToGenerate, response));
-    } catch (CodeGenerator.GeneratorException ge) {
-      response.setError(ge.getMessage());
-    }
-  }
-
-  /**
-   * Runs the generator for each parsed file in the given context.
-   */
-  private static void generate(CodeGenerator generator, String parameter,
-                               CodeGenerator.Context context)
-    throws CodeGenerator.GeneratorException {
-
-    for (FileDescriptor fileToGenerate : context.getParsedFiles()) {
-      generator.generate(fileToGenerate, parameter, context);
-    }
   }
 
   /**

@@ -20,7 +20,7 @@ import com.squareup.wire.schema.Location
 import kotlin.jvm.JvmStatic
 
 /** A single `.proto` file.  */
-data class ProtoFileElement(
+data class ProtoFileElement constructor(
   val location: Location,
   val packageName: String? = null,
   val syntax: Syntax? = null,

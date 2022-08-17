@@ -1,43 +1,45 @@
 package com.squareup.wire.protocwire
 
-import com.google.protobuf.Descriptors.Descriptor
-import com.google.protobuf.Descriptors.FileDescriptor
+import com.google.protobuf.DescriptorProtos
+import com.google.protobuf.compiler.PluginProtos
 import com.squareup.wire.Syntax
-import com.squareup.wire.schema.*
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.ProtoFile
+import com.squareup.wire.schema.Schema
+import com.squareup.wire.schema.internal.SchemaEncoder
 import com.squareup.wire.schema.internal.parser.MessageElement
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
 
 class WireGenerator : CodeGenerator {
-    override fun generate(fileToGenerate: FileDescriptor, parameter: String, context: CodeGenerator.Context) {
-      val protoFileElement = parseFileDescriptor(fileToGenerate)
-      context.addFile(fileToGenerate.name +".txt", protoFileElement.toSchema())
+  override fun generate(descriptor: PluginProtos.CodeGeneratorRequest, parameter: String, context: CodeGenerator.Context) {
+    val protoFiles = mutableListOf<ProtoFile>()
+    for (fileDescriptorProto in descriptor.protoFileList) {
+      val protoFileElement = parseFileDescriptor(fileDescriptorProto)
+      val protoFile = ProtoFile.get(protoFileElement)
+      protoFiles.add(protoFile)
     }
+    val schema = Schema(protoFiles)
+    val schemaEncoder = SchemaEncoder(schema)
+    for (protoFile in protoFiles) {
+      val encode = schemaEncoder.encode(protoFile)
+      context.addFile(protoFile.name() + ".txt", encode.toString())
+    }
+  }
 
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            Plugin.run(WireGenerator())
-        }
-    }
+  companion object {
+    @JvmStatic
+    fun main(args: Array<String>) = Plugin.run(WireGenerator())
+  }
 }
 
-fun parseFileDescriptor(fileDescriptor: FileDescriptor): ProtoFileElement {
+fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto): ProtoFileElement {
   val location = Location.get(fileDescriptor.name)
   val imports = mutableListOf<String>()
   val publicImports = mutableListOf<String>()
   val types = mutableListOf<MessageElement>()
   val nestedTypes = mutableListOf<MessageElement>()
-
-  for (dependency in fileDescriptor.dependencies) {
-    imports.add(dependency.fullName)
-  }
-
-  for (publicDependency in fileDescriptor.publicDependencies) {
-    publicImports.add(publicDependency.fullName)
-  }
-
-  for (messageType in fileDescriptor.messageTypes) {
-    for (nestedType in messageType.nestedTypes) {
+  for (messageType in fileDescriptor.messageTypeList) {
+    for (nestedType in messageType.nestedTypeList) {
       nestedTypes.add(parseMessage(nestedType))
     }
     types.add(parseMessage(messageType))
@@ -54,7 +56,7 @@ fun parseFileDescriptor(fileDescriptor: FileDescriptor): ProtoFileElement {
   )
 }
 
-fun parseMessage(message: Descriptor): MessageElement {
+fun parseMessage(message: DescriptorProtos.DescriptorProto): MessageElement {
   return MessageElement(
     location = Location.get(message.name),
     name = message.name,

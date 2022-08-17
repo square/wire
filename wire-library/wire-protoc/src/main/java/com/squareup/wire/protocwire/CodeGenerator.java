@@ -1,9 +1,11 @@
 package com.squareup.wire.protocwire;
 
 import com.google.protobuf.Descriptors.FileDescriptor;
+import com.google.protobuf.compiler.PluginProtos;
 
 import java.io.Writer;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Interface to be implemented by a code generator.
@@ -123,6 +125,5 @@ public interface CodeGenerator {
    * Generates code for the given proto file, generating one or more files in
    * the given context.
    */
-  void generate(FileDescriptor fileToGenerate, String parameter,
-                Context context) throws GeneratorException;
+  void generate(PluginProtos.CodeGeneratorRequest descriptor, String parameter, Context context);
 }
