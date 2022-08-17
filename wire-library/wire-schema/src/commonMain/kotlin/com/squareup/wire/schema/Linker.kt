@@ -70,7 +70,6 @@ class Linker {
   internal fun getFileLinker(path: String): FileLinker {
     val existing = fileLinkers[path]
     if (existing != null) return existing
-
     val protoFile = loader.withErrors(errors).load(path)
     val result = FileLinker(protoFile, withContext(protoFile))
     fileLinkers[path] = result
@@ -84,11 +83,13 @@ class Linker {
    */
   fun link(sourceProtoFiles: Iterable<ProtoFile>): Schema {
     val sourceFiles = mutableListOf<FileLinker>()
-    sourceFiles += getFileLinker("google/protobuf/descriptor.proto")
     for (sourceFile in sourceProtoFiles) {
       val fileLinker = FileLinker(sourceFile, withContext(sourceFile))
       fileLinkers[sourceFile.location.path] = fileLinker
       sourceFiles += fileLinker
+    }
+    if (fileLinkers["google/protobuf/descriptor.proto"] == null) {
+      sourceFiles += getFileLinker("google/protobuf/descriptor.proto")
     }
 
     // When loading exhaustively, every import (and transitive import!) is a source file.
