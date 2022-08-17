@@ -50,6 +50,12 @@ class ProtoParser internal constructor(
   private var prefix = ""
 
   fun readProtoFile(): ProtoFileElement {
+    try {
+      throw RuntimeException()
+    } catch(e: Exception) {
+      println(location.path)
+      println(e.stackTraceToString())
+    }
     while (true) {
       val documentation = reader.readDocumentation()
       if (reader.exhausted()) {

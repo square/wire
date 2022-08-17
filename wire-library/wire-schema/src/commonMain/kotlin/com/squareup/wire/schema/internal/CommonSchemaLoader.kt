@@ -96,6 +96,7 @@ internal class CommonSchemaLoader : Loader, ProfileLoader {
     protoPathRoots = allRoots(protoPath)
   }
 
+
   @Throws(IOException::class)
   fun loadSchema(): Schema {
     sourcePathFiles = loadSourcePathFiles()

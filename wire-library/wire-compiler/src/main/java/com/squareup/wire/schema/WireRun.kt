@@ -217,7 +217,6 @@ data class WireRun(
 
     // Validate the schema and resolve references
     val fullSchema = schemaLoader.loadSchema()
-
     // Refactor the schema.
     val schema = refactorSchema(fullSchema, logger)
 
