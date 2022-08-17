@@ -25,7 +25,7 @@ import kotlin.collections.set
  *
  * Use [SchemaLoader] to load a schema from source files.
  */
-class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
+class Schema constructor(protoFiles: Iterable<ProtoFile>) {
   val protoFiles: List<ProtoFile> = protoFiles.sortedBy { it.location.path }
 
   private val protoFilesIndex: Map<ProtoType, ProtoFile>

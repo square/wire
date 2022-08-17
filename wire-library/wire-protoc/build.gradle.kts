@@ -35,6 +35,5 @@ java {
 
 dependencies {
   implementation(libs.protobuf.java)
-//  implementation(libs.wire.schema)
-  implementation("com.squareup.wire:wire-schema:4.4.1")
+  implementation(projects.wireSchema)
 }
