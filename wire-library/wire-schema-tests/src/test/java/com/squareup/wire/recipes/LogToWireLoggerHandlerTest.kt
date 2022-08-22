@@ -57,7 +57,7 @@ class LogToWireLoggerHandlerTest {
       )
     }
     val logger = WireTestLogger()
-    val context = SchemaHandler.Context(
+    val context = SchemaHandler.FileSystemContext(
       fileSystem = FakeFileSystem(),
       outDirectory = "out".toPath(),
       logger = logger,

@@ -25,22 +25,22 @@ import okio.Path
 
 /** Sample schema handler which generate Markdown files for types and services. */
 class MarkdownHandler : SchemaHandler() {
-  override fun handle(type: Type, context: SchemaHandler.Context): Path {
+  override fun handle(type: Type, context: SchemaHandler.FileSystemContext): Path {
     return writeMarkdownFile(type.type, toMarkdown(type), context)
   }
 
-  override fun handle(service: Service, context: SchemaHandler.Context): List<Path> {
+  override fun handle(service: Service, context: SchemaHandler.FileSystemContext): List<Path> {
     return listOf(writeMarkdownFile(service.type, toMarkdown(service), context))
   }
 
-  override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? {
+  override fun handle(extend: Extend, field: Field, context: SchemaHandler.FileSystemContext): Path? {
     return null
   }
 
   private fun writeMarkdownFile(
     protoType: ProtoType,
     markdown: String,
-    context: SchemaHandler.Context
+    context: SchemaHandler.FileSystemContext
   ): Path {
     val path = context.outDirectory / toPath(protoType).joinToString(separator = "/")
     context.fileSystem.createDirectories(path.parent!!)

@@ -28,7 +28,7 @@ import okio.buffer
 class LogToFileHandler : SchemaHandler() {
   private val filePath = "log.txt".toPath()
 
-  override fun handle(type: Type, context: SchemaHandler.Context): Path? {
+  override fun handle(type: Type, context: SchemaHandler.FileSystemContext): Path? {
     context.fileSystem.appendingSink(filePath).buffer().use {
       it.writeUtf8("Generating type: ${type.type}\n")
     }
@@ -36,7 +36,7 @@ class LogToFileHandler : SchemaHandler() {
     return null
   }
 
-  override fun handle(service: Service, context: SchemaHandler.Context): List<Path> {
+  override fun handle(service: Service, context: SchemaHandler.FileSystemContext): List<Path> {
     context.fileSystem.appendingSink(filePath).buffer().use {
       it.writeUtf8("Generating service: ${service.type}\n")
     }
@@ -44,7 +44,7 @@ class LogToFileHandler : SchemaHandler() {
     return listOf()
   }
 
-  override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? {
+  override fun handle(extend: Extend, field: Field, context: SchemaHandler.FileSystemContext): Path? {
     context.fileSystem.appendingSink(filePath).buffer().use {
       it.writeUtf8("Generating ${extend.type} on ${field.location}\n")
     }

@@ -71,7 +71,7 @@ class MarkdownHandlerTest {
     }
 
     val fileSystem = FakeFileSystem()
-    val context = SchemaHandler.Context(
+    val context = SchemaHandler.FileSystemContext(
       fileSystem = fileSystem,
       outDirectory = "generated/markdown".toPath(),
       logger = WireTestLogger(),

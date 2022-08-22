@@ -258,7 +258,7 @@ data class WireRun(
           } else {
             target.outDirectory.toPath() / moduleName
           }
-        val context = SchemaHandler.Context(
+        val context = SchemaHandler.FileSystemContext(
           fileSystem = fs,
           outDirectory = outDirectory,
           logger = logger,
