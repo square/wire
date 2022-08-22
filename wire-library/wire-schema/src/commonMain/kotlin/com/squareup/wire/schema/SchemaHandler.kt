@@ -20,6 +20,7 @@ import com.squareup.wire.internal.Serializable
 import okio.BufferedSink
 import okio.FileSystem
 import okio.Path
+import okio.internal.commonAsUtf8ToByteArray
 
 /** A [SchemaHandler] [handle]s [Schema]! */
 abstract class SchemaHandler {
@@ -30,10 +31,8 @@ abstract class SchemaHandler {
    * doesn't address.
    */
   open fun handle(schema: Schema, context: Context) {
-    println("___________")
     val moduleTypes = context.module?.types
     for (protoFile in schema.protoFiles) {
-      println(protoFile.name())
       if (!context.inSourcePath(protoFile)) continue
 
       // Remove types from the file which are not owned by this partition.
@@ -44,7 +43,6 @@ abstract class SchemaHandler {
 
       handle(filteredProtoFile, context)
     }
-    println("___________")
   }
 
   /**
@@ -113,6 +111,8 @@ abstract class SchemaHandler {
     fun createDirectories(dir: Path, mustCreate: Boolean = false)
 
     fun <T> write(file: Path, mustCreate: Boolean = false, writerAction: BufferedSink.() -> T): T
+
+    fun write(file: Path, str: String)
   }
 
   /**
@@ -177,6 +177,12 @@ abstract class SchemaHandler {
 
     override fun <T> write(file: Path, mustCreate: Boolean, writerAction: BufferedSink.() -> T): T {
       return fileSystem.write(file, mustCreate, writerAction)
+    }
+
+    override fun write(file: Path, str: String) {
+      write(file, false) {
+        write(str.commonAsUtf8ToByteArray())
+      }
     }
   }
 

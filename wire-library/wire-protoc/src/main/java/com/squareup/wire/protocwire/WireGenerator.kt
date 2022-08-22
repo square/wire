@@ -29,7 +29,6 @@ import okio.Path
 import okio.Path.Companion.toPath
 
 fun <T> TODO(message: String): T {
-  println(message)
   throw RuntimeException(message)
 }
 
@@ -65,11 +64,14 @@ data class CodeGeneratorResponseContext(
   }
 
   override fun createDirectories(dir: Path, mustCreate: Boolean) {
-    println("createDirectories call")
   }
 
   override fun <T> write(file: Path, mustCreate: Boolean, writerAction: BufferedSink.() -> T): T {
     return Buffer().writerAction()
+  }
+
+  override fun write(file: Path, str: String) {
+    context.addFile(file.name, str)
   }
 }
 
@@ -77,10 +79,6 @@ class WireGenerator(
 
 ) : CodeGenerator {
   override fun generate(request: PluginProtos.CodeGeneratorRequest, parameter: String, context: CodeGenerator.Context) {
-    println("+++++++++++")
-    println(request.fileToGenerateList)
-    println("+++++++++++")
-    // TODO: Figure out how to create a linker
     val loader = CoreLoader
     val errorCollector = ErrorCollector()
     val linker = Linker(loader, errorCollector, permitPackageCycles = true, loadExhaustively = true)
@@ -96,22 +94,18 @@ class WireGenerator(
 
     try {
       val schema = linker.link(protoFiles)
+      // Create a specific target and just run.
       KotlinProtocTarget().newHandler().handle(schema, CodeGeneratorResponseContext(context, sourcePaths))
-      for (protoFile in protoFiles) {
-        context.addFile(protoFile.name() + ".txt", protoFile.toElement().toSchema())
-      }
-      context.addFile("hello.txt", "finish")
     } catch (e: Throwable) {
-      e.printStackTrace()
-      context.addFile("hello.txt", "error")
+      context.addFile("result.log", e.stackTraceToString())
     }
   }
 
   companion object {
     @JvmStatic
     fun main(args: Array<String>) {
-      Plugin.run(WireGenerator(), StubbedTestEnvironment())
-//      Plugin.run(WireGenerator())
+//      Plugin.run(WireGenerator(), StubbedTestEnvironment())
+      Plugin.run(WireGenerator())
     }
   }
 }
