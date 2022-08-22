@@ -17,6 +17,7 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.WireLogger
 import com.squareup.wire.internal.Serializable
+import okio.BufferedSink
 import okio.FileSystem
 import okio.Path
 
@@ -29,8 +30,10 @@ abstract class SchemaHandler {
    * doesn't address.
    */
   open fun handle(schema: Schema, context: Context) {
+    println("___________")
     val moduleTypes = context.module?.types
     for (protoFile in schema.protoFiles) {
+      println(protoFile.name())
       if (!context.inSourcePath(protoFile)) continue
 
       // Remove types from the file which are not owned by this partition.
@@ -41,6 +44,7 @@ abstract class SchemaHandler {
 
       handle(filteredProtoFile, context)
     }
+    println("___________")
   }
 
   /**
@@ -61,60 +65,118 @@ abstract class SchemaHandler {
    */
   abstract fun handle(extend: Extend, field: Field, context: Context): Path?
 
-  /**
-   * A [Context] holds the information necessary for a [SchemaHandler] to do its job. It contains
-   * both helping objects such as [logger], and constraining objects such as [emittingRules].
-   */
-  data class Context(
+  interface Context {
     /** To be used by the [SchemaHandler] for reading/writing operations on disk. */
-    val fileSystem: FileSystem,
+    val fileSystem: FileSystem
     /** Location on [fileSystem] where the [SchemaHandler] is to write files, if it needs to. */
-    val outDirectory: Path,
+    val outDirectory: Path
     /** Event-listener like logger with which [SchemaHandler] can notify handled artifacts. */
-    val logger: WireLogger,
+    val logger: WireLogger
     /**
      * Object to be used by the [SchemaHandler] to store errors. After all [SchemaHandler]s are
      * finished, Wire will throw an exception if any error are present inside the collector.
      */
-    val errorCollector: ErrorCollector = ErrorCollector(),
+    val errorCollector: ErrorCollector
     /**
      * Set of rules letting the [SchemaHandler] know what [ProtoType] to include or exclude in its
      * logic. This object represents the `includes` and `excludes` values which were associated
      * with its [Target].
      */
-    val emittingRules: EmittingRules = EmittingRules(),
+    val emittingRules: EmittingRules
     /**
      * If set, the [SchemaHandler] is to handle only types which are not claimed yet, and claim
      * itself types it has handled. If null, the [SchemaHandler] is to handle all types.
      */
-    val claimedDefinitions: ClaimedDefinitions? = null,
+    val claimedDefinitions: ClaimedDefinitions?
     /** If the [SchemaHandler] writes files, it is to claim [Path]s of files it created. */
-    val claimedPaths: ClaimedPaths = ClaimedPaths(),
+    val claimedPaths: ClaimedPaths
     /**
      * A [Module] dictates how the loaded types are partitioned and how they are to be handled.
      * If null, there are no partition and all types are to be handled.
      */
-    val module: Module? = null,
+    val module: Module?
     /**
      * Contains [Location.path] values of all `sourcePath` roots. The [SchemaHandler] is to ignore
      * [ProtoFile]s not part of this set; this verification can be executed via the [inSourcePath]
      * method.
      */
-    val sourcePathPaths: Set<String>? = null,
+    val sourcePathPaths: Set<String>?
     /**
      * To be used by the [SchemaHandler] if it supports [Profile] files. Please note that this API
      * is unstable and can change at anytime.
      */
-    val profileLoader: ProfileLoader? = null,
-  ) {
+    val profileLoader: ProfileLoader?
+
+    fun inSourcePath(protoFile: ProtoFile): Boolean
+    fun inSourcePath(location: Location): Boolean
+
+    fun createDirectories(dir: Path, mustCreate: Boolean = false)
+
+    fun <T> write(file: Path, mustCreate: Boolean = false, writerAction: BufferedSink.() -> T): T
+  }
+
+  /**
+   * A [FileSystemContext] holds the information necessary for a [SchemaHandler] to do its job. It contains
+   * both helping objects such as [logger], and constraining objects such as [emittingRules].
+   */
+  data class FileSystemContext(
+    /** To be used by the [SchemaHandler] for reading/writing operations on disk. */
+    override val fileSystem: FileSystem,
+    /** Location on [fileSystem] where the [SchemaHandler] is to write files, if it needs to. */
+    override val outDirectory: Path,
+    /** Event-listener like logger with which [SchemaHandler] can notify handled artifacts. */
+    override val logger: WireLogger,
+    /**
+     * Object to be used by the [SchemaHandler] to store errors. After all [SchemaHandler]s are
+     * finished, Wire will throw an exception if any error are present inside the collector.
+     */
+    override  val errorCollector: ErrorCollector = ErrorCollector(),
+    /**
+     * Set of rules letting the [SchemaHandler] know what [ProtoType] to include or exclude in its
+     * logic. This object represents the `includes` and `excludes` values which were associated
+     * with its [Target].
+     */
+    override  val emittingRules: EmittingRules = EmittingRules(),
+    /**
+     * If set, the [SchemaHandler] is to handle only types which are not claimed yet, and claim
+     * itself types it has handled. If null, the [SchemaHandler] is to handle all types.
+     */
+    override val claimedDefinitions: ClaimedDefinitions? = null,
+    /** If the [SchemaHandler] writes files, it is to claim [Path]s of files it created. */
+    override  val claimedPaths: ClaimedPaths = ClaimedPaths(),
+    /**
+     * A [Module] dictates how the loaded types are partitioned and how they are to be handled.
+     * If null, there are no partition and all types are to be handled.
+     */
+    override  val module: Module? = null,
+    /**
+     * Contains [Location.path] values of all `sourcePath` roots. The [SchemaHandler] is to ignore
+     * [ProtoFile]s not part of this set; this verification can be executed via the [inSourcePath]
+     * method.
+     */
+    override  val sourcePathPaths: Set<String>? = null,
+    /**
+     * To be used by the [SchemaHandler] if it supports [Profile] files. Please note that this API
+     * is unstable and can change at anytime.
+     */
+    override  val profileLoader: ProfileLoader? = null,
+  ): Context {
     /** True if this [protoFile] ia part of a `sourcePath` root. */
-    fun inSourcePath(protoFile: ProtoFile): Boolean {
+    override fun inSourcePath(protoFile: ProtoFile): Boolean {
       return inSourcePath(protoFile.location)
     }
 
     /** True if this [location] ia part of a `sourcePath` root. */
-    fun inSourcePath(location: Location): Boolean {
+    override fun inSourcePath(location: Location): Boolean {
       return sourcePathPaths == null || location.path in sourcePathPaths
+    }
+
+    override fun createDirectories(dir: Path, mustCreate: Boolean) {
+      fileSystem.createDirectories(dir, mustCreate)
+    }
+
+    override fun <T> write(file: Path, mustCreate: Boolean, writerAction: BufferedSink.() -> T): T {
+      return fileSystem.write(file, mustCreate, writerAction)
     }
   }
 

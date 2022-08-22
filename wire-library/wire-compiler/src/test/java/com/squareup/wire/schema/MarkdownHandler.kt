@@ -23,19 +23,19 @@ class MarkdownHandlerFactory : SchemaHandler.Factory {
 
 /** This is a sample handler that writes text files that describe types. */
 private class MarkdownHandler : SchemaHandler() {
-  override fun handle(type: Type, context: SchemaHandler.Context): Path {
+  override fun handle(type: Type, context: SchemaHandler.FileSystemContext): Path {
     return writeMarkdownFile(type.type, toMarkdown(type), context)
   }
 
-  override fun handle(service: Service, context: SchemaHandler.Context): List<Path> {
+  override fun handle(service: Service, context: SchemaHandler.FileSystemContext): List<Path> {
     return listOf(writeMarkdownFile(service.type, toMarkdown(service), context))
   }
 
-  override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? {
+  override fun handle(extend: Extend, field: Field, context: SchemaHandler.FileSystemContext): Path? {
     return null
   }
 
-  private fun writeMarkdownFile(protoType: ProtoType, markdown: String, context: SchemaHandler.Context): Path {
+  private fun writeMarkdownFile(protoType: ProtoType, markdown: String, context: SchemaHandler.FileSystemContext): Path {
     val outDirectory = context.outDirectory
     val fileSystem = context.fileSystem
     val path = outDirectory / toPath(protoType).joinToString(separator = "/")

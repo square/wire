@@ -25,7 +25,7 @@ import okio.Path
 
 /** Sample schema validator that enforces a field naming pattern. */
 class ErrorReportingSchemaHandler : SchemaHandler() {
-  override fun handle(type: Type, context: SchemaHandler.Context): Path? {
+  override fun handle(type: Type, context: SchemaHandler.FileSystemContext): Path? {
     val errorCollector = context.errorCollector
 
     if ("descriptor.proto" in type.location.path) return null // Don't report errors on built-in stuff.
@@ -39,7 +39,7 @@ class ErrorReportingSchemaHandler : SchemaHandler() {
     return null
   }
 
-  override fun handle(service: Service, context: SchemaHandler.Context): List<Path> = emptyList()
+  override fun handle(service: Service, context: SchemaHandler.FileSystemContext): List<Path> = emptyList()
 
-  override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? = null
+  override fun handle(extend: Extend, field: Field, context: SchemaHandler.FileSystemContext): Path? = null
 }

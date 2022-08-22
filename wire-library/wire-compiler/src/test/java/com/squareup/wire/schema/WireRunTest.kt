@@ -597,7 +597,7 @@ class WireRunTest {
   class ErrorReportingCustomHandler : SchemaHandler.Factory {
     override fun create(): SchemaHandler {
       return object : SchemaHandler() {
-        override fun handle(type: Type, context: SchemaHandler.Context): Path? {
+        override fun handle(type: Type, context: SchemaHandler.FileSystemContext): Path? {
           val errorCollector = context.errorCollector
           if ("descriptor.proto" in type.location.path) return null // Don't report errors on built-in stuff.
           if (type is MessageType) {
@@ -610,9 +610,9 @@ class WireRunTest {
           return null
         }
 
-        override fun handle(service: Service, context: SchemaHandler.Context): List<Path> = listOf()
+        override fun handle(service: Service, context: SchemaHandler.FileSystemContext): List<Path> = listOf()
 
-        override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? = null
+        override fun handle(extend: Extend, field: Field, context: SchemaHandler.FileSystemContext): Path? = null
       }
     }
   }
@@ -653,7 +653,7 @@ class WireRunTest {
     val errorCollector = ErrorCollector()
     schemaHandlerFactory.create().handle(
       schema = schema,
-      context = SchemaHandler.Context(
+      context = SchemaHandler.FileSystemContext(
         fileSystem = fs,
         outDirectory = "out".toPath(),
         logger = NULL_LOGGER,
