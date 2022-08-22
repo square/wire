@@ -88,6 +88,8 @@ class Linker {
       fileLinkers[sourceFile.location.path] = fileLinker
       sourceFiles += fileLinker
     }
+
+    // Ensure linking the descriptor.proto, if not provided.
     if (fileLinkers["google/protobuf/descriptor.proto"] == null) {
       sourceFiles += getFileLinker("google/protobuf/descriptor.proto")
     }

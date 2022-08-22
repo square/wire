@@ -321,10 +321,7 @@ data class KotlinProtocTarget(
           kotlinFile.packageName.replace(".", "/") /
           "${kotlinFile.name}.kt"
         try {
-          context.createDirectories(filePath.parent!!)
-          context.write(filePath) {
-            writeUtf8(kotlinFile.toString())
-          }
+          context.write(filePath, kotlinFile.toString())
         } catch (e: IOException) {
           throw IOException("Error emitting ${kotlinFile.packageName}.$source to $outDirectory", e)
         }
