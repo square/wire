@@ -37,5 +37,5 @@ dependencies {
   implementation(libs.protobuf.java)
   implementation(projects.wireSchema)
   implementation(projects.wireCompiler)
-  implementation(projects.wireKotlinGenerator)
+  implementation(projects.wireKotlinGenerator) // This is kind of needed
 }
