@@ -1,6 +1,8 @@
 package com.squareup.wire.protocwire
 
 import com.google.protobuf.DescriptorProtos
+import com.google.protobuf.GeneratedMessageV3
+import com.google.protobuf.GeneratedMessageV3.ExtendableMessage
 import com.google.protobuf.compiler.PluginProtos
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireLogger
@@ -19,6 +21,7 @@ import com.squareup.wire.schema.ProfileLoader
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.SchemaHandler
 import com.squareup.wire.schema.internal.parser.MessageElement
+import com.squareup.wire.schema.internal.parser.OptionElement
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
 import java.io.File
 import java.io.InputStream
@@ -128,6 +131,7 @@ fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto): P
     }
     types.add(parseMessage(messageType))
   }
+
   return ProtoFileElement(
     location = location,
     imports = imports,
@@ -135,7 +139,7 @@ fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto): P
     packageName = fileDescriptor.`package`,
     types = types, // TODO: this is just to see if things break
     services = emptyList(),
-    options = emptyList(),
+    options = parseOptions(fileDescriptor.options),
     syntax = Syntax.PROTO_3,
   )
 }
@@ -144,6 +148,12 @@ fun parseMessage(message: DescriptorProtos.DescriptorProto): MessageElement {
   return MessageElement(
     location = Location.get(message.name),
     name = message.name,
-    documentation = ""
+    documentation = "",
+    options = parseOptions(message.options),
   )
+}
+
+fun <T: ExtendableMessage<T>> parseOptions(options: T): List<OptionElement> {
+
+  return emptyList()
 }
