@@ -17,6 +17,10 @@ syntax = "proto3";
 
 package proto3.simple;
 
-//option java_package = "com.squareup.wire.proto3.kotlin.simple";
+option java_package = "com.squareup.wire.proto3.kotlin.simple";
 
-message Msg {}
+message EmptyMsg {}
+
+message StringMsg {
+  string str = 1;
+}
