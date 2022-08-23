@@ -28,3 +28,11 @@ message StringMsg {
 message MessageFieldMsg {
   StringMsg msg = 1;
 }
+
+message NestedMsg {
+  InnerMsg msg = 1;
+
+  message InnerMsg {
+    int32 i = 1;
+  }
+}

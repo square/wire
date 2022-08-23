@@ -53,7 +53,8 @@ class ProtoParser internal constructor(
     while (true) {
       val documentation = reader.readDocumentation()
       if (reader.exhausted()) {
-        return ProtoFileElement(
+
+        val protoFileElement = ProtoFileElement(
           location = location,
           packageName = packageName,
           syntax = syntax,
@@ -62,8 +63,14 @@ class ProtoParser internal constructor(
           types = nestedTypes,
           services = services,
           extendDeclarations = extendsList,
-          options = options
+//          options = options
         )
+        if (location.path.contains("simple")) {
+          println("-----------------------")
+          println(protoFileElement)
+          println("-----------------------")
+        }
+        return protoFileElement
       }
 
       when (val declaration = readDeclaration(documentation, Context.FILE)) {

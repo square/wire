@@ -136,10 +136,15 @@ fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto): P
 }
 
 fun parseMessage(protoLocation: String, message: DescriptorProtos.DescriptorProto): MessageElement {
+  val nestedTypes = mutableListOf<TypeElement>()
+  for (descriptorProto in message.nestedTypeList) {
+    nestedTypes.add(parseMessage(protoLocation, descriptorProto))
+  }
   return MessageElement(
     location = Location.get(protoLocation),
     name = message.name,
     documentation = "",
+    nestedTypes = nestedTypes,
     options = parseOptions(message.options),
     reserveds = emptyList(),
     fields = parseFields(protoLocation, message.fieldList),
@@ -159,7 +164,7 @@ fun parseFields(protoLocation: String, fieldList: List<DescriptorProtos.FieldDes
       type = parseType(field),
       name = field.name,
 //      defaultValue = field.defaultValue,
-//      jsonName = field.jsonName,
+      jsonName = field.jsonName,
       tag = field.number,
       documentation = "",
       options = parseOptions(field.options)
@@ -169,7 +174,6 @@ fun parseFields(protoLocation: String, fieldList: List<DescriptorProtos.FieldDes
 }
 
 fun parseType(field: DescriptorProtos.FieldDescriptorProto): String {
-
   return when (field.type) {
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_DOUBLE -> "double"
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_FLOAT -> "float"
@@ -189,10 +193,9 @@ fun parseType(field: DescriptorProtos.FieldDescriptorProto): String {
     // Collapsing enums to messages for now
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_ENUM,
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_MESSAGE -> {
-      if (field.typeName.startsWith('.')) {
-        return field.typeName.substring(1)
-      }
-      field.typeName
+      // Get the last section of the type name.
+      // E.g. .bufbuild.testing.NestedMsg.InnerMsg will be InnerMsg
+      field.typeName.split(".").last()
     }
     // TODO: Figure out group types
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_GROUP -> ""
@@ -200,12 +203,12 @@ fun parseType(field: DescriptorProtos.FieldDescriptorProto): String {
   }
 }
 
-fun parseLabel(label: DescriptorProtos.FieldDescriptorProto.Label): Field.Label {
+fun parseLabel(label: DescriptorProtos.FieldDescriptorProto.Label): Field.Label? {
   return when (label) {
     DescriptorProtos.FieldDescriptorProto.Label.LABEL_OPTIONAL -> Field.Label.OPTIONAL
     DescriptorProtos.FieldDescriptorProto.Label.LABEL_REQUIRED -> Field.Label.REQUIRED
     DescriptorProtos.FieldDescriptorProto.Label.LABEL_REPEATED -> Field.Label.REPEATED
-    else -> Field.Label.OPTIONAL
+    else -> null
   }
 }
 
