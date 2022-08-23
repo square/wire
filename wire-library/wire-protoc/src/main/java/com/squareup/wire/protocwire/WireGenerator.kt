@@ -85,7 +85,7 @@ data class CodeGeneratorResponseContext(
 class WireGenerator(
 
 ) : CodeGenerator {
-  override fun generate(request: PluginProtos.CodeGeneratorRequest, descs: Plugin.DescriptorSource, response: Plugin.Response) {
+  override fun generate(request: PluginProtos.CodeGeneratorRequest, descs: DescriptorSource, response: Plugin.Response) {
     debug(request)
     val loader = CoreLoader
     val errorCollector = ErrorCollector()
@@ -124,7 +124,7 @@ fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto, de
   val types = mutableListOf<TypeElement>()
   val nestedTypes = mutableListOf<TypeElement>()
   for (enumType in fileDescriptor.enumTypeList) {
-    types.add(parseEnum(fileDescriptor.name, enumType))
+    types.add(parseEnum(fileDescriptor.name, enumType, descs))
   }
   for (messageType in fileDescriptor.messageTypeList) {
     types.add(parseMessage(fileDescriptor.name, messageType, descs))
@@ -146,7 +146,7 @@ fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto, de
   )
 }
 
-fun parseEnum(protoLocation: String, enum: DescriptorProtos.EnumDescriptorProto): EnumElement {
+fun parseEnum(protoLocation: String, enum: DescriptorProtos.EnumDescriptorProto, descs: DescriptorSource): EnumElement {
   val constants = mutableListOf<EnumConstantElement>()
   for (enumValueDescriptorProto in enum.valueList) {
     constants.add(EnumConstantElement(
@@ -154,20 +154,20 @@ fun parseEnum(protoLocation: String, enum: DescriptorProtos.EnumDescriptorProto)
       name = enumValueDescriptorProto.name,
       tag = enumValueDescriptorProto.number,
       documentation = "",
-      options = parseOptions(enumValueDescriptorProto.options)
+      options = parseOptions(enumValueDescriptorProto.options, descs)
     ))
   }
   return EnumElement(
     location = Location.get(protoLocation),
     name = enum.name,
     documentation = "",
-    options = parseOptions(enum.options),
+    options = parseOptions(enum.options, descs),
     constants = constants,
     reserveds = emptyList()
   )
 }
 
-fun parseMessage(protoLocation: String, message: DescriptorProtos.DescriptorProto, descs: Plugin.DescriptorSource): MessageElement {
+fun parseMessage(protoLocation: String, message: DescriptorProtos.DescriptorProto, descs: DescriptorSource): MessageElement {
   val nestedTypes = mutableListOf<TypeElement>()
   for (nestedType in message.nestedTypeList) {
     nestedTypes.add(parseMessage(protoLocation, nestedType, descs))
@@ -249,7 +249,7 @@ fun parseLabel(label: DescriptorProtos.FieldDescriptorProto.Label): Field.Label 
   }
 }
 
-fun <T: ExtendableMessage<T>> parseOptions(options: T, descs: Plugin.DescriptorSource): List<OptionElement> {
+fun <T: ExtendableMessage<T>> parseOptions(options: T, descs: DescriptorSource): List<OptionElement> {
   val optDesc = options.descriptorForType
   val overrideDesc = descs.findMessageTypeByName(optDesc.fullName)
   if (overrideDesc != null) {
