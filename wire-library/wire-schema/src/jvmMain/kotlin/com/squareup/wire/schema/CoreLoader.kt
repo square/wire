@@ -44,7 +44,7 @@ actual object CoreLoader : Loader {
       }
     }
 
-    throw error("unexpected load: $path")
+    error("unexpected load: $path")
   }
 
   override fun withErrors(errors: ErrorCollector) = this

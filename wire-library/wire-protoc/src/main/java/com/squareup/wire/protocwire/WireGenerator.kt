@@ -118,9 +118,9 @@ fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto): P
   val nestedTypes = mutableListOf<MessageElement>()
   for (messageType in fileDescriptor.messageTypeList) {
     for (nestedType in messageType.nestedTypeList) {
-      nestedTypes.add(parseMessage(nestedType))
+      nestedTypes.add(parseMessage(fileDescriptor.name, nestedType))
     }
-    types.add(parseMessage(messageType))
+    types.add(parseMessage(fileDescriptor.name, messageType))
   }
 
   return ProtoFileElement(
@@ -135,30 +135,31 @@ fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto): P
   )
 }
 
-fun parseMessage(message: DescriptorProtos.DescriptorProto): MessageElement {
+fun parseMessage(protoLocation: String, message: DescriptorProtos.DescriptorProto): MessageElement {
   return MessageElement(
-    location = Location.get(message.name),
+    location = Location.get(protoLocation),
     name = message.name,
     documentation = "",
     options = parseOptions(message.options),
     reserveds = emptyList(),
-    fields = parseFields(message.fieldList),
+    fields = parseFields(protoLocation, message.fieldList),
     oneOfs = emptyList(),
     extensions = emptyList(),
     groups = emptyList()
   )
 }
 
-fun parseFields(fieldList: List<DescriptorProtos.FieldDescriptorProto>): List<FieldElement> {
+fun parseFields(protoLocation: String, fieldList: List<DescriptorProtos.FieldDescriptorProto>): List<FieldElement> {
   val result = mutableListOf<FieldElement>()
+
   for (field in fieldList) {
     result.add(FieldElement(
-      location = Location.get(field.name),
+      location = Location.get(protoLocation),
       label = parseLabel(field.label),
-      type = parseType(field.type),
+      type = parseType(field),
       name = field.name,
-      defaultValue = null,
-      jsonName = null,
+//      defaultValue = field.defaultValue,
+//      jsonName = field.jsonName,
       tag = field.number,
       documentation = "",
       options = parseOptions(field.options)
@@ -167,26 +168,35 @@ fun parseFields(fieldList: List<DescriptorProtos.FieldDescriptorProto>): List<Fi
   return result
 }
 
-fun parseType(type: DescriptorProtos.FieldDescriptorProto.Type): String {
-  return when (type) {
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_DOUBLE -> ""
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_FLOAT -> ""
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_INT64 -> "int64"
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_UINT64 -> ""
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_INT32 -> "int32"
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_FIXED64 -> ""
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_FIXED32 -> ""
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_BOOL -> "bool"
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING -> "string"
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_GROUP -> ""
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_MESSAGE -> ""
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_BYTES -> ""
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_UINT32 -> ""
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_ENUM -> ""
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_SFIXED32 -> ""
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_SFIXED64 -> ""
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_SINT32 -> ""
-     DescriptorProtos.FieldDescriptorProto.Type.TYPE_SINT64 -> ""
+fun parseType(field: DescriptorProtos.FieldDescriptorProto): String {
+
+  return when (field.type) {
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_DOUBLE -> "double"
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_FLOAT -> "float"
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_INT64 -> "int64"
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_UINT64 -> "uint64"
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_INT32 -> "int32"
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_FIXED64 -> "fixed64"
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_FIXED32 -> "fixed32"
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_BOOL -> "bool"
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING -> "string"
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_BYTES -> "bytes"
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_UINT32 -> "uint32"
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_SFIXED32 -> "sfixed32"
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_SFIXED64 -> "sfixed64"
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_SINT32 -> "sint32"
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_SINT64 -> "sint64"
+    // Collapsing enums to messages for now
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_ENUM,
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_MESSAGE -> {
+      if (field.typeName.startsWith('.')) {
+        return field.typeName.substring(1)
+      }
+      field.typeName
+    }
+    // TODO: Figure out group types
+    DescriptorProtos.FieldDescriptorProto.Type.TYPE_GROUP -> ""
+    else -> TODO("else case found for ${field.type}")
   }
 }
 
@@ -199,6 +209,6 @@ fun parseLabel(label: DescriptorProtos.FieldDescriptorProto.Label): Field.Label 
   }
 }
 
-fun <T: ExtendableMessage<T>> parseOptions(options: T): List<OptionElement> {
+fun <T : ExtendableMessage<T>> parseOptions(options: T): List<OptionElement> {
   return emptyList()
 }
