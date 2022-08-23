@@ -1,19 +1,19 @@
 package com.squareup.wire.protocwire;
 
+import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
+import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.DescriptorValidationException;
 import com.google.protobuf.Descriptors.FileDescriptor;
+import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest;
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorResponse;
-import com.google.protobuf.compiler.PluginProtos.CodeGeneratorResponse.File;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,126 +123,47 @@ public final class Plugin {
     }
   }
 
-  abstract static class AbstractContext implements CodeGenerator.Context {
-
-    private class GeneratorResponseFileWriter extends StringWriter {
-
-      private final CodeGeneratorResponse.File.Builder file;
-
-      protected GeneratorResponseFileWriter(
-        CodeGeneratorResponse.File.Builder file) {
-        super();
-        this.file = file;
-      }
-
-      @Override
-      public void close() throws IOException {
-        super.close();
-        file.setContent(this.toString());
-        commitFile(file.build());
-      }
+  public static class DescriptorSource {
+    private final Map<String, FileDescriptor> files;
+    private DescriptorSource(Map<String, FileDescriptor> files) {
+      this.files = files;
     }
 
-    private final List<FileDescriptor> parsedFiles;
+    public Descriptors.Descriptor findMessageTypeByName(String fullName) {
+      for (FileDescriptor fd : files.values()) {
+        Descriptors.Descriptor ret = fd.findMessageTypeByName(fullName);
+        if (ret != null) {
+          return ret;
+        }
+      }
+      return null;
+    }
+  }
 
-    protected AbstractContext(List<FileDescriptor> parsedFiles) {
-      this.parsedFiles = parsedFiles;
+  /**
+   * Streams generated files from a {@link CodeGenerator} to a {@link CodedOutputStream}.
+   */
+  public static class Response {
+
+    private final CodedOutputStream output;
+
+    Response(CodedOutputStream output) {
+      this.output = output;
     }
 
-    @Override
     public void addFile(String filename, String content) {
       CodeGeneratorResponse.File.Builder file =
         CodeGeneratorResponse.File.newBuilder();
       file.setName(filename);
       file.setContent(content);
       try {
-        commitFile(file.build());
+        // Protocol format guarantees that concatenated messages are parsed as
+        // if they had been merged in a single message prior to being serialized.
+        CodeGeneratorResponse.newBuilder().addFile(file).build().writeTo(output);
+        output.flush();
       } catch (IOException e) {
         throw new PluginException("Error writing to stdout.", e);
       }
-    }
-
-    @Override
-    public void insertIntoFile(String filename, String insertionPoint,
-                               String content) {
-      CodeGeneratorResponse.File.Builder file =
-        CodeGeneratorResponse.File.newBuilder();
-      file.setName(filename);
-      file.setInsertionPoint(insertionPoint);
-      file.setContent(content);
-      try {
-        commitFile(file.build());
-      } catch (IOException e) {
-        throw new PluginException("Error writing to stdout.", e);
-      }
-    }
-
-    @Override
-    public Writer open(String filename) {
-      CodeGeneratorResponse.File.Builder file =
-        CodeGeneratorResponse.File.newBuilder();
-      file.setName(filename);
-      return new GeneratorResponseFileWriter(file);
-    }
-
-    @Override
-    public Writer openForInsert(String filename, String insertionPoint) {
-      CodeGeneratorResponse.File.Builder file =
-        CodeGeneratorResponse.File.newBuilder();
-      file.setName(filename);
-      file.setInsertionPoint(insertionPoint);
-      return new GeneratorResponseFileWriter(file);
-    }
-
-    @Override
-    public List<FileDescriptor> getParsedFiles() {
-      return parsedFiles;
-    }
-
-    protected abstract void commitFile(CodeGeneratorResponse.File file)
-      throws IOException;
-  }
-
-  /**
-   * A {@link CodeGenerator.Context} that streams generated files to a
-   * {@link CodedOutputStream}.
-   */
-  static class StreamingContext extends AbstractContext {
-
-    private final CodedOutputStream output;
-
-    StreamingContext(List<FileDescriptor> parsedFiles,
-                            CodedOutputStream output) {
-      super(parsedFiles);
-      this.output = output;
-    }
-
-    @Override
-    protected void commitFile(File file) throws IOException {
-      // Protocol format guarantees that concatenated messages are parsed as
-      // if they had been merged in a single message prior to being serialized.
-      CodeGeneratorResponse.newBuilder().addFile(file).build().writeTo(output);
-      output.flush();
-    }
-  }
-
-  /**
-   * A {@link CodeGenerator.Context} that appends generated files to a
-   * {@link CodeGeneratorResponse}.
-   */
-  static class CodeGeneratorResponseContext extends AbstractContext {
-
-    private final CodeGeneratorResponse.Builder response;
-
-    protected CodeGeneratorResponseContext(List<FileDescriptor> parsedFiles,
-                                           CodeGeneratorResponse.Builder response) {
-      super(parsedFiles);
-      this.response = response;
-    }
-
-    @Override
-    public void commitFile(File file) {
-      response.addFile(file);
     }
   }
 
@@ -250,8 +171,8 @@ public final class Plugin {
   }
 
   /**
-   * Runs the given code generator, reading the request from {@link System.in}
-   * and writing the response to {@link System.out}.
+   * Runs the given code generator, reading the request from {@link System#in}
+   * and writing the response to {@link System#out}.
    * <p>
    * This is equivalent to {@code run(generator, new DefaultEnvironment())}.
    *
@@ -266,18 +187,55 @@ public final class Plugin {
    */
   public static void run(CodeGenerator generator, Environment environment) {
     CodeGeneratorRequest request;
+    ByteString rawRequest;
     try {
-      request = CodeGeneratorRequest.parseFrom(environment.getInputStream());
+      rawRequest = ByteString.readFrom(environment.getInputStream());
+      request = CodeGeneratorRequest.parseFrom(rawRequest);
     } catch (IOException e) {
-      throw new PluginException("protoc sent unparseable request to plugin.",
-        e);
+      throw new PluginException("protoc sent unparseable request to plugin.", e);
     }
 
-    List<FileDescriptor> filesToGenerate = parseFiles(request);
+    Map<String, FileDescriptor> files = asDescriptors(request.getProtoFileList());
+    ExtensionRegistry reg = createExtensionRegistry(files.values());
+
+    // now we must *re-parse* the request, but this time we can properly parse any
+    // custom options therein
+    try {
+      request = CodeGeneratorRequest.parseFrom(rawRequest, reg);
+    } catch (IOException e) {
+      throw new PluginException("protoc sent unparseable request to plugin.", e);
+    }
+    files = asDescriptors(request.getProtoFileList());
+
     CodedOutputStream output = CodedOutputStream.newInstance(
       environment.getOutputStream());
-    generator.generate(request, request.getParameter(),
-        new StreamingContext(filesToGenerate, output));
+    generator.generate(request, new DescriptorSource(files), new Response(output));
+  }
+
+  private static ExtensionRegistry createExtensionRegistry(Collection<FileDescriptor> files) {
+    ExtensionRegistry reg = ExtensionRegistry.newInstance();
+    for (FileDescriptor fd : files) {
+      addAllExtensionsFromFile(reg, fd);
+    }
+    return reg;
+  }
+
+  private static void addAllExtensionsFromFile(ExtensionRegistry reg, FileDescriptor fd) {
+    for (Descriptors.FieldDescriptor ext : fd.getExtensions()) {
+      reg.add(ext);
+    }
+    for (Descriptors.Descriptor msg : fd.getMessageTypes()) {
+      addAllExtensionsFromMessage(reg, msg);
+    }
+  }
+
+  private static void addAllExtensionsFromMessage(ExtensionRegistry reg, Descriptors.Descriptor msg) {
+    for (Descriptors.FieldDescriptor ext : msg.getExtensions()) {
+      reg.add(ext);
+    }
+    for (Descriptors.Descriptor nested : msg.getNestedTypes()) {
+      addAllExtensionsFromMessage(reg, nested);
+    }
   }
 
   /**
@@ -285,11 +243,10 @@ public final class Plugin {
    * corresponding only to the files to generate (i.e. dependencies not listed
    * explicitly are not included in the returned list).
    */
-  private static List<FileDescriptor> parseFiles(CodeGeneratorRequest request)
+  private static Map<String, FileDescriptor> asDescriptors(List<FileDescriptorProto> protoFiles)
     throws PluginException {
-    Map<String, FileDescriptor> filesByName =
-      new HashMap<String, FileDescriptor>(request.getProtoFileCount());
-    for (FileDescriptorProto protoFile : request.getProtoFileList()) {
+    Map<String, FileDescriptor> filesByName = new HashMap<>(protoFiles.size());
+    for (FileDescriptorProto protoFile : protoFiles) {
       FileDescriptor[] dependencies =
         new FileDescriptor[protoFile.getDependencyCount()];
       for (int i = 0, l = protoFile.getDependencyCount(); i < l; i++) {
@@ -311,19 +268,6 @@ public final class Plugin {
       }
     }
 
-    List<FileDescriptor> filesToGenerate = new ArrayList<FileDescriptor>(
-      request.getFileToGenerateCount());
-    for (String fileToGenerate : request.getFileToGenerateList()) {
-      FileDescriptor file = filesByName.get(fileToGenerate);
-      if (file == null) {
-        throw new PluginException("protoc asked plugin to generate a file "
-          + "but did not provide a descriptor for the file: "
-          + fileToGenerate);
-      }
-
-      filesToGenerate.add(file);
-    }
-
-    return filesToGenerate;
+    return filesByName;
   }
 }
