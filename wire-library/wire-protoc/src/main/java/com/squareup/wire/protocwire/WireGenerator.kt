@@ -22,6 +22,8 @@ import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProfileLoader
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.SchemaHandler
+import com.squareup.wire.schema.internal.parser.EnumConstantElement
+import com.squareup.wire.schema.internal.parser.EnumElement
 import com.squareup.wire.schema.internal.parser.FieldElement
 import com.squareup.wire.schema.internal.parser.MessageElement
 import com.squareup.wire.schema.internal.parser.OptionElement
@@ -120,6 +122,10 @@ fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto, de
   val imports = mutableListOf<String>()
   val publicImports = mutableListOf<String>()
   val types = mutableListOf<TypeElement>()
+  val nestedTypes = mutableListOf<TypeElement>()
+  for (enumType in fileDescriptor.enumTypeList) {
+    types.add(parseEnum(fileDescriptor.name, enumType))
+  }
   for (messageType in fileDescriptor.messageTypeList) {
     types.add(parseMessage(fileDescriptor.name, messageType, descs))
   }
@@ -137,6 +143,27 @@ fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto, de
     services = emptyList(),
     options = parseOptions(fileDescriptor.options, descs),
     syntax = Syntax.PROTO_3,
+  )
+}
+
+fun parseEnum(protoLocation: String, enum: DescriptorProtos.EnumDescriptorProto): EnumElement {
+  val constants = mutableListOf<EnumConstantElement>()
+  for (enumValueDescriptorProto in enum.valueList) {
+    constants.add(EnumConstantElement(
+      location = Location.get(protoLocation),
+      name = enumValueDescriptorProto.name,
+      tag = enumValueDescriptorProto.number,
+      documentation = "",
+      options = parseOptions(enumValueDescriptorProto.options)
+    ))
+  }
+  return EnumElement(
+    location = Location.get(protoLocation),
+    name = enum.name,
+    documentation = "",
+    options = parseOptions(enum.options),
+    constants = constants,
+    reserveds = emptyList()
   )
 }
 
@@ -199,7 +226,7 @@ fun parseType(field: DescriptorProtos.FieldDescriptorProto): String {
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_SFIXED64 -> "sfixed64"
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_SINT32 -> "sint32"
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_SINT64 -> "sint64"
-    // Collapsing enums to messages for now
+    // Collapsing enums and messages are the same.
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_ENUM,
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_MESSAGE -> {
       if (field.typeName.startsWith('.')) {
@@ -209,7 +236,7 @@ fun parseType(field: DescriptorProtos.FieldDescriptorProto): String {
     }
     // TODO: Figure out group types
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_GROUP -> ""
-    else -> TODO("else case found for ${field.type}")
+    else -> TODO("else case found for $ {field.type}")
   }
 }
 

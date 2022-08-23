@@ -28,3 +28,12 @@ message StringMsg {
 message MessageFieldMsg {
   StringMsg msg = 1;
 }
+
+message EnumMsg {
+  Enum enumeration = 1;
+}
+
+enum Enum {
+  UNSPECIFIED = 0;
+  FIRST_VALUE = 1;
+}
