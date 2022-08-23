@@ -53,7 +53,6 @@ class ProtoParser internal constructor(
     while (true) {
       val documentation = reader.readDocumentation()
       if (reader.exhausted()) {
-
         return ProtoFileElement(
           location = location,
           packageName = packageName,
