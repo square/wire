@@ -24,3 +24,7 @@ message EmptyMsg {}
 message StringMsg {
   string str = 1;
 }
+
+message MessageFieldMsg {
+  StringMsg msg = 1;
+}
