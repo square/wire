@@ -118,7 +118,6 @@ class WireGenerator(
 }
 
 private fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto, descs: DescriptorSource): ProtoFileElement {
-  val path = mutableListOf<Int>()
   val location = Location.get(fileDescriptor.name)
   val helper = SourceCodeHelper(fileDescriptor)
 
@@ -126,6 +125,7 @@ private fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorP
   val publicImports = mutableListOf<String>()
   val types = mutableListOf<TypeElement>()
 
+  val path = mutableListOf<Int>()
   path.clear()
   path.add(DescriptorProtos.FileDescriptorProto.MESSAGE_TYPE_FIELD_NUMBER)
   path.add(0) // placeholder for index
@@ -133,8 +133,12 @@ private fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorP
     path[1] = index
     types.add(parseMessage(path, helper, messageType, descs))
   }
+
+  val enumPaths = mutableListOf<Int>().apply { addAll(path) }
+  enumPaths.add(DescriptorProtos.DescriptorProto.ENUM_TYPE_FIELD_NUMBER)
   for ((index, enumType) in fileDescriptor.enumTypeList.withIndex()) {
-    types.add(parseEnum(fileDescriptor.name, enumType, descs))
+    enumPaths[1] = index
+    types.add(parseEnum(enumPaths, helper, enumType, descs))
   }
   return ProtoFileElement(
     location = location,
@@ -148,11 +152,12 @@ private fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorP
   )
 }
 
-fun parseEnum(protoLocation: String, enum: DescriptorProtos.EnumDescriptorProto, descs: DescriptorSource): EnumElement {
+private fun parseEnum(path: List<Int>, helper: SourceCodeHelper, enum: DescriptorProtos.EnumDescriptorProto, descs: DescriptorSource): EnumElement {
+  val info = helper.getLocation(path)
   val constants = mutableListOf<EnumConstantElement>()
   for (enumValueDescriptorProto in enum.valueList) {
     constants.add(EnumConstantElement(
-      location = Location.get(protoLocation),
+      location = info.loc,
       name = enumValueDescriptorProto.name,
       tag = enumValueDescriptorProto.number,
       documentation = "",
@@ -160,7 +165,7 @@ fun parseEnum(protoLocation: String, enum: DescriptorProtos.EnumDescriptorProto,
     ))
   }
   return EnumElement(
-    location = Location.get(protoLocation),
+    location = info.loc,
     name = enum.name,
     documentation = "",
     options = parseOptions(enum.options, descs),
@@ -170,9 +175,9 @@ fun parseEnum(protoLocation: String, enum: DescriptorProtos.EnumDescriptorProto,
 }
 
 private fun parseMessage(path: List<Int>, helper: SourceCodeHelper, message: DescriptorProtos.DescriptorProto, descs: DescriptorSource): MessageElement {
-  val nestedTypes = mutableListOf<TypeElement>()
   val info = helper.getLocation(path)
 
+  val nestedTypes = mutableListOf<TypeElement>()
   val nestedPath = mutableListOf<Int>().apply { addAll(path) }
   nestedPath.add(DescriptorProtos.DescriptorProto.NESTED_TYPE_FIELD_NUMBER)
   nestedPath.add(0) // placeholder for index
@@ -180,12 +185,13 @@ private fun parseMessage(path: List<Int>, helper: SourceCodeHelper, message: Des
     nestedPath[nestedPath.size-1] = index
     nestedTypes.add(parseMessage(nestedPath, helper, nestedType, descs))
   }
-  // TODO: enums
-//  for (nestedType in message.enumTypeList) {
-//    nestedTypes.add(parseEnum(nestedType, descs))
-//  }
-  for (descriptorProto in message.nestedTypeList) {
-    nestedTypes.add(parseMessage(path, helper, descriptorProto, descs))
+
+  val nestedEnumsPath = mutableListOf<Int>().apply { addAll(path) }
+  nestedEnumsPath.add(DescriptorProtos.DescriptorProto.NESTED_TYPE_FIELD_NUMBER)
+  nestedEnumsPath.add(0) // placeholder for index
+  for ((index, nestedType) in message.enumTypeList.withIndex()) {
+    nestedEnumsPath[nestedEnumsPath.size - 1] = index
+    nestedTypes.add(parseEnum(nestedEnumsPath, helper, nestedType, descs))
   }
 
   return MessageElement(
@@ -341,10 +347,10 @@ private data class OptionValueAndKind(val value: Any, val kind: OptionElement.Ki
 private data class SourceCodeInfo(val comment: String, val loc: Location)
 
 private class SourceCodeHelper(
-  val locs: Map<List<Int>, DescriptorProtos.SourceCodeInfo.Location>,
-  val baseLoc: Location
+  fd: DescriptorProtos.FileDescriptorProto
 ) {
-  constructor(fd: DescriptorProtos.FileDescriptorProto) : this(makeLocationMap(fd.sourceCodeInfo.locationList), Location.get(fd.name))
+  val locs: Map<List<Int>, DescriptorProtos.SourceCodeInfo.Location> = makeLocationMap(fd.sourceCodeInfo.locationList)
+  val baseLoc: Location = Location.get(fd.name)
 
   fun getLocation(path: List<Int>): SourceCodeInfo {
     val l = locs[path]
@@ -355,16 +361,17 @@ private class SourceCodeHelper(
     }
     return SourceCodeInfo(comment ?: "", loc)
   }
+
+  private fun makeLocationMap(locs: List<DescriptorProtos.SourceCodeInfo.Location>): Map<List<Int>, DescriptorProtos.SourceCodeInfo.Location> {
+    val m = mutableMapOf<List<Int>, DescriptorProtos.SourceCodeInfo.Location>()
+    for (loc in locs) {
+      val path = mutableListOf<Int>()
+      for (pathElem in loc.pathList) {
+        path.add(pathElem)
+      }
+      m[path] = loc
+    }
+    return m
+  }
 }
 
-private fun makeLocationMap(locs: List<DescriptorProtos.SourceCodeInfo.Location>): Map<List<Int>, DescriptorProtos.SourceCodeInfo.Location> {
-  val m = mutableMapOf<List<Int>, DescriptorProtos.SourceCodeInfo.Location>()
-  for (loc in locs) {
-    val path = mutableListOf<Int>()
-    for (pathElem in loc.pathList) {
-      path.add(pathElem)
-    }
-    m[path] = loc
-  }
-  return m
-}
