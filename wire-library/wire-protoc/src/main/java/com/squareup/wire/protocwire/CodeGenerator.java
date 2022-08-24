@@ -10,5 +10,6 @@ public interface CodeGenerator {
    * Generates code for the given proto file, generating one or more files to
    * the given response.
    */
-  void generate(CodeGeneratorRequest request, Plugin.DescriptorSource descriptorSource, Plugin.Response response);
+  void generate(CodeGeneratorRequest request, Plugin.DescriptorSource descriptorSource,
+                Plugin.Response response);
 }
