@@ -1,10 +1,14 @@
 package com.squareup.wire.protocwire
 
+import com.google.protobuf.AbstractMessage
 import com.google.protobuf.DescriptorProtos
+import com.google.protobuf.Descriptors.EnumValueDescriptor
+import com.google.protobuf.DynamicMessage
 import com.google.protobuf.GeneratedMessageV3.ExtendableMessage
 import com.google.protobuf.compiler.PluginProtos
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireLogger
+import com.squareup.wire.protocwire.Plugin.DescriptorSource
 import com.squareup.wire.protocwire.StubbedRequestDebugging.Companion.debug
 import com.squareup.wire.schema.ClaimedDefinitions
 import com.squareup.wire.schema.ClaimedPaths
@@ -34,7 +38,7 @@ fun <T> TODO(message: String): T {
 }
 
 data class CodeGeneratorResponseContext(
-  private val context: CodeGenerator.Context,
+  private val response: Plugin.Response,
   override val sourcePathPaths: Set<String> = emptySet()
 ) : SchemaHandler.Context {
   override val fileSystem: FileSystem
@@ -72,15 +76,15 @@ data class CodeGeneratorResponseContext(
   }
 
   override fun write(file: Path, str: String) {
-    context.addFile(file.name, str)
+    response.addFile(file.name, str)
   }
 }
 
 class WireGenerator(
 
 ) : CodeGenerator {
-  override fun generate(request: PluginProtos.CodeGeneratorRequest, parameter: String, context: CodeGenerator.Context) {
-    debug(request, context)
+  override fun generate(request: PluginProtos.CodeGeneratorRequest, descs: Plugin.DescriptorSource, response: Plugin.Response) {
+    debug(request)
     val loader = CoreLoader
     val errorCollector = ErrorCollector()
     val linker = Linker(loader, errorCollector, permitPackageCycles = true, loadExhaustively = true)
@@ -89,7 +93,7 @@ class WireGenerator(
     val sourcePaths = mutableSetOf<String>()
     for (fileDescriptorProto in request.protoFileList) {
       sourcePaths.add(fileDescriptorProto.name)
-      val protoFileElement = parseFileDescriptor(fileDescriptorProto)
+      val protoFileElement = parseFileDescriptor(fileDescriptorProto, descs)
       val protoFile = ProtoFile.get(protoFileElement)
       protoFiles.add(protoFile)
     }
@@ -97,9 +101,9 @@ class WireGenerator(
     try {
       val schema = linker.link(protoFiles)
       // Create a specific target and just run.
-      KotlinProtocTarget().newHandler().handle(schema, CodeGeneratorResponseContext(context, sourcePaths))
+      KotlinProtocTarget().newHandler().handle(schema, CodeGeneratorResponseContext(response, sourcePaths))
     } catch (e: Throwable) {
-      context.addFile("error.log", e.stackTraceToString())
+      response.addFile("error.log", e.stackTraceToString())
     }
   }
 
@@ -111,18 +115,18 @@ class WireGenerator(
   }
 }
 
-fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto): ProtoFileElement {
+fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto, descs: DescriptorSource): ProtoFileElement {
   val location = Location.get(fileDescriptor.name)
   val imports = mutableListOf<String>()
   val publicImports = mutableListOf<String>()
-  val types = mutableListOf<MessageElement>()
-  val nestedTypes = mutableListOf<MessageElement>()
+  val types = mutableListOf<TypeElement>()
   for (messageType in fileDescriptor.messageTypeList) {
-    for (nestedType in messageType.nestedTypeList) {
-      nestedTypes.add(parseMessage(fileDescriptor.name, nestedType))
-    }
-    types.add(parseMessage(fileDescriptor.name, messageType))
+    types.add(parseMessage(fileDescriptor.name, messageType, descs))
   }
+  // TODO: enums
+//  for (nestedType in fileDescriptor.enumTypeList) {
+//    types.add(parseEnum(nestedType, descs))
+//  }
 
   return ProtoFileElement(
     location = location,
@@ -131,12 +135,12 @@ fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto): P
     packageName = fileDescriptor.`package`,
     types = types,
     services = emptyList(),
-    options = parseOptions(fileDescriptor.options),
+    options = parseOptions(fileDescriptor.options, descs),
     syntax = Syntax.PROTO_3,
   )
 }
 
-fun parseMessage(protoLocation: String, message: DescriptorProtos.DescriptorProto): MessageElement {
+fun parseMessage(protoLocation: String, message: DescriptorProtos.DescriptorProto, descs: DescriptorSource): MessageElement {
   val nestedTypes = mutableListOf<TypeElement>()
   for (descriptorProto in message.nestedTypeList) {
     nestedTypes.add(parseMessage(protoLocation, descriptorProto))
@@ -146,18 +150,17 @@ fun parseMessage(protoLocation: String, message: DescriptorProtos.DescriptorProt
     name = message.name,
     documentation = "",
     nestedTypes = nestedTypes,
-    options = parseOptions(message.options),
+    options = parseOptions(message.options, descs),
     reserveds = emptyList(),
-    fields = parseFields(protoLocation, message.fieldList),
+    fields = parseFields(protoLocation, message.fieldList, descs),
     oneOfs = emptyList(),
     extensions = emptyList(),
-    groups = emptyList()
+    groups = emptyList(),
   )
 }
 
-fun parseFields(protoLocation: String, fieldList: List<DescriptorProtos.FieldDescriptorProto>): List<FieldElement> {
+fun parseFields(protoLocation: String, fieldList: List<DescriptorProtos.FieldDescriptorProto>, descs: DescriptorSource): List<FieldElement> {
   val result = mutableListOf<FieldElement>()
-
   for (field in fieldList) {
     result.add(FieldElement(
       location = Location.get(protoLocation),
@@ -168,7 +171,7 @@ fun parseFields(protoLocation: String, fieldList: List<DescriptorProtos.FieldDes
       jsonName = field.jsonName,
       tag = field.number,
       documentation = "",
-      options = parseOptions(field.options)
+      options = parseOptions(field.options, descs)
     ))
   }
   return result
@@ -211,6 +214,77 @@ fun parseLabel(label: DescriptorProtos.FieldDescriptorProto.Label): Field.Label?
   }
 }
 
-fun <T : ExtendableMessage<T>> parseOptions(options: T): List<OptionElement> {
-  return emptyList()
+fun <T: ExtendableMessage<T>> parseOptions(options: T, descs: Plugin.DescriptorSource): List<OptionElement> {
+  val optDesc = options.descriptorForType
+  val overrideDesc = descs.findMessageTypeByName(optDesc.fullName)
+  if (overrideDesc != null) {
+    val optsDm = DynamicMessage.newBuilder(overrideDesc)
+        .mergeFrom(options)
+        .build()
+    return createOptionElements(optsDm)
+  }
+  return createOptionElements(options)
 }
+
+private fun createOptionElements(options: AbstractMessage): List<OptionElement> {
+  val elements = mutableListOf<OptionElement>()
+  for (entry in options.allFields.entries) {
+    val fld = entry.key
+    val name = if (fld.isExtension) fld.fullName else fld.name
+    val (value, kind) = valueOf(entry.value)
+    elements.add(OptionElement(name, kind, value, fld.isExtension))
+  }
+  return elements
+}
+
+private fun valueOf(value: Any): OptionValueAndKind {
+  return when (value) {
+    is Number -> OptionValueAndKind(value.toString(), OptionElement.Kind.NUMBER)
+    is Boolean -> OptionValueAndKind(value.toString(), OptionElement.Kind.BOOLEAN)
+    is String -> OptionValueAndKind(value, OptionElement.Kind.STRING)
+    is ByteArray -> OptionValueAndKind(String(toCharArray(value)), OptionElement.Kind.STRING)
+    is EnumValueDescriptor -> OptionValueAndKind(value.name, OptionElement.Kind.ENUM)
+    is List<*> -> OptionValueAndKind(valueOfList(value), OptionElement.Kind.LIST)
+    is AbstractMessage -> OptionValueAndKind(valueOfMessage(value), OptionElement.Kind.MAP)
+    else -> throw IllegalStateException("Unexpected field value type: ${value::class.qualifiedName}")
+  }
+}
+
+private fun toCharArray(bytes: ByteArray): CharArray {
+  val ch = CharArray(bytes.size)
+  bytes.forEachIndexed{ index, element -> ch[index] = element.toInt().toChar() }
+  return ch
+}
+
+private fun simpleValue(optVal: OptionValueAndKind): Any {
+  return if (optVal.kind == OptionElement.Kind.BOOLEAN ||
+      optVal.kind == OptionElement.Kind.ENUM ||
+      optVal.kind == OptionElement.Kind.NUMBER) {
+    OptionElement.OptionPrimitive(optVal.kind, optVal.value)
+  } else {
+    optVal.value
+  }
+}
+
+private fun valueOfList(list: List<*>): List<Any> {
+  val ret = mutableListOf<Any>()
+  for (element in list) {
+    if (element == null) {
+      throw NullPointerException("list value should not contain null")
+    }
+    ret.add(simpleValue(valueOf(element)))
+  }
+  return ret
+}
+
+private fun valueOfMessage(msg: AbstractMessage): Map<String, Any> {
+  val ret = mutableMapOf<String, Any>()
+  for (entry in msg.allFields.entries) {
+    val fld = entry.key
+    val name = if (fld.isExtension) "[${fld.fullName}]" else fld.name
+    ret[name] = simpleValue(valueOf(entry.value))
+  }
+  return ret
+}
+
+private data class OptionValueAndKind(val value: Any, val kind: OptionElement.Kind)
