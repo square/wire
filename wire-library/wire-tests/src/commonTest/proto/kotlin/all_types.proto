@@ -113,8 +113,8 @@ message AllTypes {
   optional bool default_bool = 411 [default = true ];
   optional float default_float = 412 [default = 123.456e7 ];
   optional double default_double = 413 [default = 123.456e78 ];
-  optional string default_string = 414 [default = "çok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11güzel" ];
-  optional bytes default_bytes = 415 [default = "çok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11güzel" ];
+  optional string default_string = 414 [default = "çok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\x01\x01\x11güzel" ];
+  optional bytes default_bytes = 415 [default = "çok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\x1\x01\x11güzel" ];
   optional NestedEnum default_nested_enum = 416 [default = A ];
 
   map<int32, int32> map_int32_int32 = 501;
