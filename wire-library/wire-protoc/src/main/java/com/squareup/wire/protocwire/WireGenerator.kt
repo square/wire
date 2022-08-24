@@ -163,6 +163,10 @@ private fun parseMessage(path: List<Int>, helper: SourceCodeHelper, message: Des
 //  for (nestedType in message.enumTypeList) {
 //    nestedTypes.add(parseEnum(nestedType, descs))
 //  }
+  for (descriptorProto in message.nestedTypeList) {
+    nestedTypes.add(parseMessage(path, helper, descriptorProto, descs))
+  }
+
   return MessageElement(
     location = info.loc,
     name = message.name,
@@ -191,7 +195,7 @@ private fun parseFields(path: List<Int>, helper: SourceCodeHelper, fieldList: Li
       type = parseType(field),
       name = field.name,
 //      defaultValue = field.defaultValue,
-//      jsonName = field.jsonName,
+      jsonName = field.jsonName,
       tag = field.number,
       documentation = info.comment,
       options = parseOptions(field.options, descs)
@@ -221,9 +225,6 @@ private fun parseType(field: DescriptorProtos.FieldDescriptorProto): String {
     // Collapsing enums to messages for now
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_ENUM,
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_MESSAGE -> {
-      if (field.typeName.startsWith('.')) {
-        return field.typeName.substring(1)
-      }
       field.typeName
     }
     // TODO: Figure out group types
@@ -232,12 +233,12 @@ private fun parseType(field: DescriptorProtos.FieldDescriptorProto): String {
   }
 }
 
-private fun parseLabel(label: DescriptorProtos.FieldDescriptorProto.Label): Field.Label {
+private fun parseLabel(label: DescriptorProtos.FieldDescriptorProto.Label): Field.Label? {
   return when (label) {
     DescriptorProtos.FieldDescriptorProto.Label.LABEL_OPTIONAL -> Field.Label.OPTIONAL
     DescriptorProtos.FieldDescriptorProto.Label.LABEL_REQUIRED -> Field.Label.REQUIRED
     DescriptorProtos.FieldDescriptorProto.Label.LABEL_REPEATED -> Field.Label.REPEATED
-    else -> Field.Label.OPTIONAL
+    else -> null
   }
 }
 
@@ -246,8 +247,8 @@ private fun <T: ExtendableMessage<T>> parseOptions(options: T, descs: Plugin.Des
   val overrideDesc = descs.findMessageTypeByName(optDesc.fullName)
   if (overrideDesc != null) {
     val optsDm = DynamicMessage.newBuilder(overrideDesc)
-        .mergeFrom(options)
-        .build()
+      .mergeFrom(options)
+      .build()
     return createOptionElements(optsDm)
   }
   return createOptionElements(options)
@@ -285,8 +286,8 @@ private fun toCharArray(bytes: ByteArray): CharArray {
 
 private fun simpleValue(optVal: OptionValueAndKind): Any {
   return if (optVal.kind == OptionElement.Kind.BOOLEAN ||
-      optVal.kind == OptionElement.Kind.ENUM ||
-      optVal.kind == OptionElement.Kind.NUMBER) {
+    optVal.kind == OptionElement.Kind.ENUM ||
+    optVal.kind == OptionElement.Kind.NUMBER) {
     OptionElement.OptionPrimitive(optVal.kind, optVal.value)
   } else {
     optVal.value

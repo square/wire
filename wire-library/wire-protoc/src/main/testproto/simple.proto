@@ -31,3 +31,11 @@ message StringMsg {
 message MessageFieldMsg { // trailing docs for MessageFieldMsg
   StringMsg msg = 1; // trailing doc comment
 }
+
+message NestedMsg {
+  InnerMsg msg = 1;
+
+  message InnerMsg {
+    int32 i = 1;
+  }
+}
