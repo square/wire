@@ -122,17 +122,12 @@ fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto, de
   val imports = mutableListOf<String>()
   val publicImports = mutableListOf<String>()
   val types = mutableListOf<TypeElement>()
-  val nestedTypes = mutableListOf<TypeElement>()
   for (enumType in fileDescriptor.enumTypeList) {
     types.add(parseEnum(fileDescriptor.name, enumType, descs))
   }
   for (messageType in fileDescriptor.messageTypeList) {
     types.add(parseMessage(fileDescriptor.name, messageType, descs))
   }
-  // TODO: enums
-//  for (nestedType in fileDescriptor.enumTypeList) {
-//    types.add(parseEnum(nestedType, descs))
-//  }
 
   return ProtoFileElement(
     location = location,
@@ -172,10 +167,6 @@ fun parseMessage(protoLocation: String, message: DescriptorProtos.DescriptorProt
   for (nestedType in message.nestedTypeList) {
     nestedTypes.add(parseMessage(protoLocation, nestedType, descs))
   }
-  // TODO: enums
-//  for (nestedType in message.enumTypeList) {
-//    nestedTypes.add(parseEnum(nestedType, descs))
-//  }
   return MessageElement(
     location = Location.get(protoLocation),
     name = message.name,
@@ -236,7 +227,7 @@ fun parseType(field: DescriptorProtos.FieldDescriptorProto): String {
     }
     // TODO: Figure out group types
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_GROUP -> ""
-    else -> TODO("else case found for $ {field.type}")
+    else -> TODO("else case found for ${field.type}")
   }
 }
 
