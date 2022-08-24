@@ -205,9 +205,6 @@ data class KotlinProtocTarget(
   /** True for emitted types to implement `android.os.Parcelable`. */
   val android: Boolean = false,
 
-  /** True for emitted types to implement APIs for easier migration from the Java target. */
-  val javaInterop: Boolean = false,
-
   /** True to emit types for options declared on messages, fields, etc. */
   val emitDeclaredOptions: Boolean = true,
 
@@ -254,7 +251,7 @@ data class KotlinProtocTarget(
           schema = schema,
           profile = profile,
           emitAndroid = android,
-          javaInterop = javaInterop,
+          javaInterop = true,
           emitDeclaredOptions = emitDeclaredOptions,
           emitAppliedOptions = emitAppliedOptions,
           rpcCallStyle = rpcCallStyle,

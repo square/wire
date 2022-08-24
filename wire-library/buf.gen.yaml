@@ -6,7 +6,8 @@ managed:
     default: plugins/protoc-gen-connect-kotlin
 plugins:
   - name: connect-kotlin
-    out: gen/proto/connectkotlin
+#    out: gen/proto/connectkotlin
+    out: wire-tests/src/jvmKotlinInteropTest/proto-kotlin
     path: ./wire-protoc/protoc-gen-wire-kotlin
     opt:
       - paths=source_relative
