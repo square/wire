@@ -39,3 +39,12 @@ message NestedMsg {
     int32 i = 1;
   }
 }
+
+message EnumMsg {
+  Enum enumeration = 1;
+}
+
+enum Enum {
+  UNSPECIFIED = 0;
+  FIRST_VALUE = 1;
+}
