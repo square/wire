@@ -51,6 +51,7 @@ open class JavaOutput @Inject constructor() : WireOutput() {
   var compact: Boolean = false
   var emitDeclaredOptions: Boolean = true
   var emitAppliedOptions: Boolean = true
+  var buildersOnly: Boolean = false
 
   override fun toTarget(outputDirectory: String): JavaTarget {
     return JavaTarget(
@@ -62,7 +63,8 @@ open class JavaOutput @Inject constructor() : WireOutput() {
       androidAnnotations = androidAnnotations,
       compact = compact,
       emitDeclaredOptions = emitDeclaredOptions,
-      emitAppliedOptions = emitAppliedOptions
+      emitAppliedOptions = emitAppliedOptions,
+      buildersOnly = buildersOnly,
     )
   }
 }
@@ -81,6 +83,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   var boxOneOfsMinSize: Int = 5_000
   var grpcServerCompatible: Boolean = false
   var nameSuffix: String? = null
+  var buildersOnly: Boolean = false
 
   override fun toTarget(outputDirectory: String): KotlinTarget {
     val rpcCallStyle = RpcCallStyle.values()
@@ -109,6 +112,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       boxOneOfsMinSize = boxOneOfsMinSize,
       grpcServerCompatible = grpcServerCompatible,
       nameSuffix = nameSuffix,
+      buildersOnly = buildersOnly,
     )
   }
 }

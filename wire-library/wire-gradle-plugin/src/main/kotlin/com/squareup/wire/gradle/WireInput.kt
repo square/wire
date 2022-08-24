@@ -16,6 +16,10 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.gradle.WireExtension.ProtoRootSet
+import java.io.EOFException
+import java.io.File
+import java.io.RandomAccessFile
+import java.net.URI
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
@@ -26,8 +30,6 @@ import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
-import java.io.File
-import java.net.URI
 
 /**
  * Builds Wire's inputs (expressed as [InputLocation] lists) from Gradle's objects (expressed as
@@ -90,7 +92,7 @@ internal class WireInput(var configuration: Configuration) {
 
           return when {
             file.isDirectory -> project.dependencies.create(project.files(dependency))
-            file.isJar -> project.dependencies.create(project.files(file.path))
+            file.isZip -> project.dependencies.create(project.files(file.path))
             dependency.mayBeProject -> {
               // Keys can be either `path` or `configuration`.
               // Example: "[path: ':someProj', configuration: 'someConf']"
@@ -171,7 +173,7 @@ internal class WireInput(var configuration: Configuration) {
           path = relativeTo(srcDir).toString()
         )
       )
-    } else if (isJar) {
+    } else if (isZip) {
       val filters = dependencyFilters.getOrDefault(dependency, listOf())
         .ifEmpty { return@toLocations listOf(InputLocation.get(project, path)) }
 
@@ -185,8 +187,22 @@ internal class WireInput(var configuration: Configuration) {
     }
   }
 
-  private val File.isJar
-    get() = path.endsWith(".jar")
+  private val File.isZip: Boolean
+    get() {
+      if (!exists() || !isFile) {
+        return false
+      }
+      if (path.endsWith(".jar") || path.endsWith(".zip")) {
+        return true
+      }
+      return try {
+        // See "magic numbers": https://en.wikipedia.org/wiki/ZIP_(file_format)
+        val signature = RandomAccessFile(this, "r").use { it.readInt() }
+        signature == 0x504B0304 || signature == 0x504B0506 || signature == 0x504B0708
+      } catch (_: EOFException) {
+        false
+      }
+    }
 
   private val String.mayBeProject: Boolean
     get() = startsWith(":")

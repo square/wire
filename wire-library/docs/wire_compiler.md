@@ -403,8 +403,11 @@ wire {
     // methods which are normally implemented with generated code.
     compact = false
 
+    // True to turn visibility of all generated types' constructors to non-public.
+    buildersOnly = false
+
     // True to emit types for options declared on messages, fields, etc.
-    emitDeclaredOptions = true,
+    emitDeclaredOptions = true
 
     // True to emit annotations for options applied on messages, fields, etc.
     emitAppliedOptions = true
@@ -448,11 +451,14 @@ wire {
     // target.
     javaInterop = false
 
+    // True to turn visibility of all generated types' constructors to non-public.
+    buildersOnly = false
+
     // True to emit types for options declared on messages, fields, etc.
-    emitDeclaredOptions = true,
+    emitDeclaredOptions = true
 
     // True to emit annotations for options applied on messages, fields, etc.
-    emitAppliedOptions = true,
+    emitAppliedOptions = true
 
     // `suspending` to generate coroutines APIs that require a Kotlin coroutines context.
     // `blocking` to generate blocking APIs callable by Java and Kotlin.

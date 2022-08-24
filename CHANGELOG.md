@@ -1,6 +1,19 @@
 Change Log
 ==========
 
+Version 4.4.1
+-------------
+
+_2022-08-05_
+
+* New: Check HTTP2 protocol is set for passed client to `GrpcClient`.
+* New: Add buildersOnly option for Java and Kotlin target, setting it to true will change the
+  visibility of generate types' constructor to non-public.
+* Fix: Properly define api dependency for `okio` in `wire-schema`.
+* Fix: Sort input locations so they match on all platforms.
+* Fix: Avoid NPEs with kotlin `1.7.20` around source sets.
+* Update: Bumped KotlinPoet to `1.12.0`.
+
 Version 4.4.0
 -------------
 

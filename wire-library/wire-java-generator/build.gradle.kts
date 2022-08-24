@@ -19,7 +19,7 @@ dependencies {
   testImplementation(projects.wireTestUtils)
   testImplementation(libs.junit)
   testImplementation(libs.kotlin.test.junit)
-  testImplementation(libs.assertj)
+  testImplementation(libs.truth)
   testImplementation(libs.jimfs)
 }
 
