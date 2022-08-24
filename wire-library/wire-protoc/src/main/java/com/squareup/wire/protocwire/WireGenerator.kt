@@ -22,6 +22,7 @@ import com.squareup.wire.schema.internal.parser.FieldElement
 import com.squareup.wire.schema.internal.parser.MessageElement
 import com.squareup.wire.schema.internal.parser.OptionElement
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
+import com.squareup.wire.schema.internal.parser.TypeElement
 import okio.Buffer
 import okio.BufferedSink
 import okio.FileSystem
@@ -193,9 +194,7 @@ fun parseType(field: DescriptorProtos.FieldDescriptorProto): String {
     // Collapsing enums to messages for now
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_ENUM,
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_MESSAGE -> {
-      // Get the last section of the type name.
-      // E.g. .bufbuild.testing.NestedMsg.InnerMsg will be InnerMsg
-      field.typeName.split(".").last()
+      field.typeName
     }
     // TODO: Figure out group types
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_GROUP -> ""
