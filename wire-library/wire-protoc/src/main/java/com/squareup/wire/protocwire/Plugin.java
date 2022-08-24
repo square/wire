@@ -6,6 +6,7 @@ import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.DescriptorValidationException;
 import com.google.protobuf.Descriptors.FileDescriptor;
+import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest;
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorResponse;
@@ -222,7 +223,11 @@ public final class Plugin {
 
   private static void addAllExtensionsFromFile(ExtensionRegistry reg, FileDescriptor fd) {
     for (Descriptors.FieldDescriptor ext : fd.getExtensions()) {
-      reg.add(ext);
+      if (ext.getType() == Descriptors.FieldDescriptor.Type.MESSAGE) {
+        reg.add(ext, DynamicMessage.newBuilder(ext.getMessageType()).build());
+      } else {
+        reg.add(ext);
+      }
     }
     for (Descriptors.Descriptor msg : fd.getMessageTypes()) {
       addAllExtensionsFromMessage(reg, msg);
@@ -232,7 +237,11 @@ public final class Plugin {
   private static void addAllExtensionsFromMessage(ExtensionRegistry reg,
                                                   Descriptors.Descriptor msg) {
     for (Descriptors.FieldDescriptor ext : msg.getExtensions()) {
-      reg.add(ext);
+      if (ext.getType() == Descriptors.FieldDescriptor.Type.MESSAGE) {
+        reg.add(ext, DynamicMessage.newBuilder(ext.getMessageType()).build());
+      } else {
+        reg.add(ext);
+      }
     }
     for (Descriptors.Descriptor nested : msg.getNestedTypes()) {
       addAllExtensionsFromMessage(reg, nested);
