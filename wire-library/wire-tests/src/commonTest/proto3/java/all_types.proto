@@ -141,7 +141,7 @@ message AllTypes {
     google.protobuf.Duration oneof_duration = 619;
     google.protobuf.Struct oneof_struct = 620;
     google.protobuf.ListValue oneof_list_value = 621;
-//     google.protobuf.Value oneof_value = 622;
+    // google.protobuf.Value oneof_value = 622;
     // google.protobuf.NullValue oneof_null_value = 623;
     google.protobuf.Empty oneof_empty = 624;
     google.protobuf.Timestamp oneof_timestamp = 625;
