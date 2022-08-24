@@ -115,13 +115,21 @@ class WireGenerator(
   }
 }
 
-fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto, descs: DescriptorSource): ProtoFileElement {
+private fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto, descs: DescriptorSource): ProtoFileElement {
+  val path = mutableListOf<Int>()
   val location = Location.get(fileDescriptor.name)
+  val helper = SourceCodeHelper(fileDescriptor)
+
   val imports = mutableListOf<String>()
   val publicImports = mutableListOf<String>()
   val types = mutableListOf<TypeElement>()
-  for (messageType in fileDescriptor.messageTypeList) {
-    types.add(parseMessage(fileDescriptor.name, messageType, descs))
+
+  path.clear()
+  path.add(DescriptorProtos.FileDescriptorProto.MESSAGE_TYPE_FIELD_NUMBER)
+  path.add(0) // placeholder for index
+  for ((index, messageType) in fileDescriptor.messageTypeList.withIndex()) {
+    path[1] = index
+    types.add(parseMessage(path, helper, messageType, descs))
   }
   // TODO: enums
 //  for (nestedType in fileDescriptor.enumTypeList) {
@@ -140,22 +148,28 @@ fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorProto, de
   )
 }
 
-fun parseMessage(protoLocation: String, message: DescriptorProtos.DescriptorProto, descs: Plugin.DescriptorSource): MessageElement {
+private fun parseMessage(path: List<Int>, helper: SourceCodeHelper, message: DescriptorProtos.DescriptorProto, descs: Plugin.DescriptorSource): MessageElement {
   val nestedTypes = mutableListOf<TypeElement>()
-  for (nestedType in message.nestedTypeList) {
-    nestedTypes.add(parseMessage(protoLocation, nestedType, descs))
+  val info = helper.getLocation(path)
+
+  val nestedPath = mutableListOf<Int>().apply { addAll(path) }
+  nestedPath.add(DescriptorProtos.DescriptorProto.NESTED_TYPE_FIELD_NUMBER)
+  nestedPath.add(0) // placeholder for index
+  for ((index, nestedType) in message.nestedTypeList.withIndex()) {
+    nestedPath[nestedPath.size-1] = index
+    nestedTypes.add(parseMessage(nestedPath, helper, nestedType, descs))
   }
   // TODO: enums
 //  for (nestedType in message.enumTypeList) {
 //    nestedTypes.add(parseEnum(nestedType, descs))
 //  }
   return MessageElement(
-    location = Location.get(protoLocation),
+    location = info.loc,
     name = message.name,
-    documentation = "",
+    documentation = info.comment,
     options = parseOptions(message.options, descs),
     reserveds = emptyList(),
-    fields = parseFields(protoLocation, message.fieldList, descs),
+    fields = parseFields(path, helper, message.fieldList, descs),
     nestedTypes = nestedTypes,
     oneOfs = emptyList(),
     extensions = emptyList(),
@@ -163,25 +177,30 @@ fun parseMessage(protoLocation: String, message: DescriptorProtos.DescriptorProt
   )
 }
 
-fun parseFields(protoLocation: String, fieldList: List<DescriptorProtos.FieldDescriptorProto>, descs: DescriptorSource): List<FieldElement> {
+private fun parseFields(path: List<Int>, helper: SourceCodeHelper, fieldList: List<DescriptorProtos.FieldDescriptorProto>, descs: DescriptorSource): List<FieldElement> {
   val result = mutableListOf<FieldElement>()
-  for (field in fieldList) {
+  val fieldPath = mutableListOf<Int>().apply { addAll(path) }
+  fieldPath.add(DescriptorProtos.DescriptorProto.FIELD_FIELD_NUMBER)
+  fieldPath.add(0) // placeholder for index
+  for ((index, field) in fieldList.withIndex()) {
+    fieldPath[fieldPath.size-1] = index
+    val info = helper.getLocation(fieldPath)
     result.add(FieldElement(
-      location = Location.get(protoLocation),
+      location = info.loc,
       label = parseLabel(field.label),
       type = parseType(field),
       name = field.name,
 //      defaultValue = field.defaultValue,
 //      jsonName = field.jsonName,
       tag = field.number,
-      documentation = "",
+      documentation = info.comment,
       options = parseOptions(field.options, descs)
     ))
   }
   return result
 }
 
-fun parseType(field: DescriptorProtos.FieldDescriptorProto): String {
+private fun parseType(field: DescriptorProtos.FieldDescriptorProto): String {
 
   return when (field.type) {
     DescriptorProtos.FieldDescriptorProto.Type.TYPE_DOUBLE -> "double"
@@ -213,7 +232,7 @@ fun parseType(field: DescriptorProtos.FieldDescriptorProto): String {
   }
 }
 
-fun parseLabel(label: DescriptorProtos.FieldDescriptorProto.Label): Field.Label {
+private fun parseLabel(label: DescriptorProtos.FieldDescriptorProto.Label): Field.Label {
   return when (label) {
     DescriptorProtos.FieldDescriptorProto.Label.LABEL_OPTIONAL -> Field.Label.OPTIONAL
     DescriptorProtos.FieldDescriptorProto.Label.LABEL_REQUIRED -> Field.Label.REQUIRED
@@ -222,7 +241,7 @@ fun parseLabel(label: DescriptorProtos.FieldDescriptorProto.Label): Field.Label 
   }
 }
 
-fun <T: ExtendableMessage<T>> parseOptions(options: T, descs: Plugin.DescriptorSource): List<OptionElement> {
+private fun <T: ExtendableMessage<T>> parseOptions(options: T, descs: Plugin.DescriptorSource): List<OptionElement> {
   val optDesc = options.descriptorForType
   val overrideDesc = descs.findMessageTypeByName(optDesc.fullName)
   if (overrideDesc != null) {
@@ -296,3 +315,34 @@ private fun valueOfMessage(msg: AbstractMessage): Map<String, Any> {
 }
 
 private data class OptionValueAndKind(val value: Any, val kind: OptionElement.Kind)
+
+private data class SourceCodeInfo(val comment: String, val loc: Location)
+
+private class SourceCodeHelper(
+  val locs: Map<List<Int>, DescriptorProtos.SourceCodeInfo.Location>,
+  val baseLoc: Location
+) {
+  constructor(fd: DescriptorProtos.FileDescriptorProto) : this(makeLocationMap(fd.sourceCodeInfo.locationList), Location.get(fd.name))
+
+  fun getLocation(path: List<Int>): SourceCodeInfo {
+    val l = locs[path]
+    val loc = if (l == null) baseLoc else baseLoc.at(l.getSpan(0), l.getSpan(1))
+    var comment = l?.leadingComments
+    if ((comment ?: "") == "") {
+      comment = l?.trailingComments
+    }
+    return SourceCodeInfo(comment ?: "", loc)
+  }
+}
+
+private fun makeLocationMap(locs: List<DescriptorProtos.SourceCodeInfo.Location>): Map<List<Int>, DescriptorProtos.SourceCodeInfo.Location> {
+  val m = mutableMapOf<List<Int>, DescriptorProtos.SourceCodeInfo.Location>()
+  for (loc in locs) {
+    val path = mutableListOf<Int>()
+    for (pathElem in loc.pathList) {
+      path.add(pathElem)
+    }
+    m[path] = loc
+  }
+  return m
+}

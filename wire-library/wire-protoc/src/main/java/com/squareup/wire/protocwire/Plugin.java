@@ -229,7 +229,8 @@ public final class Plugin {
     }
   }
 
-  private static void addAllExtensionsFromMessage(ExtensionRegistry reg, Descriptors.Descriptor msg) {
+  private static void addAllExtensionsFromMessage(ExtensionRegistry reg,
+                                                  Descriptors.Descriptor msg) {
     for (Descriptors.FieldDescriptor ext : msg.getExtensions()) {
       reg.add(ext);
     }
