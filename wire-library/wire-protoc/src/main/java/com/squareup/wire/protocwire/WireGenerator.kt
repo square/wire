@@ -126,7 +126,6 @@ private fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorP
   val types = mutableListOf<TypeElement>()
 
   val path = mutableListOf<Int>()
-  path.clear()
   path.add(DescriptorProtos.FileDescriptorProto.MESSAGE_TYPE_FIELD_NUMBER)
   path.add(0) // placeholder for index
   for ((index, messageType) in fileDescriptor.messageTypeList.withIndex()) {
@@ -134,11 +133,12 @@ private fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorP
     types.add(parseMessage(path, helper, messageType, descs))
   }
 
-  val enumPaths = mutableListOf<Int>().apply { addAll(path) }
-  enumPaths.add(DescriptorProtos.DescriptorProto.ENUM_TYPE_FIELD_NUMBER)
+  path.clear()
+  path.add(DescriptorProtos.DescriptorProto.ENUM_TYPE_FIELD_NUMBER)
+  path.add(0)
   for ((index, enumType) in fileDescriptor.enumTypeList.withIndex()) {
-    enumPaths[1] = index
-    types.add(parseEnum(enumPaths, helper, enumType, descs))
+    path[1] = index
+    types.add(parseEnum(path, helper, enumType, descs))
   }
   return ProtoFileElement(
     location = location,
@@ -157,17 +157,17 @@ private fun parseEnum(path: List<Int>, helper: SourceCodeHelper, enum: Descripto
   val constants = mutableListOf<EnumConstantElement>()
   for (enumValueDescriptorProto in enum.valueList) {
     constants.add(EnumConstantElement(
-      location = info.loc,
+      location = info.loc, // TODO
       name = enumValueDescriptorProto.name,
       tag = enumValueDescriptorProto.number,
-      documentation = "",
+      documentation = info.comment,
       options = parseOptions(enumValueDescriptorProto.options, descs)
     ))
   }
   return EnumElement(
     location = info.loc,
     name = enum.name,
-    documentation = "",
+    documentation = info.comment,
     options = parseOptions(enum.options, descs),
     constants = constants,
     reserveds = emptyList()
@@ -187,7 +187,7 @@ private fun parseMessage(path: List<Int>, helper: SourceCodeHelper, message: Des
   }
 
   val nestedEnumsPath = mutableListOf<Int>().apply { addAll(path) }
-  nestedEnumsPath.add(DescriptorProtos.DescriptorProto.NESTED_TYPE_FIELD_NUMBER)
+  nestedEnumsPath.add(DescriptorProtos.DescriptorProto.ENUM_TYPE_FIELD_NUMBER)
   nestedEnumsPath.add(0) // placeholder for index
   for ((index, nestedType) in message.enumTypeList.withIndex()) {
     nestedEnumsPath[nestedEnumsPath.size - 1] = index
