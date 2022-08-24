@@ -19,12 +19,15 @@ package proto3.simple;
 
 option java_package = "com.squareup.wire.proto3.kotlin.simple";
 
+// This is an empty message
 message EmptyMsg {}
 
+// A very simple message with one string
 message StringMsg {
+  // leading doc comment
   string str = 1;
 }
 
-message MessageFieldMsg {
-  StringMsg msg = 1;
+message MessageFieldMsg { // trailing docs for MessageFieldMsg
+  StringMsg msg = 1; // trailing doc comment
 }
