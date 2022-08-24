@@ -10,13 +10,9 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import kotlin.Any
-import kotlin.AssertionError
 import kotlin.Boolean
-import kotlin.Deprecated
-import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Long
-import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
 import kotlin.jvm.JvmField
@@ -24,13 +20,12 @@ import okio.ByteString
 
 public class NoPackageRequest(
   unknownFields: ByteString = ByteString.EMPTY,
-) : Message<NoPackageRequest, Nothing>(ADAPTER, unknownFields) {
-  @Deprecated(
-    message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN,
-  )
-  public override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+) : Message<NoPackageRequest, NoPackageRequest.Builder>(ADAPTER, unknownFields) {
+  public override fun newBuilder(): Builder {
+    val builder = Builder()
+    builder.addUnknownFields(unknownFields)
+    return builder
+  }
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -45,6 +40,12 @@ public class NoPackageRequest(
 
   public fun copy(unknownFields: ByteString = this.unknownFields): NoPackageRequest =
       NoPackageRequest(unknownFields)
+
+  public class Builder : Message.Builder<NoPackageRequest, Builder>() {
+    public override fun build(): NoPackageRequest = NoPackageRequest(
+      unknownFields = buildUnknownFields()
+    )
+  }
 
   public companion object {
     @JvmField

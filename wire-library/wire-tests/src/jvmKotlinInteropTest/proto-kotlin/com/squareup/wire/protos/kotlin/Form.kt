@@ -4,7 +4,6 @@ package com.squareup.wire.protos.kotlin
 
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
-import com.squareup.wire.OneOf
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
@@ -12,6 +11,7 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.`internal`.countNonNull
 import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
@@ -20,22 +20,187 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.collections.Set
 import kotlin.jvm.JvmField
-import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 public class Form(
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.protos.kotlin.Form${'$'}ButtonElement#ADAPTER",
+    oneofName = "choice",
+  )
   @JvmField
-  public val choice: OneOf<Choice<*>, *>? = null,
+  public val button_element: ButtonElement? = null,
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.protos.kotlin.Form${'$'}LocalImageElement#ADAPTER",
+    oneofName = "choice",
+  )
   @JvmField
-  public val decision: OneOf<Decision<*>, *>? = null,
+  public val local_image_element: LocalImageElement? = null,
+  @field:WireField(
+    tag = 3,
+    adapter = "com.squareup.wire.protos.kotlin.Form${'$'}RemoteImageElement#ADAPTER",
+    oneofName = "choice",
+  )
+  @JvmField
+  public val remote_image_element: RemoteImageElement? = null,
+  @field:WireField(
+    tag = 4,
+    adapter = "com.squareup.wire.protos.kotlin.Form${'$'}MoneyElement#ADAPTER",
+    oneofName = "choice",
+  )
+  @JvmField
+  public val money_element: MoneyElement? = null,
+  @field:WireField(
+    tag = 5,
+    adapter = "com.squareup.wire.protos.kotlin.Form${'$'}SpacerElement#ADAPTER",
+    oneofName = "choice",
+  )
+  @JvmField
+  public val spacer_element: SpacerElement? = null,
+  @field:WireField(
+    tag = 6,
+    adapter = "com.squareup.wire.protos.kotlin.Form${'$'}TextElement#ADAPTER",
+    oneofName = "choice",
+  )
+  @JvmField
+  public val text_element: TextElement? = null,
+  @field:WireField(
+    tag = 7,
+    adapter = "com.squareup.wire.protos.kotlin.Form${'$'}CustomizedCardElement#ADAPTER",
+    oneofName = "choice",
+  )
+  @JvmField
+  public val customized_card_element: CustomizedCardElement? = null,
+  @field:WireField(
+    tag = 8,
+    adapter = "com.squareup.wire.protos.kotlin.Form${'$'}AddressElement#ADAPTER",
+    oneofName = "choice",
+  )
+  @JvmField
+  public val address_element: AddressElement? = null,
+  @field:WireField(
+    tag = 9,
+    adapter = "com.squareup.wire.protos.kotlin.Form${'$'}TextInputElement#ADAPTER",
+    oneofName = "choice",
+  )
+  @JvmField
+  public val text_input_element: TextInputElement? = null,
+  @Deprecated(message = "option_picker_element is deprecated")
+  @field:WireField(
+    tag = 10,
+    adapter = "com.squareup.wire.protos.kotlin.Form${'$'}OptionPickerElement#ADAPTER",
+    oneofName = "choice",
+  )
+  @JvmField
+  public val option_picker_element: OptionPickerElement? = null,
+  @field:WireField(
+    tag = 11,
+    adapter = "com.squareup.wire.protos.kotlin.Form${'$'}DetailRowElement#ADAPTER",
+    oneofName = "choice",
+  )
+  @JvmField
+  public val detail_row_element: DetailRowElement? = null,
+  @field:WireField(
+    tag = 12,
+    adapter = "com.squareup.wire.protos.kotlin.Form${'$'}CurrencyConversionFlagsElement#ADAPTER",
+    oneofName = "choice",
+  )
+  @JvmField
+  public val currency_conversion_flags_element: CurrencyConversionFlagsElement? = null,
+  @field:WireField(
+    tag = 101,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "decision",
+  )
+  @JvmField
+  public val a: String? = null,
+  @field:WireField(
+    tag = 102,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "decision",
+  )
+  @JvmField
+  public val b: String? = null,
+  @field:WireField(
+    tag = 103,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "decision",
+  )
+  @JvmField
+  public val c: String? = null,
+  @field:WireField(
+    tag = 104,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "decision",
+  )
+  @JvmField
+  public val d: String? = null,
+  @field:WireField(
+    tag = 105,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    redacted = true,
+    oneofName = "decision",
+  )
+  @JvmField
+  public val e: String? = null,
+  @field:WireField(
+    tag = 106,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "decision",
+  )
+  @JvmField
+  public val f: String? = null,
+  @field:WireField(
+    tag = 107,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "decision",
+  )
+  @JvmField
+  public val g: String? = null,
+  @field:WireField(
+    tag = 108,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "decision",
+  )
+  @JvmField
+  public val h: String? = null,
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Form, Form.Builder>(ADAPTER, unknownFields) {
+  init {
+    require(countNonNull(button_element, local_image_element, remote_image_element, money_element,
+        spacer_element, text_element, customized_card_element, address_element, text_input_element,
+        option_picker_element, detail_row_element, currency_conversion_flags_element) <= 1) {
+      "At most one of button_element, local_image_element, remote_image_element, money_element, spacer_element, text_element, customized_card_element, address_element, text_input_element, option_picker_element, detail_row_element, currency_conversion_flags_element may be non-null"
+    }
+    require(countNonNull(a, b, c, d, e, f, g, h) <= 1) {
+      "At most one of a, b, c, d, e, f, g, h may be non-null"
+    }
+  }
+
   public override fun newBuilder(): Builder {
     val builder = Builder()
-    builder.choice = choice
-    builder.decision = decision
+    builder.button_element = button_element
+    builder.local_image_element = local_image_element
+    builder.remote_image_element = remote_image_element
+    builder.money_element = money_element
+    builder.spacer_element = spacer_element
+    builder.text_element = text_element
+    builder.customized_card_element = customized_card_element
+    builder.address_element = address_element
+    builder.text_input_element = text_input_element
+    builder.option_picker_element = option_picker_element
+    builder.detail_row_element = detail_row_element
+    builder.currency_conversion_flags_element = currency_conversion_flags_element
+    builder.a = a
+    builder.b = b
+    builder.c = c
+    builder.d = d
+    builder.e = e
+    builder.f = f
+    builder.g = g
+    builder.h = h
     builder.addUnknownFields(unknownFields)
     return builder
   }
@@ -44,8 +209,26 @@ public class Form(
     if (other === this) return true
     if (other !is Form) return false
     if (unknownFields != other.unknownFields) return false
-    if (choice != other.choice) return false
-    if (decision != other.decision) return false
+    if (button_element != other.button_element) return false
+    if (local_image_element != other.local_image_element) return false
+    if (remote_image_element != other.remote_image_element) return false
+    if (money_element != other.money_element) return false
+    if (spacer_element != other.spacer_element) return false
+    if (text_element != other.text_element) return false
+    if (customized_card_element != other.customized_card_element) return false
+    if (address_element != other.address_element) return false
+    if (text_input_element != other.text_input_element) return false
+    if (option_picker_element != other.option_picker_element) return false
+    if (detail_row_element != other.detail_row_element) return false
+    if (currency_conversion_flags_element != other.currency_conversion_flags_element) return false
+    if (a != other.a) return false
+    if (b != other.b) return false
+    if (c != other.c) return false
+    if (d != other.d) return false
+    if (e != other.e) return false
+    if (f != other.f) return false
+    if (g != other.g) return false
+    if (h != other.h) return false
     return true
   }
 
@@ -53,8 +236,26 @@ public class Form(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + (choice?.hashCode() ?: 0)
-      result = result * 37 + (decision?.hashCode() ?: 0)
+      result = result * 37 + (button_element?.hashCode() ?: 0)
+      result = result * 37 + (local_image_element?.hashCode() ?: 0)
+      result = result * 37 + (remote_image_element?.hashCode() ?: 0)
+      result = result * 37 + (money_element?.hashCode() ?: 0)
+      result = result * 37 + (spacer_element?.hashCode() ?: 0)
+      result = result * 37 + (text_element?.hashCode() ?: 0)
+      result = result * 37 + (customized_card_element?.hashCode() ?: 0)
+      result = result * 37 + (address_element?.hashCode() ?: 0)
+      result = result * 37 + (text_input_element?.hashCode() ?: 0)
+      result = result * 37 + (option_picker_element?.hashCode() ?: 0)
+      result = result * 37 + (detail_row_element?.hashCode() ?: 0)
+      result = result * 37 + (currency_conversion_flags_element?.hashCode() ?: 0)
+      result = result * 37 + (a?.hashCode() ?: 0)
+      result = result * 37 + (b?.hashCode() ?: 0)
+      result = result * 37 + (c?.hashCode() ?: 0)
+      result = result * 37 + (d?.hashCode() ?: 0)
+      result = result * 37 + (e?.hashCode() ?: 0)
+      result = result * 37 + (f?.hashCode() ?: 0)
+      result = result * 37 + (g?.hashCode() ?: 0)
+      result = result * 37 + (h?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -62,59 +263,434 @@ public class Form(
 
   public override fun toString(): String {
     val result = mutableListOf<String>()
-    if (choice != null) result += """choice=$choice"""
-    if (decision != null) result += """decision=██"""
+    if (button_element != null) result += """button_element=$button_element"""
+    if (local_image_element != null) result += """local_image_element=$local_image_element"""
+    if (remote_image_element != null) result += """remote_image_element=$remote_image_element"""
+    if (money_element != null) result += """money_element=$money_element"""
+    if (spacer_element != null) result += """spacer_element=$spacer_element"""
+    if (text_element != null) result += """text_element=$text_element"""
+    if (customized_card_element != null) result +=
+        """customized_card_element=$customized_card_element"""
+    if (address_element != null) result += """address_element=$address_element"""
+    if (text_input_element != null) result += """text_input_element=$text_input_element"""
+    if (option_picker_element != null) result += """option_picker_element=$option_picker_element"""
+    if (detail_row_element != null) result += """detail_row_element=$detail_row_element"""
+    if (currency_conversion_flags_element != null) result +=
+        """currency_conversion_flags_element=$currency_conversion_flags_element"""
+    if (a != null) result += """a=${sanitize(a)}"""
+    if (b != null) result += """b=${sanitize(b)}"""
+    if (c != null) result += """c=${sanitize(c)}"""
+    if (d != null) result += """d=${sanitize(d)}"""
+    if (e != null) result += """e=██"""
+    if (f != null) result += """f=${sanitize(f)}"""
+    if (g != null) result += """g=${sanitize(g)}"""
+    if (h != null) result += """h=${sanitize(h)}"""
     return result.joinToString(prefix = "Form{", separator = ", ", postfix = "}")
   }
 
   public fun copy(
-    choice: OneOf<Choice<*>, *>? = this.choice,
-    decision: OneOf<Decision<*>, *>? = this.decision,
+    button_element: ButtonElement? = this.button_element,
+    local_image_element: LocalImageElement? = this.local_image_element,
+    remote_image_element: RemoteImageElement? = this.remote_image_element,
+    money_element: MoneyElement? = this.money_element,
+    spacer_element: SpacerElement? = this.spacer_element,
+    text_element: TextElement? = this.text_element,
+    customized_card_element: CustomizedCardElement? = this.customized_card_element,
+    address_element: AddressElement? = this.address_element,
+    text_input_element: TextInputElement? = this.text_input_element,
+    option_picker_element: OptionPickerElement? = this.option_picker_element,
+    detail_row_element: DetailRowElement? = this.detail_row_element,
+    currency_conversion_flags_element: CurrencyConversionFlagsElement? =
+        this.currency_conversion_flags_element,
+    a: String? = this.a,
+    b: String? = this.b,
+    c: String? = this.c,
+    d: String? = this.d,
+    e: String? = this.e,
+    f: String? = this.f,
+    g: String? = this.g,
+    h: String? = this.h,
     unknownFields: ByteString = this.unknownFields,
-  ): Form = Form(choice, decision, unknownFields)
+  ): Form = Form(button_element, local_image_element, remote_image_element, money_element,
+      spacer_element, text_element, customized_card_element, address_element, text_input_element,
+      option_picker_element, detail_row_element, currency_conversion_flags_element, a, b, c, d, e,
+      f, g, h, unknownFields)
 
   public class Builder : Message.Builder<Form, Builder>() {
     @JvmField
-    public var choice: OneOf<Choice<*>, *>? = null
+    public var button_element: ButtonElement? = null
 
     @JvmField
-    public var decision: OneOf<Decision<*>, *>? = null
+    public var local_image_element: LocalImageElement? = null
 
-    public fun choice(choice: OneOf<Choice<*>, *>?): Builder {
-      this.choice = choice
+    @JvmField
+    public var remote_image_element: RemoteImageElement? = null
+
+    @JvmField
+    public var money_element: MoneyElement? = null
+
+    @JvmField
+    public var spacer_element: SpacerElement? = null
+
+    @JvmField
+    public var text_element: TextElement? = null
+
+    @JvmField
+    public var customized_card_element: CustomizedCardElement? = null
+
+    @JvmField
+    public var address_element: AddressElement? = null
+
+    @JvmField
+    public var text_input_element: TextInputElement? = null
+
+    @JvmField
+    public var option_picker_element: OptionPickerElement? = null
+
+    @JvmField
+    public var detail_row_element: DetailRowElement? = null
+
+    @JvmField
+    public var currency_conversion_flags_element: CurrencyConversionFlagsElement? = null
+
+    @JvmField
+    public var a: String? = null
+
+    @JvmField
+    public var b: String? = null
+
+    @JvmField
+    public var c: String? = null
+
+    @JvmField
+    public var d: String? = null
+
+    @JvmField
+    public var e: String? = null
+
+    @JvmField
+    public var f: String? = null
+
+    @JvmField
+    public var g: String? = null
+
+    @JvmField
+    public var h: String? = null
+
+    public fun button_element(button_element: ButtonElement?): Builder {
+      this.button_element = button_element
+      this.local_image_element = null
+      this.remote_image_element = null
+      this.money_element = null
+      this.spacer_element = null
+      this.text_element = null
+      this.customized_card_element = null
+      this.address_element = null
+      this.text_input_element = null
+      this.option_picker_element = null
+      this.detail_row_element = null
+      this.currency_conversion_flags_element = null
       return this
     }
 
-    public fun decision(decision: OneOf<Decision<*>, *>?): Builder {
-      this.decision = decision
+    public fun local_image_element(local_image_element: LocalImageElement?): Builder {
+      this.local_image_element = local_image_element
+      this.button_element = null
+      this.remote_image_element = null
+      this.money_element = null
+      this.spacer_element = null
+      this.text_element = null
+      this.customized_card_element = null
+      this.address_element = null
+      this.text_input_element = null
+      this.option_picker_element = null
+      this.detail_row_element = null
+      this.currency_conversion_flags_element = null
+      return this
+    }
+
+    public fun remote_image_element(remote_image_element: RemoteImageElement?): Builder {
+      this.remote_image_element = remote_image_element
+      this.button_element = null
+      this.local_image_element = null
+      this.money_element = null
+      this.spacer_element = null
+      this.text_element = null
+      this.customized_card_element = null
+      this.address_element = null
+      this.text_input_element = null
+      this.option_picker_element = null
+      this.detail_row_element = null
+      this.currency_conversion_flags_element = null
+      return this
+    }
+
+    public fun money_element(money_element: MoneyElement?): Builder {
+      this.money_element = money_element
+      this.button_element = null
+      this.local_image_element = null
+      this.remote_image_element = null
+      this.spacer_element = null
+      this.text_element = null
+      this.customized_card_element = null
+      this.address_element = null
+      this.text_input_element = null
+      this.option_picker_element = null
+      this.detail_row_element = null
+      this.currency_conversion_flags_element = null
+      return this
+    }
+
+    public fun spacer_element(spacer_element: SpacerElement?): Builder {
+      this.spacer_element = spacer_element
+      this.button_element = null
+      this.local_image_element = null
+      this.remote_image_element = null
+      this.money_element = null
+      this.text_element = null
+      this.customized_card_element = null
+      this.address_element = null
+      this.text_input_element = null
+      this.option_picker_element = null
+      this.detail_row_element = null
+      this.currency_conversion_flags_element = null
+      return this
+    }
+
+    public fun text_element(text_element: TextElement?): Builder {
+      this.text_element = text_element
+      this.button_element = null
+      this.local_image_element = null
+      this.remote_image_element = null
+      this.money_element = null
+      this.spacer_element = null
+      this.customized_card_element = null
+      this.address_element = null
+      this.text_input_element = null
+      this.option_picker_element = null
+      this.detail_row_element = null
+      this.currency_conversion_flags_element = null
+      return this
+    }
+
+    public fun customized_card_element(customized_card_element: CustomizedCardElement?): Builder {
+      this.customized_card_element = customized_card_element
+      this.button_element = null
+      this.local_image_element = null
+      this.remote_image_element = null
+      this.money_element = null
+      this.spacer_element = null
+      this.text_element = null
+      this.address_element = null
+      this.text_input_element = null
+      this.option_picker_element = null
+      this.detail_row_element = null
+      this.currency_conversion_flags_element = null
+      return this
+    }
+
+    public fun address_element(address_element: AddressElement?): Builder {
+      this.address_element = address_element
+      this.button_element = null
+      this.local_image_element = null
+      this.remote_image_element = null
+      this.money_element = null
+      this.spacer_element = null
+      this.text_element = null
+      this.customized_card_element = null
+      this.text_input_element = null
+      this.option_picker_element = null
+      this.detail_row_element = null
+      this.currency_conversion_flags_element = null
+      return this
+    }
+
+    public fun text_input_element(text_input_element: TextInputElement?): Builder {
+      this.text_input_element = text_input_element
+      this.button_element = null
+      this.local_image_element = null
+      this.remote_image_element = null
+      this.money_element = null
+      this.spacer_element = null
+      this.text_element = null
+      this.customized_card_element = null
+      this.address_element = null
+      this.option_picker_element = null
+      this.detail_row_element = null
+      this.currency_conversion_flags_element = null
+      return this
+    }
+
+    @Deprecated(message = "option_picker_element is deprecated")
+    public fun option_picker_element(option_picker_element: OptionPickerElement?): Builder {
+      this.option_picker_element = option_picker_element
+      this.button_element = null
+      this.local_image_element = null
+      this.remote_image_element = null
+      this.money_element = null
+      this.spacer_element = null
+      this.text_element = null
+      this.customized_card_element = null
+      this.address_element = null
+      this.text_input_element = null
+      this.detail_row_element = null
+      this.currency_conversion_flags_element = null
+      return this
+    }
+
+    public fun detail_row_element(detail_row_element: DetailRowElement?): Builder {
+      this.detail_row_element = detail_row_element
+      this.button_element = null
+      this.local_image_element = null
+      this.remote_image_element = null
+      this.money_element = null
+      this.spacer_element = null
+      this.text_element = null
+      this.customized_card_element = null
+      this.address_element = null
+      this.text_input_element = null
+      this.option_picker_element = null
+      this.currency_conversion_flags_element = null
+      return this
+    }
+
+    public
+        fun currency_conversion_flags_element(currency_conversion_flags_element: CurrencyConversionFlagsElement?):
+        Builder {
+      this.currency_conversion_flags_element = currency_conversion_flags_element
+      this.button_element = null
+      this.local_image_element = null
+      this.remote_image_element = null
+      this.money_element = null
+      this.spacer_element = null
+      this.text_element = null
+      this.customized_card_element = null
+      this.address_element = null
+      this.text_input_element = null
+      this.option_picker_element = null
+      this.detail_row_element = null
+      return this
+    }
+
+    public fun a(a: String?): Builder {
+      this.a = a
+      this.b = null
+      this.c = null
+      this.d = null
+      this.e = null
+      this.f = null
+      this.g = null
+      this.h = null
+      return this
+    }
+
+    public fun b(b: String?): Builder {
+      this.b = b
+      this.a = null
+      this.c = null
+      this.d = null
+      this.e = null
+      this.f = null
+      this.g = null
+      this.h = null
+      return this
+    }
+
+    public fun c(c: String?): Builder {
+      this.c = c
+      this.a = null
+      this.b = null
+      this.d = null
+      this.e = null
+      this.f = null
+      this.g = null
+      this.h = null
+      return this
+    }
+
+    public fun d(d: String?): Builder {
+      this.d = d
+      this.a = null
+      this.b = null
+      this.c = null
+      this.e = null
+      this.f = null
+      this.g = null
+      this.h = null
+      return this
+    }
+
+    public fun e(e: String?): Builder {
+      this.e = e
+      this.a = null
+      this.b = null
+      this.c = null
+      this.d = null
+      this.f = null
+      this.g = null
+      this.h = null
+      return this
+    }
+
+    public fun f(f: String?): Builder {
+      this.f = f
+      this.a = null
+      this.b = null
+      this.c = null
+      this.d = null
+      this.e = null
+      this.g = null
+      this.h = null
+      return this
+    }
+
+    public fun g(g: String?): Builder {
+      this.g = g
+      this.a = null
+      this.b = null
+      this.c = null
+      this.d = null
+      this.e = null
+      this.f = null
+      this.h = null
+      return this
+    }
+
+    public fun h(h: String?): Builder {
+      this.h = h
+      this.a = null
+      this.b = null
+      this.c = null
+      this.d = null
+      this.e = null
+      this.f = null
+      this.g = null
       return this
     }
 
     public override fun build(): Form = Form(
-      choice = choice,
-      decision = decision,
+      button_element = button_element,
+      local_image_element = local_image_element,
+      remote_image_element = remote_image_element,
+      money_element = money_element,
+      spacer_element = spacer_element,
+      text_element = text_element,
+      customized_card_element = customized_card_element,
+      address_element = address_element,
+      text_input_element = text_input_element,
+      option_picker_element = option_picker_element,
+      detail_row_element = detail_row_element,
+      currency_conversion_flags_element = currency_conversion_flags_element,
+      a = a,
+      b = b,
+      c = c,
+      d = d,
+      e = e,
+      f = f,
+      g = g,
+      h = h,
       unknownFields = buildUnknownFields()
     )
-  }
-
-  public class Choice<T>(
-    tag: Int,
-    adapter: ProtoAdapter<T>,
-    declaredName: String,
-  ) : OneOf.Key<T>(tag, adapter, declaredName) {
-    public fun create(`value`: T) = OneOf(this, value)
-
-    public fun decode(reader: ProtoReader): OneOf<Choice<T>, T> = create(adapter.decode(reader))
-  }
-
-  public class Decision<T>(
-    tag: Int,
-    adapter: ProtoAdapter<T>,
-    declaredName: String,
-  ) : OneOf.Key<T>(tag, adapter, declaredName) {
-    public fun create(`value`: T) = OneOf(this, value)
-
-    public fun decode(reader: ProtoReader): OneOf<Decision<T>, T> = create(adapter.decode(reader))
   }
 
   public companion object {
@@ -129,133 +705,172 @@ public class Form(
     ) {
       public override fun encodedSize(`value`: Form): Int {
         var size = value.unknownFields.size
-        if (value.choice != null) size += value.choice.encodedSizeWithTag()
-        if (value.decision != null) size += value.decision.encodedSizeWithTag()
+        size += ButtonElement.ADAPTER.encodedSizeWithTag(1, value.button_element)
+        size += LocalImageElement.ADAPTER.encodedSizeWithTag(2, value.local_image_element)
+        size += RemoteImageElement.ADAPTER.encodedSizeWithTag(3, value.remote_image_element)
+        size += MoneyElement.ADAPTER.encodedSizeWithTag(4, value.money_element)
+        size += SpacerElement.ADAPTER.encodedSizeWithTag(5, value.spacer_element)
+        size += TextElement.ADAPTER.encodedSizeWithTag(6, value.text_element)
+        size += CustomizedCardElement.ADAPTER.encodedSizeWithTag(7, value.customized_card_element)
+        size += AddressElement.ADAPTER.encodedSizeWithTag(8, value.address_element)
+        size += TextInputElement.ADAPTER.encodedSizeWithTag(9, value.text_input_element)
+        size += OptionPickerElement.ADAPTER.encodedSizeWithTag(10, value.option_picker_element)
+        size += DetailRowElement.ADAPTER.encodedSizeWithTag(11, value.detail_row_element)
+        size += CurrencyConversionFlagsElement.ADAPTER.encodedSizeWithTag(12,
+            value.currency_conversion_flags_element)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(101, value.a)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(102, value.b)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(103, value.c)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(104, value.d)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(105, value.e)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(106, value.f)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(107, value.g)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(108, value.h)
         return size
       }
 
       public override fun encode(writer: ProtoWriter, `value`: Form): Unit {
-        if (value.choice != null) value.choice.encodeWithTag(writer)
-        if (value.decision != null) value.decision.encodeWithTag(writer)
+        ButtonElement.ADAPTER.encodeWithTag(writer, 1, value.button_element)
+        LocalImageElement.ADAPTER.encodeWithTag(writer, 2, value.local_image_element)
+        RemoteImageElement.ADAPTER.encodeWithTag(writer, 3, value.remote_image_element)
+        MoneyElement.ADAPTER.encodeWithTag(writer, 4, value.money_element)
+        SpacerElement.ADAPTER.encodeWithTag(writer, 5, value.spacer_element)
+        TextElement.ADAPTER.encodeWithTag(writer, 6, value.text_element)
+        CustomizedCardElement.ADAPTER.encodeWithTag(writer, 7, value.customized_card_element)
+        AddressElement.ADAPTER.encodeWithTag(writer, 8, value.address_element)
+        TextInputElement.ADAPTER.encodeWithTag(writer, 9, value.text_input_element)
+        OptionPickerElement.ADAPTER.encodeWithTag(writer, 10, value.option_picker_element)
+        DetailRowElement.ADAPTER.encodeWithTag(writer, 11, value.detail_row_element)
+        CurrencyConversionFlagsElement.ADAPTER.encodeWithTag(writer, 12,
+            value.currency_conversion_flags_element)
+        ProtoAdapter.STRING.encodeWithTag(writer, 101, value.a)
+        ProtoAdapter.STRING.encodeWithTag(writer, 102, value.b)
+        ProtoAdapter.STRING.encodeWithTag(writer, 103, value.c)
+        ProtoAdapter.STRING.encodeWithTag(writer, 104, value.d)
+        ProtoAdapter.STRING.encodeWithTag(writer, 105, value.e)
+        ProtoAdapter.STRING.encodeWithTag(writer, 106, value.f)
+        ProtoAdapter.STRING.encodeWithTag(writer, 107, value.g)
+        ProtoAdapter.STRING.encodeWithTag(writer, 108, value.h)
         writer.writeBytes(value.unknownFields)
       }
 
       public override fun encode(writer: ReverseProtoWriter, `value`: Form): Unit {
         writer.writeBytes(value.unknownFields)
-        if (value.decision != null) value.decision.encodeWithTag(writer)
-        if (value.choice != null) value.choice.encodeWithTag(writer)
+        ProtoAdapter.STRING.encodeWithTag(writer, 108, value.h)
+        ProtoAdapter.STRING.encodeWithTag(writer, 107, value.g)
+        ProtoAdapter.STRING.encodeWithTag(writer, 106, value.f)
+        ProtoAdapter.STRING.encodeWithTag(writer, 105, value.e)
+        ProtoAdapter.STRING.encodeWithTag(writer, 104, value.d)
+        ProtoAdapter.STRING.encodeWithTag(writer, 103, value.c)
+        ProtoAdapter.STRING.encodeWithTag(writer, 102, value.b)
+        ProtoAdapter.STRING.encodeWithTag(writer, 101, value.a)
+        CurrencyConversionFlagsElement.ADAPTER.encodeWithTag(writer, 12,
+            value.currency_conversion_flags_element)
+        DetailRowElement.ADAPTER.encodeWithTag(writer, 11, value.detail_row_element)
+        OptionPickerElement.ADAPTER.encodeWithTag(writer, 10, value.option_picker_element)
+        TextInputElement.ADAPTER.encodeWithTag(writer, 9, value.text_input_element)
+        AddressElement.ADAPTER.encodeWithTag(writer, 8, value.address_element)
+        CustomizedCardElement.ADAPTER.encodeWithTag(writer, 7, value.customized_card_element)
+        TextElement.ADAPTER.encodeWithTag(writer, 6, value.text_element)
+        SpacerElement.ADAPTER.encodeWithTag(writer, 5, value.spacer_element)
+        MoneyElement.ADAPTER.encodeWithTag(writer, 4, value.money_element)
+        RemoteImageElement.ADAPTER.encodeWithTag(writer, 3, value.remote_image_element)
+        LocalImageElement.ADAPTER.encodeWithTag(writer, 2, value.local_image_element)
+        ButtonElement.ADAPTER.encodeWithTag(writer, 1, value.button_element)
       }
 
       public override fun decode(reader: ProtoReader): Form {
-        var choice: OneOf<Choice<*>, *>? = null
-        var decision: OneOf<Decision<*>, *>? = null
+        var button_element: ButtonElement? = null
+        var local_image_element: LocalImageElement? = null
+        var remote_image_element: RemoteImageElement? = null
+        var money_element: MoneyElement? = null
+        var spacer_element: SpacerElement? = null
+        var text_element: TextElement? = null
+        var customized_card_element: CustomizedCardElement? = null
+        var address_element: AddressElement? = null
+        var text_input_element: TextInputElement? = null
+        var option_picker_element: OptionPickerElement? = null
+        var detail_row_element: DetailRowElement? = null
+        var currency_conversion_flags_element: CurrencyConversionFlagsElement? = null
+        var a: String? = null
+        var b: String? = null
+        var c: String? = null
+        var d: String? = null
+        var e: String? = null
+        var f: String? = null
+        var g: String? = null
+        var h: String? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            else -> {
-              for (choiceKey in CHOICE_KEYS) {
-                if (tag == choiceKey.tag) {
-                  choice = choiceKey.decode(reader)
-                  return@forEachTag Unit
-                }
-              }
-              for (choiceKey in DECISION_KEYS) {
-                if (tag == choiceKey.tag) {
-                  decision = choiceKey.decode(reader)
-                  return@forEachTag Unit
-                }
-              }
-              reader.readUnknownField(tag)
-            }
+            1 -> button_element = ButtonElement.ADAPTER.decode(reader)
+            2 -> local_image_element = LocalImageElement.ADAPTER.decode(reader)
+            3 -> remote_image_element = RemoteImageElement.ADAPTER.decode(reader)
+            4 -> money_element = MoneyElement.ADAPTER.decode(reader)
+            5 -> spacer_element = SpacerElement.ADAPTER.decode(reader)
+            6 -> text_element = TextElement.ADAPTER.decode(reader)
+            7 -> customized_card_element = CustomizedCardElement.ADAPTER.decode(reader)
+            8 -> address_element = AddressElement.ADAPTER.decode(reader)
+            9 -> text_input_element = TextInputElement.ADAPTER.decode(reader)
+            10 -> option_picker_element = OptionPickerElement.ADAPTER.decode(reader)
+            11 -> detail_row_element = DetailRowElement.ADAPTER.decode(reader)
+            12 -> currency_conversion_flags_element =
+                CurrencyConversionFlagsElement.ADAPTER.decode(reader)
+            101 -> a = ProtoAdapter.STRING.decode(reader)
+            102 -> b = ProtoAdapter.STRING.decode(reader)
+            103 -> c = ProtoAdapter.STRING.decode(reader)
+            104 -> d = ProtoAdapter.STRING.decode(reader)
+            105 -> e = ProtoAdapter.STRING.decode(reader)
+            106 -> f = ProtoAdapter.STRING.decode(reader)
+            107 -> g = ProtoAdapter.STRING.decode(reader)
+            108 -> h = ProtoAdapter.STRING.decode(reader)
+            else -> reader.readUnknownField(tag)
           }
         }
         return Form(
-          choice = choice,
-          decision = decision,
+          button_element = button_element,
+          local_image_element = local_image_element,
+          remote_image_element = remote_image_element,
+          money_element = money_element,
+          spacer_element = spacer_element,
+          text_element = text_element,
+          customized_card_element = customized_card_element,
+          address_element = address_element,
+          text_input_element = text_input_element,
+          option_picker_element = option_picker_element,
+          detail_row_element = detail_row_element,
+          currency_conversion_flags_element = currency_conversion_flags_element,
+          a = a,
+          b = b,
+          c = c,
+          d = d,
+          e = e,
+          f = f,
+          g = g,
+          h = h,
           unknownFields = unknownFields
         )
       }
 
       public override fun redact(`value`: Form): Form = value.copy(
-        decision = null,
+        button_element = value.button_element?.let(ButtonElement.ADAPTER::redact),
+        local_image_element = value.local_image_element?.let(LocalImageElement.ADAPTER::redact),
+        remote_image_element = value.remote_image_element?.let(RemoteImageElement.ADAPTER::redact),
+        money_element = value.money_element?.let(MoneyElement.ADAPTER::redact),
+        spacer_element = value.spacer_element?.let(SpacerElement.ADAPTER::redact),
+        text_element = value.text_element?.let(TextElement.ADAPTER::redact),
+        customized_card_element =
+            value.customized_card_element?.let(CustomizedCardElement.ADAPTER::redact),
+        address_element = value.address_element?.let(AddressElement.ADAPTER::redact),
+        text_input_element = value.text_input_element?.let(TextInputElement.ADAPTER::redact),
+        option_picker_element =
+            value.option_picker_element?.let(OptionPickerElement.ADAPTER::redact),
+        detail_row_element = value.detail_row_element?.let(DetailRowElement.ADAPTER::redact),
+        currency_conversion_flags_element =
+            value.currency_conversion_flags_element?.let(CurrencyConversionFlagsElement.ADAPTER::redact),
+        e = null,
         unknownFields = ByteString.EMPTY
       )
     }
-
-    public val CHOICE_BUTTON_ELEMENT: Choice<ButtonElement> = Choice<ButtonElement>(tag = 1, adapter
-        = ButtonElement.ADAPTER, declaredName = "button_element")
-
-    public val CHOICE_LOCAL_IMAGE_ELEMENT: Choice<LocalImageElement> = Choice<LocalImageElement>(tag
-        = 2, adapter = LocalImageElement.ADAPTER, declaredName = "local_image_element")
-
-    public val CHOICE_REMOTE_IMAGE_ELEMENT: Choice<RemoteImageElement> =
-        Choice<RemoteImageElement>(tag = 3, adapter = RemoteImageElement.ADAPTER, declaredName =
-        "remote_image_element")
-
-    public val CHOICE_MONEY_ELEMENT: Choice<MoneyElement> = Choice<MoneyElement>(tag = 4, adapter =
-        MoneyElement.ADAPTER, declaredName = "money_element")
-
-    public val CHOICE_SPACER_ELEMENT: Choice<SpacerElement> = Choice<SpacerElement>(tag = 5, adapter
-        = SpacerElement.ADAPTER, declaredName = "spacer_element")
-
-    public val CHOICE_TEXT_ELEMENT: Choice<TextElement> = Choice<TextElement>(tag = 6, adapter =
-        TextElement.ADAPTER, declaredName = "text_element")
-
-    public val CHOICE_CUSTOMIZED_CARD_ELEMENT: Choice<CustomizedCardElement> =
-        Choice<CustomizedCardElement>(tag = 7, adapter = CustomizedCardElement.ADAPTER, declaredName
-        = "customized_card_element")
-
-    public val CHOICE_ADDRESS_ELEMENT: Choice<AddressElement> = Choice<AddressElement>(tag = 8,
-        adapter = AddressElement.ADAPTER, declaredName = "address_element")
-
-    public val CHOICE_TEXT_INPUT_ELEMENT: Choice<TextInputElement> = Choice<TextInputElement>(tag =
-        9, adapter = TextInputElement.ADAPTER, declaredName = "text_input_element")
-
-    @Deprecated(message = "option_picker_element is deprecated")
-    public val CHOICE_OPTION_PICKER_ELEMENT: Choice<OptionPickerElement> =
-        Choice<OptionPickerElement>(tag = 10, adapter = OptionPickerElement.ADAPTER, declaredName =
-        "option_picker_element")
-
-    public val CHOICE_DETAIL_ROW_ELEMENT: Choice<DetailRowElement> = Choice<DetailRowElement>(tag =
-        11, adapter = DetailRowElement.ADAPTER, declaredName = "detail_row_element")
-
-    public val CHOICE_CURRENCY_CONVERSION_FLAGS_ELEMENT: Choice<CurrencyConversionFlagsElement> =
-        Choice<CurrencyConversionFlagsElement>(tag = 12, adapter =
-        CurrencyConversionFlagsElement.ADAPTER, declaredName = "currency_conversion_flags_element")
-
-    @JvmStatic
-    public val CHOICE_KEYS: Set<Choice<*>> = setOf(CHOICE_BUTTON_ELEMENT,
-        CHOICE_LOCAL_IMAGE_ELEMENT, CHOICE_REMOTE_IMAGE_ELEMENT, CHOICE_MONEY_ELEMENT,
-        CHOICE_SPACER_ELEMENT, CHOICE_TEXT_ELEMENT, CHOICE_CUSTOMIZED_CARD_ELEMENT,
-        CHOICE_ADDRESS_ELEMENT, CHOICE_TEXT_INPUT_ELEMENT, CHOICE_OPTION_PICKER_ELEMENT,
-        CHOICE_DETAIL_ROW_ELEMENT, CHOICE_CURRENCY_CONVERSION_FLAGS_ELEMENT)
-
-    public val DECISION_A: Decision<String> = Decision<String>(tag = 101, adapter =
-        ProtoAdapter.STRING, declaredName = "a")
-
-    public val DECISION_B: Decision<String> = Decision<String>(tag = 102, adapter =
-        ProtoAdapter.STRING, declaredName = "b")
-
-    public val DECISION_C: Decision<String> = Decision<String>(tag = 103, adapter =
-        ProtoAdapter.STRING, declaredName = "c")
-
-    public val DECISION_D: Decision<String> = Decision<String>(tag = 104, adapter =
-        ProtoAdapter.STRING, declaredName = "d")
-
-    public val DECISION_E: Decision<String> = Decision<String>(tag = 105, adapter =
-        ProtoAdapter.STRING, declaredName = "e")
-
-    public val DECISION_F: Decision<String> = Decision<String>(tag = 106, adapter =
-        ProtoAdapter.STRING, declaredName = "f")
-
-    public val DECISION_G: Decision<String> = Decision<String>(tag = 107, adapter =
-        ProtoAdapter.STRING, declaredName = "g")
-
-    public val DECISION_H: Decision<String> = Decision<String>(tag = 108, adapter =
-        ProtoAdapter.STRING, declaredName = "h")
-
-    @JvmStatic
-    public val DECISION_KEYS: Set<Decision<*>> = setOf(DECISION_A, DECISION_B, DECISION_C,
-        DECISION_D, DECISION_E, DECISION_F, DECISION_G, DECISION_H)
 
     private const val serialVersionUID: Long = 0L
   }
