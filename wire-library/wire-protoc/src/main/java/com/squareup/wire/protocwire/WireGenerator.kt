@@ -134,7 +134,7 @@ private fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorP
   }
 
   path.clear()
-  path.add(DescriptorProtos.DescriptorProto.ENUM_TYPE_FIELD_NUMBER)
+  path.add(DescriptorProtos.FileDescriptorProto.ENUM_TYPE_FIELD_NUMBER)
   path.add(0)
   for ((index, enumType) in fileDescriptor.enumTypeList.withIndex()) {
     path[1] = index
@@ -155,12 +155,17 @@ private fun parseFileDescriptor(fileDescriptor: DescriptorProtos.FileDescriptorP
 private fun parseEnum(path: List<Int>, helper: SourceCodeHelper, enum: DescriptorProtos.EnumDescriptorProto, descs: DescriptorSource): EnumElement {
   val info = helper.getLocation(path)
   val constants = mutableListOf<EnumConstantElement>()
-  for (enumValueDescriptorProto in enum.valueList) {
+  val enumPaths = mutableListOf(*path.toTypedArray())
+  enumPaths.add(DescriptorProtos.EnumDescriptorProto.VALUE_FIELD_NUMBER)
+  enumPaths.add(0)
+  for ((index, enumValueDescriptorProto) in enum.valueList.withIndex()) {
+    enumPaths[enumPaths.size - 1] = index
+    val enumValueInfo = helper.getLocation(enumPaths)
     constants.add(EnumConstantElement(
-      location = info.loc, // TODO
+      location = enumValueInfo.loc,
       name = enumValueDescriptorProto.name,
       tag = enumValueDescriptorProto.number,
-      documentation = info.comment,
+      documentation = enumValueInfo.comment,
       options = parseOptions(enumValueDescriptorProto.options, descs)
     ))
   }
