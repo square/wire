@@ -274,11 +274,16 @@ class Linker {
   }
 
   /** Returns the current package name from the context stack. */
-  fun packageName(): String? {
+  fun fullyQualifiedNameOfContext(): String {
+    val parts = mutableListOf<String>()
     for (context in contextStack) {
-      if (context is ProtoFile) return context.packageName
+      if (context is Type) {
+        parts.add(context.name)
+      } else if (context is ProtoFile && context.packageName != null) {
+        parts.add(context.packageName)
+      }
     }
-    return null
+    return parts.joinToString(".")
   }
 
   /**

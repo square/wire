@@ -85,6 +85,19 @@ internal class FileLinker(
     for (extend in protoFile.extendList) {
       extend.link(linker)
     }
+    for (type in protoFile.types) {
+      linkNestedExtensions(type, linker)
+    }
+  }
+
+  private fun linkNestedExtensions(type: Type, linker: Linker) {
+    val typeLinker = linker.withContext(type)
+    for (extend in type.nestedExtendList) {
+      extend.link(typeLinker)
+    }
+    for (nested in type.nestedTypes) {
+      linkNestedExtensions(nested, typeLinker)
+    }
   }
 
   /**
@@ -104,9 +117,22 @@ internal class FileLinker(
     if (extensionOptionsLinked) return
     extensionOptionsLinked = true
 
+    val syntaxRules = SyntaxRules.get(protoFile.syntax)
     for (extend in protoFile.extendList) {
-      val syntaxRules = SyntaxRules.get(protoFile.syntax)
       extend.linkOptions(linker, syntaxRules, validate)
+    }
+    for (type in protoFile.types) {
+      linkNestedExtensionOptions(type, linker, syntaxRules, validate)
+    }
+  }
+
+  private fun linkNestedExtensionOptions(type: Type, linker: Linker, syntaxRules: SyntaxRules, validate: Boolean) {
+    val typeLinker = linker.withContext(type)
+    for (extend in type.nestedExtendList) {
+      extend.linkOptions(typeLinker, syntaxRules, validate)
+    }
+    for (nested in type.nestedTypes) {
+      linkNestedExtensionOptions(nested, typeLinker, syntaxRules, validate)
     }
   }
 

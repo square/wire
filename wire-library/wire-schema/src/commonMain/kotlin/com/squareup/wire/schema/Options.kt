@@ -93,7 +93,7 @@ class Options(
       // This is an option declared by an extension.
       val extensionsForType = type.extensionFieldsMap()
       path = resolveFieldPath(option.name, extensionsForType.keys)
-      var packageName = linker.packageName()
+      var packageName = linker.fullyQualifiedNameOfContext()
       var checkedExtensionFields = false
       while (path == null && !packageName.isNullOrBlank()) {
         // If the path couldn't be resolved, attempt again by prefixing it with the package name.
@@ -113,7 +113,7 @@ class Options(
                 return null
               }
             } else {
-              packageName = extensionFields.firstOrNull()?.packageName
+              packageName = extensionFields.firstOrNull()?.packageName ?: ""
             }
           }
         }

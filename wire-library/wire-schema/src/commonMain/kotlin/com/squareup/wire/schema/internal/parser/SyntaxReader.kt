@@ -140,20 +140,22 @@ class SyntaxReader(
   }
 
   /** Reads a (paren-wrapped), [square-wrapped] or naked symbol name. */
-  fun readName(allowLeadingDigit: Boolean = true): String {
+  fun readName(allowLeadingDigit: Boolean = true, retainWrap: Boolean = false): String {
     return when (peekChar()) {
       '(' -> {
         pos++
-        readWord(allowLeadingDigit).also {
+        val word = readWord(allowLeadingDigit).also {
           expect(readChar() == ')') { "expected ')'" }
         }
+        if (retainWrap) "(${word})" else word
       }
 
       '[' -> {
         pos++
-        readWord(allowLeadingDigit).also {
+        val word = readWord(allowLeadingDigit).also {
           expect(readChar() == ']') { "expected ']'" }
         }
+        if (retainWrap) "[${word}]" else word
       }
 
       else -> readWord(allowLeadingDigit)

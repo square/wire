@@ -22,8 +22,10 @@ import com.squareup.wire.schema.internal.parser.MessageElement
 data class EnclosingType(
   override val location: Location,
   override val type: ProtoType,
+  override val name: String,
   override val documentation: String,
   override val nestedTypes: List<Type>,
+  override val nestedExtendList: List<Extend>,
   override val syntax: Syntax
 ) : Type() {
   override val options
@@ -40,14 +42,16 @@ data class EnclosingType(
 
   override fun retainAll(schema: Schema, markSet: MarkSet): Type? {
     val retainedNestedTypes = nestedTypes.mapNotNull { it.retainAll(schema, markSet) }
-    if (retainedNestedTypes.isEmpty()) return null
-    return EnclosingType(location, type, documentation, retainedNestedTypes, syntax)
+    val retainedNestedExtends = nestedExtendList.mapNotNull { it.retainAll(schema, markSet) }
+    if (retainedNestedTypes.isEmpty() && retainedNestedExtends.isEmpty()) return null
+    return EnclosingType(location, type, name, documentation, retainedNestedTypes, retainedNestedExtends, syntax)
   }
 
-  override fun retainLinked(linkedTypes: Set<ProtoType>): Type? {
-    val retainedNestedTypes = nestedTypes.mapNotNull { it.retainLinked(linkedTypes) }
-    if (retainedNestedTypes.isEmpty()) return null
-    return EnclosingType(location, type, documentation, retainedNestedTypes, syntax)
+  override fun retainLinked(linkedTypes: Set<ProtoType>, linkedFields: Set<Field>): Type? {
+    val retainedNestedTypes = nestedTypes.mapNotNull { it.retainLinked(linkedTypes, linkedFields) }
+    val retainedNestedExtends = nestedExtendList.mapNotNull { it.retainLinked(linkedFields) }
+    if (retainedNestedTypes.isEmpty() && retainedNestedExtends.isEmpty()) return null
+    return EnclosingType(location, type, name, documentation, retainedNestedTypes, retainedNestedExtends, syntax)
   }
 
   fun toElement() = MessageElement(

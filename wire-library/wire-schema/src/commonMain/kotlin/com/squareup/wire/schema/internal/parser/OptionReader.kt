@@ -53,12 +53,20 @@ class OptionReader(internal val reader: SyntaxReader) {
     var name = reader.readName() // Option name.
     if (isExtension) name = "[$name]"
 
-    var subNames: List<String> = emptyList()
-    var c = reader.readChar()
-    if (c == '.') {
-      // Read nested field name. For example "baz" in "(foo.bar).baz = 12".
-      subNames = reader.readName().split(".")
+    var subNames = mutableListOf<String>()
+    var c: Char
+    while (true) {
       c = reader.readChar()
+      if (c != '.') {
+        break
+      }
+      // Read nested field name. For example "baz" in "(foo.bar).baz = 12".
+      val subName = reader.readName(retainWrap = true)
+      if (subName.startsWith("(")) {
+        subNames.add(subName)
+      } else {
+        subNames.addAll(subName.split("."))
+      }
     }
     if (keyValueSeparator == ':' && c == '{') {
       // In text format, values which are maps can omit a separator. Backtrack so it can be re-read.
@@ -70,7 +78,13 @@ class OptionReader(internal val reader: SyntaxReader) {
     var kind = kindAndValue.kind
     var value = kindAndValue.value
     subNames.reversed().forEach { subName ->
-      value = OptionElement.create(subName, kind, value)
+      var parenthesized = false
+      var name = subName
+      if (name.startsWith("(")) {
+        name = name.substring(1, subName.length-1)
+        parenthesized = true
+      }
+      value = OptionElement.create(name, kind, value, parenthesized)
       kind = Kind.OPTION
     }
     return OptionElement.create(name, kind, value, isParenthesized)
