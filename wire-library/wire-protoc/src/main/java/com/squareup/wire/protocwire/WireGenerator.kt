@@ -95,10 +95,9 @@ class WireGenerator(
     val errorCollector = ErrorCollector()
     val linker = Linker(loader, errorCollector, permitPackageCycles = true, loadExhaustively = true)
 
+    val sourcePaths = setOf(*request.fileToGenerateList.toTypedArray())
     val protoFiles = mutableListOf<ProtoFile>()
-    val sourcePaths = mutableSetOf<String>()
     for (fileDescriptorProto in request.protoFileList) {
-      sourcePaths.add(fileDescriptorProto.name)
       val protoFileElement = parseFileDescriptor(fileDescriptorProto, descs)
       val protoFile = ProtoFile.get(protoFileElement)
       protoFiles.add(protoFile)
