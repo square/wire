@@ -210,7 +210,26 @@ public final class Plugin {
 
     CodedOutputStream output = CodedOutputStream.newInstance(
       environment.getOutputStream());
+    try {
+      // go ahead and write response preamble
+      CodeGeneratorResponse.newBuilder()
+        // add more here as more features are introduced and then supported
+        .setSupportedFeatures(
+          toFeatureBitmask(CodeGeneratorResponse.Feature.FEATURE_PROTO3_OPTIONAL))
+        .build()
+        .writeTo(output);
+    } catch (IOException e) {
+      throw new PluginException("protoc sent unparseable request to plugin.", e);
+    }
     generator.generate(request, new DescriptorSource(files), new Response(output));
+  }
+
+  private static long toFeatureBitmask(CodeGeneratorResponse.Feature... features) {
+    long result = 0;
+    for (CodeGeneratorResponse.Feature f : features) {
+      result |= f.getNumber();
+    }
+    return result;
   }
 
   private static ExtensionRegistry createExtensionRegistry(Collection<FileDescriptor> files) {
