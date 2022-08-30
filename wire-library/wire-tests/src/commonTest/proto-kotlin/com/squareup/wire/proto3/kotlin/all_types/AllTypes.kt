@@ -48,105 +48,105 @@ public class AllTypes(
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "int32",
   )
-  public val proto3_kotlin_int32: Int = 0,
+  public val proto3_kotlin_AllTypes_int32: Int = 0,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "uint32",
   )
-  public val proto3_kotlin_uint32: Int = 0,
+  public val proto3_kotlin_AllTypes_uint32: Int = 0,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "sint32",
   )
-  public val proto3_kotlin_sint32: Int = 0,
+  public val proto3_kotlin_AllTypes_sint32: Int = 0,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "fixed32",
   )
-  public val proto3_kotlin_fixed32: Int = 0,
+  public val proto3_kotlin_AllTypes_fixed32: Int = 0,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "sfixed32",
   )
-  public val proto3_kotlin_sfixed32: Int = 0,
+  public val proto3_kotlin_AllTypes_sfixed32: Int = 0,
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "int64",
   )
-  public val proto3_kotlin_int64: Long = 0L,
+  public val proto3_kotlin_AllTypes_int64: Long = 0L,
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "uint64",
   )
-  public val proto3_kotlin_uint64: Long = 0L,
+  public val proto3_kotlin_AllTypes_uint64: Long = 0L,
   @field:WireField(
     tag = 8,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "sint64",
   )
-  public val proto3_kotlin_sint64: Long = 0L,
+  public val proto3_kotlin_AllTypes_sint64: Long = 0L,
   @field:WireField(
     tag = 9,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "fixed64",
   )
-  public val proto3_kotlin_fixed64: Long = 0L,
+  public val proto3_kotlin_AllTypes_fixed64: Long = 0L,
   @field:WireField(
     tag = 10,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "sfixed64",
   )
-  public val proto3_kotlin_sfixed64: Long = 0L,
+  public val proto3_kotlin_AllTypes_sfixed64: Long = 0L,
   @field:WireField(
     tag = 11,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "bool",
   )
-  public val proto3_kotlin_bool: Boolean = false,
+  public val proto3_kotlin_AllTypes_bool: Boolean = false,
   @field:WireField(
     tag = 12,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "float",
   )
-  public val proto3_kotlin_float: Float = 0f,
+  public val proto3_kotlin_AllTypes_float: Float = 0f,
   @field:WireField(
     tag = 13,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "double",
   )
-  public val proto3_kotlin_double: Double = 0.0,
+  public val proto3_kotlin_AllTypes_double: Double = 0.0,
   @field:WireField(
     tag = 14,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "string",
   )
-  public val proto3_kotlin_string: String = "",
+  public val proto3_kotlin_AllTypes_string: String = "",
   @field:WireField(
     tag = 15,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "bytes",
   )
-  public val proto3_kotlin_bytes: ByteString = ByteString.EMPTY,
+  public val proto3_kotlin_AllTypes_bytes: ByteString = ByteString.EMPTY,
   @field:WireField(
     tag = 16,
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedEnum#ADAPTER",
@@ -884,21 +884,21 @@ public class AllTypes(
     if (other === this) return true
     if (other !is AllTypes) return false
     if (unknownFields != other.unknownFields) return false
-    if (proto3_kotlin_int32 != other.proto3_kotlin_int32) return false
-    if (proto3_kotlin_uint32 != other.proto3_kotlin_uint32) return false
-    if (proto3_kotlin_sint32 != other.proto3_kotlin_sint32) return false
-    if (proto3_kotlin_fixed32 != other.proto3_kotlin_fixed32) return false
-    if (proto3_kotlin_sfixed32 != other.proto3_kotlin_sfixed32) return false
-    if (proto3_kotlin_int64 != other.proto3_kotlin_int64) return false
-    if (proto3_kotlin_uint64 != other.proto3_kotlin_uint64) return false
-    if (proto3_kotlin_sint64 != other.proto3_kotlin_sint64) return false
-    if (proto3_kotlin_fixed64 != other.proto3_kotlin_fixed64) return false
-    if (proto3_kotlin_sfixed64 != other.proto3_kotlin_sfixed64) return false
-    if (proto3_kotlin_bool != other.proto3_kotlin_bool) return false
-    if (proto3_kotlin_float != other.proto3_kotlin_float) return false
-    if (proto3_kotlin_double != other.proto3_kotlin_double) return false
-    if (proto3_kotlin_string != other.proto3_kotlin_string) return false
-    if (proto3_kotlin_bytes != other.proto3_kotlin_bytes) return false
+    if (proto3_kotlin_AllTypes_int32 != other.proto3_kotlin_AllTypes_int32) return false
+    if (proto3_kotlin_AllTypes_uint32 != other.proto3_kotlin_AllTypes_uint32) return false
+    if (proto3_kotlin_AllTypes_sint32 != other.proto3_kotlin_AllTypes_sint32) return false
+    if (proto3_kotlin_AllTypes_fixed32 != other.proto3_kotlin_AllTypes_fixed32) return false
+    if (proto3_kotlin_AllTypes_sfixed32 != other.proto3_kotlin_AllTypes_sfixed32) return false
+    if (proto3_kotlin_AllTypes_int64 != other.proto3_kotlin_AllTypes_int64) return false
+    if (proto3_kotlin_AllTypes_uint64 != other.proto3_kotlin_AllTypes_uint64) return false
+    if (proto3_kotlin_AllTypes_sint64 != other.proto3_kotlin_AllTypes_sint64) return false
+    if (proto3_kotlin_AllTypes_fixed64 != other.proto3_kotlin_AllTypes_fixed64) return false
+    if (proto3_kotlin_AllTypes_sfixed64 != other.proto3_kotlin_AllTypes_sfixed64) return false
+    if (proto3_kotlin_AllTypes_bool != other.proto3_kotlin_AllTypes_bool) return false
+    if (proto3_kotlin_AllTypes_float != other.proto3_kotlin_AllTypes_float) return false
+    if (proto3_kotlin_AllTypes_double != other.proto3_kotlin_AllTypes_double) return false
+    if (proto3_kotlin_AllTypes_string != other.proto3_kotlin_AllTypes_string) return false
+    if (proto3_kotlin_AllTypes_bytes != other.proto3_kotlin_AllTypes_bytes) return false
     if (nested_enum != other.nested_enum) return false
     if (nested_message != other.nested_message) return false
     if (any != other.any) return false
@@ -992,21 +992,21 @@ public class AllTypes(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + proto3_kotlin_int32.hashCode()
-      result = result * 37 + proto3_kotlin_uint32.hashCode()
-      result = result * 37 + proto3_kotlin_sint32.hashCode()
-      result = result * 37 + proto3_kotlin_fixed32.hashCode()
-      result = result * 37 + proto3_kotlin_sfixed32.hashCode()
-      result = result * 37 + proto3_kotlin_int64.hashCode()
-      result = result * 37 + proto3_kotlin_uint64.hashCode()
-      result = result * 37 + proto3_kotlin_sint64.hashCode()
-      result = result * 37 + proto3_kotlin_fixed64.hashCode()
-      result = result * 37 + proto3_kotlin_sfixed64.hashCode()
-      result = result * 37 + proto3_kotlin_bool.hashCode()
-      result = result * 37 + proto3_kotlin_float.hashCode()
-      result = result * 37 + proto3_kotlin_double.hashCode()
-      result = result * 37 + proto3_kotlin_string.hashCode()
-      result = result * 37 + proto3_kotlin_bytes.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_int32.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_uint32.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_sint32.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_fixed32.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_sfixed32.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_int64.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_uint64.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_sint64.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_fixed64.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_sfixed64.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_bool.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_float.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_double.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_string.hashCode()
+      result = result * 37 + proto3_kotlin_AllTypes_bytes.hashCode()
       result = result * 37 + nested_enum.hashCode()
       result = result * 37 + (nested_message?.hashCode() ?: 0)
       result = result * 37 + (any?.hashCode() ?: 0)
@@ -1100,21 +1100,21 @@ public class AllTypes(
 
   public override fun toString(): String {
     val result = mutableListOf<String>()
-    result += """proto3_kotlin_int32=$proto3_kotlin_int32"""
-    result += """proto3_kotlin_uint32=$proto3_kotlin_uint32"""
-    result += """proto3_kotlin_sint32=$proto3_kotlin_sint32"""
-    result += """proto3_kotlin_fixed32=$proto3_kotlin_fixed32"""
-    result += """proto3_kotlin_sfixed32=$proto3_kotlin_sfixed32"""
-    result += """proto3_kotlin_int64=$proto3_kotlin_int64"""
-    result += """proto3_kotlin_uint64=$proto3_kotlin_uint64"""
-    result += """proto3_kotlin_sint64=$proto3_kotlin_sint64"""
-    result += """proto3_kotlin_fixed64=$proto3_kotlin_fixed64"""
-    result += """proto3_kotlin_sfixed64=$proto3_kotlin_sfixed64"""
-    result += """proto3_kotlin_bool=$proto3_kotlin_bool"""
-    result += """proto3_kotlin_float=$proto3_kotlin_float"""
-    result += """proto3_kotlin_double=$proto3_kotlin_double"""
-    result += """proto3_kotlin_string=${sanitize(proto3_kotlin_string)}"""
-    result += """proto3_kotlin_bytes=$proto3_kotlin_bytes"""
+    result += """proto3_kotlin_AllTypes_int32=$proto3_kotlin_AllTypes_int32"""
+    result += """proto3_kotlin_AllTypes_uint32=$proto3_kotlin_AllTypes_uint32"""
+    result += """proto3_kotlin_AllTypes_sint32=$proto3_kotlin_AllTypes_sint32"""
+    result += """proto3_kotlin_AllTypes_fixed32=$proto3_kotlin_AllTypes_fixed32"""
+    result += """proto3_kotlin_AllTypes_sfixed32=$proto3_kotlin_AllTypes_sfixed32"""
+    result += """proto3_kotlin_AllTypes_int64=$proto3_kotlin_AllTypes_int64"""
+    result += """proto3_kotlin_AllTypes_uint64=$proto3_kotlin_AllTypes_uint64"""
+    result += """proto3_kotlin_AllTypes_sint64=$proto3_kotlin_AllTypes_sint64"""
+    result += """proto3_kotlin_AllTypes_fixed64=$proto3_kotlin_AllTypes_fixed64"""
+    result += """proto3_kotlin_AllTypes_sfixed64=$proto3_kotlin_AllTypes_sfixed64"""
+    result += """proto3_kotlin_AllTypes_bool=$proto3_kotlin_AllTypes_bool"""
+    result += """proto3_kotlin_AllTypes_float=$proto3_kotlin_AllTypes_float"""
+    result += """proto3_kotlin_AllTypes_double=$proto3_kotlin_AllTypes_double"""
+    result += """proto3_kotlin_AllTypes_string=${sanitize(proto3_kotlin_AllTypes_string)}"""
+    result += """proto3_kotlin_AllTypes_bytes=$proto3_kotlin_AllTypes_bytes"""
     result += """nested_enum=$nested_enum"""
     if (nested_message != null) result += """nested_message=$nested_message"""
     if (any != null) result += """any=$any"""
@@ -1207,21 +1207,21 @@ public class AllTypes(
   }
 
   public fun copy(
-    proto3_kotlin_int32: Int = this.proto3_kotlin_int32,
-    proto3_kotlin_uint32: Int = this.proto3_kotlin_uint32,
-    proto3_kotlin_sint32: Int = this.proto3_kotlin_sint32,
-    proto3_kotlin_fixed32: Int = this.proto3_kotlin_fixed32,
-    proto3_kotlin_sfixed32: Int = this.proto3_kotlin_sfixed32,
-    proto3_kotlin_int64: Long = this.proto3_kotlin_int64,
-    proto3_kotlin_uint64: Long = this.proto3_kotlin_uint64,
-    proto3_kotlin_sint64: Long = this.proto3_kotlin_sint64,
-    proto3_kotlin_fixed64: Long = this.proto3_kotlin_fixed64,
-    proto3_kotlin_sfixed64: Long = this.proto3_kotlin_sfixed64,
-    proto3_kotlin_bool: Boolean = this.proto3_kotlin_bool,
-    proto3_kotlin_float: Float = this.proto3_kotlin_float,
-    proto3_kotlin_double: Double = this.proto3_kotlin_double,
-    proto3_kotlin_string: String = this.proto3_kotlin_string,
-    proto3_kotlin_bytes: ByteString = this.proto3_kotlin_bytes,
+    proto3_kotlin_AllTypes_int32: Int = this.proto3_kotlin_AllTypes_int32,
+    proto3_kotlin_AllTypes_uint32: Int = this.proto3_kotlin_AllTypes_uint32,
+    proto3_kotlin_AllTypes_sint32: Int = this.proto3_kotlin_AllTypes_sint32,
+    proto3_kotlin_AllTypes_fixed32: Int = this.proto3_kotlin_AllTypes_fixed32,
+    proto3_kotlin_AllTypes_sfixed32: Int = this.proto3_kotlin_AllTypes_sfixed32,
+    proto3_kotlin_AllTypes_int64: Long = this.proto3_kotlin_AllTypes_int64,
+    proto3_kotlin_AllTypes_uint64: Long = this.proto3_kotlin_AllTypes_uint64,
+    proto3_kotlin_AllTypes_sint64: Long = this.proto3_kotlin_AllTypes_sint64,
+    proto3_kotlin_AllTypes_fixed64: Long = this.proto3_kotlin_AllTypes_fixed64,
+    proto3_kotlin_AllTypes_sfixed64: Long = this.proto3_kotlin_AllTypes_sfixed64,
+    proto3_kotlin_AllTypes_bool: Boolean = this.proto3_kotlin_AllTypes_bool,
+    proto3_kotlin_AllTypes_float: Float = this.proto3_kotlin_AllTypes_float,
+    proto3_kotlin_AllTypes_double: Double = this.proto3_kotlin_AllTypes_double,
+    proto3_kotlin_AllTypes_string: String = this.proto3_kotlin_AllTypes_string,
+    proto3_kotlin_AllTypes_bytes: ByteString = this.proto3_kotlin_AllTypes_bytes,
     nested_enum: NestedEnum = this.nested_enum,
     nested_message: NestedMessage? = this.nested_message,
     any: AnyMessage? = this.any,
@@ -1309,10 +1309,12 @@ public class AllTypes(
     oneof_empty: Unit? = this.oneof_empty,
     oneof_timestamp: Instant? = this.oneof_timestamp,
     unknownFields: ByteString = this.unknownFields,
-  ): AllTypes = AllTypes(proto3_kotlin_int32, proto3_kotlin_uint32, proto3_kotlin_sint32,
-      proto3_kotlin_fixed32, proto3_kotlin_sfixed32, proto3_kotlin_int64, proto3_kotlin_uint64,
-      proto3_kotlin_sint64, proto3_kotlin_fixed64, proto3_kotlin_sfixed64, proto3_kotlin_bool,
-      proto3_kotlin_float, proto3_kotlin_double, proto3_kotlin_string, proto3_kotlin_bytes,
+  ): AllTypes = AllTypes(proto3_kotlin_AllTypes_int32, proto3_kotlin_AllTypes_uint32,
+      proto3_kotlin_AllTypes_sint32, proto3_kotlin_AllTypes_fixed32,
+      proto3_kotlin_AllTypes_sfixed32, proto3_kotlin_AllTypes_int64, proto3_kotlin_AllTypes_uint64,
+      proto3_kotlin_AllTypes_sint64, proto3_kotlin_AllTypes_fixed64,
+      proto3_kotlin_AllTypes_sfixed64, proto3_kotlin_AllTypes_bool, proto3_kotlin_AllTypes_float,
+      proto3_kotlin_AllTypes_double, proto3_kotlin_AllTypes_string, proto3_kotlin_AllTypes_bytes,
       nested_enum, nested_message, any, duration, struct, list_value, value_, null_value, empty,
       timestamp, opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64,
       opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double,
@@ -1376,36 +1378,36 @@ public class AllTypes(
 
       public override fun encodedSize(`value`: AllTypes): Int {
         var size = value.unknownFields.size
-        if (value.proto3_kotlin_int32 != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1,
-            value.proto3_kotlin_int32)
-        if (value.proto3_kotlin_uint32 != 0) size += ProtoAdapter.UINT32.encodedSizeWithTag(2,
-            value.proto3_kotlin_uint32)
-        if (value.proto3_kotlin_sint32 != 0) size += ProtoAdapter.SINT32.encodedSizeWithTag(3,
-            value.proto3_kotlin_sint32)
-        if (value.proto3_kotlin_fixed32 != 0) size += ProtoAdapter.FIXED32.encodedSizeWithTag(4,
-            value.proto3_kotlin_fixed32)
-        if (value.proto3_kotlin_sfixed32 != 0) size += ProtoAdapter.SFIXED32.encodedSizeWithTag(5,
-            value.proto3_kotlin_sfixed32)
-        if (value.proto3_kotlin_int64 != 0L) size += ProtoAdapter.INT64.encodedSizeWithTag(6,
-            value.proto3_kotlin_int64)
-        if (value.proto3_kotlin_uint64 != 0L) size += ProtoAdapter.UINT64.encodedSizeWithTag(7,
-            value.proto3_kotlin_uint64)
-        if (value.proto3_kotlin_sint64 != 0L) size += ProtoAdapter.SINT64.encodedSizeWithTag(8,
-            value.proto3_kotlin_sint64)
-        if (value.proto3_kotlin_fixed64 != 0L) size += ProtoAdapter.FIXED64.encodedSizeWithTag(9,
-            value.proto3_kotlin_fixed64)
-        if (value.proto3_kotlin_sfixed64 != 0L) size += ProtoAdapter.SFIXED64.encodedSizeWithTag(10,
-            value.proto3_kotlin_sfixed64)
-        if (value.proto3_kotlin_bool != false) size += ProtoAdapter.BOOL.encodedSizeWithTag(11,
-            value.proto3_kotlin_bool)
-        if (!value.proto3_kotlin_float.equals(0f)) size += ProtoAdapter.FLOAT.encodedSizeWithTag(12,
-            value.proto3_kotlin_float)
-        if (!value.proto3_kotlin_double.equals(0.0)) size +=
-            ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.proto3_kotlin_double)
-        if (value.proto3_kotlin_string != "") size += ProtoAdapter.STRING.encodedSizeWithTag(14,
-            value.proto3_kotlin_string)
-        if (value.proto3_kotlin_bytes != ByteString.EMPTY) size +=
-            ProtoAdapter.BYTES.encodedSizeWithTag(15, value.proto3_kotlin_bytes)
+        if (value.proto3_kotlin_AllTypes_int32 != 0) size +=
+            ProtoAdapter.INT32.encodedSizeWithTag(1, value.proto3_kotlin_AllTypes_int32)
+        if (value.proto3_kotlin_AllTypes_uint32 != 0) size +=
+            ProtoAdapter.UINT32.encodedSizeWithTag(2, value.proto3_kotlin_AllTypes_uint32)
+        if (value.proto3_kotlin_AllTypes_sint32 != 0) size +=
+            ProtoAdapter.SINT32.encodedSizeWithTag(3, value.proto3_kotlin_AllTypes_sint32)
+        if (value.proto3_kotlin_AllTypes_fixed32 != 0) size +=
+            ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.proto3_kotlin_AllTypes_fixed32)
+        if (value.proto3_kotlin_AllTypes_sfixed32 != 0) size +=
+            ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.proto3_kotlin_AllTypes_sfixed32)
+        if (value.proto3_kotlin_AllTypes_int64 != 0L) size +=
+            ProtoAdapter.INT64.encodedSizeWithTag(6, value.proto3_kotlin_AllTypes_int64)
+        if (value.proto3_kotlin_AllTypes_uint64 != 0L) size +=
+            ProtoAdapter.UINT64.encodedSizeWithTag(7, value.proto3_kotlin_AllTypes_uint64)
+        if (value.proto3_kotlin_AllTypes_sint64 != 0L) size +=
+            ProtoAdapter.SINT64.encodedSizeWithTag(8, value.proto3_kotlin_AllTypes_sint64)
+        if (value.proto3_kotlin_AllTypes_fixed64 != 0L) size +=
+            ProtoAdapter.FIXED64.encodedSizeWithTag(9, value.proto3_kotlin_AllTypes_fixed64)
+        if (value.proto3_kotlin_AllTypes_sfixed64 != 0L) size +=
+            ProtoAdapter.SFIXED64.encodedSizeWithTag(10, value.proto3_kotlin_AllTypes_sfixed64)
+        if (value.proto3_kotlin_AllTypes_bool != false) size +=
+            ProtoAdapter.BOOL.encodedSizeWithTag(11, value.proto3_kotlin_AllTypes_bool)
+        if (!value.proto3_kotlin_AllTypes_float.equals(0f)) size +=
+            ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.proto3_kotlin_AllTypes_float)
+        if (!value.proto3_kotlin_AllTypes_double.equals(0.0)) size +=
+            ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.proto3_kotlin_AllTypes_double)
+        if (value.proto3_kotlin_AllTypes_string != "") size +=
+            ProtoAdapter.STRING.encodedSizeWithTag(14, value.proto3_kotlin_AllTypes_string)
+        if (value.proto3_kotlin_AllTypes_bytes != ByteString.EMPTY) size +=
+            ProtoAdapter.BYTES.encodedSizeWithTag(15, value.proto3_kotlin_AllTypes_bytes)
         if (value.nested_enum != NestedEnum.UNKNOWN) size +=
             NestedEnum.ADAPTER.encodedSizeWithTag(16, value.nested_enum)
         if (value.nested_message != null) size += NestedMessage.ADAPTER.encodedSizeWithTag(17,
@@ -1504,36 +1506,36 @@ public class AllTypes(
       }
 
       public override fun encode(writer: ProtoWriter, `value`: AllTypes): Unit {
-        if (value.proto3_kotlin_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1,
-            value.proto3_kotlin_int32)
-        if (value.proto3_kotlin_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2,
-            value.proto3_kotlin_uint32)
-        if (value.proto3_kotlin_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3,
-            value.proto3_kotlin_sint32)
-        if (value.proto3_kotlin_fixed32 != 0) ProtoAdapter.FIXED32.encodeWithTag(writer, 4,
-            value.proto3_kotlin_fixed32)
-        if (value.proto3_kotlin_sfixed32 != 0) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5,
-            value.proto3_kotlin_sfixed32)
-        if (value.proto3_kotlin_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 6,
-            value.proto3_kotlin_int64)
-        if (value.proto3_kotlin_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 7,
-            value.proto3_kotlin_uint64)
-        if (value.proto3_kotlin_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 8,
-            value.proto3_kotlin_sint64)
-        if (value.proto3_kotlin_fixed64 != 0L) ProtoAdapter.FIXED64.encodeWithTag(writer, 9,
-            value.proto3_kotlin_fixed64)
-        if (value.proto3_kotlin_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10,
-            value.proto3_kotlin_sfixed64)
-        if (value.proto3_kotlin_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11,
-            value.proto3_kotlin_bool)
-        if (!value.proto3_kotlin_float.equals(0f)) ProtoAdapter.FLOAT.encodeWithTag(writer, 12,
-            value.proto3_kotlin_float)
-        if (!value.proto3_kotlin_double.equals(0.0)) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
-            value.proto3_kotlin_double)
-        if (value.proto3_kotlin_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14,
-            value.proto3_kotlin_string)
-        if (value.proto3_kotlin_bytes != ByteString.EMPTY) ProtoAdapter.BYTES.encodeWithTag(writer,
-            15, value.proto3_kotlin_bytes)
+        if (value.proto3_kotlin_AllTypes_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1,
+            value.proto3_kotlin_AllTypes_int32)
+        if (value.proto3_kotlin_AllTypes_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2,
+            value.proto3_kotlin_AllTypes_uint32)
+        if (value.proto3_kotlin_AllTypes_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3,
+            value.proto3_kotlin_AllTypes_sint32)
+        if (value.proto3_kotlin_AllTypes_fixed32 != 0) ProtoAdapter.FIXED32.encodeWithTag(writer, 4,
+            value.proto3_kotlin_AllTypes_fixed32)
+        if (value.proto3_kotlin_AllTypes_sfixed32 != 0) ProtoAdapter.SFIXED32.encodeWithTag(writer,
+            5, value.proto3_kotlin_AllTypes_sfixed32)
+        if (value.proto3_kotlin_AllTypes_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 6,
+            value.proto3_kotlin_AllTypes_int64)
+        if (value.proto3_kotlin_AllTypes_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 7,
+            value.proto3_kotlin_AllTypes_uint64)
+        if (value.proto3_kotlin_AllTypes_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 8,
+            value.proto3_kotlin_AllTypes_sint64)
+        if (value.proto3_kotlin_AllTypes_fixed64 != 0L) ProtoAdapter.FIXED64.encodeWithTag(writer,
+            9, value.proto3_kotlin_AllTypes_fixed64)
+        if (value.proto3_kotlin_AllTypes_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer,
+            10, value.proto3_kotlin_AllTypes_sfixed64)
+        if (value.proto3_kotlin_AllTypes_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11,
+            value.proto3_kotlin_AllTypes_bool)
+        if (!value.proto3_kotlin_AllTypes_float.equals(0f)) ProtoAdapter.FLOAT.encodeWithTag(writer,
+            12, value.proto3_kotlin_AllTypes_float)
+        if (!value.proto3_kotlin_AllTypes_double.equals(0.0))
+            ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.proto3_kotlin_AllTypes_double)
+        if (value.proto3_kotlin_AllTypes_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14,
+            value.proto3_kotlin_AllTypes_string)
+        if (value.proto3_kotlin_AllTypes_bytes != ByteString.EMPTY)
+            ProtoAdapter.BYTES.encodeWithTag(writer, 15, value.proto3_kotlin_AllTypes_bytes)
         if (value.nested_enum != NestedEnum.UNKNOWN) NestedEnum.ADAPTER.encodeWithTag(writer, 16,
             value.nested_enum)
         if (value.nested_message != null) NestedMessage.ADAPTER.encodeWithTag(writer, 17,
@@ -1719,54 +1721,54 @@ public class AllTypes(
             value.nested_message)
         if (value.nested_enum != NestedEnum.UNKNOWN) NestedEnum.ADAPTER.encodeWithTag(writer, 16,
             value.nested_enum)
-        if (value.proto3_kotlin_bytes != ByteString.EMPTY) ProtoAdapter.BYTES.encodeWithTag(writer,
-            15, value.proto3_kotlin_bytes)
-        if (value.proto3_kotlin_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14,
-            value.proto3_kotlin_string)
-        if (!value.proto3_kotlin_double.equals(0.0)) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
-            value.proto3_kotlin_double)
-        if (!value.proto3_kotlin_float.equals(0f)) ProtoAdapter.FLOAT.encodeWithTag(writer, 12,
-            value.proto3_kotlin_float)
-        if (value.proto3_kotlin_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11,
-            value.proto3_kotlin_bool)
-        if (value.proto3_kotlin_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10,
-            value.proto3_kotlin_sfixed64)
-        if (value.proto3_kotlin_fixed64 != 0L) ProtoAdapter.FIXED64.encodeWithTag(writer, 9,
-            value.proto3_kotlin_fixed64)
-        if (value.proto3_kotlin_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 8,
-            value.proto3_kotlin_sint64)
-        if (value.proto3_kotlin_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 7,
-            value.proto3_kotlin_uint64)
-        if (value.proto3_kotlin_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 6,
-            value.proto3_kotlin_int64)
-        if (value.proto3_kotlin_sfixed32 != 0) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5,
-            value.proto3_kotlin_sfixed32)
-        if (value.proto3_kotlin_fixed32 != 0) ProtoAdapter.FIXED32.encodeWithTag(writer, 4,
-            value.proto3_kotlin_fixed32)
-        if (value.proto3_kotlin_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3,
-            value.proto3_kotlin_sint32)
-        if (value.proto3_kotlin_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2,
-            value.proto3_kotlin_uint32)
-        if (value.proto3_kotlin_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1,
-            value.proto3_kotlin_int32)
+        if (value.proto3_kotlin_AllTypes_bytes != ByteString.EMPTY)
+            ProtoAdapter.BYTES.encodeWithTag(writer, 15, value.proto3_kotlin_AllTypes_bytes)
+        if (value.proto3_kotlin_AllTypes_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14,
+            value.proto3_kotlin_AllTypes_string)
+        if (!value.proto3_kotlin_AllTypes_double.equals(0.0))
+            ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.proto3_kotlin_AllTypes_double)
+        if (!value.proto3_kotlin_AllTypes_float.equals(0f)) ProtoAdapter.FLOAT.encodeWithTag(writer,
+            12, value.proto3_kotlin_AllTypes_float)
+        if (value.proto3_kotlin_AllTypes_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11,
+            value.proto3_kotlin_AllTypes_bool)
+        if (value.proto3_kotlin_AllTypes_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer,
+            10, value.proto3_kotlin_AllTypes_sfixed64)
+        if (value.proto3_kotlin_AllTypes_fixed64 != 0L) ProtoAdapter.FIXED64.encodeWithTag(writer,
+            9, value.proto3_kotlin_AllTypes_fixed64)
+        if (value.proto3_kotlin_AllTypes_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 8,
+            value.proto3_kotlin_AllTypes_sint64)
+        if (value.proto3_kotlin_AllTypes_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 7,
+            value.proto3_kotlin_AllTypes_uint64)
+        if (value.proto3_kotlin_AllTypes_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 6,
+            value.proto3_kotlin_AllTypes_int64)
+        if (value.proto3_kotlin_AllTypes_sfixed32 != 0) ProtoAdapter.SFIXED32.encodeWithTag(writer,
+            5, value.proto3_kotlin_AllTypes_sfixed32)
+        if (value.proto3_kotlin_AllTypes_fixed32 != 0) ProtoAdapter.FIXED32.encodeWithTag(writer, 4,
+            value.proto3_kotlin_AllTypes_fixed32)
+        if (value.proto3_kotlin_AllTypes_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3,
+            value.proto3_kotlin_AllTypes_sint32)
+        if (value.proto3_kotlin_AllTypes_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2,
+            value.proto3_kotlin_AllTypes_uint32)
+        if (value.proto3_kotlin_AllTypes_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1,
+            value.proto3_kotlin_AllTypes_int32)
       }
 
       public override fun decode(reader: ProtoReader): AllTypes {
-        var proto3_kotlin_int32: Int = 0
-        var proto3_kotlin_uint32: Int = 0
-        var proto3_kotlin_sint32: Int = 0
-        var proto3_kotlin_fixed32: Int = 0
-        var proto3_kotlin_sfixed32: Int = 0
-        var proto3_kotlin_int64: Long = 0L
-        var proto3_kotlin_uint64: Long = 0L
-        var proto3_kotlin_sint64: Long = 0L
-        var proto3_kotlin_fixed64: Long = 0L
-        var proto3_kotlin_sfixed64: Long = 0L
-        var proto3_kotlin_bool: Boolean = false
-        var proto3_kotlin_float: Float = 0f
-        var proto3_kotlin_double: Double = 0.0
-        var proto3_kotlin_string: String = ""
-        var proto3_kotlin_bytes: ByteString = ByteString.EMPTY
+        var proto3_kotlin_AllTypes_int32: Int = 0
+        var proto3_kotlin_AllTypes_uint32: Int = 0
+        var proto3_kotlin_AllTypes_sint32: Int = 0
+        var proto3_kotlin_AllTypes_fixed32: Int = 0
+        var proto3_kotlin_AllTypes_sfixed32: Int = 0
+        var proto3_kotlin_AllTypes_int64: Long = 0L
+        var proto3_kotlin_AllTypes_uint64: Long = 0L
+        var proto3_kotlin_AllTypes_sint64: Long = 0L
+        var proto3_kotlin_AllTypes_fixed64: Long = 0L
+        var proto3_kotlin_AllTypes_sfixed64: Long = 0L
+        var proto3_kotlin_AllTypes_bool: Boolean = false
+        var proto3_kotlin_AllTypes_float: Float = 0f
+        var proto3_kotlin_AllTypes_double: Double = 0.0
+        var proto3_kotlin_AllTypes_string: String = ""
+        var proto3_kotlin_AllTypes_bytes: ByteString = ByteString.EMPTY
         var nested_enum: NestedEnum = NestedEnum.UNKNOWN
         var nested_message: NestedMessage? = null
         var any: AnyMessage? = null
@@ -1855,21 +1857,21 @@ public class AllTypes(
         var oneof_timestamp: Instant? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> proto3_kotlin_int32 = ProtoAdapter.INT32.decode(reader)
-            2 -> proto3_kotlin_uint32 = ProtoAdapter.UINT32.decode(reader)
-            3 -> proto3_kotlin_sint32 = ProtoAdapter.SINT32.decode(reader)
-            4 -> proto3_kotlin_fixed32 = ProtoAdapter.FIXED32.decode(reader)
-            5 -> proto3_kotlin_sfixed32 = ProtoAdapter.SFIXED32.decode(reader)
-            6 -> proto3_kotlin_int64 = ProtoAdapter.INT64.decode(reader)
-            7 -> proto3_kotlin_uint64 = ProtoAdapter.UINT64.decode(reader)
-            8 -> proto3_kotlin_sint64 = ProtoAdapter.SINT64.decode(reader)
-            9 -> proto3_kotlin_fixed64 = ProtoAdapter.FIXED64.decode(reader)
-            10 -> proto3_kotlin_sfixed64 = ProtoAdapter.SFIXED64.decode(reader)
-            11 -> proto3_kotlin_bool = ProtoAdapter.BOOL.decode(reader)
-            12 -> proto3_kotlin_float = ProtoAdapter.FLOAT.decode(reader)
-            13 -> proto3_kotlin_double = ProtoAdapter.DOUBLE.decode(reader)
-            14 -> proto3_kotlin_string = ProtoAdapter.STRING.decode(reader)
-            15 -> proto3_kotlin_bytes = ProtoAdapter.BYTES.decode(reader)
+            1 -> proto3_kotlin_AllTypes_int32 = ProtoAdapter.INT32.decode(reader)
+            2 -> proto3_kotlin_AllTypes_uint32 = ProtoAdapter.UINT32.decode(reader)
+            3 -> proto3_kotlin_AllTypes_sint32 = ProtoAdapter.SINT32.decode(reader)
+            4 -> proto3_kotlin_AllTypes_fixed32 = ProtoAdapter.FIXED32.decode(reader)
+            5 -> proto3_kotlin_AllTypes_sfixed32 = ProtoAdapter.SFIXED32.decode(reader)
+            6 -> proto3_kotlin_AllTypes_int64 = ProtoAdapter.INT64.decode(reader)
+            7 -> proto3_kotlin_AllTypes_uint64 = ProtoAdapter.UINT64.decode(reader)
+            8 -> proto3_kotlin_AllTypes_sint64 = ProtoAdapter.SINT64.decode(reader)
+            9 -> proto3_kotlin_AllTypes_fixed64 = ProtoAdapter.FIXED64.decode(reader)
+            10 -> proto3_kotlin_AllTypes_sfixed64 = ProtoAdapter.SFIXED64.decode(reader)
+            11 -> proto3_kotlin_AllTypes_bool = ProtoAdapter.BOOL.decode(reader)
+            12 -> proto3_kotlin_AllTypes_float = ProtoAdapter.FLOAT.decode(reader)
+            13 -> proto3_kotlin_AllTypes_double = ProtoAdapter.DOUBLE.decode(reader)
+            14 -> proto3_kotlin_AllTypes_string = ProtoAdapter.STRING.decode(reader)
+            15 -> proto3_kotlin_AllTypes_bytes = ProtoAdapter.BYTES.decode(reader)
             16 -> try {
               nested_enum = NestedEnum.ADAPTER.decode(reader)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
@@ -1984,21 +1986,21 @@ public class AllTypes(
           }
         }
         return AllTypes(
-          proto3_kotlin_int32 = proto3_kotlin_int32,
-          proto3_kotlin_uint32 = proto3_kotlin_uint32,
-          proto3_kotlin_sint32 = proto3_kotlin_sint32,
-          proto3_kotlin_fixed32 = proto3_kotlin_fixed32,
-          proto3_kotlin_sfixed32 = proto3_kotlin_sfixed32,
-          proto3_kotlin_int64 = proto3_kotlin_int64,
-          proto3_kotlin_uint64 = proto3_kotlin_uint64,
-          proto3_kotlin_sint64 = proto3_kotlin_sint64,
-          proto3_kotlin_fixed64 = proto3_kotlin_fixed64,
-          proto3_kotlin_sfixed64 = proto3_kotlin_sfixed64,
-          proto3_kotlin_bool = proto3_kotlin_bool,
-          proto3_kotlin_float = proto3_kotlin_float,
-          proto3_kotlin_double = proto3_kotlin_double,
-          proto3_kotlin_string = proto3_kotlin_string,
-          proto3_kotlin_bytes = proto3_kotlin_bytes,
+          proto3_kotlin_AllTypes_int32 = proto3_kotlin_AllTypes_int32,
+          proto3_kotlin_AllTypes_uint32 = proto3_kotlin_AllTypes_uint32,
+          proto3_kotlin_AllTypes_sint32 = proto3_kotlin_AllTypes_sint32,
+          proto3_kotlin_AllTypes_fixed32 = proto3_kotlin_AllTypes_fixed32,
+          proto3_kotlin_AllTypes_sfixed32 = proto3_kotlin_AllTypes_sfixed32,
+          proto3_kotlin_AllTypes_int64 = proto3_kotlin_AllTypes_int64,
+          proto3_kotlin_AllTypes_uint64 = proto3_kotlin_AllTypes_uint64,
+          proto3_kotlin_AllTypes_sint64 = proto3_kotlin_AllTypes_sint64,
+          proto3_kotlin_AllTypes_fixed64 = proto3_kotlin_AllTypes_fixed64,
+          proto3_kotlin_AllTypes_sfixed64 = proto3_kotlin_AllTypes_sfixed64,
+          proto3_kotlin_AllTypes_bool = proto3_kotlin_AllTypes_bool,
+          proto3_kotlin_AllTypes_float = proto3_kotlin_AllTypes_float,
+          proto3_kotlin_AllTypes_double = proto3_kotlin_AllTypes_double,
+          proto3_kotlin_AllTypes_string = proto3_kotlin_AllTypes_string,
+          proto3_kotlin_AllTypes_bytes = proto3_kotlin_AllTypes_bytes,
           nested_enum = nested_enum,
           nested_message = nested_message,
           any = any,
