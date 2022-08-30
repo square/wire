@@ -22,7 +22,12 @@ import com.squareup.wire.schema.internal.parser.OptionElement.Companion.PACKED_O
 import kotlin.jvm.JvmStatic
 
 data class Field(
-  val packageName: String?,
+  // The namespace in which the field is defined. For top-level extensions,
+  // the namespace is the package of the file in which the extension is
+  // declared or null if the file has no package. For other fields and
+  // extensions defined inside a message, this is the fully-qualified name
+  // of the enclosing message.
+  val namespace: String?,
 
   val location: Location,
 
@@ -75,7 +80,7 @@ data class Field(
   val qualifiedName: String
     get() {
       return when {
-        packageName != null -> "$packageName.$name"
+        namespace != null -> "$namespace.$name"
         else -> name
       }
     }
@@ -159,7 +164,7 @@ data class Field(
   /** Returns a copy of this whose options is [options].  */
   private fun withOptions(options: Options): Field {
     val result = Field(
-      packageName = packageName,
+      namespace = namespace,
       location = location,
       label = label,
       name = name,
@@ -217,13 +222,13 @@ data class Field(
 
     @JvmStatic
     fun fromElements(
-      packageName: String?,
+      namespace: String?,
       fieldElements: List<FieldElement>,
       extension: Boolean,
       oneOf: Boolean
     ) = fieldElements.map {
       Field(
-        packageName = packageName,
+        namespace = namespace,
         location = it.location,
         label = it.label,
         name = it.name,

@@ -70,7 +70,7 @@ fun eligibleAsAnnotationMember(schema: Schema, field: Field): Boolean {
     return false
   }
 
-  if (field.packageName == "google.protobuf" || field.packageName == "wire") {
+  if (field.namespace == "google.protobuf" || field.namespace == "wire") {
     return false // Don't emit annotations for packed, since, etc.
   }
 

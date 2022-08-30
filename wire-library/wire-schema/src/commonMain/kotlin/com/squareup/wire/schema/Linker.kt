@@ -254,7 +254,7 @@ class Linker {
     return null
   }
 
-  private fun resolveContext(): String {
+  fun resolveContext(): String {
     for (i in contextStack.indices.reversed()) {
       val context = contextStack[i]
       when {
@@ -266,24 +266,11 @@ class Linker {
           return packageName ?: ""
         }
         context is Field && context.isExtension -> {
-          return context.packageName ?: ""
+          return context.namespace ?: ""
         }
       }
     }
     throw IllegalStateException()
-  }
-
-  /** Returns the current package name from the context stack. */
-  fun fullyQualifiedNameOfContext(): String {
-    val parts = mutableListOf<String>()
-    for (context in contextStack) {
-      if (context is Type) {
-        parts.add(context.name)
-      } else if (context is ProtoFile && context.packageName != null) {
-        parts.add(context.packageName)
-      }
-    }
-    return parts.joinToString(".")
   }
 
   /**

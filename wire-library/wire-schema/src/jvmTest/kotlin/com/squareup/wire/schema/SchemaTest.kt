@@ -883,8 +883,8 @@ class SchemaTest {
     val messageType = schema.getType("Message") as MessageType
 
     assertThat(messageType.field("a")).isNull()
-    assertThat(messageType.extensionField("p1.a")!!.packageName).isEqualTo("p1")
-    assertThat(messageType.extensionField("p2.a")!!.packageName).isEqualTo("p2")
+    assertThat(messageType.extensionField("p1.a")!!.namespace).isEqualTo("p1")
+    assertThat(messageType.extensionField("p2.a")!!.namespace).isEqualTo("p2")
   }
 
   @Test

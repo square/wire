@@ -265,9 +265,9 @@ data class MessageType(
         documentation = messageElement.documentation,
         name = messageElement.name,
         declaredFields =
-        fromElements(packageName, messageElement.fields, extension = false, oneOf = false),
+        fromElements(namespace, messageElement.fields, extension = false, oneOf = false),
         extensionFields = mutableListOf(), // Extension fields are populated during linking.
-        oneOfs = fromElements(packageName, messageElement.oneOfs, false),
+        oneOfs = fromElements(namespace, messageElement.oneOfs),
         nestedTypes = nestedTypes,
         nestedExtendList = nestedExtends,
         extensionsList = fromElements(messageElement.extensions),
