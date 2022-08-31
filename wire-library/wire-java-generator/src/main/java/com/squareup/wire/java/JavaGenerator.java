@@ -53,6 +53,7 @@ import com.squareup.wire.schema.EnumConstant;
 import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.Extend;
 import com.squareup.wire.schema.Field;
+import com.squareup.wire.schema.internal.NameFactory;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.OneOf;
 import com.squareup.wire.schema.Options;
@@ -81,10 +82,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
+
 import okio.ByteString;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.squareup.wire.internal._PlatformKt.camelCase;
+import static com.squareup.wire.schema.internal.JvmLanguages.annotationName;
 import static com.squareup.wire.schema.internal.JvmLanguages.annotationTargetType;
 import static com.squareup.wire.schema.internal.JvmLanguages.builtInAdapterString;
 import static com.squareup.wire.schema.internal.JvmLanguages.eligibleAsAnnotationMember;
@@ -314,18 +317,7 @@ public final class JavaGenerator {
         nameToJavaName.put(service.type(), className);
       }
 
-      for (Extend extend : protoFile.getExtendList()) {
-        if (annotationTargetType(extend) == null) continue;
-
-        for (Field field : extend.getFields()) {
-          if (!eligibleAsAnnotationMember(schema, field)) continue;
-
-          ProtoMember protoMember = extend.member(field);
-          String simpleName = camelCase(protoMember.getSimpleName(), true) + "Option";
-          ClassName className = ClassName.get(javaPackage, simpleName);
-          memberToJavaName.put(protoMember, className);
-        }
-      }
+      putAllExtensions(schema, protoFile, protoFile.getTypes(), protoFile.getExtendList(), memberToJavaName);
     }
 
     nameToJavaName.putAll(BUILT_IN_TYPES_MAP);
@@ -333,6 +325,37 @@ public final class JavaGenerator {
     return new JavaGenerator(schema, nameToJavaName, memberToJavaName, new Profile(),
         false /* emitAndroid */, false /* emitAndroidAnnotations */, false /* emitCompact */,
         false /* emitDeclaredOptions */, false /* emitAppliedOptions */, false /* buildersOnly */);
+  }
+
+  private static void putAllExtensions(Schema schema, ProtoFile protoFile, List<Type> types,
+      List<Extend> extendList, Map<ProtoMember, TypeName> memberToJavaName) {
+
+    for (Extend extend : extendList) {
+      if (annotationTargetType(extend) == null) continue;
+
+      for (Field field : extend.getFields()) {
+        if (!eligibleAsAnnotationMember(schema, field)) continue;
+
+        ProtoMember protoMember = extend.member(field);
+        memberToJavaName.put(protoMember, annotationName(protoFile, field, new ClassNameFactory()));
+      }
+    }
+
+    for (Type type : types) {
+      putAllExtensions(schema, protoFile, type.getNestedTypes(), type.getNestedExtendList(), memberToJavaName);
+    }
+  }
+
+  private static class ClassNameFactory implements NameFactory<ClassName> {
+    @Override
+    public ClassName newName(String packageName, String simpleName) {
+      return ClassName.get(packageName, simpleName);
+    }
+
+    @Override
+    public ClassName nestedName(ClassName enclosing, String simpleName) {
+      return enclosing.nestedClass(simpleName);
+    }
   }
 
   private static void putAll(Map<ProtoType, TypeName> wireToJava, String javaPackage,
@@ -722,6 +745,15 @@ public final class JavaGenerator {
 
     for (Type nestedType : type.getNestedTypes()) {
       builder.addType(generateType(nestedType));
+    }
+
+    for (Extend nestedExtend : type.getNestedExtendList()) {
+      for (Field extension : nestedExtend.getFields()) {
+        TypeSpec extensionOption = generateOptionType(nestedExtend, extension);
+        if (extensionOption != null) {
+          builder.addType(extensionOption);
+        }
+      }
     }
 
     if (!emitCompact) {
@@ -2164,8 +2196,7 @@ public final class JavaGenerator {
     if (!eligibleAsAnnotationMember(schema, field)) return null;
 
     ProtoFile protoFile = schema.protoFile(field.getLocation().getPath());
-    String simpleName = camelCase(field.getName(), true) + "Option";
-    ClassName type = ClassName.get(javaPackage(protoFile), simpleName);
+    ClassName type = annotationName(protoFile, field, new ClassNameFactory());
     CodeBlock fieldValue = fieldInitializer(field.getType(), value, true);
 
     return AnnotationSpec.builder(type)

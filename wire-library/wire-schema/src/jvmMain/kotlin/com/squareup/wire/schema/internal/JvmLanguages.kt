@@ -17,6 +17,7 @@
 package com.squareup.wire.schema.internal
 
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.internal.camelCase
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Extend
 import com.squareup.wire.schema.Field
@@ -24,6 +25,7 @@ import com.squareup.wire.schema.Options
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Schema
+import java.lang.NullPointerException
 import java.lang.annotation.ElementType
 import java.math.BigInteger
 import java.util.Locale
@@ -134,4 +136,57 @@ fun javaPackage(protoFile: ProtoFile): String {
   if (javaPackage != null) return javaPackage
 
   return protoFile.packageName ?: ""
+}
+
+fun <T> annotationName(protoFile: ProtoFile, extension: Field, factory: NameFactory<T>): T {
+  val simpleName = camelCase(extension.name, true) + "Option"
+  var enclosing = extension.namespace
+  val protoPackage = protoFile.packageName
+  // If extension is defined inside a message, then the namespace is not just
+  // the package name but also includes names of enclosing messages.
+  if (protoPackage != null) {
+    enclosing = if (enclosing == protoPackage) {
+      null
+    } else {
+      if(enclosing == null || !enclosing.startsWith("$protoPackage.")) {
+        throw IllegalStateException(String.format(
+          "enclosing type '%s' must have package name '%s' as prefix",
+          enclosing, protoPackage
+        ))
+      }
+      enclosing!!.substring(protoPackage.length + 1)
+    }
+  }
+  // The last element of names is the annotation name. If there are other elements,
+  // they are enclosing message names (first one is topmost-level message).
+  val names: List<String>
+  if (enclosing != null) {
+    val outers = enclosing.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+    names = ArrayList(outers.size + 1)
+    names.addAll(listOf(*outers))
+    names.add(simpleName)
+  } else {
+    names = listOf(simpleName)
+  }
+  // we know that names has at least one element (simpleName), so the loop
+  // below will produce a non-null type
+  var type: T? = null
+  for (n in names) {
+    type = if (type == null) {
+      factory.newName(javaPackage(protoFile), n)
+    } else {
+      factory.nestedName(type, n)
+    }
+  }
+  if (type == null) {
+    // should not be possible
+    throw NullPointerException()
+  }
+  return type
+}
+
+/** NameFactory is an abstraction for creating language-specific (Java vs Kotlin) type names. */
+interface NameFactory<T> {
+  fun newName(packageName: String, simpleName: String): T
+  fun nestedName(enclosing: T, simpleName: String): T
 }

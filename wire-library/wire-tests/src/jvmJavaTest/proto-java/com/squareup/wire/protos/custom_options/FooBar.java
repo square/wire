@@ -24,6 +24,10 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Collections;
 import java.util.List;
 import okio.ByteString;
@@ -619,6 +623,12 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
         return FooBarBazEnum.fromValue(value);
       }
     }
+  }
+
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target(ElementType.TYPE)
+  public @interface FoobarStringOption {
+    String value();
   }
 
   private static final class ProtoAdapter_FooBar extends ProtoAdapter<FooBar> {

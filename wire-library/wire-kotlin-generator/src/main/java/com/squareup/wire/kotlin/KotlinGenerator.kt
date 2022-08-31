@@ -73,7 +73,6 @@ import com.squareup.wire.WireRpc
 import com.squareup.wire.internal.boxedOneOfClassName
 import com.squareup.wire.internal.boxedOneOfKeyFieldName
 import com.squareup.wire.internal.boxedOneOfKeysFieldName
-import com.squareup.wire.internal.camelCase
 import com.squareup.wire.kotlin.grpcserver.KotlinGrpcGenerator
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumConstant
@@ -98,6 +97,8 @@ import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
+import com.squareup.wire.schema.internal.NameFactory
+import com.squareup.wire.schema.internal.annotationName
 import com.squareup.wire.schema.internal.builtInAdapterString
 import com.squareup.wire.schema.internal.eligibleAsAnnotationMember
 import com.squareup.wire.schema.internal.javaPackage
@@ -544,6 +545,15 @@ class KotlinGenerator private constructor(
     classBuilder.addType(companionBuilder.build())
 
     type.nestedTypes.forEach { classBuilder.addType(generateType(it)) }
+
+    type.nestedExtendList.forEach { extend ->
+      extend.fields.forEach {
+        val optionType = generateOptionType(extend, it)
+        if (optionType != null) {
+          classBuilder.addType(optionType)
+        }
+      }
+    }
 
     return classBuilder.build()
   }
@@ -2246,8 +2256,7 @@ class KotlinGenerator private constructor(
     if (!eligibleAsAnnotationMember(schema, field)) return null
 
     val protoFile: ProtoFile = schema.protoFile(field.location.path) ?: return null
-    val simpleName = camelCase(field.name, upperCamel = true) + "Option"
-    val type = ClassName(javaPackage(protoFile), simpleName)
+    val type = annotationName(protoFile, field, ClassNameFactory())
     val fieldValue = defaultFieldInitializer(field.type!!, value, annotation = true)
 
     return AnnotationSpec.builder(type)
@@ -2529,16 +2538,7 @@ class KotlinGenerator private constructor(
           typeToKotlinName[service.type] = className
         }
 
-        for (extend in protoFile.extendList) {
-          if (extend.annotationTargets.isEmpty()) continue
-          for (field in extend.fields) {
-            if (!eligibleAsAnnotationMember(schema, field)) continue
-            val protoMember = extend.member(field)
-            val simpleName = camelCase(protoMember.simpleName, upperCamel = true) + "Option"
-            val className = ClassName(kotlinPackage, simpleName)
-            memberToKotlinName[protoMember] = className
-          }
-        }
+        putAllExtensions(schema, protoFile, protoFile.types, protoFile.extendList, memberToKotlinName)
       }
 
       typeToKotlinName.putAll(BUILT_IN_TYPES)
@@ -2559,6 +2559,31 @@ class KotlinGenerator private constructor(
         nameSuffix = nameSuffix,
         buildersOnly = buildersOnly,
       )
+    }
+
+    private fun putAllExtensions(schema: Schema, protoFile: ProtoFile, types: List<Type>,
+        extendList: List<Extend>, memberToKotlinName: MutableMap<ProtoMember, TypeName>) {
+      for (extend in extendList) {
+        if (extend.annotationTargets.isEmpty()) continue
+        for (field in extend.fields) {
+          if (!eligibleAsAnnotationMember(schema, field)) continue
+          val protoMember = extend.member(field)
+          memberToKotlinName[protoMember] = annotationName(protoFile, field, ClassNameFactory())
+        }
+      }
+      for (type in types) {
+        putAllExtensions(schema, protoFile, type.nestedTypes, type.nestedExtendList, memberToKotlinName)
+      }
+    }
+
+    private class ClassNameFactory : NameFactory<ClassName> {
+      override fun newName(packageName: String, simpleName: String): ClassName {
+        return ClassName(packageName, simpleName)
+      }
+
+      override fun nestedName(enclosing: ClassName, simpleName: String): ClassName {
+        return enclosing.nestedClass(simpleName)
+      }
     }
 
     private val Extend.annotationTargets: List<AnnotationTarget>
