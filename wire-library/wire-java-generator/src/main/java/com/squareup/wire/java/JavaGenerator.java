@@ -86,7 +86,6 @@ import javax.annotation.Nullable;
 import okio.ByteString;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.squareup.wire.internal._PlatformKt.camelCase;
 import static com.squareup.wire.schema.internal.JvmLanguages.annotationName;
 import static com.squareup.wire.schema.internal.JvmLanguages.annotationTargetType;
 import static com.squareup.wire.schema.internal.JvmLanguages.builtInAdapterString;
@@ -317,7 +316,9 @@ public final class JavaGenerator {
         nameToJavaName.put(service.type(), className);
       }
 
-      putAllExtensions(schema, protoFile, protoFile.getTypes(), protoFile.getExtendList(), memberToJavaName);
+      putAllExtensions(schema, protoFile,
+          protoFile.getTypes(), protoFile.getExtendList(),
+          memberToJavaName);
     }
 
     nameToJavaName.putAll(BUILT_IN_TYPES_MAP);
@@ -342,7 +343,9 @@ public final class JavaGenerator {
     }
 
     for (Type type : types) {
-      putAllExtensions(schema, protoFile, type.getNestedTypes(), type.getNestedExtendList(), memberToJavaName);
+      putAllExtensions(schema, protoFile,
+          type.getNestedTypes(), type.getNestedExtendList(),
+          memberToJavaName);
     }
   }
 

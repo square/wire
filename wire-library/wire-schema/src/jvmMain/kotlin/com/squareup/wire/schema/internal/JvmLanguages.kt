@@ -38,7 +38,7 @@ import java.util.Locale
 
 fun builtInAdapterString(type: ProtoType): String? {
   if (type.isScalar) {
-    return "${ProtoAdapter::class.java.name}#${type.toString().toUpperCase(Locale.US)}"
+    return "${ProtoAdapter::class.java.name}#${type.toString().uppercase(Locale.US)}"
   }
   return when (type) {
     ProtoType.DURATION -> ProtoAdapter::class.java.name + "#DURATION"
@@ -154,7 +154,7 @@ fun <T> annotationName(protoFile: ProtoFile, extension: Field, factory: NameFact
           enclosing, protoPackage
         ))
       }
-      enclosing!!.substring(protoPackage.length + 1)
+      enclosing.substring(protoPackage.length + 1)
     }
   }
   // The last element of names is the annotation name. If there are other elements,

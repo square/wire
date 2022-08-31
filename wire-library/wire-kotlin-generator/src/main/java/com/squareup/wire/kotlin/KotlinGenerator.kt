@@ -2538,7 +2538,9 @@ class KotlinGenerator private constructor(
           typeToKotlinName[service.type] = className
         }
 
-        putAllExtensions(schema, protoFile, protoFile.types, protoFile.extendList, memberToKotlinName)
+        putAllExtensions(schema, protoFile,
+            protoFile.types, protoFile.extendList,
+            memberToKotlinName)
       }
 
       typeToKotlinName.putAll(BUILT_IN_TYPES)
@@ -2572,7 +2574,9 @@ class KotlinGenerator private constructor(
         }
       }
       for (type in types) {
-        putAllExtensions(schema, protoFile, type.nestedTypes, type.nestedExtendList, memberToKotlinName)
+        putAllExtensions(schema, protoFile,
+            type.nestedTypes, type.nestedExtendList,
+            memberToKotlinName)
       }
     }
 
