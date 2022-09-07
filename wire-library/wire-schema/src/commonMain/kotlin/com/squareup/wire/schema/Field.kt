@@ -22,12 +22,15 @@ import com.squareup.wire.schema.internal.parser.OptionElement.Companion.PACKED_O
 import kotlin.jvm.JvmStatic
 
 data class Field(
-  // The namespace in which the field is defined. For top-level extensions,
-  // the namespace is the package of the file in which the extension is
-  // declared or null if the file has no package. For other fields and
-  // extensions defined inside a message, this is the fully-qualified name
-  // of the enclosing message.
-  val namespace: String?,
+  /**
+   * The namespaces in which the field is defined. For top-level extensions in a
+   * file that has no package declaration, this may be empty. For normal fields
+   * and extensions nested inside a message, the first entry will always be the
+   * package name, which might be the empty string if defined in a file that has
+   * no package declaration. Subsequent entries will be the names of enclosing
+   * messages, outer-most to inner-most.
+   */
+  val namespaces: List<String>,
 
   val location: Location,
 
@@ -74,14 +77,27 @@ data class Field(
     private set
 
   /**
-   * Returns this field's name, prefixed with its package name. Uniquely identifies extension
+   * Returns this field's name, prefixed with its namespaces. Uniquely identifies extension
    * fields, such as in options.
    */
   val qualifiedName: String
     get() {
+      val prefix = namespaces.joinToString(".").removePrefix(".")
       return when {
-        namespace != null -> "$namespace.$name"
+        prefix.isNotEmpty() -> "$prefix.$name"
         else -> name
+      }
+    }
+
+  /**
+   * Returns the package in which this field is defined. If the file that
+   * defined this field has no package declaration, returns the empty string.
+   */
+  val packageName: String
+    get() {
+      return when {
+        namespaces.isNotEmpty() -> namespaces[0]
+        else -> ""
       }
     }
 
@@ -164,7 +180,7 @@ data class Field(
   /** Returns a copy of this whose options is [options].  */
   private fun withOptions(options: Options): Field {
     val result = Field(
-      namespace = namespace,
+      namespaces = namespaces,
       location = location,
       label = label,
       name = name,
@@ -222,13 +238,13 @@ data class Field(
 
     @JvmStatic
     fun fromElements(
-      namespace: String?,
+      namespaces: List<String>,
       fieldElements: List<FieldElement>,
       extension: Boolean,
       oneOf: Boolean
     ) = fieldElements.map {
       Field(
-        namespace = namespace,
+        namespaces = namespaces,
         location = it.location,
         label = it.label,
         name = it.name,

@@ -1246,7 +1246,7 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.Person")
-    assertThat(code).contains("val common_proto_Person_Gender: Gender")
+    assertThat(code).contains("val common_proto_Gender: Gender")
   }
 
   @Test fun generateTypeUsesPackageNameOnFieldAndClassNameClashWithinPackage() {
@@ -1273,7 +1273,7 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.A")
-    assertThat(code).contains("val Status: AnotherStatus")
+    assertThat(code).contains("val common_proto_Status: AnotherStatus")
   }
 
   @Test fun usesAny() {

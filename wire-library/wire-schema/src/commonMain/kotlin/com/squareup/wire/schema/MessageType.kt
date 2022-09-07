@@ -244,7 +244,7 @@ data class MessageType(
     internal val DEPRECATED = ProtoMember.get(MESSAGE_OPTIONS, "deprecated")
 
     @JvmStatic fun fromElement(
-      packageName: String?,
+      namespaces: List<String>,
       protoType: ProtoType,
       messageElement: MessageElement,
       syntax: Syntax
@@ -252,12 +252,14 @@ data class MessageType(
       check(messageElement.groups.isEmpty()) {
         "${messageElement.groups[0].location}: 'group' is not supported"
       }
+      // namespaces for all child elements include this message's name
+      val childNamespaces = when{
+        namespaces.isEmpty() -> listOf("", messageElement.name) // first element must be package name
+        else -> namespaces.plus(messageElement.name)
+      }
       val nestedTypes =
-        messageElement.nestedTypes.map { get(packageName, protoType.nestedType(it.name), it, syntax) }
-
-      // namespace for nested extensions is fully-qualified name of enclosing message
-      val namespace = if ((packageName ?: "") == "") messageElement.name else "${packageName}.${messageElement.name}"
-      val nestedExtends = fromElements(namespace, messageElement.extendDeclarations)
+        messageElement.nestedTypes.map { get(childNamespaces, protoType.nestedType(it.name), it, syntax) }
+      val nestedExtends = fromElements(childNamespaces, messageElement.extendDeclarations)
 
       return MessageType(
         type = protoType,
@@ -265,9 +267,9 @@ data class MessageType(
         documentation = messageElement.documentation,
         name = messageElement.name,
         declaredFields =
-        fromElements(namespace, messageElement.fields, extension = false, oneOf = false),
+        fromElements(childNamespaces, messageElement.fields, extension = false, oneOf = false),
         extensionFields = mutableListOf(), // Extension fields are populated during linking.
-        oneOfs = fromElements(namespace, messageElement.oneOfs),
+        oneOfs = fromElements(childNamespaces, messageElement.oneOfs),
         nestedTypes = nestedTypes,
         nestedExtendList = nestedExtends,
         extensionsList = fromElements(messageElement.extensions),

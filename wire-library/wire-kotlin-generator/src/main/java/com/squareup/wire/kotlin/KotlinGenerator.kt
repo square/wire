@@ -101,7 +101,9 @@ import com.squareup.wire.schema.internal.NameFactory
 import com.squareup.wire.schema.internal.annotationName
 import com.squareup.wire.schema.internal.builtInAdapterString
 import com.squareup.wire.schema.internal.eligibleAsAnnotationMember
+import com.squareup.wire.schema.internal.hasEponymousType
 import com.squareup.wire.schema.internal.javaPackage
+import com.squareup.wire.schema.internal.legacyQualifiedFieldName
 import com.squareup.wire.schema.internal.optionValueToInt
 import com.squareup.wire.schema.internal.optionValueToLong
 import java.util.Locale
@@ -441,9 +443,9 @@ class KotlinGenerator private constructor(
               when (fieldOrOneOf) {
                 is Field -> {
                   if (fieldOrOneOf.name == fieldOrOneOf.type!!.simpleName ||
-                    schema.getType(fieldOrOneOf.qualifiedName) != null
+                    hasEponymousType(schema, fieldOrOneOf)
                   ) {
-                    newName(fieldOrOneOf.qualifiedName, fieldOrOneOf)
+                    newName(legacyQualifiedFieldName(fieldOrOneOf), fieldOrOneOf)
                   } else {
                     newName(fieldOrOneOf.name, fieldOrOneOf)
                   }

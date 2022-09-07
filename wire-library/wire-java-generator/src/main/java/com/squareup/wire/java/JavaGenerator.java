@@ -90,7 +90,9 @@ import static com.squareup.wire.schema.internal.JvmLanguages.annotationName;
 import static com.squareup.wire.schema.internal.JvmLanguages.annotationTargetType;
 import static com.squareup.wire.schema.internal.JvmLanguages.builtInAdapterString;
 import static com.squareup.wire.schema.internal.JvmLanguages.eligibleAsAnnotationMember;
+import static com.squareup.wire.schema.internal.JvmLanguages.hasEponymousType;
 import static com.squareup.wire.schema.internal.JvmLanguages.javaPackage;
+import static com.squareup.wire.schema.internal.JvmLanguages.legacyQualifiedFieldName;
 import static com.squareup.wire.schema.internal.JvmLanguages.optionValueToInt;
 import static com.squareup.wire.schema.internal.JvmLanguages.optionValueToLong;
 import static javax.lang.model.element.Modifier.ABSTRACT;
@@ -220,8 +222,8 @@ public final class JavaGenerator {
           String suggestion = collidingNames.contains(field.getName())
             || (field.getName().equals(field.getType().getSimpleName())
               && !field.getType().isScalar())
-            || schema.getType(field.getQualifiedName()) != null
-              ? field.getQualifiedName()
+            || hasEponymousType(schema, field)
+              ? legacyQualifiedFieldName(field)
               : field.getName();
           nameAllocator.newName(suggestion, field);
         }

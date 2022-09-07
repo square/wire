@@ -60,10 +60,10 @@ sealed class Type {
   }
 
   companion object {
-    fun get(packageName: String?, protoType: ProtoType, type: TypeElement, syntax: Syntax): Type {
+    fun get(namespaces: List<String>, protoType: ProtoType, type: TypeElement, syntax: Syntax): Type {
       return when (type) {
         is EnumElement -> fromElement(protoType, type, syntax)
-        is MessageElement -> fromElement(packageName, protoType, type, syntax)
+        is MessageElement -> fromElement(namespaces, protoType, type, syntax)
         else -> throw IllegalArgumentException("unexpected type: $type")
       }
     }
@@ -75,7 +75,11 @@ sealed class Type {
       syntax: Syntax
     ) = elements.map {
       val protoType = ProtoType.get(packageName, it.name)
-      return@map get(packageName, protoType, it, syntax)
+      val namespaces = when {
+        packageName == null -> listOf()
+        else -> listOf(packageName)
+      }
+      return@map get(namespaces, protoType, it, syntax)
     }
 
     private fun toElement(type: Type): TypeElement {

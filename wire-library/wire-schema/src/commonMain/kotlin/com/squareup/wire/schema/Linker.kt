@@ -256,17 +256,13 @@ class Linker {
 
   fun resolveContext(): String {
     for (i in contextStack.indices.reversed()) {
-      val context = contextStack[i]
-      when {
-        context is Type -> {
+      when (val context = contextStack[i]) {
+        is Type -> {
           return context.type.toString()
         }
-        context is ProtoFile -> {
+        is ProtoFile -> {
           val packageName = context.packageName
           return packageName ?: ""
-        }
-        context is Field && context.isExtension -> {
-          return context.namespace ?: ""
         }
       }
     }

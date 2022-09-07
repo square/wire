@@ -1266,7 +1266,7 @@ class WireRunTest {
         |import "squareup/options/documentation.proto";
         |
         |message Octagon {
-        |  option (documentation_url) = "https://en.wikipedia.org/wiki/Octagon";
+        |  option (options.documentation_url) = "https://en.wikipedia.org/wiki/Octagon";
         |  optional bool stop = 1;
         |}
         """.trimMargin()

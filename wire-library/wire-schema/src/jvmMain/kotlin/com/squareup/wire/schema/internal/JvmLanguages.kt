@@ -25,6 +25,7 @@ import com.squareup.wire.schema.Options
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Schema
+import com.squareup.wire.schema.Type
 import java.lang.NullPointerException
 import java.lang.annotation.ElementType
 import java.math.BigInteger
@@ -138,35 +139,37 @@ fun javaPackage(protoFile: ProtoFile): String {
   return protoFile.packageName ?: ""
 }
 
+fun hasEponymousType(schema: Schema, field: Field): Boolean {
+  // See if the package in which the field is defined already has a
+  // type by the same name. If so, the field and type name may collide.
+  return schema.getType(legacyQualifiedFieldName(field)) != null
+  // TODO: This is likely incomplete. Ideally, we could search for
+  //   symbols in the generated Java/Kotlin code to find conflicts based
+  //   on the actual lexical scope in which the field is defined. And
+  //   even then, instead of mangling the field name, we could instead
+  //   use fully-qualified references to the types.
+}
+
+fun legacyQualifiedFieldName(field: Field): String {
+  // for backwards compatibility with older generated code, we use
+  // package name + field name instead of the fully-qualified name.
+  return when {
+    field.packageName.isBlank() -> field.name
+    else -> "${field.packageName}.${field.name}"
+  }
+  // TODO: If a qualified name is really appropriate, it should
+  //   be the fully-qualified name, not this weird hybrid.
+}
+
 fun <T> annotationName(protoFile: ProtoFile, extension: Field, factory: NameFactory<T>): T {
   val simpleName = camelCase(extension.name, true) + "Option"
-  var enclosing = extension.namespace
-  val protoPackage = protoFile.packageName
-  // If extension is defined inside a message, then the namespace is not just
-  // the package name but also includes names of enclosing messages.
-  if (protoPackage != null) {
-    enclosing = if (enclosing == protoPackage) {
-      null
-    } else {
-      if(enclosing == null || !enclosing.startsWith("$protoPackage.")) {
-        throw IllegalStateException(String.format(
-          "enclosing type '%s' must have package name '%s' as prefix",
-          enclosing, protoPackage
-        ))
-      }
-      enclosing.substring(protoPackage.length + 1)
-    }
-  }
-  // The last element of names is the annotation name. If there are other elements,
-  // they are enclosing message names (first one is topmost-level message).
-  val names: List<String>
-  if (enclosing != null) {
-    val outers = enclosing.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-    names = ArrayList(outers.size + 1)
-    names.addAll(listOf(*outers))
-    names.add(simpleName)
-  } else {
-    names = listOf(simpleName)
+  // collect class names: all enclosing message names plus simpleName
+  var names = when (extension.namespaces.size) {
+    // 0 means no package and no enclosing messages
+    // 1 means a package, but no enclosing messages
+    0, 1 -> listOf(simpleName)
+    // 2 or more: first is a package name, the rest are enclosing messages
+    else -> extension.namespaces.subList(1, extension.namespaces.size).plus(simpleName)
   }
   // we know that names has at least one element (simpleName), so the loop
   // below will produce a non-null type
@@ -179,7 +182,7 @@ fun <T> annotationName(protoFile: ProtoFile, extension: Field, factory: NameFact
     }
   }
   if (type == null) {
-    // should not be possible
+    // should not be possible; keeping compiler happy
     throw NullPointerException()
   }
   return type

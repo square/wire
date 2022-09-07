@@ -182,7 +182,11 @@ data class ProtoFile(
 
       val services = fromElements(packageName, protoFileElement.services)
 
-      val wireExtends = fromElements(packageName, protoFileElement.extendDeclarations)
+      val namespaces = when {
+        packageName == null -> listOf()
+        else -> listOf(packageName)
+      }
+      val wireExtends = fromElements(namespaces, protoFileElement.extendDeclarations)
 
       val options = Options(Options.FILE_OPTIONS, protoFileElement.options)
 

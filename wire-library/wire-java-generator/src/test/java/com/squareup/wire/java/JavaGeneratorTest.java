@@ -514,7 +514,7 @@ public final class JavaGeneratorTest {
       .build();
     assertThat(new JavaWithProfilesGenerator(schema)
       .generateJava("common.proto.Person"))
-        .contains("public final Gender common_proto_Person_Gender;");
+        .contains("public final Gender common_proto_Gender;");
   }
 
   @Test
@@ -563,7 +563,7 @@ public final class JavaGeneratorTest {
       .build();
     assertThat(new JavaWithProfilesGenerator(schema)
       .generateJava("common.proto.A"))
-        .contains("public final AnotherStatus Status;");
+        .contains("public final AnotherStatus common_proto_Status;");
   }
 
   @Test public void fieldHasScalarName() throws Exception {
@@ -683,7 +683,7 @@ public final class JavaGeneratorTest {
       .generateJava("a.Example");
     assertThat(code).contains("package a");
     assertThat(code).contains("import a.common.CommonMessage");
-    assertThat(code).contains("public CommonMessage a_Example_CommonMessage");
+    assertThat(code).contains("public CommonMessage a_CommonMessage");
   }
 
   @Test public void wirePackageUsedInImport() throws IOException {
