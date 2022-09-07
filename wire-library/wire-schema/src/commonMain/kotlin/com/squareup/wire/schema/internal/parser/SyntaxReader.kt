@@ -139,7 +139,12 @@ class SyntaxReader(
     }
   }
 
-  /** Reads a (paren-wrapped), [square-wrapped] or naked symbol name. */
+  /**
+   * Reads a (paren-wrapped), [square-wrapped] or naked symbol name.
+   * If {@code retainWrap} is true and the symbol was wrapped in parens
+   * or square brackets, the returned string retains the wrapping
+   * punctuation. Otherwise, just the symbol is returned.
+   */
   fun readName(allowLeadingDigit: Boolean = true, retainWrap: Boolean = false): String {
     return when (peekChar()) {
       '(' -> {
