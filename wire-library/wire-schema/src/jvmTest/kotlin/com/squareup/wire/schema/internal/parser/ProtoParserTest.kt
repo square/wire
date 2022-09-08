@@ -1511,18 +1511,23 @@ class ProtoParserTest {
         """.trimMargin()
     val expected = ProtoFileElement(
       location = location,
-      types = listOf(MessageElement(location = location.at(1, 1), name = "Bar")),
-      extendDeclarations = listOf(
-        ExtendElement(
-          location = location.at(2, 3),
-          name = "Foo",
-          fields = listOf(
-            FieldElement(
-              location = location.at(3, 5),
-              label = OPTIONAL,
-              type = "Bar",
-              name = "bar",
-              tag = 126
+      types = listOf(
+        MessageElement(
+          location = location.at(1, 1),
+          name = "Bar",
+          extendDeclarations = listOf(
+            ExtendElement(
+              location = location.at(2, 3),
+              name = "Foo",
+              fields = listOf(
+                FieldElement(
+                  location = location.at(3, 5),
+                  label = OPTIONAL,
+                  type = "Bar",
+                  name = "bar",
+                  tag = 126
+                )
+              )
             )
           )
         )
@@ -1546,20 +1551,22 @@ class ProtoParserTest {
       location = location,
       packageName = "kit.kat",
       types = listOf(
-        MessageElement(location = location.at(3, 1), name = "Bar")
-
-      ),
-      extendDeclarations = listOf(
-        ExtendElement(
-          location = location.at(4, 3),
-          name = "Foo",
-          fields = listOf(
-            FieldElement(
-              location = location.at(5, 5),
-              label = OPTIONAL,
-              type = "Bar",
-              name = "bar",
-              tag = 126
+        MessageElement(
+          location = location.at(3, 1),
+          name = "Bar",
+          extendDeclarations = listOf(
+            ExtendElement(
+              location = location.at(4, 3),
+              name = "Foo",
+              fields = listOf(
+                FieldElement(
+                  location = location.at(5, 5),
+                  label = OPTIONAL,
+                  type = "Bar",
+                  name = "bar",
+                  tag = 126
+                )
+              )
             )
           )
         )
@@ -1579,18 +1586,23 @@ class ProtoParserTest {
         """.trimMargin()
     val expected = ProtoFileElement(
       location = location,
-      types = listOf(MessageElement(location = location.at(1, 1), name = "Bar")),
-      extendDeclarations = listOf(
-        ExtendElement(
-          location = location.at(2, 3),
-          name = "example.Foo",
-          fields = listOf(
-            FieldElement(
-              location = location.at(3, 5),
-              label = OPTIONAL,
-              type = "Bar",
-              name = "bar",
-              tag = 126
+      types = listOf(
+        MessageElement(
+          location = location.at(1, 1),
+          name = "Bar",
+          extendDeclarations = listOf(
+              ExtendElement(
+              location = location.at(2, 3),
+              name = "example.Foo",
+              fields = listOf(
+                FieldElement(
+                  location = location.at(3, 5),
+                  label = OPTIONAL,
+                  type = "Bar",
+                  name = "bar",
+                  tag = 126
+                )
+              )
             )
           )
         )
@@ -1614,20 +1626,22 @@ class ProtoParserTest {
       location = location,
       packageName = "kit.kat",
       types = listOf(
-        MessageElement(location = location.at(3, 1), name = "Bar")
-
-      ),
-      extendDeclarations = listOf(
-        ExtendElement(
-          location = location.at(4, 3),
-          name = "example.Foo",
-          fields = listOf(
-            FieldElement(
-              location = location.at(5, 5),
-              label = OPTIONAL,
-              type = "Bar",
-              name = "bar",
-              tag = 126
+        MessageElement(
+          location = location.at(3, 1),
+          name = "Bar",
+          extendDeclarations = listOf(
+            ExtendElement(
+              location = location.at(4, 3),
+              name = "example.Foo",
+              fields = listOf(
+                FieldElement(
+                  location = location.at(5, 5),
+                  label = OPTIONAL,
+                  type = "Bar",
+                  name = "bar",
+                  tag = 126
+                )
+              )
             )
           )
         )

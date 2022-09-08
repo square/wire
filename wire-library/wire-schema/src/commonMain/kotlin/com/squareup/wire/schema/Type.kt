@@ -26,9 +26,11 @@ import kotlin.jvm.JvmStatic
 sealed class Type {
   abstract val location: Location
   abstract val type: ProtoType
+  abstract val name: String
   abstract val documentation: String
   abstract val options: Options
   abstract val nestedTypes: List<Type>
+  abstract val nestedExtendList: List<Extend>
   abstract val syntax: Syntax
   abstract fun linkMembers(linker: Linker)
   abstract fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean)
@@ -36,14 +38,14 @@ sealed class Type {
   abstract fun retainAll(schema: Schema, markSet: MarkSet): Type?
 
   /**
-   * Returns a copy of this containing only the types in [linkedTypes], or null if that set is
-   * empty. This will return an [EnclosingType] if it is itself not linked, but its nested types are
-   * linked.
+   * Returns a copy of this containing only the types in [linkedTypes] and extensions in [linkedFields],
+   * or null if that set is empty. This will return an [EnclosingType] if it is itself not linked, but
+   * its nested types are linked.
    *
    * The returned type is a shadow of its former self. It it useful for linking against, but lacks
    * most of the members of the original type.
    */
-  abstract fun retainLinked(linkedTypes: Set<ProtoType>): Type?
+  abstract fun retainLinked(linkedTypes: Set<ProtoType>, linkedFields: Set<Field>): Type?
 
   /**
    * Returns all types and subtypes which are linked to the type.
@@ -58,10 +60,10 @@ sealed class Type {
   }
 
   companion object {
-    fun get(packageName: String?, protoType: ProtoType, type: TypeElement, syntax: Syntax): Type {
+    fun get(namespaces: List<String>, protoType: ProtoType, type: TypeElement, syntax: Syntax): Type {
       return when (type) {
         is EnumElement -> fromElement(protoType, type, syntax)
-        is MessageElement -> fromElement(packageName, protoType, type, syntax)
+        is MessageElement -> fromElement(namespaces, protoType, type, syntax)
         else -> throw IllegalArgumentException("unexpected type: $type")
       }
     }
@@ -73,7 +75,11 @@ sealed class Type {
       syntax: Syntax
     ) = elements.map {
       val protoType = ProtoType.get(packageName, it.name)
-      return@map get(packageName, protoType, it, syntax)
+      val namespaces = when {
+        packageName == null -> listOf()
+        else -> listOf(packageName)
+      }
+      return@map get(namespaces, protoType, it, syntax)
     }
 
     private fun toElement(type: Type): TypeElement {

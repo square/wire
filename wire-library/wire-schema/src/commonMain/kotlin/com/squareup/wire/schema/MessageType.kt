@@ -16,6 +16,8 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.Syntax
+import com.squareup.wire.schema.Extend.Companion.fromElements
+import com.squareup.wire.schema.Extend.Companion.toElements
 import com.squareup.wire.schema.Extensions.Companion.fromElements
 import com.squareup.wire.schema.Extensions.Companion.toElements
 import com.squareup.wire.schema.Field.Companion.fromElements
@@ -35,11 +37,12 @@ data class MessageType(
   override val type: ProtoType,
   override val location: Location,
   override val documentation: String,
-  private val name: String,
+  override val name: String,
   val declaredFields: List<Field>,
   val extensionFields: MutableList<Field>,
   val oneOfs: List<OneOf>,
   override val nestedTypes: List<Type>,
+  override val nestedExtendList: List<Extend>,
   val extensionsList: List<Extensions>,
   private val reserveds: List<Reserved>,
   override val options: Options,
@@ -157,12 +160,13 @@ data class MessageType(
     markSet: MarkSet
   ): Type? {
     val retainedNestedTypes = nestedTypes.mapNotNull { it.retainAll(schema, markSet) }
+    val retainedNestedExtends = nestedExtendList.mapNotNull { it.retainAll(schema, markSet) }
     if (!markSet.contains(type) && !Options.GOOGLE_PROTOBUF_OPTION_TYPES.contains(type)) {
       return when {
         // This type is not retained, and none of its nested types are retained, prune it.
-        retainedNestedTypes.isEmpty() -> null
+        retainedNestedTypes.isEmpty() && retainedNestedExtends.isEmpty() -> null
         // This type is not retained but retained nested types, replace it with an enclosing type.
-        else -> EnclosingType(location, type, documentation, retainedNestedTypes, syntax)
+        else -> EnclosingType(location, type, name, documentation, retainedNestedTypes, retainedNestedExtends, syntax)
       }
     }
 
@@ -177,6 +181,7 @@ data class MessageType(
       extensionFields = retainAll(schema, markSet, type, extensionFields).toMutableList(),
       oneOfs = retainedOneOfs,
       nestedTypes = retainedNestedTypes,
+      nestedExtendList = retainedNestedExtends,
       extensionsList = extensionsList,
       reserveds = reserveds,
       options = options.retainAll(schema, markSet),
@@ -186,15 +191,16 @@ data class MessageType(
     return result
   }
 
-  override fun retainLinked(linkedTypes: Set<ProtoType>): Type? {
-    val retainedNestedTypes = nestedTypes.mapNotNull { it.retainLinked(linkedTypes) }
+  override fun retainLinked(linkedTypes: Set<ProtoType>, linkedFields: Set<Field>): Type? {
+    val retainedNestedTypes = nestedTypes.mapNotNull { it.retainLinked(linkedTypes, linkedFields) }
+    val retainedNestedExtends = nestedExtendList.mapNotNull { it.retainLinked(linkedFields) }
 
     if (!linkedTypes.contains(type)) {
       return when {
         // This type is not retained, and none of its nested types are retained, prune it.
-        retainedNestedTypes.isEmpty() -> null
+        retainedNestedTypes.isEmpty() && retainedNestedExtends.isEmpty() -> null
         // This type is not retained but retained nested types, replace it with an enclosing type.
-        else -> EnclosingType(location, type, documentation, retainedNestedTypes, syntax)
+        else -> EnclosingType(location, type, name, documentation, retainedNestedTypes, retainedNestedExtends, syntax)
       }
     }
 
@@ -210,6 +216,7 @@ data class MessageType(
       extensionFields = retainLinked(extensionFields).toMutableList(),
       oneOfs = retainedOneOfs,
       nestedTypes = retainedNestedTypes,
+      nestedExtendList = retainedNestedExtends,
       extensionsList = emptyList(),
       reserveds = emptyList(),
       options = options.retainLinked(),
@@ -223,6 +230,7 @@ data class MessageType(
       name = name,
       documentation = documentation,
       nestedTypes = toElements(nestedTypes),
+      extendDeclarations = toElements(nestedExtendList),
       options = options.elements,
       reserveds = toElements(reserveds),
       fields = toElements(declaredFields),
@@ -236,7 +244,7 @@ data class MessageType(
     internal val DEPRECATED = ProtoMember.get(MESSAGE_OPTIONS, "deprecated")
 
     @JvmStatic fun fromElement(
-      packageName: String?,
+      namespaces: List<String>,
       protoType: ProtoType,
       messageElement: MessageElement,
       syntax: Syntax
@@ -244,21 +252,29 @@ data class MessageType(
       check(messageElement.groups.isEmpty()) {
         "${messageElement.groups[0].location}: 'group' is not supported"
       }
+      // Namespaces for all child elements include this message's name.
+      val childNamespaces = when{
+        namespaces.isEmpty() -> listOf("", messageElement.name) // first element must be package name
+        else -> namespaces.plus(messageElement.name)
+      }
       val nestedTypes =
-        messageElement.nestedTypes.map { get(packageName, protoType.nestedType(it.name), it, syntax) }
+        messageElement.nestedTypes.map { get(childNamespaces, protoType.nestedType(it.name), it, syntax) }
+      val nestedExtends = fromElements(childNamespaces, messageElement.extendDeclarations)
+
       return MessageType(
         type = protoType,
         location = messageElement.location,
         documentation = messageElement.documentation,
         name = messageElement.name,
         declaredFields =
-        fromElements(packageName, messageElement.fields, extension = false, oneOf = false),
+        fromElements(childNamespaces, messageElement.fields, extension = false, oneOf = false),
         extensionFields = mutableListOf(), // Extension fields are populated during linking.
-        oneOfs = fromElements(packageName, messageElement.oneOfs, false),
+        oneOfs = fromElements(childNamespaces, messageElement.oneOfs),
         nestedTypes = nestedTypes,
+        nestedExtendList = nestedExtends,
         extensionsList = fromElements(messageElement.extensions),
         reserveds = fromElements(messageElement.reserveds),
-        options = Options(Options.MESSAGE_OPTIONS, messageElement.options),
+        options = Options(MESSAGE_OPTIONS, messageElement.options),
         syntax = syntax
       )
     }

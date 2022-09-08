@@ -24,6 +24,10 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Collections;
 import java.util.List;
 import okio.ByteString;
@@ -42,6 +46,8 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   public static final Double DEFAULT_DAISY = 0.0d;
 
   public static final FooBarBazEnum DEFAULT_EXT = FooBarBazEnum.FOO;
+
+  public static final String DEFAULT_MORE_STRING = "";
 
   @MyFieldOptionOneOption(17)
   @WireField(
@@ -121,13 +127,23 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   )
   public final List<FooBarBazEnum> rep;
 
+  /**
+   * Extension source: custom_options.proto
+   */
+  @WireField(
+      tag = 150,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  public final String more_string;
+
   public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy,
-      List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep) {
-    this(foo, bar, baz, qux, fred, daisy, nested, ext, rep, ByteString.EMPTY);
+      List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep, String more_string) {
+    this(foo, bar, baz, qux, fred, daisy, nested, ext, rep, more_string, ByteString.EMPTY);
   }
 
   public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy,
-      List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep, ByteString unknownFields) {
+      List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep, String more_string,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.foo = foo;
     this.bar = bar;
@@ -138,6 +154,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     this.nested = Internal.immutableCopyOf("nested", nested);
     this.ext = ext;
     this.rep = Internal.immutableCopyOf("rep", rep);
+    this.more_string = more_string;
   }
 
   @Override
@@ -152,6 +169,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     builder.nested = Internal.copyOf(nested);
     builder.ext = ext;
     builder.rep = Internal.copyOf(rep);
+    builder.more_string = more_string;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -170,7 +188,8 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
         && Internal.equals(daisy, o.daisy)
         && nested.equals(o.nested)
         && Internal.equals(ext, o.ext)
-        && rep.equals(o.rep);
+        && rep.equals(o.rep)
+        && Internal.equals(more_string, o.more_string);
   }
 
   @Override
@@ -187,6 +206,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       result = result * 37 + nested.hashCode();
       result = result * 37 + (ext != null ? ext.hashCode() : 0);
       result = result * 37 + rep.hashCode();
+      result = result * 37 + (more_string != null ? more_string.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -204,6 +224,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     if (!nested.isEmpty()) builder.append(", nested=██");
     if (ext != null) builder.append(", ext=").append(ext);
     if (!rep.isEmpty()) builder.append(", rep=").append(rep);
+    if (more_string != null) builder.append(", more_string=").append(Internal.sanitize(more_string));
     return builder.replace(0, 2, "FooBar{").append('}').toString();
   }
 
@@ -225,6 +246,8 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     public FooBarBazEnum ext;
 
     public List<FooBarBazEnum> rep;
+
+    public String more_string;
 
     public Builder() {
       fred = Internal.newMutableList();
@@ -280,9 +303,14 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       return this;
     }
 
+    public Builder more_string(String more_string) {
+      this.more_string = more_string;
+      return this;
+    }
+
     @Override
     public FooBar build() {
-      return new FooBar(foo, bar, baz, qux, fred, daisy, nested, ext, rep, super.buildUnknownFields());
+      return new FooBar(foo, bar, baz, qux, fred, daisy, nested, ext, rep, more_string, super.buildUnknownFields());
     }
   }
 
@@ -543,6 +571,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   }
 
   @EnumOptionOption(true)
+  @FoobarStringOption("foobar")
   public enum FooBarBazEnum implements WireEnum {
     @EnumValueOptionOption(17)
     FOO(1),
@@ -596,6 +625,12 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     }
   }
 
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target(ElementType.TYPE)
+  public @interface FoobarStringOption {
+    String value();
+  }
+
   private static final class ProtoAdapter_FooBar extends ProtoAdapter<FooBar> {
     public ProtoAdapter_FooBar() {
       super(FieldEncoding.LENGTH_DELIMITED, FooBar.class, "type.googleapis.com/squareup.protos.custom_options.FooBar", Syntax.PROTO_2, null, "custom_options.proto");
@@ -613,6 +648,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       result += FooBar.ADAPTER.asRepeated().encodedSizeWithTag(7, value.nested);
       result += FooBarBazEnum.ADAPTER.encodedSizeWithTag(101, value.ext);
       result += FooBarBazEnum.ADAPTER.asRepeated().encodedSizeWithTag(102, value.rep);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(150, value.more_string);
       result += value.unknownFields().size();
       return result;
     }
@@ -628,12 +664,14 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       FooBar.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.nested);
       FooBarBazEnum.ADAPTER.encodeWithTag(writer, 101, value.ext);
       FooBarBazEnum.ADAPTER.asRepeated().encodeWithTag(writer, 102, value.rep);
+      ProtoAdapter.STRING.encodeWithTag(writer, 150, value.more_string);
       writer.writeBytes(value.unknownFields());
     }
 
     @Override
     public void encode(ReverseProtoWriter writer, FooBar value) throws IOException {
       writer.writeBytes(value.unknownFields());
+      ProtoAdapter.STRING.encodeWithTag(writer, 150, value.more_string);
       FooBarBazEnum.ADAPTER.asRepeated().encodeWithTag(writer, 102, value.rep);
       FooBarBazEnum.ADAPTER.encodeWithTag(writer, 101, value.ext);
       FooBar.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.nested);
@@ -674,6 +712,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
             }
             break;
           }
+          case 150: builder.more_string(ProtoAdapter.STRING.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }

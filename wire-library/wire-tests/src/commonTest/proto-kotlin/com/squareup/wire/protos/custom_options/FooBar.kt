@@ -29,6 +29,10 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
+import kotlin.`annotation`.AnnotationRetention
+import kotlin.`annotation`.AnnotationTarget
+import kotlin.`annotation`.Retention
+import kotlin.`annotation`.Target
 import kotlin.collections.List
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
@@ -78,6 +82,14 @@ public class FooBar(
   )
   public val daisy: Double? = null,
   nested: List<FooBar> = emptyList(),
+  /**
+   * Extension source: custom_options.proto
+   */
+  @field:WireField(
+    tag = 150,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+  )
+  public val more_string: String? = null,
   /**
    * Extension source: custom_options.proto
    */
@@ -133,6 +145,7 @@ public class FooBar(
     if (fred != other.fred) return false
     if (daisy != other.daisy) return false
     if (nested != other.nested) return false
+    if (more_string != other.more_string) return false
     if (ext != other.ext) return false
     if (rep != other.rep) return false
     return true
@@ -149,6 +162,7 @@ public class FooBar(
       result = result * 37 + fred.hashCode()
       result = result * 37 + (daisy?.hashCode() ?: 0)
       result = result * 37 + nested.hashCode()
+      result = result * 37 + (more_string?.hashCode() ?: 0)
       result = result * 37 + (ext?.hashCode() ?: 0)
       result = result * 37 + rep.hashCode()
       super.hashCode = result
@@ -165,6 +179,7 @@ public class FooBar(
     if (fred.isNotEmpty()) result += """fred=$fred"""
     if (daisy != null) result += """daisy=$daisy"""
     if (nested.isNotEmpty()) result += """nested=██"""
+    if (more_string != null) result += """more_string=${sanitize(more_string)}"""
     if (ext != null) result += """ext=$ext"""
     if (rep.isNotEmpty()) result += """rep=$rep"""
     return result.joinToString(prefix = "FooBar{", separator = ", ", postfix = "}")
@@ -178,10 +193,11 @@ public class FooBar(
     fred: List<Float> = this.fred,
     daisy: Double? = this.daisy,
     nested: List<FooBar> = this.nested,
+    more_string: String? = this.more_string,
     ext: FooBarBazEnum? = this.ext,
     rep: List<FooBarBazEnum> = this.rep,
     unknownFields: ByteString = this.unknownFields,
-  ): FooBar = FooBar(foo, bar, baz, qux, fred, daisy, nested, ext, rep, unknownFields)
+  ): FooBar = FooBar(foo, bar, baz, qux, fred, daisy, nested, more_string, ext, rep, unknownFields)
 
   public companion object {
     @JvmField
@@ -202,6 +218,7 @@ public class FooBar(
         size += ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(5, value.fred)
         size += ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.daisy)
         size += FooBar.ADAPTER.asRepeated().encodedSizeWithTag(7, value.nested)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(150, value.more_string)
         size += FooBarBazEnum.ADAPTER.encodedSizeWithTag(101, value.ext)
         size += FooBarBazEnum.ADAPTER.asRepeated().encodedSizeWithTag(102, value.rep)
         return size
@@ -217,11 +234,13 @@ public class FooBar(
         FooBar.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.nested)
         FooBarBazEnum.ADAPTER.encodeWithTag(writer, 101, value.ext)
         FooBarBazEnum.ADAPTER.asRepeated().encodeWithTag(writer, 102, value.rep)
+        ProtoAdapter.STRING.encodeWithTag(writer, 150, value.more_string)
         writer.writeBytes(value.unknownFields)
       }
 
       public override fun encode(writer: ReverseProtoWriter, `value`: FooBar): Unit {
         writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.encodeWithTag(writer, 150, value.more_string)
         FooBarBazEnum.ADAPTER.asRepeated().encodeWithTag(writer, 102, value.rep)
         FooBarBazEnum.ADAPTER.encodeWithTag(writer, 101, value.ext)
         FooBar.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.nested)
@@ -241,6 +260,7 @@ public class FooBar(
         val fred = mutableListOf<Float>()
         var daisy: Double? = null
         val nested = mutableListOf<FooBar>()
+        var more_string: String? = null
         var ext: FooBarBazEnum? = null
         val rep = mutableListOf<FooBarBazEnum>()
         val unknownFields = reader.forEachTag { tag ->
@@ -252,6 +272,7 @@ public class FooBar(
             5 -> fred.add(ProtoAdapter.FLOAT.decode(reader))
             6 -> daisy = ProtoAdapter.DOUBLE.decode(reader)
             7 -> nested.add(FooBar.ADAPTER.decode(reader))
+            150 -> more_string = ProtoAdapter.STRING.decode(reader)
             101 -> try {
               ext = FooBarBazEnum.ADAPTER.decode(reader)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
@@ -273,6 +294,7 @@ public class FooBar(
           fred = fred,
           daisy = daisy,
           nested = nested,
+          more_string = more_string,
           ext = ext,
           rep = rep,
           unknownFields = unknownFields
@@ -480,6 +502,7 @@ public class FooBar(
   }
 
   @EnumOptionOption(true)
+  @FoobarStringOption("foobar")
   public enum class FooBarBazEnum(
     public override val `value`: Int,
   ) : WireEnum {
@@ -518,4 +541,10 @@ public class FooBar(
       }
     }
   }
+
+  @Retention(AnnotationRetention.RUNTIME)
+  @Target(AnnotationTarget.CLASS)
+  public annotation class FoobarStringOption(
+    public val `value`: String,
+  )
 }

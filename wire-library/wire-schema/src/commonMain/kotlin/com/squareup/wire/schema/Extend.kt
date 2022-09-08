@@ -76,14 +76,14 @@ data class Extend(
   companion object {
     @JvmStatic
     fun fromElements(
-      packageName: String?,
+      namespaces: List<String>,
       extendElements: List<ExtendElement>
     ) = extendElements.map {
       Extend(
         location = it.location,
         documentation = it.documentation,
         name = it.name,
-        fields = Field.fromElements(packageName, it.fields, extension = true, oneOf = false)
+        fields = Field.fromElements(namespaces, it.fields, extension = true, oneOf = false)
       )
     }
 

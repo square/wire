@@ -27,7 +27,7 @@ data class EnumType(
   override val type: ProtoType,
   override val location: Location,
   override val documentation: String,
-  val name: String,
+  override val name: String,
   val constants: List<EnumConstant>,
   private val reserveds: List<Reserved>,
   override val options: Options,
@@ -38,6 +38,9 @@ data class EnumType(
   private var deprecated: Any? = null
 
   override val nestedTypes: List<Type>
+    get() = emptyList() // Enums do not allow nested type declarations.
+
+  override val nestedExtendList: List<Extend>
     get() = emptyList() // Enums do not allow nested type declarations.
 
   fun allowAlias() = "true" == allowAlias
@@ -156,7 +159,7 @@ data class EnumType(
     return result
   }
 
-  override fun retainLinked(linkedTypes: Set<ProtoType>): Type? {
+  override fun retainLinked(linkedTypes: Set<ProtoType>, linkedFields: Set<Field>): Type? {
     if (!linkedTypes.contains(type)) {
       return null
     }

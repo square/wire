@@ -186,6 +186,7 @@ class ProtoParser internal constructor(
     val options = mutableListOf<OptionElement>()
     val reserveds = mutableListOf<ReservedElement>()
     val groups = mutableListOf<GroupElement>()
+    val extendDeclarations = mutableListOf<ExtendElement>()
 
     val previousPrefix = prefix
     prefix = "$prefix$name."
@@ -202,8 +203,7 @@ class ProtoParser internal constructor(
         is TypeElement -> nestedTypes.add(declared)
         is ExtensionsElement -> extensions.add(declared)
         is OptionElement -> options.add(declared)
-        // Extend declarations always add in a global scope regardless of nesting.
-        is ExtendElement -> extendsList.add(declared)
+        is ExtendElement -> extendDeclarations.add(declared)
         is ReservedElement -> reserveds.add(declared)
       }
     }
@@ -220,7 +220,8 @@ class ProtoParser internal constructor(
       fields = fields,
       oneOfs = oneOfs,
       extensions = extensions,
-      groups = groups
+      groups = groups,
+      extendDeclarations = extendDeclarations
     )
   }
 

@@ -29,7 +29,8 @@ data class MessageElement(
   val fields: List<FieldElement> = emptyList(),
   val oneOfs: List<OneOfElement> = emptyList(),
   val extensions: List<ExtensionsElement> = emptyList(),
-  val groups: List<GroupElement> = emptyList()
+  val groups: List<GroupElement> = emptyList(),
+  val extendDeclarations: List<ExtendElement> = emptyList(),
 ) : TypeElement {
   override fun toSchema() = buildString {
     appendDocumentation(documentation)
@@ -74,6 +75,12 @@ data class MessageElement(
       for (group in groups) {
         append('\n')
         appendIndented(group.toSchema())
+      }
+    }
+    if (extendDeclarations.isNotEmpty()) {
+      for (extendDeclaration in extendDeclarations) {
+        append('\n')
+        append(extendDeclaration.toSchema())
       }
     }
     if (extensions.isNotEmpty()) {

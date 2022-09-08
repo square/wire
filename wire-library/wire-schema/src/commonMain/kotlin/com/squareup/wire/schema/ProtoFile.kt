@@ -110,7 +110,7 @@ data class ProtoFile(
 
   /** Return a copy of this file with only the marked types. */
   fun retainLinked(linkedTypes: Set<ProtoType>, linkedFields: Set<Field>): ProtoFile {
-    val retainedTypes = types.mapNotNull { it.retainLinked(linkedTypes) }
+    val retainedTypes = types.mapNotNull { it.retainLinked(linkedTypes, linkedFields) }
     val retainedExtends = extendList.mapNotNull { it.retainLinked(linkedFields) }
 
     // Other .proto files can't link to our services so strip them unconditionally.
@@ -182,7 +182,11 @@ data class ProtoFile(
 
       val services = fromElements(packageName, protoFileElement.services)
 
-      val wireExtends = fromElements(packageName, protoFileElement.extendDeclarations)
+      val namespaces = when {
+        packageName == null -> listOf()
+        else -> listOf(packageName)
+      }
+      val wireExtends = fromElements(namespaces, protoFileElement.extendDeclarations)
 
       val options = Options(Options.FILE_OPTIONS, protoFileElement.options)
 

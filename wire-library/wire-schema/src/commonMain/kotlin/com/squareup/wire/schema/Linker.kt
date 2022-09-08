@@ -254,31 +254,19 @@ class Linker {
     return null
   }
 
-  private fun resolveContext(): String {
+  fun resolveContext(): String {
     for (i in contextStack.indices.reversed()) {
-      val context = contextStack[i]
-      when {
-        context is Type -> {
+      when (val context = contextStack[i]) {
+        is Type -> {
           return context.type.toString()
         }
-        context is ProtoFile -> {
+        is ProtoFile -> {
           val packageName = context.packageName
           return packageName ?: ""
-        }
-        context is Field && context.isExtension -> {
-          return context.packageName ?: ""
         }
       }
     }
     throw IllegalStateException()
-  }
-
-  /** Returns the current package name from the context stack. */
-  fun packageName(): String? {
-    for (context in contextStack) {
-      if (context is ProtoFile) return context.packageName
-    }
-    return null
   }
 
   /**

@@ -54,9 +54,8 @@ data class OneOf(
   companion object {
     @JvmStatic
     fun fromElements(
-      packageName: String?,
-      elements: List<OneOfElement>,
-      extension: Boolean
+      namespaces: List<String>,
+      elements: List<OneOfElement>
     ) = elements.map {
       if (it.groups.isNotEmpty()) {
         val (_, location) = it.groups[0]
@@ -66,7 +65,7 @@ data class OneOf(
       return@map OneOf(
         name = it.name,
         documentation = it.documentation,
-        fields = Field.fromElements(packageName, it.fields, extension, oneOf = true)
+        fields = Field.fromElements(namespaces, it.fields, false, oneOf = true)
       )
     }
 

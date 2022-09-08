@@ -15,6 +15,7 @@ public struct FooBar {
     public var nested: [FooBar]
     public var ext: FooBarBazEnum?
     public var rep: [FooBarBazEnum]
+    public var more_string: String?
     public var unknownFields: Data = .init()
 
     public init(
@@ -26,7 +27,8 @@ public struct FooBar {
         daisy: Double? = nil,
         nested: [FooBar] = [],
         ext: FooBarBazEnum? = nil,
-        rep: [FooBarBazEnum] = []
+        rep: [FooBarBazEnum] = [],
+        more_string: String? = nil
     ) {
         self.foo = foo
         self.bar = bar
@@ -37,6 +39,7 @@ public struct FooBar {
         self.nested = nested
         self.ext = ext
         self.rep = rep
+        self.more_string = more_string
     }
 
     public struct Nested {
@@ -176,6 +179,7 @@ extension FooBar : Proto2Codable {
         var nested: [FooBar] = []
         var ext: FooBar.FooBarBazEnum? = nil
         var rep: [FooBar.FooBarBazEnum] = []
+        var more_string: String? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
@@ -189,6 +193,7 @@ extension FooBar : Proto2Codable {
             case 7: try reader.decode(into: &nested)
             case 101: ext = try reader.decode(FooBar.FooBarBazEnum.self)
             case 102: try reader.decode(into: &rep)
+            case 150: more_string = try reader.decode(String.self)
             default: try reader.readUnknownField(tag: tag)
             }
         }
@@ -203,6 +208,7 @@ extension FooBar : Proto2Codable {
         self.nested = nested
         self.ext = ext
         self.rep = rep
+        self.more_string = more_string
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -215,6 +221,7 @@ extension FooBar : Proto2Codable {
         try writer.encode(tag: 7, value: self.nested)
         try writer.encode(tag: 101, value: self.ext)
         try writer.encode(tag: 102, value: self.rep)
+        try writer.encode(tag: 150, value: self.more_string)
         try writer.writeUnknownFields(unknownFields)
     }
 }
@@ -232,6 +239,7 @@ extension FooBar : Codable {
         case nested
         case ext
         case rep
+        case more_string
 
     }
 }

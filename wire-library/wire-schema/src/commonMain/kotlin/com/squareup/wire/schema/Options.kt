@@ -93,29 +93,13 @@ class Options(
       // This is an option declared by an extension.
       val extensionsForType = type.extensionFieldsMap()
       path = resolveFieldPath(option.name, extensionsForType.keys)
-      var packageName = linker.packageName()
-      var checkedExtensionFields = false
-      while (path == null && !packageName.isNullOrBlank()) {
+      var namespace = linker.resolveContext()
+      while (path == null && namespace.isNotBlank()) {
         // If the path couldn't be resolved, attempt again by prefixing it with the package name.
-        path = resolveFieldPath(packageName + "." + option.name, extensionsForType.keys)
+        path = resolveFieldPath("$namespace.${option.name}", extensionsForType.keys)
         // Retry with one upper level package to resolve relative paths.
         if (path == null) {
-          packageName = packageName.substringBeforeLast(".", missingDelimiterValue = "")
-          if (packageName.isBlank() && !checkedExtensionFields) {
-            checkedExtensionFields = true
-            val extensionFields = type.extensionFields.filter { it.name == option.name }
-            if (extensionFields.size > 1) {
-              if (validate) {
-                linker.errors += """
-                   |ambiguous options ${option.name} defined in
-                   |  ${extensionFields.map { "- ${it.location}" }.joinToString("\n  ")}
-                   """.trimMargin()
-                return null
-              }
-            } else {
-              packageName = extensionFields.firstOrNull()?.packageName
-            }
-          }
+          namespace = namespace.substringBeforeLast(".", missingDelimiterValue = "")
         }
       }
       if (path == null) {

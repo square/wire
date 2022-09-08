@@ -49,10 +49,22 @@ message FooBar {
 
   message More {
     repeated int32 serial = 1;
+
+    extend FooBar {
+      optional string more_string = 150;
+    }
+
+    option (my_message_option_six).(More.more_string) = "foobar";
+  }
+
+  extend google.protobuf.EnumOptions {
+    optional string foobar_string = 71001;
   }
 
   enum FooBarBazEnum {
     option (squareup.protos.custom_options.enum_option) = true;
+    option (FooBar.foobar_string) = "foobar";
+
     FOO = 1 [(squareup.protos.custom_options.enum_value_option)=17,
              (squareup.protos.custom_options.complex_enum_value_option)={ serial: [ 99, 199 ] }];
     BAR = 2 [(squareup.protos.foreign.foreign_enum_value_option)=true,

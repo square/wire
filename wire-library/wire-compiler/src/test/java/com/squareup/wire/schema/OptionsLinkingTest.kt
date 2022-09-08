@@ -36,7 +36,7 @@ class OptionsLinkingTest {
       """
              |import "formatting_options.proto";
              |message A {
-             |  optional string s = 1 [formatting_options.language = "English"];
+             |  optional string s = 1 [(formatting_options).language = "English"];
              |}
             """.trimMargin()
     )
@@ -73,7 +73,7 @@ class OptionsLinkingTest {
       """
              |import "formatting_options.proto";
              |message A {
-             |  optional string s = 1 [formatting_options.language = "English"];
+             |  optional string s = 1 [(formatting_options).language = "English"];
              |}
             """.trimMargin()
     )
@@ -110,7 +110,7 @@ class OptionsLinkingTest {
       """
              |import "formatting_options.proto";
              |message A {
-             |  optional string s = 1 [formatting_options.language.name = "English"];
+             |  optional string s = 1 [(formatting_options).language.name = "English"];
              |  optional string t = 2 [(length).max = 80];
              |}
             """.trimMargin()
