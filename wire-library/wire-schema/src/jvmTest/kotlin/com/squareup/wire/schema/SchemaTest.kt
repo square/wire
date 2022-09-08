@@ -2509,7 +2509,7 @@ class SchemaTest {
   }
 
   @Test
-  fun optionsWithRelativePathUsedInExtensionsAmbiguous() {
+  fun optionsWithRelativePathUsedInExtensionsUnresolvable() {
     try {
       buildSchema {
         add(
@@ -2532,7 +2532,7 @@ class SchemaTest {
              |import "squareup/options2/special.proto";
              |
              |extend squareup.domain.Message {
-             |  optional string type = 12000 [(maps_to) = "sup"];
+             |  optional string type = 12000 [(maps_to) = "sup"]; // missing package qualifier
              |}
              """.trimMargin()
         )
@@ -2567,9 +2567,7 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |ambiguous options maps_to defined in
-            |  - /source/squareup/options1/special.proto:7:3
-            |  - /source/squareup/options2/special.proto:7:3
+            |unable to resolve option maps_to
             |  for field type (/source/squareup/common/options.proto:9:3)
             |  in extend squareup.domain.Message (/source/squareup/common/options.proto:8:1)
             """.trimMargin()
@@ -2577,62 +2575,49 @@ class SchemaTest {
     }
   }
 
-  @Ignore("We throw as ambiguous but protoc resolve by the using the local one.")
   @Test
   fun optionsWithRelativePathUsedInExtensionsShouldUseClosest() {
-    try {
-      buildSchema {
-        add(
-          "squareup/domain/message.proto".toPath(),
-          """
-             |syntax = "proto2";
-             |package squareup.domain;
-             |
-             |message Message{}
-             """.trimMargin()
-        )
-        add(
-          "squareup/common/options.proto".toPath(),
-          """
-             |syntax = "proto2";
-             |package squareup.common;
-             |
-             |import "squareup/domain/message.proto";
-             |import "squareup/options/special.proto";
-             |
-             |extend squareup.domain.Message {
-             |  optional string type = 12000 [(maps_to) = "sup"];
-             |}
-             |
-             |extend google.protobuf.FieldOptions {
-             |  optional string maps_to = 123301;
-             |}
-             """.trimMargin()
-        )
-        add(
-          "squareup/options/special.proto".toPath(),
-          """
-             |syntax = "proto2";
-             |package squareup.options;
-             |
-             |import "google/protobuf/descriptor.proto";
-             |
-             |extend google.protobuf.FieldOptions {
-             |  optional string maps_to = 123302;
-             |}
-             """.trimMargin()
-        )
-      }
-      fail()
-    } catch (expected: SchemaException) {
-      assertThat(expected).hasMessage(
+    buildSchema {
+      add(
+        "squareup/domain/message.proto".toPath(),
         """
-            |ambiguous options maps_to defined in
-            |  - /source/squareup/common/options.proto:12:3
-            |  - /source/squareup/options/special.proto:7:3
-            |  for field type (/source/squareup/common/options.proto:9:3)
-            |  in message squareup.domain.Message (/source/squareup/domain/message.proto:4:1)
-            """.trimMargin()
+           |syntax = "proto2";
+           |package squareup.domain;
+           |
+           |message Message{}
+           """.trimMargin()
+      )
+      add(
+        "squareup/common/options.proto".toPath(),
+        """
+           |syntax = "proto2";
+           |package squareup.common;
+           |
+           |import "squareup/domain/message.proto";
+           |import "squareup/options/special.proto";
+           |import "google/protobuf/descriptor.proto";
+           |
+           |extend squareup.domain.Message {
+           |  optional string type = 12000 [(maps_to) = "sup"];
+           |}
+           |
+           |extend google.protobuf.FieldOptions {
+           |  optional string maps_to = 123301;
+           |}
+           """.trimMargin()
+      )
+      add(
+        "squareup/options/special.proto".toPath(),
+        """
+           |syntax = "proto2";
+           |package squareup.options;
+           |
+           |import "google/protobuf/descriptor.proto";
+           |
+           |extend google.protobuf.FieldOptions {
+           |  optional string maps_to = 123302;
+           |}
+           """.trimMargin()
       )
     }
   }
