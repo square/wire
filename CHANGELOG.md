@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 4.4.2
+-------------
+
+_2022-10-06_
+
+* Fix: Use KotlinProjectExtension to access source sets.
+* Fix: Improve support for ZIP artifacts.
+* Fix: When set to true, `buildersOnly` will take precedence over `javaInterop` when generating Kotlin.
+* Fix: Support nested extensions in a message.
+
 Version 4.4.1
 -------------
 
