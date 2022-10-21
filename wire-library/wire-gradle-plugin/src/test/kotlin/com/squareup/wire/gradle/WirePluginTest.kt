@@ -19,6 +19,7 @@ import java.io.IOException
 import java.util.zip.ZipFile
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
+import org.gradle.testkit.runner.BuildTask
 
 class WirePluginTest {
 
@@ -1017,7 +1018,7 @@ class WirePluginTest {
     }
 
     println(result.tasks.joinToString { it.toString() })
-    assertThat(result.task(":generateCommonMainProtos")).isNotNull
+    assertThat(result.task(":generateCommonCommonMainProtos")).isNotNull
     assertThat(result.output)
       .contains("Writing com.squareup.dinosaurs.Dinosaur")
       .contains("Writing com.squareup.geology.Period")

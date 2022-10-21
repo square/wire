@@ -53,7 +53,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 internal fun WirePlugin.sourceRoots(kotlin: Boolean, java: Boolean): List<Source> {
   // Multiplatform project.
   project.extensions.findByType(KotlinMultiplatformExtension::class.java)?.let {
-    return it.sourceRoots(project)
+    return it.sources()
   }
 
   // Java project.
@@ -98,7 +98,7 @@ internal fun WirePlugin.sourceRoots(kotlin: Boolean, java: Boolean): List<Source
   )
 }
 
-private fun KotlinMultiplatformExtension.sourceRoots(project: Project): List<Source> {
+private fun KotlinMultiplatformExtension.sources(): List<Source> {
   val target = targets.single { it is KotlinMetadataTarget }
   return target.compilations.mapNotNull { compilation ->
     if (compilation.name.endsWith(suffix = "Test", ignoreCase = true)) {
