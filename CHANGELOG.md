@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 4.4.3
+-------------
+
+_2022-10-26_
+
+* Fix: No more NPEs when the building project uses Kotlin `1.7.20`.
+
 Version 4.4.2
 -------------
 
