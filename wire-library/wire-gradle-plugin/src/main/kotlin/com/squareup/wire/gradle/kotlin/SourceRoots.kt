@@ -135,13 +135,15 @@ private fun BaseExtension.sourceRoots(project: Project, kotlin: Boolean): List<S
           sourceSet.name to sourceSet.java
         }
     }
-  val sourceSets: Map<String, SourceDirectorySet?>? =
+  val sourceSets: Map<String, SourceDirectorySet?>? = run {
     if (kotlin) {
+      val kotlinSourceSets = (project.extensions.getByName("kotlin") as KotlinProjectExtension).sourceSets
       sourceSets
         .associate { sourceSet ->
-          sourceSet.name to sourceSet.kotlinSourceDirectorySet
+          sourceSet.name to kotlinSourceSets.getByName(sourceSet.name).kotlin
         }
     } else null
+  }
 
   return variants.map { variant ->
     val kotlinSourceDirectSet = when {
