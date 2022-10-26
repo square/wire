@@ -38,4 +38,30 @@ internal class KotlinGrpcGeneratorTest {
     assertThat(output.toString())
       .isEqualTo(File("src/test/golden/RouteGuideWireGrpc.kt").source().buffer().readUtf8())
   }
+
+  @Test
+  fun `java_package option is respected`() {
+    val schema = buildSchema { add(
+      "service.proto".toPath(),
+      """
+      |syntax = "proto2";
+      |
+      |package foo;
+      |option java_package = "com.foo.bar";
+      |
+      |message Request {}
+      |message Response {}
+      |
+      |service FooService {
+      |  rpc Call(Request) returns (Response) {}
+      |}
+      |""".trimMargin()
+    ) }
+    val service = schema.getService("foo.FooService")
+    val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(schema, service!!)).generateGrpcServer(service)
+    val output = FileSpec.get("com.foo.bar", typeSpec)
+
+    assertThat(output.toString())
+      .isEqualTo(File("src/test/golden/JavaPackage.java").source().buffer().readUtf8())
+  }
 }
