@@ -10,6 +10,7 @@ import io.grpc.ServiceDescriptor.newBuilder
 import io.grpc.stub.AbstractStub
 import io.grpc.stub.ClientCalls
 import io.grpc.stub.ClientCalls.blockingUnaryCall
+import io.grpc.stub.ServerCalls
 import io.grpc.stub.ServerCalls.asyncUnaryCall
 import io.grpc.stub.StreamObserver
 import java.io.InputStream
@@ -26,7 +27,10 @@ public object FooServiceWireGrpc {
   private var serviceDescriptor: ServiceDescriptor? = null
 
   @Volatile
-  private var getCallMethod: MethodDescriptor<Request, Response>? = null
+  private var getCall1Method: MethodDescriptor<Request, Response>? = null
+
+  @Volatile
+  private var getCall2Method: MethodDescriptor<Request, Response>? = null
 
   public fun getServiceDescriptor(): ServiceDescriptor? {
     var result = serviceDescriptor
@@ -35,7 +39,8 @@ public object FooServiceWireGrpc {
         result = serviceDescriptor
         if (result == null) {
           result = newBuilder(SERVICE_NAME)
-          .addMethod(getCallMethod())
+          .addMethod(getCall1Method())
+          .addMethod(getCall2Method())
           .build()
           serviceDescriptor = result
         }
@@ -44,17 +49,17 @@ public object FooServiceWireGrpc {
     return result
   }
 
-  public fun getCallMethod(): MethodDescriptor<Request, Response> {
-    var result: MethodDescriptor<Request, Response>? = getCallMethod
+  public fun getCall1Method(): MethodDescriptor<Request, Response> {
+    var result: MethodDescriptor<Request, Response>? = getCall1Method
     if (result == null) {
       synchronized(FooServiceWireGrpc::class) {
-        result = getCallMethod
+        result = getCall1Method
         if (result == null) {
-          getCallMethod = MethodDescriptor.newBuilder<Request, Response>()
+          getCall1Method = MethodDescriptor.newBuilder<Request, Response>()
             .setType(MethodDescriptor.MethodType.UNARY)
             .setFullMethodName(
               MethodDescriptor.generateFullMethodName(
-                "foo.FooService", "Call"
+                "foo.FooService", "Call1"
               )
             )
             .setSampledToLocalTracing(true)
@@ -64,7 +69,30 @@ public object FooServiceWireGrpc {
         }
       }
     }
-    return getCallMethod!!
+    return getCall1Method!!
+  }
+
+  public fun getCall2Method(): MethodDescriptor<Request, Response> {
+    var result: MethodDescriptor<Request, Response>? = getCall2Method
+    if (result == null) {
+      synchronized(FooServiceWireGrpc::class) {
+        result = getCall2Method
+        if (result == null) {
+          getCall2Method = MethodDescriptor.newBuilder<Request, Response>()
+            .setType(MethodDescriptor.MethodType.UNARY)
+            .setFullMethodName(
+              MethodDescriptor.generateFullMethodName(
+                "foo.FooService", "Call2"
+              )
+            )
+            .setSampledToLocalTracing(true)
+            .setRequestMarshaller(FooServiceImplBase.RequestMarshaller())
+            .setResponseMarshaller(FooServiceImplBase.ResponseMarshaller())
+            .build()
+        }
+      }
+    }
+    return getCall2Method!!
   }
 
   public fun newStub(channel: Channel): FooServiceStub = FooServiceStub(channel)
@@ -73,13 +101,19 @@ public object FooServiceWireGrpc {
       FooServiceBlockingStub(channel)
 
   public abstract class FooServiceImplBase : BindableService {
-    public open fun Call(request: Request, response: StreamObserver<Response>): Unit = throw
+    public open fun Call1(request: Request, response: StreamObserver<Response>): Unit = throw
+        UnsupportedOperationException()
+
+    public open fun Call2(request: Request, response: StreamObserver<Response>): Unit = throw
         UnsupportedOperationException()
 
     public override fun bindService(): ServerServiceDefinition =
         ServerServiceDefinition.builder(getServiceDescriptor()).addMethod(
-              getCallMethod(),
-              asyncUnaryCall(this@FooServiceImplBase::Call)
+              getCall1Method(),
+              asyncUnaryCall(this@FooServiceImplBase::Call1)
+            ).addMethod(
+              getCall2Method(),
+              asyncUnaryCall(this@FooServiceImplBase::Call2)
             ).build()
 
     public class RequestMarshaller : MethodDescriptor.Marshaller<Request> {
@@ -99,10 +133,15 @@ public object FooServiceWireGrpc {
 
   public class FooServiceImplLegacyAdapter(
     private val streamExecutor: ExecutorService,
-    private val Call: () -> FooServiceCallBlockingServer,
+    private val service: () -> FooServiceBlockingServer,
   ) : FooServiceImplBase() {
-    public override fun Call(request: Request, response: StreamObserver<Response>): Unit {
-      response.onNext(Call().Call(request))
+    public override fun Call1(request: Request, response: StreamObserver<Response>): Unit {
+      response.onNext(service().Call1(request))
+      response.onCompleted()
+    }
+
+    public override fun Call2(request: Request, response: StreamObserver<Response>): Unit {
+      response.onNext(service().Call2(request))
       response.onCompleted()
     }
   }
@@ -115,8 +154,12 @@ public object FooServiceWireGrpc {
     public override fun build(channel: Channel, callOptions: CallOptions) = FooServiceStub(channel,
         callOptions)
 
-    public fun Call(request: Request, response: StreamObserver<Response>): Unit {
-      ClientCalls.asyncUnaryCall(channel.newCall(getCallMethod(), callOptions), request, response)
+    public fun Call1(request: Request, response: StreamObserver<Response>): Unit {
+      ClientCalls.asyncUnaryCall(channel.newCall(getCall1Method(), callOptions), request, response)
+    }
+
+    public fun Call2(request: Request, response: StreamObserver<Response>): Unit {
+      ClientCalls.asyncUnaryCall(channel.newCall(getCall2Method(), callOptions), request, response)
     }
   }
 
@@ -128,7 +171,10 @@ public object FooServiceWireGrpc {
     public override fun build(channel: Channel, callOptions: CallOptions) = FooServiceStub(channel,
         callOptions)
 
-    public fun Call(request: Request): Response = blockingUnaryCall(channel, getCallMethod(),
+    public fun Call1(request: Request): Response = blockingUnaryCall(channel, getCall1Method(),
+        callOptions, request)
+
+    public fun Call2(request: Request): Response = blockingUnaryCall(channel, getCall2Method(),
         callOptions, request)
   }
 }
