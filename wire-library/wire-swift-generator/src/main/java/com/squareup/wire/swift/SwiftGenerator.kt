@@ -1,5 +1,6 @@
 package com.squareup.wire.swift
 
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.schema.EnclosingType
@@ -55,6 +56,7 @@ class SwiftGenerator private constructor(
 ) {
   private val proto2Codable = DeclaredTypeName.typeName("Wire.Proto2Codable")
   private val proto3Codable = DeclaredTypeName.typeName("Wire.Proto3Codable")
+  private val protoMessage = DeclaredTypeName.typeName("Wire.ProtoMessage")
   private val protoReader = DeclaredTypeName.typeName("Wire.ProtoReader")
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
   private val heap = DeclaredTypeName.typeName("Wire.Heap")
@@ -282,6 +284,11 @@ class SwiftGenerator private constructor(
         .build()
       fileMembers += FileMemberSpec.builder(structProtoCodableExtension).build()
 
+      val storageMessageConformanceExtension = ExtensionSpec.builder(storageType)
+        .messageConformanceExtension(type)
+        .build()
+      fileMembers += FileMemberSpec.builder(storageMessageConformanceExtension).build()
+
       val storageProtoCodableExtension = ExtensionSpec.builder(storageType)
         .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames)
         .build()
@@ -337,6 +344,11 @@ class SwiftGenerator private constructor(
           .build()
       }
     } else {
+      val messageConformanceExtension = ExtensionSpec.builder(structType)
+        .messageConformanceExtension(type)
+        .build()
+      fileMembers += FileMemberSpec.builder(messageConformanceExtension).build()
+
       val protoCodableExtension = ExtensionSpec.builder(structType)
         .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames)
         .build()
@@ -510,6 +522,20 @@ class SwiftGenerator private constructor(
           }
         }
         .addStatement("try $writer.writeUnknownFields(unknownFields)")
+        .build()
+    )
+  }
+
+  private fun ExtensionSpec.Builder.messageConformanceExtension(
+    type: MessageType,
+  ): ExtensionSpec.Builder = apply {
+    addSuperType(protoMessage)
+    addFunction(
+      FunctionSpec.builder("protoMessageTypeURL")
+        .returns(STRING)
+        .addModifiers(PUBLIC)
+        .addModifiers(STATIC)
+        .addStatement("return \"%N\"", type.type.typeUrl!!)
         .build()
     )
   }
@@ -975,7 +1001,7 @@ class SwiftGenerator private constructor(
   companion object {
     fun builtInType(protoType: ProtoType): Boolean = protoType in BUILT_IN_TYPES.keys
 
-    private val BUILT_IN_TYPES = mapOf(
+    private val BUILT_IN_TYPES: Map<out ProtoType, DeclaredTypeName> = mapOf(
       ProtoType.BOOL to BOOL,
       ProtoType.BYTES to DATA,
       ProtoType.DOUBLE to DOUBLE,
@@ -990,8 +1016,8 @@ class SwiftGenerator private constructor(
       ProtoType.SINT64 to INT64,
       ProtoType.STRING to STRING,
       ProtoType.UINT32 to UINT32,
-      ProtoType.UINT64 to UINT64
-//        ProtoType.ANY to ClassName("com.squareup.wire", "AnyMessage"),
+      ProtoType.UINT64 to UINT64,
+      ProtoType.ANY to DeclaredTypeName.typeName("Wire.AnyMessage")
 //        Options.FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
 //        Options.MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
 //        Options.ENUM_OPTIONS to ClassName("com.google.protobuf", "EnumOptions")
