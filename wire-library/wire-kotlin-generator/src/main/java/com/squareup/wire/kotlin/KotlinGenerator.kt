@@ -127,6 +127,7 @@ class KotlinGenerator private constructor(
   private val grpcServerCompatible: Boolean,
   private val nameSuffix: String?,
   private val buildersOnly: Boolean,
+  private val singleMethodServices: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -238,7 +239,7 @@ class KotlinGenerator private constructor(
     }
 
     if (grpcServerCompatible) {
-      val (grpcClassName, grpcSpec) = KotlinGrpcGenerator(typeToKotlinName)
+      val (grpcClassName, grpcSpec) = KotlinGrpcGenerator(typeToKotlinName, singleMethodServices)
         .generateGrpcServer(service)
       result[grpcClassName] = grpcSpec
     }
@@ -2518,6 +2519,7 @@ class KotlinGenerator private constructor(
       grpcServerCompatible: Boolean = false,
       nameSuffix: String? = null,
       buildersOnly: Boolean = false,
+      singleMethodServices: Boolean = false,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -2562,6 +2564,7 @@ class KotlinGenerator private constructor(
         grpcServerCompatible = grpcServerCompatible,
         nameSuffix = nameSuffix,
         buildersOnly = buildersOnly,
+        singleMethodServices = singleMethodServices,
       )
     }
 

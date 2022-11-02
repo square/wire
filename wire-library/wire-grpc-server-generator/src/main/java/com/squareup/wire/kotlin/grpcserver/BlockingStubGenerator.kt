@@ -49,12 +49,12 @@ object BlockingStubGenerator {
       .addType(
         TypeSpec.classBuilder(stubClassName)
           .apply { addAbstractStubConstructor(generator, this, service) }
-          .addBlockingStubRpcCalls(service)
+          .addBlockingStubRpcCalls(generator, service)
           .build()
       )
   }
 
-  private fun TypeSpec.Builder.addBlockingStubRpcCalls(service: Service): TypeSpec.Builder {
+  private fun TypeSpec.Builder.addBlockingStubRpcCalls(generator: ClassNameGenerator, service: Service): TypeSpec.Builder {
     service.rpcs
       .filter { !it.responseStreaming }
       .forEach { rpc ->
@@ -68,7 +68,7 @@ object BlockingStubGenerator {
         )
         this.addFunction(
           FunSpec.builder(rpc.name)
-            .addBlockingStubSignature(rpc)
+            .addBlockingStubSignature(generator, rpc)
             .addCode(codeBlock)
             .build()
         )
@@ -76,12 +76,12 @@ object BlockingStubGenerator {
     return this
   }
 
-  private fun FunSpec.Builder.addBlockingStubSignature(rpc: Rpc): FunSpec.Builder = this
-    .addParameter("request", ClassName.bestGuess(rpc.requestType.toString()))
+  private fun FunSpec.Builder.addBlockingStubSignature(generator: ClassNameGenerator, rpc: Rpc): FunSpec.Builder = this
+    .addParameter("request", ClassName.bestGuess(generator.classNameFor(rpc.requestType!!).toString()))
     .returns(
       if (rpc.requestStreaming)
         Iterator::class.asClassName()
-          .parameterizedBy(ClassName.bestGuess(rpc.responseType.toString()))
-      else ClassName.bestGuess(rpc.responseType.toString())
+          .parameterizedBy(generator.classNameFor(rpc.responseType!!))
+      else generator.classNameFor(rpc.responseType!!)
     )
 }

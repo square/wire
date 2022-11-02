@@ -40,7 +40,8 @@ class LegacyAdapterTest {
             addLegacyAdapter(
               generator = ClassNameGenerator(buildClassMap(schema, service!!)),
               builder = this,
-              service
+              service,
+              LegacyAdapterGenerator.Options(singleMethodServices = true),
             )
           }
           .build()

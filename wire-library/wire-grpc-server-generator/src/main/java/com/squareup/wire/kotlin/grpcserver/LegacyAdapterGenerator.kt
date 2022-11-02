@@ -28,10 +28,14 @@ import com.squareup.wire.schema.Service
 import java.util.concurrent.ExecutorService
 
 object LegacyAdapterGenerator {
+
+  data class Options(val singleMethodServices: Boolean)
+
   internal fun addLegacyAdapter(
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
-    service: Service
+    service: Service,
+    options: Options
   ): TypeSpec.Builder {
     val serviceClassName = generator.classNameFor(service.type)
     val implBaseClassName = ClassName(
@@ -49,7 +53,7 @@ object LegacyAdapterGenerator {
                 name = "streamExecutor",
                 type = ExecutorService::class
               )
-              .apply { addRpcConstructorParameters(generator, this, service) }
+              .apply { addRpcConstructorParameters(generator, this, service, options) }
               .build()
           )
           .addProperty(
@@ -59,8 +63,8 @@ object LegacyAdapterGenerator {
               .build()
           )
           .apply {
-            addRpcProperties(generator, this, service)
-            addRpcAdapterCodeBlocks(generator, this, service)
+            addRpcProperties(generator, this, service, options)
+            addRpcAdapterCodeBlocks(generator, this, service, options)
           }
           .build()
       )
@@ -69,15 +73,28 @@ object LegacyAdapterGenerator {
   private fun addRpcConstructorParameters(
     generator: ClassNameGenerator,
     builder: FunSpec.Builder,
-    service: Service
+    service: Service,
+    options: Options
   ): FunSpec.Builder {
-    service.rpcs.forEach { rpc ->
+    if (options.singleMethodServices) {
+      service.rpcs.forEach { rpc ->
+        builder.addParameter(
+          name = rpc.name,
+          type = LambdaTypeName.get(
+            returnType = ClassName(
+              generator.classNameFor(service.type).packageName,
+              "${service.name}${rpc.name}${BLOCKING_SERVER_SUFFIX}"
+            )
+          )
+        )
+      }
+    } else {
       builder.addParameter(
-        name = rpc.name,
+        name = SERVICE_CONSTRUCTOR_ARGUMENT,
         type = LambdaTypeName.get(
           returnType = ClassName(
             generator.classNameFor(service.type).packageName,
-            "${service.name}${rpc.name}BlockingServer"
+            "${service.name}${BLOCKING_SERVER_SUFFIX}"
           )
         )
       )
@@ -88,20 +105,38 @@ object LegacyAdapterGenerator {
   private fun addRpcProperties(
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
-    service: Service
+    service: Service,
+    options: Options
   ): TypeSpec.Builder {
-    service.rpcs.forEach { rpc ->
+    if (options.singleMethodServices) {
+      service.rpcs.forEach { rpc ->
+        builder.addProperty(
+          PropertySpec.builder(
+            name = rpc.name,
+            type = LambdaTypeName.get(
+              returnType = ClassName(
+                generator.classNameFor(service.type).packageName,
+                "${service.name}${rpc.name}${BLOCKING_SERVER_SUFFIX}"
+              )
+            )
+          )
+            .initializer(rpc.name)
+            .addModifiers(KModifier.PRIVATE)
+            .build()
+        )
+      }
+    } else {
       builder.addProperty(
         PropertySpec.builder(
-          name = rpc.name,
+          name = SERVICE_CONSTRUCTOR_ARGUMENT,
           type = LambdaTypeName.get(
             returnType = ClassName(
               generator.classNameFor(service.type).packageName,
-              "${service.name}${rpc.name}BlockingServer"
+              "${service.name}${BLOCKING_SERVER_SUFFIX}"
             )
           )
         )
-          .initializer(rpc.name)
+          .initializer(SERVICE_CONSTRUCTOR_ARGUMENT)
           .addModifiers(KModifier.PRIVATE)
           .build()
       )
@@ -112,15 +147,18 @@ object LegacyAdapterGenerator {
   private fun addRpcAdapterCodeBlocks(
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
-    service: Service
+    service: Service,
+    options: Options
   ): TypeSpec.Builder {
     service.rpcs.forEach { rpc ->
+      val serviceProviderName = if (options.singleMethodServices) { rpc.name } else { SERVICE_CONSTRUCTOR_ARGUMENT }
+
       val codeBlock = when {
         rpc.requestStreaming && rpc.responseStreaming -> CodeBlock.of(
           """
           |val requestStream = %T()
           |streamExecutor.submit {
-          |  ${rpc.name}().${rpc.name}(requestStream, %T(response))
+          |  ${serviceProviderName}().${rpc.name}(requestStream, %T(response))
           |}
           |return requestStream
           |""".trimMargin(),
@@ -132,7 +170,7 @@ object LegacyAdapterGenerator {
           """
           |val requestStream = %T()
           |streamExecutor.submit {
-          |  response.onNext(${rpc.name}().${rpc.name}(requestStream))
+          |  response.onNext(${serviceProviderName}().${rpc.name}(requestStream))
           |  response.onCompleted()
           |}
           |return requestStream
@@ -142,13 +180,13 @@ object LegacyAdapterGenerator {
         )
         rpc.responseStreaming -> CodeBlock.of(
           """
-          |${rpc.name}().${rpc.name}(request, %T(response))
+          |${serviceProviderName}().${rpc.name}(request, %T(response))
           |""".trimMargin(),
           ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSinkAdapter")
         )
         else -> CodeBlock.of(
           """
-          |response.onNext(${rpc.name}().${rpc.name}(request))
+          |response.onNext(${serviceProviderName}().${rpc.name}(request))
           |response.onCompleted()
           |""".trimMargin()
         )
@@ -163,4 +201,7 @@ object LegacyAdapterGenerator {
     }
     return builder
   }
+
+  private const val SERVICE_CONSTRUCTOR_ARGUMENT = "service"
+  private const val BLOCKING_SERVER_SUFFIX = "BlockingServer"
 }

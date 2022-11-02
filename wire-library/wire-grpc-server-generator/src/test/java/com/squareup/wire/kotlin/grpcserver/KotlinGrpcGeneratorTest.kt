@@ -31,11 +31,50 @@ internal class KotlinGrpcGeneratorTest {
     val schema = buildSchema { addLocal("src/test/proto/RouteGuideProto.proto".toPath()) }
     val service = schema.getService("routeguide.RouteGuide")
 
-    val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(schema, service!!))
+    val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(schema, service!!), singleMethodServices = true)
       .generateGrpcServer(service)
     val output = FileSpec.get("routeguide", typeSpec)
 
     assertThat(output.toString())
       .isEqualTo(File("src/test/golden/RouteGuideWireGrpc.kt").source().buffer().readUtf8())
+  }
+
+  private val twoMethodSchema = """
+      |syntax = "proto2";
+      |
+      |package foo;
+      |option java_package = "com.foo.bar";
+      |
+      |message Request {}
+      |message Response {}
+      |
+      |service FooService {
+      |  rpc Call1(Request) returns (Response) {}
+      |  rpc Call2(Request) returns (Response) {}
+      |}
+      |""".trimMargin()
+
+  @Test
+  fun `correctly generates singleMethodService = false adapters`() {
+    val schema = buildSchema { add("service.proto".toPath(), twoMethodSchema) }
+    val service = schema.getService("foo.FooService")
+    val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(schema, service!!), singleMethodServices = false)
+      .generateGrpcServer(service)
+    val output = FileSpec.get("com.foo.bar", typeSpec)
+
+    assertThat(output.toString())
+      .isEqualTo(File("src/test/golden/nonSingleMethodService.java").source().buffer().readUtf8())
+  }
+
+  @Test
+  fun `correctly generates singleMethodService = true adapters`() {
+    val schema = buildSchema { add("service.proto".toPath(), twoMethodSchema) }
+    val service = schema.getService("foo.FooService")
+    val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(schema, service!!), singleMethodServices = true)
+      .generateGrpcServer(service)
+    val output = FileSpec.get("com.foo.bar", typeSpec)
+
+    assertThat(output.toString())
+      .isEqualTo(File("src/test/golden/singleMethodService.java").source().buffer().readUtf8())
   }
 }
