@@ -109,7 +109,9 @@ extension AnyMessage: ProtoMessage {
 #if !WIRE_REMOVE_CODABLE
 extension AnyMessage: Codable {
     public enum CodingKeys: String, CodingKey {
-        case typeUrl = "type_url"
+        // TODO: Audit google.protobuf.Any JSON serialization strategy on both
+        // Swift and Kotlin to ensure they conform to the spec.
+        case typeUrl = "@type"
         case value = "value"
     }
 }
