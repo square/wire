@@ -25,8 +25,8 @@ import Foundation
  *
  * Example
  * ```
- * let person: Person = anyMessage.unpack(Person.self)
- * let anyMessage = AnyMessage.pack(person)
+ * let anyMessage = try AnyMessage.pack(person)
+ * let person = try anyMessage.unpack(Person.self)
  * ```
  */
 public struct AnyMessage {
@@ -98,8 +98,10 @@ extension AnyMessage: Proto3Codable {
         try writer.encode(tag: 1, value: self.typeUrl)
         try writer.encode(tag: 2, value: self.value)
     }
+}
 
-    public func protoMessageName() -> String {
+extension AnyMessage: ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
         return "google.protobuf.Any"
     }
 }
