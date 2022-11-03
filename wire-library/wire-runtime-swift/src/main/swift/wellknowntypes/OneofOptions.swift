@@ -21,6 +21,12 @@ extension OneofOptions : Hashable {
 }
 #endif
 
+extension OneofOptions : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/google.protobuf.OneofOptions"
+    }
+}
+
 extension OneofOptions : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()

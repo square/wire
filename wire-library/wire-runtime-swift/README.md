@@ -20,7 +20,8 @@ open gen/Wire/Wire.xcworkspace
 
 ### Running Tests On the Command Line
 
-To build the runtime and run tests from the command line using Gradle, run the following command from the root of the repo:
+To build the runtime and run the [Swift tests](./src/test) from the command line using Gradle,
+run the following command **from the root of the repo**:
 
 ```
 ./gradlew -p wire-library :wire-runtime-swift:build

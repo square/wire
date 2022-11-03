@@ -1,6 +1,5 @@
 package com.squareup.wire.swift
 
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.schema.EnclosingType

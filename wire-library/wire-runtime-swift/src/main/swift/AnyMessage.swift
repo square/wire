@@ -38,7 +38,7 @@ public struct AnyMessage {
         self.value = value
     }
 
-    public enum DecodingError: Swift.Error {
+    public enum DecodingError: Swift.Error, Equatable {
         case typeUrlMismatch
     }
 

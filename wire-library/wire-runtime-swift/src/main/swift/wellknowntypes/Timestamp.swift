@@ -92,6 +92,12 @@ extension Timestamp : Hashable {
 }
 #endif
 
+extension Timestamp : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/google.protobuf.Timestamp"
+    }
+}
+
 extension Timestamp : Proto3Codable {
     public init(from reader: ProtoReader) throws {
         var seconds: Int64? = nil

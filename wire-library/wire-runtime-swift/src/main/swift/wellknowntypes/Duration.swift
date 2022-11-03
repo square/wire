@@ -80,6 +80,12 @@ extension Duration : Hashable {
 }
 #endif
 
+extension Duration : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/google.protobuf.Duration"
+    }
+}
+
 extension Duration : Proto3Codable {
     public init(from reader: ProtoReader) throws {
         var seconds: Int64? = nil
