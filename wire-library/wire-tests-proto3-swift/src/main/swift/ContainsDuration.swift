@@ -24,6 +24,12 @@ extension ContainsDuration : Hashable {
 }
 #endif
 
+extension ContainsDuration : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos3.kotlin.contains_duration.ContainsDuration"
+    }
+}
+
 extension ContainsDuration : Proto3Codable {
     public init(from reader: ProtoReader) throws {
         var duration: Duration? = nil

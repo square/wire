@@ -47,6 +47,12 @@ extension ModelEvaluation : Hashable {
 }
 #endif
 
+extension ModelEvaluation : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/ModelEvaluation"
+    }
+}
+
 extension ModelEvaluation : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var name: String? = nil

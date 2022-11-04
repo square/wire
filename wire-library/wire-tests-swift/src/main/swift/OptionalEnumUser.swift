@@ -31,6 +31,12 @@ extension OptionalEnumUser : Hashable {
 }
 #endif
 
+extension OptionalEnumUser : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.OptionalEnumUser"
+    }
+}
+
 extension OptionalEnumUser : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var optional_enum: OptionalEnumUser.OptionalEnum? = nil

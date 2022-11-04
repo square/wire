@@ -24,6 +24,12 @@ extension ExternalMessage : Hashable {
 }
 #endif
 
+extension ExternalMessage : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.simple.ExternalMessage"
+    }
+}
+
 extension ExternalMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var f: Float? = nil

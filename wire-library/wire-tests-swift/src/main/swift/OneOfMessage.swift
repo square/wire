@@ -65,6 +65,12 @@ extension OneOfMessage : Hashable {
 }
 #endif
 
+extension OneOfMessage : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.OneOfMessage"
+    }
+}
+
 extension OneOfMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var choice: OneOfMessage.Choice? = nil

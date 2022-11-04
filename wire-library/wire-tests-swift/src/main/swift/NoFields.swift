@@ -22,6 +22,12 @@ extension NoFields : Hashable {
 }
 #endif
 
+extension NoFields : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.NoFields"
+    }
+}
+
 extension NoFields : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()

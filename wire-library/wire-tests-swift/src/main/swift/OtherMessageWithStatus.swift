@@ -28,6 +28,12 @@ extension OtherMessageWithStatus : Hashable {
 }
 #endif
 
+extension OtherMessageWithStatus : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.OtherMessageWithStatus"
+    }
+}
+
 extension OtherMessageWithStatus : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()

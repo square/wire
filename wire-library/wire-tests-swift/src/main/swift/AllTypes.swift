@@ -1895,6 +1895,12 @@ extension AllTypes.NestedMessage : Hashable {
 }
 #endif
 
+extension AllTypes.NestedMessage : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes.NestedMessage"
+    }
+}
+
 extension AllTypes.NestedMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var a: Int32? = nil
@@ -1944,6 +1950,12 @@ extension AllTypes : Proto2Codable {
 
     public func encode(to writer: ProtoWriter) throws {
         try storage.encode(to: writer)
+    }
+}
+
+extension _AllTypes : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes"
     }
 }
 

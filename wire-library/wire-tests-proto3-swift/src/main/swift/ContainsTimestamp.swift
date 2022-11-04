@@ -24,6 +24,12 @@ extension ContainsTimestamp : Hashable {
 }
 #endif
 
+extension ContainsTimestamp : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos3.kotlin.contains_timestamp.ContainsTimestamp"
+    }
+}
+
 extension ContainsTimestamp : Proto3Codable {
     public init(from reader: ProtoReader) throws {
         var timestamp: Timestamp? = nil

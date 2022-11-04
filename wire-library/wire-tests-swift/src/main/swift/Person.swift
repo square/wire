@@ -86,6 +86,12 @@ extension Person.PhoneNumber : Hashable {
 }
 #endif
 
+extension Person.PhoneNumber : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.person.Person.PhoneNumber"
+    }
+}
+
 extension Person.PhoneNumber : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var number: String? = nil
@@ -132,6 +138,12 @@ extension Person : Equatable {
 extension Person : Hashable {
 }
 #endif
+
+extension Person : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.person.Person"
+    }
+}
 
 extension Person : Proto2Codable {
     public init(from reader: ProtoReader) throws {
