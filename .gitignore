@@ -27,6 +27,7 @@ wire-library/docs/changelog.md
 wire-library/docs/contributing.md
 wire-library/docs/index.md
 
+*.DS_Store
 local.properties
 
 # for dependency watching with https://github.com/JakeWharton/dependency-watch/
