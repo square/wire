@@ -22,7 +22,7 @@ final class AnyMessageTests: XCTestCase {
     func testPackingAny() throws {
         let person = Person(name: "foo bar", id: 12345)
         let any = try AnyMessage.pack(person)
-        XCTAssertEqual(any.typeUrl, Person.protoMessageTypeURL())
+        XCTAssertEqual(any.typeURL, Person.protoMessageTypeURL())
         XCTAssertEqual(any.value, try ProtoEncoder().encode(person))
     }
 
@@ -36,7 +36,7 @@ final class AnyMessageTests: XCTestCase {
         let person = Person(name: "foo bar", id: 12345)
         let any = try AnyMessage.pack(person)
         XCTAssertThrowsError(try any.unpack(Parent.self)) { error in
-            XCTAssertEqual(.typeUrlMismatch, error as? AnyMessage.DecodingError)
+            XCTAssertEqual(.typeURLMismatch, error as? AnyMessage.DecodingError)
         }
     }
 
