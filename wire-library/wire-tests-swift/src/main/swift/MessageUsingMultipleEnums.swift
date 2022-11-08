@@ -29,6 +29,12 @@ extension MessageUsingMultipleEnums : Hashable {
 }
 #endif
 
+extension MessageUsingMultipleEnums : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.MessageUsingMultipleEnums"
+    }
+}
+
 extension MessageUsingMultipleEnums : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var a: MessageWithStatus.Status? = nil

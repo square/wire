@@ -27,6 +27,12 @@ extension VeryLongProtoNameCausingBrokenLineBreaks : Hashable {
 }
 #endif
 
+extension VeryLongProtoNameCausingBrokenLineBreaks : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.tostring.VeryLongProtoNameCausingBrokenLineBreaks"
+    }
+}
+
 extension VeryLongProtoNameCausingBrokenLineBreaks : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var foo: String? = nil

@@ -227,6 +227,12 @@ extension Form.ButtonElement : Hashable {
 }
 #endif
 
+extension Form.ButtonElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.ButtonElement"
+    }
+}
+
 extension Form.ButtonElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -258,6 +264,12 @@ extension Form.LocalImageElement : Equatable {
 extension Form.LocalImageElement : Hashable {
 }
 #endif
+
+extension Form.LocalImageElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.LocalImageElement"
+    }
+}
 
 extension Form.LocalImageElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -291,6 +303,12 @@ extension Form.RemoteImageElement : Hashable {
 }
 #endif
 
+extension Form.RemoteImageElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.RemoteImageElement"
+    }
+}
+
 extension Form.RemoteImageElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -322,6 +340,12 @@ extension Form.MoneyElement : Equatable {
 extension Form.MoneyElement : Hashable {
 }
 #endif
+
+extension Form.MoneyElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.MoneyElement"
+    }
+}
 
 extension Form.MoneyElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -355,6 +379,12 @@ extension Form.SpacerElement : Hashable {
 }
 #endif
 
+extension Form.SpacerElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.SpacerElement"
+    }
+}
+
 extension Form.SpacerElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -386,6 +416,12 @@ extension Form.TextElement : Equatable {
 extension Form.TextElement : Hashable {
 }
 #endif
+
+extension Form.TextElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextElement"
+    }
+}
 
 extension Form.TextElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -429,6 +465,12 @@ extension Form.CustomizedCardElement : Hashable {
 }
 #endif
 
+extension Form.CustomizedCardElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CustomizedCardElement"
+    }
+}
+
 extension Form.CustomizedCardElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -460,6 +502,12 @@ extension Form.AddressElement : Equatable {
 extension Form.AddressElement : Hashable {
 }
 #endif
+
+extension Form.AddressElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.AddressElement"
+    }
+}
 
 extension Form.AddressElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -493,6 +541,12 @@ extension Form.TextInputElement : Hashable {
 }
 #endif
 
+extension Form.TextInputElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextInputElement"
+    }
+}
+
 extension Form.TextInputElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -524,6 +578,12 @@ extension Form.OptionPickerElement : Equatable {
 extension Form.OptionPickerElement : Hashable {
 }
 #endif
+
+extension Form.OptionPickerElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.OptionPickerElement"
+    }
+}
 
 extension Form.OptionPickerElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -557,6 +617,12 @@ extension Form.DetailRowElement : Hashable {
 }
 #endif
 
+extension Form.DetailRowElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.DetailRowElement"
+    }
+}
+
 extension Form.DetailRowElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -589,6 +655,12 @@ extension Form.CurrencyConversionFlagsElement : Hashable {
 }
 #endif
 
+extension Form.CurrencyConversionFlagsElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CurrencyConversionFlagsElement"
+    }
+}
+
 extension Form.CurrencyConversionFlagsElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -620,6 +692,12 @@ extension Form : Equatable {
 extension Form : Hashable {
 }
 #endif
+
+extension Form : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form"
+    }
+}
 
 extension Form : Proto2Codable {
     public init(from reader: ProtoReader) throws {

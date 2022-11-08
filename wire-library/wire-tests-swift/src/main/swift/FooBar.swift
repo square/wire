@@ -84,6 +84,12 @@ extension FooBar.Nested : Hashable {
 }
 #endif
 
+extension FooBar.Nested : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.custom_options.FooBar.Nested"
+    }
+}
+
 extension FooBar.Nested : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var value: FooBar.FooBarBazEnum? = nil
@@ -126,6 +132,12 @@ extension FooBar.More : Hashable {
 }
 #endif
 
+extension FooBar.More : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.custom_options.FooBar.More"
+    }
+}
+
 extension FooBar.More : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var serial: [Int32] = []
@@ -167,6 +179,12 @@ extension FooBar : Equatable {
 extension FooBar : Hashable {
 }
 #endif
+
+extension FooBar : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.custom_options.FooBar"
+    }
+}
 
 extension FooBar : Proto2Codable {
     public init(from reader: ProtoReader) throws {

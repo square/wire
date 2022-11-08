@@ -32,6 +32,12 @@ extension VersionOne : Hashable {
 }
 #endif
 
+extension VersionOne : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.unknownfields.VersionOne"
+    }
+}
+
 extension VersionOne : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var i: Int32? = nil

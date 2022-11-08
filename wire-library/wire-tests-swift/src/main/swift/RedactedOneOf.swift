@@ -58,6 +58,12 @@ extension RedactedOneOf : Hashable {
 }
 #endif
 
+extension RedactedOneOf : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedOneOf"
+    }
+}
+
 extension RedactedOneOf : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var a: RedactedOneOf.A? = nil

@@ -26,6 +26,12 @@ extension EmbeddedMessage : Hashable {
 }
 #endif
 
+extension EmbeddedMessage : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.packed_encoding.EmbeddedMessage"
+    }
+}
+
 extension EmbeddedMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var inner_repeated_number: [Int32] = []

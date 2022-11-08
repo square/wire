@@ -22,6 +22,12 @@ extension MessageWithOptions : Hashable {
 }
 #endif
 
+extension MessageWithOptions : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions"
+    }
+}
+
 extension MessageWithOptions : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()

@@ -27,6 +27,12 @@ extension Percents : Hashable {
 }
 #endif
 
+extension Percents : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.Percents"
+    }
+}
+
 extension Percents : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var text: String? = nil

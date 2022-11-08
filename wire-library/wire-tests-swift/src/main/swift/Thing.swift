@@ -24,6 +24,12 @@ extension Thing : Hashable {
 }
 #endif
 
+extension Thing : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Thing"
+    }
+}
+
 extension Thing : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var name: String? = nil
