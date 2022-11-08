@@ -26,4 +26,5 @@ dependencies {
   implementation(libs.wire.runtime)
   implementation(libs.grpc.netty)
   implementation(libs.grpc.stub)
+  implementation(libs.grpc.protobuf)
 }

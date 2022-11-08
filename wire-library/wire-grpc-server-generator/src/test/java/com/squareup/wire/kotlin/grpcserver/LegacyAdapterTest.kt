@@ -30,7 +30,8 @@ import java.io.File
 class LegacyAdapterTest {
   @Test
   fun legacyAdapter() {
-    val schema = buildSchema { addLocal("src/test/proto/RouteGuideProto.proto".toPath()) }
+    val path = "src/test/proto/RouteGuideProto.proto".toPath()
+    val schema = buildSchema { addLocal(path) }
     val service = schema.getService("routeguide.RouteGuide")
 
     val code = FileSpec.builder("routeguide", "RouteGuide")

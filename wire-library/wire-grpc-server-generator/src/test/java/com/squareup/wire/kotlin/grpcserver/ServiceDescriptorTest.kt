@@ -29,19 +29,21 @@ import java.io.File
 class ServiceDescriptorTest {
   @Test
   fun addServiceDescriptor() {
-    val schema = buildSchema { addLocal("src/test/proto/RouteGuideProto.proto".toPath()) }
+    val path = "src/test/proto/RouteGuideProto.proto".toPath()
+    val schema = buildSchema { addLocal(path) }
     val service = schema.getService("routeguide.RouteGuide")
 
     val code = FileSpec.builder("routeguide", "RouteGuide")
       .addType(
         TypeSpec.classBuilder("RouteGuideWireGrpc")
-          .apply { ServiceDescriptorGenerator.addServiceDescriptor(this, service!!) }
+          .apply {
+            ServiceDescriptorGenerator.addServiceDescriptor(this, service!!, schema.protoFile(path), schema)
+          }
           .build()
       )
       .build()
       .toString()
 
-    println(code)
     assertThat(code).isEqualTo(File("src/test/golden/ServiceDescriptor.kt").source().buffer().readUtf8())
   }
 }

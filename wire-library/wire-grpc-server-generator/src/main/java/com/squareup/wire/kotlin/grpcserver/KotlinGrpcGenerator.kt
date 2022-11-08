@@ -24,19 +24,21 @@ import com.squareup.wire.kotlin.grpcserver.LegacyAdapterGenerator.addLegacyAdapt
 import com.squareup.wire.kotlin.grpcserver.MethodDescriptorGenerator.addMethodDescriptor
 import com.squareup.wire.kotlin.grpcserver.ServiceDescriptorGenerator.addServiceDescriptor
 import com.squareup.wire.kotlin.grpcserver.StubGenerator.addStub
+import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoType
+import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
 
 class KotlinGrpcGenerator(
   private val typeToKotlinName: Map<ProtoType, TypeName>,
   private val singleMethodServices: Boolean,
   ) {
-  fun generateGrpcServer(service: Service): Pair<ClassName, TypeSpec> {
+  fun generateGrpcServer(service: Service, protoFile: ProtoFile?, schema: Schema): Pair<ClassName, TypeSpec> {
     val classNameGenerator = ClassNameGenerator(typeToKotlinName)
     val grpcClassName = classNameGenerator.classNameFor(service.type, "WireGrpc")
     val builder = TypeSpec.objectBuilder(grpcClassName)
 
-    addServiceDescriptor(builder, service)
+    addServiceDescriptor(builder, service, protoFile, schema)
     service.rpcs.forEach { rpc -> addMethodDescriptor(classNameGenerator, builder, service, rpc) }
     addImplBase(classNameGenerator, builder, service)
     addLegacyAdapter(classNameGenerator, builder, service, LegacyAdapterGenerator.Options(

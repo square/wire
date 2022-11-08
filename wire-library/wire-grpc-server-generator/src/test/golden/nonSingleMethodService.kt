@@ -1,5 +1,7 @@
 package com.foo.bar
 
+import com.google.protobuf.DescriptorProtos
+import com.google.protobuf.Descriptors
 import io.grpc.BindableService
 import io.grpc.CallOptions
 import io.grpc.Channel
@@ -16,8 +18,11 @@ import io.grpc.stub.StreamObserver
 import java.io.InputStream
 import java.lang.UnsupportedOperationException
 import java.util.concurrent.ExecutorService
+import kotlin.Array
 import kotlin.String
 import kotlin.Unit
+import kotlin.collections.Map
+import kotlin.collections.Set
 import kotlin.jvm.Volatile
 
 public object FooServiceWireGrpc {
@@ -26,11 +31,33 @@ public object FooServiceWireGrpc {
   @Volatile
   private var serviceDescriptor: ServiceDescriptor? = null
 
+  private val descriptorMap: Map<String, DescriptorProtos.FileDescriptorProto> = mapOf(
+    "service.proto" to descriptorFor(arrayOf(
+      "Cg1zZXJ2aWNlLnByb3RvEgNmb28iCQoHUmVxdWVzdCIKCghSZXNwb25zZTJYCgpGb29TZXJ2aWNlEiQK",
+      "BUNhbGwxEgwuZm9vLlJlcXVlc3QaDS5mb28uUmVzcG9uc2USJAoFQ2FsbDISDC5mb28uUmVxdWVzdBoN",
+      "LmZvby5SZXNwb25zZUINCgtjb20uZm9vLmJhcg==",
+    )),
+  )
+
+
   @Volatile
   private var getCall1Method: MethodDescriptor<Request, Response>? = null
 
   @Volatile
   private var getCall2Method: MethodDescriptor<Request, Response>? = null
+
+  private fun descriptorFor(`data`: Array<String>): DescriptorProtos.FileDescriptorProto {
+    val str = data.fold(java.lang.StringBuilder()) { b, s -> b.append(s) }.toString()
+    val bytes = java.util.Base64.getDecoder().decode(str)
+    return DescriptorProtos.FileDescriptorProto.parseFrom(bytes)
+  }
+
+  private fun fileDescriptor(path: String, visited: Set<String>): Descriptors.FileDescriptor {
+    val proto = descriptorMap[path]!!
+    val deps = proto.dependencyList.filter { !visited.contains(it) }.map { fileDescriptor(it,
+        visited + path) }
+    return Descriptors.FileDescriptor.buildFrom(proto, deps.toTypedArray())
+  }
 
   public fun getServiceDescriptor(): ServiceDescriptor? {
     var result = serviceDescriptor
@@ -41,6 +68,9 @@ public object FooServiceWireGrpc {
           result = newBuilder(SERVICE_NAME)
           .addMethod(getCall1Method())
           .addMethod(getCall2Method())
+          .setSchemaDescriptor(io.grpc.protobuf.ProtoFileDescriptorSupplier {
+                fileDescriptor("service.proto", emptySet())
+              })
           .build()
           serviceDescriptor = result
         }
