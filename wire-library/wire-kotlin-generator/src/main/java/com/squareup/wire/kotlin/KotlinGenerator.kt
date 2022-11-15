@@ -239,8 +239,9 @@ class KotlinGenerator private constructor(
     }
 
     if (grpcServerCompatible) {
+      val protoFile: ProtoFile? = schema.protoFile(service.location.path)
       val (grpcClassName, grpcSpec) = KotlinGrpcGenerator(typeToKotlinName, singleMethodServices)
-        .generateGrpcServer(service)
+        .generateGrpcServer(service, protoFile, schema)
       result[grpcClassName] = grpcSpec
     }
 

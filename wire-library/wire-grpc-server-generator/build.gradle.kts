@@ -16,10 +16,12 @@ dependencies {
   implementation(projects.wireGrpcClient)
   implementation(libs.okio.core)
   api(libs.kotlinpoet)
+  api(libs.protobuf.java)
   testImplementation(projects.wireTestUtils)
   testImplementation(libs.kotlin.test.junit)
   testImplementation(libs.truth)
   testImplementation(libs.assertj)
+  testImplementation(libs.kotlin.jsr223)
 }
 
 sourceSets {

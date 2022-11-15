@@ -28,11 +28,12 @@ import java.io.File
 internal class KotlinGrpcGeneratorTest {
   @Test
   fun fullFile() {
-    val schema = buildSchema { addLocal("src/test/proto/RouteGuideProto.proto".toPath()) }
+    val path = "src/test/proto/RouteGuideProto.proto".toPath()
+    val schema = buildSchema { addLocal(path) }
     val service = schema.getService("routeguide.RouteGuide")
 
     val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(schema, service!!), singleMethodServices = true)
-      .generateGrpcServer(service)
+      .generateGrpcServer(service, schema.protoFile(path), schema)
     val output = FileSpec.get("routeguide", typeSpec)
 
     assertThat(output.toString())
@@ -56,25 +57,27 @@ internal class KotlinGrpcGeneratorTest {
 
   @Test
   fun `correctly generates singleMethodService = false adapters`() {
-    val schema = buildSchema { add("service.proto".toPath(), twoMethodSchema) }
+    val path = "service.proto".toPath()
+    val schema = buildSchema { add(path, twoMethodSchema) }
     val service = schema.getService("foo.FooService")
     val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(schema, service!!), singleMethodServices = false)
-      .generateGrpcServer(service)
+      .generateGrpcServer(service, schema.protoFile(path), schema)
     val output = FileSpec.get("com.foo.bar", typeSpec)
 
     assertThat(output.toString())
-      .isEqualTo(File("src/test/golden/nonSingleMethodService.java").source().buffer().readUtf8())
+      .isEqualTo(File("src/test/golden/nonSingleMethodService.kt").source().buffer().readUtf8())
   }
 
   @Test
   fun `correctly generates singleMethodService = true adapters`() {
-    val schema = buildSchema { add("service.proto".toPath(), twoMethodSchema) }
+    val path = "service.proto".toPath()
+    val schema = buildSchema { add(path, twoMethodSchema) }
     val service = schema.getService("foo.FooService")
     val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(schema, service!!), singleMethodServices = true)
-      .generateGrpcServer(service)
+      .generateGrpcServer(service, schema.protoFile(path), schema)
     val output = FileSpec.get("com.foo.bar", typeSpec)
 
     assertThat(output.toString())
-      .isEqualTo(File("src/test/golden/singleMethodService.java").source().buffer().readUtf8())
+      .isEqualTo(File("src/test/golden/singleMethodService.kt").source().buffer().readUtf8())
   }
 }
