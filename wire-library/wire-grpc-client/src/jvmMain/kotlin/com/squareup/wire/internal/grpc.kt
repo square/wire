@@ -34,6 +34,7 @@ import okhttp3.RequestBody
 import okio.BufferedSink
 import okio.IOException
 import java.io.Closeable
+import java.util.Base64
 
 internal val APPLICATION_GRPC_MEDIA_TYPE: MediaType = "application/grpc".toMediaType()
 
@@ -189,16 +190,17 @@ private fun GrpcResponse.checkGrpcResponse() {
 
 /** Returns an exception if the gRPC call didn't have a grpc-status of 0. */
 internal fun GrpcResponse.grpcResponseToException(suppressed: IOException? = null): IOException? {
-  var trailers = headersOf()
   var transportException = suppressed
-  try {
-    trailers = trailers()
+  val trailers = try {
+    trailers()
   } catch (e: IOException) {
     if (transportException == null) transportException = e
+    headersOf()
   }
 
-  val grpcStatus = trailers["grpc-status"] ?: header("grpc-status")
-  val grpcMessage = trailers["grpc-message"] ?: header("grpc-message")
+  val grpcStatus = trailers["grpc-status"]
+  val grpcMessage = trailers["grpc-message"]
+  var grpcStatusDetailsBin: ByteArray? = null
 
   if (transportException != null) {
     return IOException(
@@ -211,11 +213,22 @@ internal fun GrpcResponse.grpcResponseToException(suppressed: IOException? = nul
   if (grpcStatus != "0") {
     val grpcStatusInt = grpcStatus?.toIntOrNull()
       ?: throw IOException(
-        "gRPC transport failure" +
+        "gRPC transport failure, invalid grpc-status" +
           " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)"
       )
+    grpcStatusDetailsBin = trailers["grpc-status-details-bin"]?.let {
+      try {
+        Base64.getDecoder().decode(it)
+      } catch (e: IllegalArgumentException) {
+        throw IOException(
+          "gRPC transport failure, invalid grpc-status-details-bin" +
+            " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)",
+          e
+        )
+      }
+    }
 
-    return GrpcException(GrpcStatus.get(grpcStatusInt), grpcMessage)
+    return GrpcException(GrpcStatus.get(grpcStatusInt), grpcMessage, grpcStatusDetailsBin)
   }
 
   return null // Success.
