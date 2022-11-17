@@ -569,6 +569,15 @@ class SwiftGenerator private constructor(
               }
               .build()
           )
+        } else {
+          // Coding keys still need to be specified in order to prevent `unknownFields` from getting serialized
+          // in the JSON/Codable scenario.
+          addType(
+            TypeSpec.enumBuilder(codingKeys)
+              .addModifiers(PUBLIC)
+              .addSuperType(codingKey)
+              .build()
+          )
         }
 
         // If there are any oneofs we cannot rely on the built-in Codable support since the

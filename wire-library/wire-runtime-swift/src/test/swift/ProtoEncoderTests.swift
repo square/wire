@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
+import Foundation
 import Wire
 import XCTest
 
 final class ProtoEncoderTests: XCTestCase {
 
-    func testEncodeEmptyMessage() throws {
-        let object = SimpleOptional2()
+    func testEncodeEmptyProtoMessage() throws {
+        let object = EmptyMessage()
         let encoder = ProtoEncoder()
         let data = try encoder.encode(object)
 
         XCTAssertEqual(data, Data())
     }
 
+    func testEncodeEmptyJSONMessage() throws {
+        let object = EmptyMessage()
+        let encoder = JSONEncoder()
+        let data = try encoder.encode(object)
+        let jsonString = try XCTUnwrap(String(data: data, encoding: .utf8))
+
+        XCTAssertEqual(jsonString, "{}")
+    }
 }

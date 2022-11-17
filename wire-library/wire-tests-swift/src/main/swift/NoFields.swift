@@ -47,5 +47,7 @@ extension NoFields : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension NoFields : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
