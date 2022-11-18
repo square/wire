@@ -53,5 +53,7 @@ extension OtherMessageWithStatus : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension OtherMessageWithStatus : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif

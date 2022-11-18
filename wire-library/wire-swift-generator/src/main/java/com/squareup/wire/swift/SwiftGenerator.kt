@@ -553,23 +553,25 @@ class SwiftGenerator private constructor(
       .addSuperType(codable)
       .apply {
         val codingKeys = structType.nestedType("CodingKeys")
-
-        if (type.fieldsAndOneOfFields.isNotEmpty()) {
-          // Define the keys which are the set of all direct properties and the properties within
-          // each oneof.
-          addType(
-            TypeSpec.enumBuilder(codingKeys)
-              .addModifiers(PUBLIC)
-              .addSuperType(STRING)
-              .addSuperType(codingKey)
-              .apply {
-                type.fieldsAndOneOfFields.forEach { field ->
-                  addEnumCase(field.name)
-                }
+        // Define the keys which are the set of all direct properties and the properties within
+        // each oneof.
+        addType(
+          TypeSpec.enumBuilder(codingKeys)
+            .addModifiers(PUBLIC)
+            .apply {
+              // Coding keys still need to be specified on empty messages in order to prevent `unknownFields` from
+              // getting serialized via JSON/Codable. In this case, the keys cannot conform to `RawRepresentable`
+              // in order to compile.
+              if (type.fieldsAndOneOfFields.isNotEmpty()) {
+                addSuperType(STRING)
               }
-              .build()
-          )
-        }
+              addSuperType(codingKey)
+              type.fieldsAndOneOfFields.forEach { field ->
+                addEnumCase(field.name)
+              }
+            }
+            .build()
+        )
 
         // If there are any oneofs we cannot rely on the built-in Codable support since the
         // keys of the nested associated enum are flattened into the enclosing parent.

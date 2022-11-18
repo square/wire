@@ -46,5 +46,7 @@ extension OneofOptions : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension OneofOptions : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif

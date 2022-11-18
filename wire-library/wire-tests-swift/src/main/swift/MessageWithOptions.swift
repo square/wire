@@ -47,5 +47,7 @@ extension MessageWithOptions : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension MessageWithOptions : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif

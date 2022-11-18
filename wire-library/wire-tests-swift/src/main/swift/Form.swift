@@ -252,6 +252,8 @@ extension Form.ButtonElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.ButtonElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -290,6 +292,8 @@ extension Form.LocalImageElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.LocalImageElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -328,6 +332,8 @@ extension Form.RemoteImageElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.RemoteImageElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -366,6 +372,8 @@ extension Form.MoneyElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.MoneyElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -404,6 +412,8 @@ extension Form.SpacerElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.SpacerElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -490,6 +500,8 @@ extension Form.CustomizedCardElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.CustomizedCardElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -528,6 +540,8 @@ extension Form.AddressElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.AddressElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -566,6 +580,8 @@ extension Form.TextInputElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.TextInputElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -604,6 +620,8 @@ extension Form.OptionPickerElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.OptionPickerElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -642,6 +660,8 @@ extension Form.DetailRowElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.DetailRowElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -680,6 +700,8 @@ extension Form.CurrencyConversionFlagsElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.CurrencyConversionFlagsElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
