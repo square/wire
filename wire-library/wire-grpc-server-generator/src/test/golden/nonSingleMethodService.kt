@@ -2,7 +2,8 @@ package com.foo.bar
 
 import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.Descriptors
-import io.grpc.BindableService
+import com.squareup.wire.kotlin.grpcserver.WireBindableService
+import com.squareup.wire.kotlin.grpcserver.WireMethodMarshaller
 import io.grpc.CallOptions
 import io.grpc.Channel
 import io.grpc.MethodDescriptor
@@ -16,6 +17,7 @@ import io.grpc.stub.ServerCalls
 import io.grpc.stub.ServerCalls.asyncUnaryCall
 import io.grpc.stub.StreamObserver
 import java.io.InputStream
+import java.lang.Class
 import java.lang.UnsupportedOperationException
 import java.util.concurrent.ExecutorService
 import kotlin.Array
@@ -130,7 +132,7 @@ public object FooServiceWireGrpc {
   public fun newBlockingStub(channel: Channel): FooServiceBlockingStub =
       FooServiceBlockingStub(channel)
 
-  public abstract class FooServiceImplBase : BindableService {
+  public abstract class FooServiceImplBase : WireBindableService {
     public open fun Call1(request: Request, response: StreamObserver<Response>): Unit = throw
         UnsupportedOperationException()
 
@@ -146,16 +148,20 @@ public object FooServiceWireGrpc {
               asyncUnaryCall(this@FooServiceImplBase::Call2)
             ).build()
 
-    public class RequestMarshaller : MethodDescriptor.Marshaller<Request> {
+    public class RequestMarshaller : WireMethodMarshaller<Request> {
       public override fun stream(`value`: Request): InputStream =
           Request.ADAPTER.encode(value).inputStream()
+
+      public override fun marshalledClass(): Class<Request> = Request::class.java
 
       public override fun parse(stream: InputStream): Request = Request.ADAPTER.decode(stream)
     }
 
-    public class ResponseMarshaller : MethodDescriptor.Marshaller<Response> {
+    public class ResponseMarshaller : WireMethodMarshaller<Response> {
       public override fun stream(`value`: Response): InputStream =
           Response.ADAPTER.encode(value).inputStream()
+
+      public override fun marshalledClass(): Class<Response> = Response::class.java
 
       public override fun parse(stream: InputStream): Response = Response.ADAPTER.decode(stream)
     }

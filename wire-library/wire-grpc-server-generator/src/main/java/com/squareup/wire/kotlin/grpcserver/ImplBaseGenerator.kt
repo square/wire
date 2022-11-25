@@ -24,6 +24,7 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.UNIT
+import com.squareup.kotlinpoet.asClassName
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
 import java.io.InputStream
@@ -38,7 +39,7 @@ object ImplBaseGenerator {
     .addType(
       TypeSpec.classBuilder("${service.name}ImplBase")
         .addModifiers(KModifier.ABSTRACT)
-        .addSuperinterface(ClassName("io.grpc", "BindableService"))
+        .addSuperinterface(WireBindableService::class)
         .apply { addImplBaseBody(generator, this, service) }
         .build()
     )
@@ -99,17 +100,20 @@ object ImplBaseGenerator {
         val className = generator.classNameFor(it!!)
         builder.addType(
           TypeSpec.classBuilder("${it.simpleName}Marshaller")
-            .addSuperinterface(
-              ClassName("io.grpc", "MethodDescriptor")
-                .nestedClass("Marshaller")
-                .parameterizedBy(className)
-            )
+            .addSuperinterface(WireMethodMarshaller::class.asClassName().parameterizedBy(className))
             .addFunction(
               FunSpec.builder("stream")
                 .addModifiers(KModifier.OVERRIDE)
                 .addParameter(ParameterSpec(name = "value", type = className))
                 .returns(InputStream::class)
                 .addCode(CodeBlock.of("return %T.ADAPTER.encode(value).inputStream()", className))
+                .build()
+            )
+            .addFunction(
+              FunSpec.builder("marshalledClass")
+                .addModifiers(KModifier.OVERRIDE)
+                .returns(Class::class.asClassName().parameterizedBy(className))
+                .addCode(CodeBlock.of("return %T::class.java", className))
                 .build()
             )
             .addFunction(
