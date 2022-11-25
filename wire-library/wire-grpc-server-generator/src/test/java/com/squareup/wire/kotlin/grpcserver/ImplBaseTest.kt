@@ -47,7 +47,6 @@ class ImplBaseTest {
       .build()
       .toString()
 
-    println(code)
     Assertions.assertThat(code)
       .isEqualTo(File("src/test/golden/ImplBase.kt").source().buffer().readUtf8())
   }

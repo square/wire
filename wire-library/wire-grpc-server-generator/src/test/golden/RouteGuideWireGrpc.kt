@@ -4,7 +4,8 @@ import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.Descriptors
 import com.squareup.wire.kotlin.grpcserver.MessageSinkAdapter
 import com.squareup.wire.kotlin.grpcserver.MessageSourceAdapter
-import io.grpc.BindableService
+import com.squareup.wire.kotlin.grpcserver.WireBindableService
+import com.squareup.wire.kotlin.grpcserver.WireMethodMarshaller
 import io.grpc.CallOptions
 import io.grpc.Channel
 import io.grpc.MethodDescriptor
@@ -21,6 +22,7 @@ import io.grpc.stub.ServerCalls.asyncServerStreamingCall
 import io.grpc.stub.ServerCalls.asyncUnaryCall
 import io.grpc.stub.StreamObserver
 import java.io.InputStream
+import java.lang.Class
 import java.lang.UnsupportedOperationException
 import java.util.concurrent.ExecutorService
 import kotlin.Array
@@ -199,7 +201,7 @@ public object RouteGuideWireGrpc {
   public fun newBlockingStub(channel: Channel): RouteGuideBlockingStub =
       RouteGuideBlockingStub(channel)
 
-  public abstract class RouteGuideImplBase : BindableService {
+  public abstract class RouteGuideImplBase : WireBindableService {
     public open fun GetFeature(request: Point, response: StreamObserver<Feature>): Unit = throw
         UnsupportedOperationException()
 
@@ -227,38 +229,48 @@ public object RouteGuideWireGrpc {
               asyncBidiStreamingCall(this@RouteGuideImplBase::RouteChat)
             ).build()
 
-    public class PointMarshaller : MethodDescriptor.Marshaller<Point> {
+    public class PointMarshaller : WireMethodMarshaller<Point> {
       public override fun stream(`value`: Point): InputStream =
           Point.ADAPTER.encode(value).inputStream()
+
+      public override fun marshalledClass(): Class<Point> = Point::class.java
 
       public override fun parse(stream: InputStream): Point = Point.ADAPTER.decode(stream)
     }
 
-    public class FeatureMarshaller : MethodDescriptor.Marshaller<Feature> {
+    public class FeatureMarshaller : WireMethodMarshaller<Feature> {
       public override fun stream(`value`: Feature): InputStream =
           Feature.ADAPTER.encode(value).inputStream()
+
+      public override fun marshalledClass(): Class<Feature> = Feature::class.java
 
       public override fun parse(stream: InputStream): Feature = Feature.ADAPTER.decode(stream)
     }
 
-    public class RectangleMarshaller : MethodDescriptor.Marshaller<Rectangle> {
+    public class RectangleMarshaller : WireMethodMarshaller<Rectangle> {
       public override fun stream(`value`: Rectangle): InputStream =
           Rectangle.ADAPTER.encode(value).inputStream()
+
+      public override fun marshalledClass(): Class<Rectangle> = Rectangle::class.java
 
       public override fun parse(stream: InputStream): Rectangle = Rectangle.ADAPTER.decode(stream)
     }
 
-    public class RouteSummaryMarshaller : MethodDescriptor.Marshaller<RouteSummary> {
+    public class RouteSummaryMarshaller : WireMethodMarshaller<RouteSummary> {
       public override fun stream(`value`: RouteSummary): InputStream =
           RouteSummary.ADAPTER.encode(value).inputStream()
+
+      public override fun marshalledClass(): Class<RouteSummary> = RouteSummary::class.java
 
       public override fun parse(stream: InputStream): RouteSummary =
           RouteSummary.ADAPTER.decode(stream)
     }
 
-    public class RouteNoteMarshaller : MethodDescriptor.Marshaller<RouteNote> {
+    public class RouteNoteMarshaller : WireMethodMarshaller<RouteNote> {
       public override fun stream(`value`: RouteNote): InputStream =
           RouteNote.ADAPTER.encode(value).inputStream()
+
+      public override fun marshalledClass(): Class<RouteNote> = RouteNote::class.java
 
       public override fun parse(stream: InputStream): RouteNote = RouteNote.ADAPTER.decode(stream)
     }
