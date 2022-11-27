@@ -304,6 +304,13 @@ data class KotlinTarget(
           }
         }
 
+        if (grpcServerCompatible) {
+          val map = kotlinGenerator.generateGrpcServerAdapter(service)
+          for ((className, typeSpec) in map) {
+            generatedPaths.add(write(className, typeSpec, service.type, service.location, context))
+          }
+        }
+
         return generatedPaths
       }
 
