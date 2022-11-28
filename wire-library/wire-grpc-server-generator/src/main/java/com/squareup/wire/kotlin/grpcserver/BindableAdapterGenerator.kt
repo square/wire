@@ -21,11 +21,11 @@ import com.squareup.wire.kotlin.grpcserver.ImplBaseGenerator.addImplBaseRpcSigna
 import com.squareup.wire.schema.Service
 import java.util.concurrent.ExecutorService
 
-object LegacyAdapterGenerator {
+object BindableAdapterGenerator {
 
   data class Options(val singleMethodServices: Boolean)
 
-  internal fun addLegacyAdapter(
+  internal fun addBindableAdapter(
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
     service: Service,
@@ -39,7 +39,7 @@ object LegacyAdapterGenerator {
     )
     return builder
       .addType(
-        TypeSpec.classBuilder(generator.classNameFor(service.type, "ImplLegacyAdapter"))
+        TypeSpec.classBuilder("BindableAdapter")
           .superclass(implBaseClassName)
           .primaryConstructor(
             FunSpec.constructorBuilder()

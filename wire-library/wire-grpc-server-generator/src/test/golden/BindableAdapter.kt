@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService
 import kotlin.Unit
 
 public class RouteGuideWireGrpc {
-  public class RouteGuideImplLegacyAdapter(
+  public class BindableAdapter(
     private val streamExecutor: ExecutorService,
     private val GetFeature: () -> RouteGuideGetFeatureBlockingServer,
     private val ListFeatures: () -> RouteGuideListFeaturesBlockingServer,

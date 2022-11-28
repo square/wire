@@ -167,7 +167,7 @@ public object FooServiceWireGrpc {
     }
   }
 
-  public class FooServiceImplLegacyAdapter(
+  public class BindableAdapter(
     private val streamExecutor: ExecutorService,
     private val service: () -> FooServiceBlockingServer,
   ) : FooServiceImplBase() {
