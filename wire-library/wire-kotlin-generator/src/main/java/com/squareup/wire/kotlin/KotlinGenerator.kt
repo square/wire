@@ -238,12 +238,21 @@ class KotlinGenerator private constructor(
       result[implementationName] = implementationSpec
     }
 
-    if (grpcServerCompatible) {
-      val protoFile: ProtoFile? = schema.protoFile(service.location.path)
-      val (grpcClassName, grpcSpec) = KotlinGrpcGenerator(typeToKotlinName, singleMethodServices)
-        .generateGrpcServer(service, protoFile, schema)
-      result[grpcClassName] = grpcSpec
-    }
+    return result
+  }
+
+  /**
+   * Generates [TypeSpec]s for gRPC adapter for the given [service].
+   *
+   * These adapters allow us to use Wire based gRPC as io.grpc.BindableService
+   */
+  fun generateGrpcServerAdapter(service: Service): Map<ClassName, TypeSpec> {
+    val result = mutableMapOf<ClassName, TypeSpec>()
+
+    val protoFile: ProtoFile? = schema.protoFile(service.location.path)
+    val (grpcClassName, grpcSpec) = KotlinGrpcGenerator(typeToKotlinName, singleMethodServices)
+      .generateGrpcServer(service, protoFile, schema)
+    result[grpcClassName] = grpcSpec
 
     return result
   }
