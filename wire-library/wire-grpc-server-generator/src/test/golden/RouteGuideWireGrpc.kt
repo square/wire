@@ -276,7 +276,7 @@ public object RouteGuideWireGrpc {
     }
   }
 
-  public class RouteGuideImplLegacyAdapter(
+  public class BindableAdapter(
     private val streamExecutor: ExecutorService,
     private val GetFeature: () -> RouteGuideGetFeatureBlockingServer,
     private val ListFeatures: () -> RouteGuideListFeaturesBlockingServer,

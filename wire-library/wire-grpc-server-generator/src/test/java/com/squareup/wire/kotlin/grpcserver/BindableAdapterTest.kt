@@ -18,7 +18,7 @@ package com.squareup.wire.kotlin.grpcserver
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.buildSchema
-import com.squareup.wire.kotlin.grpcserver.LegacyAdapterGenerator.addLegacyAdapter
+import com.squareup.wire.kotlin.grpcserver.BindableAdapterGenerator.addBindableAdapter
 import com.squareup.wire.schema.addLocal
 import okio.Path.Companion.toPath
 import okio.buffer
@@ -27,7 +27,7 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import java.io.File
 
-class LegacyAdapterTest {
+class BindableAdapterTest {
   @Test
   fun legacyAdapter() {
     val path = "src/test/proto/RouteGuideProto.proto".toPath()
@@ -38,11 +38,11 @@ class LegacyAdapterTest {
       .addType(
         TypeSpec.classBuilder("RouteGuideWireGrpc")
           .apply {
-            addLegacyAdapter(
+            addBindableAdapter(
               generator = ClassNameGenerator(buildClassMap(schema, service!!)),
               builder = this,
               service,
-              LegacyAdapterGenerator.Options(singleMethodServices = true),
+              BindableAdapterGenerator.Options(singleMethodServices = true),
             )
           }
           .build()
@@ -52,6 +52,6 @@ class LegacyAdapterTest {
 
     println(code)
     Assertions.assertThat(code)
-      .isEqualTo(File("src/test/golden/LegacyAdapter.kt").source().buffer().readUtf8())
+      .isEqualTo(File("src/test/golden/BindableAdapter.kt").source().buffer().readUtf8())
   }
 }

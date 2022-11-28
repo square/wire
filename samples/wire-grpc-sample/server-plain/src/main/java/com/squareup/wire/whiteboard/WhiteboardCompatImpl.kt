@@ -22,7 +22,7 @@ import java.util.concurrent.Executors
 
 class WhiteboardCompatImpl() : WhiteboardWireGrpc.WhiteboardImplBase() {
   override fun Whiteboard(response: StreamObserver<WhiteboardUpdate>): StreamObserver<WhiteboardCommand> {
-    return WhiteboardWireGrpc.WhiteboardImplLegacyAdapter(
+    return WhiteboardWireGrpc.BindableAdapter(
       Whiteboard = { WhiteboardCompat() },
       streamExecutor = Executors.newSingleThreadExecutor()
     )
