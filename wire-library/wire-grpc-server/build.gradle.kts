@@ -16,6 +16,7 @@ dependencies {
     exclude(group = "com.google.guava", module = "guava")
   }
   implementation("com.google.guava:guava:21.0")
+  implementation(libs.kotlin.coroutines.core)
   testImplementation(projects.wireTestUtils)
   testImplementation(libs.kotlin.test.junit)
   testImplementation(libs.truth)

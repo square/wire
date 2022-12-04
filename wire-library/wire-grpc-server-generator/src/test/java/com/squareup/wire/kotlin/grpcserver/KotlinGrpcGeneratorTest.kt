@@ -15,7 +15,9 @@
  */
 package com.squareup.wire.kotlin.grpcserver
 
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.addLocal
 import okio.Path.Companion.toPath
@@ -24,6 +26,7 @@ import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.io.File
+import javax.script.ScriptEngineManager
 
 internal class KotlinGrpcGeneratorTest {
   @Test
@@ -32,8 +35,11 @@ internal class KotlinGrpcGeneratorTest {
     val schema = buildSchema { addLocal(path) }
     val service = schema.getService("routeguide.RouteGuide")
 
-    val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(schema, service!!), singleMethodServices = true)
-      .generateGrpcServer(service, schema.protoFile(path), schema)
+    val (_, typeSpec) = KotlinGrpcGenerator(
+      buildClassMap(schema, service!!),
+      singleMethodServices = true,
+      suspendingCalls = false
+    ).generateGrpcServer(service, schema.protoFile(path), schema)
     val output = FileSpec.get("routeguide", typeSpec)
 
     assertThat(output.toString())
@@ -60,8 +66,11 @@ internal class KotlinGrpcGeneratorTest {
     val path = "service.proto".toPath()
     val schema = buildSchema { add(path, twoMethodSchema) }
     val service = schema.getService("foo.FooService")
-    val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(schema, service!!), singleMethodServices = false)
-      .generateGrpcServer(service, schema.protoFile(path), schema)
+    val (_, typeSpec) = KotlinGrpcGenerator(
+      buildClassMap(schema, service!!),
+      singleMethodServices = false,
+      suspendingCalls = false
+    ).generateGrpcServer(service, schema.protoFile(path), schema)
     val output = FileSpec.get("com.foo.bar", typeSpec)
 
     assertThat(output.toString())
@@ -73,8 +82,11 @@ internal class KotlinGrpcGeneratorTest {
     val path = "service.proto".toPath()
     val schema = buildSchema { add(path, twoMethodSchema) }
     val service = schema.getService("foo.FooService")
-    val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(schema, service!!), singleMethodServices = true)
-      .generateGrpcServer(service, schema.protoFile(path), schema)
+    val (_, typeSpec) = KotlinGrpcGenerator(
+      buildClassMap(schema, service!!),
+      singleMethodServices = true,
+      suspendingCalls = false
+    ).generateGrpcServer(service, schema.protoFile(path), schema)
     val output = FileSpec.get("com.foo.bar", typeSpec)
 
     assertThat(output.toString())

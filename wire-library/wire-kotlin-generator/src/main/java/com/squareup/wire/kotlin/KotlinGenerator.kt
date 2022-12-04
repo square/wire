@@ -250,7 +250,7 @@ class KotlinGenerator private constructor(
     val result = mutableMapOf<ClassName, TypeSpec>()
 
     val protoFile: ProtoFile? = schema.protoFile(service.location.path)
-    val (grpcClassName, grpcSpec) = KotlinGrpcGenerator(typeToKotlinName, singleMethodServices)
+    val (grpcClassName, grpcSpec) = KotlinGrpcGenerator(typeToKotlinName, singleMethodServices, rpcCallStyle == RpcCallStyle.SUSPENDING)
       .generateGrpcServer(service, protoFile, schema)
     result[grpcClassName] = grpcSpec
 

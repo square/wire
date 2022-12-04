@@ -20,16 +20,15 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.wire.kotlin.grpcserver.ImplBaseGenerator.addImplBaseRpcSignature
 import com.squareup.wire.schema.Service
 import java.util.concurrent.ExecutorService
+import kotlinx.coroutines.channels.Channel
 
 object BindableAdapterGenerator {
-
-  data class Options(val singleMethodServices: Boolean)
 
   internal fun addBindableAdapter(
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
     service: Service,
-    options: Options
+    options: KotlinGrpcGenerator.Companion.Options
   ): TypeSpec.Builder {
     val serviceClassName = generator.classNameFor(service.type)
     val implBaseClassName = ClassName(
@@ -43,19 +42,26 @@ object BindableAdapterGenerator {
           .superclass(implBaseClassName)
           .primaryConstructor(
             FunSpec.constructorBuilder()
-              .addParameter(
-                name = "streamExecutor",
-                type = ExecutorService::class
-              )
+              .apply { if (!options.suspendingCalls) {
+                // non suspending calls need an executor for the streaming calls
+                // suspending calls use CoroutineContext instead
+                this.addParameter(
+                  name = "streamExecutor",
+                  type = ExecutorService::class
+                )
+              } }
+
               .apply { addRpcConstructorParameters(generator, this, service, options) }
               .build()
           )
-          .addProperty(
-            PropertySpec.builder("streamExecutor", ExecutorService::class)
-              .addModifiers(KModifier.PRIVATE)
-              .initializer("streamExecutor")
-              .build()
-          )
+          .apply { if (!options.suspendingCalls) {
+            this.addProperty(
+              PropertySpec.builder("streamExecutor", ExecutorService::class)
+                .addModifiers(KModifier.PRIVATE)
+                .initializer("streamExecutor")
+                .build()
+            )
+          } }
           .apply {
             addRpcProperties(generator, this, service, options)
             addRpcAdapterCodeBlocks(generator, this, service, options)
@@ -68,8 +74,13 @@ object BindableAdapterGenerator {
     generator: ClassNameGenerator,
     builder: FunSpec.Builder,
     service: Service,
-    options: Options
+    options: KotlinGrpcGenerator.Companion.Options
   ): FunSpec.Builder {
+    val serviceSuffix = if (options.suspendingCalls) {
+      SUSPENDING_SERVER_SUFFIX
+    } else {
+      BLOCKING_SERVER_SUFFIX
+    }
     if (options.singleMethodServices) {
       service.rpcs.forEach { rpc ->
         builder.addParameter(
@@ -77,7 +88,7 @@ object BindableAdapterGenerator {
           type = LambdaTypeName.get(
             returnType = ClassName(
               generator.classNameFor(service.type).packageName,
-              "${service.name}${rpc.name}${BLOCKING_SERVER_SUFFIX}"
+              "${service.name}${rpc.name}${serviceSuffix}"
             )
           )
         )
@@ -88,7 +99,7 @@ object BindableAdapterGenerator {
         type = LambdaTypeName.get(
           returnType = ClassName(
             generator.classNameFor(service.type).packageName,
-            "${service.name}${BLOCKING_SERVER_SUFFIX}"
+            "${service.name}${serviceSuffix}"
           )
         )
       )
@@ -100,8 +111,13 @@ object BindableAdapterGenerator {
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
     service: Service,
-    options: Options
+    options: KotlinGrpcGenerator.Companion.Options
   ): TypeSpec.Builder {
+    val serviceSuffix = if (options.suspendingCalls) {
+      SUSPENDING_SERVER_SUFFIX
+    } else {
+      BLOCKING_SERVER_SUFFIX
+    }
     if (options.singleMethodServices) {
       service.rpcs.forEach { rpc ->
         builder.addProperty(
@@ -110,7 +126,7 @@ object BindableAdapterGenerator {
             type = LambdaTypeName.get(
               returnType = ClassName(
                 generator.classNameFor(service.type).packageName,
-                "${service.name}${rpc.name}${BLOCKING_SERVER_SUFFIX}"
+                "${service.name}${rpc.name}${serviceSuffix}"
               )
             )
           )
@@ -126,7 +142,7 @@ object BindableAdapterGenerator {
           type = LambdaTypeName.get(
             returnType = ClassName(
               generator.classNameFor(service.type).packageName,
-              "${service.name}${BLOCKING_SERVER_SUFFIX}"
+              "${service.name}${serviceSuffix}"
             )
           )
         )
@@ -142,26 +158,48 @@ object BindableAdapterGenerator {
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
     service: Service,
-    options: Options
+    options: KotlinGrpcGenerator.Companion.Options
   ): TypeSpec.Builder {
     service.rpcs.forEach { rpc ->
-      val serviceProviderName = if (options.singleMethodServices) { rpc.name } else { SERVICE_CONSTRUCTOR_ARGUMENT }
+      val serviceProviderName = if (options.singleMethodServices) {
+        rpc.name
+      } else {
+        SERVICE_CONSTRUCTOR_ARGUMENT
+      }
 
-      val codeBlock = when {
-        rpc.requestStreaming && rpc.responseStreaming -> CodeBlock.of(
-          """
+      val codeBlock = if (options.suspendingCalls) {
+        when {
+          !rpc.requestStreaming && !rpc.responseStreaming -> CodeBlock.of(
+            "return ${serviceProviderName}().${rpc.name}(request)"
+          )
+          !rpc.requestStreaming -> CodeBlock.of(
+            "return %T.serverStream(context, request, %L()::%L)", FlowAdapter::class, rpc.name, rpc.name
+          )
+          !rpc.responseStreaming -> CodeBlock.of(
+            "return %T.clientStream(context, request, %L()::%L)", FlowAdapter::class, rpc.name, rpc.name
+          )
+          else -> CodeBlock.of(
+            "return %T.bidiStream(context, request, %L()::%L)", FlowAdapter::class, rpc.name, rpc.name
+          )
+        }
+      } else {
+        val responseAdapter = ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSinkAdapter")
+        when {
+          rpc.requestStreaming && rpc.responseStreaming -> CodeBlock.of(
+            """
           |val requestStream = %T()
           |streamExecutor.submit {
           |  ${serviceProviderName}().${rpc.name}(requestStream, %T(response))
           |}
           |return requestStream
           |""".trimMargin(),
-          ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSourceAdapter")
-            .parameterizedBy(generator.classNameFor(rpc.requestType!!)),
-          ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSinkAdapter")
-        )
-        rpc.requestStreaming -> CodeBlock.of(
-          """
+            ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSourceAdapter")
+              .parameterizedBy(generator.classNameFor(rpc.requestType!!)),
+            responseAdapter
+          )
+
+          rpc.requestStreaming -> CodeBlock.of(
+            """
           |val requestStream = %T()
           |streamExecutor.submit {
           |  response.onNext(${serviceProviderName}().${rpc.name}(requestStream))
@@ -169,26 +207,30 @@ object BindableAdapterGenerator {
           |}
           |return requestStream
           |""".trimMargin(),
-          ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSourceAdapter")
-            .parameterizedBy(generator.classNameFor(rpc.requestType!!))
-        )
-        rpc.responseStreaming -> CodeBlock.of(
-          """
+            ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSourceAdapter")
+              .parameterizedBy(generator.classNameFor(rpc.requestType!!))
+          )
+
+          rpc.responseStreaming -> CodeBlock.of(
+            """
           |${serviceProviderName}().${rpc.name}(request, %T(response))
           |""".trimMargin(),
-          ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSinkAdapter")
-        )
-        else -> CodeBlock.of(
-          """
+            responseAdapter
+          )
+
+          else -> CodeBlock.of(
+            """
           |response.onNext(${serviceProviderName}().${rpc.name}(request))
           |response.onCompleted()
           |""".trimMargin()
-        )
+          )
+        }
       }
       builder.addFunction(
         FunSpec.builder(rpc.name)
           .addModifiers(KModifier.OVERRIDE)
-          .apply { addImplBaseRpcSignature(generator, this, rpc) }
+          .apply { addImplBaseRpcSignature(generator, this, rpc, options) }
+          .apply { if (options.suspendingCalls && !rpc.responseStreaming) { addModifiers(KModifier.SUSPEND) } }
           .addCode(codeBlock)
           .build()
       )
@@ -198,4 +240,5 @@ object BindableAdapterGenerator {
 
   private const val SERVICE_CONSTRUCTOR_ARGUMENT = "service"
   private const val BLOCKING_SERVER_SUFFIX = "BlockingServer"
+  private const val SUSPENDING_SERVER_SUFFIX = "Server"
 }
