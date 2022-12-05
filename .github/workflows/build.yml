@@ -41,7 +41,7 @@ jobs:
 
       - name: Test
         run: |
-          ./gradlew -p wire-library -Dkjs=false -Dknative=false build --stacktrace -Pswift=false
+          ./gradlew -Dkjs=false -Dknative=false build --stacktrace -Pswift=false
           ./gradlew build --stacktrace
 
   multiplatform:
@@ -77,7 +77,7 @@ jobs:
 
       - name: Test
         run: |
-          ./gradlew -p wire-library build -Pswift=false --stacktrace
+          ./gradlew build -Pswift=false --stacktrace
           ./gradlew build --stacktrace
 
   windows:
@@ -111,7 +111,7 @@ jobs:
 
       - name: Test
         run: |
-          ./gradlew -p wire-library build --stacktrace -Pswift=false
+          ./gradlew build --stacktrace -Pswift=false
           ./gradlew build --stacktrace
         shell: bash
 
@@ -140,7 +140,7 @@ jobs:
         # currently checked into the repo both for the runtime itself and for its tests, and runs
         # the tests.
         run: |
-          ./gradlew -p wire-library :wire-runtime-swift:build --stacktrace
+          ./gradlew :wire-runtime-swift:build --stacktrace
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nGenerated files changed. Did you run ./gradlew generateSwiftProtos?"; exit 1; fi
 
       - name: Generate Swift from golden proto files
@@ -152,7 +152,7 @@ jobs:
         run: |
           ./gradlew generateSwiftTests --stacktrace
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nGenerated files changed. Did you run ./gradlew generateSwiftProtos and generateSwiftTests?"; exit 1; fi
-          ./gradlew -p wire-library :wire-tests-swift:build --stacktrace
+          ./gradlew :wire-tests-swift:build --stacktrace
 
   publish:
     runs-on: macos-latest
@@ -176,7 +176,7 @@ jobs:
 
       - name: Upload Artifacts
         run: |
-          ./gradlew -p wire-library clean publish --stacktrace --no-parallel
+          ./gradlew clean publish --stacktrace --no-parallel
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
@@ -184,7 +184,7 @@ jobs:
 
       - name: Plublish plugin to Gradle portal
         run: |
-          ./gradlew -p wire-library publishPluginToGradlePortalIfRelease --stacktrace
+          ./gradlew publishPluginToGradlePortalIfRelease --stacktrace
         env:
           GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
           GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}

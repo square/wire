@@ -21,7 +21,7 @@ git clone $REPO $DIR
 cd $DIR
 
 # Generate the API docs
-./gradlew -p wire-library \
+./gradlew \
     :wire-grpc-client:dokkaGfm \
     :wire-moshi-adapter:dokkaGfm \
     :wire-runtime:dokkaGfm \
@@ -41,15 +41,13 @@ sed -i "" 's/wire-library\/docs\/wire_compiler.md/wire_compiler/' README.md
 sed -i "" 's/wire-library\/docs\/wire_grpc.md/wire_grpc/' README.md
 
 # Copy in special files that GitHub wants in the project root.
-cat README.md | grep -v 'project website' > wire-library/docs/index.md
-cp CHANGELOG.md wire-library/docs/changelog.md
-cp CONTRIBUTING.md wire-library/docs/contributing.md
-cp RELEASING.md wire-library/docs/releasing.md
+cat README.md | grep -v 'project website' > docs/index.md
+cp CHANGELOG.md docs/changelog.md
+cp CONTRIBUTING.md docs/contributing.md
+cp RELEASING.md docs/releasing.md
 
 # Build the site and push the new files up to GitHub
-cd wire-library
-  mkdocs gh-deploy
-cd ..
+mkdocs gh-deploy
 
 # Undo any file changes to be able to jump branches.
 git checkout -- .

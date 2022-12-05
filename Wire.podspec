@@ -1,4 +1,4 @@
-require_relative 'wire-library/wire-runtime-swift/pod_helpers.rb'
+require_relative 'wire-runtime-swift/pod_helpers.rb'
 
 Pod::Spec.new do |s|
   version = get_version
@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.osx.deployment_target  = '10.15'
   s.watchos.deployment_target = '3.0'
 
-  s.source_files  = 'wire-library/wire-runtime-swift/src/main/swift/**/*.swift'
+  s.source_files  = 'wire-runtime-swift/src/main/swift/**/*.swift'
 
   s.test_spec do |test_spec|
     test_spec.ios.deployment_target  = '11.0'
@@ -36,12 +36,12 @@ Pod::Spec.new do |s|
           # This pod was installed via a Podfile (not from source) and ./gradlew was removed.
           exit 0
         fi
-        ./gradlew -p wire-library :wire-runtime-swift:generateTestProtos
+        ./gradlew :wire-runtime-swift:generateTestProtos
       CMD
     }
 
-    test_spec.preserve_paths = 'wire-library/wire-runtime-swift/src/test/proto/**/*.proto'
-    test_spec.source_files = 'wire-library/wire-runtime-swift/src/test/swift/**/*.swift'
+    test_spec.preserve_paths = 'wire-runtime-swift/src/test/proto/**/*.proto'
+    test_spec.source_files = 'wire-runtime-swift/src/test/swift/**/*.swift'
   end
 
 end

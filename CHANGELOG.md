@@ -1022,7 +1022,7 @@ Initial version.
 
  [bom]: https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import
  [custom-handlers-doc]: https://square.github.io/wire/wire_compiler/#custom-handlers
- [custom-handlers-recipes]: https://github.com/square/wire/tree/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
+ [custom-handlers-recipes]: https://github.com/square/wire/tree/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-schema-tests/src/test/java/com/squareup/wire/recipes
  [javapoet]: https://github.com/square/javapoet
  [jimfs]: https://github.com/google/jimfs
  [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493

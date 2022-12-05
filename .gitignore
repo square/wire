@@ -14,18 +14,18 @@ out/
 .gradle
 build
 generated
-wire-library/gradle
-wire-library/gradlew
-wire-library/gradlew.bat
+gradle
+gradlew
+gradlew.bat
 
 # Maven
 plugin*.xml
 
 # Special Mkdocs files
-wire-library/docs/3.x
-wire-library/docs/changelog.md
-wire-library/docs/contributing.md
-wire-library/docs/index.md
+docs/3.x
+docs/changelog.md
+docs/contributing.md
+docs/index.md
 
 local.properties
 

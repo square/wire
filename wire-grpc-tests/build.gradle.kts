@@ -64,9 +64,9 @@ animalsniffer {
 }
 
 dependencies {
-  implementation(libs.wire.runtime)
-  implementation(libs.wire.grpcClient)
-  implementation(libs.wire.grpcMockWebServer)
+  implementation(projects.wire.runtime)
+  implementation(projects.wire.grpcClient)
+  implementation(projects.wire.grpcMockWebServer)
   implementation(libs.okio.core)
   if (JavaVersion.current().isJava9Compatible()) {
     // Workaround for @javax.annotation.Generated

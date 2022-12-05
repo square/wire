@@ -2380,7 +2380,7 @@ class KotlinGenerator private constructor(
    * ```
    * public val CHOICE_BUTTON_ELEMENT: Choice<ButtonElement> = Choice<ButtonElement>(tag = 1,
    *     adapter = ButtonElement.ADAPTER, declaredName = "button_element")
-   * ```/Users/bquenaudon/workspace/wire/wire-library/wire-tests/src/commonTest/kotlin/com/squareup/wire/BoxOneOfTest.kt
+   * ```/Users/bquenaudon/workspace/wire/wire-tests/src/commonTest/kotlin/com/squareup/wire/BoxOneOfTest.kt
    */
   private fun oneOfKey(
     oneOfName: String,

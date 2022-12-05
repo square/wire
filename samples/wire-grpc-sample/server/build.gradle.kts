@@ -21,6 +21,6 @@ wire {
 
 dependencies {
   implementation(projects.samples.wireGrpcSample.protos)
-  implementation(libs.wire.runtime)
+  implementation(projects.wire.runtime)
   implementation(libs.misk)
 }

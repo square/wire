@@ -42,9 +42,3 @@ if (startParameter.projectProperties.get("swift") != "false") {
 // include(":wire-protoc-compatibility-tests")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
-dependencyResolutionManagement {
-  versionCatalogs {
-    create("libs").from(files("../gradle/libs.versions.toml"))
-  }
-}

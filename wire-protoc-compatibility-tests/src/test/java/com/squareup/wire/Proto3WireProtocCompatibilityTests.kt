@@ -1194,7 +1194,7 @@ class Proto3WireProtocCompatibilityTests {
     }
 
     private fun loadJson(fileName: String): String {
-      return File("../wire-library/wire-tests/src/commonTest/shared/json", fileName)
+      return File("../wire-tests/src/commonTest/shared/json", fileName)
         .source().use { it.buffer().readUtf8() }
     }
   }

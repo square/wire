@@ -44,7 +44,7 @@ val generateSwiftProtos by tasks.creating(JavaExec::class) {
 
   // TODO(kcianfarini) this is a workaround for https://github.com/square/wire/issues/1928
   doLast {
-    val wellKnownTypesDir = "wire-library/wire-runtime-swift/src/main/swift/wellknowntypes/"
+    val wellKnownTypesDir = "wire-runtime-swift/src/main/swift/wellknowntypes/"
     val files = listOf(
       "EnumOptions.swift",
       "EnumValueOptions.swift",

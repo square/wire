@@ -316,28 +316,28 @@ Period period = stegosaurus.period != null ? stegosaurus.period : Dinosaur.DEFAU
 Wire Kotlin
 -----------
 
-Since version 3.0.0, Wire can generate Kotlin code. See 
+Since version 3.0.0, Wire can generate Kotlin code. See
 [Wire Compiler & Gradle Plugin][compiler_docs] to learn how to configure your build.
 
-Kotlin is a pragmatic and expressive programming language that makes it easy to model data. Here's 
+Kotlin is a pragmatic and expressive programming language that makes it easy to model data. Here's
 how we used Kotlin to model Protocol Buffers messages:
 
  * Messages feel like `data` classes, but in fact they're not. Compiler still generates `equals()`,
    `hashCode()`, `toString()` and `copy()` for you. Wire does not generate `componentN()` functions
    though, we believe that destructuring declarations are not a good fit for Protocol Buffers: a
-   change in the schema that removes or adds a field might lead to a situation when your 
-   destructuring declaration still compiles but now describes a completely different subset of 
-   fields, rendering your code incorrect. 
+   change in the schema that removes or adds a field might lead to a situation when your
+   destructuring declaration still compiles but now describes a completely different subset of
+   fields, rendering your code incorrect.
  * `copy()` is a substitute for the `Builder`, which is not used anymore. If your program relies on
-   the `Builder` to be present, you may generate code in Java interoperability mode - 
+   the `Builder` to be present, you may generate code in Java interoperability mode -
    [Wire Compiler & Gradle Plugin][compiler_docs] explains how that works.
  * Fields are generated as properties. While this is idiomatic in Kotlin, Java code will now have
-   to access fields using getters. If your program relies on accessing fields directly, use Java 
+   to access fields using getters. If your program relies on accessing fields directly, use Java
    interoperability mode - the compiler will generate `@JvmField` annotations for each field.
- * The nullability of each field's type depends on its label: `required`, `repeated` and `map` 
-   fields get non-nullable types, whereas `optional` fields are of nullable types.   
- * With the exception of `required` fields, each field has a default value: 
-   
+ * The nullability of each field's type depends on its label: `required`, `repeated` and `map`
+   fields get non-nullable types, whereas `optional` fields are of nullable types.
+ * With the exception of `required` fields, each field has a default value:
+
    * null for `optional` fields,
    * `emptyList()` for `repeated` fields,
    * `emptyMap()` for `map` fields.
@@ -607,8 +607,8 @@ See [Google's excellent documentation][schema_docs] on the structure and syntax 
  [google_protos]: https://developers.google.com/protocol-buffers/docs/overview
  [effective_java]: https://www.amazon.ca/Effective-Java-3rd-Joshua-Bloch/dp/0134685997/
  [schema_docs]: https://developers.google.com/protocol-buffers/docs/proto
- [compiler_docs]: wire-library/docs/wire_compiler.md
- [grpc_docs]: wire-library/docs/wire_grpc.md
+ [compiler_docs]: docs/wire_compiler.md
+ [grpc_docs]: docs/wire_grpc.md
  [dl_runtime]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-runtime&v=LATEST
  [dl_compiler]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
  [snap]: https://s01.oss.sonatype.org/content/repositories/snapshots/

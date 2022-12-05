@@ -56,17 +56,17 @@ sourceSets {
 }
 
 dependencies {
-  protobuf(libs.wire.schema)
-  implementation(libs.wire.grpcClient)
+  protobuf(projects.wire.schema)
+  implementation(projects.wire.grpcClient)
   implementation(libs.okio.core)
   implementation(libs.protobuf.java)
-  testImplementation(libs.wire.compiler)
-  testImplementation(libs.wire.gsonSupport)
-  testImplementation(libs.wire.moshiAdapter)
+  testImplementation(projects.wire.compiler)
+  testImplementation(projects.wire.gsonSupport)
+  testImplementation(projects.wire.moshiAdapter)
   testImplementation(libs.assertj)
   testImplementation(libs.junit)
   testImplementation(libs.protobuf.javaUtil)
-  testImplementation(libs.wire.testUtils)
+  testImplementation(projects.wire.testUtils)
 }
 
 val test by tasks.getting(Test::class) {

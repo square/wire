@@ -44,6 +44,6 @@ dependencies {
   implementation(libs.contour)
   implementation(libs.contour)
   implementation(libs.kotlin.coroutines.android)
-  implementation(libs.wire.grpcClient)
+  implementation(projects.wire.grpcClient)
   implementation(projects.samples.wireGrpcSample.protos)
 }
