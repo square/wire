@@ -1,0 +1,14 @@
+$dokka.format:gfm-v1
+$dokka.linkExtension:md
+$dokka.location:com.squareup.wire////PointingToDeclaration/wire-gson-support/com.squareup.wire/index.md
+$dokka.location:com.squareup.wire/AnyMessageTypeAdapter///PointingToDeclaration/wire-gson-support/com.squareup.wire/-any-message-type-adapter/index.md
+$dokka.location:com.squareup.wire/AnyMessageTypeAdapter/AnyMessageTypeAdapter/#com.google.gson.Gson#kotlin.collections.Map[kotlin.String,com.squareup.wire.ProtoAdapter[*]]/PointingToDeclaration/wire-gson-support/com.squareup.wire/-any-message-type-adapter/-any-message-type-adapter.md
+$dokka.location:com.squareup.wire/AnyMessageTypeAdapter/read/#com.google.gson.stream.JsonReader/PointingToDeclaration/wire-gson-support/com.squareup.wire/-any-message-type-adapter/read.md
+$dokka.location:com.squareup.wire/AnyMessageTypeAdapter/write/#com.google.gson.stream.JsonWriter#com.squareup.wire.AnyMessage?/PointingToDeclaration/wire-gson-support/com.squareup.wire/-any-message-type-adapter/write.md
+$dokka.location:com.squareup.wire/WireTypeAdapterFactory///PointingToDeclaration/wire-gson-support/com.squareup.wire/-wire-type-adapter-factory/index.md
+$dokka.location:com.squareup.wire/WireTypeAdapterFactory/WireTypeAdapterFactory/#kotlin.collections.Map[kotlin.String,com.squareup.wire.ProtoAdapter[*]]#kotlin.Boolean/PointingToDeclaration/wire-gson-support/com.squareup.wire/-wire-type-adapter-factory/-wire-type-adapter-factory.md
+$dokka.location:com.squareup.wire/WireTypeAdapterFactory/create/#com.google.gson.Gson#com.google.gson.reflect.TypeToken[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/wire-gson-support/com.squareup.wire/-wire-type-adapter-factory/create.md
+$dokka.location:com.squareup.wire/WireTypeAdapterFactory/plus/#com.squareup.wire.ProtoAdapter[*]/PointingToDeclaration/wire-gson-support/com.squareup.wire/-wire-type-adapter-factory/plus.md
+$dokka.location:com.squareup.wire/WireTypeAdapterFactory/plus/#kotlin.collections.List[com.squareup.wire.ProtoAdapter[*]]/PointingToDeclaration/wire-gson-support/com.squareup.wire/-wire-type-adapter-factory/plus.md
+com.squareup.wire
+

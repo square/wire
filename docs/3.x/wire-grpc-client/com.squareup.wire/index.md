@@ -1,0 +1,30 @@
+//[wire-grpc-client](../../index.md)/[com.squareup.wire](index.md)
+
+# Package com.squareup.wire
+
+## Types
+
+| Name | Summary |
+|---|---|
+| [GrpcCall](-grpc-call/index.md) | [common]<br>interface [GrpcCall](-grpc-call/index.md)&lt;[S](-grpc-call/index.md) : [Any](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html), [R](-grpc-call/index.md) : [Any](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html)&gt;<br>A single call to a remote server. This call sends a single request value and receives a single response value. A gRPC call cannot be executed twice. |
+| [GrpcClient](-grpc-client/index.md) | [common, js, jvm, native]<br>[common, js, jvm, native]<br>class [GrpcClient](-grpc-client/index.md) |
+| [GrpcException](-grpc-exception/index.md) | [common]<br>class [GrpcException](-grpc-exception/index.md)(grpcStatus: [GrpcStatus](-grpc-status/index.md), grpcMessage: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)?) : IOException |
+| [GrpcHeaders](-grpc-headers/index.md) | [common, js, native, jvm]<br>[common, js, native]<br>class [GrpcHeaders](-grpc-headers/index.md)<br>[jvm]<br>typealias [GrpcHeaders](-grpc-headers/index.md) = Headers |
+| [GrpcHttpUrl](-grpc-http-url/index.md) | [common, js, native, jvm]<br>[common, js, native]<br>class [GrpcHttpUrl](-grpc-http-url/index.md)<br>[jvm]<br>typealias [GrpcHttpUrl](-grpc-http-url/index.md) = HttpUrl |
+| [GrpcMethod](-grpc-method/index.md) | [common]<br>class [GrpcMethod](-grpc-method/index.md)&lt;[S](-grpc-method/index.md) : [Any](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html), [R](-grpc-method/index.md) : [Any](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html)&gt;(path: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), requestAdapter: ProtoAdapter&lt;[S](-grpc-method/index.md)&gt;, responseAdapter: ProtoAdapter&lt;[R](-grpc-method/index.md)&gt;) |
+| [GrpcRequest](-grpc-request/index.md) | [common, js, native, jvm]<br>[common, js, native]<br>class [GrpcRequest](-grpc-request/index.md)<br>[jvm]<br>typealias [GrpcRequest](-grpc-request/index.md) = Request |
+| [GrpcRequestBody](-grpc-request-body/index.md) | [common, js, native, jvm]<br>[common, js, native]<br>abstract class [GrpcRequestBody](-grpc-request-body/index.md)<br>[jvm]<br>typealias [GrpcRequestBody](-grpc-request-body/index.md) = RequestBody |
+| [GrpcRequestBuilder](-grpc-request-builder/index.md) | [common, js, native, jvm]<br>[common, js, native]<br>open class [GrpcRequestBuilder](-grpc-request-builder/index.md)<br>[jvm]<br>typealias [GrpcRequestBuilder](-grpc-request-builder/index.md) = Request.Builder |
+| [GrpcResponse](-grpc-response/index.md) | [common, js, native, jvm]<br>[common, js, native]<br>class [GrpcResponse](-grpc-response/index.md)<br>[jvm]<br>typealias [GrpcResponse](-grpc-response/index.md) = Response |
+| [GrpcResponseBody](-grpc-response-body/index.md) | [common, js, native, jvm]<br>[common, js, native]<br>abstract class [GrpcResponseBody](-grpc-response-body/index.md)<br>[jvm]<br>typealias [GrpcResponseBody](-grpc-response-body/index.md) = ResponseBody |
+| [GrpcStatus](-grpc-status/index.md) | [common]<br>class [GrpcStatus](-grpc-status/index.md) |
+| [GrpcStreamingCall](-grpc-streaming-call/index.md) | [common]<br>interface [GrpcStreamingCall](-grpc-streaming-call/index.md)&lt;[S](-grpc-streaming-call/index.md) : [Any](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html), [R](-grpc-streaming-call/index.md) : [Any](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html)&gt;<br>A single streaming call to a remote server. This class handles three streaming call types: |
+| [WireGrpcExperimental](-wire-grpc-experimental/index.md) | [common]<br>@ExperimentalCoroutinesApi<br>@[Target](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-target/index.html)(allowedTargets = [[AnnotationTarget.CLASS](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-annotation-target/-c-l-a-s-s/index.html), [AnnotationTarget.FUNCTION](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-annotation-target/-f-u-n-c-t-i-o-n/index.html)])<br>annotation class [WireGrpcExperimental](-wire-grpc-experimental/index.md)<br>Marker annotation for experimental Wire gRPC features. |
+
+## Functions
+
+| Name | Summary |
+|---|---|
+| [GrpcCall](-grpc-call.md) | [jvm]<br>@[JvmName](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-name/index.html)(name = "grpcCall")<br>fun &lt;[S](-grpc-call.md) : [Any](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html), [R](-grpc-call.md) : [Any](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html)&gt; [GrpcCall](-grpc-call.md)(function: ([S](-grpc-call.md)) -&gt; [R](-grpc-call.md)): GrpcCall&lt;[S](-grpc-call.md), [R](-grpc-call.md)&gt;<br>Returns a new instance of GrpcCall that can be used for a single call to execute, executeBlocking, or enqueue. |
+| [GrpcStreamingCall](-grpc-streaming-call.md) | [jvm]<br>@[JvmName](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-name/index.html)(name = "grpcStreamingCall")<br>fun &lt;[S](-grpc-streaming-call.md) : [Any](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html), [R](-grpc-streaming-call.md) : [Any](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html)&gt; [GrpcStreamingCall](-grpc-streaming-call.md)(function: suspend (ReceiveChannel&lt;[S](-grpc-streaming-call.md)&gt;, SendChannel&lt;[R](-grpc-streaming-call.md)&gt;) -&gt; [Unit](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)): GrpcStreamingCall&lt;[S](-grpc-streaming-call.md), [R](-grpc-streaming-call.md)&gt;<br>Returns a new instance of GrpcStreamingCall that can be used for a single call to executeIn or executeBlocking. |
+| [toHttpUrl](to-http-url.md) | [common, js, jvm, native]<br>[common, js, jvm, native]<br>fun [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html).[toHttpUrl](to-http-url.md)(): [GrpcHttpUrl](-grpc-http-url/index.md) |

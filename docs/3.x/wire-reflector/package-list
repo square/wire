@@ -1,0 +1,8 @@
+$dokka.format:gfm-v1
+$dokka.linkExtension:md
+$dokka.location:com.squareup.wire.reflector////PointingToDeclaration/wire-reflector/com.squareup.wire.reflector/index.md
+$dokka.location:com.squareup.wire.reflector/SchemaReflector///PointingToDeclaration/wire-reflector/com.squareup.wire.reflector/-schema-reflector/index.md
+$dokka.location:com.squareup.wire.reflector/SchemaReflector/SchemaReflector/#com.squareup.wire.schema.Schema#kotlin.Boolean/PointingToDeclaration/wire-reflector/com.squareup.wire.reflector/-schema-reflector/-schema-reflector.md
+$dokka.location:com.squareup.wire.reflector/SchemaReflector/process/#ServerReflectionRequest/PointingToDeclaration/wire-reflector/com.squareup.wire.reflector/-schema-reflector/process.md
+com.squareup.wire.reflector
+

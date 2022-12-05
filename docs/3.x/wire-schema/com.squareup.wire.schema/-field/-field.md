@@ -1,0 +1,6 @@
+//[wire-schema](../../../index.md)/[com.squareup.wire.schema](../index.md)/[Field](index.md)/[Field](-field.md)
+
+# Field
+
+[common]\
+fun [Field](-field.md)(namespaces: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)&gt;, location: [Location](../-location/index.md), label: [Field.Label](-label/index.md)?, name: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), documentation: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), tag: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), default: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)?, elementType: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), options: [Options](../-options/index.md), isExtension: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html), isOneOf: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html), declaredJsonName: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)?)
