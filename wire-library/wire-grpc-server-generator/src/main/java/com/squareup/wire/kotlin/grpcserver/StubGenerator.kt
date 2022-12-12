@@ -30,29 +30,35 @@ object StubGenerator {
   internal fun addStub(
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
-    service: Service
+    service: Service,
+    options: KotlinGrpcGenerator.Companion.Options
   ): TypeSpec.Builder {
-    val serviceClassName = generator.classNameFor(service.type)
-    val stubClassName = ClassName(
-      packageName = serviceClassName.packageName,
-      "${serviceClassName.simpleName}WireGrpc", "${serviceClassName.simpleName}Stub"
-    )
-    return builder
-      .addFunction(
-        FunSpec.builder("newStub")
-          .addParameter("channel", ClassName("io.grpc", "Channel"))
-          .returns(stubClassName)
-          .addCode("return %T(channel)", stubClassName)
-          .build()
+    if (options.suspendingCalls) {
+      // coroutine stubs are not supported at the moment
+      return builder
+    } else {
+      val serviceClassName = generator.classNameFor(service.type)
+      val stubClassName = ClassName(
+        packageName = serviceClassName.packageName,
+        "${serviceClassName.simpleName}WireGrpc", "${serviceClassName.simpleName}Stub"
       )
-      .addType(
-        TypeSpec.classBuilder(stubClassName)
-          .apply {
-            addAbstractStubConstructor(generator, this, service)
-            addStubRpcCalls(generator, this, service)
-          }
-          .build()
-      )
+      return builder
+        .addFunction(
+          FunSpec.builder("newStub")
+            .addParameter("channel", ClassName("io.grpc", "Channel"))
+            .returns(stubClassName)
+            .addCode("return %T(channel)", stubClassName)
+            .build()
+        )
+        .addType(
+          TypeSpec.classBuilder(stubClassName)
+            .apply {
+              addAbstractStubConstructor(generator, this, service)
+              addStubRpcCalls(generator, this, service, options)
+            }
+            .build()
+        )
+    }
   }
 
   internal fun addAbstractStubConstructor(
@@ -99,7 +105,8 @@ object StubGenerator {
   private fun addStubRpcCalls(
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
-    service: Service
+    service: Service,
+    options: KotlinGrpcGenerator.Companion.Options
   ): TypeSpec.Builder {
     service.rpcs.forEach { rpc ->
       val codeBlock = when {
@@ -116,7 +123,7 @@ object StubGenerator {
       }
       builder.addFunction(
         FunSpec.builder(rpc.name)
-          .apply { addImplBaseRpcSignature(generator, this, rpc) }
+          .apply { addImplBaseRpcSignature(generator, this, rpc, options) }
           .addCode(codeBlock)
           .build()
       )

@@ -39,7 +39,11 @@ class ImplBaseTest {
             ImplBaseGenerator.addImplBase(
               generator = ClassNameGenerator(buildClassMap(schema, service!!)),
               builder = this,
-              service = service
+              service = service,
+              options = KotlinGrpcGenerator.Companion.Options(
+                singleMethodServices = false,
+                suspendingCalls = false
+              )
             )
           }
           .build()

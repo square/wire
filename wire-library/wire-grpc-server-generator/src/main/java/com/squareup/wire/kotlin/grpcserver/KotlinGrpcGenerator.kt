@@ -32,21 +32,28 @@ import com.squareup.wire.schema.Service
 class KotlinGrpcGenerator(
   private val typeToKotlinName: Map<ProtoType, TypeName>,
   private val singleMethodServices: Boolean,
+  private val suspendingCalls: Boolean,
   ) {
   fun generateGrpcServer(service: Service, protoFile: ProtoFile?, schema: Schema): Pair<ClassName, TypeSpec> {
+    val options = Options(
+      singleMethodServices = singleMethodServices,
+      suspendingCalls = suspendingCalls,
+    )
     val classNameGenerator = ClassNameGenerator(typeToKotlinName)
     val grpcClassName = classNameGenerator.classNameFor(service.type, "WireGrpc")
     val builder = TypeSpec.objectBuilder(grpcClassName)
 
     addServiceDescriptor(builder, service, protoFile, schema)
     service.rpcs.forEach { rpc -> addMethodDescriptor(classNameGenerator, builder, service, rpc) }
-    addImplBase(classNameGenerator, builder, service)
-    addBindableAdapter(classNameGenerator, builder, service, BindableAdapterGenerator.Options(
-      singleMethodServices = singleMethodServices,
-    ))
-    addStub(classNameGenerator, builder, service)
-    addBlockingStub(classNameGenerator, builder, service)
+    addImplBase(classNameGenerator, builder, service, options)
+    addBindableAdapter(classNameGenerator, builder, service, options)
+    addStub(classNameGenerator, builder, service, options)
+    addBlockingStub(classNameGenerator, builder, service, options)
 
     return grpcClassName to builder.build()
+  }
+
+  companion object {
+    data class Options(val singleMethodServices: Boolean, val suspendingCalls: Boolean)
   }
 }

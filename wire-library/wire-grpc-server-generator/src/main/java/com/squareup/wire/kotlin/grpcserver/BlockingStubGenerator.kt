@@ -30,28 +30,33 @@ object BlockingStubGenerator {
   internal fun addBlockingStub(
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
-    service: Service
+    service: Service,
+    options: KotlinGrpcGenerator.Companion.Options
   ): TypeSpec.Builder {
-    val serviceClassName = generator.classNameFor(service.type)
-    val stubClassName = ClassName(
-      packageName = serviceClassName.packageName,
-      "${serviceClassName.simpleName}WireGrpc",
-      "${serviceClassName.simpleName}BlockingStub"
-    )
-    return builder
-      .addFunction(
-        FunSpec.builder("newBlockingStub")
-          .addParameter("channel", ClassName("io.grpc", "Channel"))
-          .returns(stubClassName)
-          .addCode("return %T(channel)", stubClassName)
-          .build()
+    if (!options.suspendingCalls) {
+      val serviceClassName = generator.classNameFor(service.type)
+      val stubClassName = ClassName(
+        packageName = serviceClassName.packageName,
+        "${serviceClassName.simpleName}WireGrpc",
+        "${serviceClassName.simpleName}BlockingStub"
       )
-      .addType(
-        TypeSpec.classBuilder(stubClassName)
-          .apply { addAbstractStubConstructor(generator, this, service) }
-          .addBlockingStubRpcCalls(generator, service)
-          .build()
-      )
+      return builder
+        .addFunction(
+          FunSpec.builder("newBlockingStub")
+            .addParameter("channel", ClassName("io.grpc", "Channel"))
+            .returns(stubClassName)
+            .addCode("return %T(channel)", stubClassName)
+            .build()
+        )
+        .addType(
+          TypeSpec.classBuilder(stubClassName)
+            .apply { addAbstractStubConstructor(generator, this, service) }
+            .addBlockingStubRpcCalls(generator, service)
+            .build()
+        )
+    } else {
+      return builder
+    }
   }
 
   private fun TypeSpec.Builder.addBlockingStubRpcCalls(generator: ClassNameGenerator, service: Service): TypeSpec.Builder {
