@@ -50,7 +50,8 @@ object BlockingStubGenerator {
         )
         .addType(
           TypeSpec.classBuilder(stubClassName)
-            .apply { addAbstractStubConstructor(generator, this, service) }
+            .apply { addAbstractStubConstructor(generator, this, service,
+              ClassName("io.grpc.stub", "AbstractStub")) }
             .addBlockingStubRpcCalls(generator, service)
             .build()
         )
