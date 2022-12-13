@@ -62,11 +62,11 @@ misk = { module = "com.squareup.misk:misk", version = "0.11.0" }
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
 moshiKotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }
-okhttp-core = { module = "com.squareup.okhttp3:okhttp" }
-okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver" }
+okhttp-core = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 okio-bom = { module = "com.squareup.okio:okio-bom", version.ref = "okio" }
-okio-core = { module = "com.squareup.okio:okio" }
-okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem" }
+okio-core = { module = "com.squareup.okio:okio", version.ref = "okio" }
+okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 # `plugins` is a keyword in version catalogs.
 # Check https://docs.gradle.org/current/userguide/platforms.html#sec:version-catalog-plugin
 #  if we ever wanna migrate to this.
@@ -76,6 +76,7 @@ pluginz-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version
 pluginz-kotlinSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 pluginz-shadow = { module = "com.github.jengelman.gradle.plugins:shadow", version = "4.0.1" }
 pluginz-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version = "6.3.0" }
+pluginz-buildConfig = { module = "com.github.gmazzo:gradle-buildconfig-plugin", version = "3.1.0" }
 protobuf-gradlePlugin = { module = "com.google.protobuf:protobuf-gradle-plugin", version.ref = "protobufGradlePlugin" }
 protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
 protobuf-javaUtil = { module = "com.google.protobuf:protobuf-java-util", version.ref = "protobuf" }
@@ -84,5 +85,16 @@ swiftpoet = { module = "io.outfoxx:swiftpoet", version = "1.3.1" }
 truth = { module = "com.google.truth:truth", version = "1.1.3" }
 vanniktechPublishPlugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.20.0" }
 
-# TODO(Benoit) delete when ready.
-wire-gradlePlugin = { module = "com.squareup.wire:wire-gradle-plugin", version = "4.4.3" }
+wire-compiler = { module = "com.squareup.wire:wire-compiler" }
+wire-gradlePlugin = { module = "com.squareup.wire:wire-gradle-plugin" }
+wire-grpcClient = { module = "com.squareup.wire:wire-grpc-client" }
+wire-grpcMockWebServer = { module = "com.squareup.wire:wire-grpc-mockwebserver" }
+wire-grpcServer = { module = "com.squareup.wire:wire-grpc-server" }
+wire-gsonSupport = { module = "com.squareup.wire:wire-gson-support" }
+wire-javaGenerator = { module = "com.squareup.wire:wire-java-generator" }
+wire-kotlinGenerator = { module = "com.squareup.wire:wire-kotlin-generator" }
+wire-moshiAdapter = { module = "com.squareup.wire:wire-moshi-adapter" }
+wire-runtime = { module = "com.squareup.wire:wire-runtime" }
+wire-schema = { module = "com.squareup.wire:wire-schema" }
+wire-schemaHandlerTests = { module = "com.squareup.wire:wire-schema-tests" }
+wire-testUtils = { module = "com.squareup.wire:wire-test-utils" }

@@ -24,6 +24,12 @@ if (startParameter.projectProperties.get("swift") != "false") {
   include(":wire-tests-proto3-swift")
 }
 
+includeBuild("build-logic") {
+  dependencySubstitution {
+    substitute(module("com.squareup.wire:wire-gradle-plugin")).using(project(":wire-gradle-plugin"))
+  }
+}
+
 // include(":samples:simple-sample")
 // include(":samples:android-app-java-sample")
 // include(":samples:android-app-kotlin-sample")
@@ -39,6 +45,6 @@ if (startParameter.projectProperties.get("swift") != "false") {
 // include(":wire-golden-files")
 // include(":wire-gradle-plugin-playground")
 // include(":wire-grpc-tests")
-// include(":wire-protoc-compatibility-tests")
+include(":wire-protoc-compatibility-tests")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

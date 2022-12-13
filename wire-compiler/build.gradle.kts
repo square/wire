@@ -1,15 +1,15 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.vanniktech.maven.publish.JavadocJar.Dokka
-import com.vanniktech.maven.publish.KotlinJvm
-import com.vanniktech.maven.publish.MavenPublishBaseExtension
+// import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+// import com.vanniktech.maven.publish.JavadocJar.Dokka
+// import com.vanniktech.maven.publish.KotlinJvm
+// import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
 plugins {
   application
   kotlin("jvm")
   id("org.jetbrains.kotlin.plugin.serialization")
   id("com.github.johnrengelman.shadow")
-  id("org.jetbrains.dokka")
-  id("com.vanniktech.maven.publish.base")
+  // id("org.jetbrains.dokka")
+  // id("com.vanniktech.maven.publish.base")
 }
 
 application {
@@ -32,29 +32,29 @@ dependencies {
   testImplementation(projects.wireTestUtils)
 }
 
-val shadowJar by tasks.getting(ShadowJar::class) {
-  classifier = "jar-with-dependencies"
-}
+// val shadowJar by tasks.getting(ShadowJar::class) {
+//   classifier = "jar-with-dependencies"
+// }
+//
+// publishing {
+//   publications.withType<MavenPublication>().configureEach {
+//     artifact(shadowJar)
+//   }
+// }
 
-publishing {
-  publications.withType<MavenPublication>().configureEach {
-    artifact(shadowJar)
-  }
-}
+// // The `shadow` plugin internally applies the `distribution` plugin and
+// // automatically adds tasks to create respective tar and zip artifacts.
+// // https://github.com/johnrengelman/shadow/issues/347#issuecomment-424726972
+// // https://github.com/johnrengelman/shadow/commit/a824e4f6e4618785deb7f084c4a80ce1b78fc4fd
+// tasks.findByName("shadowDistTar")?.enabled = false
+// tasks.findByName("shadowDistZip")?.enabled = false
+// configurations["archives"].artifacts.removeAll {
+//   val file: File = it.file
+//   file.name.contains("tar") || file.name.contains("zip")
+// }
 
-// The `shadow` plugin internally applies the `distribution` plugin and
-// automatically adds tasks to create respective tar and zip artifacts.
-// https://github.com/johnrengelman/shadow/issues/347#issuecomment-424726972
-// https://github.com/johnrengelman/shadow/commit/a824e4f6e4618785deb7f084c4a80ce1b78fc4fd
-tasks.findByName("shadowDistTar")?.enabled = false
-tasks.findByName("shadowDistZip")?.enabled = false
-configurations["archives"].artifacts.removeAll {
-  val file: File = it.file
-  file.name.contains("tar") || file.name.contains("zip")
-}
-
-configure<MavenPublishBaseExtension> {
-  configure(
-    KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
-  )
-}
+// configure<MavenPublishBaseExtension> {
+//   configure(
+//     KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
+//   )
+// }

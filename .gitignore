@@ -32,3 +32,5 @@ local.properties
 # for dependency watching with https://github.com/JakeWharton/dependency-watch/
 watched-deps
 deps-watch.toml
+
+kotlin-js-store

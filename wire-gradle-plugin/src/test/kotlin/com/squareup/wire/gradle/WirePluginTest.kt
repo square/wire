@@ -101,7 +101,7 @@ class WirePluginTest {
   fun sourcePathBuildDir() {
     val fixtureRoot = File("src/test/projects/sourcepath-build-dir")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = gradleRunner.runFixture(fixtureRoot) { withDebug(false).build() }
     assertThat(result.task(":copyProtos")).isNotNull
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)

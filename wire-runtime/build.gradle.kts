@@ -3,20 +3,26 @@ import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import ru.vyarus.gradle.plugin.animalsniffer.AnimalSnifferExtension
 
+// apply(plugin = "org.jetbrains.kotlin.multiplatform")
 plugins {
   kotlin("multiplatform")
-  id("ru.vyarus.animalsniffer")
-  id("org.jetbrains.dokka")
-  id("com.vanniktech.maven.publish.base")
+  id("com.github.gmazzo.buildconfig")
+  id("ru.vyarus.animalsniffer").apply(false)
+  id("org.jetbrains.dokka").apply(false)
+  id("com.vanniktech.maven.publish.base").apply(false)
 }
 
-val versionWriterTaskProvider = tasks.register("writeVersion", VersionWriterTask::class)
+if (project.rootProject.name == "wire") {
+  apply(plugin = "ru.vyarus.animalsniffer")
+  apply(plugin = "org.jetbrains.dokka")
+  apply(plugin = "com.vanniktech.maven.publish.base")
+}
 
 kotlin {
   jvm {
     withJava()
   }
-  if (kmpJsEnabled) {
+  if (System.getProperty("kjs", "true").toBoolean()) {
     js {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
         tasks.getByName(compileKotlinTaskName) {
@@ -31,7 +37,7 @@ kotlin {
       browser()
     }
   }
-  if (kmpNativeEnabled) {
+  if (System.getProperty("knative", "true").toBoolean()) {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
@@ -48,7 +54,6 @@ kotlin {
       languageSettings.optIn("kotlin.Experimental")
     }
     val commonMain by getting {
-      kotlin.srcDir(versionWriterTaskProvider)
       dependencies {
         api(libs.okio.core)
       }
@@ -70,14 +75,14 @@ kotlin {
         implementation(libs.kotlin.test.junit)
       }
     }
-    if (kmpJsEnabled) {
+    if (System.getProperty("kjs", "true").toBoolean()) {
       val jsTest by getting {
         dependencies {
           implementation(libs.kotlin.test.js)
         }
       }
     }
-    if (kmpNativeEnabled) {
+    if (System.getProperty("knative", "true").toBoolean()) {
       val nativeMain by creating {
         dependsOn(commonMain)
       }
@@ -126,7 +131,7 @@ afterEvaluate {
   val installLocally by tasks.creating {
     dependsOn("publishKotlinMultiplatformPublicationToTestRepository")
     dependsOn("publishJvmPublicationToTestRepository")
-    if (kmpJsEnabled) {
+    if (System.getProperty("kjs", "true").toBoolean()) {
       dependsOn("publishJsPublicationToTestRepository")
     }
   }
@@ -141,14 +146,26 @@ repositories.whenObjectAdded {
   }
 }
 
-val main by sourceSets.getting
-configure<AnimalSnifferExtension> {
-  sourceSets = listOf(main)
-  ignore("com.squareup.wire.internal")
+buildConfig {
+  useKotlinOutput {
+    internalVisibility = true
+    topLevelConstants = true
+  }
+
+  packageName("com.squareup.wire")
+  buildConfigField("String", "VERSION", "\"${project.version}\"")
 }
 
-configure<MavenPublishBaseExtension> {
-  configure(
-    KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
-  )
+if (project.rootProject.name == "wire") {
+  val main by sourceSets.getting
+  configure<AnimalSnifferExtension> {
+    sourceSets = listOf(main)
+    ignore("com.squareup.wire.internal")
+  }
+
+  configure<MavenPublishBaseExtension> {
+    configure(
+      KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
+    )
+  }
 }

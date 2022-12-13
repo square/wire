@@ -1,0 +1,41 @@
+buildscript {
+  dependencies {
+    classpath libs.pluginz.kotlin
+    classpath(libs.vanniktechPublishPlugin)
+    classpath(libs.animalSniffer.gradle)
+    classpath(libs.dokka.core)
+    classpath(libs.dokka.gradlePlugin)
+    classpath(libs.pluginz.buildConfig)
+    classpath(libs.pluginz.kotlinSerialization)
+    classpath(libs.pluginz.shadow)
+    // TODO(Benoit) Use to create version file
+    // buildConfig-plugin = "com.github.gmazzo:gradle-buildconfig-plugin:3.1.0"
+    // classpath libs.buildConfig.plugin
+  }
+
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+  }
+}
+
+allprojects {
+  repositories {
+    mavenCentral()
+    google()
+  }
+
+  plugins.withId('java-base') {
+    java {
+      toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+      }
+    }
+  }
+
+  tasks.withType(org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile).configureEach { task ->
+    task.kotlinOptions {
+      jvmTarget = '11'
+    }
+  }
+}

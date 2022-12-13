@@ -48,7 +48,7 @@ kotlin {
     // See https://youtrack.jetbrains.com/issue/KT-41506.
     withJava()
   }
-  if (kmpJsEnabled) {
+  if (System.getProperty("kjs", "true").toBoolean()) {
     js {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
         tasks.getByName(compileKotlinTaskName) {
@@ -62,7 +62,7 @@ kotlin {
       nodejs()
     }
   }
-  if (kmpNativeEnabled) {
+  if (System.getProperty("knative", "true").toBoolean()) {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
@@ -98,14 +98,14 @@ kotlin {
         implementation(libs.jimfs)
       }
     }
-    if (kmpJsEnabled) {
+    if (System.getProperty("kjs", "true").toBoolean()) {
       val jsTest by getting {
         dependencies {
           implementation(libs.kotlin.test.js)
         }
       }
     }
-    if (kmpNativeEnabled) {
+    if (System.getProperty("knative", "true").toBoolean()) {
       val nativeMain by creating {
         dependsOn(commonMain)
       }

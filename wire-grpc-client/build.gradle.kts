@@ -1,20 +1,20 @@
-import com.vanniktech.maven.publish.JavadocJar.Dokka
-import com.vanniktech.maven.publish.KotlinMultiplatform
-import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import ru.vyarus.gradle.plugin.animalsniffer.AnimalSnifferExtension
+// import com.vanniktech.maven.publish.JavadocJar.Dokka
+// import com.vanniktech.maven.publish.KotlinMultiplatform
+// import com.vanniktech.maven.publish.MavenPublishBaseExtension
+// import ru.vyarus.gradle.plugin.animalsniffer.AnimalSnifferExtension
 
 plugins {
   kotlin("multiplatform")
-  id("ru.vyarus.animalsniffer")
-  id("org.jetbrains.dokka")
-  id("com.vanniktech.maven.publish.base")
+  // id("ru.vyarus.animalsniffer")
+  // id("org.jetbrains.dokka")
+  // id("com.vanniktech.maven.publish.base")
 }
 
 kotlin {
   jvm {
     withJava()
   }
-  if (kmpJsEnabled) {
+  if (System.getProperty("kjs", "true").toBoolean()) {
     js {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
         tasks.getByName(compileKotlinTaskName) {
@@ -29,7 +29,7 @@ kotlin {
       browser()
     }
   }
-  if (kmpNativeEnabled) {
+  if (System.getProperty("knative", "true").toBoolean()) {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
@@ -54,7 +54,7 @@ kotlin {
         api(libs.okhttp.core)
       }
     }
-    if (kmpNativeEnabled) {
+    if (System.getProperty("knative", "true").toBoolean()) {
       val nativeMain by creating {
         dependsOn(commonMain)
       }
@@ -91,14 +91,14 @@ repositories.whenObjectAdded {
   }
 }
 
-val main by sourceSets.getting
-configure<AnimalSnifferExtension> {
-  sourceSets = listOf(main)
-  ignore("com.squareup.wire.internal")
-}
+// val main by sourceSets.getting
+// configure<AnimalSnifferExtension> {
+//   sourceSets = listOf(main)
+//   ignore("com.squareup.wire.internal")
+// }
 
-configure<MavenPublishBaseExtension> {
-  configure(
-    KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
-  )
-}
+// configure<MavenPublishBaseExtension> {
+//   configure(
+//     KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
+//   )
+// }

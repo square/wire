@@ -1,13 +1,13 @@
-import com.vanniktech.maven.publish.JavadocJar.Dokka
-import com.vanniktech.maven.publish.KotlinJvm
-import com.vanniktech.maven.publish.MavenPublishBaseExtension
+// import com.vanniktech.maven.publish.JavadocJar.Dokka
+// import com.vanniktech.maven.publish.KotlinJvm
+// import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
 // TODO(Benoit) this module can be multiplatform.
 
 plugins {
   kotlin("jvm")
-  id("org.jetbrains.dokka")
-  id("com.vanniktech.maven.publish.base")
+  // id("org.jetbrains.dokka")
+  // id("com.vanniktech.maven.publish.base")
 }
 
 dependencies {
@@ -24,8 +24,8 @@ dependencies {
   testImplementation(projects.wireTestUtils)
 }
 
-configure<MavenPublishBaseExtension> {
-  configure(
-    KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
-  )
-}
+// configure<MavenPublishBaseExtension> {
+//   configure(
+//     KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
+//   )
+// }

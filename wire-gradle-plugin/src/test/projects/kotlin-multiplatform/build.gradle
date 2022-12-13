@@ -13,7 +13,7 @@ repositories {
 kotlin {
   jvm()
   def kmpJsEnabled = Boolean.parseBoolean(System.getProperty('kjs', 'true'))
-  if (kmpJsEnabled) {
+  if (System.getProperty("kjs", "true").toBoolean()) {
     js {
       nodejs()
     }

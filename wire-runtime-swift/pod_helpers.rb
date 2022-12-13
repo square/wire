@@ -33,6 +33,6 @@ private def is_release_version?(version)
 end
 
 private def version_from_gradle
-  properties_file = File.join(git_root, 'wire-library', 'gradle.properties')
+  properties_file = File.join(git_root, 'gradle.properties')
   File.read(properties_file).match(/^VERSION_NAME=([0-9.]+.*)$/).captures[0]
 end

@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.google.protobuf.gradle.protobuf
-import com.google.protobuf.gradle.protoc
+// import com.google.protobuf.gradle.protobuf
+// import com.google.protobuf.gradle.protoc
 
 plugins {
   id("java-library")
   kotlin("jvm")
-  id("com.google.protobuf")
+  // id("com.google.protobuf")
 }
 
-protobuf {
-  protoc {
-    artifact = deps.protobuf.protoc
-  }
-}
+// protobuf {
+//   protoc {
+//     artifact = deps.protobuf.protoc
+//   }
+// }
 
 dependencies {
   api(libs.moshi)

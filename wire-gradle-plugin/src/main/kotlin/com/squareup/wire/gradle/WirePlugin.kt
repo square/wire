@@ -15,13 +15,16 @@
  */
 package com.squareup.wire.gradle
 
-import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.Source
 import com.squareup.wire.gradle.kotlin.sourceRoots
+import java.io.File
+import java.lang.reflect.Array as JavaArray
+import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.UnknownConfigurationException
 import org.gradle.api.internal.file.FileOrUriNotationConverter
@@ -31,9 +34,6 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.io.File
-import java.util.concurrent.atomic.AtomicBoolean
-import java.lang.reflect.Array as JavaArray
 
 class WirePlugin : Plugin<Project> {
   private val android = AtomicBoolean(false)
@@ -154,7 +154,8 @@ class WirePlugin : Plugin<Project> {
           }
         )
       }
-      val generatedSourcesDirectories = targets.map { target -> project.file(target.outDirectory) }.toSet()
+      val generatedSourcesDirectories =
+        targets.map { target -> project.file(target.outDirectory) }.toSet()
 
       // Both the JavaCompile and KotlinCompile tasks might already have been configured by now.
       // Even though we add the Wire output directories into the corresponding sourceSets, the
@@ -244,6 +245,8 @@ class WirePlugin : Plugin<Project> {
     hasJavaOutput: Boolean,
     hasKotlinOutput: Boolean
   ) {
+    // Indicates when the plugin is applied inside the Wire repo to Wire's own modules.
+    val isInternalBuild = project.properties["com.squareup.wire.internal"].toString() == "true"
     val isMultiplatform = project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")
     // Only add the dependency for Java and Kotlin.
     if (hasJavaOutput || hasKotlinOutput) {
@@ -252,17 +255,26 @@ class WirePlugin : Plugin<Project> {
           project.extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets
         val sourceSet = (sourceSets.getByName("commonMain") as DefaultKotlinSourceSet)
         project.configurations.getByName(sourceSet.apiConfigurationName).dependencies
-          .add(project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION"))
+          .add(wireRuntimeDependency(isInternalBuild))
       } else {
         try {
           project.configurations.getByName("api").dependencies
-            .add(project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION"))
+            .add(wireRuntimeDependency(isInternalBuild))
         } catch (_: UnknownConfigurationException) {
           // No `api` configuration on Java applications.
           project.configurations.getByName("implementation").dependencies
-            .add(project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION"))
+            .add(wireRuntimeDependency(isInternalBuild))
         }
       }
+    }
+  }
+
+  private fun wireRuntimeDependency(isInternalBuild: Boolean): Dependency {
+    return if (isInternalBuild) {
+      project.dependencies.project(mapOf("path" to ":wire-runtime"))
+    } else{
+      // TODO(Benoit) Fix with generated version
+      project.dependencies.create("com.squareup.wire:wire-runtime:4.4.3")
     }
   }
 
@@ -282,6 +294,7 @@ class WirePlugin : Plugin<Project> {
   internal companion object {
     const val ROOT_TASK = "generateProtos"
     const val GROUP = "wire"
+
     // The signature of this function changed in Kotlin 1.7, so we invoke it reflectively to support
     // both.
     // 1.6.x: `fun source(vararg sources: Any): SourceTask`

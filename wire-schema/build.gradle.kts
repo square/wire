@@ -1,18 +1,18 @@
-import com.vanniktech.maven.publish.JavadocJar.Dokka
-import com.vanniktech.maven.publish.KotlinMultiplatform
-import com.vanniktech.maven.publish.MavenPublishBaseExtension
+// import com.vanniktech.maven.publish.JavadocJar.Dokka
+// import com.vanniktech.maven.publish.KotlinMultiplatform
+// import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
 plugins {
   kotlin("multiplatform")
-  id("org.jetbrains.dokka")
-  id("com.vanniktech.maven.publish.base")
+  // id("org.jetbrains.dokka")
+  // id("com.vanniktech.maven.publish.base")
 }
 
 kotlin {
   jvm {
     withJava()
   }
-  if (kmpJsEnabled) {
+  if (System.getProperty("kjs", "true").toBoolean()) {
     js {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
         tasks.getByName(compileKotlinTaskName) {
@@ -54,7 +54,7 @@ kotlin {
         implementation(libs.okio.fakefilesystem)
       }
     }
-    if (kmpJsEnabled) {
+    if (System.getProperty("kjs", "true").toBoolean()) {
       val jsTest by getting {
         dependencies {
           implementation(libs.kotlin.test.js)
@@ -64,8 +64,8 @@ kotlin {
   }
 }
 
-configure<MavenPublishBaseExtension> {
-  configure(
-    KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
-  )
-}
+// configure<MavenPublishBaseExtension> {
+//   configure(
+//     KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
+//   )
+// }

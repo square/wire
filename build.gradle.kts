@@ -24,6 +24,7 @@ buildscript {
     classpath(libs.pluginz.spotless)
     classpath(libs.protobuf.gradlePlugin)
     classpath(libs.vanniktechPublishPlugin)
+    classpath(libs.pluginz.buildConfig)
     classpath(libs.wire.gradlePlugin)
   }
 
@@ -33,6 +34,11 @@ buildscript {
     google()
   }
 }
+
+rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class) {
+  rootProject.extensions.getByType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension::class).nodeVersion = "16.0.0"
+}
+
 
 apply(plugin = "com.vanniktech.maven.publish.base")
 
