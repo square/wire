@@ -18,7 +18,7 @@ package com.squareup.wire.gradle.kotlin
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.api.AndroidSourceDirectorySet
+import com.android.build.api.dsl.AndroidSourceDirectorySet
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.squareup.wire.gradle.WirePlugin

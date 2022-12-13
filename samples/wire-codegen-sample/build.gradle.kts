@@ -3,10 +3,10 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.wire.runtime)
-  implementation(projects.wire.schema)
-  implementation(projects.wire.javaGenerator)
-  implementation(projects.wire.compiler)
+  implementation(projects.wireRuntime)
+  implementation(projects.wireSchema)
+  implementation(projects.wireJavaGenerator)
+  implementation(projects.wireCompiler)
   implementation(libs.okio.core)
   implementation(libs.guava)
   implementation(libs.javapoet)

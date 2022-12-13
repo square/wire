@@ -14,13 +14,13 @@ wire {
 }
 
 dependencies {
-  implementation(projects.wire.grpcClient)
+  implementation(projects.wireGrpcClient)
   implementation(libs.okio.core)
-  implementation(projects.wire.compiler)
-  implementation(projects.wire.gsonSupport)
-  implementation(projects.wire.moshiAdapter)
+  implementation(projects.wireCompiler)
+  implementation(projects.wireGsonSupport)
+  implementation(projects.wireMoshiAdapter)
   implementation(libs.assertj)
   implementation(libs.junit)
   implementation(libs.protobuf.javaUtil)
-  implementation(projects.wire.testUtils)
+  implementation(projects.wireTestUtils)
 }

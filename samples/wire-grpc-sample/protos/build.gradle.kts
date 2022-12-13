@@ -12,5 +12,5 @@ wire {
 }
 
 dependencies {
-  implementation(projects.wire.grpcClient)
+  implementation(projects.wireGrpcClient)
 }

@@ -1,13 +1,19 @@
-// import com.vanniktech.maven.publish.JavadocJar.Dokka
-// import com.vanniktech.maven.publish.KotlinMultiplatform
-// import com.vanniktech.maven.publish.MavenPublishBaseExtension
-// import ru.vyarus.gradle.plugin.animalsniffer.AnimalSnifferExtension
+import com.vanniktech.maven.publish.JavadocJar.Dokka
+import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import ru.vyarus.gradle.plugin.animalsniffer.AnimalSnifferExtension
 
 plugins {
   kotlin("multiplatform")
-  // id("ru.vyarus.animalsniffer")
-  // id("org.jetbrains.dokka")
-  // id("com.vanniktech.maven.publish.base")
+  id("ru.vyarus.animalsniffer").apply(false)
+  id("org.jetbrains.dokka").apply(false)
+  id("com.vanniktech.maven.publish.base").apply(false)
+}
+
+if (project.rootProject.name == "wire") {
+  apply(plugin = "ru.vyarus.animalsniffer")
+  apply(plugin = "org.jetbrains.dokka")
+  apply(plugin = "com.vanniktech.maven.publish.base")
 }
 
 kotlin {
@@ -91,14 +97,16 @@ repositories.whenObjectAdded {
   }
 }
 
-// val main by sourceSets.getting
-// configure<AnimalSnifferExtension> {
-//   sourceSets = listOf(main)
-//   ignore("com.squareup.wire.internal")
-// }
+if (project.rootProject.name == "wire") {
+  val main by sourceSets.getting
+  configure<AnimalSnifferExtension> {
+    sourceSets = listOf(main)
+    ignore("com.squareup.wire.internal")
+  }
 
-// configure<MavenPublishBaseExtension> {
-//   configure(
-//     KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
-//   )
-// }
+  configure<MavenPublishBaseExtension> {
+    configure(
+      KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
+    )
+  }
+}

@@ -30,7 +30,6 @@ val wire by configurations.creating {
   }
 }
 
-// val versionCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
 dependencies {
   wire(project("wire-compiler"))
 }

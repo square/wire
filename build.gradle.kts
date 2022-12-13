@@ -7,12 +7,12 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.STARTED
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
   dependencies {
-    // https://github.com/melix/japicmp-gradle-plugin/issues/36
-    classpath("com.google.guava:guava:28.2-jre")
     classpath(libs.animalSniffer.gradle)
     classpath(libs.dokka.core)
     classpath(libs.dokka.gradlePlugin)
@@ -26,6 +26,8 @@ buildscript {
     classpath(libs.vanniktechPublishPlugin)
     classpath(libs.pluginz.buildConfig)
     classpath(libs.wire.gradlePlugin)
+    classpath("com.google.guava:guava:31.1-jre")
+    classpath("org.ow2.asm:asm:9.1")
   }
 
   repositories {
@@ -35,10 +37,11 @@ buildscript {
   }
 }
 
-rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class) {
-  rootProject.extensions.getByType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension::class).nodeVersion = "16.0.0"
+rootProject.plugins.withType(NodeJsRootPlugin::class) {
+  // 16+ required for Apple Silicon support
+  // https://youtrack.jetbrains.com/issue/KT-49109#focus=Comments-27-5259190.0-0
+  rootProject.extensions.getByType(NodeJsRootExtension::class).nodeVersion = "16.0.0"
 }
-
 
 apply(plugin = "com.vanniktech.maven.publish.base")
 
@@ -49,6 +52,19 @@ allprojects {
   repositories {
     mavenCentral()
     google()
+  }
+
+  // Prefer to get dependency versions from BOMs.
+  configurations.all {
+    val configuration = this
+    configuration.dependencies.all {
+      val bom = when (group) {
+        "com.squareup.okio" -> libs.okio.bom.get()
+        "com.squareup.okhttp3" -> libs.okhttp.bom.get()
+        else -> return@all
+      }
+      configuration.dependencies.add(project.dependencies.platform(bom))
+    }
   }
 }
 
@@ -100,7 +116,14 @@ subprojects {
     }
   }
 
-  if (!(project.name.endsWith("-swift") || project.name.endsWith("-bom"))) {
+  if (!(
+      project.name.endsWith("-swift") ||
+        project.name.endsWith("-bom") ||
+        project.name.endsWith("-benchmarks") ||
+        project.name.contains("golden") ||
+        project.name.contains("protoc") ||
+        project.displayName.contains("sample")
+    )) {
     apply(plugin = "checkstyle")
 
     afterEvaluate {
