@@ -173,13 +173,13 @@ object BindableAdapterGenerator {
             "return ${serviceProviderName}().${rpc.name}(request)"
           )
           !rpc.requestStreaming -> CodeBlock.of(
-            "return %T.serverStream(context, request, %L()::%L)", FlowAdapter::class, rpc.name, rpc.name
+            "return %T.serverStream(context, request, %L()::%L)", FlowAdapter::class, serviceProviderName, rpc.name
           )
           !rpc.responseStreaming -> CodeBlock.of(
-            "return %T.clientStream(context, request, %L()::%L)", FlowAdapter::class, rpc.name, rpc.name
+            "return %T.clientStream(context, request, %L()::%L)", FlowAdapter::class, serviceProviderName, rpc.name
           )
           else -> CodeBlock.of(
-            "return %T.bidiStream(context, request, %L()::%L)", FlowAdapter::class, rpc.name, rpc.name
+            "return %T.bidiStream(context, request, %L()::%L)", FlowAdapter::class, serviceProviderName, rpc.name
           )
         }
       } else {

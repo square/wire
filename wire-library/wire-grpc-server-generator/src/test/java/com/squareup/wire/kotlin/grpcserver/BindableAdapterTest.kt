@@ -78,7 +78,7 @@ class BindableAdapterTest {
           private val service: () -> TestServiceServer,
         ) : TestServiceWireGrpc.TestServiceImplBase() {
           public override fun TestRPC(request: Test): Flow<Test> = FlowAdapter.serverStream(context,
-              request, TestRPC()::TestRPC)
+              request, service()::TestRPC)
         }
       }
     """.trimIndent().trim(), code)
@@ -106,7 +106,7 @@ class BindableAdapterTest {
           private val service: () -> TestServiceServer,
         ) : TestServiceWireGrpc.TestServiceImplBase() {
           public override suspend fun TestRPC(request: Flow<Test>): Test =
-              FlowAdapter.clientStream(context, request, TestRPC()::TestRPC)
+              FlowAdapter.clientStream(context, request, service()::TestRPC)
         }
       }
     """.trimIndent().trim(), code)
@@ -132,6 +132,37 @@ class BindableAdapterTest {
       public class TestServiceWireGrpc {
         public class BindableAdapter(
           private val service: () -> TestServiceServer,
+        ) : TestServiceWireGrpc.TestServiceImplBase() {
+          public override fun TestRPC(request: Flow<Test>): Flow<Test> = FlowAdapter.bidiStream(context,
+              request, service()::TestRPC)
+        }
+      }
+    """.trimIndent().trim(), code)
+  }
+
+  @Test
+  fun `works on suspending streaming bidi rpcs with single method services`() {
+    val code = bindableCodeFor("test", "TestService", """
+      syntax = "proto2";
+      package test;
+
+      message Test {}
+      service TestService {
+        rpc TestRPC(stream Test) returns (stream Test){}
+      }
+      """.trimMargin(), KotlinGrpcGenerator.Companion.Options(
+      singleMethodServices = true,
+      suspendingCalls = true
+    ))
+    assertEquals("""
+      package test
+
+      import com.squareup.wire.kotlin.grpcserver.FlowAdapter
+      import kotlinx.coroutines.flow.Flow
+
+      public class TestServiceWireGrpc {
+        public class BindableAdapter(
+          private val TestRPC: () -> TestServiceTestRPCServer,
         ) : TestServiceWireGrpc.TestServiceImplBase() {
           public override fun TestRPC(request: Flow<Test>): Flow<Test> = FlowAdapter.bidiStream(context,
               request, TestRPC()::TestRPC)
