@@ -64,6 +64,7 @@ class SwiftGenerator private constructor(
   private val redactedKey = DeclaredTypeName.typeName("Wire.RedactedKey")
   private val equatable = DeclaredTypeName.typeName("Swift.Equatable")
   private val hashable = DeclaredTypeName.typeName("Swift.Hashable")
+  private val sendable = DeclaredTypeName.typeName("Swift.Sendable")
   private val codable = DeclaredTypeName.typeName("Swift.Codable")
   private val codingKey = DeclaredTypeName.typeName("Swift.CodingKey")
   private val encoder = DeclaredTypeName.typeName("Swift.Encoder")
@@ -232,6 +233,13 @@ class SwiftGenerator private constructor(
       .addGuard("!$FLAG_REMOVE_HASHABLE")
       .build()
 
+    val structSendableExtension = ExtensionSpec.builder(structType)
+      .addSuperType(sendable)
+      .build()
+    fileMembers += FileMemberSpec.builder(structSendableExtension)
+      .addGuard("!$FLAG_REMOVE_SENDABLE")
+      .build()
+
     val redactionExtension = if (type.fields.any { it.isRedacted }) {
       ExtensionSpec.builder(structType)
         .addSuperType(redactable)
@@ -317,6 +325,13 @@ class SwiftGenerator private constructor(
         .build()
       fileMembers += FileMemberSpec.builder(storageHashableExtension)
         .addGuard("!$FLAG_REMOVE_HASHABLE")
+        .build()
+
+      val storageSendableExtension = ExtensionSpec.builder(structType)
+        .addSuperType(sendable)
+        .build()
+      fileMembers += FileMemberSpec.builder(storageSendableExtension)
+        .addGuard("!$FLAG_REMOVE_SENDABLE")
         .build()
 
       if (redactionExtension != null) {
@@ -876,6 +891,13 @@ class SwiftGenerator private constructor(
         .addGuard("!$FLAG_REMOVE_HASHABLE")
         .build()
 
+      val sendableExtension = ExtensionSpec.builder(enumName)
+        .addSuperType(sendable)
+        .build()
+      fileMembers += FileMemberSpec.builder(sendableExtension)
+        .addGuard("!$FLAG_REMOVE_SENDABLE")
+        .build()
+
       if (oneOf.fields.any { it.isRedacted }) {
         val redactableExtension = ExtensionSpec.builder(enumName)
           .addSuperType(redactable)
@@ -1027,6 +1049,7 @@ class SwiftGenerator private constructor(
     private const val FLAG_REMOVE_CODABLE = "WIRE_REMOVE_CODABLE"
     private const val FLAG_REMOVE_EQUATABLE = "WIRE_REMOVE_EQUATABLE"
     private const val FLAG_REMOVE_HASHABLE = "WIRE_REMOVE_HASHABLE"
+    private const val FLAG_REMOVE_SENDABLE = "WIRE_REMOVE_SENDABLE"
     private const val FLAG_REMOVE_REDACTABLE = "WIRE_REMOVE_REDACTABLE"
 
     @JvmStatic @JvmName("get")
