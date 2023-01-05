@@ -80,6 +80,11 @@ extension Duration : Hashable {
 }
 #endif
 
+#if swift(>=5.5) && !WIRE_REMOVE_HASHABLE
+extension Duration: Sendable {
+}
+#endif
+
 extension Duration : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/google.protobuf.Duration"

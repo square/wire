@@ -21,6 +21,11 @@ extension OneofOptions : Hashable {
 }
 #endif
 
+#if swift(>=5.5) && !WIRE_REMOVE_HASHABLE
+extension OneofOptions: Sendable {
+}
+#endif
+
 extension OneofOptions : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/google.protobuf.OneofOptions"

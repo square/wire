@@ -63,3 +63,6 @@ extension Indirect : Equatable where T : Equatable {
 
 extension Indirect : Hashable where T : Hashable {
 }
+
+extension Indirect : Sendable where T : Sendable {
+}
