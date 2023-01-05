@@ -2677,6 +2677,6 @@ extension _AllTypes : Hashable {
 #endif
 
 #if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
-extension AllTypes : Sendable {
+extension _AllTypes : Sendable {
 }
 #endif

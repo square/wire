@@ -334,7 +334,7 @@ class SwiftGenerator private constructor(
         .addGuard("!$FLAG_REMOVE_HASHABLE")
         .build()
 
-      val storageSendableExtension = ExtensionSpec.builder(structType)
+      val storageSendableExtension = ExtensionSpec.builder(storageType)
         .addSuperType(sendable)
         .build()
       fileMembers += FileMemberSpec.builder(storageSendableExtension)
