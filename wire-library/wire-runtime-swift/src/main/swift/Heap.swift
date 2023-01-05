@@ -66,8 +66,3 @@ extension Heap : Hashable where T : Hashable {
     }
 
 }
-
-// MARK: - Sendable
-
-extension Heap : Sendable where T : Sendable {
-}
