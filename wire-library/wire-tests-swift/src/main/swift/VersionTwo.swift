@@ -48,6 +48,11 @@ extension VersionTwo : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension VersionTwo : Sendable {
+}
+#endif
+
 extension VersionTwo : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.unknownfields.VersionTwo"

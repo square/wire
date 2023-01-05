@@ -25,6 +25,11 @@ extension DeprecatedProto : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension DeprecatedProto : Sendable {
+}
+#endif
+
 extension DeprecatedProto : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.DeprecatedProto"

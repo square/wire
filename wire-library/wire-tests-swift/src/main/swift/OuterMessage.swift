@@ -26,6 +26,11 @@ extension OuterMessage : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension OuterMessage : Sendable {
+}
+#endif
+
 extension OuterMessage : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.packed_encoding.OuterMessage"

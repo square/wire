@@ -55,6 +55,11 @@ extension OneOfMessage.Choice : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension OneOfMessage.Choice : Sendable {
+}
+#endif
+
 #if !WIRE_REMOVE_EQUATABLE
 extension OneOfMessage : Equatable {
 }
@@ -62,6 +67,11 @@ extension OneOfMessage : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension OneOfMessage : Hashable {
+}
+#endif
+
+#if !WIRE_REMOVE_SENDABLE
+extension OneOfMessage : Sendable {
 }
 #endif
 

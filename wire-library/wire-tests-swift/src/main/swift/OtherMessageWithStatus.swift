@@ -28,6 +28,11 @@ extension OtherMessageWithStatus : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension OtherMessageWithStatus : Sendable {
+}
+#endif
+
 extension OtherMessageWithStatus : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.OtherMessageWithStatus"

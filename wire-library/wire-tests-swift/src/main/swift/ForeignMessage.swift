@@ -24,6 +24,11 @@ extension ForeignMessage : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension ForeignMessage : Sendable {
+}
+#endif
+
 extension ForeignMessage : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.foreign.ForeignMessage"

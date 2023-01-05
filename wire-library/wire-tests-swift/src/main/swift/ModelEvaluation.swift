@@ -47,6 +47,11 @@ extension ModelEvaluation : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension ModelEvaluation : Sendable {
+}
+#endif
+
 extension ModelEvaluation : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/ModelEvaluation"

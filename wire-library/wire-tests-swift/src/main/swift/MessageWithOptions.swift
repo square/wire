@@ -22,6 +22,11 @@ extension MessageWithOptions : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension MessageWithOptions : Sendable {
+}
+#endif
+
 extension MessageWithOptions : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions"

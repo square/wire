@@ -24,6 +24,11 @@ extension Mappy : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension Mappy : Sendable {
+}
+#endif
+
 extension Mappy : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Mappy"

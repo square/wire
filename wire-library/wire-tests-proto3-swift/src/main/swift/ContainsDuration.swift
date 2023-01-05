@@ -24,6 +24,11 @@ extension ContainsDuration : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension ContainsDuration : Sendable {
+}
+#endif
+
 extension ContainsDuration : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos3.kotlin.contains_duration.ContainsDuration"

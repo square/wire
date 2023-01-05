@@ -1895,6 +1895,11 @@ extension AllTypes.NestedMessage : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension AllTypes.NestedMessage : Sendable {
+}
+#endif
+
 extension AllTypes.NestedMessage : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes.NestedMessage"
@@ -1940,6 +1945,11 @@ extension AllTypes : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension AllTypes : Hashable {
+}
+#endif
+
+#if !WIRE_REMOVE_SENDABLE
+extension AllTypes : Sendable {
 }
 #endif
 
@@ -2663,5 +2673,10 @@ extension _AllTypes : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension _AllTypes : Hashable {
+}
+#endif
+
+#if !WIRE_REMOVE_SENDABLE
+extension AllTypes : Sendable {
 }
 #endif

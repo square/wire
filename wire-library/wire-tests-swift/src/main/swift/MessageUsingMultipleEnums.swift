@@ -29,6 +29,11 @@ extension MessageUsingMultipleEnums : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension MessageUsingMultipleEnums : Sendable {
+}
+#endif
+
 extension MessageUsingMultipleEnums : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.MessageUsingMultipleEnums"

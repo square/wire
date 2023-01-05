@@ -42,6 +42,11 @@ extension NestedVersionTwo : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension NestedVersionTwo : Sendable {
+}
+#endif
+
 extension NestedVersionTwo : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.unknownfields.NestedVersionTwo"

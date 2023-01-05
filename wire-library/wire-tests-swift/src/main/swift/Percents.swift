@@ -27,6 +27,11 @@ extension Percents : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension Percents : Sendable {
+}
+#endif
+
 extension Percents : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.Percents"

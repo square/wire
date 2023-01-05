@@ -28,6 +28,11 @@ extension MessageWithStatus : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension MessageWithStatus : Sendable {
+}
+#endif
+
 extension MessageWithStatus : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.MessageWithStatus"

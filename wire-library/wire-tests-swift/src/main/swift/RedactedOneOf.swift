@@ -38,6 +38,11 @@ extension RedactedOneOf.A : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension RedactedOneOf.A : Sendable {
+}
+#endif
+
 #if !WIRE_REMOVE_REDACTABLE
 extension RedactedOneOf.A : Redactable {
     public enum RedactedKeys : String, RedactedKey {
@@ -55,6 +60,11 @@ extension RedactedOneOf : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension RedactedOneOf : Hashable {
+}
+#endif
+
+#if !WIRE_REMOVE_SENDABLE
+extension RedactedOneOf : Sendable {
 }
 #endif
 

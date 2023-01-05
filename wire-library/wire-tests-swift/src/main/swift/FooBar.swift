@@ -84,6 +84,11 @@ extension FooBar.Nested : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension FooBar.Nested : Sendable {
+}
+#endif
+
 extension FooBar.Nested : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.custom_options.FooBar.Nested"
@@ -132,6 +137,11 @@ extension FooBar.More : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension FooBar.More : Sendable {
+}
+#endif
+
 extension FooBar.More : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.custom_options.FooBar.More"
@@ -177,6 +187,11 @@ extension FooBar : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension FooBar : Hashable {
+}
+#endif
+
+#if !WIRE_REMOVE_SENDABLE
+extension FooBar : Sendable {
 }
 #endif
 

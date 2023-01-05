@@ -22,6 +22,11 @@ extension NoFields : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension NoFields : Sendable {
+}
+#endif
+
 extension NoFields : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.NoFields"

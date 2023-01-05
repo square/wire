@@ -31,6 +31,11 @@ extension OptionalEnumUser : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension OptionalEnumUser : Sendable {
+}
+#endif
+
 extension OptionalEnumUser : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.OptionalEnumUser"

@@ -86,6 +86,11 @@ extension Person.PhoneNumber : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension Person.PhoneNumber : Sendable {
+}
+#endif
+
 extension Person.PhoneNumber : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.person.Person.PhoneNumber"
@@ -136,6 +141,11 @@ extension Person : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension Person : Hashable {
+}
+#endif
+
+#if !WIRE_REMOVE_SENDABLE
+extension Person : Sendable {
 }
 #endif
 

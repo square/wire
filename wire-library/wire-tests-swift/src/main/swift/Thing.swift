@@ -24,6 +24,11 @@ extension Thing : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_SENDABLE
+extension Thing : Sendable {
+}
+#endif
+
 extension Thing : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Thing"
