@@ -237,7 +237,7 @@ class SwiftGenerator private constructor(
       .addSuperType(sendable)
       .build()
     fileMembers += FileMemberSpec.builder(structSendableExtension)
-      .addGuard("!$FLAG_REMOVE_SENDABLE")
+      .addGuard("swift(>=5.5) && !$FLAG_REMOVE_SENDABLE")
       .build()
 
     val redactionExtension = if (type.fields.any { it.isRedacted }) {
@@ -331,7 +331,7 @@ class SwiftGenerator private constructor(
         .addSuperType(sendable)
         .build()
       fileMembers += FileMemberSpec.builder(storageSendableExtension)
-        .addGuard("!$FLAG_REMOVE_SENDABLE")
+        .addGuard("swift(>=5.5) && !$FLAG_REMOVE_SENDABLE")
         .build()
 
       if (redactionExtension != null) {
@@ -895,7 +895,7 @@ class SwiftGenerator private constructor(
         .addSuperType(sendable)
         .build()
       fileMembers += FileMemberSpec.builder(sendableExtension)
-        .addGuard("!$FLAG_REMOVE_SENDABLE")
+        .addGuard("swift(>=5.5) && !$FLAG_REMOVE_SENDABLE")
         .build()
 
       if (oneOf.fields.any { it.isRedacted }) {

@@ -197,7 +197,7 @@ extension Form.Choice : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form.Choice : Sendable {
 }
 #endif
@@ -212,7 +212,7 @@ extension Form.Decision : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form.Decision : Sendable {
 }
 #endif
@@ -237,7 +237,7 @@ extension Form.ButtonElement : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form.ButtonElement : Sendable {
 }
 #endif
@@ -282,7 +282,7 @@ extension Form.LocalImageElement : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form.LocalImageElement : Sendable {
 }
 #endif
@@ -327,7 +327,7 @@ extension Form.RemoteImageElement : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form.RemoteImageElement : Sendable {
 }
 #endif
@@ -372,7 +372,7 @@ extension Form.MoneyElement : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form.MoneyElement : Sendable {
 }
 #endif
@@ -417,7 +417,7 @@ extension Form.SpacerElement : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form.SpacerElement : Sendable {
 }
 #endif
@@ -462,7 +462,7 @@ extension Form.TextElement : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form.TextElement : Sendable {
 }
 #endif
@@ -515,7 +515,7 @@ extension Form.CustomizedCardElement : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form.CustomizedCardElement : Sendable {
 }
 #endif
@@ -560,7 +560,7 @@ extension Form.AddressElement : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form.AddressElement : Sendable {
 }
 #endif
@@ -605,7 +605,7 @@ extension Form.TextInputElement : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form.TextInputElement : Sendable {
 }
 #endif
@@ -650,7 +650,7 @@ extension Form.OptionPickerElement : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form.OptionPickerElement : Sendable {
 }
 #endif
@@ -695,7 +695,7 @@ extension Form.DetailRowElement : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form.DetailRowElement : Sendable {
 }
 #endif
@@ -740,7 +740,7 @@ extension Form.CurrencyConversionFlagsElement : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form.CurrencyConversionFlagsElement : Sendable {
 }
 #endif
@@ -785,7 +785,7 @@ extension Form : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Form : Sendable {
 }
 #endif

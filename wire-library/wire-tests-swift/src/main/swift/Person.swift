@@ -86,7 +86,7 @@ extension Person.PhoneNumber : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Person.PhoneNumber : Sendable {
 }
 #endif
@@ -144,7 +144,7 @@ extension Person : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Person : Sendable {
 }
 #endif

@@ -38,7 +38,7 @@ extension RedactedOneOf.A : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension RedactedOneOf.A : Sendable {
 }
 #endif
@@ -63,7 +63,7 @@ extension RedactedOneOf : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension RedactedOneOf : Sendable {
 }
 #endif

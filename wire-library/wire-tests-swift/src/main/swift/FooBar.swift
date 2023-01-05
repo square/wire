@@ -84,7 +84,7 @@ extension FooBar.Nested : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension FooBar.Nested : Sendable {
 }
 #endif
@@ -137,7 +137,7 @@ extension FooBar.More : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension FooBar.More : Sendable {
 }
 #endif
@@ -190,7 +190,7 @@ extension FooBar : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension FooBar : Sendable {
 }
 #endif

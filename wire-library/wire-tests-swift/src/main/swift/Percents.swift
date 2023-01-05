@@ -27,7 +27,7 @@ extension Percents : Hashable {
 }
 #endif
 
-#if !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension Percents : Sendable {
 }
 #endif
