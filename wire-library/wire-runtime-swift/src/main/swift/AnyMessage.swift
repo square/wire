@@ -73,7 +73,7 @@ extension AnyMessage: Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_HASHABLE
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
 extension AnyMessage: Sendable {
 }
 #endif

@@ -21,8 +21,8 @@ extension OneofOptions : Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_HASHABLE
-extension OneofOptions: Sendable {
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+extension OneofOptions : Sendable {
 }
 #endif
 

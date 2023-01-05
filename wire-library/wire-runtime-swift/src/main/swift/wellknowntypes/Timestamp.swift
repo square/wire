@@ -92,8 +92,8 @@ extension Timestamp : Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_HASHABLE
-extension Timestamp: Sendable {
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+extension Timestamp : Sendable {
 }
 #endif
 

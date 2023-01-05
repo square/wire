@@ -80,8 +80,8 @@ extension Duration : Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_HASHABLE
-extension Duration: Sendable {
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+extension Duration : Sendable {
 }
 #endif
 
