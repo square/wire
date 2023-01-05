@@ -42,6 +42,7 @@ import io.outfoxx.swiftpoet.STRING
 import io.outfoxx.swiftpoet.TypeAliasSpec
 import io.outfoxx.swiftpoet.TypeName
 import io.outfoxx.swiftpoet.TypeSpec
+import io.outfoxx.swiftpoet.TypeVariableName
 import io.outfoxx.swiftpoet.UINT32
 import io.outfoxx.swiftpoet.UINT64
 import io.outfoxx.swiftpoet.joinToCode
@@ -65,6 +66,7 @@ class SwiftGenerator private constructor(
   private val equatable = DeclaredTypeName.typeName("Swift.Equatable")
   private val hashable = DeclaredTypeName.typeName("Swift.Hashable")
   private val sendable = DeclaredTypeName.typeName("Swift.Sendable")
+  private val uncheckedSendable = TypeVariableName.typeVariable("@unchecked Sendable")
   private val codable = DeclaredTypeName.typeName("Swift.Codable")
   private val codingKey = DeclaredTypeName.typeName("Swift.CodingKey")
   private val encoder = DeclaredTypeName.typeName("Swift.Encoder")
@@ -233,8 +235,13 @@ class SwiftGenerator private constructor(
       .addGuard("!$FLAG_REMOVE_HASHABLE")
       .build()
 
+    val structSendableType = if (type.isHeapAllocated) {
+      uncheckedSendable
+    } else {
+      sendable
+    }
     val structSendableExtension = ExtensionSpec.builder(structType)
-      .addSuperType(sendable)
+      .addSuperType(structSendableType)
       .build()
     fileMembers += FileMemberSpec.builder(structSendableExtension)
       .addGuard("swift(>=5.5) && !$FLAG_REMOVE_SENDABLE")
