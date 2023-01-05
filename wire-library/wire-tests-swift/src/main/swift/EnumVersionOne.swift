@@ -7,3 +7,8 @@ public enum EnumVersionOne : UInt32, CaseIterable, Codable {
     case FIONA_V1 = 3
 
 }
+
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+extension EnumVersionOne : Sendable {
+}
+#endif

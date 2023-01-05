@@ -963,6 +963,13 @@ class SwiftGenerator private constructor(
       .addSuperType(CASE_ITERABLE)
       .addSuperType(codable)
       .apply {
+        val sendableExtension = ExtensionSpec.builder(enumName)
+          .addSuperType(sendable)
+          .build()
+        fileMembers += FileMemberSpec.builder(sendableExtension)
+          .addGuard("swift(>=5.5) && !$FLAG_REMOVE_SENDABLE")
+          .build()
+
         if (type.documentation.isNotBlank()) {
           addDoc("%L\n", type.documentation.sanitizeDoc())
         }

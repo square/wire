@@ -76,6 +76,11 @@ public struct Person {
 
 }
 
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+extension Person.PhoneType : Sendable {
+}
+#endif
+
 #if !WIRE_REMOVE_EQUATABLE
 extension Person.PhoneNumber : Equatable {
 }

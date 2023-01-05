@@ -180,6 +180,11 @@ extension FooBar.More : Codable {
 }
 #endif
 
+#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+extension FooBar.FooBarBazEnum : Sendable {
+}
+#endif
+
 #if !WIRE_REMOVE_EQUATABLE
 extension FooBar : Equatable {
 }
