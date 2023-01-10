@@ -55,7 +55,7 @@ extension OneOfMessage.Choice : Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension OneOfMessage.Choice : Sendable {
 }
 #endif
@@ -70,7 +70,7 @@ extension OneOfMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension OneOfMessage : Sendable {
 }
 #endif

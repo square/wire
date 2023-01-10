@@ -76,7 +76,7 @@ public struct Person {
 
 }
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension Person.PhoneType : Sendable {
 }
 #endif
@@ -91,7 +91,7 @@ extension Person.PhoneNumber : Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension Person.PhoneNumber : Sendable {
 }
 #endif
@@ -149,7 +149,7 @@ extension Person : Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension Person : Sendable {
 }
 #endif

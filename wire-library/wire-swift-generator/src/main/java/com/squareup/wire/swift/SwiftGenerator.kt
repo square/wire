@@ -244,7 +244,7 @@ class SwiftGenerator private constructor(
       .addSuperType(structSendableType)
       .build()
     fileMembers += FileMemberSpec.builder(structSendableExtension)
-      .addGuard("swift(>=5.5) && !$FLAG_REMOVE_SENDABLE")
+      .addGuard("swift(>=5.5)")
       .build()
 
     val redactionExtension = if (type.fields.any { it.isRedacted }) {
@@ -338,7 +338,7 @@ class SwiftGenerator private constructor(
         .addSuperType(sendable)
         .build()
       fileMembers += FileMemberSpec.builder(storageSendableExtension)
-        .addGuard("swift(>=5.5) && !$FLAG_REMOVE_SENDABLE")
+        .addGuard("swift(>=5.5)")
         .build()
 
       if (redactionExtension != null) {
@@ -902,7 +902,7 @@ class SwiftGenerator private constructor(
         .addSuperType(sendable)
         .build()
       fileMembers += FileMemberSpec.builder(sendableExtension)
-        .addGuard("swift(>=5.5) && !$FLAG_REMOVE_SENDABLE")
+        .addGuard("swift(>=5.5)")
         .build()
 
       if (oneOf.fields.any { it.isRedacted }) {
@@ -967,7 +967,7 @@ class SwiftGenerator private constructor(
           .addSuperType(sendable)
           .build()
         fileMembers += FileMemberSpec.builder(sendableExtension)
-          .addGuard("swift(>=5.5) && !$FLAG_REMOVE_SENDABLE")
+          .addGuard("swift(>=5.5)")
           .build()
 
         if (type.documentation.isNotBlank()) {
@@ -1063,7 +1063,6 @@ class SwiftGenerator private constructor(
     private const val FLAG_REMOVE_CODABLE = "WIRE_REMOVE_CODABLE"
     private const val FLAG_REMOVE_EQUATABLE = "WIRE_REMOVE_EQUATABLE"
     private const val FLAG_REMOVE_HASHABLE = "WIRE_REMOVE_HASHABLE"
-    private const val FLAG_REMOVE_SENDABLE = "WIRE_REMOVE_SENDABLE"
     private const val FLAG_REMOVE_REDACTABLE = "WIRE_REMOVE_REDACTABLE"
 
     @JvmStatic @JvmName("get")

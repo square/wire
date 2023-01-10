@@ -47,7 +47,7 @@ extension ModelEvaluation : Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension ModelEvaluation : Sendable {
 }
 #endif

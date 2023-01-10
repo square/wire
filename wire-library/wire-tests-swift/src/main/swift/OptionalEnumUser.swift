@@ -21,7 +21,7 @@ public struct OptionalEnumUser {
 
 }
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension OptionalEnumUser.OptionalEnum : Sendable {
 }
 #endif
@@ -36,7 +36,7 @@ extension OptionalEnumUser : Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension OptionalEnumUser : Sendable {
 }
 #endif

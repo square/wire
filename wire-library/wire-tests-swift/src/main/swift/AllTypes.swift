@@ -1885,7 +1885,7 @@ fileprivate struct _AllTypes {
 
 }
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension AllTypes.NestedEnum : Sendable {
 }
 #endif
@@ -1900,7 +1900,7 @@ extension AllTypes.NestedMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension AllTypes.NestedMessage : Sendable {
 }
 #endif
@@ -1953,7 +1953,7 @@ extension AllTypes : Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension AllTypes : @unchecked Sendable {
 }
 #endif
@@ -2681,7 +2681,7 @@ extension _AllTypes : Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension _AllTypes : Sendable {
 }
 #endif

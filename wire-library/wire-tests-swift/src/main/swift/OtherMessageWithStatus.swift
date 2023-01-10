@@ -18,7 +18,7 @@ public struct OtherMessageWithStatus {
 
 }
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension OtherMessageWithStatus.Status : Sendable {
 }
 #endif
@@ -33,7 +33,7 @@ extension OtherMessageWithStatus : Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension OtherMessageWithStatus : Sendable {
 }
 #endif

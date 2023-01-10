@@ -9,7 +9,7 @@ public enum EnumVersionTwo : UInt32, CaseIterable, Codable {
 
 }
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension EnumVersionTwo : Sendable {
 }
 #endif

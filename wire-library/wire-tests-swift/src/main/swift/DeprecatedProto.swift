@@ -25,7 +25,7 @@ extension DeprecatedProto : Hashable {
 }
 #endif
 
-#if swift(>=5.5) && !WIRE_REMOVE_SENDABLE
+#if swift(>=5.5)
 extension DeprecatedProto : Sendable {
 }
 #endif
