@@ -38,7 +38,7 @@ class Options(
     }
 
   val map: Map<ProtoMember, Any?>
-    get() = entries!!.toMap()
+    get() = entries?.toMap() ?: emptyMap()
 
   fun retainLinked() = Options(optionType, emptyList())
 
