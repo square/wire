@@ -24,6 +24,11 @@ extension Thing : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension Thing : Sendable {
+}
+#endif
+
 extension Thing : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Thing"

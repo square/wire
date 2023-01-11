@@ -26,6 +26,11 @@ extension EmbeddedMessage : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension EmbeddedMessage : Sendable {
+}
+#endif
+
 extension EmbeddedMessage : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.packed_encoding.EmbeddedMessage"

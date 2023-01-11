@@ -42,6 +42,7 @@ import io.outfoxx.swiftpoet.STRING
 import io.outfoxx.swiftpoet.TypeAliasSpec
 import io.outfoxx.swiftpoet.TypeName
 import io.outfoxx.swiftpoet.TypeSpec
+import io.outfoxx.swiftpoet.TypeVariableName
 import io.outfoxx.swiftpoet.UINT32
 import io.outfoxx.swiftpoet.UINT64
 import io.outfoxx.swiftpoet.joinToCode
@@ -64,6 +65,8 @@ class SwiftGenerator private constructor(
   private val redactedKey = DeclaredTypeName.typeName("Wire.RedactedKey")
   private val equatable = DeclaredTypeName.typeName("Swift.Equatable")
   private val hashable = DeclaredTypeName.typeName("Swift.Hashable")
+  private val sendable = DeclaredTypeName.typeName("Swift.Sendable")
+  private val uncheckedSendable = TypeVariableName.typeVariable("@unchecked Sendable")
   private val codable = DeclaredTypeName.typeName("Swift.Codable")
   private val codingKey = DeclaredTypeName.typeName("Swift.CodingKey")
   private val encoder = DeclaredTypeName.typeName("Swift.Encoder")
@@ -232,6 +235,18 @@ class SwiftGenerator private constructor(
       .addGuard("!$FLAG_REMOVE_HASHABLE")
       .build()
 
+    val structSendableType = if (type.isHeapAllocated) {
+      uncheckedSendable
+    } else {
+      sendable
+    }
+    val structSendableExtension = ExtensionSpec.builder(structType)
+      .addSuperType(structSendableType)
+      .build()
+    fileMembers += FileMemberSpec.builder(structSendableExtension)
+      .addGuard("swift(>=5.5)")
+      .build()
+
     val redactionExtension = if (type.fields.any { it.isRedacted }) {
       ExtensionSpec.builder(structType)
         .addSuperType(redactable)
@@ -317,6 +332,13 @@ class SwiftGenerator private constructor(
         .build()
       fileMembers += FileMemberSpec.builder(storageHashableExtension)
         .addGuard("!$FLAG_REMOVE_HASHABLE")
+        .build()
+
+      val storageSendableExtension = ExtensionSpec.builder(storageType)
+        .addSuperType(sendable)
+        .build()
+      fileMembers += FileMemberSpec.builder(storageSendableExtension)
+        .addGuard("swift(>=5.5)")
         .build()
 
       if (redactionExtension != null) {
@@ -876,6 +898,13 @@ class SwiftGenerator private constructor(
         .addGuard("!$FLAG_REMOVE_HASHABLE")
         .build()
 
+      val sendableExtension = ExtensionSpec.builder(enumName)
+        .addSuperType(sendable)
+        .build()
+      fileMembers += FileMemberSpec.builder(sendableExtension)
+        .addGuard("swift(>=5.5)")
+        .build()
+
       if (oneOf.fields.any { it.isRedacted }) {
         val redactableExtension = ExtensionSpec.builder(enumName)
           .addSuperType(redactable)
@@ -934,6 +963,13 @@ class SwiftGenerator private constructor(
       .addSuperType(CASE_ITERABLE)
       .addSuperType(codable)
       .apply {
+        val sendableExtension = ExtensionSpec.builder(enumName)
+          .addSuperType(sendable)
+          .build()
+        fileMembers += FileMemberSpec.builder(sendableExtension)
+          .addGuard("swift(>=5.5)")
+          .build()
+
         if (type.documentation.isNotBlank()) {
           addDoc("%L\n", type.documentation.sanitizeDoc())
         }

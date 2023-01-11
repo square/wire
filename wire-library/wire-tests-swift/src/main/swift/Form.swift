@@ -197,6 +197,11 @@ extension Form.Choice : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension Form.Choice : Sendable {
+}
+#endif
+
 #if !WIRE_REMOVE_EQUATABLE
 extension Form.Decision : Equatable {
 }
@@ -204,6 +209,11 @@ extension Form.Decision : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension Form.Decision : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension Form.Decision : Sendable {
 }
 #endif
 
@@ -224,6 +234,11 @@ extension Form.ButtonElement : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension Form.ButtonElement : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension Form.ButtonElement : Sendable {
 }
 #endif
 
@@ -267,6 +282,11 @@ extension Form.LocalImageElement : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension Form.LocalImageElement : Sendable {
+}
+#endif
+
 extension Form.LocalImageElement : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.LocalImageElement"
@@ -304,6 +324,11 @@ extension Form.RemoteImageElement : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension Form.RemoteImageElement : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension Form.RemoteImageElement : Sendable {
 }
 #endif
 
@@ -347,6 +372,11 @@ extension Form.MoneyElement : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension Form.MoneyElement : Sendable {
+}
+#endif
+
 extension Form.MoneyElement : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.MoneyElement"
@@ -387,6 +417,11 @@ extension Form.SpacerElement : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension Form.SpacerElement : Sendable {
+}
+#endif
+
 extension Form.SpacerElement : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.SpacerElement"
@@ -424,6 +459,11 @@ extension Form.TextElement : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension Form.TextElement : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension Form.TextElement : Sendable {
 }
 #endif
 
@@ -475,6 +515,11 @@ extension Form.CustomizedCardElement : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension Form.CustomizedCardElement : Sendable {
+}
+#endif
+
 extension Form.CustomizedCardElement : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CustomizedCardElement"
@@ -512,6 +557,11 @@ extension Form.AddressElement : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension Form.AddressElement : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension Form.AddressElement : Sendable {
 }
 #endif
 
@@ -555,6 +605,11 @@ extension Form.TextInputElement : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension Form.TextInputElement : Sendable {
+}
+#endif
+
 extension Form.TextInputElement : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextInputElement"
@@ -592,6 +647,11 @@ extension Form.OptionPickerElement : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension Form.OptionPickerElement : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension Form.OptionPickerElement : Sendable {
 }
 #endif
 
@@ -635,6 +695,11 @@ extension Form.DetailRowElement : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension Form.DetailRowElement : Sendable {
+}
+#endif
+
 extension Form.DetailRowElement : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.DetailRowElement"
@@ -675,6 +740,11 @@ extension Form.CurrencyConversionFlagsElement : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension Form.CurrencyConversionFlagsElement : Sendable {
+}
+#endif
+
 extension Form.CurrencyConversionFlagsElement : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CurrencyConversionFlagsElement"
@@ -712,6 +782,11 @@ extension Form : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension Form : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension Form : Sendable {
 }
 #endif
 

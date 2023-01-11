@@ -8,3 +8,8 @@ public enum EnumVersionTwo : UInt32, CaseIterable, Codable {
     case PUSS_IN_BOOTS_V2 = 4
 
 }
+
+#if swift(>=5.5)
+extension EnumVersionTwo : Sendable {
+}
+#endif

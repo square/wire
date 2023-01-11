@@ -18,6 +18,11 @@ public struct MessageWithStatus {
 
 }
 
+#if swift(>=5.5)
+extension MessageWithStatus.Status : Sendable {
+}
+#endif
+
 #if !WIRE_REMOVE_EQUATABLE
 extension MessageWithStatus : Equatable {
 }
@@ -25,6 +30,11 @@ extension MessageWithStatus : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension MessageWithStatus : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension MessageWithStatus : Sendable {
 }
 #endif
 

@@ -48,6 +48,11 @@ extension VersionTwo : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension VersionTwo : Sendable {
+}
+#endif
+
 extension VersionTwo : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.unknownfields.VersionTwo"

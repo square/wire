@@ -24,6 +24,11 @@ extension ContainsTimestamp : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension ContainsTimestamp : Sendable {
+}
+#endif
+
 extension ContainsTimestamp : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos3.kotlin.contains_timestamp.ContainsTimestamp"

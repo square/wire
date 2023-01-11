@@ -92,6 +92,11 @@ extension Timestamp : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension Timestamp : Sendable {
+}
+#endif
+
 extension Timestamp : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/google.protobuf.Timestamp"

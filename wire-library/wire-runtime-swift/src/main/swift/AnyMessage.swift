@@ -64,11 +64,18 @@ public struct AnyMessage {
 }
 
 #if !WIRE_REMOVE_EQUATABLE
-extension AnyMessage: Equatable {}
+extension AnyMessage: Equatable {
+}
 #endif
 
 #if !WIRE_REMOVE_HASHABLE
-extension AnyMessage: Hashable {}
+extension AnyMessage: Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension AnyMessage: Sendable {
+}
 #endif
 
 extension AnyMessage: Proto3Codable {

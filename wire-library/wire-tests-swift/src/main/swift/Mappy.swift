@@ -24,6 +24,11 @@ extension Mappy : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension Mappy : Sendable {
+}
+#endif
+
 extension Mappy : ProtoMessage {
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Mappy"
