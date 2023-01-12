@@ -31,19 +31,13 @@ public struct JSONEnum<T : CaseIterable & Hashable & RawRepresentable> : Codable
     public init(from decoder: Decoder) throws {
         // We support decoding from either the string value or the field index.
         let container = try decoder.singleValueContainer()
-        do {
-            let string = try container.decode(String.self)
-            guard let value = T.allCases.first(where: { "\($0)" == string }) else {
-                throw ProtoDecoder.Error.unknownEnumString(type: T.self, string: string)
-            }
-            self.wrappedValue = value
-        } catch {
+
+        if let string = try? container.decode(String.self) {
+            try self.init(string: string)
+        } else {
             // If the value wasn't a string, then look for the field index instead.
             let fieldNumber = try container.decode(UInt32.self)
-            guard let value = T.init(rawValue: fieldNumber) else {
-                throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: fieldNumber)
-            }
-            self.wrappedValue = value
+            try self.init(fieldNumber: fieldNumber)
         }
     }
 
@@ -51,4 +45,17 @@ public struct JSONEnum<T : CaseIterable & Hashable & RawRepresentable> : Codable
         try String(describing: wrappedValue).encode(to: encoder)
     }
 
+    private init(string: String) throws {
+        guard let value = T.allCases.first(where: { "\($0)" == string }) else {
+            throw ProtoDecoder.Error.unknownEnumString(type: T.self, string: string)
+        }
+        self.wrappedValue = value
+    }
+
+    private init(fieldNumber: UInt32) throws {
+        guard let value = T.init(rawValue: fieldNumber) else {
+            throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: fieldNumber)
+        }
+        self.wrappedValue = value
+    }
 }
