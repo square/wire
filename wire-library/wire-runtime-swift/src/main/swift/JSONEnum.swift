@@ -48,7 +48,7 @@ public struct JSONEnum<T : CaseIterable & Hashable & RawRepresentable> : Codable
     }
 
     public func encode(to encoder: Encoder) throws {
-        try "\(wrappedValue)".encode(to: encoder)
+        try String(describing: wrappedValue).encode(to: encoder)
     }
 
 }
