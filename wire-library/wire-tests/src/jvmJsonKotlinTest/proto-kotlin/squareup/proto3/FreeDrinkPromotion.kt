@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
@@ -18,7 +19,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -27,11 +27,11 @@ public class FreeDrinkPromotion(
   @field:WireField(
     tag = 1,
     adapter = "squareup.proto3.FreeDrinkPromotion${'$'}Drink#ADAPTER",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   @JvmField
   public val drink: Drink = Drink.UNKNOWN,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<FreeDrinkPromotion, FreeDrinkPromotion.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -90,17 +90,23 @@ public class FreeDrinkPromotion(
       FreeDrinkPromotion::class, 
       "type.googleapis.com/squareup.proto3.FreeDrinkPromotion", 
       PROTO_3, 
-      null
+      null, 
+      "pizza.proto"
     ) {
-      public override fun encodedSize(value: FreeDrinkPromotion): Int {
+      public override fun encodedSize(`value`: FreeDrinkPromotion): Int {
         var size = value.unknownFields.size
         if (value.drink != Drink.UNKNOWN) size += Drink.ADAPTER.encodedSizeWithTag(1, value.drink)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: FreeDrinkPromotion): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: FreeDrinkPromotion): Unit {
         if (value.drink != Drink.UNKNOWN) Drink.ADAPTER.encodeWithTag(writer, 1, value.drink)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: FreeDrinkPromotion): Unit {
+        writer.writeBytes(value.unknownFields)
+        if (value.drink != Drink.UNKNOWN) Drink.ADAPTER.encodeWithTag(writer, 1, value.drink)
       }
 
       public override fun decode(reader: ProtoReader): FreeDrinkPromotion {
@@ -121,7 +127,7 @@ public class FreeDrinkPromotion(
         )
       }
 
-      public override fun redact(value: FreeDrinkPromotion): FreeDrinkPromotion = value.copy(
+      public override fun redact(`value`: FreeDrinkPromotion): FreeDrinkPromotion = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -130,7 +136,7 @@ public class FreeDrinkPromotion(
   }
 
   public enum class Drink(
-    public override val value: Int
+    public override val `value`: Int,
   ) : WireEnum {
     UNKNOWN(0),
     PEPSI(1),
@@ -145,11 +151,11 @@ public class FreeDrinkPromotion(
         PROTO_3, 
         Drink.UNKNOWN
       ) {
-        public override fun fromValue(value: Int): Drink? = Drink.fromValue(value)
+        public override fun fromValue(`value`: Int): Drink? = Drink.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): Drink? = when (value) {
+      public fun fromValue(`value`: Int): Drink? = when (value) {
         0 -> UNKNOWN
         1 -> PEPSI
         2 -> MOUNTAIN_DEW

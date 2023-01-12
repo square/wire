@@ -21,6 +21,8 @@ import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.MAX_TAG_VALUE
+import com.squareup.wire.schema.internal.withUnixSlashes
+import okio.Path.Companion.toPath
 
 /** Basic parser for `.proto` schema declarations. */
 class ProtoParser internal constructor(
@@ -52,15 +54,15 @@ class ProtoParser internal constructor(
       val documentation = reader.readDocumentation()
       if (reader.exhausted()) {
         return ProtoFileElement(
-            location = location,
-            packageName = packageName,
-            syntax = syntax,
-            imports = imports,
-            publicImports = publicImports,
-            types = nestedTypes,
-            services = services,
-            extendDeclarations = extendsList,
-            options = options
+          location = location,
+          packageName = packageName,
+          syntax = syntax,
+          imports = imports.map { it.toPath().withUnixSlashes().toString() },
+          publicImports = publicImports.map { it.toPath().withUnixSlashes().toString() },
+          types = nestedTypes,
+          services = services,
+          extendDeclarations = extendsList,
+          options = options
         )
       }
 
@@ -68,16 +70,20 @@ class ProtoParser internal constructor(
         is TypeElement -> {
           val duplicate = nestedTypes.find { it.name == declaration.name }
           if (duplicate != null) {
-            error("${declaration.name} (${declaration.location}) is already defined at " +
-                "${duplicate.location}")
+            error(
+              "${declaration.name} (${declaration.location}) is already defined at " +
+                "${duplicate.location}"
+            )
           }
           nestedTypes.add(declaration)
         }
         is ServiceElement -> {
           val duplicate = services.find { it.name == declaration.name }
           if (duplicate != null) {
-            error("${declaration.name} (${declaration.location}) is already defined at " +
-                "${duplicate.location}")
+            error(
+              "${declaration.name} (${declaration.location}) is already defined at " +
+                "${duplicate.location}"
+            )
           }
           services.add(declaration)
         }
@@ -94,7 +100,7 @@ class ProtoParser internal constructor(
     if (reader.peekChar(';')) return null
 
     val location = reader.location()
-    val label = reader.readWord()
+    val label = reader.readWord(allowLeadingDigit = context !== Context.ENUM)
 
     // TODO(benoit) Let's better parse the proto keywords. We are pretty weak when field/constants
     //  are named after any of the label we check here.
@@ -180,6 +186,7 @@ class ProtoParser internal constructor(
     val options = mutableListOf<OptionElement>()
     val reserveds = mutableListOf<ReservedElement>()
     val groups = mutableListOf<GroupElement>()
+    val extendDeclarations = mutableListOf<ExtendElement>()
 
     val previousPrefix = prefix
     prefix = "$prefix$name."
@@ -196,8 +203,7 @@ class ProtoParser internal constructor(
         is TypeElement -> nestedTypes.add(declared)
         is ExtensionsElement -> extensions.add(declared)
         is OptionElement -> options.add(declared)
-        // Extend declarations always add in a global scope regardless of nesting.
-        is ExtendElement -> extendsList.add(declared)
+        is ExtendElement -> extendDeclarations.add(declared)
         is ReservedElement -> reserveds.add(declared)
       }
     }
@@ -205,16 +211,17 @@ class ProtoParser internal constructor(
     prefix = previousPrefix
 
     return MessageElement(
-        location = location,
-        name = name,
-        documentation = documentation,
-        nestedTypes = nestedTypes,
-        options = options,
-        reserveds = reserveds,
-        fields = fields,
-        oneOfs = oneOfs,
-        extensions = extensions,
-        groups = groups
+      location = location,
+      name = name,
+      documentation = documentation,
+      nestedTypes = nestedTypes,
+      options = options,
+      reserveds = reserveds,
+      fields = fields,
+      oneOfs = oneOfs,
+      extensions = extensions,
+      groups = groups,
+      extendDeclarations = extendDeclarations
     )
   }
 
@@ -235,10 +242,10 @@ class ProtoParser internal constructor(
     }
 
     return ExtendElement(
-        location = location,
-        name = name,
-        documentation = documentation,
-        fields = fields
+      location = location,
+      name = name,
+      documentation = documentation,
+      fields = fields
     )
   }
 
@@ -261,11 +268,11 @@ class ProtoParser internal constructor(
     }
 
     return ServiceElement(
-        location = location,
-        name = name,
-        documentation = documentation,
-        rpcs = rpcs,
-        options = options
+      location = location,
+      name = name,
+      documentation = documentation,
+      rpcs = rpcs,
+      options = options
     )
   }
 
@@ -277,6 +284,7 @@ class ProtoParser internal constructor(
     val name = reader.readName()
     val constants = mutableListOf<EnumConstantElement>()
     val options = mutableListOf<OptionElement>()
+    val reserveds = mutableListOf<ReservedElement>()
 
     reader.require('{')
     while (true) {
@@ -286,11 +294,12 @@ class ProtoParser internal constructor(
       when (val declared = readDeclaration(valueDocumentation, Context.ENUM)) {
         is EnumConstantElement -> constants.add(declared)
         is OptionElement -> options.add(declared)
+        is ReservedElement -> reserveds.add(declared)
         // TODO: add else clause to catch unexpected declarations.
       }
     }
 
-    return EnumElement(location, name, documentation, options, constants)
+    return EnumElement(location, name, documentation, options, constants, reserveds)
   }
 
   private fun readField(documentation: String, location: Location, word: String): Any {
@@ -316,8 +325,11 @@ class ProtoParser internal constructor(
       }
 
       else -> {
-        reader.expect(syntax == PROTO_3 ||
-            (word == "map" && reader.peekChar() == '<'), location) {
+        reader.expect(
+          syntax == PROTO_3 ||
+            (word == "map" && reader.peekChar() == '<'),
+          location
+        ) {
           "unexpected label: $word"
         }
         label = null
@@ -342,9 +354,7 @@ class ProtoParser internal constructor(
     label: Field.Label?,
     type: String
   ): FieldElement {
-    var documentation = documentation
-
-    val name = reader.readName()
+    val name = reader.readName(allowLeadingDigit = false)
     reader.require('=')
     val tag = reader.readInt()
 
@@ -355,18 +365,18 @@ class ProtoParser internal constructor(
     val jsonName = stripJsonName(options)
     reader.require(';')
 
-    documentation = reader.tryAppendTrailingDocumentation(documentation)
+    val documentation = reader.tryAppendTrailingDocumentation(documentation)
 
     return FieldElement(
-        location = location,
-        label = label,
-        type = type,
-        name = name,
-        defaultValue = defaultValue,
-        jsonName = jsonName,
-        tag = tag,
-        documentation = documentation,
-        options = options.toList()
+      location = location,
+      label = label,
+      type = type,
+      name = name,
+      defaultValue = defaultValue,
+      jsonName = jsonName,
+      tag = tag,
+      documentation = documentation,
+      options = options.toList()
     )
   }
 
@@ -420,11 +430,11 @@ class ProtoParser internal constructor(
     }
 
     return OneOfElement(
-        name = name,
-        documentation = documentation,
-        fields = fields,
-        groups = groups,
-        options = options,
+      name = name,
+      documentation = documentation,
+      fields = fields,
+      groups = groups,
+      options = options,
     )
   }
 
@@ -452,18 +462,17 @@ class ProtoParser internal constructor(
     }
 
     return GroupElement(
-        label = label,
-        location = location,
-        name = name,
-        tag = tag,
-        documentation = documentation,
-        fields = fields
+      label = label,
+      location = location,
+      name = name,
+      tag = tag,
+      documentation = documentation,
+      fields = fields
     )
   }
 
   /** Reads a reserved tags and names list like "reserved 10, 12 to 14, 'foo';". */
   private fun readReserved(location: Location, documentation: String): ReservedElement {
-    var documentation = documentation
     val values = mutableListOf<Any>()
 
     loop@ while (true) {
@@ -477,7 +486,10 @@ class ProtoParser internal constructor(
 
             else -> {
               reader.expect(reader.readWord() == "to", location) { "expected ',', ';', or 'to'" }
-              val tagEnd = reader.readInt()
+              val tagEnd = when (val s = reader.readWord()) {
+                "max" -> MAX_TAG_VALUE
+                else -> s.toInt()
+              }
               values.add(tagStart..tagEnd)
             }
           }
@@ -495,12 +507,12 @@ class ProtoParser internal constructor(
       "'reserved' must have at least one field name or tag"
     }
 
-    documentation = reader.tryAppendTrailingDocumentation(documentation)
+    val documentation = reader.tryAppendTrailingDocumentation(documentation)
 
     return ReservedElement(
-        location = location,
-        documentation = documentation,
-        values = values
+      location = location,
+      documentation = documentation,
+      values = values
     )
   }
 
@@ -532,32 +544,32 @@ class ProtoParser internal constructor(
     }
 
     return ExtensionsElement(
-        location = location,
-        documentation = documentation,
-        values = values
+      location = location,
+      documentation = documentation,
+      values = values
     )
   }
 
   /** Reads an enum constant like "ROCK = 0;". The label is the constant name. */
   private fun readEnumConstant(
-    documentation: String, location: Location, label: String
+    documentation: String,
+    location: Location,
+    label: String
   ): EnumConstantElement {
-    var documentation = documentation
-
     reader.require('=')
     val tag = reader.readInt()
 
     val options = OptionReader(reader).readOptions()
     reader.require(';')
 
-    documentation = reader.tryAppendTrailingDocumentation(documentation)
+    val documentation = reader.tryAppendTrailingDocumentation(documentation)
 
     return EnumConstantElement(
-        location = location,
-        name = label,
-        tag = tag,
-        documentation = documentation,
-        options = options
+      location = location,
+      name = label,
+      tag = tag,
+      documentation = documentation,
+      options = options
     )
   }
 
@@ -599,14 +611,14 @@ class ProtoParser internal constructor(
     }
 
     return RpcElement(
-        location = location,
-        name = name,
-        documentation = documentation,
-        requestType = requestType,
-        responseType = responseType,
-        requestStreaming = requestStreaming,
-        responseStreaming = responseStreaming,
-        options = options
+      location = location,
+      name = name,
+      documentation = documentation,
+      requestType = requestType,
+      responseType = responseType,
+      requestStreaming = requestStreaming,
+      responseStreaming = responseStreaming,
+      options = options
     )
   }
 

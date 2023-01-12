@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -24,12 +25,12 @@ import okio.ByteString
 
 public class Pizza(
   toppings: List<String> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Pizza, Pizza.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val toppings: List<String> = immutableCopyOf("toppings", toppings)
@@ -91,17 +92,23 @@ public class Pizza(
       Pizza::class, 
       "type.googleapis.com/squareup.proto3.Pizza", 
       PROTO_3, 
-      null
+      null, 
+      "pizza.proto"
     ) {
-      public override fun encodedSize(value: Pizza): Int {
+      public override fun encodedSize(`value`: Pizza): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.toppings)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Pizza): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Pizza): Unit {
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.toppings)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: Pizza): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.toppings)
       }
 
       public override fun decode(reader: ProtoReader): Pizza {
@@ -118,7 +125,7 @@ public class Pizza(
         )
       }
 
-      public override fun redact(value: Pizza): Pizza = value.copy(
+      public override fun redact(`value`: Pizza): Pizza = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

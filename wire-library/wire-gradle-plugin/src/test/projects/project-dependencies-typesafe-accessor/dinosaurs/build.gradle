@@ -1,0 +1,22 @@
+plugins {
+  id 'com.squareup.wire'
+  id 'org.jetbrains.kotlin.jvm'
+}
+
+dependencies {
+  protoPath projects.geology
+}
+
+wire {
+  sourcePath {
+    srcDir 'src/main/proto'
+  }
+
+  sourcePath {
+    srcProject projects.location
+    include 'squareup/location/continent.proto'
+  }
+
+  kotlin {
+  }
+}

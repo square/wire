@@ -105,15 +105,15 @@ class DagCheckerTest {
   @Test fun `wikipedia example`() {
     val nodes = listOf("a", "b", "c", "d", "e", "f", "g", "h")
     val edges = listOf(
-        "ae", "ba", "cb", "cd", "dc", "eb",
-        "fb", "fe", "fg", "gc", "gf", "hd", "hg", "hh"
+      "ae", "ba", "cb", "cd", "dc", "eb",
+      "fb", "fe", "fg", "gc", "gf", "hd", "hg", "hh"
     )
     val cycleFinder = DagChecker(nodes) { it.targets(edges) }
     assertThat(cycleFinder.check()).containsExactly(
-        listOf("a", "e", "b"),
-        listOf("c", "d"),
-        listOf("f", "g"),
-        listOf("h")
+      listOf("a", "e", "b"),
+      listOf("c", "d"),
+      listOf("f", "g"),
+      listOf("h")
     )
   }
 
@@ -131,9 +131,9 @@ class DagCheckerTest {
   @Test fun `cojoined cycles`() {
     val nodes = listOf("a", "b", "c", "d", "e", "f", "g", "h", "i")
     val edges = listOf(
-        "ad", "ba", "cb",
-        "de", "dg", "eb", "ef", "fi",
-        "he", "ih"
+      "ad", "ba", "cb",
+      "de", "dg", "eb", "ef", "fi",
+      "he", "ih"
     )
     val cycleFinder = DagChecker(nodes) { it.targets(edges) }
     assertThat(cycleFinder.check()).containsExactly(listOf("a", "d", "e", "b", "f", "i", "h"))
@@ -141,6 +141,6 @@ class DagCheckerTest {
 
   private fun String.targets(allEdges: List<String>): List<String> {
     return allEdges.filter { it.startsWith(this) }
-        .map { it.substring(1) }
+      .map { it.substring(1) }
   }
 }

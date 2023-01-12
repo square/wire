@@ -1,7 +1,9 @@
 package com.squareup.wire.internal
 
+import com.squareup.wire.VERSION
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 class InternalTest {
   @Test fun countNonNull() {
@@ -25,8 +27,10 @@ class InternalTest {
     assertEquals("""\\""", sanitize("""\"""))
     assertEquals("""Hi\, I'm \{CURRENT_HOST\} dax!""", sanitize("""Hi, I'm {CURRENT_HOST} dax!"""))
 
-    assertEquals("""[\,, \{, \}, \[, \], \\]""",
-        sanitize(listOf(""",""", """{""", """}""", """[""", """]""", """\""")))
+    assertEquals(
+      """[\,, \{, \}, \[, \], \\]""",
+      sanitize(listOf(""",""", """{""", """}""", """[""", """]""", """\"""))
+    )
   }
 
   @Test fun lowerCamelCase() {
@@ -70,5 +74,9 @@ class InternalTest {
     assertEquals("🦕", camelCase("🦕", upperCamel = true))
     assertEquals("Hello🦕world", camelCase("hello_🦕world", upperCamel = true))
     assertEquals("Hello🦕World", camelCase("hello_🦕_world", upperCamel = true))
+  }
+
+  @Test fun versionIsExposed() {
+    assertNotNull(VERSION)
   }
 }

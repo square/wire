@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -22,7 +23,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
@@ -31,72 +31,63 @@ public class AllWrappers(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "doubleValue"
+    jsonName = "doubleValue",
   )
   @JvmField
   public val double_value: Double? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "floatValue"
+    jsonName = "floatValue",
   )
   @JvmField
   public val float_value: Float? = null,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#INT64_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "int64Value"
+    jsonName = "int64Value",
   )
   @JvmField
   public val int64_value: Long? = null,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "uint64Value"
+    jsonName = "uint64Value",
   )
   @JvmField
   public val uint64_value: Long? = null,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#INT32_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "int32Value"
+    jsonName = "int32Value",
   )
   @JvmField
   public val int32_value: Int? = null,
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "uint32Value"
+    jsonName = "uint32Value",
   )
   @JvmField
   public val uint32_value: Int? = null,
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "boolValue"
+    jsonName = "boolValue",
   )
   @JvmField
   public val bool_value: Boolean? = null,
   @field:WireField(
     tag = 8,
     adapter = "com.squareup.wire.ProtoAdapter#STRING_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "stringValue"
+    jsonName = "stringValue",
   )
   @JvmField
   public val string_value: String? = null,
   @field:WireField(
     tag = 9,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "bytesValue"
+    jsonName = "bytesValue",
   )
   @JvmField
   public val bytes_value: ByteString? = null,
@@ -118,13 +109,13 @@ public class AllWrappers(
   map_int32_bool_value: Map<Int, Boolean?> = emptyMap(),
   map_int32_string_value: Map<Int, String?> = emptyMap(),
   map_int32_bytes_value: Map<Int, ByteString?> = emptyMap(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<AllWrappers, AllWrappers.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 101,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE_VALUE",
     label = WireField.Label.REPEATED,
-    jsonName = "repDoubleValue"
+    jsonName = "repDoubleValue",
   )
   @JvmField
   public val rep_double_value: List<Double?> = immutableCopyOf("rep_double_value", rep_double_value)
@@ -133,7 +124,7 @@ public class AllWrappers(
     tag = 102,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT_VALUE",
     label = WireField.Label.REPEATED,
-    jsonName = "repFloatValue"
+    jsonName = "repFloatValue",
   )
   @JvmField
   public val rep_float_value: List<Float?> = immutableCopyOf("rep_float_value", rep_float_value)
@@ -142,7 +133,7 @@ public class AllWrappers(
     tag = 103,
     adapter = "com.squareup.wire.ProtoAdapter#INT64_VALUE",
     label = WireField.Label.REPEATED,
-    jsonName = "repInt64Value"
+    jsonName = "repInt64Value",
   )
   @JvmField
   public val rep_int64_value: List<Long?> = immutableCopyOf("rep_int64_value", rep_int64_value)
@@ -151,7 +142,7 @@ public class AllWrappers(
     tag = 104,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64_VALUE",
     label = WireField.Label.REPEATED,
-    jsonName = "repUint64Value"
+    jsonName = "repUint64Value",
   )
   @JvmField
   public val rep_uint64_value: List<Long?> = immutableCopyOf("rep_uint64_value", rep_uint64_value)
@@ -160,7 +151,7 @@ public class AllWrappers(
     tag = 105,
     adapter = "com.squareup.wire.ProtoAdapter#INT32_VALUE",
     label = WireField.Label.REPEATED,
-    jsonName = "repInt32Value"
+    jsonName = "repInt32Value",
   )
   @JvmField
   public val rep_int32_value: List<Int?> = immutableCopyOf("rep_int32_value", rep_int32_value)
@@ -169,7 +160,7 @@ public class AllWrappers(
     tag = 106,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32_VALUE",
     label = WireField.Label.REPEATED,
-    jsonName = "repUint32Value"
+    jsonName = "repUint32Value",
   )
   @JvmField
   public val rep_uint32_value: List<Int?> = immutableCopyOf("rep_uint32_value", rep_uint32_value)
@@ -178,7 +169,7 @@ public class AllWrappers(
     tag = 107,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL_VALUE",
     label = WireField.Label.REPEATED,
-    jsonName = "repBoolValue"
+    jsonName = "repBoolValue",
   )
   @JvmField
   public val rep_bool_value: List<Boolean?> = immutableCopyOf("rep_bool_value", rep_bool_value)
@@ -187,7 +178,7 @@ public class AllWrappers(
     tag = 108,
     adapter = "com.squareup.wire.ProtoAdapter#STRING_VALUE",
     label = WireField.Label.REPEATED,
-    jsonName = "repStringValue"
+    jsonName = "repStringValue",
   )
   @JvmField
   public val rep_string_value: List<String?> = immutableCopyOf("rep_string_value", rep_string_value)
@@ -196,7 +187,7 @@ public class AllWrappers(
     tag = 109,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES_VALUE",
     label = WireField.Label.REPEATED,
-    jsonName = "repBytesValue"
+    jsonName = "repBytesValue",
   )
   @JvmField
   public val rep_bytes_value: List<ByteString?> = immutableCopyOf("rep_bytes_value",
@@ -206,7 +197,7 @@ public class AllWrappers(
     tag = 301,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE_VALUE",
-    jsonName = "mapInt32DoubleValue"
+    jsonName = "mapInt32DoubleValue",
   )
   @JvmField
   public val map_int32_double_value: Map<Int, Double?> = immutableCopyOf("map_int32_double_value",
@@ -216,7 +207,7 @@ public class AllWrappers(
     tag = 302,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT_VALUE",
-    jsonName = "mapInt32FloatValue"
+    jsonName = "mapInt32FloatValue",
   )
   @JvmField
   public val map_int32_float_value: Map<Int, Float?> = immutableCopyOf("map_int32_float_value",
@@ -226,7 +217,7 @@ public class AllWrappers(
     tag = 303,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INT64_VALUE",
-    jsonName = "mapInt32Int64Value"
+    jsonName = "mapInt32Int64Value",
   )
   @JvmField
   public val map_int32_int64_value: Map<Int, Long?> = immutableCopyOf("map_int32_int64_value",
@@ -236,7 +227,7 @@ public class AllWrappers(
     tag = 304,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#UINT64_VALUE",
-    jsonName = "mapInt32Uint64Value"
+    jsonName = "mapInt32Uint64Value",
   )
   @JvmField
   public val map_int32_uint64_value: Map<Int, Long?> = immutableCopyOf("map_int32_uint64_value",
@@ -246,7 +237,7 @@ public class AllWrappers(
     tag = 305,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INT32_VALUE",
-    jsonName = "mapInt32Int32Value"
+    jsonName = "mapInt32Int32Value",
   )
   @JvmField
   public val map_int32_int32_value: Map<Int, Int?> = immutableCopyOf("map_int32_int32_value",
@@ -256,7 +247,7 @@ public class AllWrappers(
     tag = 306,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#UINT32_VALUE",
-    jsonName = "mapInt32Uint32Value"
+    jsonName = "mapInt32Uint32Value",
   )
   @JvmField
   public val map_int32_uint32_value: Map<Int, Int?> = immutableCopyOf("map_int32_uint32_value",
@@ -266,7 +257,7 @@ public class AllWrappers(
     tag = 307,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#BOOL_VALUE",
-    jsonName = "mapInt32BoolValue"
+    jsonName = "mapInt32BoolValue",
   )
   @JvmField
   public val map_int32_bool_value: Map<Int, Boolean?> = immutableCopyOf("map_int32_bool_value",
@@ -276,7 +267,7 @@ public class AllWrappers(
     tag = 308,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRING_VALUE",
-    jsonName = "mapInt32StringValue"
+    jsonName = "mapInt32StringValue",
   )
   @JvmField
   public val map_int32_string_value: Map<Int, String?> = immutableCopyOf("map_int32_string_value",
@@ -286,7 +277,7 @@ public class AllWrappers(
     tag = 309,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#BYTES_VALUE",
-    jsonName = "mapInt32BytesValue"
+    jsonName = "mapInt32BytesValue",
   )
   @JvmField
   public val map_int32_bytes_value: Map<Int, ByteString?> = immutableCopyOf("map_int32_bytes_value",
@@ -363,15 +354,15 @@ public class AllWrappers(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + double_value.hashCode()
-      result = result * 37 + float_value.hashCode()
-      result = result * 37 + int64_value.hashCode()
-      result = result * 37 + uint64_value.hashCode()
-      result = result * 37 + int32_value.hashCode()
-      result = result * 37 + uint32_value.hashCode()
-      result = result * 37 + bool_value.hashCode()
-      result = result * 37 + string_value.hashCode()
-      result = result * 37 + bytes_value.hashCode()
+      result = result * 37 + (double_value?.hashCode() ?: 0)
+      result = result * 37 + (float_value?.hashCode() ?: 0)
+      result = result * 37 + (int64_value?.hashCode() ?: 0)
+      result = result * 37 + (uint64_value?.hashCode() ?: 0)
+      result = result * 37 + (int32_value?.hashCode() ?: 0)
+      result = result * 37 + (uint32_value?.hashCode() ?: 0)
+      result = result * 37 + (bool_value?.hashCode() ?: 0)
+      result = result * 37 + (string_value?.hashCode() ?: 0)
+      result = result * 37 + (bytes_value?.hashCode() ?: 0)
       result = result * 37 + rep_double_value.hashCode()
       result = result * 37 + rep_float_value.hashCode()
       result = result * 37 + rep_int64_value.hashCode()
@@ -464,7 +455,7 @@ public class AllWrappers(
     map_int32_bool_value: Map<Int, Boolean?> = this.map_int32_bool_value,
     map_int32_string_value: Map<Int, String?> = this.map_int32_string_value,
     map_int32_bytes_value: Map<Int, ByteString?> = this.map_int32_bytes_value,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): AllWrappers = AllWrappers(double_value, float_value, int64_value, uint64_value, int32_value,
       uint32_value, bool_value, string_value, bytes_value, rep_double_value, rep_float_value,
       rep_int64_value, rep_uint64_value, rep_int32_value, rep_uint32_value, rep_bool_value,
@@ -737,7 +728,8 @@ public class AllWrappers(
       AllWrappers::class, 
       "type.googleapis.com/squareup.proto3.AllWrappers", 
       PROTO_3, 
-      null
+      null, 
+      "all_wrappers.proto"
     ) {
       private val map_int32_double_valueAdapter: ProtoAdapter<Map<Int, Double?>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.DOUBLE_VALUE) }
@@ -766,7 +758,7 @@ public class AllWrappers(
       private val map_int32_bytes_valueAdapter: ProtoAdapter<Map<Int, ByteString?>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.BYTES_VALUE) }
 
-      public override fun encodedSize(value: AllWrappers): Int {
+      public override fun encodedSize(`value`: AllWrappers): Int {
         var size = value.unknownFields.size
         if (value.double_value != null) size += ProtoAdapter.DOUBLE_VALUE.encodedSizeWithTag(1,
             value.double_value)
@@ -811,7 +803,7 @@ public class AllWrappers(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: AllWrappers): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: AllWrappers): Unit {
         if (value.double_value != null) ProtoAdapter.DOUBLE_VALUE.encodeWithTag(writer, 1,
             value.double_value)
         if (value.float_value != null) ProtoAdapter.FLOAT_VALUE.encodeWithTag(writer, 2,
@@ -849,6 +841,46 @@ public class AllWrappers(
         map_int32_string_valueAdapter.encodeWithTag(writer, 308, value.map_int32_string_value)
         map_int32_bytes_valueAdapter.encodeWithTag(writer, 309, value.map_int32_bytes_value)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: AllWrappers): Unit {
+        writer.writeBytes(value.unknownFields)
+        map_int32_bytes_valueAdapter.encodeWithTag(writer, 309, value.map_int32_bytes_value)
+        map_int32_string_valueAdapter.encodeWithTag(writer, 308, value.map_int32_string_value)
+        map_int32_bool_valueAdapter.encodeWithTag(writer, 307, value.map_int32_bool_value)
+        map_int32_uint32_valueAdapter.encodeWithTag(writer, 306, value.map_int32_uint32_value)
+        map_int32_int32_valueAdapter.encodeWithTag(writer, 305, value.map_int32_int32_value)
+        map_int32_uint64_valueAdapter.encodeWithTag(writer, 304, value.map_int32_uint64_value)
+        map_int32_int64_valueAdapter.encodeWithTag(writer, 303, value.map_int32_int64_value)
+        map_int32_float_valueAdapter.encodeWithTag(writer, 302, value.map_int32_float_value)
+        map_int32_double_valueAdapter.encodeWithTag(writer, 301, value.map_int32_double_value)
+        ProtoAdapter.BYTES_VALUE.asRepeated().encodeWithTag(writer, 109, value.rep_bytes_value)
+        ProtoAdapter.STRING_VALUE.asRepeated().encodeWithTag(writer, 108, value.rep_string_value)
+        ProtoAdapter.BOOL_VALUE.asRepeated().encodeWithTag(writer, 107, value.rep_bool_value)
+        ProtoAdapter.UINT32_VALUE.asRepeated().encodeWithTag(writer, 106, value.rep_uint32_value)
+        ProtoAdapter.INT32_VALUE.asRepeated().encodeWithTag(writer, 105, value.rep_int32_value)
+        ProtoAdapter.UINT64_VALUE.asRepeated().encodeWithTag(writer, 104, value.rep_uint64_value)
+        ProtoAdapter.INT64_VALUE.asRepeated().encodeWithTag(writer, 103, value.rep_int64_value)
+        ProtoAdapter.FLOAT_VALUE.asRepeated().encodeWithTag(writer, 102, value.rep_float_value)
+        ProtoAdapter.DOUBLE_VALUE.asRepeated().encodeWithTag(writer, 101, value.rep_double_value)
+        if (value.bytes_value != null) ProtoAdapter.BYTES_VALUE.encodeWithTag(writer, 9,
+            value.bytes_value)
+        if (value.string_value != null) ProtoAdapter.STRING_VALUE.encodeWithTag(writer, 8,
+            value.string_value)
+        if (value.bool_value != null) ProtoAdapter.BOOL_VALUE.encodeWithTag(writer, 7,
+            value.bool_value)
+        if (value.uint32_value != null) ProtoAdapter.UINT32_VALUE.encodeWithTag(writer, 6,
+            value.uint32_value)
+        if (value.int32_value != null) ProtoAdapter.INT32_VALUE.encodeWithTag(writer, 5,
+            value.int32_value)
+        if (value.uint64_value != null) ProtoAdapter.UINT64_VALUE.encodeWithTag(writer, 4,
+            value.uint64_value)
+        if (value.int64_value != null) ProtoAdapter.INT64_VALUE.encodeWithTag(writer, 3,
+            value.int64_value)
+        if (value.float_value != null) ProtoAdapter.FLOAT_VALUE.encodeWithTag(writer, 2,
+            value.float_value)
+        if (value.double_value != null) ProtoAdapter.DOUBLE_VALUE.encodeWithTag(writer, 1,
+            value.double_value)
       }
 
       public override fun decode(reader: ProtoReader): AllWrappers {
@@ -943,7 +975,7 @@ public class AllWrappers(
         )
       }
 
-      public override fun redact(value: AllWrappers): AllWrappers = value.copy(
+      public override fun redact(`value`: AllWrappers): AllWrappers = value.copy(
         double_value = value.double_value?.let(ProtoAdapter.DOUBLE_VALUE::redact),
         float_value = value.float_value?.let(ProtoAdapter.FLOAT_VALUE::redact),
         int64_value = value.int64_value?.let(ProtoAdapter.INT64_VALUE::redact),

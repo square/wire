@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
@@ -26,13 +27,14 @@ import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 public class MessageWithStatus(
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MessageWithStatus, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -55,14 +57,19 @@ public class MessageWithStatus(
       MessageWithStatus::class, 
       "type.googleapis.com/squareup.protos.kotlin.MessageWithStatus", 
       PROTO_2, 
-      null
+      null, 
+      "same_name_enum.proto"
     ) {
-      public override fun encodedSize(value: MessageWithStatus): Int {
+      public override fun encodedSize(`value`: MessageWithStatus): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: MessageWithStatus): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: MessageWithStatus): Unit {
+        writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: MessageWithStatus): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
@@ -73,7 +80,7 @@ public class MessageWithStatus(
         )
       }
 
-      public override fun redact(value: MessageWithStatus): MessageWithStatus = value.copy(
+      public override fun redact(`value`: MessageWithStatus): MessageWithStatus = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -82,7 +89,7 @@ public class MessageWithStatus(
   }
 
   public enum class Status(
-    public override val value: Int
+    public override val `value`: Int,
   ) : WireEnum {
     A(1),
     ;
@@ -94,11 +101,11 @@ public class MessageWithStatus(
         PROTO_2, 
         null
       ) {
-        public override fun fromValue(value: Int): Status? = Status.fromValue(value)
+        public override fun fromValue(`value`: Int): Status? = Status.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): Status? = when (value) {
+      public fun fromValue(`value`: Int): Status? = when (value) {
         1 -> A
         else -> null
       }

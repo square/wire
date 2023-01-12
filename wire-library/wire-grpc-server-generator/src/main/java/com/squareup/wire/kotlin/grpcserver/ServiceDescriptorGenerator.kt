@@ -15,19 +15,21 @@
  */
 package com.squareup.wire.kotlin.grpcserver
 
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.MemberName
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.wire.schema.ProtoFile
+import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
+import com.squareup.wire.schema.internal.SchemaEncoder
+import com.google.protobuf.DescriptorProtos
+import com.google.protobuf.Descriptors
 
 object ServiceDescriptorGenerator {
   internal fun addServiceDescriptor(
     builder: TypeSpec.Builder,
-    service: Service
+    service: Service,
+    protoFile: ProtoFile?,
+    schema: Schema,
   ) = builder
     .addProperty(
       PropertySpec.builder(
@@ -49,27 +51,28 @@ object ServiceDescriptorGenerator {
         .mutable(true)
         .build()
     )
+    .apply { FileDescriptorGenerator.addDescriptorDataProperty(this, protoFile, schema) }
     .addFunction(
       FunSpec.builder("getServiceDescriptor")
         .returns(ClassName("io.grpc", "ServiceDescriptor").copy(nullable = true))
-        .addCode(serviceDescriptorCodeBlock(service))
+        .addCode(serviceDescriptorCodeBlock(service, protoFile))
         .build()
     )
 
-  private fun serviceDescriptorCodeBlock(service: Service): CodeBlock {
+  private fun serviceDescriptorCodeBlock(service: Service, protoFile: ProtoFile?): CodeBlock {
     val grpcType = "${service.name}WireGrpc"
     val builder = CodeBlock.builder()
       .addStatement("var result = serviceDescriptor")
       .beginControlFlow("if (result == null)")
       .beginControlFlow("synchronized($grpcType::class)")
-      .add(resultAssignerCodeBlock(service))
+      .add(resultAssignerCodeBlock(service, protoFile))
       .endControlFlow()
       .endControlFlow()
       .addStatement("return result")
     return builder.build()
   }
 
-  private fun resultAssignerCodeBlock(service: Service): CodeBlock {
+  private fun resultAssignerCodeBlock(service: Service, protoFile: ProtoFile?): CodeBlock {
     val builder = CodeBlock.builder()
       .addStatement("result = serviceDescriptor")
       .beginControlFlow("if (result == null)")
@@ -81,6 +84,13 @@ object ServiceDescriptorGenerator {
         )
       )
     service.rpcs.forEach { builder.addStatement(".addMethod(get${it.name}Method())") }
+    if (protoFile != null){
+      builder.addStatement("""
+        .setSchemaDescriptor(io.grpc.protobuf.ProtoFileDescriptorSupplier {
+          fileDescriptor("${protoFile.location.path}", emptySet())
+        })""".trimIndent()
+      )
+    }
     builder
       .addStatement(".build()")
       .addStatement("serviceDescriptor = result")

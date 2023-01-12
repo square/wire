@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -20,7 +21,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
@@ -33,7 +33,7 @@ public class All64(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myInt64"
+    jsonName = "myInt64",
   )
   @JvmField
   public val my_int64: Long = 0L,
@@ -41,7 +41,7 @@ public class All64(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myUint64"
+    jsonName = "myUint64",
   )
   @JvmField
   public val my_uint64: Long = 0L,
@@ -49,7 +49,7 @@ public class All64(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "mySint64"
+    jsonName = "mySint64",
   )
   @JvmField
   public val my_sint64: Long = 0L,
@@ -57,7 +57,7 @@ public class All64(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myFixed64"
+    jsonName = "myFixed64",
   )
   @JvmField
   public val my_fixed64: Long = 0L,
@@ -65,7 +65,7 @@ public class All64(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "mySfixed64"
+    jsonName = "mySfixed64",
   )
   @JvmField
   public val my_sfixed64: Long = 0L,
@@ -79,32 +79,34 @@ public class All64(
   pack_sint64: List<Long> = emptyList(),
   pack_fixed64: List<Long> = emptyList(),
   pack_sfixed64: List<Long> = emptyList(),
-  map_int64_int64: Map<Long, Long> = emptyMap(),
-  map_int64_uint64: Map<Long, Long> = emptyMap(),
-  map_int64_sint64: Map<Long, Long> = emptyMap(),
-  map_int64_fixed64: Map<Long, Long> = emptyMap(),
-  map_int64_sfixed64: Map<Long, Long> = emptyMap(),
   @field:WireField(
     tag = 401,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
-    jsonName = "oneofInt64"
+    jsonName = "oneofInt64",
+    oneofName = "choice",
   )
   @JvmField
   public val oneof_int64: Long? = null,
   @field:WireField(
     tag = 402,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-    jsonName = "oneofSfixed64"
+    jsonName = "oneofSfixed64",
+    oneofName = "choice",
   )
   @JvmField
   public val oneof_sfixed64: Long? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  map_int64_int64: Map<Long, Long> = emptyMap(),
+  map_int64_uint64: Map<Long, Long> = emptyMap(),
+  map_int64_sint64: Map<Long, Long> = emptyMap(),
+  map_int64_fixed64: Map<Long, Long> = emptyMap(),
+  map_int64_sfixed64: Map<Long, Long> = emptyMap(),
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<All64, All64.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 201,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.REPEATED,
-    jsonName = "repInt64"
+    jsonName = "repInt64",
   )
   @JvmField
   public val rep_int64: List<Long> = immutableCopyOf("rep_int64", rep_int64)
@@ -113,7 +115,7 @@ public class All64(
     tag = 202,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.REPEATED,
-    jsonName = "repUint64"
+    jsonName = "repUint64",
   )
   @JvmField
   public val rep_uint64: List<Long> = immutableCopyOf("rep_uint64", rep_uint64)
@@ -122,7 +124,7 @@ public class All64(
     tag = 203,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.REPEATED,
-    jsonName = "repSint64"
+    jsonName = "repSint64",
   )
   @JvmField
   public val rep_sint64: List<Long> = immutableCopyOf("rep_sint64", rep_sint64)
@@ -131,7 +133,7 @@ public class All64(
     tag = 204,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.REPEATED,
-    jsonName = "repFixed64"
+    jsonName = "repFixed64",
   )
   @JvmField
   public val rep_fixed64: List<Long> = immutableCopyOf("rep_fixed64", rep_fixed64)
@@ -140,7 +142,7 @@ public class All64(
     tag = 205,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.REPEATED,
-    jsonName = "repSfixed64"
+    jsonName = "repSfixed64",
   )
   @JvmField
   public val rep_sfixed64: List<Long> = immutableCopyOf("rep_sfixed64", rep_sfixed64)
@@ -149,7 +151,7 @@ public class All64(
     tag = 301,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.PACKED,
-    jsonName = "packInt64"
+    jsonName = "packInt64",
   )
   @JvmField
   public val pack_int64: List<Long> = immutableCopyOf("pack_int64", pack_int64)
@@ -158,7 +160,7 @@ public class All64(
     tag = 302,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.PACKED,
-    jsonName = "packUint64"
+    jsonName = "packUint64",
   )
   @JvmField
   public val pack_uint64: List<Long> = immutableCopyOf("pack_uint64", pack_uint64)
@@ -167,7 +169,7 @@ public class All64(
     tag = 303,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.PACKED,
-    jsonName = "packSint64"
+    jsonName = "packSint64",
   )
   @JvmField
   public val pack_sint64: List<Long> = immutableCopyOf("pack_sint64", pack_sint64)
@@ -176,7 +178,7 @@ public class All64(
     tag = 304,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.PACKED,
-    jsonName = "packFixed64"
+    jsonName = "packFixed64",
   )
   @JvmField
   public val pack_fixed64: List<Long> = immutableCopyOf("pack_fixed64", pack_fixed64)
@@ -185,7 +187,7 @@ public class All64(
     tag = 305,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.PACKED,
-    jsonName = "packSfixed64"
+    jsonName = "packSfixed64",
   )
   @JvmField
   public val pack_sfixed64: List<Long> = immutableCopyOf("pack_sfixed64", pack_sfixed64)
@@ -194,7 +196,7 @@ public class All64(
     tag = 501,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
-    jsonName = "mapInt64Int64"
+    jsonName = "mapInt64Int64",
   )
   @JvmField
   public val map_int64_int64: Map<Long, Long> = immutableCopyOf("map_int64_int64", map_int64_int64)
@@ -203,7 +205,7 @@ public class All64(
     tag = 502,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-    jsonName = "mapInt64Uint64"
+    jsonName = "mapInt64Uint64",
   )
   @JvmField
   public val map_int64_uint64: Map<Long, Long> = immutableCopyOf("map_int64_uint64",
@@ -213,7 +215,7 @@ public class All64(
     tag = 503,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-    jsonName = "mapInt64Sint64"
+    jsonName = "mapInt64Sint64",
   )
   @JvmField
   public val map_int64_sint64: Map<Long, Long> = immutableCopyOf("map_int64_sint64",
@@ -223,7 +225,7 @@ public class All64(
     tag = 504,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-    jsonName = "mapInt64Fixed64"
+    jsonName = "mapInt64Fixed64",
   )
   @JvmField
   public val map_int64_fixed64: Map<Long, Long> = immutableCopyOf("map_int64_fixed64",
@@ -233,7 +235,7 @@ public class All64(
     tag = 505,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-    jsonName = "mapInt64Sfixed64"
+    jsonName = "mapInt64Sfixed64",
   )
   @JvmField
   public val map_int64_sfixed64: Map<Long, Long> = immutableCopyOf("map_int64_sfixed64",
@@ -262,13 +264,13 @@ public class All64(
     builder.pack_sint64 = pack_sint64
     builder.pack_fixed64 = pack_fixed64
     builder.pack_sfixed64 = pack_sfixed64
+    builder.oneof_int64 = oneof_int64
+    builder.oneof_sfixed64 = oneof_sfixed64
     builder.map_int64_int64 = map_int64_int64
     builder.map_int64_uint64 = map_int64_uint64
     builder.map_int64_sint64 = map_int64_sint64
     builder.map_int64_fixed64 = map_int64_fixed64
     builder.map_int64_sfixed64 = map_int64_sfixed64
-    builder.oneof_int64 = oneof_int64
-    builder.oneof_sfixed64 = oneof_sfixed64
     builder.addUnknownFields(unknownFields)
     return builder
   }
@@ -292,13 +294,13 @@ public class All64(
     if (pack_sint64 != other.pack_sint64) return false
     if (pack_fixed64 != other.pack_fixed64) return false
     if (pack_sfixed64 != other.pack_sfixed64) return false
+    if (oneof_int64 != other.oneof_int64) return false
+    if (oneof_sfixed64 != other.oneof_sfixed64) return false
     if (map_int64_int64 != other.map_int64_int64) return false
     if (map_int64_uint64 != other.map_int64_uint64) return false
     if (map_int64_sint64 != other.map_int64_sint64) return false
     if (map_int64_fixed64 != other.map_int64_fixed64) return false
     if (map_int64_sfixed64 != other.map_int64_sfixed64) return false
-    if (oneof_int64 != other.oneof_int64) return false
-    if (oneof_sfixed64 != other.oneof_sfixed64) return false
     return true
   }
 
@@ -321,13 +323,13 @@ public class All64(
       result = result * 37 + pack_sint64.hashCode()
       result = result * 37 + pack_fixed64.hashCode()
       result = result * 37 + pack_sfixed64.hashCode()
+      result = result * 37 + (oneof_int64?.hashCode() ?: 0)
+      result = result * 37 + (oneof_sfixed64?.hashCode() ?: 0)
       result = result * 37 + map_int64_int64.hashCode()
       result = result * 37 + map_int64_uint64.hashCode()
       result = result * 37 + map_int64_sint64.hashCode()
       result = result * 37 + map_int64_fixed64.hashCode()
       result = result * 37 + map_int64_sfixed64.hashCode()
-      result = result * 37 + oneof_int64.hashCode()
-      result = result * 37 + oneof_sfixed64.hashCode()
       super.hashCode = result
     }
     return result
@@ -350,13 +352,13 @@ public class All64(
     if (pack_sint64.isNotEmpty()) result += """pack_sint64=$pack_sint64"""
     if (pack_fixed64.isNotEmpty()) result += """pack_fixed64=$pack_fixed64"""
     if (pack_sfixed64.isNotEmpty()) result += """pack_sfixed64=$pack_sfixed64"""
+    if (oneof_int64 != null) result += """oneof_int64=$oneof_int64"""
+    if (oneof_sfixed64 != null) result += """oneof_sfixed64=$oneof_sfixed64"""
     if (map_int64_int64.isNotEmpty()) result += """map_int64_int64=$map_int64_int64"""
     if (map_int64_uint64.isNotEmpty()) result += """map_int64_uint64=$map_int64_uint64"""
     if (map_int64_sint64.isNotEmpty()) result += """map_int64_sint64=$map_int64_sint64"""
     if (map_int64_fixed64.isNotEmpty()) result += """map_int64_fixed64=$map_int64_fixed64"""
     if (map_int64_sfixed64.isNotEmpty()) result += """map_int64_sfixed64=$map_int64_sfixed64"""
-    if (oneof_int64 != null) result += """oneof_int64=$oneof_int64"""
-    if (oneof_sfixed64 != null) result += """oneof_sfixed64=$oneof_sfixed64"""
     return result.joinToString(prefix = "All64{", separator = ", ", postfix = "}")
   }
 
@@ -376,18 +378,18 @@ public class All64(
     pack_sint64: List<Long> = this.pack_sint64,
     pack_fixed64: List<Long> = this.pack_fixed64,
     pack_sfixed64: List<Long> = this.pack_sfixed64,
+    oneof_int64: Long? = this.oneof_int64,
+    oneof_sfixed64: Long? = this.oneof_sfixed64,
     map_int64_int64: Map<Long, Long> = this.map_int64_int64,
     map_int64_uint64: Map<Long, Long> = this.map_int64_uint64,
     map_int64_sint64: Map<Long, Long> = this.map_int64_sint64,
     map_int64_fixed64: Map<Long, Long> = this.map_int64_fixed64,
     map_int64_sfixed64: Map<Long, Long> = this.map_int64_sfixed64,
-    oneof_int64: Long? = this.oneof_int64,
-    oneof_sfixed64: Long? = this.oneof_sfixed64,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): All64 = All64(my_int64, my_uint64, my_sint64, my_fixed64, my_sfixed64, rep_int64, rep_uint64,
       rep_sint64, rep_fixed64, rep_sfixed64, pack_int64, pack_uint64, pack_sint64, pack_fixed64,
-      pack_sfixed64, map_int64_int64, map_int64_uint64, map_int64_sint64, map_int64_fixed64,
-      map_int64_sfixed64, oneof_int64, oneof_sfixed64, unknownFields)
+      pack_sfixed64, oneof_int64, oneof_sfixed64, map_int64_int64, map_int64_uint64,
+      map_int64_sint64, map_int64_fixed64, map_int64_sfixed64, unknownFields)
 
   public class Builder : Message.Builder<All64, Builder>() {
     @JvmField
@@ -436,6 +438,12 @@ public class All64(
     public var pack_sfixed64: List<Long> = emptyList()
 
     @JvmField
+    public var oneof_int64: Long? = null
+
+    @JvmField
+    public var oneof_sfixed64: Long? = null
+
+    @JvmField
     public var map_int64_int64: Map<Long, Long> = emptyMap()
 
     @JvmField
@@ -449,12 +457,6 @@ public class All64(
 
     @JvmField
     public var map_int64_sfixed64: Map<Long, Long> = emptyMap()
-
-    @JvmField
-    public var oneof_int64: Long? = null
-
-    @JvmField
-    public var oneof_sfixed64: Long? = null
 
     /**
      * Prefixing so the generated code doesn't rename it weirdly.
@@ -597,13 +599,13 @@ public class All64(
       pack_sint64 = pack_sint64,
       pack_fixed64 = pack_fixed64,
       pack_sfixed64 = pack_sfixed64,
+      oneof_int64 = oneof_int64,
+      oneof_sfixed64 = oneof_sfixed64,
       map_int64_int64 = map_int64_int64,
       map_int64_uint64 = map_int64_uint64,
       map_int64_sint64 = map_int64_sint64,
       map_int64_fixed64 = map_int64_fixed64,
       map_int64_sfixed64 = map_int64_sfixed64,
-      oneof_int64 = oneof_int64,
-      oneof_sfixed64 = oneof_sfixed64,
       unknownFields = buildUnknownFields()
     )
   }
@@ -615,7 +617,8 @@ public class All64(
       All64::class, 
       "type.googleapis.com/squareup.proto3.All64", 
       PROTO_3, 
-      null
+      null, 
+      "all64.proto"
     ) {
       private val map_int64_int64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.INT64) }
@@ -632,7 +635,7 @@ public class All64(
       private val map_int64_sfixed64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.SFIXED64) }
 
-      public override fun encodedSize(value: All64): Int {
+      public override fun encodedSize(`value`: All64): Int {
         var size = value.unknownFields.size
         if (value.my_int64 != 0L) size += ProtoAdapter.INT64.encodedSizeWithTag(1, value.my_int64)
         if (value.my_uint64 != 0L) size += ProtoAdapter.UINT64.encodedSizeWithTag(2,
@@ -653,17 +656,17 @@ public class All64(
         size += ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(303, value.pack_sint64)
         size += ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(304, value.pack_fixed64)
         size += ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(305, value.pack_sfixed64)
+        size += ProtoAdapter.INT64.encodedSizeWithTag(401, value.oneof_int64)
+        size += ProtoAdapter.SFIXED64.encodedSizeWithTag(402, value.oneof_sfixed64)
         size += map_int64_int64Adapter.encodedSizeWithTag(501, value.map_int64_int64)
         size += map_int64_uint64Adapter.encodedSizeWithTag(502, value.map_int64_uint64)
         size += map_int64_sint64Adapter.encodedSizeWithTag(503, value.map_int64_sint64)
         size += map_int64_fixed64Adapter.encodedSizeWithTag(504, value.map_int64_fixed64)
         size += map_int64_sfixed64Adapter.encodedSizeWithTag(505, value.map_int64_sfixed64)
-        size += ProtoAdapter.INT64.encodedSizeWithTag(401, value.oneof_int64)
-        size += ProtoAdapter.SFIXED64.encodedSizeWithTag(402, value.oneof_sfixed64)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: All64): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: All64): Unit {
         if (value.my_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 1, value.my_int64)
         if (value.my_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 2, value.my_uint64)
         if (value.my_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 3, value.my_sint64)
@@ -690,6 +693,33 @@ public class All64(
         writer.writeBytes(value.unknownFields)
       }
 
+      public override fun encode(writer: ReverseProtoWriter, `value`: All64): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.SFIXED64.encodeWithTag(writer, 402, value.oneof_sfixed64)
+        ProtoAdapter.INT64.encodeWithTag(writer, 401, value.oneof_int64)
+        map_int64_sfixed64Adapter.encodeWithTag(writer, 505, value.map_int64_sfixed64)
+        map_int64_fixed64Adapter.encodeWithTag(writer, 504, value.map_int64_fixed64)
+        map_int64_sint64Adapter.encodeWithTag(writer, 503, value.map_int64_sint64)
+        map_int64_uint64Adapter.encodeWithTag(writer, 502, value.map_int64_uint64)
+        map_int64_int64Adapter.encodeWithTag(writer, 501, value.map_int64_int64)
+        ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 305, value.pack_sfixed64)
+        ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 304, value.pack_fixed64)
+        ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 303, value.pack_sint64)
+        ProtoAdapter.UINT64.asPacked().encodeWithTag(writer, 302, value.pack_uint64)
+        ProtoAdapter.INT64.asPacked().encodeWithTag(writer, 301, value.pack_int64)
+        ProtoAdapter.SFIXED64.asRepeated().encodeWithTag(writer, 205, value.rep_sfixed64)
+        ProtoAdapter.FIXED64.asRepeated().encodeWithTag(writer, 204, value.rep_fixed64)
+        ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 203, value.rep_sint64)
+        ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 202, value.rep_uint64)
+        ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 201, value.rep_int64)
+        if (value.my_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer, 5,
+            value.my_sfixed64)
+        if (value.my_fixed64 != 0L) ProtoAdapter.FIXED64.encodeWithTag(writer, 4, value.my_fixed64)
+        if (value.my_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 3, value.my_sint64)
+        if (value.my_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 2, value.my_uint64)
+        if (value.my_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 1, value.my_int64)
+      }
+
       public override fun decode(reader: ProtoReader): All64 {
         var my_int64: Long = 0L
         var my_uint64: Long = 0L
@@ -706,13 +736,13 @@ public class All64(
         val pack_sint64 = mutableListOf<Long>()
         val pack_fixed64 = mutableListOf<Long>()
         val pack_sfixed64 = mutableListOf<Long>()
+        var oneof_int64: Long? = null
+        var oneof_sfixed64: Long? = null
         val map_int64_int64 = mutableMapOf<Long, Long>()
         val map_int64_uint64 = mutableMapOf<Long, Long>()
         val map_int64_sint64 = mutableMapOf<Long, Long>()
         val map_int64_fixed64 = mutableMapOf<Long, Long>()
         val map_int64_sfixed64 = mutableMapOf<Long, Long>()
-        var oneof_int64: Long? = null
-        var oneof_sfixed64: Long? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> my_int64 = ProtoAdapter.INT64.decode(reader)
@@ -730,13 +760,13 @@ public class All64(
             303 -> pack_sint64.add(ProtoAdapter.SINT64.decode(reader))
             304 -> pack_fixed64.add(ProtoAdapter.FIXED64.decode(reader))
             305 -> pack_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader))
+            401 -> oneof_int64 = ProtoAdapter.INT64.decode(reader)
+            402 -> oneof_sfixed64 = ProtoAdapter.SFIXED64.decode(reader)
             501 -> map_int64_int64.putAll(map_int64_int64Adapter.decode(reader))
             502 -> map_int64_uint64.putAll(map_int64_uint64Adapter.decode(reader))
             503 -> map_int64_sint64.putAll(map_int64_sint64Adapter.decode(reader))
             504 -> map_int64_fixed64.putAll(map_int64_fixed64Adapter.decode(reader))
             505 -> map_int64_sfixed64.putAll(map_int64_sfixed64Adapter.decode(reader))
-            401 -> oneof_int64 = ProtoAdapter.INT64.decode(reader)
-            402 -> oneof_sfixed64 = ProtoAdapter.SFIXED64.decode(reader)
             else -> reader.readUnknownField(tag)
           }
         }
@@ -756,18 +786,18 @@ public class All64(
           pack_sint64 = pack_sint64,
           pack_fixed64 = pack_fixed64,
           pack_sfixed64 = pack_sfixed64,
+          oneof_int64 = oneof_int64,
+          oneof_sfixed64 = oneof_sfixed64,
           map_int64_int64 = map_int64_int64,
           map_int64_uint64 = map_int64_uint64,
           map_int64_sint64 = map_int64_sint64,
           map_int64_fixed64 = map_int64_fixed64,
           map_int64_sfixed64 = map_int64_sfixed64,
-          oneof_int64 = oneof_int64,
-          oneof_sfixed64 = oneof_sfixed64,
           unknownFields = unknownFields
         )
       }
 
-      public override fun redact(value: All64): All64 = value.copy(
+      public override fun redact(`value`: All64): All64 = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

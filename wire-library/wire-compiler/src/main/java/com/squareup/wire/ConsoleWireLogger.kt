@@ -15,64 +15,61 @@
  */
 package com.squareup.wire
 
-import com.squareup.javapoet.JavaFile
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.schema.ProtoType
-import java.nio.file.Path
-import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
+import okio.Path
 
 internal class ConsoleWireLogger : WireLogger {
-  private var quiet: Boolean = false
+  var quiet: Boolean = false
 
-  override fun setQuiet(quiet: Boolean) {
-    this.quiet = quiet
+  override fun unusedRoots(unusedRoots: Set<String>) {
+    if (quiet) return
+
+    println(
+      """Unused element in treeShakingRoots:
+      |  ${unusedRoots.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
   }
 
-  override fun info(message: String) {
-    if (!quiet) {
-      println(message)
-    }
+  override fun unusedPrunes(unusedPrunes: Set<String>) {
+    if (quiet) return
+
+    println(
+      """Unused element in treeShakingRubbish:
+      |  ${unusedPrunes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
   }
 
-  override fun artifact(outputPath: Path, filePath: String) {
+  override fun unusedIncludesInTarget(unusedIncludes: Set<String>) {
+    if (quiet) return
+
+    println(
+      """Unused includes in targets:
+      |  ${unusedIncludes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
+  }
+
+  override fun unusedExcludesInTarget(unusedExcludes: Set<String>) {
+    if (quiet) return
+
+    println(
+      """Unused excludes in targets:
+      |  ${unusedExcludes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
+  }
+
+  override fun artifactHandled(outputPath: Path, qualifiedName: String, targetName: String) {
     if (quiet) {
-      println(filePath)
+      println(qualifiedName)
     } else {
-      println("Writing $filePath to $outputPath")
+      println("Writing $qualifiedName to $outputPath (target=$targetName)")
     }
   }
 
-  override fun artifact(outputPath: Path, javaFile: JavaFile) {
-    if (quiet) {
-      println("${javaFile.packageName}.${javaFile.typeSpec.name}")
-    } else {
-      println("Writing ${javaFile.packageName}.${javaFile.typeSpec.name} to $outputPath")
-    }
-  }
-
-  override fun artifact(outputPath: Path, kotlinFile: FileSpec) {
-    val typeSpec = kotlinFile.members.first() as TypeSpec
-    if (quiet) {
-      println("${kotlinFile.packageName}.${typeSpec.name}")
-    } else {
-      println("Writing ${kotlinFile.packageName}.${typeSpec.name} to $outputPath")
-    }
-  }
-
-  override fun artifact(
-    outputPath: Path,
-    type: ProtoType,
-    swiftFile: SwiftFileSpec
-  ) {
-    if (quiet) {
-      println(swiftFile.name)
-    } else {
-      println("Writing $type to $outputPath")
-    }
-  }
-
-  override fun artifactSkipped(type: ProtoType) {
-    println("Skipping $type")
+  override fun artifactSkipped(type: ProtoType, targetName: String) {
+    println("Skipping $type (target=$targetName)")
   }
 }

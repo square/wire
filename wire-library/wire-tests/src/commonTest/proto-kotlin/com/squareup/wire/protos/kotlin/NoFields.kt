@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import kotlin.Any
 import kotlin.AssertionError
@@ -21,14 +22,16 @@ import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
+@Deprecated(message = "NoFields is deprecated")
 public class NoFields(
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<NoFields, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -51,14 +54,19 @@ public class NoFields(
       NoFields::class, 
       "type.googleapis.com/squareup.protos.kotlin.NoFields", 
       PROTO_2, 
-      null
+      null, 
+      "no_fields.proto"
     ) {
-      public override fun encodedSize(value: NoFields): Int {
+      public override fun encodedSize(`value`: NoFields): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: NoFields): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: NoFields): Unit {
+        writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: NoFields): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
@@ -69,7 +77,7 @@ public class NoFields(
         )
       }
 
-      public override fun redact(value: NoFields): NoFields = value.copy(
+      public override fun redact(`value`: NoFields): NoFields = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

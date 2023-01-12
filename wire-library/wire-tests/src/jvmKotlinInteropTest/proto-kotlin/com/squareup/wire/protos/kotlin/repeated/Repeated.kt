@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -24,12 +25,12 @@ import okio.ByteString
 
 public class Repeated(
   things: List<Thing> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Repeated, Repeated.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.repeated.Thing#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val things: List<Thing> = immutableCopyOf("things", things)
@@ -91,17 +92,23 @@ public class Repeated(
       Repeated::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.repeated.Repeated", 
       PROTO_2, 
-      null
+      null, 
+      "repeated.proto"
     ) {
-      public override fun encodedSize(value: Repeated): Int {
+      public override fun encodedSize(`value`: Repeated): Int {
         var size = value.unknownFields.size
         size += Thing.ADAPTER.asRepeated().encodedSizeWithTag(1, value.things)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Repeated): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Repeated): Unit {
         Thing.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.things)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: Repeated): Unit {
+        writer.writeBytes(value.unknownFields)
+        Thing.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.things)
       }
 
       public override fun decode(reader: ProtoReader): Repeated {
@@ -118,7 +125,7 @@ public class Repeated(
         )
       }
 
-      public override fun redact(value: Repeated): Repeated = value.copy(
+      public override fun redact(`value`: Repeated): Repeated = value.copy(
         things = value.things.redactElements(Thing.ADAPTER),
         unknownFields = ByteString.EMPTY
       )

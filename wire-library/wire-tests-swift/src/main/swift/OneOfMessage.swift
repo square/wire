@@ -55,6 +55,11 @@ extension OneOfMessage.Choice : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension OneOfMessage.Choice : Sendable {
+}
+#endif
+
 #if !WIRE_REMOVE_EQUATABLE
 extension OneOfMessage : Equatable {
 }
@@ -64,6 +69,17 @@ extension OneOfMessage : Equatable {
 extension OneOfMessage : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension OneOfMessage : Sendable {
+}
+#endif
+
+extension OneOfMessage : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.OneOfMessage"
+    }
+}
 
 extension OneOfMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -104,7 +120,7 @@ extension OneOfMessage : Codable {
         } else if container.contains(.baz) {
             let baz = try container.decode(String.self, forKey: .baz)
             self.choice = .baz(baz)
-        } else  {
+        } else {
             self.choice = nil
         }
     }

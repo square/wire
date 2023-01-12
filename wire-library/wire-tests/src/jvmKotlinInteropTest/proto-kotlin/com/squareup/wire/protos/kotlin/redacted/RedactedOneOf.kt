@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.countNonNull
@@ -16,25 +17,26 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
 public class RedactedOneOf(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    oneofName = "a",
   )
   @JvmField
   public val b: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    redacted = true
+    redacted = true,
+    oneofName = "a",
   )
   @JvmField
   public val c: String? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<RedactedOneOf, RedactedOneOf.Builder>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(b, c) <= 1) {
@@ -63,8 +65,8 @@ public class RedactedOneOf(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + b.hashCode()
-      result = result * 37 + c.hashCode()
+      result = result * 37 + (b?.hashCode() ?: 0)
+      result = result * 37 + (c?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -80,7 +82,7 @@ public class RedactedOneOf(
   public fun copy(
     b: Int? = this.b,
     c: String? = this.c,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): RedactedOneOf = RedactedOneOf(b, c, unknownFields)
 
   public class Builder : Message.Builder<RedactedOneOf, Builder>() {
@@ -116,19 +118,26 @@ public class RedactedOneOf(
       RedactedOneOf::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedOneOf", 
       PROTO_2, 
-      null
+      null, 
+      "redacted_one_of.proto"
     ) {
-      public override fun encodedSize(value: RedactedOneOf): Int {
+      public override fun encodedSize(`value`: RedactedOneOf): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.b)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.c)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: RedactedOneOf): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: RedactedOneOf): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.b)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: RedactedOneOf): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.b)
       }
 
       public override fun decode(reader: ProtoReader): RedactedOneOf {
@@ -148,7 +157,7 @@ public class RedactedOneOf(
         )
       }
 
-      public override fun redact(value: RedactedOneOf): RedactedOneOf = value.copy(
+      public override fun redact(`value`: RedactedOneOf): RedactedOneOf = value.copy(
         c = null,
         unknownFields = ByteString.EMPTY
       )

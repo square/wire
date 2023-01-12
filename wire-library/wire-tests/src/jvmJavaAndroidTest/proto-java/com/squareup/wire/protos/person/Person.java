@@ -3,7 +3,6 @@
 package com.squareup.wire.protos.person;
 
 import android.os.Parcelable;
-import androidx.annotation.Nullable;
 import com.squareup.wire.AndroidMessage;
 import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
@@ -11,6 +10,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
@@ -64,7 +64,6 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
       tag = 3,
       adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
-  @Nullable
   public final String email;
 
   /**
@@ -84,12 +83,12 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   )
   public final List<String> aliases;
 
-  public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone,
+  public Person(String name, Integer id, String email, List<PhoneNumber> phone,
       List<String> aliases) {
     this(name, id, email, phone, aliases, ByteString.EMPTY);
   }
 
-  public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone,
+  public Person(String name, Integer id, String email, List<PhoneNumber> phone,
       List<String> aliases, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
@@ -291,14 +290,13 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
         tag = 2,
         adapter = "com.squareup.wire.protos.person.Person$PhoneType#ADAPTER"
     )
-    @Nullable
     public final PhoneType type;
 
-    public PhoneNumber(String number, @Nullable PhoneType type) {
+    public PhoneNumber(String number, PhoneType type) {
       this(number, type, ByteString.EMPTY);
     }
 
-    public PhoneNumber(String number, @Nullable PhoneType type, ByteString unknownFields) {
+    public PhoneNumber(String number, PhoneType type, ByteString unknownFields) {
       super(ADAPTER, unknownFields);
       this.number = number;
       this.type = type;
@@ -378,7 +376,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
 
     private static final class ProtoAdapter_PhoneNumber extends ProtoAdapter<PhoneNumber> {
       public ProtoAdapter_PhoneNumber() {
-        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class, "type.googleapis.com/squareup.protos.person.Person.PhoneNumber", Syntax.PROTO_2, null);
+        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class, "type.googleapis.com/squareup.protos.person.Person.PhoneNumber", Syntax.PROTO_2, null, "person.proto");
       }
 
       @Override
@@ -395,6 +393,13 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number);
         PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type);
         writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public void encode(ReverseProtoWriter writer, PhoneNumber value) throws IOException {
+        writer.writeBytes(value.unknownFields());
+        PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type);
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number);
       }
 
       @Override
@@ -432,7 +437,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
 
   private static final class ProtoAdapter_Person extends ProtoAdapter<Person> {
     public ProtoAdapter_Person() {
-      super(FieldEncoding.LENGTH_DELIMITED, Person.class, "type.googleapis.com/squareup.protos.person.Person", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, Person.class, "type.googleapis.com/squareup.protos.person.Person", Syntax.PROTO_2, null, "person.proto");
     }
 
     @Override
@@ -455,6 +460,16 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
       PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
       ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, Person value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases);
+      PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
+      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
+      ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
     }
 
     @Override

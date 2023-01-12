@@ -31,11 +31,14 @@ class RedactTest {
     val redacted = RedactedFields(a = "a", b = "b", c = "c")
     assertEquals("RedactedFields{a=██, b=b, c=c}", redacted.toString())
     val redactedRepeated = RedactedRepeated(
-        a = listOf("a", "b"),
-        b = listOf(RedactedFields("a", "b", "c", null), RedactedFields("d", "e", "f", null))
+      a = listOf("a", "b"),
+      b = listOf(RedactedFields("a", "b", "c", null), RedactedFields("d", "e", "f", null))
     )
-    assertEquals("RedactedRepeated{a=██, b=[RedactedFields{a=██, b=b, c=c}, " +
-        "RedactedFields{a=██, b=e, c=f}]}", redactedRepeated.toString())
+    assertEquals(
+      "RedactedRepeated{a=██, b=[RedactedFields{a=██, b=b, c=c}, " +
+        "RedactedFields{a=██, b=e, c=f}]}",
+      redactedRepeated.toString()
+    )
   }
 
   @Test fun message() {
@@ -51,9 +54,9 @@ class RedactTest {
 
   @Test fun nestedRedactions() {
     val message = RedactedChild(
-        a = "a",
-        b = RedactedFields(a = "a", b = "b", c = "c"),
-        c = NotRedacted(a = "a", b = "b")
+      a = "a",
+      b = RedactedFields(a = "a", b = "b", c = "c"),
+      c = NotRedacted(a = "a", b = "b")
     )
     val expected = message.copy(b = message.b!!.copy(a = null))
     assertEquals(expected, RedactedChild.ADAPTER.redact(message))
@@ -72,11 +75,11 @@ class RedactTest {
 
   @Test fun repeatedField() {
     val message = RedactedRepeated(
-        a = listOf("a", "b"),
-        b = listOf(RedactedFields("a", "b", "c", null), RedactedFields("d", "e", "f", null))
+      a = listOf("a", "b"),
+      b = listOf(RedactedFields("a", "b", "c", null), RedactedFields("d", "e", "f", null))
     )
     val expected = RedactedRepeated(
-        b = listOf(RedactedFields(null, "b", "c", null), RedactedFields(null, "e", "f", null))
+      b = listOf(RedactedFields(null, "b", "c", null), RedactedFields(null, "e", "f", null))
     )
     val actual = RedactedRepeated.ADAPTER.redact(message)
     assertEquals(expected, actual)

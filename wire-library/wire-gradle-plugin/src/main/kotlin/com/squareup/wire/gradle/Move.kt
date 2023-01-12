@@ -44,8 +44,8 @@ open class Move @Inject constructor() : Serializable {
     check(targetPath != null) { "move requires a targetPath but was null" }
 
     return TypeMover.Move(
-        type = ProtoType.get(type),
-        targetPath = targetPath!!
+      type = ProtoType.get(type),
+      targetPath = targetPath!!
     )
   }
 }

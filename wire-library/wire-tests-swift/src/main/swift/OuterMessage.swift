@@ -26,6 +26,17 @@ extension OuterMessage : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension OuterMessage : Sendable {
+}
+#endif
+
+extension OuterMessage : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.packed_encoding.OuterMessage"
+    }
+}
+
 extension OuterMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var outer_number_before: Int32? = nil

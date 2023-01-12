@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
@@ -15,24 +16,23 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
 public class OuterMessage(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   @JvmField
   public val outer_number_before: Int? = null,
   @field:WireField(
     tag = 2,
-    adapter = "squareup.protos.packed_encoding.EmbeddedMessage#ADAPTER"
+    adapter = "squareup.protos.packed_encoding.EmbeddedMessage#ADAPTER",
   )
   @JvmField
   public val embedded_message: EmbeddedMessage? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<OuterMessage, OuterMessage.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -55,8 +55,8 @@ public class OuterMessage(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + outer_number_before.hashCode()
-      result = result * 37 + embedded_message.hashCode()
+      result = result * 37 + (outer_number_before?.hashCode() ?: 0)
+      result = result * 37 + (embedded_message?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -72,7 +72,7 @@ public class OuterMessage(
   public fun copy(
     outer_number_before: Int? = this.outer_number_before,
     embedded_message: EmbeddedMessage? = this.embedded_message,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): OuterMessage = OuterMessage(outer_number_before, embedded_message, unknownFields)
 
   public class Builder : Message.Builder<OuterMessage, Builder>() {
@@ -106,19 +106,26 @@ public class OuterMessage(
       OuterMessage::class, 
       "type.googleapis.com/squareup.protos.packed_encoding.OuterMessage", 
       PROTO_2, 
-      null
+      null, 
+      "packed_encoding.proto"
     ) {
-      public override fun encodedSize(value: OuterMessage): Int {
+      public override fun encodedSize(`value`: OuterMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.outer_number_before)
         size += EmbeddedMessage.ADAPTER.encodedSizeWithTag(2, value.embedded_message)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: OuterMessage): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: OuterMessage): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.outer_number_before)
         EmbeddedMessage.ADAPTER.encodeWithTag(writer, 2, value.embedded_message)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: OuterMessage): Unit {
+        writer.writeBytes(value.unknownFields)
+        EmbeddedMessage.ADAPTER.encodeWithTag(writer, 2, value.embedded_message)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.outer_number_before)
       }
 
       public override fun decode(reader: ProtoReader): OuterMessage {
@@ -138,7 +145,7 @@ public class OuterMessage(
         )
       }
 
-      public override fun redact(value: OuterMessage): OuterMessage = value.copy(
+      public override fun redact(`value`: OuterMessage): OuterMessage = value.copy(
         embedded_message = value.embedded_message?.let(EmbeddedMessage.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

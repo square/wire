@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
@@ -353,7 +354,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
     private static final class ProtoAdapter_PhoneNumber extends ProtoAdapter<PhoneNumber> {
       public ProtoAdapter_PhoneNumber() {
-        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class, "type.googleapis.com/squareup.proto2.person.java.Person.PhoneNumber", Syntax.PROTO_2, null);
+        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class, "type.googleapis.com/squareup.proto2.person.java.Person.PhoneNumber", Syntax.PROTO_2, null, "person_java.proto");
       }
 
       @Override
@@ -370,6 +371,13 @@ public final class Person extends Message<Person, Person.Builder> {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number);
         PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type);
         writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public void encode(ReverseProtoWriter writer, PhoneNumber value) throws IOException {
+        writer.writeBytes(value.unknownFields());
+        PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type);
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number);
       }
 
       @Override
@@ -407,7 +415,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
   private static final class ProtoAdapter_Person extends ProtoAdapter<Person> {
     public ProtoAdapter_Person() {
-      super(FieldEncoding.LENGTH_DELIMITED, Person.class, "type.googleapis.com/squareup.proto2.person.java.Person", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, Person.class, "type.googleapis.com/squareup.proto2.person.java.Person", Syntax.PROTO_2, null, "person_java.proto");
     }
 
     @Override
@@ -428,6 +436,15 @@ public final class Person extends Message<Person, Person.Builder> {
       ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
       PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, Person value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
+      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
+      ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
     }
 
     @Override

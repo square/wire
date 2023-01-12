@@ -8,6 +8,15 @@ dependencies {
 }
 
 wire {
+  sourcePath {
+    srcDir 'src/main/proto'
+  }
+
+  sourcePath {
+    srcProject ':location'
+    include 'squareup/location/continent.proto'
+  }
+
   kotlin {
   }
 }

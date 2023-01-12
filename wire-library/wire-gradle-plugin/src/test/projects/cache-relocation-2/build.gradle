@@ -1,0 +1,16 @@
+plugins {
+  id 'application'
+  id 'org.jetbrains.kotlin.jvm'
+  id 'com.squareup.wire'
+}
+
+// The code in this test project should be identical to
+// the one in cache-relocation-1; the only difference is
+// that the pathname is different. The test ensures that
+// the gradle task is cacheable even when the project
+// gets relocated to a different filesystem path.
+
+wire {
+  kotlin {
+  }
+}

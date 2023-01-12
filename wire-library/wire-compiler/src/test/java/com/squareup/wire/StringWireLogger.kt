@@ -15,48 +15,64 @@
  */
 package com.squareup.wire
 
-import com.squareup.javapoet.JavaFile
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.schema.ProtoType
-import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
-import java.nio.file.Path
+import okio.Path
 
 internal class StringWireLogger : WireLogger {
-  private var quiet: Boolean = false
+  var quiet: Boolean = false
   private val buffer = StringBuilder()
 
   val log: String get() = buffer.toString()
 
-  override fun setQuiet(quiet: Boolean) {
-    this.quiet = quiet
+  @Synchronized override fun artifactHandled(
+    outputPath: Path,
+    qualifiedName: String,
+    targetName: String
+  ) {
+    buffer.append("$outputPath $qualifiedName (target=$targetName)\n")
   }
 
-  @Synchronized override fun artifact(outputPath: Path, filePath: String) {
-    buffer.append("$outputPath $filePath\n")
+  override fun artifactSkipped(type: ProtoType, targetName: String) {
+    buffer.append("Skipped $type (target=$targetName)\n")
   }
 
-  @Synchronized override fun artifact(outputPath: Path, javaFile: JavaFile) {
-    buffer.append("$outputPath ${javaFile.packageName}.${javaFile.typeSpec.name}\n")
+  @Synchronized override fun unusedRoots(unusedRoots: Set<String>) {
+    if (quiet) return
+
+    buffer.append(
+      """Unused element in treeShakingRoots:
+      |  ${unusedRoots.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
   }
 
-  @Synchronized override fun artifact(outputPath: Path, kotlinFile: FileSpec) {
-    val typeSpec = kotlinFile.members.single() as TypeSpec
-    buffer.append("$outputPath ${kotlinFile.packageName}.${typeSpec.name}\n")
+  @Synchronized override fun unusedPrunes(unusedPrunes: Set<String>) {
+    if (quiet) return
+
+    buffer.append(
+      """Unused element in treeShakingRubbish:
+      |  ${unusedPrunes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
   }
 
-  @Synchronized override fun artifact(outputPath: Path, type: ProtoType, swiftFile: SwiftFileSpec) {
-    val typeSpec = swiftFile.members.single() as TypeSpec
-    buffer.append("$outputPath $type ${typeSpec.name}\n")
+  @Synchronized override fun unusedIncludesInTarget(unusedIncludes: Set<String>) {
+    if (quiet) return
+
+    buffer.append(
+      """Unused includes in targets:
+      |  ${unusedIncludes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
   }
 
-  override fun artifactSkipped(type: ProtoType) {
-    buffer.append("skipped $type\n")
-  }
+  @Synchronized override fun unusedExcludesInTarget(unusedExcludes: Set<String>) {
+    if (quiet) return
 
-  @Synchronized override fun info(message: String) {
-    if (!quiet) {
-      buffer.append("$message\n")
-    }
+    buffer.append(
+      """Unused excludes in targets:
+      |  ${unusedExcludes.joinToString(separator = "\n  ")}
+      """.trimMargin()
+    )
   }
 }

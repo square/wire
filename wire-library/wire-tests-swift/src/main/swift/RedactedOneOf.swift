@@ -38,6 +38,11 @@ extension RedactedOneOf.A : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension RedactedOneOf.A : Sendable {
+}
+#endif
+
 #if !WIRE_REMOVE_REDACTABLE
 extension RedactedOneOf.A : Redactable {
     public enum RedactedKeys : String, RedactedKey {
@@ -57,6 +62,17 @@ extension RedactedOneOf : Equatable {
 extension RedactedOneOf : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension RedactedOneOf : Sendable {
+}
+#endif
+
+extension RedactedOneOf : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedOneOf"
+    }
+}
 
 extension RedactedOneOf : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -93,7 +109,7 @@ extension RedactedOneOf : Codable {
         } else if container.contains(.c) {
             let c = try container.decode(String.self, forKey: .c)
             self.a = .c(c)
-        } else  {
+        } else {
             self.a = nil
         }
     }

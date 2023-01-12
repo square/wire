@@ -28,13 +28,13 @@ class UnknownFieldsTest {
   @Test
   fun repeatedCallsToBuildRetainUnknownFields() {
     val v2 = VersionTwo.Builder()
-        .i(111)
-        .v2_i(12345)
-        .v2_s("222")
-        .v2_f32(67890)
-        .v2_f64(98765L)
-        .v2_rs(listOf("1", "2"))
-        .build()
+      .i(111)
+      .v2_i(12345)
+      .v2_s("222")
+      .v2_f32(67890)
+      .v2_f64(98765L)
+      .v2_rs(listOf("1", "2"))
+      .build()
 
     // Serializes v2 and decodes it as a VersionOne.
     val v2Bytes = v2Adapter.encode(v2)
@@ -54,25 +54,25 @@ class UnknownFieldsTest {
   @Test
   fun unknownFieldsCanBeAddedBetweenCallsToBuild() {
     val v2A = VersionTwo.Builder()
-        .i(111)
-        .v2_i(12345)
-        .v2_s("222")
-        .v2_f32(67890)
-        .build()
+      .i(111)
+      .v2_i(12345)
+      .v2_s("222")
+      .v2_f32(67890)
+      .build()
     val v2B = VersionTwo.Builder()
-        .v2_f64(98765L)
-        .build()
+      .v2_f64(98765L)
+      .build()
     val v2C = VersionTwo.Builder()
-        .v2_rs(listOf("1", "2"))
-        .build()
+      .v2_rs(listOf("1", "2"))
+      .build()
     // A combination of v1A and v1B.
     val v2AB = v2A.newBuilder()
-        .v2_f64(v2B.v2_f64)
-        .build()
+      .v2_f64(v2B.v2_f64)
+      .build()
     // A combination of v1A, v1B and v1C.
     val v2All = v2AB.newBuilder()
-        .v2_rs(v2C.v2_rs)
-        .build()
+      .v2_rs(v2C.v2_rs)
+      .build()
 
     // Serializes v2A and decodes it as a VersionOne.
     val v2ABytes = v2Adapter.encode(v2A)
@@ -113,13 +113,13 @@ class UnknownFieldsTest {
   @Test
   fun unknownFieldsCanBeAddedAfterClearingUnknownFields() {
     val v2 = VersionTwo.Builder()
-        .i(111)
-        .v2_i(12345)
-        .v2_s("222")
-        .v2_f32(67890)
-        .v2_f64(98765L)
-        .v2_rs(listOf("1", "2"))
-        .build()
+      .i(111)
+      .v2_i(12345)
+      .v2_s("222")
+      .v2_f32(67890)
+      .v2_f64(98765L)
+      .v2_rs(listOf("1", "2"))
+      .build()
 
     // Serializes v2 and decodes it as a VersionOne.
     val v2Bytes = v2Adapter.encode(v2)
@@ -138,11 +138,11 @@ class UnknownFieldsTest {
   @Test
   fun addedUnknownFieldsCanBeClearedFromBuilder() {
     val v2 = VersionTwo.Builder()
-        .i(111)
-        .v2_i(12345)
-        .v2_s("222")
-        .v2_f32(67890)
-        .build()
+      .i(111)
+      .v2_i(12345)
+      .v2_s("222")
+      .v2_f32(67890)
+      .build()
 
     // Serializes v2 and decodes it as a VersionOne.
     val v2Bytes = v2Adapter.encode(v2)
@@ -150,9 +150,9 @@ class UnknownFieldsTest {
 
     // Adds unknown fields to an empty builder and clears them again.
     val emptyV1 = VersionOne.Builder()
-        .addUnknownFields(fromV2.unknownFields)
-        .clearUnknownFields()
-        .build()
+      .addUnknownFields(fromV2.unknownFields)
+      .clearUnknownFields()
+      .build()
     assertThat(emptyV1.unknownFields).isEqualTo(ByteString.EMPTY)
   }
 }

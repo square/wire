@@ -15,23 +15,26 @@
  */
 package com.squareup.wire;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.wire.json.JsonUtils;
 import com.squareup.wire.proto2.RepeatedPackedAndMap;
 import com.squareup.wire.proto2.alltypes.AllTypes;
+import com.squareup.wire.proto2.kotlin.Getters;
+import com.squareup.wire.proto2.person.kotlin.Person;
+import com.squareup.wire.proto2.person.kotlin.Person.PhoneNumber;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import okio.ByteString;
 import okio.Okio;
-import org.junit.Ignore;
 import org.junit.Test;
 import squareup.proto2.keywords.KeywordJava;
 import squareup.proto2.keywords.KeywordJava.KeywordJavaEnum;
 import squareup.proto2.keywords.KeywordKotlin;
 import squareup.proto2.keywords.KeywordKotlin.KeywordKotlinEnum;
 
+import static com.squareup.wire.json.JsonUtils.assertJsonEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GsonTest {
@@ -80,20 +83,23 @@ public class GsonTest {
                 KeywordKotlinEnum.when_,
                 KeywordKotlinEnum.fun_,
                 KeywordKotlinEnum.return_,
-                KeywordKotlinEnum.open_
+                KeywordKotlinEnum.open_,
+                KeywordKotlinEnum.name_,
+                KeywordKotlinEnum.ordinal_
             )
         )
         .build();
     String json = gson.toJson(keyword);
-    JsonUtils.assertJsonEquals(
+    assertJsonEquals(
         "{\"object\":\"object\",\"when\":1, \"fun\":{}, \"return\":[], \"enums\":[\"object\", "
-            + "\"when\", \"fun\", \"return\", \"open\"]}",
+            + "\"when\", \"fun\", \"return\", \"open\", \"name\", \"ordinal\"]}",
         json);
     KeywordKotlin parseKeyword = gson.fromJson(json, KeywordKotlin.class);
     assertThat(parseKeyword).isEqualTo(keyword);
 
     String generatedNamedJson = "{\"object_\":\"object\",\"when_\":1, \"fun_\":{}, \"return_\":[], "
-        + "\"enums\":[\"object_\", \"when_\", \"fun_\", \"return_\", \"open_\"]}";
+        + "\"enums\":[\"object_\", \"when_\", \"fun_\", \"return_\", \"open_\", \"name_\", "
+        + "\"ordinal_\"]}";
     assertThat(gson.fromJson(generatedNamedJson, KeywordKotlin.class)).isEqualTo(keyword);
   }
 
@@ -111,7 +117,7 @@ public class GsonTest {
         )
         .build();
     String json = gson.toJson(keyword);
-    JsonUtils.assertJsonEquals(
+    assertJsonEquals(
         "{\"final\":\"final\", \"public\":true, \"package\":{}, \"return\":[], "
             + "\"enums\":[\"final\", \"public\", \"package\", \"return\"]}",
         json);
@@ -126,7 +132,7 @@ public class GsonTest {
   @Test public void enumKeywordsAtRootInKotlin() {
     KeywordKotlinEnum constant = KeywordKotlinEnum.object_;
     String json = gson.toJson(constant);
-    JsonUtils.assertJsonEquals("\"object\"", json);
+    assertJsonEquals("\"object\"", json);
     KeywordKotlinEnum parseKeyword = gson.fromJson(json, KeywordKotlinEnum.class);
     assertThat(parseKeyword).isEqualTo(constant);
 
@@ -137,11 +143,72 @@ public class GsonTest {
   @Test public void enumKeywordsAtRootInJava() {
     KeywordJavaEnum constant = KeywordJavaEnum.final_;
     String json = gson.toJson(constant);
-    JsonUtils.assertJsonEquals("\"final\"", json);
+    assertJsonEquals("\"final\"", json);
     KeywordJavaEnum parseKeyword = gson.fromJson(json, KeywordJavaEnum.class);
     assertThat(parseKeyword).isEqualTo(constant);
 
     String generatedNamedJson = "\"final_\"";
     assertThat(gson.fromJson(generatedNamedJson, KeywordJavaEnum.class)).isEqualTo(constant);
+  }
+
+  @Test public void kotlinWithoutBuilderFromJson() {
+    Person person = gson.fromJson(
+        "{"
+          + "\"id\":1,"
+          + "\"name\":\"Jo\","
+          + "\"email\":\"foo@square.com\","
+          + "\"phone\":[{\"number\": \"555-555-5555\"}, {\"number\": \"444-444-4444\"}],"
+          + "\"favorite_numbers\":[1, 2, 3],"
+          + "\"area_numbers\":{\"519\":\"555-5555\"},"
+          + "\"is_canadian\":true"
+          + "}",
+        Person.class);
+    assertThat(person).isEqualTo(
+        new Person(
+          "Jo",
+          1,
+          "foo@square.com",
+          Arrays.asList(new PhoneNumber("555-555-5555", null, ByteString.EMPTY), new PhoneNumber("444-444-4444", null, ByteString.EMPTY)),
+          Arrays.asList(1, 2, 3),
+          ImmutableMap.<Integer, String>builder().put(519, "555-5555").build(),
+          true,
+          ByteString.EMPTY));
+  }
+
+  @Test public void kotlinWithoutBuilderToJson() {
+    Person person =
+        new Person(
+          "Jo",
+          1,
+          "foo@square.com",
+          Arrays.asList(new PhoneNumber("555-555-5555", null, ByteString.EMPTY), new PhoneNumber("444-444-4444", null, ByteString.EMPTY)),
+          Arrays.asList(1, 2, 3),
+           ImmutableMap.<Integer, String>builder().put(519, "555-5555").build(),
+          false,
+          ByteString.EMPTY);
+    String json = gson.toJson(person);
+    assertJsonEquals(
+      "{"
+        + "\"id\":1,"
+        + "\"name\":\"Jo\","
+        + "\"email\":\"foo@square.com\","
+        + "\"phone\":[{\"number\": \"555-555-5555\"}, {\"number\": \"444-444-4444\"}],"
+        + "\"favorite_numbers\":[1, 2, 3],"
+        + "\"area_numbers\":{\"519\":\"555-5555\"},"
+        + "\"is_canadian\":false"
+        + "}",
+        json);
+  }
+
+  @Test public void kotlinGettersFromJson() {
+    Getters getters = gson
+        .fromJson("{\"isa\":1,\"isA\":2,\"is_a\":3,\"is32\":32,\"isb\":true}", Getters.class);
+    assertThat(getters).isEqualTo(new Getters(1, 2, 3, 32, true, ByteString.EMPTY));
+  }
+
+  @Test public void kotlinGettersToJson() {
+    Getters getters = new Getters(1, 2, 3, 32, true, ByteString.EMPTY);
+    String json = gson.toJson(getters);
+    assertJsonEquals("{\"isa\":1,\"isA\":2,\"is_a\":3,\"is32\":32,\"isb\":true}", json);
   }
 }

@@ -15,6 +15,8 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.buildSchema
+import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -22,9 +24,10 @@ class OptionsTest {
   @Test
   fun structuredAndUnstructuredOptions() {
     // From https://developers.google.com/protocol-buffers/docs/proto#options
-    val schema = RepoBuilder()
-        .add("foo.proto",
-            """
+    val schema = buildSchema {
+      add(
+        "foo.proto".toPath(),
+        """
             |import "google/protobuf/descriptor.proto";
             |message FooOptions {
             |  optional int32 opt1 = 1;
@@ -40,8 +43,8 @@ class OptionsTest {
             |  optional int32 b = 2 [(foo_options) = { opt1: 456 opt2: "quux" }];
             |}
             """.trimMargin()
-        )
-        .schema()
+      )
+    }
 
     val fooOptions = ProtoMember.get(Options.FIELD_OPTIONS, "foo_options")
     val opt1 = ProtoMember.get(ProtoType.get("FooOptions"), "opt1")
@@ -49,16 +52,17 @@ class OptionsTest {
 
     val bar = schema.getType("Bar") as MessageType
     assertThat(bar.field("a")!!.options.map)
-        .isEqualTo(mapOf(fooOptions to mapOf(opt1 to "123", opt2 to "baz")))
+      .isEqualTo(mapOf(fooOptions to mapOf(opt1 to "123", opt2 to "baz")))
     assertThat(bar.field("b")!!.options.map)
-        .isEqualTo(mapOf(fooOptions to mapOf(opt1 to "456", opt2 to "quux")))
+      .isEqualTo(mapOf(fooOptions to mapOf(opt1 to "456", opt2 to "quux")))
   }
 
   @Test
   fun textFormatCanOmitMapValueSeparator() {
-    val schema = RepoBuilder()
-        .add("foo.proto",
-            """
+    val schema = buildSchema {
+      add(
+        "foo.proto".toPath(),
+        """
             |import "google/protobuf/descriptor.proto";
             |message FooOptions {
             |  optional BarOptions bar = 2;
@@ -75,8 +79,8 @@ class OptionsTest {
             |  optional int32 b = 2 [(foo) = { bar { baz: 123 } }];
             |}
             """.trimMargin()
-        )
-        .schema()
+      )
+    }
 
     val foo = ProtoMember.get(Options.FIELD_OPTIONS, "foo")
     val bar = ProtoMember.get(ProtoType.get("FooOptions"), "bar")
@@ -84,14 +88,100 @@ class OptionsTest {
 
     val message = schema.getType("Message") as MessageType
     assertThat(message.field("b")!!.options.map)
-        .isEqualTo(mapOf(foo to mapOf(bar to mapOf(baz to "123"))))
+      .isEqualTo(mapOf(foo to mapOf(bar to mapOf(baz to "123"))))
+  }
+
+  @Test
+  fun testOptionsToSchema() {
+    val schema = buildSchema {
+      add(
+        "foo.proto".toPath(),
+        """
+            |import "google/protobuf/descriptor.proto";
+            |enum FooParameterType {
+            |   NUMBER = 1;
+            |   STRING = 2;
+            |}
+            |enum Scheme {
+            |  UNKNOWN = 0;
+            |  HTTP = 1;
+            |  HTTPS = 2;
+            |}
+            |
+            |message FooOptions {
+            |  optional string name = 1;
+            |  optional FooParameterType type = 2;
+            |  repeated Scheme schemes = 3;
+            |}
+            |extend google.protobuf.MessageOptions {
+            |  repeated FooOptions foo = 12345;
+            |}
+            |
+            |message Message {
+            |  option (foo) = {
+            |    name: "test"
+            |    type: STRING
+            |    schemes: HTTP
+            |    schemes: HTTPS
+            |  };
+            |
+            |  option (foo) = {
+            |    name: "test2"
+            |    type: NUMBER
+            |    schemes: [HTTP, HTTPS]
+            |  };
+            |
+            |  optional int32 b = 2;
+            |}
+            """.trimMargin()
+      )
+    }
+
+    val protoFile = schema.protoFile("foo.proto")
+
+    val optionElements = protoFile!!.types
+      .first { it is MessageType && it.toElement().name == "Message" }
+      .options.elements
+
+    assertThat(optionElements[0].toSchema())
+      .isEqualTo(
+        """|(foo) = {
+           |  name: "test",
+           |  type: STRING,
+           |  schemes: [
+           |    HTTP,
+           |    HTTPS
+           |  ]
+           |}""".trimMargin()
+      )
+
+    val foo = ProtoMember.get(Options.MESSAGE_OPTIONS, "foo")
+
+    val name = ProtoMember.get(ProtoType.get("FooOptions"), "name")
+    val type = ProtoMember.get(ProtoType.get("FooOptions"), "type")
+    val schemes = ProtoMember.get(ProtoType.get("FooOptions"), "schemes")
+
+    val message = schema.getType("Message") as MessageType
+    message.toElement().name
+
+    assertThat(message.options.map)
+      .isEqualTo(
+        mapOf(
+          foo to
+            arrayListOf(
+              mapOf(name to "test", type to "STRING", schemes to listOf("HTTP", "HTTPS")),
+              mapOf(name to "test2", type to "NUMBER", schemes to listOf("HTTP", "HTTPS"))
+            )
+        )
+      )
   }
 
   @Test
   fun fullyQualifiedOptionFields() {
-    val schema = RepoBuilder()
-        .add("a/b/more_options.proto",
-            """
+    val schema = buildSchema {
+      add(
+        "a/b/more_options.proto".toPath(),
+        """
             |syntax = "proto2";
             |package a.b;
             |
@@ -105,9 +195,10 @@ class OptionsTest {
             |  extensions 100 to 200;
             |}
             """.trimMargin()
-        )
-        .add("a/c/event_more_options.proto",
-            """
+      )
+      add(
+        "a/c/event_more_options.proto".toPath(),
+        """
             |syntax = "proto2";
             |package a.c;
             |
@@ -120,9 +211,11 @@ class OptionsTest {
             |message EvenMoreOptions {
             |  optional string string_option = 1;
             |}
-            """.trimMargin())
-        .add("a/d/message.proto",
-            """
+            """.trimMargin()
+      )
+      add(
+        "a/d/message.proto".toPath(),
+        """
             |syntax = "proto2";
             |package a.d;
             |
@@ -135,8 +228,8 @@ class OptionsTest {
             |  };
             |}
             """.trimMargin()
-        )
-        .schema()
+      )
+    }
     val moreOptionsType = ProtoType.get("a.b.MoreOptions")
     val evenMoreOptionsType = ProtoType.get("a.c.EvenMoreOptions")
     val moreOptions = ProtoMember.get(Options.MESSAGE_OPTIONS, "a.b.more_options")
@@ -145,25 +238,31 @@ class OptionsTest {
     val message = schema.getType("a.d.Message") as MessageType
 
     assertThat(message.options.map)
-        .isEqualTo(mapOf(moreOptions to mapOf(evenMoreOptions to mapOf(stringOption to "foo"))))
+      .isEqualTo(mapOf(moreOptions to mapOf(evenMoreOptions to mapOf(stringOption to "foo"))))
+  }
+
+  @Test
+  fun resolveFieldPathMatchesLeadingDotFirstSegment() {
+    assertThat(Options.resolveFieldPath(".a.b.c.d", setOf("a", "z", "y")))
+      .containsExactly("a", "b", "c", "d")
   }
 
   @Test
   fun resolveFieldPathMatchesFirstSegment() {
     assertThat(Options.resolveFieldPath("a.b.c.d", setOf("a", "z", "y")))
-        .containsExactly("a", "b", "c", "d")
+      .containsExactly("a", "b", "c", "d")
   }
 
   @Test
   fun resolveFieldPathMatchesMultipleSegments() {
     assertThat(Options.resolveFieldPath("a.b.c.d", setOf("a.b", "z.b", "y.b")))
-        .containsExactly("a.b", "c", "d")
+      .containsExactly("a.b", "c", "d")
   }
 
   @Test
   fun resolveFieldPathMatchesAllSegments() {
     assertThat(Options.resolveFieldPath("a.b.c.d", setOf("a.b.c.d", "z.b.c.d")))
-        .containsExactly("a.b.c.d")
+      .containsExactly("a.b.c.d")
   }
 
   @Test
@@ -174,5 +273,158 @@ class OptionsTest {
   @Test
   fun resolveFieldPathDoesntMatch() {
     assertThat(Options.resolveFieldPath("a.b", setOf("c", "d"))).isNull()
+  }
+
+  @Test
+  fun mapFieldEntriesLinking() {
+    val schema = buildSchema {
+      add(
+        "my_package/some_enum.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |import "google/protobuf/descriptor.proto";
+        |package my_package;
+        |
+        |enum SomeEnum {
+        |  TEST = 0 [(my_package.my_option) = {
+        |    entries: [
+        |      {
+        |        key: 'key-1',
+        |        value: {
+        |          some_string: "value-1"
+        |        }
+        |      },
+        |      {
+        |        value: {
+        |          some_string: "value-2"
+        |        }
+        |      },
+        |      {
+        |        key: 'key-3',
+        |        value: {
+        |        }
+        |      },
+        |      {
+        |        key: 'key-4',
+        |      },
+        |      {
+        |        key: 'key-5',
+        |        value: {
+        |          some_string: "value-5",
+        |          some_int32: 5
+        |        }
+        |      }
+        |    ]
+        |  }];
+        |}
+        |
+        |message SomeMessage {
+        |  optional string some_string = 1;
+        |  optional int32 some_int32 = 2;
+        |}
+        |
+        |message MyOption {
+        |  map<string, SomeMessage> entries = 2;
+        |}
+        |
+        |extend google.protobuf.EnumValueOptions {
+        |  optional MyOption my_option = 1000;
+        |}
+      """.trimMargin()
+      )
+    }
+
+    val enumType = schema.getType(ProtoType.get("my_package.SomeEnum")) as EnumType
+    val myOption = ProtoMember.get(Options.ENUM_VALUE_OPTIONS, "my_package.my_option")
+    val entries = ProtoMember.get(ProtoType.get("my_package.MyOption"), "entries")
+    val someString = ProtoMember.get(ProtoType.get("my_package.SomeMessage"), "some_string")
+    val someInt32 = ProtoMember.get(ProtoType.get("my_package.SomeMessage"), "some_int32")
+    assertThat(enumType.constant(tag = 0)!!.options.map)
+      .isEqualTo(
+        mapOf(
+          myOption to mapOf(
+            entries to listOf(
+              mapOf("key-1" to mapOf(someString to "value-1")),
+              mapOf(null to mapOf(someString to "value-2")),
+              mapOf("key-3" to mapOf()),
+              mapOf("key-4" to null),
+              mapOf("key-5" to mapOf(someString to "value-5", someInt32 to "5")),
+            )
+          )
+        )
+      )
+  }
+
+  @Test
+  fun mapFieldEntriesWriting() {
+    val path = "my_package/some_enum.proto".toPath()
+    val schema = buildSchema {
+      add(
+        path,
+        """
+        |syntax = "proto3";
+        |import "google/protobuf/descriptor.proto";
+        |package my_package;
+        |
+        |enum SomeEnum {
+        |  TEST = 0 [(my_package.my_option) = {
+        |    entries: [
+        |      {
+        |        key: 'key-1',
+        |        value: {
+        |          some_string: "value-1"
+        |        }
+        |      },
+        |      {
+        |        key: 'key-2',
+        |        value: {
+        |          some_string: "value-2",
+        |          some_int32: 2
+        |        }
+        |      }
+        |    ]
+        |  }];
+        |}
+        |
+        |message SomeMessage {
+        |  string some_string = 1;
+        |  int32 some_int32 = 2;
+        |}
+        |
+        |message MyOption {
+        |  map<string, SomeMessage> entries = 2;
+        |}
+        |
+        |extend google.protobuf.EnumValueOptions {
+        |  MyOption my_option = 1000;
+        |}
+      """.trimMargin()
+      )
+    }
+
+    val enumType = schema.getType(ProtoType.get("my_package.SomeEnum")) as EnumType
+    val optionElement = enumType.constant(tag = 0)!!.options.elements.first()
+    // We do print "key" and "value" keys for map fields, even though the linked schema doesn't
+    // know about them.
+    val expected = """
+      |(my_package.my_option) = {
+      |  entries: [
+      |    {
+      |      key: "key-1",
+      |      value: {
+      |        some_string: "value-1"
+      |      }
+      |    },
+      |    {
+      |      key: "key-2",
+      |      value: {
+      |        some_string: "value-2",
+      |        some_int32: 2
+      |      }
+      |    }
+      |  ]
+      |}
+    """.trimMargin()
+    assertThat(optionElement.toSchema()).isEqualTo(expected)
   }
 }

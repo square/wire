@@ -9,6 +9,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
@@ -776,49 +777,56 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 601,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      jsonName = "oneofString"
+      jsonName = "oneofString",
+      oneofName = "choice"
   )
   public final String oneof_string;
 
   @WireField(
       tag = 602,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      jsonName = "oneofInt32"
+      jsonName = "oneofInt32",
+      oneofName = "choice"
   )
   public final Integer oneof_int32;
 
   @WireField(
       tag = 603,
       adapter = "com.squareup.wire.proto3.java.all_types.AllTypes$NestedMessage#ADAPTER",
-      jsonName = "oneofNestedMessage"
+      jsonName = "oneofNestedMessage",
+      oneofName = "choice"
   )
   public final NestedMessage oneof_nested_message;
 
   @WireField(
       tag = 618,
       adapter = "com.squareup.wire.AnyMessage#ADAPTER",
-      jsonName = "oneofAny"
+      jsonName = "oneofAny",
+      oneofName = "choice"
   )
   public final AnyMessage oneof_any;
 
   @WireField(
       tag = 619,
       adapter = "com.squareup.wire.ProtoAdapter#DURATION",
-      jsonName = "oneofDuration"
+      jsonName = "oneofDuration",
+      oneofName = "choice"
   )
   public final Duration oneof_duration;
 
   @WireField(
       tag = 620,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-      jsonName = "oneofStruct"
+      jsonName = "oneofStruct",
+      oneofName = "choice"
   )
   public final Map<String, ?> oneof_struct;
 
   @WireField(
       tag = 621,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-      jsonName = "oneofListValue"
+      jsonName = "oneofListValue",
+      oneofName = "choice"
   )
   public final List<?> oneof_list_value;
 
@@ -829,14 +837,16 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 624,
       adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
-      jsonName = "oneofEmpty"
+      jsonName = "oneofEmpty",
+      oneofName = "choice"
   )
   public final Unit oneof_empty;
 
   @WireField(
       tag = 625,
       adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
-      jsonName = "oneofTimestamp"
+      jsonName = "oneofTimestamp",
+      oneofName = "choice"
   )
   public final Instant oneof_timestamp;
 
@@ -2422,7 +2432,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     private static final class ProtoAdapter_NestedMessage extends ProtoAdapter<NestedMessage> {
       public ProtoAdapter_NestedMessage() {
-        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class, "type.googleapis.com/proto3.java.AllTypes.NestedMessage", Syntax.PROTO_3, null);
+        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class, "type.googleapis.com/proto3.java.AllTypes.NestedMessage", Syntax.PROTO_3, null, "all_types.proto");
       }
 
       @Override
@@ -2439,6 +2449,12 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       public void encode(ProtoWriter writer, NestedMessage value) throws IOException {
         if (!Objects.equals(value.a, 0)) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a);
         writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public void encode(ReverseProtoWriter writer, NestedMessage value) throws IOException {
+        writer.writeBytes(value.unknownFields());
+        if (!Objects.equals(value.a, 0)) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a);
       }
 
       @Override
@@ -2492,7 +2508,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     private ProtoAdapter<Map<Integer, Instant>> map_int32_timestamp;
 
     public ProtoAdapter_AllTypes() {
-      super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class, "type.googleapis.com/proto3.java.AllTypes", Syntax.PROTO_3, null);
+      super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class, "type.googleapis.com/proto3.java.AllTypes", Syntax.PROTO_3, null, "all_types.proto");
     }
 
     @Override
@@ -2757,6 +2773,112 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       ProtoAdapter.EMPTY.encodeWithTag(writer, 624, value.oneof_empty);
       ProtoAdapter.INSTANT.encodeWithTag(writer, 625, value.oneof_timestamp);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, AllTypes value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      ProtoAdapter.INSTANT.encodeWithTag(writer, 625, value.oneof_timestamp);
+      ProtoAdapter.EMPTY.encodeWithTag(writer, 624, value.oneof_empty);
+      ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 621, value.oneof_list_value);
+      ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 620, value.oneof_struct);
+      ProtoAdapter.DURATION.encodeWithTag(writer, 619, value.oneof_duration);
+      AnyMessage.ADAPTER.encodeWithTag(writer, 618, value.oneof_any);
+      NestedMessage.ADAPTER.encodeWithTag(writer, 603, value.oneof_nested_message);
+      ProtoAdapter.INT32.encodeWithTag(writer, 602, value.oneof_int32);
+      ProtoAdapter.STRING.encodeWithTag(writer, 601, value.oneof_string);
+      map_int32_timestampAdapter().encodeWithTag(writer, 525, value.map_int32_timestamp);
+      map_int32_emptyAdapter().encodeWithTag(writer, 524, value.map_int32_empty);
+      map_int32_null_valueAdapter().encodeWithTag(writer, 523, value.map_int32_null_value);
+      map_int32_valueAdapter().encodeWithTag(writer, 522, value.map_int32_value);
+      map_int32_list_valueAdapter().encodeWithTag(writer, 521, value.map_int32_list_value);
+      map_int32_structAdapter().encodeWithTag(writer, 520, value.map_int32_struct);
+      map_int32_durationAdapter().encodeWithTag(writer, 519, value.map_int32_duration);
+      map_int32_anyAdapter().encodeWithTag(writer, 518, value.map_int32_any);
+      map_string_enumAdapter().encodeWithTag(writer, 504, value.map_string_enum);
+      map_string_messageAdapter().encodeWithTag(writer, 503, value.map_string_message);
+      map_string_stringAdapter().encodeWithTag(writer, 502, value.map_string_string);
+      map_int32_int32Adapter().encodeWithTag(writer, 501, value.map_int32_int32);
+      ProtoAdapter.STRUCT_NULL.asPacked().encodeWithTag(writer, 323, value.pack_null_value);
+      NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 316, value.pack_nested_enum);
+      ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 313, value.pack_double);
+      ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 312, value.pack_float);
+      ProtoAdapter.BOOL.asPacked().encodeWithTag(writer, 311, value.pack_bool);
+      ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 310, value.pack_sfixed64);
+      ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 309, value.pack_fixed64);
+      ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 308, value.pack_sint64);
+      ProtoAdapter.UINT64.asPacked().encodeWithTag(writer, 307, value.pack_uint64);
+      ProtoAdapter.INT64.asPacked().encodeWithTag(writer, 306, value.pack_int64);
+      ProtoAdapter.SFIXED32.asPacked().encodeWithTag(writer, 305, value.pack_sfixed32);
+      ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 304, value.pack_fixed32);
+      ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 303, value.pack_sint32);
+      ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 302, value.pack_uint32);
+      ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32);
+      ProtoAdapter.INSTANT.asRepeated().encodeWithTag(writer, 225, value.rep_timestamp);
+      ProtoAdapter.EMPTY.asRepeated().encodeWithTag(writer, 224, value.rep_empty);
+      ProtoAdapter.STRUCT_NULL.asRepeated().encodeWithTag(writer, 223, value.rep_null_value);
+      ProtoAdapter.STRUCT_VALUE.asRepeated().encodeWithTag(writer, 222, value.rep_value);
+      ProtoAdapter.STRUCT_LIST.asRepeated().encodeWithTag(writer, 221, value.rep_list_value);
+      ProtoAdapter.STRUCT_MAP.asRepeated().encodeWithTag(writer, 220, value.rep_struct);
+      ProtoAdapter.DURATION.asRepeated().encodeWithTag(writer, 219, value.rep_duration);
+      AnyMessage.ADAPTER.asRepeated().encodeWithTag(writer, 218, value.rep_any);
+      NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 217, value.rep_nested_message);
+      NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 216, value.rep_nested_enum);
+      ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 215, value.rep_bytes);
+      ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 214, value.rep_string);
+      ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 213, value.rep_double);
+      ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 212, value.rep_float);
+      ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 211, value.rep_bool);
+      ProtoAdapter.SFIXED64.asRepeated().encodeWithTag(writer, 210, value.rep_sfixed64);
+      ProtoAdapter.FIXED64.asRepeated().encodeWithTag(writer, 209, value.rep_fixed64);
+      ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 208, value.rep_sint64);
+      ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 207, value.rep_uint64);
+      ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 206, value.rep_int64);
+      ProtoAdapter.SFIXED32.asRepeated().encodeWithTag(writer, 205, value.rep_sfixed32);
+      ProtoAdapter.FIXED32.asRepeated().encodeWithTag(writer, 204, value.rep_fixed32);
+      ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 203, value.rep_sint32);
+      ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 202, value.rep_uint32);
+      ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32);
+      ProtoAdapter.BYTES.encodeWithTag(writer, 115, value.opt_bytes);
+      ProtoAdapter.STRING.encodeWithTag(writer, 114, value.opt_string);
+      ProtoAdapter.DOUBLE.encodeWithTag(writer, 113, value.opt_double);
+      ProtoAdapter.FLOAT.encodeWithTag(writer, 112, value.opt_float);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 111, value.opt_bool);
+      ProtoAdapter.SFIXED64.encodeWithTag(writer, 110, value.opt_sfixed64);
+      ProtoAdapter.FIXED64.encodeWithTag(writer, 109, value.opt_fixed64);
+      ProtoAdapter.SINT64.encodeWithTag(writer, 108, value.opt_sint64);
+      ProtoAdapter.UINT64.encodeWithTag(writer, 107, value.opt_uint64);
+      ProtoAdapter.INT64.encodeWithTag(writer, 106, value.opt_int64);
+      ProtoAdapter.SFIXED32.encodeWithTag(writer, 105, value.opt_sfixed32);
+      ProtoAdapter.FIXED32.encodeWithTag(writer, 104, value.opt_fixed32);
+      ProtoAdapter.SINT32.encodeWithTag(writer, 103, value.opt_sint32);
+      ProtoAdapter.UINT32.encodeWithTag(writer, 102, value.opt_uint32);
+      ProtoAdapter.INT32.encodeWithTag(writer, 101, value.opt_int32);
+      if (!Objects.equals(value.timestamp, null)) ProtoAdapter.INSTANT.encodeWithTag(writer, 25, value.timestamp);
+      if (!Objects.equals(value.empty, null)) ProtoAdapter.EMPTY.encodeWithTag(writer, 24, value.empty);
+      if (!Objects.equals(value.null_value, null)) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 23, value.null_value);
+      if (!Objects.equals(value.value, null)) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 22, value.value);
+      if (!Objects.equals(value.list_value, null)) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 21, value.list_value);
+      if (!Objects.equals(value.struct, null)) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 20, value.struct);
+      if (!Objects.equals(value.duration, null)) ProtoAdapter.DURATION.encodeWithTag(writer, 19, value.duration);
+      if (!Objects.equals(value.any, null)) AnyMessage.ADAPTER.encodeWithTag(writer, 18, value.any);
+      if (!Objects.equals(value.nested_message, null)) NestedMessage.ADAPTER.encodeWithTag(writer, 17, value.nested_message);
+      if (!Objects.equals(value.nested_enum, NestedEnum.UNKNOWN)) NestedEnum.ADAPTER.encodeWithTag(writer, 16, value.nested_enum);
+      if (!Objects.equals(value.bytes, ByteString.EMPTY)) ProtoAdapter.BYTES.encodeWithTag(writer, 15, value.bytes);
+      if (!Objects.equals(value.string, "")) ProtoAdapter.STRING.encodeWithTag(writer, 14, value.string);
+      if (!Objects.equals(value.double_, 0.0)) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.double_);
+      if (!Objects.equals(value.float_, 0f)) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.float_);
+      if (!Objects.equals(value.bool, false)) ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.bool);
+      if (!Objects.equals(value.sfixed64, 0L)) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10, value.sfixed64);
+      if (!Objects.equals(value.fixed64, 0L)) ProtoAdapter.FIXED64.encodeWithTag(writer, 9, value.fixed64);
+      if (!Objects.equals(value.sint64, 0L)) ProtoAdapter.SINT64.encodeWithTag(writer, 8, value.sint64);
+      if (!Objects.equals(value.uint64, 0L)) ProtoAdapter.UINT64.encodeWithTag(writer, 7, value.uint64);
+      if (!Objects.equals(value.int64, 0L)) ProtoAdapter.INT64.encodeWithTag(writer, 6, value.int64);
+      if (!Objects.equals(value.sfixed32, 0)) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5, value.sfixed32);
+      if (!Objects.equals(value.fixed32, 0)) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.fixed32);
+      if (!Objects.equals(value.sint32, 0)) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.sint32);
+      if (!Objects.equals(value.uint32, 0)) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.uint32);
+      if (!Objects.equals(value.int32, 0)) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.int32);
     }
 
     @Override

@@ -26,6 +26,17 @@ extension EmbeddedMessage : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension EmbeddedMessage : Sendable {
+}
+#endif
+
+extension EmbeddedMessage : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.packed_encoding.EmbeddedMessage"
+    }
+}
+
 extension EmbeddedMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var inner_repeated_number: [Int32] = []

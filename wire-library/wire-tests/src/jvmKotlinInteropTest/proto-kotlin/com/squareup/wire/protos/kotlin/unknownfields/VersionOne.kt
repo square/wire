@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
@@ -15,30 +16,29 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
 public class VersionOne(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   @JvmField
   public val i: Int? = null,
   @field:WireField(
     tag = 7,
-    adapter = "com.squareup.wire.protos.kotlin.unknownfields.NestedVersionOne#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.unknownfields.NestedVersionOne#ADAPTER",
   )
   @JvmField
   public val obj: NestedVersionOne? = null,
   @field:WireField(
     tag = 8,
-    adapter = "com.squareup.wire.protos.kotlin.unknownfields.EnumVersionOne#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.unknownfields.EnumVersionOne#ADAPTER",
   )
   @JvmField
   public val en: EnumVersionOne? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<VersionOne, VersionOne.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -63,9 +63,9 @@ public class VersionOne(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + i.hashCode()
-      result = result * 37 + obj.hashCode()
-      result = result * 37 + en.hashCode()
+      result = result * 37 + (i?.hashCode() ?: 0)
+      result = result * 37 + (obj?.hashCode() ?: 0)
+      result = result * 37 + (en?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -83,7 +83,7 @@ public class VersionOne(
     i: Int? = this.i,
     obj: NestedVersionOne? = this.obj,
     en: EnumVersionOne? = this.en,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): VersionOne = VersionOne(i, obj, en, unknownFields)
 
   public class Builder : Message.Builder<VersionOne, Builder>() {
@@ -126,9 +126,10 @@ public class VersionOne(
       VersionOne::class, 
       "type.googleapis.com/squareup.protos.kotlin.unknownfields.VersionOne", 
       PROTO_2, 
-      null
+      null, 
+      "unknown_fields.proto"
     ) {
-      public override fun encodedSize(value: VersionOne): Int {
+      public override fun encodedSize(`value`: VersionOne): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
         size += NestedVersionOne.ADAPTER.encodedSizeWithTag(7, value.obj)
@@ -136,11 +137,18 @@ public class VersionOne(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: VersionOne): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: VersionOne): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
         NestedVersionOne.ADAPTER.encodeWithTag(writer, 7, value.obj)
         EnumVersionOne.ADAPTER.encodeWithTag(writer, 8, value.en)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: VersionOne): Unit {
+        writer.writeBytes(value.unknownFields)
+        EnumVersionOne.ADAPTER.encodeWithTag(writer, 8, value.en)
+        NestedVersionOne.ADAPTER.encodeWithTag(writer, 7, value.obj)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
       }
 
       public override fun decode(reader: ProtoReader): VersionOne {
@@ -167,7 +175,7 @@ public class VersionOne(
         )
       }
 
-      public override fun redact(value: VersionOne): VersionOne = value.copy(
+      public override fun redact(`value`: VersionOne): VersionOne = value.copy(
         obj = value.obj?.let(NestedVersionOne.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

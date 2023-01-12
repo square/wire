@@ -13,36 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("UsePropertyAccessSyntax")
+
 package com.squareup.wire
 
-import okio.buffer
-import okio.source
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toOkioPath
+import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import java.io.File
-import java.nio.file.FileSystems
-import java.util.ArrayList
 import java.util.Collections
 
 class WireCompilerTest {
   @Rule @JvmField val temp = TemporaryFolder()
+  private val fileSystem = FileSystem.SYSTEM
 
   private var logger: StringWireLogger? = null
-  private lateinit var testDir: File
+  private lateinit var testDir: Path
 
   /** Returns all paths within `root`, and relative to `root`.  */
-  private val paths: List<String>
+  private val paths: List<Path>
     get() {
-      val paths = mutableListOf<String>()
-      getPathsRecursive(testDir.absoluteFile, "", paths)
-      return paths
+      return fileSystem.listRecursively("/".toPath() / testDir)
+        .filter { fileSystem.metadata(it).isRegularFile }
+        .toList()
     }
 
   @Before fun setUp() {
-    testDir = temp.root
+    testDir = temp.root.toOkioPath()
   }
 
   @Test
@@ -51,8 +53,9 @@ class WireCompilerTest {
     compileToJava(sources)
 
     val outputs = arrayOf(
-        "com/squareup/foobar/protos/bar/Bar.java",
-        "com/squareup/foobar/protos/foo/Foo.java")
+      "com/squareup/foobar/protos/bar/Bar.java",
+      "com/squareup/foobar/protos/foo/Foo.java"
+    )
     assertJavaOutputs(outputs)
   }
 
@@ -62,8 +65,9 @@ class WireCompilerTest {
     compileToJava(sources)
 
     val outputs = arrayOf(
-        "com/squareup/differentpackage/protos/bar/Bar.java",
-        "com/squareup/differentpackage/protos/foo/Foo.java")
+      "com/squareup/differentpackage/protos/bar/Bar.java",
+      "com/squareup/differentpackage/protos/foo/Foo.java"
+    )
     assertJavaOutputs(outputs)
   }
 
@@ -100,11 +104,12 @@ class WireCompilerTest {
     compileToJava(sources)
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/simple/SimpleMessage.java",
-        "com/squareup/wire/protos/simple/ExternalMessage.java",
-        "com/squareup/wire/protos/foreign/ForeignEnum.java",
-        "com/squareup/wire/protos/foreign/ForeignEnumValueOptionOption.java",
-        "com/squareup/wire/protos/foreign/ForeignMessage.java")
+      "com/squareup/wire/protos/simple/SimpleMessage.java",
+      "com/squareup/wire/protos/simple/ExternalMessage.java",
+      "com/squareup/wire/protos/foreign/ForeignEnum.java",
+      "com/squareup/wire/protos/foreign/ForeignEnumValueOptionOption.java",
+      "com/squareup/wire/protos/foreign/ForeignMessage.java"
+    )
     assertJavaOutputs(outputs)
   }
 
@@ -123,30 +128,33 @@ class WireCompilerTest {
     compileToJava(sources)
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/single_level/Foo.java",
-        "com/squareup/wire/protos/single_level/Foos.java")
+      "com/squareup/wire/protos/single_level/Foo.java",
+      "com/squareup/wire/protos/single_level/Foos.java"
+    )
     assertJavaOutputs(outputs)
   }
 
   @Test
   fun testSameBasename() {
     val sources = arrayOf(
-        "single_level.proto",
-        "samebasename/single_level.proto")
+      "single_level.proto",
+      "samebasename/single_level.proto"
+    )
     compileToJava(sources)
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/single_level/Foo.java",
-        "com/squareup/wire/protos/single_level/Foos.java",
-        "com/squareup/wire/protos/single_level/Bar.java",
-        "com/squareup/wire/protos/single_level/Bars.java")
+      "com/squareup/wire/protos/single_level/Foo.java",
+      "com/squareup/wire/protos/single_level/Foos.java",
+      "com/squareup/wire/protos/single_level/Bar.java",
+      "com/squareup/wire/protos/single_level/Bars.java"
+    )
     assertJavaOutputs(outputs)
   }
 
   @Test
   fun testChildPackage() {
     val sources = arrayOf("child_pkg.proto")
-    compileToJava(sources, "--named_files_only")
+    compileToJava(sources)
 
     val outputs = arrayOf("com/squareup/wire/protos/ChildPackage.java")
     assertJavaOutputs(outputs)
@@ -167,10 +175,11 @@ class WireCompilerTest {
     compileToJava(sources)
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/edgecases/NoFields.java",
-        "com/squareup/wire/protos/edgecases/OneField.java",
-        "com/squareup/wire/protos/edgecases/OneBytesField.java",
-        "com/squareup/wire/protos/edgecases/Recursive.java")
+      "com/squareup/wire/protos/edgecases/NoFields.java",
+      "com/squareup/wire/protos/edgecases/OneField.java",
+      "com/squareup/wire/protos/edgecases/OneBytesField.java",
+      "com/squareup/wire/protos/edgecases/Recursive.java"
+    )
     assertJavaOutputs(outputs)
   }
 
@@ -180,43 +189,54 @@ class WireCompilerTest {
     compileToJava(sources)
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/unknownfields/EnumVersionOne.java",
-        "com/squareup/wire/protos/unknownfields/EnumVersionTwo.java",
-        "com/squareup/wire/protos/unknownfields/VersionOne.java",
-        "com/squareup/wire/protos/unknownfields/VersionTwo.java",
-        "com/squareup/wire/protos/unknownfields/NestedVersionOne.java",
-        "com/squareup/wire/protos/unknownfields/NestedVersionTwo.java")
+      "com/squareup/wire/protos/unknownfields/EnumVersionOne.java",
+      "com/squareup/wire/protos/unknownfields/EnumVersionTwo.java",
+      "com/squareup/wire/protos/unknownfields/VersionOne.java",
+      "com/squareup/wire/protos/unknownfields/VersionTwo.java",
+      "com/squareup/wire/protos/unknownfields/NestedVersionOne.java",
+      "com/squareup/wire/protos/unknownfields/NestedVersionTwo.java"
+    )
     assertJavaOutputs(outputs)
   }
 
   @Test
   fun testCustomOptions() {
     val sources = arrayOf("custom_options.proto", "option_redacted.proto")
-    compileToJava(sources, "--named_files_only", "--emit_applied_options")
+    compileToJava(sources)
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/custom_options/EnumOptionOption.java",
-        "com/squareup/wire/protos/custom_options/EnumValueOptionOption.java",
-        "com/squareup/wire/protos/custom_options/FooBar.java",
-        "com/squareup/wire/protos/custom_options/MethodOptionOneOption.java",
-        "com/squareup/wire/protos/custom_options/MessageWithOptions.java",
-        "com/squareup/wire/protos/custom_options/MyFieldOptionOneOption.java",
-        "com/squareup/wire/protos/custom_options/MyFieldOptionTwoOption.java",
-        "com/squareup/wire/protos/custom_options/MyFieldOptionThreeOption.java",
-        "com/squareup/wire/protos/custom_options/MyMessageOptionTwoOption.java",
-        "com/squareup/wire/protos/custom_options/MyMessageOptionFourOption.java",
-        "com/squareup/wire/protos/custom_options/ServiceOptionOneOption.java")
+      "com/squareup/wire/protos/custom_options/EnumOptionOption.java",
+      "com/squareup/wire/protos/custom_options/EnumValueOptionOption.java",
+      "com/squareup/wire/protos/custom_options/FooBar.java",
+      "com/squareup/wire/protos/custom_options/MessageWithOptions.java",
+      "com/squareup/wire/protos/custom_options/MethodOptionOneOption.java",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionFiveOption.java",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionOneOption.java",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionSevenOption.java",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionSixOption.java",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionThreeOption.java",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionTwoOption.java",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionEightOption.java",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionFourOption.java",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionNineOption.java",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionSevenOption.java",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionTwoOption.java",
+      "com/squareup/wire/protos/custom_options/RepeatedEnumValueOptionOneOption.java",
+      "com/squareup/wire/protos/custom_options/RepeatedEnumValueOptionTwoOption.java",
+      "com/squareup/wire/protos/custom_options/ServiceOptionOneOption.java",
+    )
     assertJavaOutputs(outputs)
   }
 
   @Test
   fun testCustomOptionsNoOptions() {
     val sources = arrayOf("custom_options.proto", "option_redacted.proto")
-    compileToJava(sources, "--excludes=google.protobuf.*", "--named_files_only")
+    compileToJava(sources, "--excludes=google.protobuf.*")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/custom_options/FooBar.java",
-        "com/squareup/wire/protos/custom_options/MessageWithOptions.java")
+      "com/squareup/wire/protos/custom_options/FooBar.java",
+      "com/squareup/wire/protos/custom_options/MessageWithOptions.java"
+    )
     assertJavaOutputs(outputs, ".noOptions")
   }
 
@@ -226,14 +246,15 @@ class WireCompilerTest {
     compileToJava(sources)
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/redacted/NotRedacted.java",
-        "com/squareup/wire/protos/redacted/RedactedChild.java",
-        "com/squareup/wire/protos/redacted/RedactedCycleA.java",
-        "com/squareup/wire/protos/redacted/RedactedCycleB.java",
-        "com/squareup/wire/protos/redacted/RedactedExtension.java",
-        "com/squareup/wire/protos/redacted/RedactedFields.java",
-        "com/squareup/wire/protos/redacted/RedactedRepeated.java",
-        "com/squareup/wire/protos/redacted/RedactedRequired.java")
+      "com/squareup/wire/protos/redacted/NotRedacted.java",
+      "com/squareup/wire/protos/redacted/RedactedChild.java",
+      "com/squareup/wire/protos/redacted/RedactedCycleA.java",
+      "com/squareup/wire/protos/redacted/RedactedCycleB.java",
+      "com/squareup/wire/protos/redacted/RedactedExtension.java",
+      "com/squareup/wire/protos/redacted/RedactedFields.java",
+      "com/squareup/wire/protos/redacted/RedactedRepeated.java",
+      "com/squareup/wire/protos/redacted/RedactedRequired.java"
+    )
     assertJavaOutputs(outputs)
   }
 
@@ -243,31 +264,35 @@ class WireCompilerTest {
     compileToJava(sources)
 
     val outputs =
-        arrayOf(
-            "com/squareup/wire/protos/roots/A.java",
-            "com/squareup/wire/protos/roots/B.java",
-            "com/squareup/wire/protos/roots/C.java",
-            "com/squareup/wire/protos/roots/D.java",
-            "com/squareup/wire/protos/roots/E.java",
-            "com/squareup/wire/protos/roots/G.java",
-            "com/squareup/wire/protos/roots/H.java",
-            "com/squareup/wire/protos/roots/I.java",
-            "com/squareup/wire/protos/roots/J.java",
-            "com/squareup/wire/protos/roots/K.java")
+      arrayOf(
+        "com/squareup/wire/protos/roots/A.java",
+        "com/squareup/wire/protos/roots/B.java",
+        "com/squareup/wire/protos/roots/C.java",
+        "com/squareup/wire/protos/roots/D.java",
+        "com/squareup/wire/protos/roots/E.java",
+        "com/squareup/wire/protos/roots/G.java",
+        "com/squareup/wire/protos/roots/H.java",
+        "com/squareup/wire/protos/roots/I.java",
+        "com/squareup/wire/protos/roots/J.java",
+        "com/squareup/wire/protos/roots/K.java"
+      )
     assertJavaOutputs(outputs)
   }
 
   @Test
   fun testExcludes() {
     val sources = arrayOf("roots.proto")
-    compileToJava(sources,
-        "--includes=squareup.protos.roots.A",
-        "--excludes=squareup.protos.roots.B")
+    compileToJava(
+      sources,
+      "--includes=squareup.protos.roots.A",
+      "--excludes=squareup.protos.roots.B"
+    )
 
     val outputs =
-        arrayOf(
-            "com/squareup/wire/protos/roots/A.java",
-            "com/squareup/wire/protos/roots/D.java")
+      arrayOf(
+        "com/squareup/wire/protos/roots/A.java",
+        "com/squareup/wire/protos/roots/D.java"
+      )
     assertJavaOutputs(outputs, ".pruned")
   }
 
@@ -277,11 +302,12 @@ class WireCompilerTest {
     compileToJava(sources, "--includes=squareup.protos.roots.A")
 
     val outputs =
-        arrayOf(
-            "com/squareup/wire/protos/roots/A.java",
-            "com/squareup/wire/protos/roots/B.java",
-            "com/squareup/wire/protos/roots/C.java",
-            "com/squareup/wire/protos/roots/D.java")
+      arrayOf(
+        "com/squareup/wire/protos/roots/A.java",
+        "com/squareup/wire/protos/roots/B.java",
+        "com/squareup/wire/protos/roots/C.java",
+        "com/squareup/wire/protos/roots/D.java"
+      )
     assertJavaOutputs(outputs)
   }
 
@@ -291,8 +317,9 @@ class WireCompilerTest {
     compileToJava(sources, "--includes=squareup.protos.roots.B")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/roots/B.java",
-        "com/squareup/wire/protos/roots/C.java")
+      "com/squareup/wire/protos/roots/B.java",
+      "com/squareup/wire/protos/roots/C.java"
+    )
     assertJavaOutputs(outputs)
   }
 
@@ -302,8 +329,9 @@ class WireCompilerTest {
     compileToJava(sources, "--includes=squareup.protos.roots.E")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/roots/E.java",
-        "com/squareup/wire/protos/roots/G.java")
+      "com/squareup/wire/protos/roots/E.java",
+      "com/squareup/wire/protos/roots/G.java"
+    )
     assertJavaOutputs(outputs)
   }
 
@@ -313,8 +341,9 @@ class WireCompilerTest {
     compileToJava(sources, "--includes=squareup.protos.roots.H")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/roots/E.java",
-        "com/squareup/wire/protos/roots/H.java")
+      "com/squareup/wire/protos/roots/E.java",
+      "com/squareup/wire/protos/roots/H.java"
+    )
     assertJavaOutputs(outputs, ".pruned")
   }
 
@@ -324,34 +353,22 @@ class WireCompilerTest {
     compileToJava(sources, "--includes=squareup.protos.roots.I")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/roots/I.java",
-        "com/squareup/wire/protos/roots/J.java",
-        "com/squareup/wire/protos/roots/K.java")
+      "com/squareup/wire/protos/roots/I.java",
+      "com/squareup/wire/protos/roots/J.java",
+      "com/squareup/wire/protos/roots/K.java"
+    )
     assertJavaOutputs(outputs)
   }
 
   @Test
-  fun testDryRun() {
-    val sources = arrayOf("service_root.proto")
-    compileToJava(sources, "--includes=squareup.wire.protos.roots.TheService", "--dry_run",
-        "--quiet")
-
-    assertThat(logger!!.log).isEqualTo("""
-        |skipped squareup.wire.protos.roots.TheRequest
-        |skipped squareup.wire.protos.roots.TheResponse
-        |skipped squareup.wire.protos.roots.TheService
-        |""".trimMargin())
-  }
-
-  @Test
-  fun serviceAreIgnoredForJava(){
+  fun serviceAreIgnoredForJava() {
     val sources = arrayOf("service_root.proto")
     compileToJava(sources, "--includes=squareup.wire.protos.roots.TheService")
 
     // TheService is not created.
     val outputs = arrayOf(
-        "com/squareup/wire/protos/roots/TheResponse.java",
-        "com/squareup/wire/protos/roots/TheRequest.java"
+      "com/squareup/wire/protos/roots/TheResponse.java",
+      "com/squareup/wire/protos/roots/TheRequest.java"
     )
     assertJavaOutputs(outputs)
   }
@@ -362,10 +379,10 @@ class WireCompilerTest {
     compileToKotlin(sources, "--includes=squareup.protos.kotlin.SomeService")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/kotlin/services/GrpcSomeServiceClient.kt",
-        "com/squareup/wire/protos/kotlin/services/SomeServiceClient.kt",
-        "com/squareup/wire/protos/kotlin/services/SomeResponse.kt",
-        "com/squareup/wire/protos/kotlin/services/SomeRequest.kt"
+      "com/squareup/wire/protos/kotlin/services/GrpcSomeServiceClient.kt",
+      "com/squareup/wire/protos/kotlin/services/SomeServiceClient.kt",
+      "com/squareup/wire/protos/kotlin/services/SomeResponse.kt",
+      "com/squareup/wire/protos/kotlin/services/SomeRequest.kt"
     )
     assertKotlinOutputs(outputs)
   }
@@ -376,10 +393,10 @@ class WireCompilerTest {
     compileToKotlin(sources, "--includes=NoPackageService")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/kotlin/services/GrpcNoPackageServiceClient.kt",
-        "com/squareup/wire/protos/kotlin/services/NoPackageServiceClient.kt",
-        "com/squareup/wire/protos/kotlin/services/NoPackageResponse.kt",
-        "com/squareup/wire/protos/kotlin/services/NoPackageRequest.kt"
+      "com/squareup/wire/protos/kotlin/services/GrpcNoPackageServiceClient.kt",
+      "com/squareup/wire/protos/kotlin/services/NoPackageServiceClient.kt",
+      "com/squareup/wire/protos/kotlin/services/NoPackageResponse.kt",
+      "com/squareup/wire/protos/kotlin/services/NoPackageRequest.kt"
     )
     assertKotlinOutputs(outputs)
   }
@@ -398,6 +415,42 @@ class WireCompilerTest {
     compileToKotlin(sources)
 
     val outputs = arrayOf("com/squareup/wire/protos/kotlin/alltypes/AllTypes.kt")
+    assertKotlinOutputs(outputs)
+  }
+
+  @Test
+  fun sourceInJar() {
+    val sources = arrayOf("squareup/geology/period.proto", "squareup/dinosaurs/dinosaur.proto")
+    val args = ArrayList<String>()
+    args.add("--proto_path=../wire-tests/src/commonTest/proto/kotlin/protos.jar")
+    args.add(TargetLanguage.KOTLIN.outArg("/".toPath() / testDir))
+    Collections.addAll(args)
+    Collections.addAll(args, *sources)
+    logger = StringWireLogger()
+    val compiler = WireCompiler.forArgs(fileSystem, logger!!, *args.toTypedArray())
+    compiler.compile()
+
+    val outputs = arrayOf(
+      "com/squareup/geology/Period.kt",
+      "com/squareup/dinosaurs/Dinosaur.kt"
+    )
+    assertKotlinOutputs(outputs)
+  }
+
+  @Test
+  fun sourceDependsOnJar() {
+    // `dinosaur.proto` depends on `period.proto` which both are in `protos.jar`.
+    val sources = arrayOf("squareup/dinosaurs/dinosaur.proto")
+    val args = ArrayList<String>()
+    args.add("--proto_path=../wire-tests/src/commonTest/proto/kotlin/protos.jar")
+    args.add(TargetLanguage.KOTLIN.outArg("/".toPath() / testDir))
+    Collections.addAll(args)
+    Collections.addAll(args, *sources)
+    logger = StringWireLogger()
+    val compiler = WireCompiler.forArgs(fileSystem, logger!!, *args.toTypedArray())
+    compiler.compile()
+
+    val outputs = arrayOf("com/squareup/dinosaurs/Dinosaur.kt")
     assertKotlinOutputs(outputs)
   }
 
@@ -485,22 +538,30 @@ class WireCompilerTest {
   @Test
   fun testCustomOptionsKotlin() {
     val sources = arrayOf("custom_options.proto", "option_redacted.proto")
-    compileToKotlin(sources, "--named_files_only", "--emit_applied_options")
+    compileToKotlin(sources)
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/custom_options/EnumOptionOption.kt",
-        "com/squareup/wire/protos/custom_options/EnumValueOptionOption.kt",
-        "com/squareup/wire/protos/custom_options/FooBar.kt",
-        "com/squareup/wire/protos/custom_options/GrpcServiceWithOptionsClient.kt",
-        "com/squareup/wire/protos/custom_options/MessageWithOptions.kt",
-        "com/squareup/wire/protos/custom_options/MethodOptionOneOption.kt",
-        "com/squareup/wire/protos/custom_options/MyFieldOptionOneOption.kt",
-        "com/squareup/wire/protos/custom_options/MyFieldOptionTwoOption.kt",
-        "com/squareup/wire/protos/custom_options/MyFieldOptionThreeOption.kt",
-        "com/squareup/wire/protos/custom_options/MyMessageOptionTwoOption.kt",
-        "com/squareup/wire/protos/custom_options/MyMessageOptionFourOption.kt",
-        "com/squareup/wire/protos/custom_options/ServiceOptionOneOption.kt",
-        "com/squareup/wire/protos/custom_options/ServiceWithOptionsClient.kt"
+      "com/squareup/wire/protos/custom_options/EnumOptionOption.kt",
+      "com/squareup/wire/protos/custom_options/EnumValueOptionOption.kt",
+      "com/squareup/wire/protos/custom_options/FooBar.kt",
+      "com/squareup/wire/protos/custom_options/GrpcServiceWithOptionsClient.kt",
+      "com/squareup/wire/protos/custom_options/MessageWithOptions.kt",
+      "com/squareup/wire/protos/custom_options/MethodOptionOneOption.kt",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionFiveOption.kt",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionOneOption.kt",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionSevenOption.kt",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionSixOption.kt",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionThreeOption.kt",
+      "com/squareup/wire/protos/custom_options/MyFieldOptionTwoOption.kt",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionEightOption.kt",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionFourOption.kt",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionNineOption.kt",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionSevenOption.kt",
+      "com/squareup/wire/protos/custom_options/MyMessageOptionTwoOption.kt",
+      "com/squareup/wire/protos/custom_options/RepeatedEnumValueOptionOneOption.kt",
+      "com/squareup/wire/protos/custom_options/RepeatedEnumValueOptionTwoOption.kt",
+      "com/squareup/wire/protos/custom_options/ServiceOptionOneOption.kt",
+      "com/squareup/wire/protos/custom_options/ServiceWithOptionsClient.kt",
     )
     assertKotlinOutputs(outputs)
   }
@@ -511,14 +572,14 @@ class WireCompilerTest {
     compileToKotlin(sources)
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/kotlin/redacted/NotRedacted.kt",
-        "com/squareup/wire/protos/kotlin/redacted/RedactedFields.kt",
-        "com/squareup/wire/protos/kotlin/redacted/RedactedChild.kt",
-        "com/squareup/wire/protos/kotlin/redacted/RedactedCycleA.kt",
-        "com/squareup/wire/protos/kotlin/redacted/RedactedCycleB.kt",
-        "com/squareup/wire/protos/kotlin/redacted/RedactedRepeated.kt",
-        "com/squareup/wire/protos/kotlin/redacted/RedactedRequired.kt",
-        "com/squareup/wire/protos/kotlin/redacted/RedactedExtension.kt"
+      "com/squareup/wire/protos/kotlin/redacted/NotRedacted.kt",
+      "com/squareup/wire/protos/kotlin/redacted/RedactedFields.kt",
+      "com/squareup/wire/protos/kotlin/redacted/RedactedChild.kt",
+      "com/squareup/wire/protos/kotlin/redacted/RedactedCycleA.kt",
+      "com/squareup/wire/protos/kotlin/redacted/RedactedCycleB.kt",
+      "com/squareup/wire/protos/kotlin/redacted/RedactedRepeated.kt",
+      "com/squareup/wire/protos/kotlin/redacted/RedactedRequired.kt",
+      "com/squareup/wire/protos/kotlin/redacted/RedactedExtension.kt"
     )
     assertKotlinOutputs(outputs)
   }
@@ -529,7 +590,7 @@ class WireCompilerTest {
     compileToKotlin(sources)
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/kotlin/redacted/RedactedOneOf.kt"
+      "com/squareup/wire/protos/kotlin/redacted/RedactedOneOf.kt"
     )
     assertKotlinOutputs(outputs)
   }
@@ -540,7 +601,7 @@ class WireCompilerTest {
     compileToKotlin(sources, "--java_interop")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/kotlin/redacted/RedactedOneOf.kt"
+      "com/squareup/wire/protos/kotlin/redacted/RedactedOneOf.kt"
     )
     assertKotlinOutputs(outputs, ".java.interop")
   }
@@ -577,15 +638,16 @@ class WireCompilerTest {
     val sources = arrayOf("to_string.proto")
     compileToKotlin(sources)
 
-    val outputs = arrayOf("com/squareup/wire/protos/kotlin/VeryLongProtoNameCausingBrokenLineBreaks.kt")
+    val outputs =
+      arrayOf("com/squareup/wire/protos/kotlin/VeryLongProtoNameCausingBrokenLineBreaks.kt")
     assertKotlinOutputs(outputs)
   }
 
   private fun compileToJava(sources: Array<String>, vararg extraArgs: String) =
-      invokeCompiler(TargetLanguage.JAVA, sources, *extraArgs)
+    invokeCompiler(TargetLanguage.JAVA, sources, *extraArgs)
 
   private fun compileToKotlin(sources: Array<String>, vararg extraArgs: String) =
-      invokeCompiler(TargetLanguage.KOTLIN, sources, *extraArgs)
+    invokeCompiler(TargetLanguage.KOTLIN, sources, *extraArgs)
 
   private fun invokeCompiler(
     target: TargetLanguage,
@@ -594,63 +656,48 @@ class WireCompilerTest {
   ) {
     val args = ArrayList<String>()
     args.add(target.protoPathArg())
-    args.add(target.outArg(testDir.absolutePath))
+    args.add(target.outArg("/".toPath() / testDir))
     Collections.addAll(args, *extraArgs)
     Collections.addAll(args, *sources)
 
     logger = StringWireLogger()
-    val fs = FileSystems.getDefault()
+    val fs = fileSystem
     val compiler = WireCompiler.forArgs(fs, logger!!, *args.toTypedArray())
     compiler.compile()
   }
 
   private fun assertJavaOutputs(outputs: Array<String>, suffix: String = "") =
-      assertOutputs(TargetLanguage.JAVA, outputs, suffix)
+    assertOutputs(TargetLanguage.JAVA, outputs, suffix)
 
   private fun assertKotlinOutputs(outputs: Array<String>, suffix: String = "") =
-      assertOutputs(TargetLanguage.KOTLIN, outputs, suffix)
+    assertOutputs(TargetLanguage.KOTLIN, outputs, suffix)
 
   private fun assertOutputs(target: TargetLanguage, outputs: Array<String>, suffix: String = "") {
     val filesAfter = paths
     assertThat(filesAfter.size)
-        .overridingErrorMessage(filesAfter.toString())
-        .isEqualTo(outputs.size)
+      .overridingErrorMessage(filesAfter.toString())
+      .isEqualTo(outputs.size)
 
     for (output in outputs) {
       assertFilesMatch(target, testDir, output, suffix)
     }
   }
 
-  private fun getPathsRecursive(base: File, path: String, paths: MutableList<String>) {
-    val file = File(base, path)
-
-    val children = file.list() ?: return
-
-    for (child in children) {
-      val childFile = File(file, child)
-      if (childFile.isFile) {
-        paths.add(path + child)
-      } else {
-        getPathsRecursive(base, "$path$child/", paths)
-      }
-    }
-  }
-
   private fun assertFilesMatch(
     target: TargetLanguage,
-    outputDir: File,
+    outputDir: Path,
     path: String,
     suffix: String
   ) {
-    // Compare against file with suffix if present
+    // Compare against file with suffix if present.
     val expectedFile = target.expectedFile(path, suffix)
-    val actualFile = File(outputDir, path)
+    val actualFile = outputDir / path
     assertFilesMatch(expectedFile, actualFile)
   }
 
-  private fun assertFilesMatch(expectedFile: File, actualFile: File) {
-    var expected = expectedFile.source().use { it.buffer().readUtf8() }
-    var actual = actualFile.source().use { it.buffer().readUtf8() }
+  private fun assertFilesMatch(expectedFile: Path, actualFile: Path) {
+    var expected = fileSystem.read(expectedFile) { readUtf8() }
+    var actual = fileSystem.read(actualFile) { readUtf8() }
 
     // Normalize CRLF -> LF.
     expected = expected.replace("\r\n", "\n")
@@ -661,20 +708,20 @@ class WireCompilerTest {
   private enum class TargetLanguage {
     JAVA {
       override fun protoPathArg() = "--proto_path=../wire-tests/src/commonTest/proto/java"
-      override fun outArg(testDirPath: String) = "--java_out=$testDirPath"
+      override fun outArg(testDirPath: Path) = "--java_out=$testDirPath"
       override fun protoFolderSuffix() = "java"
     },
     KOTLIN {
       override fun protoPathArg() = "--proto_path=../wire-tests/src/commonTest/proto/kotlin"
-      override fun outArg(testDirPath: String) = "--kotlin_out=$testDirPath"
+      override fun outArg(testDirPath: Path) = "--kotlin_out=$testDirPath"
       override fun protoFolderSuffix() = "kotlin"
     };
 
-    internal abstract fun protoPathArg(): String
-    internal abstract fun outArg(testDirPath: String): String
-    internal abstract fun protoFolderSuffix(): String
+    abstract fun protoPathArg(): String
+    abstract fun outArg(testDirPath: Path): String
+    abstract fun protoFolderSuffix(): String
 
-    internal fun expectedFile(path: String, suffix: String): File {
+    fun expectedFile(path: String, suffix: String): Path {
       val sourceSet = when (val protoFolderSuffix = protoFolderSuffix()) {
         "kotlin" -> when (suffix) {
           "" -> if (path.contains("kotlin/services/")) "jvmKotlinInteropTest" else "commonTest"
@@ -693,7 +740,7 @@ class WireCompilerTest {
         }
         else -> throw AssertionError("Unknown proto folder suffix: $protoFolderSuffix")
       }
-      val expectedFile = File("../wire-tests/src/$sourceSet/proto-${protoFolderSuffix()}/$path")
+      val expectedFile = "../wire-tests/src/$sourceSet/proto-${protoFolderSuffix()}/$path".toPath()
       return expectedFile.also {
         println("Comparing against expected output $name")
       }

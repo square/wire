@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
@@ -22,7 +23,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -30,16 +30,17 @@ import okio.ByteString
 public class OptionalEnumUser(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.protos.kotlin.OptionalEnumUser${'$'}OptionalEnum#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.OptionalEnumUser${'$'}OptionalEnum#ADAPTER",
   )
   public val optional_enum: OptionalEnum? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<OptionalEnumUser, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -53,7 +54,7 @@ public class OptionalEnumUser(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + optional_enum.hashCode()
+      result = result * 37 + (optional_enum?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -75,17 +76,23 @@ public class OptionalEnumUser(
       OptionalEnumUser::class, 
       "type.googleapis.com/squareup.protos.kotlin.OptionalEnumUser", 
       PROTO_2, 
-      null
+      null, 
+      "optional_enum.proto"
     ) {
-      public override fun encodedSize(value: OptionalEnumUser): Int {
+      public override fun encodedSize(`value`: OptionalEnumUser): Int {
         var size = value.unknownFields.size
         size += OptionalEnum.ADAPTER.encodedSizeWithTag(1, value.optional_enum)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: OptionalEnumUser): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: OptionalEnumUser): Unit {
         OptionalEnum.ADAPTER.encodeWithTag(writer, 1, value.optional_enum)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: OptionalEnumUser): Unit {
+        writer.writeBytes(value.unknownFields)
+        OptionalEnum.ADAPTER.encodeWithTag(writer, 1, value.optional_enum)
       }
 
       public override fun decode(reader: ProtoReader): OptionalEnumUser {
@@ -106,7 +113,7 @@ public class OptionalEnumUser(
         )
       }
 
-      public override fun redact(value: OptionalEnumUser): OptionalEnumUser = value.copy(
+      public override fun redact(`value`: OptionalEnumUser): OptionalEnumUser = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -115,7 +122,7 @@ public class OptionalEnumUser(
   }
 
   public enum class OptionalEnum(
-    public override val value: Int
+    public override val `value`: Int,
   ) : WireEnum {
     FOO(1),
     BAR(2),
@@ -128,11 +135,11 @@ public class OptionalEnumUser(
         PROTO_2, 
         null
       ) {
-        public override fun fromValue(value: Int): OptionalEnum? = OptionalEnum.fromValue(value)
+        public override fun fromValue(`value`: Int): OptionalEnum? = OptionalEnum.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): OptionalEnum? = when (value) {
+      public fun fromValue(`value`: Int): OptionalEnum? = when (value) {
         1 -> FOO
         2 -> BAR
         else -> null

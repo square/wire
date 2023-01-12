@@ -38,15 +38,15 @@ internal fun parseManifestModules(yaml: String): Map<String, WireRun.Module> {
   val modules = Yaml.default.decodeFromString(serializer, yaml)
   return modules.mapValues { (_, module) ->
     WireRun.Module(
-        dependencies = module.dependencies,
-        pruningRules = if (module.roots != defaultRoots || module.prunes != defaultPrunes) {
-          PruningRules.Builder()
-              .addRoot(module.roots)
-              .prune(module.prunes)
-              .build()
-        } else {
-          null
-        }
+      dependencies = module.dependencies,
+      pruningRules = if (module.roots != defaultRoots || module.prunes != defaultPrunes) {
+        PruningRules.Builder()
+          .addRoot(module.roots)
+          .prune(module.prunes)
+          .build()
+      } else {
+        null
+      }
     )
   }
 }

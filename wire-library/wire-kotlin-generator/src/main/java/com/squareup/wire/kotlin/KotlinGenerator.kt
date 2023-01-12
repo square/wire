@@ -28,6 +28,7 @@ import com.squareup.kotlinpoet.INT
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.KModifier.ABSTRACT
 import com.squareup.kotlinpoet.KModifier.CONST
+import com.squareup.kotlinpoet.KModifier.INTERNAL
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.KModifier.PUBLIC
@@ -63,6 +64,7 @@ import com.squareup.wire.MessageSource
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
@@ -71,8 +73,6 @@ import com.squareup.wire.WireRpc
 import com.squareup.wire.internal.boxedOneOfClassName
 import com.squareup.wire.internal.boxedOneOfKeyFieldName
 import com.squareup.wire.internal.boxedOneOfKeysFieldName
-import com.squareup.wire.internal.camelCase
-import com.squareup.wire.java.Profile
 import com.squareup.wire.kotlin.grpcserver.KotlinGrpcGenerator
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumConstant
@@ -89,6 +89,7 @@ import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.MESSAGE_OPTIONS
 import com.squareup.wire.schema.Options.Companion.METHOD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.SERVICE_OPTIONS
+import com.squareup.wire.schema.Profile
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoMember
 import com.squareup.wire.schema.ProtoType
@@ -96,17 +97,20 @@ import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
+import com.squareup.wire.schema.internal.NameFactory
+import com.squareup.wire.schema.internal.annotationName
 import com.squareup.wire.schema.internal.builtInAdapterString
 import com.squareup.wire.schema.internal.eligibleAsAnnotationMember
+import com.squareup.wire.schema.internal.hasEponymousType
 import com.squareup.wire.schema.internal.javaPackage
+import com.squareup.wire.schema.internal.legacyQualifiedFieldName
 import com.squareup.wire.schema.internal.optionValueToInt
 import com.squareup.wire.schema.internal.optionValueToLong
-import kotlinx.coroutines.Deferred
+import java.util.Locale
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.ByteString
 import okio.ByteString.Companion.encode
-import java.util.Locale
 
 class KotlinGenerator private constructor(
   val schema: Schema,
@@ -117,29 +121,34 @@ class KotlinGenerator private constructor(
   private val javaInterOp: Boolean,
   private val emitDeclaredOptions: Boolean,
   private val emitAppliedOptions: Boolean,
-  private val emitKotlinSerialization: Boolean,
   private val rpcCallStyle: RpcCallStyle,
   private val rpcRole: RpcRole,
   private val boxOneOfsMinSize: Int,
   private val grpcServerCompatible: Boolean,
+  private val nameSuffix: String?,
+  private val buildersOnly: Boolean,
+  private val singleMethodServices: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
   private val ProtoType.typeName: TypeName
     get() {
-      val profileTypeName = profile.kotlinTarget(this)
-      if (profileTypeName != null) return profileTypeName
-      return typeToKotlinName.getValue(this)
+      return if (isMap) {
+        Map::class.asTypeName()
+          .parameterizedBy(keyType!!.typeName, valueType!!.typeName)
+      } else {
+        profile.kotlinTarget(this) ?: typeToKotlinName.getValue(this)
+      }
     }
   private val ProtoType.isEnum
     get() = schema.getType(this) is EnumType
   private val ProtoType.isMessage
     get() = schema.getType(this) is MessageType
   private val ProtoType.isStruct
-    get() = this == ProtoType.STRUCT_MAP
-        || this == ProtoType.STRUCT_LIST
-        || this == ProtoType.STRUCT_VALUE
-        || this == ProtoType.STRUCT_NULL
+    get() = this == ProtoType.STRUCT_MAP ||
+      this == ProtoType.STRUCT_LIST ||
+      this == ProtoType.STRUCT_VALUE ||
+      this == ProtoType.STRUCT_NULL
   private val ProtoType.isStructNull
     get() = this == ProtoType.STRUCT_NULL
   private val Type.typeName
@@ -150,8 +159,8 @@ class KotlinGenerator private constructor(
   /** Returns the full name of the class generated for [type].  */
   fun generatedTypeName(type: Type) = type.typeName as ClassName
 
-  /** Returns the full name of the class generated for [field].  */
-  fun generatedTypeName(field: Field) = memberToKotlinName[field.member] as ClassName
+  /** Returns the full name of the class generated for [member].  */
+  fun generatedTypeName(member: ProtoMember) = memberToKotlinName[member] as ClassName
 
   /**
    * Returns the full name of the class generated for [service]#[rpc]. This returns a name like
@@ -171,19 +180,33 @@ class KotlinGenerator private constructor(
       if (rpc != null) {
         append(rpc.name)
       }
-      when (rpcCallStyle) {
-        RpcCallStyle.SUSPENDING -> Unit // Suspending is implicit.
-        RpcCallStyle.BLOCKING -> {
-          if (rpcRole == RpcRole.SERVER) append("Blocking")
-        }
-      }
-      when (rpcRole) {
-        RpcRole.CLIENT -> append("Client")
-        RpcRole.SERVER -> append("Server")
-      }
+      append(serviceNameSuffix)
     }
     return typeName.peerClass(simpleName)
   }
+
+  private val serviceNameSuffix: String
+    get() {
+      // nameSuffix, if given, overrides both call-style and rpc-role suffixes.
+      if (nameSuffix != null) {
+        return nameSuffix
+      }
+
+      return buildString {
+        when (rpcCallStyle) {
+          RpcCallStyle.SUSPENDING -> Unit // Suspending is implicit.
+          RpcCallStyle.BLOCKING -> {
+            if (rpcRole == RpcRole.SERVER) append("Blocking")
+          }
+        }
+
+        when (rpcRole) {
+          RpcRole.CLIENT -> append("Client")
+          RpcRole.SERVER -> append("Server")
+          RpcRole.NONE -> Unit
+        }
+      }
+    }
 
   fun generateType(type: Type): TypeSpec {
     check(type.type != ProtoType.ANY)
@@ -208,16 +231,28 @@ class KotlinGenerator private constructor(
     result[interfaceName] = interfaceSpec
 
     if (rpcRole == RpcRole.CLIENT) {
-      val (implementationName, implementationSpec) = generateService(service, onlyRpc,
-          isImplementation = true)
+      val (implementationName, implementationSpec) = generateService(
+        service, onlyRpc,
+        isImplementation = true
+      )
       result[implementationName] = implementationSpec
     }
 
-    if (grpcServerCompatible) {
-      val (grpcClassName, grpcSpec) = KotlinGrpcGenerator(typeToKotlinName)
-        .generateGrpcServer(service)
-      result[grpcClassName] = grpcSpec
-    }
+    return result
+  }
+
+  /**
+   * Generates [TypeSpec]s for gRPC adapter for the given [service].
+   *
+   * These adapters allow us to use Wire based gRPC as io.grpc.BindableService
+   */
+  fun generateGrpcServerAdapter(service: Service): Map<ClassName, TypeSpec> {
+    val result = mutableMapOf<ClassName, TypeSpec>()
+
+    val protoFile: ProtoFile? = schema.protoFile(service.location.path)
+    val (grpcClassName, grpcSpec) = KotlinGrpcGenerator(typeToKotlinName, singleMethodServices, rpcCallStyle == RpcCallStyle.SUSPENDING)
+      .generateGrpcServer(service, protoFile, schema)
+    result[grpcClassName] = grpcSpec
 
     return result
   }
@@ -234,33 +269,40 @@ class KotlinGenerator private constructor(
     val implementationName = generatedServiceName(service, onlyRpc, isImplementation = true)
     val builder = if (!isImplementation) {
       TypeSpec.interfaceBuilder(interfaceName)
-          .addSuperinterface(com.squareup.wire.Service::class.java)
+        .addSuperinterface(com.squareup.wire.Service::class.java)
     } else {
       TypeSpec.classBuilder(implementationName)
-          .primaryConstructor(FunSpec.constructorBuilder()
-              .addParameter("client", GrpcClient::class)
-              .build())
-          .addProperty(PropertySpec.builder("client", GrpcClient::class, PRIVATE)
-              .initializer("client")
-              .build())
-          .addSuperinterface(interfaceName)
+        .primaryConstructor(
+          FunSpec.constructorBuilder()
+            .addParameter("client", GrpcClient::class)
+            .build()
+        )
+        .addProperty(
+          PropertySpec.builder("client", GrpcClient::class, PRIVATE)
+            .initializer("client")
+            .build()
+        )
+        .addSuperinterface(interfaceName)
     }
     builder
-        .apply {
-          if (service.documentation.isNotBlank()) {
-            addKdoc("%L\n", service.documentation.sanitizeKdoc())
-          }
-          if (!isImplementation) {
-            for (annotation in optionAnnotations(service.options)) {
-              addAnnotation(annotation)
-            }
+      .apply {
+        if (service.documentation.isNotBlank()) {
+          addKdoc("%L\n", service.documentation.sanitizeKdoc())
+        }
+        if (!isImplementation) {
+          for (annotation in optionAnnotations(service.options)) {
+            addAnnotation(annotation)
           }
         }
+      }
 
     val rpcs = if (onlyRpc == null) service.rpcs else listOf(onlyRpc)
     for (rpc in rpcs) {
-      builder.addFunction(generateRpcFunction(
-          rpc, service.name, service.type.enclosingTypeOrPackage, isImplementation))
+      builder.addFunction(
+        generateRpcFunction(
+          rpc, service.name, service.type.enclosingTypeOrPackage, isImplementation
+        )
+      )
     }
 
     val key = if (isImplementation) implementationName else interfaceName
@@ -275,85 +317,86 @@ class KotlinGenerator private constructor(
   ): FunSpec {
     val packageName = if (servicePackageName.isNullOrBlank()) "" else "$servicePackageName."
     val funSpecBuilder = FunSpec.builder(rpc.name)
-        .apply {
-          if (rpc.documentation.isNotBlank()) {
-            addKdoc("%L\n", rpc.documentation.sanitizeKdoc())
-          }
-          if (!isImplementation) {
-            for (annotation in optionAnnotations(rpc.options)) {
-              addAnnotation(annotation)
-            }
+      .apply {
+        if (rpc.documentation.isNotBlank()) {
+          addKdoc("%L\n", rpc.documentation.sanitizeKdoc())
+        }
+        if (!isImplementation) {
+          for (annotation in optionAnnotations(rpc.options)) {
+            addAnnotation(annotation)
           }
         }
+      }
 
     val requestType = rpc.requestType!!.typeName
     val responseType = rpc.responseType!!.typeName
 
     if (rpcRole == RpcRole.SERVER) {
       val wireRpcAnnotationSpec = AnnotationSpec.builder(WireRpc::class.asClassName())
-          .addMember("path = %S", "/$packageName$serviceName/${rpc.name}")
-          .addMember("requestAdapter = %S", rpc.requestType!!.adapterString())
-          .addMember("responseAdapter = %S", rpc.responseType!!.adapterString())
-          .build()
+        .addMember("path = %S", "/$packageName$serviceName/${rpc.name}")
+        .addMember("requestAdapter = %S", rpc.requestType!!.adapterString())
+        .addMember("responseAdapter = %S", rpc.responseType!!.adapterString())
+        .addMember("sourceFile = %S", rpc.location.path)
+        .build()
       funSpecBuilder
-          .addAnnotation(wireRpcAnnotationSpec)
-          .addModifiers(ABSTRACT)
+        .addAnnotation(wireRpcAnnotationSpec)
+        .addModifiers(ABSTRACT)
       if (rpcCallStyle == RpcCallStyle.SUSPENDING) {
         funSpecBuilder.addModifiers(KModifier.SUSPEND)
       }
       when {
         rpc.requestStreaming && rpc.responseStreaming -> {
           funSpecBuilder
-              .addParameter("request", readableStreamOf(requestType))
-              .addParameter("response", writableStreamOf(responseType))
+            .addParameter("request", readableStreamOf(requestType))
+            .addParameter("response", writableStreamOf(responseType))
         }
         rpc.requestStreaming -> {
           funSpecBuilder
-              .addParameter("request", readableStreamOf(requestType))
-              .returns(responseType)
+            .addParameter("request", readableStreamOf(requestType))
+            .returns(responseType)
         }
         rpc.responseStreaming -> {
           funSpecBuilder
-              .addParameter("request", requestType)
-              .addParameter("response", writableStreamOf(responseType))
+            .addParameter("request", requestType)
+            .addParameter("response", writableStreamOf(responseType))
         }
         else -> {
           funSpecBuilder
-              .addParameter("request", requestType)
-              .returns(responseType)
+            .addParameter("request", requestType)
+            .returns(responseType)
         }
       }
     } else {
       val grpcMethod = CodeBlock.builder()
-          .addStatement("%T(⇥⇥", GrpcMethod::class)
-          .addStatement("path = %S,", "/$packageName$serviceName/${rpc.name}")
-          .addStatement("requestAdapter = %L,", rpc.requestType!!.getAdapterName())
-          .addStatement("responseAdapter = %L", rpc.responseType!!.getAdapterName())
-          .add("⇤⇤)")
-          .build()
+        .addStatement("%T(⇥⇥", GrpcMethod::class)
+        .addStatement("path = %S,", "/$packageName$serviceName/${rpc.name}")
+        .addStatement("requestAdapter = %L,", rpc.requestType!!.getAdapterName())
+        .addStatement("responseAdapter = %L", rpc.responseType!!.getAdapterName())
+        .add("⇤⇤)")
+        .build()
       when {
         rpc.requestStreaming || rpc.responseStreaming -> {
           funSpecBuilder
-              .returns(
-                  GrpcStreamingCall::class.asClassName().parameterizedBy(requestType, responseType)
-              )
+            .returns(
+              GrpcStreamingCall::class.asClassName().parameterizedBy(requestType, responseType)
+            )
           if (isImplementation) {
             funSpecBuilder
-                .addModifiers(OVERRIDE)
-                .addStatement("return client.newStreamingCall(%L)", grpcMethod)
+              .addModifiers(OVERRIDE)
+              .addStatement("return client.newStreamingCall(%L)", grpcMethod)
           } else {
             funSpecBuilder.addModifiers(ABSTRACT)
           }
         }
         else -> {
           funSpecBuilder
-              .returns(
-                  GrpcCall::class.asClassName().parameterizedBy(requestType, responseType)
-              )
+            .returns(
+              GrpcCall::class.asClassName().parameterizedBy(requestType, responseType)
+            )
           if (isImplementation) {
             funSpecBuilder
-                .addModifiers(OVERRIDE)
-                .addStatement("return client.newCall(%L)", grpcMethod)
+              .addModifiers(OVERRIDE)
+              .addStatement("return client.newCall(%L)", grpcMethod)
           } else {
             funSpecBuilder.addModifiers(ABSTRACT)
           }
@@ -378,23 +421,21 @@ class KotlinGenerator private constructor(
     }
   }
 
-  private fun readableSingleOf(typeName: TypeName): ParameterizedTypeName {
-    return when (rpcCallStyle) {
-      RpcCallStyle.SUSPENDING -> Deferred::class.asClassName().parameterizedBy(typeName)
-      RpcCallStyle.BLOCKING -> MessageSource::class.asClassName().parameterizedBy(typeName)
-    }
-  }
-
   private fun nameAllocator(message: Type): NameAllocator {
     return nameAllocatorStore.getOrPut(message) {
       NameAllocator().apply {
         when (message) {
           is EnumType -> {
-            newName("value", "value")
             newName("ADAPTER", "ADAPTER")
             newName("ENUM_OPTIONS", "ENUM_OPTIONS")
             message.constants.forEach { constant ->
-              newName(constant.name, constant)
+              val constantName = when (constant.name) {
+                // `name` and `ordinal` are private fields of all Kotlin enums. We are escaping them
+                // manually because KotlinPoet does not escape them.
+                "name", "ordinal" -> constant.name + "_"
+                else -> constant.name
+              }
+              newName(constantName, constant)
             }
           }
           is MessageType -> {
@@ -409,28 +450,34 @@ class KotlinGenerator private constructor(
             if (emitAndroid) {
               newName("CREATOR", "CREATOR")
             }
-            message.fieldsAndFlatOneOfFields().forEach { field ->
-              if (field.name == field.type!!.simpleName ||
-                schema.getType(field.qualifiedName) != null
-              ) {
-                newName(field.qualifiedName, field)
-              } else {
-                newName(field.name, field)
-              }
-            }
-            message.boxOneOfs().forEach { oneOf ->
-              val fieldName = newName(oneOf.name, oneOf)
-              val keysFieldName = boxedOneOfKeysFieldName(fieldName)
-              check(newName(keysFieldName) == keysFieldName) {
-                "unexpected name collision for keys set of boxed one of, ${oneOf.name}"
-              }
-              newName(boxedOneOfClassName(oneOf.name), boxedOneOfClassName(oneOf.name))
-              oneOf.fields.forEach { field ->
-                val keyFieldName = boxedOneOfKeyFieldName(oneOf.name, field.name)
-                newName(keyFieldName, keyFieldName)
+            for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+              when (fieldOrOneOf) {
+                is Field -> {
+                  if (fieldOrOneOf.name == fieldOrOneOf.type!!.simpleName ||
+                    hasEponymousType(schema, fieldOrOneOf)
+                  ) {
+                    newName(legacyQualifiedFieldName(fieldOrOneOf), fieldOrOneOf)
+                  } else {
+                    newName(fieldOrOneOf.name, fieldOrOneOf)
+                  }
+                }
+                is OneOf -> {
+                  val fieldName = newName(fieldOrOneOf.name, fieldOrOneOf)
+                  val keysFieldName = boxedOneOfKeysFieldName(fieldName)
+                  check(newName(keysFieldName) == keysFieldName) {
+                    "unexpected name collision for keys set of boxed one of, ${fieldOrOneOf.name}"
+                  }
+                  newName(boxedOneOfClassName(fieldOrOneOf.name), boxedOneOfClassName(fieldOrOneOf.name))
+                  fieldOrOneOf.fields.forEach { field ->
+                    val keyFieldName = boxedOneOfKeyFieldName(fieldOrOneOf.name, field.name)
+                    newName(keyFieldName, keyFieldName)
+                  }
+                }
+                else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
               }
             }
           }
+          else -> {}
         }
       }
     }
@@ -443,12 +490,10 @@ class KotlinGenerator private constructor(
     val adapterName = nameAllocator["ADAPTER"]
     val unknownFields = nameAllocator["unknownFields"]
     val rawSuperclass = when {
-      emitKotlinSerialization -> ANY
       emitAndroid -> ANDROID_MESSAGE
       else -> MESSAGE
     }
     val superclass = when {
-      emitKotlinSerialization -> rawSuperclass
       javaInterOp -> rawSuperclass.parameterizedBy(className, builderClassName)
       else -> rawSuperclass.parameterizedBy(className, NOTHING)
     }
@@ -459,35 +504,34 @@ class KotlinGenerator private constructor(
     addAdapter(type, companionBuilder)
 
     val classBuilder = TypeSpec.classBuilder(className)
-        .apply {
-          if (type.documentation.isNotBlank()) {
-            addKdoc("%L\n", type.documentation.sanitizeKdoc())
-          }
-          for (annotation in optionAnnotations(type.options)) {
-            addAnnotation(annotation)
-          }
-          if (emitKotlinSerialization) {
-            addAnnotation(AnnotationSpec.builder(SERIALIZABLE)
-                .build())
-          }
+      .apply {
+        if (type.documentation.isNotBlank()) {
+          addKdoc("%L\n", type.documentation.sanitizeKdoc())
         }
-        .superclass(superclass)
-        .apply {
-          if (!emitKotlinSerialization) {
-            addSuperclassConstructorParameter(adapterName)
-            addSuperclassConstructorParameter(unknownFields)
-            addFunction(generateNewBuilderMethod(type, builderClassName))
-          }
+        for (annotation in optionAnnotations(type.options)) {
+          addAnnotation(annotation)
         }
-        .addFunction(generateEqualsMethod(type, nameAllocator))
-        .addFunction(generateHashCodeMethod(type, nameAllocator))
-        .addFunction(generateToStringMethod(type, nameAllocator))
-        .addFunction(generateCopyMethod(type, nameAllocator))
-        .apply {
-          if (javaInterOp) {
-            addType(generateBuilderClass(type, className, builderClassName))
-          }
+        if (type.isDeprecated) {
+          addAnnotation(
+            AnnotationSpec.builder(Deprecated::class)
+              .addMember("message = %S", "${className.simpleName} is deprecated")
+              .build()
+          )
         }
+      }
+      .superclass(superclass)
+      .addSuperclassConstructorParameter(adapterName)
+      .addSuperclassConstructorParameter(unknownFields)
+      .addFunction(generateNewBuilderMethod(type, builderClassName))
+      .addFunction(generateEqualsMethod(type, nameAllocator))
+      .addFunction(generateHashCodeMethod(type, nameAllocator))
+      .addFunction(generateToStringMethod(type, nameAllocator))
+      .addFunction(generateCopyMethod(type, nameAllocator))
+      .apply {
+        if (javaInterOp) {
+          addType(generateBuilderClass(type, className, builderClassName))
+        }
+      }
 
     if (emitAndroid) {
       addAndroidCreator(type, companionBuilder)
@@ -505,15 +549,24 @@ class KotlinGenerator private constructor(
       addOneOfKeys(companionBuilder, oneOf, boxClassName, nameAllocator)
     }
 
-    if (!emitKotlinSerialization) {
-      companionBuilder.addProperty(PropertySpec.builder("serialVersionUID", LONG, PRIVATE, CONST)
-          .initializer("0L")
-          .build())
-    }
+    companionBuilder.addProperty(
+      PropertySpec.builder("serialVersionUID", LONG, PRIVATE, CONST)
+        .initializer("0L")
+        .build()
+    )
 
     classBuilder.addType(companionBuilder.build())
 
     type.nestedTypes.forEach { classBuilder.addType(generateType(it)) }
+
+    type.nestedExtendList.forEach { extend ->
+      extend.fields.forEach {
+        val optionType = generateOptionType(extend, it)
+        if (optionType != null) {
+          classBuilder.addType(optionType)
+        }
+      }
+    }
 
     return classBuilder.build()
   }
@@ -522,32 +575,34 @@ class KotlinGenerator private constructor(
     return buildCodeBlock {
       val nameAllocator = nameAllocator(type)
       type.flatOneOfs()
-          .filter { oneOf -> oneOf.fields.size >= 2 }
-          .forEach { oneOf ->
-            val countNonNull = MemberName("com.squareup.wire.internal", "countNonNull")
-            // FIXME(egor): Revert back to function reference once KotlinPoet compiled with Kotlin
-            // 1.4 is released. See https://youtrack.jetbrains.com/issue/KT-37435.
-            val fieldNames = oneOf.fields.joinToString(", ") { field -> nameAllocator[field] }
-            beginControlFlow("require(%M(%L)·<=·1)", countNonNull, fieldNames)
-            addStatement("%S", "At most one of $fieldNames may be non-null")
-            endControlFlow()
-          }
+        .filter { oneOf -> oneOf.fields.size >= 2 }
+        .forEach { oneOf ->
+          val countNonNull = MemberName("com.squareup.wire.internal", "countNonNull")
+          // FIXME(egor): Revert back to function reference once KotlinPoet compiled with Kotlin
+          // 1.4 is released. See https://youtrack.jetbrains.com/issue/KT-37435.
+          val fieldNames = oneOf.fields.joinToString(", ") { field -> nameAllocator[field] }
+          beginControlFlow("require(%M(%L)·<=·1)", countNonNull, fieldNames)
+          addStatement("%S", "At most one of $fieldNames may be non-null")
+          endControlFlow()
+        }
     }
   }
 
   private fun generateNewBuilderMethod(type: MessageType, builderClassName: ClassName): FunSpec {
     val funBuilder = FunSpec.builder("newBuilder")
-        .addModifiers(OVERRIDE)
+      .addModifiers(OVERRIDE)
 
     if (!javaInterOp) {
       return funBuilder
-          .addAnnotation(AnnotationSpec.builder(Deprecated::class)
-              .addMember("message = %S", "Shouldn't be used in Kotlin")
-              .addMember("level = %T.%L", DeprecationLevel::class, DeprecationLevel.HIDDEN)
-              .build())
-          .returns(NOTHING)
-          .addStatement("throw %T()", ClassName("kotlin", "AssertionError"))
-          .build()
+        .addAnnotation(
+          AnnotationSpec.builder(Deprecated::class)
+            .addMember("message = %S", "Shouldn't be used in Kotlin")
+            .addMember("level = %T.%L", DeprecationLevel::class, DeprecationLevel.HIDDEN)
+            .build()
+        )
+        .returns(NOTHING)
+        .addStatement("throw %T(%S)", ClassName("kotlin", "AssertionError"), "Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+        .build()
     }
 
     funBuilder.returns(builderClassName)
@@ -556,19 +611,24 @@ class KotlinGenerator private constructor(
 
     funBuilder.addStatement("val builder = Builder()")
 
-    type.fieldsAndFlatOneOfFields().forEach { field ->
-      val fieldName = nameAllocator[field]
-      funBuilder.addStatement("builder.%1L = %1L", fieldName)
-    }
-    type.boxOneOfs().forEach { oneOf ->
-      val fieldName = nameAllocator[oneOf]
-      funBuilder.addStatement("builder.%1L = %1L", fieldName)
+    for (fieldOrOneOf in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+      when (fieldOrOneOf) {
+        is Field -> {
+          val fieldName = nameAllocator[fieldOrOneOf]
+          funBuilder.addStatement("builder.%1L = %1L", fieldName)
+        }
+        is OneOf -> {
+          val fieldName = nameAllocator[fieldOrOneOf]
+          funBuilder.addStatement("builder.%1L = %1L", fieldName)
+        }
+        else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
+      }
     }
 
     return funBuilder
-        .addStatement("builder.addUnknownFields(unknownFields)")
-        .addStatement("return builder")
-        .build()
+      .addStatement("builder.addUnknownFields(unknownFields)")
+      .addStatement("return builder")
+      .build()
   }
 
   // Example:
@@ -585,22 +645,27 @@ class KotlinGenerator private constructor(
     val otherName = localNameAllocator.newName("other")
     val kotlinType = type.typeName
     val result = FunSpec.builder("equals")
-        .addModifiers(OVERRIDE)
-        .addParameter(otherName, ANY.copy(nullable = true))
-        .returns(BOOLEAN)
+      .addModifiers(OVERRIDE)
+      .addParameter(otherName, ANY.copy(nullable = true))
+      .returns(BOOLEAN)
 
     val body = buildCodeBlock {
       addStatement("if (%N === this) return·true", otherName)
       addStatement("if (%N !is %T) return·false", otherName, kotlinType)
       addStatement("if (unknownFields != %N.unknownFields) return·false", otherName)
 
-      for (field in type.fieldsAndFlatOneOfFields()) {
-        val fieldName = localNameAllocator[field]
-        addStatement("if (%1L != %2N.%1L) return·false", fieldName, otherName)
-      }
-      for (oneOf in type.boxOneOfs()) {
-        val fieldName = localNameAllocator[oneOf]
-        addStatement("if (%1L != %2N.%1L) return·false", fieldName, otherName)
+      for (fieldOrOneOf in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+        when (fieldOrOneOf) {
+          is Field -> {
+            val fieldName = localNameAllocator[fieldOrOneOf]
+            addStatement("if (%1L != %2N.%1L) return·false", fieldName, otherName)
+          }
+          is OneOf -> {
+            val fieldName = localNameAllocator[fieldOrOneOf]
+            addStatement("if (%1L != %2N.%1L) return·false", fieldName, otherName)
+          }
+          else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
+        }
       }
       addStatement("return true")
     }
@@ -628,8 +693,8 @@ class KotlinGenerator private constructor(
     val localNameAllocator = nameAllocator.copy()
     val resultName = localNameAllocator.newName("result")
     val result = FunSpec.builder("hashCode")
-        .addModifiers(OVERRIDE)
-        .returns(INT)
+      .addModifiers(OVERRIDE)
+      .returns(INT)
 
     if (type.fieldsAndOneOfFields.isEmpty()) {
       result.addStatement("return unknownFields.hashCode()")
@@ -637,33 +702,32 @@ class KotlinGenerator private constructor(
     }
 
     val body = buildCodeBlock {
-      if (!emitKotlinSerialization) {
-        addStatement("var %N = super.hashCode", resultName)
-      } else {
-        addStatement("var %N = 0", resultName)
-      }
+      addStatement("var %N = super.hashCode", resultName)
       beginControlFlow("if (%N == 0)", resultName)
 
-      val hashCode = MemberName("kotlin", "hashCode")
       addStatement("%N = unknownFields.hashCode()", resultName)
-      for (field in type.fieldsAndFlatOneOfFields()) {
-        val fieldName = localNameAllocator[field]
-        add("%1N = %1N * 37 + ", resultName)
-        if (field.isRepeated || field.isRequired || field.isMap) {
-          addStatement("%L.hashCode()", fieldName)
-        } else {
-          addStatement("%L.%M()", fieldName, hashCode)
+
+      for (fieldOrOneOf in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+        when (fieldOrOneOf) {
+          is Field -> {
+            val fieldName = localNameAllocator[fieldOrOneOf]
+            add("%1N = %1N * 37 + ", resultName)
+            if (fieldOrOneOf.isRepeated || fieldOrOneOf.isRequired || fieldOrOneOf.isMap || !fieldOrOneOf.acceptsNull) {
+              addStatement("%L.hashCode()", fieldName)
+            } else {
+              addStatement("(%L?.hashCode() ?: 0)", fieldName)
+            }
+          }
+          is OneOf -> {
+            val fieldName = localNameAllocator[fieldOrOneOf]
+            add("%1N = %1N * 37 + ", resultName)
+            addStatement("(%L?.hashCode() ?: 0)", fieldName)
+          }
+          else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
         }
       }
-      for (oneOf in type.boxOneOfs()) {
-        val fieldName = localNameAllocator[oneOf]
-        add("%1N = %1N * 37 + ", resultName)
-        addStatement("%L.%M()", fieldName, hashCode)
-      }
 
-      if (!emitKotlinSerialization) {
-        addStatement("super.hashCode = %N", resultName)
-      }
+      addStatement("super.hashCode = %N", resultName)
       endControlFlow()
       addStatement("return %N", resultName)
     }
@@ -686,33 +750,43 @@ class KotlinGenerator private constructor(
   private fun generateCopyMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
     val className = generatedTypeName(type)
     val result = FunSpec.builder("copy")
-        .returns(type.typeName)
+      .returns(type.typeName)
     val fieldNames = mutableListOf<String>()
-    for (field in type.fieldsAndFlatOneOfFields()) {
-      val fieldName = nameAllocator[field]
-      result.addParameter(
-        ParameterSpec.builder(fieldName, field.typeNameForMessageField)
-          .defaultValue("this.%N", fieldName)
-          .build()
-      )
-      fieldNames += fieldName
+    for (fieldOrOneOf in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+      when (fieldOrOneOf) {
+        is Field -> {
+          val fieldName = nameAllocator[fieldOrOneOf]
+          result.addParameter(
+            ParameterSpec.builder(fieldName, fieldOrOneOf.typeNameForMessageField)
+              .defaultValue("this.%N", fieldName)
+              .build()
+          )
+          fieldNames += fieldName
+        }
+        is OneOf -> {
+          val fieldName = nameAllocator[fieldOrOneOf]
+          val fieldClass = type.oneOfClassFor(fieldOrOneOf, nameAllocator)
+          result.addParameter(
+            ParameterSpec.builder(fieldName, fieldClass)
+              .defaultValue("this.%N", fieldName)
+              .build()
+          )
+          fieldNames += fieldName
+        }
+        else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
+      }
     }
-    for (oneOf in type.boxOneOfs()) {
-      val fieldName = nameAllocator[oneOf]
-      val fieldClass = type.oneOfClassFor(oneOf, nameAllocator)
-      result.addParameter(
-        ParameterSpec.builder(fieldName, fieldClass)
-          .defaultValue("this.%N", fieldName)
-          .build()
-      )
-      fieldNames += fieldName
-    }
-    result.addParameter(ParameterSpec.builder("unknownFields", ByteString::class)
+    result.addParameter(
+      ParameterSpec.builder("unknownFields", ByteString::class)
         .defaultValue("this.unknownFields")
-        .build())
+        .build()
+    )
     fieldNames += "unknownFields"
-    result.addStatement("return %L", fieldNames
-        .joinToString(prefix = className.simpleName + "(", postfix = ")"))
+    result.addStatement(
+      "return %L",
+      fieldNames
+        .joinToString(prefix = className.simpleName + "(", postfix = ")")
+    )
     return result.build()
   }
 
@@ -722,24 +796,32 @@ class KotlinGenerator private constructor(
     builderClassName: ClassName
   ): TypeSpec {
     val builder = TypeSpec.classBuilder("Builder")
-        .superclass(Message.Builder::class.asTypeName()
-            .parameterizedBy(className, builderClassName))
+      .superclass(
+        Message.Builder::class.asTypeName()
+          .parameterizedBy(className, builderClassName)
+      )
 
     if (!javaInterOp) {
       return builder
-          .primaryConstructor(FunSpec.constructorBuilder()
-              .addParameter("message", className)
-              .build())
-          .addProperty(PropertySpec.builder("message", className)
-              .addModifiers(PRIVATE)
-              .initializer("message")
-              .build())
-          .addFunction(FunSpec.builder("build")
-              .addModifiers(OVERRIDE)
-              .returns(className)
-              .addStatement("return message")
-              .build())
-          .build()
+        .primaryConstructor(
+          FunSpec.constructorBuilder()
+            .addParameter("message", className)
+            .build()
+        )
+        .addProperty(
+          PropertySpec.builder("message", className)
+            .addModifiers(PRIVATE)
+            .initializer("message")
+            .build()
+        )
+        .addFunction(
+          FunSpec.builder("build")
+            .addModifiers(OVERRIDE)
+            .returns(className)
+            .addStatement("return message")
+            .build()
+        )
+        .build()
     }
 
     val nameAllocator = nameAllocator(type)
@@ -749,53 +831,64 @@ class KotlinGenerator private constructor(
       add("return %T(⇥\n", className)
 
       val missingRequiredFields = MemberName("com.squareup.wire.internal", "missingRequiredFields")
-      type.fieldsAndFlatOneOfFields().forEach { field ->
-        val fieldName = nameAllocator[field]
+      for (fieldOrOneOf in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+        when (fieldOrOneOf) {
+          is Field -> {
+            val fieldName = nameAllocator[fieldOrOneOf]
 
-        val throwExceptionBlock = if (!field.isRepeated && field.isRequired) {
-          CodeBlock.of(" ?: throw %1M(%2L, %2S)", missingRequiredFields, nameAllocator[field])
-        } else {
-          CodeBlock.of("")
+            val throwExceptionBlock = if (!fieldOrOneOf.isRepeated && fieldOrOneOf.isRequired) {
+              CodeBlock.of(" ?: throw %1M(%2L, %2S)", missingRequiredFields, nameAllocator[fieldOrOneOf])
+            } else {
+              CodeBlock.of("")
+            }
+
+            addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
+          }
+          is OneOf -> {
+            val fieldName = nameAllocator[fieldOrOneOf]
+            addStatement("%1L = %1L,", fieldName)
+          }
+          else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
         }
-
-        addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
-      }
-      for (oneOf in type.boxOneOfs()) {
-        val fieldName = nameAllocator[oneOf]
-        addStatement("%1L = %1L,", fieldName)
       }
       add("unknownFields = buildUnknownFields()")
       add("⇤\n)\n") // close the block
     }
 
-    type.fieldsAndFlatOneOfFields().forEach { field ->
-      val fieldName = nameAllocator[field]
+    for (fieldOrOneOf in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+      when (fieldOrOneOf) {
+        is Field -> {
+          val fieldName = nameAllocator[fieldOrOneOf]
 
-      val propertyBuilder = PropertySpec.builder(fieldName, field.typeNameForBuilderField)
-          .mutable(true)
-          .initializer(field.identityValue)
+          val propertyBuilder = PropertySpec.builder(fieldName, fieldOrOneOf.typeNameForBuilderField)
+            .mutable(true)
+            .initializer(fieldOrOneOf.identityValue)
 
-      if (javaInterOp) {
-        propertyBuilder.addAnnotation(JvmField::class)
+          if (javaInterOp) {
+            propertyBuilder.addAnnotation(JvmField::class)
+          }
+
+          builder.addProperty(propertyBuilder.build())
+        }
+        is OneOf -> {
+          val fieldName = nameAllocator[fieldOrOneOf]
+          val fieldClass = type.oneOfClassFor(fieldOrOneOf, nameAllocator)
+
+          val propertyBuilder = PropertySpec.builder(fieldName, fieldClass)
+            .mutable(true)
+            .initializer(CodeBlock.of("null"))
+
+          if (javaInterOp) {
+            propertyBuilder.addAnnotation(JvmField::class)
+          }
+
+          builder.addProperty(propertyBuilder.build())
+        }
+        else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
       }
-
-      builder.addProperty(propertyBuilder.build())
-    }
-    for (oneOf in type.boxOneOfs()) {
-      val fieldName = nameAllocator[oneOf]
-      val fieldClass = type.oneOfClassFor(oneOf, nameAllocator)
-
-      val propertyBuilder = PropertySpec.builder(fieldName, fieldClass)
-        .mutable(true)
-        .initializer(CodeBlock.of("null"))
-
-      if (javaInterOp) {
-        propertyBuilder.addAnnotation(JvmField::class)
-      }
-
-      builder.addProperty(propertyBuilder.build())
     }
 
+    // TODO(Benoit) Order builder setters in the same order as the fields.
     type.fields.forEach { field ->
       builder.addFunction(builderSetter(field, nameAllocator, builderClass, oneOf = null))
     }
@@ -817,13 +910,13 @@ class KotlinGenerator private constructor(
     }
 
     val buildFunction = FunSpec.builder("build")
-        .addModifiers(OVERRIDE)
-        .returns(className)
-        .addCode(returnBody)
-        .build()
+      .addModifiers(OVERRIDE)
+      .returns(className)
+      .addCode(returnBody)
+      .build()
 
     return builder.addFunction(buildFunction)
-        .build()
+      .build()
   }
 
   private fun builderSetter(
@@ -834,15 +927,17 @@ class KotlinGenerator private constructor(
   ): FunSpec {
     val fieldName = nameAllocator[field]
     val funBuilder = FunSpec.builder(fieldName)
-        .addParameter(fieldName, field.typeNameForBuilderSetter())
-        .returns(builderType)
+      .addParameter(fieldName, field.typeNameForBuilderSetter())
+      .returns(builderType)
     if (field.documentation.isNotBlank()) {
       funBuilder.addKdoc("%L\n", field.documentation.sanitizeKdoc())
     }
     if (field.isDeprecated) {
-      funBuilder.addAnnotation(AnnotationSpec.builder(Deprecated::class)
+      funBuilder.addAnnotation(
+        AnnotationSpec.builder(Deprecated::class)
           .addMember("message = %S", "$fieldName is deprecated")
-          .build())
+          .build()
+      )
     }
     if (field.isRepeated) {
       val checkElementsNotNull = MemberName("com.squareup.wire.internal", "checkElementsNotNull")
@@ -850,18 +945,18 @@ class KotlinGenerator private constructor(
     }
 
     return funBuilder
-        .addStatement("this.%1L = %1L", fieldName)
-        .apply {
-          if (oneOf != null) {
-            for (other in oneOf.fields) {
-              if (field != other) {
-                addStatement("this.%L = null", nameAllocator[other])
-              }
+      .addStatement("this.%1L = %1L", fieldName)
+      .apply {
+        if (oneOf != null) {
+          for (other in oneOf.fields) {
+            if (field != other) {
+              addStatement("this.%L = null", nameAllocator[other])
             }
           }
         }
-        .addStatement("return this")
-        .build()
+      }
+      .addStatement("return this")
+      .build()
   }
 
   private fun boxOneOfBuilderSetter(
@@ -902,228 +997,280 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
     val byteClass = ProtoType.BYTES.typeName
 
-    val fields = message.fieldsAndFlatOneOfFields()
-    fields.forEach { field ->
-      val fieldClass = field.typeNameForMessageField
-      val fieldName = nameAllocator[field]
+    if (buildersOnly) constructorBuilder.addModifiers(INTERNAL)
 
-      val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
-      if (!field.isRequired) {
-        parameterSpec.defaultValue(field.identityValue)
-      }
-
-      val initializer = when {
-        emitKotlinSerialization -> CodeBlock.of("%N", fieldName)
-        field.type!!.valueType?.isStruct == true -> {
-          CodeBlock.of("%M(%S, %N)",
-              MemberName("com.squareup.wire.internal", "immutableCopyOfMapWithStructValues"),
-              fieldName,
-              fieldName
-          )
-        }
-        field.type!!.isStruct -> {
-          CodeBlock.of("%M(%S, %N)",
-              MemberName("com.squareup.wire.internal", "immutableCopyOfStruct"),
-              fieldName,
-              fieldName
-          )
-        }
-        field.isRepeated || field.isMap -> {
-          CodeBlock.of("%M(%S, %N)",
-              MemberName("com.squareup.wire.internal", "immutableCopyOf"),
-              fieldName,
-              fieldName
-          )
-        }
-        else -> CodeBlock.of("%N", fieldName)
-      }
-
-      constructorBuilder.addParameter(parameterSpec.build())
-      classBuilder.addProperty(PropertySpec.builder(fieldName, fieldClass)
-          .initializer(initializer)
-          .apply {
-            if (field.isDeprecated) {
-              addAnnotation(
-                AnnotationSpec.builder(Deprecated::class)
-                  .addMember("message = %S", "$fieldName is deprecated")
-                  .build()
-              )
-            }
-            for (annotation in optionAnnotations(field.options)) {
-              addAnnotation(annotation)
-            }
-            addAnnotation(wireFieldAnnotation(message, field))
-            if (javaInterOp) {
-              addAnnotation(JvmField::class)
-            }
-            if (emitKotlinSerialization) {
-              val jsonName = field.jsonName!!
-              val generatedName = nameAllocator(message)[field]
-              if (jsonName != generatedName) {
-                addAnnotation(
-                  AnnotationSpec.builder(SERIAL_NAME)
-                    .addMember("%S", jsonName)
-                    .build()
-                )
-              }
-            }
-            if (field.documentation.isNotBlank()) {
-              addKdoc("%L\n", field.documentation.sanitizeKdoc())
-            }
-            if (field.isExtension) {
-              addKdoc("Extension source: %L\n", field.location.withPathOnly())
-            }
-          }
-          .build())
-    }
-
-    val boxOneOfs = message.boxOneOfs()
-    for (oneOf in boxOneOfs) {
-      val fieldClass = message.oneOfClassFor(oneOf, nameAllocator)
-      val fieldName = oneOf.name
-
-      val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
-      parameterSpec.defaultValue(CodeBlock.of("null"))
-
-      constructorBuilder.addParameter(parameterSpec.build())
-      classBuilder.addProperty(PropertySpec.builder(fieldName, fieldClass)
-        .initializer(CodeBlock.of("%N", fieldName))
-        .apply {
-          if (javaInterOp) {
-            addAnnotation(JvmField::class)
-          }
-          if (oneOf.documentation.isNotBlank()) {
-            addKdoc("%L\n", oneOf.documentation.sanitizeKdoc())
-          }
-        }
-        .build())
+    val parametersAndProperties = parametersAndProperties(message, nameAllocator)
+    for ((parameter, property) in parametersAndProperties) {
+      constructorBuilder.addParameter(parameter)
+      classBuilder.addProperty(property)
     }
 
     val unknownFields = nameAllocator["unknownFields"]
     constructorBuilder.addParameter(
-        ParameterSpec.builder(unknownFields, byteClass)
-            .defaultValue("%T.EMPTY", byteClass)
-            .build())
-    if (emitKotlinSerialization) {
-      classBuilder.addProperty(PropertySpec.builder(unknownFields, byteClass)
-          .initializer(unknownFields)
-          .build())
-    }
+      ParameterSpec.builder(unknownFields, byteClass)
+        .defaultValue("%T.EMPTY", byteClass)
+        .build()
+    )
 
     classBuilder.primaryConstructor(constructorBuilder.build())
   }
 
+  private fun parametersAndProperties(
+    message: MessageType,
+    nameAllocator: NameAllocator
+  ): List<Pair<ParameterSpec, PropertySpec>> {
+    val result = mutableListOf<Pair<ParameterSpec, PropertySpec>>()
+
+    for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+      when (fieldOrOneOf) {
+        is Field -> result.add(
+          constructorParameterAndProperty(
+            message,
+            fieldOrOneOf,
+            nameAllocator
+          )
+        )
+        is OneOf -> result.add(
+          constructorParameterAndProperty(
+            message,
+            fieldOrOneOf,
+            nameAllocator
+          )
+        )
+        else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
+      }
+    }
+
+    return result
+  }
+
+  private fun constructorParameterAndProperty(
+    message: MessageType,
+    field: Field,
+    nameAllocator: NameAllocator
+  ): Pair<ParameterSpec, PropertySpec> {
+    val fieldClass = field.typeNameForMessageField
+    val fieldName = nameAllocator[field]
+
+    val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
+    if (!field.isRequired) {
+      parameterSpec.defaultValue(field.identityValue)
+    }
+
+    val initializer = when {
+      field.type!!.valueType?.isStruct == true -> {
+        CodeBlock.of(
+          "%M(%S, %N)",
+          MemberName("com.squareup.wire.internal", "immutableCopyOfMapWithStructValues"),
+          fieldName,
+          fieldName
+        )
+      }
+      field.type!!.isStruct -> {
+        CodeBlock.of(
+          "%M(%S, %N)",
+          MemberName("com.squareup.wire.internal", "immutableCopyOfStruct"),
+          fieldName,
+          fieldName
+        )
+      }
+      field.isRepeated || field.isMap -> {
+        CodeBlock.of(
+          "%M(%S, %N)",
+          MemberName("com.squareup.wire.internal", "immutableCopyOf"),
+          fieldName,
+          fieldName
+        )
+      }
+      else -> CodeBlock.of("%N", fieldName)
+    }
+
+    val propertySpec = PropertySpec.builder(fieldName, fieldClass)
+      .initializer(initializer)
+      .apply {
+        if (field.isDeprecated) {
+          addAnnotation(
+            AnnotationSpec.builder(Deprecated::class)
+              .addMember("message = %S", "$fieldName is deprecated")
+              .build()
+          )
+        }
+        for (annotation in optionAnnotations(field.options)) {
+          addAnnotation(annotation)
+        }
+        addAnnotation(wireFieldAnnotation(message, field))
+        if (javaInterOp) {
+          addAnnotation(JvmField::class)
+        }
+        if (field.documentation.isNotBlank()) {
+          addKdoc("%L\n", field.documentation.sanitizeKdoc())
+        }
+        if (field.isExtension) {
+          addKdoc("Extension source: %L\n", field.location.withPathOnly())
+        }
+      }
+    return parameterSpec.build() to propertySpec.build()
+  }
+
+  private fun constructorParameterAndProperty(
+    message: MessageType,
+    oneOf: OneOf,
+    nameAllocator: NameAllocator
+  ): Pair<ParameterSpec, PropertySpec> {
+    val fieldClass = message.oneOfClassFor(oneOf, nameAllocator)
+    val fieldName = oneOf.name
+
+    val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
+    parameterSpec.defaultValue(CodeBlock.of("null"))
+
+    val propertySpec = PropertySpec.builder(fieldName, fieldClass)
+      .initializer(CodeBlock.of("%N", fieldName))
+      .apply {
+        if (javaInterOp) {
+          addAnnotation(JvmField::class)
+        }
+        if (oneOf.documentation.isNotBlank()) {
+          addKdoc("%L\n", oneOf.documentation.sanitizeKdoc())
+        }
+      }
+
+    return parameterSpec.build() to propertySpec.build()
+  }
+
   private fun wireFieldAnnotation(message: MessageType, field: Field): AnnotationSpec {
     return AnnotationSpec.builder(WireField::class)
-        .useSiteTarget(FIELD)
-        .addMember("tag = %L", field.tag)
-        .apply {
-          if (field.type!!.isMap) {
-            addMember("keyAdapter = %S", field.type!!.keyType!!.adapterString())
-            addMember("adapter = %S", field.type!!.valueType!!.adapterString())
-          } else {
-            addMember("adapter = %S", field.type!!.adapterString())
-          }
+      .useSiteTarget(FIELD)
+      .addMember("tag = %L", field.tag)
+      .apply {
+        if (field.type!!.isMap) {
+          addMember("keyAdapter = %S", field.type!!.keyType!!.adapterString())
+          addMember("adapter = %S", field.type!!.valueType!!.adapterString())
+        } else {
+          addMember("adapter = %S", field.type!!.adapterString())
         }
-        .apply {
-          val wireFieldLabel: WireField.Label? =
-            when (field.encodeMode!!) {
-              EncodeMode.REQUIRED -> WireField.Label.REQUIRED
-              EncodeMode.OMIT_IDENTITY -> WireField.Label.OMIT_IDENTITY
-              EncodeMode.REPEATED -> WireField.Label.REPEATED
-              EncodeMode.PACKED -> WireField.Label.PACKED
-              EncodeMode.MAP,
-              EncodeMode.NULL_IF_ABSENT -> null
+      }
+      .apply {
+        val wireFieldLabel: WireField.Label? =
+          when (field.encodeMode!!) {
+            EncodeMode.REQUIRED -> WireField.Label.REQUIRED
+            EncodeMode.OMIT_IDENTITY -> {
+              // Wrapper types don't omit identity values on JSON as other proto3 messages would.
+              if (field.type!!.isWrapper) null
+              else WireField.Label.OMIT_IDENTITY
             }
-          if (wireFieldLabel != null) {
-            addMember("label = %T.%L", WireField.Label::class, wireFieldLabel)
+            EncodeMode.REPEATED -> WireField.Label.REPEATED
+            EncodeMode.PACKED -> WireField.Label.PACKED
+            EncodeMode.MAP,
+            EncodeMode.NULL_IF_ABSENT -> null
           }
+        if (wireFieldLabel != null) {
+          addMember("label = %T.%L", WireField.Label::class, wireFieldLabel)
         }
-        .apply { if (field.isRedacted) addMember("redacted = true") }
-        .apply {
-          val generatedName = nameAllocator(message)[field]
-          if (generatedName != field.name) {
-            addMember("declaredName = %S", field.name)
-          }
+      }
+      .apply { if (field.isRedacted) addMember("redacted = true") }
+      .apply {
+        val generatedName = nameAllocator(message)[field]
+        if (generatedName != field.name) {
+          addMember("declaredName = %S", field.name)
         }
-        .apply {
-          if (field.jsonName != field.name) {
-            addMember("jsonName = %S", field.jsonName!!)
-          }
+      }
+      .apply {
+        if (field.jsonName != field.name) {
+          addMember("jsonName = %S", field.jsonName!!)
         }
-        .build()
+      }
+      .apply {
+        if (field.isOneOf) {
+          val oneofName = message.oneOfs.first { it.fields.contains(field) }.name
+          addMember("oneofName = %S", oneofName)
+        }
+      }
+      .build()
   }
 
   private fun wireEnumConstantAnnotation(enum: EnumType, constant: EnumConstant): AnnotationSpec? {
     return AnnotationSpec.builder(WireEnumConstant::class)
-        .apply {
-          val generatedName = nameAllocator(enum)[constant]
-          if (generatedName == constant.name) return null
+      .apply {
+        val generatedName = nameAllocator(enum)[constant]
+        if (generatedName == constant.name) return null
 
-          addMember("declaredName = %S", constant.name)
-        }
-        .build()
+        addMember("declaredName = %S", constant.name)
+      }
+      .build()
   }
 
   private fun generateToStringMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
     val sanitizeMember = MemberName("com.squareup.wire.internal", "sanitize")
     val localNameAllocator = nameAllocator.copy()
     val className = generatedTypeName(type)
-    val fields = type.fieldsAndFlatOneOfFields()
-    val boxOneOfs = type.boxOneOfs()
+    val fieldsAndOneOfs = type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()
     val body = buildCodeBlock {
-      if (fields.isEmpty() && boxOneOfs.isEmpty()) {
+      if (fieldsAndOneOfs.isEmpty()) {
         addStatement("return %S", className.simpleName + "{}")
       } else {
         val resultName = localNameAllocator.newName("result")
         addStatement("val %N = mutableListOf<%T>()", resultName, STRING)
-        for (field in fields) {
-          val fieldName = localNameAllocator[field]
-          if (field.isRepeated || field.isMap) {
-            add("if (%N.isNotEmpty()) ", fieldName)
-          } else if (field.acceptsNull) {
-            add("if (%N != null) ", fieldName)
-          }
-          addStatement("%N += %P", resultName, buildCodeBlock {
-            add(fieldName)
-            if (field.isRedacted) {
-              add("=██")
-            } else {
-              if (field.type == ProtoType.STRING) {
-                add("=\${%M($fieldName)}", sanitizeMember)
-              } else {
-                add("=\$")
-                add(fieldName)
+
+        for (fieldOrOneOf in fieldsAndOneOfs) {
+          when (fieldOrOneOf) {
+            is Field -> {
+              val fieldName = localNameAllocator[fieldOrOneOf]
+              if (fieldOrOneOf.isRepeated || fieldOrOneOf.isMap) {
+                add("if (%N.isNotEmpty()) ", fieldName)
+              } else if (fieldOrOneOf.acceptsNull) {
+                add("if (%N != null) ", fieldName)
               }
+              addStatement(
+                "%N += %P", resultName,
+                buildCodeBlock {
+                  add(fieldName)
+                  if (fieldOrOneOf.isRedacted) {
+                    add("=$DOUBLE_FULL_BLOCK")
+                  } else {
+                    if (fieldOrOneOf.type == ProtoType.STRING) {
+                      add("=\${%M($fieldName)}", sanitizeMember)
+                    } else {
+                      add("=\$")
+                      add(fieldName)
+                    }
+                  }
+                }
+              )
             }
-          })
-        }
-        for (oneOf in boxOneOfs) {
-          val fieldName = localNameAllocator[oneOf]
-          add("if (%N != null) ", fieldName)
-          addStatement("%N += %P", resultName, buildCodeBlock {
-            add(fieldName)
-            // TODO(Benoit) Do we redact if one of the field is redacted?
-            add("=\$")
-            add(fieldName)
+            is OneOf -> {
+              val fieldName = localNameAllocator[fieldOrOneOf]
+              add("if (%N != null) ", fieldName)
+              addStatement(
+                "%N += %P", resultName,
+                buildCodeBlock {
+                  add(fieldName)
+                  if (fieldOrOneOf.fields.any { it.isRedacted }) {
+                    add("=$DOUBLE_FULL_BLOCK")
+                  } else {
+                    add("=\$")
+                    add(fieldName)
+                  }
+                }
+              )
+            }
+            else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
           }
-          )
         }
 
         addStatement(
-            "return %N.joinToString(prefix = %S, separator = %S, postfix = %S)",
-            resultName,
-            className.simpleName + "{",
-            ", ",
-            "}"
+          "return %N.joinToString(prefix = %S, separator = %S, postfix = %S)",
+          resultName,
+          className.simpleName + "{",
+          ", ",
+          "}"
         )
       }
     }
     return FunSpec.builder("toString")
-        .addModifiers(OVERRIDE)
-        .returns(String::class)
-        .addCode(body)
-        .build()
+      .addModifiers(OVERRIDE)
+      .returns(String::class)
+      .addCode(body)
+      .build()
   }
 
   private fun addDefaultFields(
@@ -1131,40 +1278,53 @@ class KotlinGenerator private constructor(
     companionBuilder: TypeSpec.Builder,
     nameAllocator: NameAllocator
   ) {
-    for (field in type.fieldsAndFlatOneOfFields()) {
+    for (field in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs().filterIsInstance<Field>()) {
       val default = field.default ?: continue
 
       val fieldName = "DEFAULT_" + nameAllocator[field].toUpperCase(Locale.US)
       val fieldType = field.typeNameForMessageField.copy(nullable = false)
       val fieldValue = defaultFieldInitializer(field.type!!, default)
       companionBuilder.addProperty(
-          PropertySpec.builder(fieldName, fieldType)
-              .apply {
-                if (field.type!!.isScalar && field.type != ProtoType.BYTES) {
-                  addModifiers(CONST)
-                } else {
-                  jvmField()
-                }
-              }
-              .initializer(fieldValue)
-              .build())
+        PropertySpec.builder(fieldName, fieldType)
+          .apply {
+            if (field.type!!.isScalar && field.type != ProtoType.BYTES) {
+              addModifiers(CONST)
+            } else {
+              jvmField()
+            }
+          }
+          .initializer(fieldValue)
+          .build()
+      )
     }
   }
 
-  private fun defaultFieldInitializer(protoType: ProtoType, defaultValue: Any): CodeBlock {
+  private fun defaultFieldInitializer(
+    protoType: ProtoType,
+    defaultValue: Any,
+    annotation: Boolean = false,
+  ): CodeBlock {
     val typeName = protoType.typeName
     return when {
-      defaultValue is List<*> -> defaultValue.toListFieldInitializer(protoType)
+      defaultValue is List<*> -> {
+        if (annotation) {
+          defaultValue.toArrayFieldInitializer(protoType)
+        } else {
+          defaultValue.toListFieldInitializer(protoType)
+        }
+      }
       defaultValue is Map<*, *> -> defaultValue.toMapFieldInitializer(protoType)
       typeName == BOOLEAN -> CodeBlock.of("%L", defaultValue)
       typeName == INT -> defaultValue.toIntFieldInitializer()
       typeName == LONG -> defaultValue.toLongFieldInitializer()
-      typeName == FLOAT -> CodeBlock.of("%Lf", defaultValue.toString())
-      typeName == DOUBLE -> CodeBlock.of("%L", defaultValue.toString().toDouble())
+      typeName == FLOAT -> defaultValue.toFloatFieldInitializer()
+      typeName == DOUBLE -> defaultValue.toDoubleFieldInitializer()
       typeName == STRING -> CodeBlock.of("%S", defaultValue)
-      typeName == ByteString::class.asTypeName() -> CodeBlock.of("%S.%M()!!",
-          defaultValue.toString().encode(charset = Charsets.ISO_8859_1).base64(),
-          ByteString.Companion::class.asClassName().member("decodeBase64"))
+      typeName == ByteString::class.asTypeName() -> CodeBlock.of(
+        "%S.%M()!!",
+        defaultValue.toString().encode(charset = Charsets.ISO_8859_1).base64(),
+        ByteString.Companion::class.asClassName().member("decodeBase64")
+      )
       protoType.isEnum -> CodeBlock.of("%T.%L", typeName, defaultValue)
       else -> throw IllegalStateException("$protoType is not an allowed scalar type")
     }
@@ -1179,6 +1339,17 @@ class KotlinGenerator private constructor(
       add("\n⇥%L⇤", defaultFieldInitializer(protoType, it!!))
     }
     add("\n)")
+  }
+
+  private fun List<*>.toArrayFieldInitializer(protoType: ProtoType): CodeBlock = buildCodeBlock {
+    add("[")
+    var first = true
+    forEach {
+      if (!first) add(",")
+      first = false
+      add("\n⇥%L⇤", defaultFieldInitializer(protoType, it!!))
+    }
+    add("\n]")
   }
 
   private fun Map<*, *>.toMapFieldInitializer(protoType: ProtoType): CodeBlock = buildCodeBlock {
@@ -1207,6 +1378,22 @@ class KotlinGenerator private constructor(
     else -> CodeBlock.of("%LL", long)
   }
 
+  private fun Any.toFloatFieldInitializer(): CodeBlock = when (this) {
+    "inf" -> CodeBlock.of("Float.POSITIVE_INFINITY")
+    "-inf" -> CodeBlock.of("Float.NEGATIVE_INFINITY")
+    "nan" -> CodeBlock.of("Float.NaN")
+    "-nan" -> CodeBlock.of("Float.NaN")
+    else -> CodeBlock.of("%Lf", this.toString())
+  }
+
+  private fun Any.toDoubleFieldInitializer(): CodeBlock = when (this) {
+    "inf" -> CodeBlock.of("Double.POSITIVE_INFINITY")
+    "-inf" -> CodeBlock.of("Double.NEGATIVE_INFINITY")
+    "nan" -> CodeBlock.of("Double.NaN")
+    "-nan" -> CodeBlock.of("Double.NaN")
+    else -> CodeBlock.of("%L", this.toString().toDouble())
+  }
+
   /**
    * Example
    * ```
@@ -1217,7 +1404,8 @@ class KotlinGenerator private constructor(
    *    Person::class,
    *    "square.github.io/wire/unknown",
    *    Syntax.PROTO_3,
-   *    null
+   *    null,
+   *    "com/squareup/wire/path.proto",
    *  ) {
    *    override fun encodedSize(value: Person): Int { .. }
    *    override fun encode(writer: ProtoWriter, value: Person) { .. }
@@ -1233,18 +1421,24 @@ class KotlinGenerator private constructor(
     val adapterName = nameAllocator["ADAPTER"]
 
     val adapterObject = TypeSpec.anonymousClassBuilder()
-        .superclass(ProtoAdapter::class.asClassName().parameterizedBy(parentClassName))
-        .addSuperclassConstructorParameter("\n⇥%T.LENGTH_DELIMITED",
-            FieldEncoding::class.asClassName())
-        .addSuperclassConstructorParameter("\n%T::class", parentClassName)
-        .addSuperclassConstructorParameter("\n%S", type.type.typeUrl!!)
-        .addSuperclassConstructorParameter("\n%M",
-            MemberName(Syntax::class.asClassName(), type.syntax.name))
-        .addSuperclassConstructorParameter("\nnull\n⇤")
-        .addFunction(encodedSizeFun(type))
-        .addFunction(encodeFun(type))
-        .addFunction(decodeFun(type))
-        .addFunction(redactFun(type))
+      .superclass(ProtoAdapter::class.asClassName().parameterizedBy(parentClassName))
+      .addSuperclassConstructorParameter(
+        "\n⇥%T.LENGTH_DELIMITED",
+        FieldEncoding::class.asClassName()
+      )
+      .addSuperclassConstructorParameter("\n%T::class", parentClassName)
+      .addSuperclassConstructorParameter("\n%S", type.type.typeUrl!!)
+      .addSuperclassConstructorParameter(
+        "\n%M",
+        MemberName(Syntax::class.asClassName(), type.syntax.name)
+      )
+      .addSuperclassConstructorParameter("\nnull")
+      .addSuperclassConstructorParameter("\n%S\n⇤", type.location.path)
+      .addFunction(encodedSizeFun(type))
+      .addFunction(encodeFun(type, reverse = false))
+      .addFunction(encodeFun(type, reverse = true))
+      .addFunction(decodeFun(type))
+      .addFunction(redactFun(type))
 
     for (field in type.fields) {
       if (field.isMap) {
@@ -1254,28 +1448,32 @@ class KotlinGenerator private constructor(
 
     val adapterType = ProtoAdapter::class.asClassName().parameterizedBy(parentClassName)
 
-    companionObjBuilder.addProperty(PropertySpec.builder(adapterName, adapterType)
+    companionObjBuilder.addProperty(
+      PropertySpec.builder(adapterName, adapterType)
         .jvmField()
         .initializer("%L", adapterObject.build())
-        .build())
+        .build()
+    )
   }
 
   private fun Field.toProtoAdapterPropertySpec(): PropertySpec {
     val adapterType = ProtoAdapter::class.asTypeName()
-        .parameterizedBy(Map::class.asTypeName()
-            .parameterizedBy(keyType.typeName, valueType.typeName))
+      .parameterizedBy(
+        Map::class.asTypeName()
+          .parameterizedBy(keyType.typeName, valueType.typeName)
+      )
 
     // Map adapters have to be lazy in order to avoid a circular reference when its value type
     // is the same as its enclosing type.
     return PropertySpec.builder("${name}Adapter", adapterType, PRIVATE)
-        .delegate(
-            "%M·{ %T.newMapAdapter(%L, %L) }",
-            MemberName("kotlin", "lazy"),
-            ProtoAdapter::class,
-            keyType.getAdapterName(),
-            valueType.getAdapterName()
-        )
-        .build()
+      .delegate(
+        "%M·{ %T.newMapAdapter(%L, %L) }",
+        MemberName("kotlin", "lazy"),
+        ProtoAdapter::class,
+        keyType.getAdapterName(),
+        valueType.getAdapterName()
+      )
+      .build()
   }
 
   private fun encodedSizeFun(message: MessageType): FunSpec {
@@ -1285,27 +1483,34 @@ class KotlinGenerator private constructor(
 
     val body = buildCodeBlock {
       addStatement("var %N = value.unknownFields.size", sizeName)
-      message.fieldsAndFlatOneOfFields().forEach { field ->
-        val fieldName = localNameAllocator[field]
-        if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
-          add("if (value.%1L != %2L) ", fieldName, field.identityValue)
+      for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+        when (fieldOrOneOf) {
+          is Field -> {
+            val fieldName = localNameAllocator[fieldOrOneOf]
+            if (fieldOrOneOf.encodeMode == EncodeMode.OMIT_IDENTITY) {
+              add(fieldEqualsIdentityBlock(fieldOrOneOf, fieldName))
+            }
+            addStatement(
+              "%N += %L.encodedSizeWithTag(%L, value.%L)", sizeName, adapterFor(fieldOrOneOf),
+              fieldOrOneOf.tag, fieldName
+            )
+          }
+          is OneOf -> {
+            val fieldName = localNameAllocator[fieldOrOneOf]
+            add("if (value.%1L != %2L) ", fieldName, "null")
+            addStatement("%N += value.%L.encodedSizeWithTag()", sizeName, fieldName)
+          }
+          else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
         }
-        addStatement("%N += %L.encodedSizeWithTag(%L, value.%L)", sizeName, adapterFor(field),
-            field.tag, fieldName)
-      }
-      for (boxOneOf in message.boxOneOfs()) {
-        val fieldName = localNameAllocator[boxOneOf]
-        add("if (value.%1L != %2L) ", fieldName, "null")
-        addStatement("%N += value.%L.encodedSizeWithTag()", sizeName, fieldName)
       }
       addStatement("return %N", sizeName)
     }
     return FunSpec.builder("encodedSize")
-        .addParameter("value", className)
-        .returns(Int::class)
-        .addCode(body)
-        .addModifiers(OVERRIDE)
-        .build()
+      .addParameter("value", className)
+      .returns(Int::class)
+      .addCode(body)
+      .addModifiers(OVERRIDE)
+      .build()
   }
 
   private fun adapterFor(field: Field) = buildCodeBlock {
@@ -1317,35 +1522,50 @@ class KotlinGenerator private constructor(
     }
   }
 
-  private fun encodeFun(message: MessageType): FunSpec {
+  private fun encodeFun(message: MessageType, reverse: Boolean): FunSpec {
     val className = generatedTypeName(message)
-    val body = buildCodeBlock {
-      val nameAllocator = nameAllocator(message)
+    val encodeCalls = mutableListOf<CodeBlock>()
+    val nameAllocator = nameAllocator(message)
 
-      message.fieldsAndFlatOneOfFields().forEach { field ->
-        val fieldName = nameAllocator[field]
+    for (field in message.fields + message.flatOneOfs().flatMap { it.fields }) {
+      val fieldName = nameAllocator[field]
+      encodeCalls += buildCodeBlock {
         if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
-          add("if (value.%L != %L) ", fieldName, field.identityValue)
+          add(fieldEqualsIdentityBlock(field, fieldName))
         }
-        addStatement("%L.encodeWithTag(writer, %L, value.%L)",
+        addStatement(
+          "%L.encodeWithTag(writer, %L, value.%L)",
           adapterFor(field),
           field.tag,
-          fieldName)
+          fieldName
+        )
       }
-      for (boxOneOf in message.boxOneOfs()) {
-        val fieldName = nameAllocator[boxOneOf]
+    }
+    for (boxOneOf in message.boxOneOfs()) {
+      val fieldName = nameAllocator[boxOneOf]
+      encodeCalls += buildCodeBlock {
         add("if (value.%L != %L) ", fieldName, "null")
         addStatement("value.%L.encodeWithTag(writer)", fieldName)
       }
+    }
+    encodeCalls += buildCodeBlock {
       addStatement("writer.writeBytes(value.unknownFields)")
+    }
+    if (reverse) {
+      encodeCalls.reverse()
+    }
+    val body = buildCodeBlock {
+      for (encodeCall in encodeCalls) {
+        add(encodeCall)
+      }
     }
 
     return FunSpec.builder("encode")
-        .addParameter("writer", ProtoWriter::class)
-        .addParameter("value", className)
-        .addCode(body)
-        .addModifiers(OVERRIDE)
-        .build()
+      .addParameter("writer", if (reverse) ReverseProtoWriter::class else ProtoWriter::class)
+      .addParameter("value", className)
+      .addCode(body)
+      .addModifiers(OVERRIDE)
+      .build()
   }
 
   private fun decodeFun(message: MessageType): FunSpec {
@@ -1353,20 +1573,25 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message).copy()
 
     val declarationBody = buildCodeBlock {
-      message.fieldsAndFlatOneOfFields().forEach { field ->
-        val fieldName = nameAllocator[field]
-        val fieldDeclaration: CodeBlock = field.getDeclaration(fieldName)
-        addStatement("%L", fieldDeclaration)
-      }
-      for (boxOneOf in message.boxOneOfs()) {
-        val fieldName = nameAllocator[boxOneOf]
-        val oneOfClass = (message.typeName as ClassName)
-          .nestedClass(boxedOneOfClassName(boxOneOf.name))
-          .parameterizedBy(STAR)
-        val fieldClass = com.squareup.wire.OneOf::class.asClassName()
-          .parameterizedBy(oneOfClass, STAR).copy(nullable = true)
-        val fieldDeclaration = CodeBlock.of("var $fieldName: %T = %L", fieldClass, "null")
-        addStatement("%L", fieldDeclaration)
+      for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+        when (fieldOrOneOf) {
+          is Field -> {
+            val fieldName = nameAllocator[fieldOrOneOf]
+            val fieldDeclaration: CodeBlock = fieldOrOneOf.getDeclaration(fieldName)
+            addStatement("%L", fieldDeclaration)
+          }
+          is OneOf -> {
+            val fieldName = nameAllocator[fieldOrOneOf]
+            val oneOfClass = (message.typeName as ClassName)
+              .nestedClass(nameAllocator[boxedOneOfClassName(fieldOrOneOf.name)])
+              .parameterizedBy(STAR)
+            val fieldClass = com.squareup.wire.OneOf::class.asClassName()
+              .parameterizedBy(oneOfClass, STAR).copy(nullable = true)
+            val fieldDeclaration = CodeBlock.of("var $fieldName: %T = %L", fieldClass, "null")
+            addStatement("%L", fieldDeclaration)
+          }
+          else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
+        }
       }
     }
 
@@ -1374,20 +1599,31 @@ class KotlinGenerator private constructor(
       addStatement("return·%T(⇥", className)
 
       val missingRequiredFields = MemberName("com.squareup.wire.internal", "missingRequiredFields")
-      message.fieldsAndFlatOneOfFields().forEach { field ->
-        val fieldName = nameAllocator[field]
+      for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+        when (fieldOrOneOf) {
+          is Field -> {
+            val fieldName = nameAllocator[fieldOrOneOf]
 
-        val throwExceptionBlock = if (!field.isRepeated && !field.isMap && field.isRequired) {
-          CodeBlock.of(" ?: throw %1M(%2L, %3S)", missingRequiredFields, fieldName, field.name)
-        } else {
-          CodeBlock.of("")
+            val throwExceptionBlock =
+              if (!fieldOrOneOf.isRepeated && !fieldOrOneOf.isMap && fieldOrOneOf.isRequired) {
+                CodeBlock.of(
+                  " ?: throw %1M(%2L, %3S)",
+                  missingRequiredFields,
+                  fieldName,
+                  fieldOrOneOf.name
+                )
+              } else {
+                CodeBlock.of("")
+              }
+
+            addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
+          }
+          is OneOf -> {
+            val fieldName = nameAllocator[fieldOrOneOf]
+            addStatement("%1L = %1L,", fieldName)
+          }
+          else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
         }
-
-        addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
-      }
-      for (boxOneOf in message.boxOneOfs()) {
-        val fieldName = nameAllocator[boxOneOf]
-        addStatement("%1L = %1L,", fieldName)
       }
 
       add("unknownFields = unknownFields")
@@ -1395,7 +1631,7 @@ class KotlinGenerator private constructor(
     }
 
     val decodeBlock = buildCodeBlock {
-      val fields = message.fieldsAndFlatOneOfFields()
+      val fields = message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs().filterIsInstance<Field>()
       val boxOneOfs = message.boxOneOfs()
       if (fields.isEmpty() && boxOneOfs.isEmpty()) {
         addStatement("val unknownFields = reader.forEachTag(reader::readUnknownField)")
@@ -1404,7 +1640,7 @@ class KotlinGenerator private constructor(
         addStatement("val unknownFields = reader.forEachTag { %L ->", tag)
         addStatement("⇥when (%L) {⇥", tag)
 
-        message.fieldsAndFlatOneOfFields().forEach { field ->
+        fields.forEach { field ->
           val fieldName = nameAllocator[field]
           val adapterName = field.getAdapterName()
 
@@ -1412,8 +1648,10 @@ class KotlinGenerator private constructor(
             beginControlFlow("%L -> try", field.tag)
             addStatement("%L", decodeAndAssign(field, fieldName, adapterName))
             nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
-            addStatement("reader.addUnknownField(%L, %T.VARINT, e.value.toLong())", tag,
-                FieldEncoding::class)
+            addStatement(
+              "reader.addUnknownField(%L, %T.VARINT, e.value.toLong())", tag,
+              FieldEncoding::class
+            )
             endControlFlow()
           } else {
             addStatement("%L -> %L", field.tag, decodeAndAssign(field, fieldName, adapterName))
@@ -1442,64 +1680,76 @@ class KotlinGenerator private constructor(
     }
 
     return FunSpec.builder("decode")
-        .addParameter("reader", ProtoReader::class)
-        .returns(className)
-        .addCode(declarationBody)
-        .addCode(decodeBlock)
-        .addCode(returnBody)
-        .addModifiers(OVERRIDE)
-        .build()
+      .addParameter("reader", ProtoReader::class)
+      .returns(className)
+      .addCode(declarationBody)
+      .addCode(decodeBlock)
+      .addCode(returnBody)
+      .addModifiers(OVERRIDE)
+      .build()
   }
 
   private fun decodeAndAssign(field: Field, fieldName: String, adapterName: CodeBlock): CodeBlock {
     val decode = CodeBlock.of("%L.decode(reader)", adapterName)
-    return CodeBlock.of(when {
-      field.isRepeated -> "%L.add(%L)"
-      field.isMap -> "%L.putAll(%L)"
-      else -> "%L·= %L"
-    }, fieldName, decode)
+    return CodeBlock.of(
+      when {
+        field.isRepeated -> "%L.add(%L)"
+        field.isMap -> "%L.putAll(%L)"
+        else -> "%L·= %L"
+      },
+      fieldName, decode
+    )
   }
 
   private fun redactFun(message: MessageType): FunSpec {
     val className = typeToKotlinName.getValue(message.type)
     val nameAllocator = nameAllocator(message)
     val result = FunSpec.builder("redact")
-        .addModifiers(OVERRIDE)
-        .addParameter("value", className)
-        .returns(className)
+      .addModifiers(OVERRIDE)
+      .addParameter("value", className)
+      .returns(className)
 
     val redactedMessageFields = message.fields.filter { it.isRedacted }
     val requiredRedactedMessageFields = redactedMessageFields.filter { it.isRequired }
     if (requiredRedactedMessageFields.isNotEmpty()) {
       result.addStatement(
-          "throw %T(%S)",
-          ClassName("kotlin", "UnsupportedOperationException"),
-          requiredRedactedMessageFields.joinToString(
-              prefix = if (requiredRedactedMessageFields.size > 1) "Fields [" else "Field '",
-              postfix = if (requiredRedactedMessageFields.size > 1) "] are " else "' is " +
-                  "required and cannot be redacted.",
-              transform = nameAllocator::get
-          )
+        "throw %T(%S)",
+        ClassName("kotlin", "UnsupportedOperationException"),
+        requiredRedactedMessageFields.joinToString(
+          prefix = if (requiredRedactedMessageFields.size > 1) "Fields [" else "Field '",
+          postfix = if (requiredRedactedMessageFields.size > 1) "] are " else "' is " +
+            "required and cannot be redacted.",
+          transform = nameAllocator::get
+        )
       )
       return result.build()
     }
 
     val redactedFields = mutableListOf<CodeBlock>()
-    for (field in message.fieldsAndFlatOneOfFields()) {
-      val fieldName = nameAllocator[field]
-      val redactedField = field.redact(fieldName)
-      if (redactedField != null) {
-        redactedFields += CodeBlock.of("%N = %L", fieldName, redactedField)
+    for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+      when (fieldOrOneOf) {
+        is Field -> {
+          val fieldName = nameAllocator[fieldOrOneOf]
+          val redactedField = fieldOrOneOf.redact(fieldName)
+          if (redactedField != null) {
+            redactedFields += CodeBlock.of("%N = %L", fieldName, redactedField)
+          }
+        }
+        is OneOf -> {
+          if (fieldOrOneOf.fields.none { it.isRedacted }) continue
+          val fieldName = nameAllocator[fieldOrOneOf]
+          redactedFields += CodeBlock.of("%N = %L", fieldName, CodeBlock.of("null"))
+        }
+        else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
       }
     }
-    // TODO(benoit) How do we deal with redacted oneof fields !?
     redactedFields += CodeBlock.of("unknownFields = %T.EMPTY", ByteString::class)
     return result
-        .addStatement(
-            "return %L",
-            redactedFields.joinToCode(separator = ",\n", prefix = "value.copy(\n⇥", suffix = "\n⇤)")
-        )
-        .build()
+      .addStatement(
+        "return %L",
+        redactedFields.joinToCode(separator = ",\n", prefix = "value.copy(\n⇥", suffix = "\n⇤)")
+      )
+      .build()
   }
 
   private fun Field.redact(fieldName: String): CodeBlock? {
@@ -1507,6 +1757,8 @@ class KotlinGenerator private constructor(
       return when {
         isRepeated -> CodeBlock.of("emptyList()")
         isMap -> CodeBlock.of("emptyMap()")
+        encodeMode!! == EncodeMode.NULL_IF_ABSENT -> CodeBlock.of("null")
+        isScalar -> PROTOTYPE_TO_IDENTITY_VALUES[type!!]
         else -> CodeBlock.of("null")
       }
     } else if (!type!!.isScalar && !type!!.isEnum) {
@@ -1531,7 +1783,6 @@ class KotlinGenerator private constructor(
     return null
   }
 
-  // TODO add support for custom adapters.
   private fun Field.getAdapterName(nameDelimiter: Char = '.'): CodeBlock {
     return if (type!!.isMap) {
       CodeBlock.of("%N", "${name}Adapter")
@@ -1544,12 +1795,16 @@ class KotlinGenerator private constructor(
     val adapterConstant = profile.getAdapter(this)
     return when {
       adapterConstant != null -> {
-        CodeBlock.of("%T%L%L",
-          adapterConstant.kotlinClassName, adapterFieldDelimiterName, adapterConstant.memberName)
+        CodeBlock.of(
+          "%T%L%L",
+          adapterConstant.kotlinClassName, adapterFieldDelimiterName, adapterConstant.memberName
+        )
       }
       isScalar -> {
-        CodeBlock.of("%T$adapterFieldDelimiterName%L",
-            ProtoAdapter::class, simpleName.toUpperCase(Locale.US))
+        CodeBlock.of(
+          "%T$adapterFieldDelimiterName%L",
+          ProtoAdapter::class, simpleName.toUpperCase(Locale.US)
+        )
       }
       this == ProtoType.DURATION -> {
         CodeBlock.of("%T${adapterFieldDelimiterName}DURATION", ProtoAdapter::class)
@@ -1639,28 +1894,42 @@ class KotlinGenerator private constructor(
     val type = enum.type
     val nameAllocator = nameAllocator(enum)
 
-    val valueName = nameAllocator["value"]
+    // Note that we cannot use nameAllocator for `value` because if we rename it the generated code
+    // will not compile for the constructor parameter `override val value_: Int` won't be overriding
+    // anything anymore.
+    val valueName = "value"
 
     val primaryConstructor = FunSpec.constructorBuilder()
-        .addParameter(valueName, Int::class, OVERRIDE)
+      .addParameter(valueName, Int::class)
 
     val builder = TypeSpec.enumBuilder(type.simpleName)
-        .apply {
-          if (enum.documentation.isNotBlank()) {
-            addKdoc("%L\n", enum.documentation.sanitizeKdoc())
-          }
-          for (annotation in optionAnnotations(enum.options)) {
-            addAnnotation(annotation)
-          }
+      .apply {
+        if (enum.documentation.isNotBlank()) {
+          addKdoc("%L\n", enum.documentation.sanitizeKdoc())
         }
-        .addSuperinterface(WireEnum::class)
-        .addProperty(PropertySpec.builder(valueName, Int::class)
-            .initializer(valueName)
-            .build())
-        .addType(generateEnumCompanion(enum))
+        for (annotation in optionAnnotations(enum.options)) {
+          addAnnotation(annotation)
+        }
+        if (enum.isDeprecated) {
+          addAnnotation(
+            AnnotationSpec.builder(Deprecated::class)
+              .addMember("message = %S", "${type.simpleName} is deprecated")
+              .build()
+          )
+        }
+      }
+      .addSuperinterface(WireEnum::class)
+      .addProperty(
+        PropertySpec.builder(valueName, Int::class, OVERRIDE)
+          .initializer(valueName)
+          .build()
+      )
+      .addType(generateEnumCompanion(enum))
 
     enum.constants.forEach { constant ->
-      builder.addEnumConstant(nameAllocator[constant], TypeSpec.anonymousClassBuilder()
+      builder.addEnumConstant(
+        nameAllocator[constant],
+        TypeSpec.anonymousClassBuilder()
           .addSuperclassConstructorParameter("%L", constant.tag)
           .apply {
             if (constant.documentation.isNotBlank()) {
@@ -1676,40 +1945,54 @@ class KotlinGenerator private constructor(
             }
 
             if (constant.isDeprecated) {
-              addAnnotation(AnnotationSpec.builder(Deprecated::class)
+              addAnnotation(
+                AnnotationSpec.builder(Deprecated::class)
                   .addMember("message = %S", "${constant.name} is deprecated")
-                  .build())
+                  .build()
+              )
             }
           }
-          .build())
+          .build()
+      )
     }
 
     return builder.primaryConstructor(primaryConstructor.build())
-        .build()
+      .build()
   }
 
+  private fun fieldEqualsIdentityBlock(field: Field, fieldName: String): CodeBlock {
+    val format = when (field.type) {
+      // Special case for doubles and floats because of negative zeros.
+      ProtoType.DOUBLE,
+      ProtoType.FLOAT -> "if (!value.%1L.equals(%2L)) "
+      else -> "if (value.%1L != %2L) "
+    }
+    return CodeBlock.of(format, fieldName, field.identityValue)
+  }
   private fun generateEnumCompanion(message: EnumType): TypeSpec {
     val nameAllocator = nameAllocator(message)
     val companionObjectBuilder = TypeSpec.companionObjectBuilder()
     val parentClassName = typeToKotlinName.getValue(message.type)
-    val valueName = nameAllocator["value"]
+    val valueName = "value"
     val fromValue = FunSpec.builder("fromValue")
-        .jvmStatic()
-        .addParameter(valueName, Int::class)
-        .returns(parentClassName.copy(nullable = true))
-        .apply {
-          addCode("return when (value) {\n⇥")
-          message.constants.forEach { constant ->
-            addCode("%L -> %L\n", constant.tag, nameAllocator[constant])
-          }
-          addCode("else -> null")
-          addCode("\n⇤}\n") // close the block
+      .jvmStatic()
+      .addParameter(valueName, Int::class)
+      .returns(parentClassName.copy(nullable = true))
+      .apply {
+        addCode("return when (value) {\n⇥")
+        message.constants.forEach { constant ->
+          addCode("%L -> ", constant.tag)
+          if (constant.isDeprecated) addCode("@Suppress(\"DEPRECATION\") ")
+          addCode("%L\n", nameAllocator[constant])
         }
-        .build()
+        addCode("else -> null")
+        addCode("\n⇤}\n") // close the block
+      }
+      .build()
 
     return companionObjectBuilder.addFunction(fromValue)
-        .addProperty(generateEnumAdapter(message))
-        .build()
+      .addProperty(generateEnumAdapter(message))
+      .build()
   }
 
   /**
@@ -1726,27 +2009,31 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
 
     val adapterName = nameAllocator["ADAPTER"]
-    val valueName = nameAllocator["value"]
+    val valueName = "value"
 
     val adapterType = ProtoAdapter::class.asClassName().parameterizedBy(parentClassName)
     val adapterObject = TypeSpec.anonymousClassBuilder()
-        .superclass(EnumAdapter::class.asClassName().parameterizedBy(parentClassName))
-        .addSuperclassConstructorParameter("\n⇥%T::class", parentClassName)
-        .addSuperclassConstructorParameter("\n%M",
-            MemberName(Syntax::class.asClassName(), message.syntax.name))
-        .addSuperclassConstructorParameter("\n%L\n⇤", message.identity())
-        .addFunction(FunSpec.builder("fromValue")
-            .addModifiers(OVERRIDE)
-            .addParameter(valueName, Int::class)
-            .returns(parentClassName.copy(nullable = true))
-            .addStatement("return %T.fromValue(value)", parentClassName)
-            .build())
-        .build()
+      .superclass(EnumAdapter::class.asClassName().parameterizedBy(parentClassName))
+      .addSuperclassConstructorParameter("\n⇥%T::class", parentClassName)
+      .addSuperclassConstructorParameter(
+        "\n%M",
+        MemberName(Syntax::class.asClassName(), message.syntax.name)
+      )
+      .addSuperclassConstructorParameter("\n%L\n⇤", message.identity())
+      .addFunction(
+        FunSpec.builder("fromValue")
+          .addModifiers(OVERRIDE)
+          .addParameter(valueName, Int::class)
+          .returns(parentClassName.copy(nullable = true))
+          .addStatement("return %T.fromValue(value)", parentClassName)
+          .build()
+      )
+      .build()
 
     return PropertySpec.builder(adapterName, adapterType)
-        .jvmField()
-        .initializer("%L", adapterObject)
-        .build()
+      .jvmField()
+      .initializer("%L", adapterObject)
+      .build()
   }
 
   /**
@@ -1763,17 +2050,19 @@ class KotlinGenerator private constructor(
     val parentClassName = generatedTypeName(type)
     val creatorName = nameAllocator["CREATOR"]
     val creatorTypeName = ClassName("android.os", "Parcelable", "Creator")
-        .parameterizedBy(parentClassName)
+      .parameterizedBy(parentClassName)
 
-    companionObjBuilder.addProperty(PropertySpec.builder(creatorName, creatorTypeName)
+    companionObjBuilder.addProperty(
+      PropertySpec.builder(creatorName, creatorTypeName)
         .jvmField()
         .initializer("%T.newCreator(ADAPTER)", ANDROID_MESSAGE)
-        .build())
+        .build()
+    )
   }
 
   private fun generateEnclosing(type: EnclosingType): TypeSpec {
     val classBuilder = TypeSpec.classBuilder(type.typeName as ClassName)
-        .primaryConstructor(FunSpec.constructorBuilder().addModifiers(PRIVATE).build())
+      .primaryConstructor(FunSpec.constructorBuilder().addModifiers(PRIVATE).build())
 
     type.nestedTypes.forEach { classBuilder.addType(generateType(it)) }
 
@@ -1784,7 +2073,7 @@ class KotlinGenerator private constructor(
    * Example
    * ```
    * @Retention(AnnotationRetention.RUNTIME)
-   * @Target(AnnotationTarget.FIELD)
+   * @Target(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD)
    * annotation class MyFieldOption(val value: String)
    * ```
    */
@@ -1793,39 +2082,70 @@ class KotlinGenerator private constructor(
     field: Field
   ): TypeSpec? {
     require(field in extend.fields)
-    val annotationTarget = extend.annotationTarget ?: return null
+    val annotationTargets = extend.annotationTargets
+    if (annotationTargets.isEmpty()) return null
 
     if (!emitDeclaredOptions) return null
 
     if (!eligibleAsAnnotationMember(schema, field)) return null
-    val returnType = field.type!!.typeName
+    val returnType = when (field.label) {
+      Field.Label.REPEATED -> when {
+        field.type!!.isScalar -> when (field.type!!.typeName) {
+          LONG -> LongArray::class.asClassName()
+          INT -> IntArray::class.asClassName()
+          FLOAT -> FloatArray::class.asClassName()
+          DOUBLE -> DoubleArray::class.asClassName()
+          BOOLEAN -> BooleanArray::class.asClassName()
+          String::class.asClassName() -> Array::class.asClassName().parameterizedBy(field.type!!.typeName)
+          else -> throw IllegalStateException("Unsupported annotation for ${field.type}")
+        }
+        schema.getType(field.type!!) is EnumType -> Array::class.asClassName().parameterizedBy(field.type!!.typeName)
+        else -> throw IllegalStateException("Unsupported annotation for ${field.type}")
+      }
+      else -> field.type!!.typeName
+    }
 
-    val kotlinType = generatedTypeName(field)
+    val kotlinType = generatedTypeName(extend.member(field))
 
     val builder = TypeSpec.annotationBuilder(kotlinType)
-        .addModifiers(PUBLIC)
-        .addAnnotation(AnnotationSpec.builder(Retention::class)
-            .addMember("%T.%L", AnnotationRetention::class, AnnotationRetention.RUNTIME)
-            .build())
-        .addAnnotation(AnnotationSpec.builder(Target::class)
-            .addMember("%T.%L", AnnotationTarget::class, annotationTarget)
-            .build())
+      .addModifiers(PUBLIC)
+      .addAnnotation(
+        AnnotationSpec.builder(Retention::class)
+          .addMember("%T.%L", AnnotationRetention::class, AnnotationRetention.RUNTIME)
+          .build()
+      )
+      .addAnnotation(
+        AnnotationSpec.builder(Target::class)
+          .run {
+            for (annotationTarget in annotationTargets) {
+              addMember("%T.%L", AnnotationTarget::class, annotationTarget)
+            }
+            this
+          }
+          .build()
+      )
     if (field.documentation.isNotEmpty()) {
       builder.addKdoc("%L\n", field.documentation)
     }
-    builder.primaryConstructor(FunSpec.constructorBuilder()
+    builder.primaryConstructor(
+      FunSpec.constructorBuilder()
         .addParameter("value", returnType)
-        .build())
-    builder.addProperty(PropertySpec.builder("value", returnType, PUBLIC)
+        .build()
+    )
+    builder.addProperty(
+      PropertySpec.builder("value", returnType, PUBLIC)
         .initializer("value")
-        .build())
+        .build()
+    )
     return builder.build()
   }
 
   private fun Field.getDeclaration(allocatedName: String) = when {
     isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", type!!.typeName)
-    isMap -> CodeBlock.of("val $allocatedName = mutableMapOf<%T, %T>()",
-        keyType.typeName, valueType.typeName)
+    isMap -> CodeBlock.of(
+      "val $allocatedName = mutableMapOf<%T, %T>()",
+      keyType.typeName, valueType.typeName
+    )
     else -> CodeBlock.of("var $allocatedName: %T = %L", typeNameForBuilderField, identityValue)
   }
 
@@ -1841,12 +2161,6 @@ class KotlinGenerator private constructor(
       }
     }
 
-  private fun ProtoType.asTypeName(): TypeName = when {
-    isMap -> Map::class.asTypeName()
-        .parameterizedBy(keyType!!.asTypeName(), valueType!!.asTypeName())
-    else -> typeToKotlinName.getValue(this)
-  }
-
   private fun EnumType.identity(): CodeBlock {
     val enumConstant = constant(0) ?: return CodeBlock.of("null")
     return CodeBlock.of("%T.%L", type.typeName, nameAllocator(this)[enumConstant])
@@ -1854,7 +2168,7 @@ class KotlinGenerator private constructor(
 
   private fun Field.typeNameForBuilderSetter(): TypeName {
     val type = type!!
-    val baseClass = type.asTypeName()
+    val baseClass = type.typeName
     return when (encodeMode!!) {
       EncodeMode.REPEATED,
       EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(baseClass)
@@ -1904,11 +2218,12 @@ class KotlinGenerator private constructor(
           if (isOneOf) return CodeBlock.of("null")
           when {
             protoType.isScalar -> PROTOTYPE_TO_IDENTITY_VALUES[protoType]
-                ?: throw IllegalArgumentException("Unexpected scalar proto type: $protoType")
+              ?: throw IllegalArgumentException("Unexpected scalar proto type: $protoType")
             type is MessageType -> CodeBlock.of("null")
             type is EnumType -> type.identity()
             else -> throw IllegalArgumentException(
-                "Unexpected type $protoType for IDENTITY_IF_ABSENT")
+              "Unexpected type $protoType for IDENTITY_IF_ABSENT"
+            )
           }
         }
         // We run this code even if when we're not using the default value so we return something.
@@ -1954,23 +2269,12 @@ class KotlinGenerator private constructor(
     if (!eligibleAsAnnotationMember(schema, field)) return null
 
     val protoFile: ProtoFile = schema.protoFile(field.location.path) ?: return null
-    val simpleName = camelCase(field.name, upperCamel = true) + "Option"
-    val type = ClassName(javaPackage(protoFile), simpleName)
-    val fieldValue = defaultFieldInitializer(field.type!!, value)
+    val type = annotationName(protoFile, field, ClassNameFactory())
+    val fieldValue = defaultFieldInitializer(field.type!!, value, annotation = true)
 
     return AnnotationSpec.builder(type)
-        .addMember(fieldValue)
-        .build()
-  }
-
-  fun generateFileAnnotations(): List<AnnotationSpec> {
-    if (emitKotlinSerialization) {
-      return listOf(AnnotationSpec.builder(USE_SERIALIZERS)
-          .addMember("%T::class", BYTE_STRING_SERIALIZER)
-          .build())
-    } else {
-      return listOf()
-    }
+      .addMember(fieldValue)
+      .build()
   }
 
   /**
@@ -2102,7 +2406,7 @@ class KotlinGenerator private constructor(
         CodeBlock.of(
           "%T<%T>(%L = %L, %L = %L, %L = %S)",
           boxClassName,
-          field.type!!.asTypeName(),
+          field.type!!.typeName,
           "tag",
           field.tag,
           "adapter",
@@ -2114,22 +2418,20 @@ class KotlinGenerator private constructor(
       .build()
   }
 
-  private fun MessageType.fieldsAndFlatOneOfFields(): List<Field> {
-    val result = mutableListOf<Field>()
-    result.addAll(this.declaredFields)
-    result.addAll(this.extensionFields)
-    result.addAll(this.flatOneOfs().flatMap { it.fields })
-    return result
-  }
+  private fun MessageType.fieldsAndFlatOneOfFieldsAndBoxedOneOfs(): List<Any> {
+    val fieldsAndFlatOneOfFields: List<Field> =
+      declaredFields + extensionFields + flatOneOfs().flatMap { it.fields }
 
-  private fun MessageType.boxOneOfs(): List<OneOf> {
-    val result = mutableListOf<OneOf>()
-    for (oneOf in this.oneOfs) {
-      if (oneOf.fields.size >= boxOneOfsMinSize) {
-        result.add(oneOf)
+    return (fieldsAndFlatOneOfFields + boxOneOfs())
+      .sortedBy { fieldOrOneOf ->
+        when (fieldOrOneOf) {
+          is Field -> fieldOrOneOf.location.line
+          // TODO(Benoit) If boxed oneofs without fields become a problem, we can add location to
+          //  oneofs and use that.
+          is OneOf -> fieldOrOneOf.fields.getOrNull(0)?.location?.line ?: 0
+          else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
+        }
       }
-    }
-    return result
   }
 
   private fun MessageType.flatOneOfs(): List<OneOf> {
@@ -2142,6 +2444,10 @@ class KotlinGenerator private constructor(
     return result
   }
 
+  private fun MessageType.boxOneOfs(): List<OneOf> {
+    return oneOfs.filter { it.fields.size >= boxOneOfsMinSize }
+  }
+
   private fun MessageType.oneOfClassFor(oneOf: OneOf, nameAllocator: NameAllocator): TypeName {
     val oneOfClass = (this.typeName as ClassName)
       .nestedClass(nameAllocator[boxedOneOfClassName(oneOf.name)])
@@ -2151,68 +2457,63 @@ class KotlinGenerator private constructor(
   }
 
   companion object {
+    fun builtInType(protoType: ProtoType): Boolean = protoType in BUILT_IN_TYPES.keys
+
     private val BUILT_IN_TYPES = mapOf(
-        ProtoType.BOOL to BOOLEAN,
-        ProtoType.BYTES to ByteString::class.asClassName(),
-        ProtoType.DOUBLE to DOUBLE,
-        ProtoType.FLOAT to FLOAT,
-        ProtoType.FIXED32 to INT,
-        ProtoType.FIXED64 to LONG,
-        ProtoType.INT32 to INT,
-        ProtoType.INT64 to LONG,
-        ProtoType.SFIXED32 to INT,
-        ProtoType.SFIXED64 to LONG,
-        ProtoType.SINT32 to INT,
-        ProtoType.SINT64 to LONG,
-        ProtoType.STRING to String::class.asClassName(),
-        ProtoType.UINT32 to INT,
-        ProtoType.UINT64 to LONG,
-        ProtoType.ANY to ClassName("com.squareup.wire", "AnyMessage"),
-        ProtoType.DURATION to ClassName("com.squareup.wire", "Duration"),
-        ProtoType.TIMESTAMP to ClassName("com.squareup.wire", "Instant"),
-        ProtoType.EMPTY to ClassName("kotlin", "Unit"),
-        ProtoType.STRUCT_MAP to ClassName("kotlin.collections", "Map")
-            .parameterizedBy(ClassName("kotlin", "String"), STAR).copy(nullable = true),
-        ProtoType.STRUCT_VALUE to ClassName("kotlin", "Any").copy(nullable = true),
-        ProtoType.STRUCT_NULL to ClassName("kotlin", "Nothing").copy(nullable = true),
-        ProtoType.STRUCT_LIST to ClassName("kotlin.collections", "List")
-            .parameterizedBy(STAR).copy(nullable = true),
-        ProtoType.DOUBLE_VALUE to DOUBLE.copy(nullable = true),
-        ProtoType.FLOAT_VALUE to FLOAT.copy(nullable = true),
-        ProtoType.INT64_VALUE to LONG.copy(nullable = true),
-        ProtoType.UINT64_VALUE to LONG.copy(nullable = true),
-        ProtoType.INT32_VALUE to INT.copy(nullable = true),
-        ProtoType.UINT32_VALUE to INT.copy(nullable = true),
-        ProtoType.BOOL_VALUE to BOOLEAN.copy(nullable = true),
-        ProtoType.STRING_VALUE to String::class.asClassName().copy(nullable = true),
-        ProtoType.BYTES_VALUE to ByteString::class.asClassName().copy(nullable = true),
-        FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
-        MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
-        ENUM_OPTIONS to ClassName("com.google.protobuf", "EnumOptions")
+      ProtoType.BOOL to BOOLEAN,
+      ProtoType.BYTES to ByteString::class.asClassName(),
+      ProtoType.DOUBLE to DOUBLE,
+      ProtoType.FLOAT to FLOAT,
+      ProtoType.FIXED32 to INT,
+      ProtoType.FIXED64 to LONG,
+      ProtoType.INT32 to INT,
+      ProtoType.INT64 to LONG,
+      ProtoType.SFIXED32 to INT,
+      ProtoType.SFIXED64 to LONG,
+      ProtoType.SINT32 to INT,
+      ProtoType.SINT64 to LONG,
+      ProtoType.STRING to String::class.asClassName(),
+      ProtoType.UINT32 to INT,
+      ProtoType.UINT64 to LONG,
+      ProtoType.ANY to ClassName("com.squareup.wire", "AnyMessage"),
+      ProtoType.DURATION to ClassName("com.squareup.wire", "Duration"),
+      ProtoType.TIMESTAMP to ClassName("com.squareup.wire", "Instant"),
+      ProtoType.EMPTY to ClassName("kotlin", "Unit"),
+      ProtoType.STRUCT_MAP to ClassName("kotlin.collections", "Map")
+        .parameterizedBy(ClassName("kotlin", "String"), STAR).copy(nullable = true),
+      ProtoType.STRUCT_VALUE to ClassName("kotlin", "Any").copy(nullable = true),
+      ProtoType.STRUCT_NULL to ClassName("kotlin", "Nothing").copy(nullable = true),
+      ProtoType.STRUCT_LIST to ClassName("kotlin.collections", "List")
+        .parameterizedBy(STAR).copy(nullable = true),
+      ProtoType.DOUBLE_VALUE to DOUBLE.copy(nullable = true),
+      ProtoType.FLOAT_VALUE to FLOAT.copy(nullable = true),
+      ProtoType.INT64_VALUE to LONG.copy(nullable = true),
+      ProtoType.UINT64_VALUE to LONG.copy(nullable = true),
+      ProtoType.INT32_VALUE to INT.copy(nullable = true),
+      ProtoType.UINT32_VALUE to INT.copy(nullable = true),
+      ProtoType.BOOL_VALUE to BOOLEAN.copy(nullable = true),
+      ProtoType.STRING_VALUE to String::class.asClassName().copy(nullable = true),
+      ProtoType.BYTES_VALUE to ByteString::class.asClassName().copy(nullable = true),
     )
     private val PROTOTYPE_TO_IDENTITY_VALUES = mapOf(
-        ProtoType.BOOL to CodeBlock.of("false"),
-        ProtoType.STRING to CodeBlock.of("\"\""),
-        ProtoType.BYTES to CodeBlock.of("%T.%L", ByteString::class, "EMPTY"),
-        ProtoType.DOUBLE to CodeBlock.of("0.0"),
-        ProtoType.FLOAT to CodeBlock.of("0f"),
-        ProtoType.FIXED64 to CodeBlock.of("0L"),
-        ProtoType.INT64 to CodeBlock.of("0L"),
-        ProtoType.SFIXED64 to CodeBlock.of("0L"),
-        ProtoType.SINT64 to CodeBlock.of("0L"),
-        ProtoType.UINT64 to CodeBlock.of("0L"),
-        ProtoType.FIXED32 to CodeBlock.of("0"),
-        ProtoType.INT32 to CodeBlock.of("0"),
-        ProtoType.SFIXED32 to CodeBlock.of("0"),
-        ProtoType.SINT32 to CodeBlock.of("0"),
-        ProtoType.UINT32 to CodeBlock.of("0")
+      ProtoType.BOOL to CodeBlock.of("false"),
+      ProtoType.STRING to CodeBlock.of("\"\""),
+      ProtoType.BYTES to CodeBlock.of("%T.%L", ByteString::class, "EMPTY"),
+      ProtoType.DOUBLE to CodeBlock.of("0.0"),
+      ProtoType.FLOAT to CodeBlock.of("0f"),
+      ProtoType.FIXED64 to CodeBlock.of("0L"),
+      ProtoType.INT64 to CodeBlock.of("0L"),
+      ProtoType.SFIXED64 to CodeBlock.of("0L"),
+      ProtoType.SINT64 to CodeBlock.of("0L"),
+      ProtoType.UINT64 to CodeBlock.of("0L"),
+      ProtoType.FIXED32 to CodeBlock.of("0"),
+      ProtoType.INT32 to CodeBlock.of("0"),
+      ProtoType.SFIXED32 to CodeBlock.of("0"),
+      ProtoType.SINT32 to CodeBlock.of("0"),
+      ProtoType.UINT32 to CodeBlock.of("0")
     )
     private val MESSAGE = Message::class.asClassName()
     private val ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage")
-    private val SERIALIZABLE = ClassName("kotlinx.serialization", "Serializable")
-    private val SERIAL_NAME = ClassName("kotlinx.serialization", "SerialName")
-    private val USE_SERIALIZERS = ClassName("kotlinx.serialization", "UseSerializers")
-    private val BYTE_STRING_SERIALIZER = ClassName("com.squareup.wire", "ByteStringSerializer")
 
     @JvmStatic @JvmName("get")
     operator fun invoke(
@@ -2221,12 +2522,14 @@ class KotlinGenerator private constructor(
       emitAndroid: Boolean = false,
       javaInterop: Boolean = false,
       emitDeclaredOptions: Boolean = true,
-      emitAppliedOptions: Boolean = false,
-      emitKotlinSerialization: Boolean = false,
+      emitAppliedOptions: Boolean = true,
       rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
       rpcRole: RpcRole = RpcRole.CLIENT,
       boxOneOfsMinSize: Int = 5_000,
       grpcServerCompatible: Boolean = false,
+      nameSuffix: String? = null,
+      buildersOnly: Boolean = false,
+      singleMethodServices: Boolean = false,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -2234,7 +2537,7 @@ class KotlinGenerator private constructor(
       fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
         for (type in types) {
           val className = enclosingClassName?.nestedClass(type.type.simpleName)
-              ?: ClassName(kotlinPackage, type.type.simpleName)
+            ?: ClassName(kotlinPackage, type.type.simpleName)
           typeToKotlinName[type.type] = className
           putAll(kotlinPackage, className, type.nestedTypes)
         }
@@ -2249,55 +2552,78 @@ class KotlinGenerator private constructor(
           typeToKotlinName[service.type] = className
         }
 
-        for (extend in protoFile.extendList) {
-          if (extend.annotationTarget == null) continue
-          for (field in extend.fields) {
-            if (!eligibleAsAnnotationMember(schema, field)) continue
-            val protoMember = field.member
-            val simpleName = camelCase(protoMember.simpleName, upperCamel = true) + "Option"
-            val className = ClassName(kotlinPackage, simpleName)
-            memberToKotlinName[protoMember] = className
-          }
-        }
+        putAllExtensions(schema, protoFile,
+            protoFile.types, protoFile.extendList,
+            memberToKotlinName)
       }
 
       typeToKotlinName.putAll(BUILT_IN_TYPES)
 
       return KotlinGenerator(
-          schema = schema,
-          profile = profile,
-          typeToKotlinName = typeToKotlinName,
-          memberToKotlinName = memberToKotlinName,
-          emitAndroid = emitAndroid,
-          javaInterOp = javaInterop,
-          emitDeclaredOptions = emitDeclaredOptions,
-          emitAppliedOptions = emitAppliedOptions,
-          emitKotlinSerialization = emitKotlinSerialization,
-          rpcCallStyle = rpcCallStyle,
-          rpcRole = rpcRole,
-          boxOneOfsMinSize = boxOneOfsMinSize,
-          grpcServerCompatible = grpcServerCompatible
+        schema = schema,
+        profile = profile,
+        typeToKotlinName = typeToKotlinName,
+        memberToKotlinName = memberToKotlinName,
+        emitAndroid = emitAndroid,
+        javaInterOp = javaInterop || buildersOnly,
+        emitDeclaredOptions = emitDeclaredOptions,
+        emitAppliedOptions = emitAppliedOptions,
+        rpcCallStyle = rpcCallStyle,
+        rpcRole = rpcRole,
+        boxOneOfsMinSize = boxOneOfsMinSize,
+        grpcServerCompatible = grpcServerCompatible,
+        nameSuffix = nameSuffix,
+        buildersOnly = buildersOnly,
+        singleMethodServices = singleMethodServices,
       )
     }
 
-    private val Extend.annotationTarget: AnnotationTarget?
+    private fun putAllExtensions(schema: Schema, protoFile: ProtoFile, types: List<Type>,
+        extendList: List<Extend>, memberToKotlinName: MutableMap<ProtoMember, TypeName>) {
+      for (extend in extendList) {
+        if (extend.annotationTargets.isEmpty()) continue
+        for (field in extend.fields) {
+          if (!eligibleAsAnnotationMember(schema, field)) continue
+          val protoMember = extend.member(field)
+          memberToKotlinName[protoMember] = annotationName(protoFile, field, ClassNameFactory())
+        }
+      }
+      for (type in types) {
+        putAllExtensions(schema, protoFile,
+            type.nestedTypes, type.nestedExtendList,
+            memberToKotlinName)
+      }
+    }
+
+    private class ClassNameFactory : NameFactory<ClassName> {
+      override fun newName(packageName: String, simpleName: String): ClassName {
+        return ClassName(packageName, simpleName)
+      }
+
+      override fun nestedName(enclosing: ClassName, simpleName: String): ClassName {
+        return enclosing.nestedClass(simpleName)
+      }
+    }
+
+    private val Extend.annotationTargets: List<AnnotationTarget>
       get() = when (type) {
-        MESSAGE_OPTIONS, ENUM_OPTIONS, SERVICE_OPTIONS -> AnnotationTarget.CLASS
-        FIELD_OPTIONS, ENUM_VALUE_OPTIONS -> AnnotationTarget.PROPERTY
-        METHOD_OPTIONS -> AnnotationTarget.FUNCTION
-        else -> null
+        MESSAGE_OPTIONS, ENUM_OPTIONS, SERVICE_OPTIONS -> listOf(AnnotationTarget.CLASS)
+        FIELD_OPTIONS, ENUM_VALUE_OPTIONS -> listOf(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD)
+        METHOD_OPTIONS -> listOf(AnnotationTarget.FUNCTION)
+        else -> emptyList()
       }
 
     internal fun String.sanitizeKdoc(): String {
       return this
-          // Remove trailing whitespace on each line.
-          .replace("[^\\S\n]+\n".toRegex(), "\n")
-          .replace("\\s+$".toRegex(), "")
-          .replace("\\*/".toRegex(), "&#42;/")
-          .replace("/\\*".toRegex(), "/&#42;")
-          .replace("""[""", """\[""")
-          .replace("""]""", """\]""")
+        // Remove trailing whitespace on each line.
+        .replace("[^\\S\n]+\n".toRegex(), "\n")
+        .replace("\\s+$".toRegex(), "")
+        .replace("\\*/".toRegex(), "&#42;/")
+        .replace("/\\*".toRegex(), "/&#42;")
+        .replace("""[""", """\[""")
+        .replace("""]""", """\]""")
     }
+
+    private const val DOUBLE_FULL_BLOCK = "\u2588\u2588"
   }
 }
-

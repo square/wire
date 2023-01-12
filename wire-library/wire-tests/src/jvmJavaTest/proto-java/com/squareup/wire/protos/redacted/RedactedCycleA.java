@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -91,7 +92,7 @@ public final class RedactedCycleA extends Message<RedactedCycleA, RedactedCycleA
 
   private static final class ProtoAdapter_RedactedCycleA extends ProtoAdapter<RedactedCycleA> {
     public ProtoAdapter_RedactedCycleA() {
-      super(FieldEncoding.LENGTH_DELIMITED, RedactedCycleA.class, "type.googleapis.com/squareup.protos.redacted_test.RedactedCycleA", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedCycleA.class, "type.googleapis.com/squareup.protos.redacted_test.RedactedCycleA", Syntax.PROTO_2, null, "redacted_test.proto");
     }
 
     @Override
@@ -106,6 +107,12 @@ public final class RedactedCycleA extends Message<RedactedCycleA, RedactedCycleA
     public void encode(ProtoWriter writer, RedactedCycleA value) throws IOException {
       RedactedCycleB.ADAPTER.encodeWithTag(writer, 1, value.b);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, RedactedCycleA value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      RedactedCycleB.ADAPTER.encodeWithTag(writer, 1, value.b);
     }
 
     @Override

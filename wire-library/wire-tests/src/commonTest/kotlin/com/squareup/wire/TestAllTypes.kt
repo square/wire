@@ -18,7 +18,6 @@ package com.squareup.wire
 import com.squareup.wire.protos.kotlin.alltypes.AllTypes
 import okio.Buffer
 import okio.ByteString
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -31,74 +30,74 @@ class TestAllTypes {
     val bytes = ByteString.of(125.toByte(), 225.toByte())
     val nestedMessage = AllTypes.NestedMessage(a = 999)
     return AllTypes(
-        opt_int32 = 111,
-        opt_uint32 = 112,
-        opt_sint32 = 113,
-        opt_fixed32 = 114,
-        opt_sfixed32 = 115,
-        opt_int64 = 116L,
-        opt_uint64 = 117L,
-        opt_sint64 = 118L,
-        opt_fixed64 = 119L,
-        opt_sfixed64 = 120L,
-        opt_bool = true,
-        opt_float = 122.0f,
-        opt_double = 123.0,
-        opt_string = "124",
-        opt_bytes = bytes,
-        opt_nested_enum = AllTypes.NestedEnum.A,
-        opt_nested_message = nestedMessage,
-        req_int32 = 111,
-        req_uint32 = 112,
-        req_sint32 = 113,
-        req_fixed32 = 114,
-        req_sfixed32 = 115,
-        req_int64 = 116L,
-        req_uint64 = 117L,
-        req_sint64 = 118L,
-        req_fixed64 = 119L,
-        req_sfixed64 = 120L,
-        req_bool = true,
-        req_float = 122.0f,
-        req_double = 123.0,
-        req_string = "124",
-        req_bytes = bytes,
-        req_nested_enum = AllTypes.NestedEnum.A,
-        req_nested_message = nestedMessage,
-        rep_int32 = list(111, numRepeated),
-        rep_uint32 = list(112, numRepeated),
-        rep_sint32 = list(113, numRepeated),
-        rep_fixed32 = list(114, numRepeated),
-        rep_sfixed32 = list(115, numRepeated),
-        rep_int64 = list(116L, numRepeated),
-        rep_uint64 = list(117L, numRepeated),
-        rep_sint64 = list(118L, numRepeated),
-        rep_fixed64 = list(119L, numRepeated),
-        rep_sfixed64 = list(120L, numRepeated),
-        rep_bool = list(true, numRepeated),
-        rep_float = list(122.0f, numRepeated),
-        rep_double = list(123.0, numRepeated),
-        rep_string = list("124", numRepeated),
-        rep_bytes = list(bytes, numRepeated),
-        rep_nested_enum = list(AllTypes.NestedEnum.A, numRepeated),
-        rep_nested_message = list(nestedMessage, numRepeated),
-        pack_int32 = list(111, numRepeated),
-        pack_uint32 = list(112, numRepeated),
-        pack_sint32 = list(113, numRepeated),
-        pack_fixed32 = list(114, numRepeated),
-        pack_sfixed32 = list(115, numRepeated),
-        pack_int64 = list(116L, numRepeated),
-        pack_uint64 = list(117L, numRepeated),
-        pack_sint64 = list(118L, numRepeated),
-        pack_fixed64 = list(119L, numRepeated),
-        pack_sfixed64 = list(120L, numRepeated),
-        pack_bool = list(true, numRepeated),
-        pack_float = list(122.0f, numRepeated),
-        pack_double = list(123.0, numRepeated),
-        pack_nested_enum = list(AllTypes.NestedEnum.A, numRepeated),
-        ext_opt_bool = true,
-        ext_rep_bool = list(true, numRepeated),
-        ext_pack_bool = list(true, numRepeated)
+      opt_int32 = 111,
+      opt_uint32 = 112,
+      opt_sint32 = 113,
+      opt_fixed32 = 114,
+      opt_sfixed32 = 115,
+      opt_int64 = 116L,
+      opt_uint64 = 117L,
+      opt_sint64 = 118L,
+      opt_fixed64 = 119L,
+      opt_sfixed64 = 120L,
+      opt_bool = true,
+      opt_float = 122.0f,
+      opt_double = 123.0,
+      opt_string = "124",
+      opt_bytes = bytes,
+      opt_nested_enum = AllTypes.NestedEnum.A,
+      opt_nested_message = nestedMessage,
+      req_int32 = 111,
+      req_uint32 = 112,
+      req_sint32 = 113,
+      req_fixed32 = 114,
+      req_sfixed32 = 115,
+      req_int64 = 116L,
+      req_uint64 = 117L,
+      req_sint64 = 118L,
+      req_fixed64 = 119L,
+      req_sfixed64 = 120L,
+      req_bool = true,
+      req_float = 122.0f,
+      req_double = 123.0,
+      req_string = "124",
+      req_bytes = bytes,
+      req_nested_enum = AllTypes.NestedEnum.A,
+      req_nested_message = nestedMessage,
+      rep_int32 = list(111, numRepeated),
+      rep_uint32 = list(112, numRepeated),
+      rep_sint32 = list(113, numRepeated),
+      rep_fixed32 = list(114, numRepeated),
+      rep_sfixed32 = list(115, numRepeated),
+      rep_int64 = list(116L, numRepeated),
+      rep_uint64 = list(117L, numRepeated),
+      rep_sint64 = list(118L, numRepeated),
+      rep_fixed64 = list(119L, numRepeated),
+      rep_sfixed64 = list(120L, numRepeated),
+      rep_bool = list(true, numRepeated),
+      rep_float = list(122.0f, numRepeated),
+      rep_double = list(123.0, numRepeated),
+      rep_string = list("124", numRepeated),
+      rep_bytes = list(bytes, numRepeated),
+      rep_nested_enum = list(AllTypes.NestedEnum.A, numRepeated),
+      rep_nested_message = list(nestedMessage, numRepeated),
+      pack_int32 = list(111, numRepeated),
+      pack_uint32 = list(112, numRepeated),
+      pack_sint32 = list(113, numRepeated),
+      pack_fixed32 = list(114, numRepeated),
+      pack_sfixed32 = list(115, numRepeated),
+      pack_int64 = list(116L, numRepeated),
+      pack_uint64 = list(117L, numRepeated),
+      pack_sint64 = list(118L, numRepeated),
+      pack_fixed64 = list(119L, numRepeated),
+      pack_sfixed64 = list(120L, numRepeated),
+      pack_bool = list(true, numRepeated),
+      pack_float = list(122.0f, numRepeated),
+      pack_double = list(123.0, numRepeated),
+      pack_nested_enum = list(AllTypes.NestedEnum.A, numRepeated),
+      ext_opt_bool = true,
+      ext_rep_bool = list(true, numRepeated),
+      ext_pack_bool = list(true, numRepeated)
     )
   }
 
@@ -251,9 +250,9 @@ class TestAllTypes {
     assertEquals(list(true), builder.ext_pack_bool)
 
     builder = builder.copy(
-        ext_opt_bool = false,
-        ext_rep_bool = list(false),
-        ext_pack_bool = list(false)
+      ext_opt_bool = false,
+      ext_rep_bool = list(false),
+      ext_pack_bool = list(false)
     )
 
     assertEquals(false, builder.ext_opt_bool)
@@ -329,8 +328,11 @@ class TestAllTypes {
   @Test fun testDefaults() {
     assertEquals(true, AllTypes.DEFAULT_DEFAULT_BOOL)
     // original: "<c-cedilla>ok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11g<u umlaut>zel"
-    assertEquals("çok\u0007\b\u000C\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011" +
-        "\u0001\u0001\u0011güzel", AllTypes.DEFAULT_DEFAULT_STRING)
+    assertEquals(
+      "çok\u0007\b\u000C\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011" +
+        "\u0001\u0001\u0011güzel",
+      AllTypes.DEFAULT_DEFAULT_STRING
+    )
   }
 
   @Test fun testEnums() {
@@ -370,8 +372,10 @@ class TestAllTypes {
     data[index++] = 0x04.toByte()
     data[index++] = 0xa4.toByte() // end group, tag = 20, type = 4
     data[index++] = 0x01.toByte()
-    arraycopy(TestAllTypesData.expectedOutput.toByteArray(), 17, data, index,
-        TestAllTypesData.expectedOutput.size - 17)
+    arraycopy(
+      TestAllTypesData.expectedOutput.toByteArray(), 17, data, index,
+      TestAllTypesData.expectedOutput.size - 17
+    )
     val parsed = adapter.decode(data)
     assertEquals(allTypes, parsed)
   }

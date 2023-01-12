@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -21,7 +22,6 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -31,30 +31,30 @@ public class Dinosaur(
    */
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   @JvmField
   public val name: String? = null,
   picture_urls: List<String> = emptyList(),
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
   )
   @JvmField
   public val length_meters: Double? = null,
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
   )
   @JvmField
   public val mass_kilograms: Double? = null,
   @field:WireField(
     tag = 5,
-    adapter = "com.squareup.wire.proto2.geology.javainteropkotlin.Period#ADAPTER"
+    adapter = "com.squareup.wire.proto2.geology.javainteropkotlin.Period#ADAPTER",
   )
   @JvmField
   public val period: Period? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Dinosaur, Dinosaur.Builder>(ADAPTER, unknownFields) {
   /**
    * URLs with images of this dinosaur.
@@ -62,7 +62,7 @@ public class Dinosaur(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val picture_urls: List<String> = immutableCopyOf("picture_urls", picture_urls)
@@ -94,11 +94,11 @@ public class Dinosaur(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + name.hashCode()
+      result = result * 37 + (name?.hashCode() ?: 0)
       result = result * 37 + picture_urls.hashCode()
-      result = result * 37 + length_meters.hashCode()
-      result = result * 37 + mass_kilograms.hashCode()
-      result = result * 37 + period.hashCode()
+      result = result * 37 + (length_meters?.hashCode() ?: 0)
+      result = result * 37 + (mass_kilograms?.hashCode() ?: 0)
+      result = result * 37 + (period?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -120,7 +120,7 @@ public class Dinosaur(
     length_meters: Double? = this.length_meters,
     mass_kilograms: Double? = this.mass_kilograms,
     period: Period? = this.period,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): Dinosaur = Dinosaur(name, picture_urls, length_meters, mass_kilograms, period, unknownFields)
 
   public class Builder : Message.Builder<Dinosaur, Builder>() {
@@ -188,9 +188,10 @@ public class Dinosaur(
       Dinosaur::class, 
       "type.googleapis.com/squareup.dinosaurs.javainteropkotlin.Dinosaur", 
       PROTO_2, 
-      null
+      null, 
+      "dinosaur_java_interop_kotlin.proto"
     ) {
-      public override fun encodedSize(value: Dinosaur): Int {
+      public override fun encodedSize(`value`: Dinosaur): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(2, value.picture_urls)
@@ -200,13 +201,22 @@ public class Dinosaur(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Dinosaur): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Dinosaur): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 2, value.picture_urls)
         ProtoAdapter.DOUBLE.encodeWithTag(writer, 3, value.length_meters)
         ProtoAdapter.DOUBLE.encodeWithTag(writer, 4, value.mass_kilograms)
         Period.ADAPTER.encodeWithTag(writer, 5, value.period)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: Dinosaur): Unit {
+        writer.writeBytes(value.unknownFields)
+        Period.ADAPTER.encodeWithTag(writer, 5, value.period)
+        ProtoAdapter.DOUBLE.encodeWithTag(writer, 4, value.mass_kilograms)
+        ProtoAdapter.DOUBLE.encodeWithTag(writer, 3, value.length_meters)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 2, value.picture_urls)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
       }
 
       public override fun decode(reader: ProtoReader): Dinosaur {
@@ -239,7 +249,7 @@ public class Dinosaur(
         )
       }
 
-      public override fun redact(value: Dinosaur): Dinosaur = value.copy(
+      public override fun redact(`value`: Dinosaur): Dinosaur = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

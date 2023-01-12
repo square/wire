@@ -19,7 +19,7 @@ package squareup.dinosaurs.javainteropkotlin;
 
 option java_package = "com.squareup.wire.proto2.dinosaurs.javainteropkotlin";
 
-import "proto2/period_java_interop_kotlin.proto";
+import "period_java_interop_kotlin.proto";
 
 message Dinosaur {
   /** Common name of this dinosaur, like "Stegosaurus". */

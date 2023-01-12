@@ -3,7 +3,7 @@ plugins {
   id 'com.squareup.wire'
 }
 
-// See installProtoJars task in wire-gradle-plugin/build.gradle
+// See installProtoJars task in wire-gradle-plugin/build.gradle.kts
 repositories {
   maven {
     url "file://${projectDir.absolutePath}/../../../../../build/localMaven"
@@ -12,4 +12,6 @@ repositories {
 
 wire {
   sourcePath 'com.squareup.wire.dinosaur:all-protos:+'
+  java{
+  }
 }

@@ -48,19 +48,19 @@ class StructTest {
 
   @Test fun specialDoubleValues() {
     val googleMessage = listOf(
-        Double.NEGATIVE_INFINITY,
-        -0.0,
-        0.0,
-        Double.POSITIVE_INFINITY,
-        Double.NaN
+      Double.NEGATIVE_INFINITY,
+      -0.0,
+      0.0,
+      Double.POSITIVE_INFINITY,
+      Double.NaN
     ).toListValue()
 
     val wireMessage = listOf(
-        Double.NEGATIVE_INFINITY,
-        -0.0,
-        0.0,
-        Double.POSITIVE_INFINITY,
-        Double.NaN
+      Double.NEGATIVE_INFINITY,
+      -0.0,
+      0.0,
+      Double.POSITIVE_INFINITY,
+      Double.NaN
     )
 
     val googleMessageBytes = googleMessage.toByteArray()
@@ -130,21 +130,21 @@ class StructTest {
 
   @Test fun mapOfAllTypes() {
     val googleMessage = mapOf(
-        "a" to null,
-        "b" to 0.5,
-        "c" to true,
-        "d" to "cash",
-        "e" to listOf("g", "h"),
-        "f" to mapOf("i" to "j", "k" to "l")
+      "a" to null,
+      "b" to 0.5,
+      "c" to true,
+      "d" to "cash",
+      "e" to listOf("g", "h"),
+      "f" to mapOf("i" to "j", "k" to "l")
     ).toStruct()
 
     val wireMessage = mapOf(
-        "a" to null,
-        "b" to 0.5,
-        "c" to true,
-        "d" to "cash",
-        "e" to listOf("g", "h"),
-        "f" to mapOf("i" to "j", "k" to "l")
+      "a" to null,
+      "b" to 0.5,
+      "c" to true,
+      "d" to "cash",
+      "e" to listOf("g", "h"),
+      "f" to mapOf("i" to "j", "k" to "l")
     )
 
     val googleMessageBytes = googleMessage.toByteArray()
@@ -219,21 +219,21 @@ class StructTest {
 
   @Test fun listOfAllTypes() {
     val googleMessage = listOf(
-        null,
-        0.5,
-        true,
-        "cash",
-        listOf("a", "b"),
-        mapOf("c" to "d", "e" to "f")
+      null,
+      0.5,
+      true,
+      "cash",
+      listOf("a", "b"),
+      mapOf("c" to "d", "e" to "f")
     ).toListValue()
 
     val wireMessage = listOf(
-        null,
-        0.5,
-        true,
-        "cash",
-        listOf("a", "b"),
-        mapOf("c" to "d", "e" to "f")
+      null,
+      0.5,
+      true,
+      "cash",
+      listOf("a", "b"),
+      mapOf("c" to "d", "e" to "f")
     )
 
     val googleMessageBytes = googleMessage.toByteArray()
@@ -287,16 +287,17 @@ class StructTest {
 
   @Test fun emptyMapAndListAsFields() {
     val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
-        .setStruct(emptyStruct())
-        .setList(emptyListValue())
-        .build()
+      .setStruct(emptyStruct())
+      .setList(emptyListValue())
+      .build()
     val wireAllStructJava = AllStructsJ.Builder()
-        .struct(emptyMap<String, Any?>())
-        .list(emptyList<Any?>())
-        .build()
+      .struct(emptyMap<String, Any?>())
+      .list(emptyList<Any?>())
+      .build()
     val wireAllStructKotlin = AllStructsK(
-        struct = emptyMap<String, Any?>(),
-        list = emptyList<Any?>())
+      struct = emptyMap<String, Any?>(),
+      list = emptyList<Any?>()
+    )
 
     val protocAllStructBytes = protocAllStruct.toByteArray()
     assertThat(AllStructsJ.ADAPTER.encode(wireAllStructJava)).isEqualTo(protocAllStructBytes)
@@ -308,34 +309,34 @@ class StructTest {
   // Note: We are not testing nulls because while protoc emits `NULL_VALUE`s, Wire doesn't.
   @Test fun structRoundTripWithData() {
     val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
-        .setStruct(mapOf("a" to 1.0).toStruct())
-        .setList(listOf("a", 3.0).toListValue())
-        .setNullValue(NullValue.NULL_VALUE)
-        .setValueA("a".toValue())
-        .setValueB(33.0.toValue())
-        .setValueC(true.toValue())
-        .setValueE(mapOf("a" to 1.0).toValue())
-        .setValueF(listOf("a", 3.0).toValue())
-        .build()
+      .setStruct(mapOf("a" to 1.0).toStruct())
+      .setList(listOf("a", 3.0).toListValue())
+      .setNullValue(NullValue.NULL_VALUE)
+      .setValueA("a".toValue())
+      .setValueB(33.0.toValue())
+      .setValueC(true.toValue())
+      .setValueE(mapOf("a" to 1.0).toValue())
+      .setValueF(listOf("a", 3.0).toValue())
+      .build()
     val wireAllStructJava = AllStructsJ.Builder()
-        .struct(mapOf("a" to 1.0))
-        .list(listOf("a", 3.0))
-        .null_value(null)
-        .value_a("a")
-        .value_b(33.0)
-        .value_c(true)
-        .value_e(mapOf("a" to 1.0))
-        .value_f(listOf("a", 3.0))
-        .build()
+      .struct(mapOf("a" to 1.0))
+      .list(listOf("a", 3.0))
+      .null_value(null)
+      .value_a("a")
+      .value_b(33.0)
+      .value_c(true)
+      .value_e(mapOf("a" to 1.0))
+      .value_f(listOf("a", 3.0))
+      .build()
     val wireAllStructKotlin = AllStructsK(
-        struct = mapOf("a" to 1.0),
-        list = listOf("a", 3.0),
-        null_value = null,
-        value_a = "a",
-        value_b = 33.0,
-        value_c = true,
-        value_e = mapOf("a" to 1.0),
-        value_f = listOf("a", 3.0)
+      struct = mapOf("a" to 1.0),
+      list = listOf("a", 3.0),
+      null_value = null,
+      value_a = "a",
+      value_b = 33.0,
+      value_c = true,
+      value_e = mapOf("a" to 1.0),
+      value_f = listOf("a", 3.0)
     )
 
     val protocAllStructBytes = protocAllStruct.toByteArray()
@@ -349,8 +350,8 @@ class StructTest {
     val list = mutableListOf(mutableMapOf("a" to "b"), mutableListOf("c"), "d", 5.0, false, null)
 
     val allStructs = AllStructsJ.Builder()
-        .list(list)
-        .build()
+      .list(list)
+      .build()
     assertThat(allStructs.list.isDeeplyUnmodifiable()).isTrue()
 
     // Mutate the values used to create the list. Wire should have defensive copies.
@@ -359,15 +360,15 @@ class StructTest {
     list.clear()
 
     assertThat(allStructs.list)
-        .containsExactly(mapOf("a" to "b"), listOf("c"), "d", 5.0, false, null)
+      .containsExactly(mapOf("a" to "b"), listOf("c"), "d", 5.0, false, null)
   }
 
   @Test fun kotlinListsAreDeeplyImmutable() {
     val list = mutableListOf(mutableMapOf("a" to "b"), mutableListOf("c"), "d", 5.0, false, null)
 
     val allStructs = AllStructsK.Builder()
-        .list(list)
-        .build()
+      .list(list)
+      .build()
 
     assertThat(allStructs.list!!.isDeeplyUnmodifiable()).isTrue()
 
@@ -377,22 +378,22 @@ class StructTest {
     list.clear()
 
     assertThat(allStructs.list)
-        .containsExactly(mapOf("a" to "b"), listOf("c"), "d", 5.0, false, null)
+      .containsExactly(mapOf("a" to "b"), listOf("c"), "d", 5.0, false, null)
   }
 
   @Test fun javaMapsAreDeeplyImmutable() {
     val map = mutableMapOf(
-        "a" to mutableMapOf("g" to "h"),
-        "b" to mutableListOf("i"),
-        "c" to "j",
-        "d" to 5.0,
-        "e" to false,
-        "f" to null
+      "a" to mutableMapOf("g" to "h"),
+      "b" to mutableListOf("i"),
+      "c" to "j",
+      "d" to 5.0,
+      "e" to false,
+      "f" to null
     )
 
     val allStructs = AllStructsJ.Builder()
-        .struct(map)
-        .build()
+      .struct(map)
+      .build()
     assertThat(allStructs.struct.isDeeplyUnmodifiable()).isTrue()
 
     // Mutate the values used to create the map. Wire should have defensive copies.
@@ -401,28 +402,28 @@ class StructTest {
     map.clear()
 
     assertThat(allStructs.struct).containsExactly(
-        entry("a", mapOf("g" to "h")),
-        entry("b", listOf("i")),
-        entry("c", "j"),
-        entry("d", 5.0),
-        entry("e", false),
-        entry("f", null)
+      entry("a", mapOf("g" to "h")),
+      entry("b", listOf("i")),
+      entry("c", "j"),
+      entry("d", 5.0),
+      entry("e", false),
+      entry("f", null)
     )
   }
 
   @Test fun kotlinMapsAreDeeplyImmutable() {
     val map = mutableMapOf(
-        "a" to mutableMapOf("g" to "h"),
-        "b" to mutableListOf("i"),
-        "c" to "j",
-        "d" to 5.0,
-        "e" to false,
-        "f" to null
+      "a" to mutableMapOf("g" to "h"),
+      "b" to mutableListOf("i"),
+      "c" to "j",
+      "d" to 5.0,
+      "e" to false,
+      "f" to null
     )
 
     val allStructs = AllStructsK.Builder()
-        .struct(map)
-        .build()
+      .struct(map)
+      .build()
     assertThat(allStructs.struct.isDeeplyUnmodifiable()).isTrue()
 
     // Mutate the values used to create the map. Wire should have defensive copies.
@@ -431,23 +432,25 @@ class StructTest {
     map.clear()
 
     assertThat(allStructs.struct).containsExactly(
-        entry("a", mapOf("g" to "h")),
-        entry("b", listOf("i")),
-        entry("c", "j"),
-        entry("d", 5.0),
-        entry("e", false),
-        entry("f", null)
+      entry("a", mapOf("g" to "h")),
+      entry("b", listOf("i")),
+      entry("c", "j"),
+      entry("d", 5.0),
+      entry("e", false),
+      entry("f", null)
     )
   }
 
   @Test fun nonStructTypeCannotBeConstructed() {
     try {
       AllStructsK.Builder()
-          .struct(mapOf("a" to 1)) // Int.
-          .build()
+        .struct(mapOf("a" to 1)) // Int.
+        .build()
     } catch (e: IllegalArgumentException) {
-      assertThat(e).hasMessage("struct value struct must be a JSON type " +
-          "(null, Boolean, Double, String, List, or Map) but was class kotlin.Int: 1")
+      assertThat(e).hasMessage(
+        "struct value struct must be a JSON type " +
+          "(null, Boolean, Double, String, List, or Map) but was class kotlin.Int: 1"
+      )
     }
   }
 
@@ -455,8 +458,8 @@ class StructTest {
     val map = mutableMapOf("a" to "b")
 
     val allStructs = AllStructsJ.Builder()
-        .map_int32_struct(mapOf(5 to map))
-        .build()
+      .map_int32_struct(mapOf(5 to map))
+      .build()
     assertThat(allStructs.map_int32_struct.isDeeplyUnmodifiable()).isTrue()
 
     // Mutate the values used to create the map. Wire should have defensive copies.
@@ -469,8 +472,8 @@ class StructTest {
     val map = mutableMapOf("a" to "b")
 
     val allStructs = AllStructsK.Builder()
-        .map_int32_struct(mapOf(5 to map))
-        .build()
+      .map_int32_struct(mapOf(5 to map))
+      .build()
     assertThat(allStructs.map_int32_struct.isDeeplyUnmodifiable()).isTrue()
 
     // Mutate the values used to create the map. Wire should have defensive copies.
@@ -483,8 +486,8 @@ class StructTest {
     val map = mutableMapOf("a" to "b")
 
     val allStructs = AllStructsJ.Builder()
-        .rep_struct(listOf(map))
-        .build()
+      .rep_struct(listOf(map))
+      .build()
     assertThat(allStructs.rep_struct.isDeeplyUnmodifiable()).isTrue()
 
     // Mutate the values used to create the map. Wire should have defensive copies.
@@ -497,8 +500,8 @@ class StructTest {
     val map = mutableMapOf("a" to "b")
 
     val allStructs = AllStructsK.Builder()
-        .rep_struct(listOf(map))
-        .build()
+      .rep_struct(listOf(map))
+      .build()
     assertThat(allStructs.rep_struct.isDeeplyUnmodifiable()).isTrue()
 
     // Mutate the values used to create the map. Wire should have defensive copies.
@@ -519,7 +522,7 @@ class StructTest {
       }
       is Map<*, *> -> {
         this.all { it.key.isDeeplyUnmodifiable() && it.value.isDeeplyUnmodifiable() } &&
-            this.isUnmodifiable()
+          this.isUnmodifiable()
       }
       else -> false
     }

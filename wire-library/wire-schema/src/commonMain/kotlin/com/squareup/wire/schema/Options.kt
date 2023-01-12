@@ -38,7 +38,7 @@ class Options(
     }
 
   val map: Map<ProtoMember, Any?>
-    get() = entries!!.toMap()
+    get() = entries?.toMap() ?: emptyMap()
 
   fun retainLinked() = Options(optionType, emptyList())
 
@@ -56,7 +56,7 @@ class Options(
 
     return entries!!.any { entry ->
       nameRegex.matchEntire(entry.protoMember.member) != null &&
-          valueRegex.matchEntire(entry.value.toString()) != null
+        valueRegex.matchEntire(entry.value.toString()) != null
     }
   }
 
@@ -65,8 +65,8 @@ class Options(
 
     for (option in optionElements) {
       val canonicalOption: List<LinkedOptionEntry> =
-          canonicalizeOption(linker, optionType, option, validate, location)
-              ?: continue
+        canonicalizeOption(linker, optionType, option, validate, location)
+          ?: continue
 
       entries = union(linker, entries, canonicalOption)
     }
@@ -81,7 +81,7 @@ class Options(
     location: Location
   ): List<LinkedOptionEntry>? {
     val type = linker.getForOptions(extensionType) as? MessageType
-        ?: return null // No known extensions for the given extension type.
+      ?: return null // No known extensions for the given extension type.
 
     var path: Array<String>?
     var field = type.field(option.name)
@@ -93,30 +93,13 @@ class Options(
       // This is an option declared by an extension.
       val extensionsForType = type.extensionFieldsMap()
       path = resolveFieldPath(option.name, extensionsForType.keys)
-      var packageName = linker.packageName()
-      var checkedExtensionFields = false
-      while (path == null && !packageName.isNullOrBlank()) {
+      var namespace = linker.resolveContext()
+      while (path == null && namespace.isNotBlank()) {
         // If the path couldn't be resolved, attempt again by prefixing it with the package name.
-        path = resolveFieldPath(packageName + "." + option.name, extensionsForType.keys)
+        path = resolveFieldPath("$namespace.${option.name}", extensionsForType.keys)
         // Retry with one upper level package to resolve relative paths.
         if (path == null) {
-          packageName = packageName.substringBeforeLast(".", missingDelimiterValue = "")
-
-          if (packageName.isNullOrBlank() && !checkedExtensionFields) {
-            checkedExtensionFields = true
-            val extensionFields = type.extensionFields.filter { it.name == option.name }
-            if (extensionFields.size > 1) {
-              if (validate){
-                linker.errors += """
-                   |ambiguous options ${option.name} defined in
-                   |  ${extensionFields.map { "- ${it.location}" }.joinToString("\n  ")}
-                   """.trimMargin()
-                return null
-              }
-            } else {
-              packageName = extensionFields.firstOrNull()?.packageName
-            }
-          }
+          namespace = namespace.substringBeforeLast(".", missingDelimiterValue = "")
         }
       }
       if (path == null) {
@@ -146,11 +129,13 @@ class Options(
       }
 
       last = nested
-      field = linker.dereference(field, path[i]) ?: return null // Unable to dereference segment.
+      field =
+        linker.dereference(field.type!!, path[i]) ?: return null // Unable to dereference segment.
       linker.request(field)
     }
 
-    last[get(lastProtoType!!, field!!)] = canonicalizeValue(linker, field, option.value)
+    last[get(lastProtoType!!, field!!)] =
+      canonicalizeValue(linker, field.type!!, field.isRepeated, option.value)
 
     check(result.size == 1) // TODO(benoit) might be safe to remove
     val (protoMember, value) = result.entries.first()
@@ -159,7 +144,8 @@ class Options(
 
   private fun canonicalizeValue(
     linker: Linker,
-    context: Field,
+    context: ProtoType,
+    isRepeated: Boolean,
     value: Any
   ): Any {
     when (value) {
@@ -167,39 +153,62 @@ class Options(
         val result = mutableMapOf<ProtoMember, Any>()
         val field = linker.dereference(context, value.name)
         if (field == null) {
-          linker.errors += "unable to resolve option ${value.name} on ${context.type}"
+          linker.errors += "unable to resolve option ${value.name} on $context"
         } else {
-          val protoMember = get(context.type!!, field)
-          result[protoMember] = canonicalizeValue(linker, field, value.value)
+          val protoMember = get(context, field)
+          result[protoMember] =
+            canonicalizeValue(linker, field.type!!, field.isRepeated, value.value)
         }
-        return coerceValueForField(context, result)
+        return coerceValueForField(context, result, isRepeated)
       }
 
       is Map<*, *> -> {
-        val result = mutableMapOf<ProtoMember, Any>()
-        for (entry in value) {
-          val name = entry.key as String
-          val field = linker.dereference(context, name)
-          if (field == null) {
-            linker.errors += "unable to resolve option $name on ${context.type}"
-          } else {
-            val protoMember = get(context.type!!, field)
-            result[protoMember] = canonicalizeValue(linker, field, entry.value!!)
+        if (context.isMap) {
+          // Map fields are defined with two optional entries: `key` and 'value'.
+          val mapFieldKeyAsString = value["key"]
+          val mapFieldValueAsString = value["value"]
+          val mapFieldKey =
+            if (mapFieldKeyAsString == null) null
+            else canonicalizeValue(
+              linker, context.keyType!!, isRepeated = false, mapFieldKeyAsString
+            )
+          val mapFieldValue =
+            if (mapFieldValueAsString == null) null
+            else canonicalizeValue(
+              linker, context.valueType!!, isRepeated = false, mapFieldValueAsString
+            )
+          return coerceValueForField(context, mapOf(mapFieldKey to mapFieldValue), isRepeated)
+        } else {
+          val result = mutableMapOf<ProtoMember, Any>()
+          for (entry in value) {
+            val name = entry.key as String
+            val field = linker.dereference(context, name)
+            if (field == null) {
+              linker.errors += "unable to resolve option $name on $context"
+            } else {
+              val protoMember = get(context, field)
+              result[protoMember] =
+                canonicalizeValue(linker, field.type!!, field.isRepeated, entry.value!!)
+            }
           }
+          return coerceValueForField(context, result, isRepeated)
         }
-        return coerceValueForField(context, result)
       }
 
       is List<*> -> {
         val result = mutableListOf<Any>()
         for (element in value) {
-          result.addAll(canonicalizeValue(linker, context, element!!) as List<Any>)
+          result.addAll(canonicalizeValue(linker, context, isRepeated, element!!) as List<Any>)
         }
-        return coerceValueForField(context, result)
+        return coerceValueForField(context, result, isRepeated)
       }
 
       is String -> {
-        return coerceValueForField(context, value)
+        return coerceValueForField(context, value, isRepeated)
+      }
+
+      is OptionElement.OptionPrimitive -> {
+        return canonicalizeValue(linker, context, isRepeated, value.value)
       }
 
       else -> {
@@ -208,9 +217,9 @@ class Options(
     }
   }
 
-  private fun coerceValueForField(context: Field, value: Any): Any {
+  private fun coerceValueForField(context: ProtoType, value: Any, isRepeated: Boolean): Any {
     return when {
-      context.isRepeated -> value as? List<*> ?: listOf(value)
+      isRepeated || context.isMap -> value as? List<*> ?: listOf(value)
       value is List<*> -> value.single()!!
       else -> value
     }
@@ -234,7 +243,9 @@ class Options(
   }
 
   private fun union(
-    linker: Linker, a: List<LinkedOptionEntry>, b: List<LinkedOptionEntry>
+    linker: Linker,
+    a: List<LinkedOptionEntry>,
+    b: List<LinkedOptionEntry>
   ): List<LinkedOptionEntry> {
     val aMap: Map<ProtoMember, Any?> = a.toMap()
     val bMap: Map<ProtoMember, Any> = b.toMap() as Map<ProtoMember, Any>
@@ -250,18 +261,20 @@ class Options(
     }
 
     return a.map { it.optionElement to it.protoMember }
-        .union(b.map { it.optionElement to it.protoMember })
-        .map { (optionElement, protoMember) ->
-          LinkedOptionEntry(
-              optionElement,
-              protoMember,
-              valuesMap[protoMember]
-          )
-        }
+      .union(b.map { it.optionElement to it.protoMember })
+      .map { (optionElement, protoMember) ->
+        LinkedOptionEntry(
+          optionElement,
+          protoMember,
+          valuesMap[protoMember]
+        )
+      }
   }
 
   private fun union(
-    linker: Linker, a: Map<ProtoMember, Any?>, b: Map<ProtoMember, Any>
+    linker: Linker,
+    a: Map<ProtoMember, Any?>,
+    b: Map<ProtoMember, Any>
   ): Map<ProtoMember, Any?> {
     val result: MutableMap<ProtoMember, Any?> = LinkedHashMap(a)
     for (entry in b) {
@@ -315,13 +328,13 @@ class Options(
 
     @Suppress("UNCHECKED_CAST") // All maps have these type parameters.
     val map = retainAll(schema, markSet, optionType, entries!!.toMap()) as Map<ProtoMember, Any?>?
-        ?: emptyMap<ProtoMember, Any>()
+      ?: emptyMap<ProtoMember, Any>()
 
     result.entries = entries
-        ?.filter { map.containsKey(it.protoMember) }
-        ?.map { entry ->
-          entry.copy(value = map.getValue(entry.protoMember))
-        }
+      ?.filter { map.containsKey(it.protoMember) }
+      ?.map { entry ->
+        entry.copy(value = map.getValue(entry.protoMember))
+      }
 
     return result
   }
@@ -339,10 +352,10 @@ class Options(
         for ((key, value) in o) {
           val protoMember = key as ProtoMember
           val isCoreMemberOfGoogleProtobuf =
-              protoMember.type in GOOGLE_PROTOBUF_OPTION_TYPES &&
-                  !schema.isExtensionField(protoMember)
+            protoMember.type in GOOGLE_PROTOBUF_OPTION_TYPES &&
+              !schema.isExtensionField(protoMember)
           if (!markSet.contains(protoMember) && !isCoreMemberOfGoogleProtobuf) {
-            continue  // Prune this field.
+            continue // Prune this field.
           }
 
           val field = schema.getField(protoMember)!!
@@ -373,28 +386,24 @@ class Options(
     }
   }
 
-  /** Returns true if these options assigns a value to [protoMember].  */
-  fun assignsMember(protoMember: ProtoMember?): Boolean {
-    // TODO(jwilson): remove the null check; this shouldn't be called until linking completes.
-    return entries?.any { it.protoMember == protoMember } ?: false
-  }
-
   companion object {
     @JvmField val FILE_OPTIONS = ProtoType.get("google.protobuf.FileOptions")
     @JvmField val MESSAGE_OPTIONS = ProtoType.get("google.protobuf.MessageOptions")
     @JvmField val FIELD_OPTIONS = ProtoType.get("google.protobuf.FieldOptions")
+    @JvmField val ONEOF_OPTIONS = ProtoType.get("google.protobuf.OneofOptions")
     @JvmField val ENUM_OPTIONS = ProtoType.get("google.protobuf.EnumOptions")
     @JvmField val ENUM_VALUE_OPTIONS = ProtoType.get("google.protobuf.EnumValueOptions")
     @JvmField val SERVICE_OPTIONS = ProtoType.get("google.protobuf.ServiceOptions")
     @JvmField val METHOD_OPTIONS = ProtoType.get("google.protobuf.MethodOptions")
     val GOOGLE_PROTOBUF_OPTION_TYPES = arrayOf(
-        FILE_OPTIONS,
-        MESSAGE_OPTIONS,
-        FIELD_OPTIONS,
-        ENUM_OPTIONS,
-        ENUM_VALUE_OPTIONS,
-        SERVICE_OPTIONS,
-        METHOD_OPTIONS
+      FILE_OPTIONS,
+      MESSAGE_OPTIONS,
+      FIELD_OPTIONS,
+      ONEOF_OPTIONS,
+      ENUM_OPTIONS,
+      ENUM_VALUE_OPTIONS,
+      SERVICE_OPTIONS,
+      METHOD_OPTIONS
     )
 
     /**
@@ -406,6 +415,9 @@ class Options(
      * field names. The first field name is an extension field; subsequent field names make a path
      * within that extension.
      *
+     * https://developers.google.com/protocol-buffers/docs/overview?hl=en#packages_and_name_resolution
+     * Names can be prefixed with a `.` when the search should start from the outermost scope.
+     *
      * Note that a single input may yield multiple possible answers, such as when package names
      * and field names collide. This method prefers shorter package names though that is an
      * implementation detail.
@@ -415,13 +427,14 @@ class Options(
       fullyQualifiedNames: Set<String?>
     ): Array<String>? { // Try to resolve a local name.
       var pos = 0
-      while (pos < name.length) {
-        pos = name.indexOf('.', pos)
-        if (pos == -1) pos = name.length
-        val candidate = name.substring(0, pos)
+      val chompedName = name.removePrefix(".")
+      while (pos < chompedName.length) {
+        pos = chompedName.indexOf('.', pos)
+        if (pos == -1) pos = chompedName.length
+        val candidate = chompedName.substring(0, pos)
         if (fullyQualifiedNames.contains(candidate)) {
-          val path = name.substring(pos).split('.').toTypedArray()
-          path[0] = name.substring(0, pos)
+          val path = chompedName.substring(pos).split('.').toTypedArray()
+          path[0] = chompedName.substring(0, pos)
           return path
         }
         pos++

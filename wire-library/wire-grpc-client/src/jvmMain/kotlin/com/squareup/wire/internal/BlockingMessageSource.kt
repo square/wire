@@ -34,6 +34,7 @@ import java.util.concurrent.LinkedBlockingDeque
  *  * Complete: enqueued when the stream completes normally.
  */
 internal class BlockingMessageSource<R : Any>(
+  val grpcCall: RealGrpcStreamingCall<*, R>,
   val responseAdapter: ProtoAdapter<R>,
   val call: Call
 ) : MessageSource<R> {
@@ -66,6 +67,7 @@ internal class BlockingMessageSource<R : Any>(
 
       override fun onResponse(call: Call, response: GrpcResponse) {
         try {
+          grpcCall.responseMetadata = response.headers.toMap()
           response.use {
             response.messageSource(responseAdapter).use { reader ->
               while (true) {

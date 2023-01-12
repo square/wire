@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.sanitize
@@ -20,7 +21,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -28,21 +28,22 @@ public class RedactedExtension(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    redacted = true
+    redacted = true,
   )
   public val d: String? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   public val e: String? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<RedactedExtension, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -57,8 +58,8 @@ public class RedactedExtension(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + d.hashCode()
-      result = result * 37 + e.hashCode()
+      result = result * 37 + (d?.hashCode() ?: 0)
+      result = result * 37 + (e?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -74,7 +75,7 @@ public class RedactedExtension(
   public fun copy(
     d: String? = this.d,
     e: String? = this.e,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): RedactedExtension = RedactedExtension(d, e, unknownFields)
 
   public companion object {
@@ -84,19 +85,26 @@ public class RedactedExtension(
       RedactedExtension::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedExtension", 
       PROTO_2, 
-      null
+      null, 
+      "redacted_test.proto"
     ) {
-      public override fun encodedSize(value: RedactedExtension): Int {
+      public override fun encodedSize(`value`: RedactedExtension): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.d)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.e)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: RedactedExtension): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: RedactedExtension): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.d)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.e)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: RedactedExtension): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.encodeWithTag(writer, 2, value.e)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.d)
       }
 
       public override fun decode(reader: ProtoReader): RedactedExtension {
@@ -116,7 +124,7 @@ public class RedactedExtension(
         )
       }
 
-      public override fun redact(value: RedactedExtension): RedactedExtension = value.copy(
+      public override fun redact(`value`: RedactedExtension): RedactedExtension = value.copy(
         d = null,
         unknownFields = ByteString.EMPTY
       )

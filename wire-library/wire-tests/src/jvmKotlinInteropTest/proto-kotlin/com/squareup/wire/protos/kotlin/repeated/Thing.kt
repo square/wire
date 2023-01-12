@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.sanitize
@@ -16,18 +17,17 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
 public class Thing(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   @JvmField
   public val name: String? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Thing, Thing.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -48,7 +48,7 @@ public class Thing(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + name.hashCode()
+      result = result * 37 + (name?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -85,17 +85,23 @@ public class Thing(
       Thing::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.repeated.Thing", 
       PROTO_2, 
-      null
+      null, 
+      "repeated.proto"
     ) {
-      public override fun encodedSize(value: Thing): Int {
+      public override fun encodedSize(`value`: Thing): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Thing): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Thing): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: Thing): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
       }
 
       public override fun decode(reader: ProtoReader): Thing {
@@ -112,7 +118,7 @@ public class Thing(
         )
       }
 
-      public override fun redact(value: Thing): Thing = value.copy(
+      public override fun redact(`value`: Thing): Thing = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

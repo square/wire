@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.immutableCopyOf
@@ -28,13 +29,13 @@ import okio.ByteString
 public class RedactedRepeated(
   a: List<String> = emptyList(),
   b: List<RedactedFields> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<RedactedRepeated, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
-    redacted = true
+    redacted = true,
   )
   public val a: List<String> = immutableCopyOf("a", a)
 
@@ -44,15 +45,16 @@ public class RedactedRepeated(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedFields#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   public val b: List<RedactedFields> = immutableCopyOf("b", b)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -84,7 +86,7 @@ public class RedactedRepeated(
   public fun copy(
     a: List<String> = this.a,
     b: List<RedactedFields> = this.b,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): RedactedRepeated = RedactedRepeated(a, b, unknownFields)
 
   public companion object {
@@ -94,19 +96,26 @@ public class RedactedRepeated(
       RedactedRepeated::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedRepeated", 
       PROTO_2, 
-      null
+      null, 
+      "redacted_test.proto"
     ) {
-      public override fun encodedSize(value: RedactedRepeated): Int {
+      public override fun encodedSize(`value`: RedactedRepeated): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a)
         size += RedactedFields.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: RedactedRepeated): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: RedactedRepeated): Unit {
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a)
         RedactedFields.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: RedactedRepeated): Unit {
+        writer.writeBytes(value.unknownFields)
+        RedactedFields.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a)
       }
 
       public override fun decode(reader: ProtoReader): RedactedRepeated {
@@ -126,7 +135,7 @@ public class RedactedRepeated(
         )
       }
 
-      public override fun redact(value: RedactedRepeated): RedactedRepeated = value.copy(
+      public override fun redact(`value`: RedactedRepeated): RedactedRepeated = value.copy(
         a = emptyList(),
         b = value.b.redactElements(RedactedFields.ADAPTER),
         unknownFields = ByteString.EMPTY

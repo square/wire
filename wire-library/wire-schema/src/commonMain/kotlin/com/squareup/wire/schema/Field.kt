@@ -22,12 +22,20 @@ import com.squareup.wire.schema.internal.parser.OptionElement.Companion.PACKED_O
 import kotlin.jvm.JvmStatic
 
 data class Field(
-  val packageName: String?,
+  /**
+   * The namespaces in which the field is defined. For top-level extensions in a
+   * file that has no package declaration, this may be empty. For normal fields
+   * and extensions nested inside a message, the first entry will always be the
+   * package name, which might be the empty string if defined in a file that has
+   * no package declaration. Subsequent entries will be the names of enclosing
+   * messages, outer-most to inner-most.
+   */
+  val namespaces: List<String>,
 
   val location: Location,
 
   /** May be null for proto3 fields, one-of's, or maps. */
-  private val label: Label?,
+  val label: Label?,
 
   val name: String,
 
@@ -69,14 +77,27 @@ data class Field(
     private set
 
   /**
-   * Returns this field's name, prefixed with its package name. Uniquely identifies extension
+   * Returns this field's name, prefixed with its namespaces. Uniquely identifies extension
    * fields, such as in options.
    */
   val qualifiedName: String
     get() {
+      val prefix = namespaces.joinToString(".").removePrefix(".")
       return when {
-        packageName != null -> "$packageName.$name"
+        prefix.isNotEmpty() -> "$prefix.$name"
         else -> name
+      }
+    }
+
+  /**
+   * Returns the package in which this field is defined. If the file that
+   * defined this field has no package declaration, returns the empty string.
+   */
+  val packageName: String
+    get() {
+      return when {
+        namespaces.isNotEmpty() -> namespaces[0]
+        else -> ""
       }
     }
 
@@ -90,13 +111,10 @@ data class Field(
   var jsonName: String? = null
     private set
 
-  val member: ProtoMember
-    get() = ProtoMember.get(type!!, this)
-
   private fun isPackable(linker: Linker, type: ProtoType): Boolean {
     return type != ProtoType.STRING &&
-        type != ProtoType.BYTES &&
-        linker.get(type) !is MessageType
+      type != ProtoType.BYTES &&
+      linker.get(type) !is MessageType
   }
 
   fun link(linker: Linker) {
@@ -108,12 +126,12 @@ data class Field(
     options.link(linker, location, validate)
     deprecated = options.get(DEPRECATED)
     val packed = options.get(PACKED)
-        ?: if (syntaxRules.isPackedByDefault(type!!, label)) PACKED_OPTION_ELEMENT.value else null
+      ?: if (syntaxRules.isPackedByDefault(type!!, label)) PACKED_OPTION_ELEMENT.value else null
     // We allow any package name to be used as long as it ends with '.redacted'.
     isRedacted = options.optionMatches(".*\\.redacted", "true")
 
     encodeMode =
-        syntaxRules.getEncodeMode(type!!, label, isPacked = packed == "true", isOneOf = isOneOf)
+      syntaxRules.getEncodeMode(type!!, label, isPacked = packed == "true", isOneOf = isOneOf)
     jsonName = syntaxRules.jsonName(name, declaredJsonName)
   }
 
@@ -153,7 +171,8 @@ data class Field(
     val protoMember = ProtoMember.get(enclosingType, memberName)
 
     if (!markSet.contains(protoMember) &&
-        !(GOOGLE_PROTOBUF_OPTION_TYPES.contains(enclosingType) && !isExtension)) return null
+      !(GOOGLE_PROTOBUF_OPTION_TYPES.contains(enclosingType) && !isExtension)
+    ) return null
 
     return withOptions(options.retainAll(schema, markSet))
   }
@@ -161,18 +180,18 @@ data class Field(
   /** Returns a copy of this whose options is [options].  */
   private fun withOptions(options: Options): Field {
     val result = Field(
-        packageName = packageName,
-        location = location,
-        label = label,
-        name = name,
-        documentation = documentation,
-        tag = tag,
-        default = default,
-        elementType = elementType,
-        options = options,
-        isExtension = isExtension,
-        isOneOf = isOneOf,
-        declaredJsonName = declaredJsonName,
+      namespaces = namespaces,
+      location = location,
+      label = label,
+      name = name,
+      documentation = documentation,
+      tag = tag,
+      default = default,
+      elementType = elementType,
+      options = options,
+      isExtension = isExtension,
+      isOneOf = isOneOf,
+      declaredJsonName = declaredJsonName,
     )
     result.type = type
     result.deprecated = deprecated
@@ -200,7 +219,7 @@ data class Field(
     /** Required from proto2. */
     REQUIRED,
 
-    /** Non-repeated fields in proto3. Identify can be `0`, `false`, `""`, or `null`. */
+    /** Non-repeated fields in proto3. Identity can be `0`, `false`, `""`, or `null`. */
     OMIT_IDENTITY,
 
     /** List. */
@@ -219,46 +238,46 @@ data class Field(
 
     @JvmStatic
     fun fromElements(
-      packageName: String?,
+      namespaces: List<String>,
       fieldElements: List<FieldElement>,
       extension: Boolean,
       oneOf: Boolean
     ) = fieldElements.map {
       Field(
-          packageName = packageName,
-          location = it.location,
-          label = it.label,
-          name = it.name,
-          documentation = it.documentation,
-          tag = it.tag,
-          default = it.defaultValue,
-          elementType = it.type,
-          options = Options(FIELD_OPTIONS, it.options),
-          isExtension = extension,
-          isOneOf = oneOf,
-          declaredJsonName = it.jsonName,
+        namespaces = namespaces,
+        location = it.location,
+        label = it.label,
+        name = it.name,
+        documentation = it.documentation,
+        tag = it.tag,
+        default = it.defaultValue,
+        elementType = it.type,
+        options = Options(FIELD_OPTIONS, it.options),
+        isExtension = extension,
+        isOneOf = oneOf,
+        declaredJsonName = it.jsonName,
       )
     }
 
     @JvmStatic
     fun toElements(fields: List<Field>) = fields.map {
       FieldElement(
-          location = it.location,
-          label = it.label,
-          type = it.elementType,
-          name = it.name,
-          defaultValue = it.default,
-          jsonName = it.declaredJsonName,
-          tag = it.tag,
-          documentation = it.documentation,
-          options = it.options.elements
+        location = it.location,
+        label = it.label,
+        type = it.elementType,
+        name = it.name,
+        defaultValue = it.default,
+        jsonName = it.declaredJsonName,
+        tag = it.tag,
+        documentation = it.documentation,
+        options = it.options.elements
       )
     }
 
     @JvmStatic
     fun retainLinked(fields: List<Field>) = fields
-        .filter { it.type != null } // If the type is non-null, then the field has been linked.
-        .map { it.withOptions(it.options.retainLinked()) }
+      .filter { it.type != null } // If the type is non-null, then the field has been linked.
+      .map { it.withOptions(it.options.retainLinked()) }
 
     @JvmStatic
     fun retainAll(

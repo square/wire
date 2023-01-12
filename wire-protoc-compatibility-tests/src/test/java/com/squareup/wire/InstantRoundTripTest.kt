@@ -22,9 +22,9 @@ import org.junit.Test
 class InstantRoundTripTest {
   @Test fun `positive values`() {
     val googleMessage = Timestamp.newBuilder()
-        .setSeconds(1L)
-        .setNanos(200_000_000)
-        .build()
+      .setSeconds(1L)
+      .setNanos(200_000_000)
+      .build()
 
     val wireMessage = ofEpochSecond(1L, 200_000_000L)
 
@@ -36,9 +36,9 @@ class InstantRoundTripTest {
 
   @Test fun `zero`() {
     val googleMessage = Timestamp.newBuilder()
-        .setSeconds(0L)
-        .setNanos(0)
-        .build()
+      .setSeconds(0L)
+      .setNanos(0)
+      .build()
 
     val wireMessage = ofEpochSecond(0L, 0L)
 
@@ -50,9 +50,9 @@ class InstantRoundTripTest {
 
   @Test fun `negative near zero`() {
     val googleMessage = Timestamp.newBuilder()
-        .setSeconds(-1L)
-        .setNanos(800_000_000)
-        .build()
+      .setSeconds(-1L)
+      .setNanos(800_000_000)
+      .build()
 
     val wireMessage = ofEpochSecond(0L, -200_000_000L)
 
@@ -64,9 +64,9 @@ class InstantRoundTripTest {
 
   @Test fun `negative values`() {
     val googleMessage = Timestamp.newBuilder()
-        .setSeconds(-2L)
-        .setNanos(800_000_000)
-        .build()
+      .setSeconds(-2L)
+      .setNanos(800_000_000)
+      .build()
 
     val wireMessage = ofEpochSecond(-1L, -200_000_000L)
 
@@ -78,9 +78,9 @@ class InstantRoundTripTest {
 
   @Test fun `decode proto with nanos too high`() {
     val googleMessage = Timestamp.newBuilder()
-        .setSeconds(2L)
-        .setNanos(2_000_000_000)
-        .build()
+      .setSeconds(2L)
+      .setNanos(2_000_000_000)
+      .build()
 
     val wireMessage = ofEpochSecond(4L, 0L)
 
@@ -90,9 +90,9 @@ class InstantRoundTripTest {
 
   @Test fun `decode proto with nanos too low`() {
     val googleMessage = Timestamp.newBuilder()
-        .setSeconds(2L)
-        .setNanos(-1)
-        .build()
+      .setSeconds(2L)
+      .setNanos(-1)
+      .build()
 
     val wireMessage = ofEpochSecond(1L, 999_999_999L)
 

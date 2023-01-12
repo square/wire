@@ -22,59 +22,108 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.UNIT
+import com.squareup.kotlinpoet.asClassName
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
 import java.io.InputStream
 import java.lang.UnsupportedOperationException
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.flow.Flow
 
 object ImplBaseGenerator {
   internal fun addImplBase(
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
-    service: Service
+    service: Service,
+    options: KotlinGrpcGenerator.Companion.Options
   ) = builder
     .addType(
       TypeSpec.classBuilder("${service.name}ImplBase")
         .addModifiers(KModifier.ABSTRACT)
-        .addSuperinterface(ClassName("io.grpc", "BindableService"))
-        .apply { addImplBaseBody(generator,this, service) }
+        .addSuperinterface(WireBindableService::class)
+        .apply { addImplBaseConstructor(options) }
+        .apply { addImplBaseBody(generator, this, service, options) }
         .build()
     )
+
+  private fun TypeSpec.Builder.addImplBaseConstructor(options: KotlinGrpcGenerator.Companion.Options) {
+    if (options.suspendingCalls) {
+      this.primaryConstructor(
+        FunSpec.constructorBuilder()
+          .addParameter(
+            ParameterSpec.builder("context", CoroutineContext::class)
+              .defaultValue(
+                CodeBlock.builder()
+                  .addStatement("kotlin.coroutines.EmptyCoroutineContext")
+                  .build()
+              ).build()
+          )
+          .build()
+      ).addProperty(
+        PropertySpec.builder("context", CoroutineContext::class, KModifier.PROTECTED)
+          .initializer("context")
+          .build()
+      )
+    }
+  }
 
   internal fun addImplBaseRpcSignature(
     generator: ClassNameGenerator,
     builder: FunSpec.Builder,
-    rpc: Rpc
+    rpc: Rpc,
+    options: KotlinGrpcGenerator.Companion.Options
   ): FunSpec.Builder {
-    val requestType = generator.classNameFor(rpc.requestType!!)
-    val responseType = generator.classNameFor(rpc.responseType!!)
-    return when {
-      rpc.requestStreaming -> builder
-        .addParameter(
-          "response", ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(responseType)
-        )
-        .returns(
-          ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(requestType)
-        )
-      else -> builder
+    val rpcRequestType = generator.classNameFor(rpc.requestType!!)
+    val rpcResponseType = generator.classNameFor(rpc.responseType!!)
+    return if (options.suspendingCalls) {
+      val requestType = if (rpc.requestStreaming) {
+        Flow::class.asClassName().parameterizedBy(rpcRequestType)
+      } else { rpcRequestType }
+
+      val responseType = if (rpc.responseStreaming) {
+        Flow::class.asClassName().parameterizedBy(rpcResponseType)
+      } else { rpcResponseType }
+
+      builder
         .addParameter("request", requestType)
-        .addParameter(
-          "response", ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(responseType)
-        )
+        .returns(responseType)
+    } else {
+      when {
+        rpc.requestStreaming ->
+          builder
+            .addParameter(
+              "response", ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(rpcResponseType)
+            )
+            .returns(
+              ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(rpcRequestType)
+            )
+
+        else ->
+          builder
+            .addParameter("request", rpcRequestType)
+            .addParameter(
+              "response", ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(rpcResponseType)
+            )
+            .returns(UNIT)
+      }
     }
   }
 
   private fun addImplBaseBody(
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
-    service: Service
+    service: Service,
+    options: KotlinGrpcGenerator.Companion.Options
   ): TypeSpec.Builder {
     service.rpcs.forEach { rpc ->
       builder.addFunction(
         FunSpec.builder(rpc.name)
           .addModifiers(KModifier.OPEN)
-          .apply { addImplBaseRpcSignature(generator, this, rpc) }
+          .apply { addImplBaseRpcSignature(generator, this, rpc, options) }
+          .apply { if (options.suspendingCalls && !rpc.responseStreaming) { addModifiers(KModifier.SUSPEND) } }
           .addCode(CodeBlock.of("throw %T()", UnsupportedOperationException::class.java))
           .build()
       )
@@ -84,7 +133,7 @@ object ImplBaseGenerator {
       FunSpec.builder("bindService")
         .addModifiers(KModifier.OVERRIDE)
         .returns(ClassName("io.grpc", "ServerServiceDefinition"))
-        .addCode(bindServiceCodeBlock(service))
+        .addCode(bindServiceCodeBlock(service, options))
         .build()
     )
 
@@ -95,17 +144,20 @@ object ImplBaseGenerator {
         val className = generator.classNameFor(it!!)
         builder.addType(
           TypeSpec.classBuilder("${it.simpleName}Marshaller")
-            .addSuperinterface(
-              ClassName("io.grpc", "MethodDescriptor")
-                .nestedClass("Marshaller")
-                .parameterizedBy(className)
-            )
+            .addSuperinterface(WireMethodMarshaller::class.asClassName().parameterizedBy(className))
             .addFunction(
               FunSpec.builder("stream")
                 .addModifiers(KModifier.OVERRIDE)
                 .addParameter(ParameterSpec(name = "value", type = className))
                 .returns(InputStream::class)
                 .addCode(CodeBlock.of("return %T.ADAPTER.encode(value).inputStream()", className))
+                .build()
+            )
+            .addFunction(
+              FunSpec.builder("marshalledClass")
+                .addModifiers(KModifier.OVERRIDE)
+                .returns(Class::class.asClassName().parameterizedBy(className))
+                .addCode(CodeBlock.of("return %T::class.java", className))
                 .build()
             )
             .addFunction(
@@ -123,17 +175,38 @@ object ImplBaseGenerator {
     return builder
   }
 
-  private fun bindServiceCodeBlock(service: Service): CodeBlock {
-    val codeBlock =
-      CodeBlock.Builder().add("return ServerServiceDefinition.builder(getServiceDescriptor())")
+  private fun bindServiceCodeBlock(service: Service, options: KotlinGrpcGenerator.Companion.Options): CodeBlock {
+    val codeBlock = CodeBlock.Builder().add("return ServerServiceDefinition.builder(getServiceDescriptor())")
     service.rpcs.forEach {
-      codeBlock.add(
-        """.addMethod(
+      if (options.suspendingCalls) {
+        val methodDefinition = when {
+          it.requestStreaming && it.responseStreaming -> "bidiStreaming"
+          it.requestStreaming -> "clientStreaming"
+          it.responseStreaming -> "serverStreaming"
+          else -> "unary"
+        }
+
+        codeBlock.add(
+          """.addMethod(
+           io.grpc.kotlin.ServerCalls.${methodDefinition}ServerMethodDefinition(
+             context = context,
+             descriptor = get${it.name}Method(),
+             implementation = this@${service.name}ImplBase::${it.name},
+           )
+         )
+      """.trimIndent(),
+          MemberName(ClassName("io.grpc.stub", "ServerCalls"), bindServiceCallType(it))
+        )
+      } else {
+        codeBlock.add(
+          """.addMethod(
           get${it.name}Method(),
           %M(this@${service.name}ImplBase::${it.name})
-        )""".trimIndent(),
-        MemberName(ClassName("io.grpc.stub", "ServerCalls"), bindServiceCallType(it))
-      )
+        )
+        """.trimIndent(),
+          MemberName(ClassName("io.grpc.stub", "ServerCalls"), bindServiceCallType(it))
+        )
+      }
     }
     codeBlock.add(".build()")
     return codeBlock.build()

@@ -20,5 +20,9 @@ enum class RpcRole {
   CLIENT,
 
   /** Generate interfaces best suited to receiving inbound calls. */
-  SERVER;
+  SERVER,
+
+  /** Doesn't generate any interfaces. */
+  NONE,
+  ;
 }

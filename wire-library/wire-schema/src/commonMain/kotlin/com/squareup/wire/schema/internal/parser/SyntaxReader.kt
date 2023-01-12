@@ -95,11 +95,11 @@ class SyntaxReader(
         c = data[pos++]
         when (c) {
           'a' -> c = '\u0007' // Alert.
-          'b' -> c = '\b'     // Backspace.
+          'b' -> c = '\b' // Backspace.
           'f' -> c = '\u000c' // Form feed.
-          'n' -> c = '\n'     // Newline.
-          'r' -> c = '\r'     // Carriage return.
-          't' -> c = '\t'     // Horizontal tab.
+          'n' -> c = '\n' // Newline.
+          'r' -> c = '\r' // Carriage return.
+          't' -> c = '\t' // Horizontal tab.
           'v' -> c = '\u000b' // Vertical tab.
           'x', 'X' -> c = readNumericEscape(16, 2)
           '0', '1', '2', '3', '4', '5', '6', '7' -> {
@@ -139,24 +139,31 @@ class SyntaxReader(
     }
   }
 
-  /** Reads a (paren-wrapped), [square-wrapped] or naked symbol name. */
-  fun readName(): String {
+  /**
+   * Reads a (paren-wrapped), [square-wrapped] or naked symbol name.
+   * If {@code retainWrap} is true and the symbol was wrapped in parens
+   * or square brackets, the returned string retains the wrapping
+   * punctuation. Otherwise, just the symbol is returned.
+   */
+  fun readName(allowLeadingDigit: Boolean = true, retainWrap: Boolean = false): String {
     return when (peekChar()) {
       '(' -> {
         pos++
-        readWord().also {
+        val word = readWord(allowLeadingDigit).also {
           expect(readChar() == ')') { "expected ')'" }
         }
+        if (retainWrap) "(${word})" else word
       }
 
       '[' -> {
         pos++
-        readWord().also {
+        val word = readWord(allowLeadingDigit).also {
           expect(readChar() == ']') { "expected ']'" }
         }
+        if (retainWrap) "[${word}]" else word
       }
 
-      else -> readWord()
+      else -> readWord(allowLeadingDigit)
     }
   }
 
@@ -185,7 +192,7 @@ class SyntaxReader(
   }
 
   /** Reads a non-empty word and returns it. */
-  fun readWord(): String {
+  fun readWord(allowLeadingDigit: Boolean = true): String {
     skipWhitespace(skipComments = true)
     val start = pos
     loop@ while (pos < data.size) {
@@ -195,7 +202,12 @@ class SyntaxReader(
       }
     }
     expect(start < pos) { "expected a word" }
-    return String(data, start, pos - start)
+    if (!allowLeadingDigit) {
+      expect(!data[start].isDigit(), location().copy(column = start - lineStart)) {
+        "field and constant names cannot start with a digit"
+      }
+    }
+    return data.concatToString(start, pos)
   }
 
   /** Reads an integer and returns it. */
@@ -285,7 +297,7 @@ class SyntaxReader(
             break
           }
         }
-        return String(data, start, pos - 1 - start)
+        return data.concatToString(start, pos - 1)
       }
 
       else -> throw unexpected("unexpected '/'")
@@ -369,7 +381,7 @@ class SyntaxReader(
 
     if (end == start) return documentation
 
-    val trailingDocumentation = String(data, start, end - start + 1)
+    val trailingDocumentation = data.concatToString(start, end + 1)
     if (documentation.isEmpty()) return trailingDocumentation
     return "$documentation\n$trailingDocumentation"
   }

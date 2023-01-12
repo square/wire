@@ -1893,6 +1893,11 @@ fileprivate struct _AllTypes {
 
 }
 
+#if swift(>=5.5)
+extension AllTypes.NestedEnum : Sendable {
+}
+#endif
+
 #if !WIRE_REMOVE_EQUATABLE
 extension AllTypes.NestedMessage : Equatable {
 }
@@ -1902,6 +1907,17 @@ extension AllTypes.NestedMessage : Equatable {
 extension AllTypes.NestedMessage : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension AllTypes.NestedMessage : Sendable {
+}
+#endif
+
+extension AllTypes.NestedMessage : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes.NestedMessage"
+    }
+}
 
 extension AllTypes.NestedMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -1945,6 +1961,11 @@ extension AllTypes : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension AllTypes : @unchecked Sendable {
+}
+#endif
+
 extension AllTypes : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         _storage = Heap(value: try _AllTypes(from: reader))
@@ -1952,6 +1973,12 @@ extension AllTypes : Proto2Codable {
 
     public func encode(to writer: ProtoWriter) throws {
         try storage.encode(to: writer)
+    }
+}
+
+extension _AllTypes : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes"
     }
 }
 
@@ -2659,5 +2686,10 @@ extension _AllTypes : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension _AllTypes : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension _AllTypes : Sendable {
 }
 #endif

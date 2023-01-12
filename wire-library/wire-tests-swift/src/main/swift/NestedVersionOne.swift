@@ -24,6 +24,17 @@ extension NestedVersionOne : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension NestedVersionOne : Sendable {
+}
+#endif
+
+extension NestedVersionOne : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.unknownfields.NestedVersionOne"
+    }
+}
+
 extension NestedVersionOne : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var i: Int32? = nil

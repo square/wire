@@ -22,7 +22,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.channels.receiveOrNull
 import kotlinx.coroutines.runBlocking
 import okio.IOException
 import org.assertj.core.api.Assertions.assertThat
@@ -43,7 +42,7 @@ class GrpcStreamingCallsTest {
       requests.send("hello")
       requests.close()
       assertThat(responses.receive()).isEqualTo("HELLO")
-      assertThat(responses.receiveOrNull()).isNull()
+      assertThat(responses.receiveCatching().getOrNull()).isNull()
     }
   }
 
@@ -189,21 +188,26 @@ class GrpcStreamingCallsTest {
 
   @Test
   fun cloneIsIndependent() {
+    val requestMetadata = mutableMapOf("1" to "one")
     val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
       requests.consumeEach { responses.send(it.toUpperCase()) }
       responses.close()
     }
+    grpcCall.requestMetadata = requestMetadata
 
     runBlocking {
       val (requests1, responses1) = grpcCall.executeIn(this)
       requests1.close()
       responses1.cancel()
 
-      val (requests2, responses2) = grpcCall.clone().executeIn(this)
+      val clonedGrpcStreamingCall = grpcCall.clone()
+      requestMetadata["2"] = "two"
+      assertThat(clonedGrpcStreamingCall.requestMetadata).isEqualTo(mapOf("1" to "one"))
+      val (requests2, responses2) = clonedGrpcStreamingCall.executeIn(this)
       requests2.send("hello")
       requests2.close()
       assertThat(responses2.receive()).isEqualTo("HELLO")
-      assertThat(responses2.receiveOrNull()).isNull()
+      assertThat(responses2.receiveCatching().getOrNull()).isNull()
     }
   }
 

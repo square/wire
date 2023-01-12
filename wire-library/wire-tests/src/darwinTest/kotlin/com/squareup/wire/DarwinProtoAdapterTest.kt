@@ -18,21 +18,21 @@ package com.squareup.wire
 import com.squareup.wire.protos.kotlin.person.Person
 import com.squareup.wire.protos.kotlin.person.Person.PhoneNumber
 import com.squareup.wire.protos.kotlin.person.Person.PhoneType.WORK
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import platform.Foundation.NSData
 import platform.Foundation.create
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class DarwinProtoAdapterTest {
   @Test fun decodeNSData() {
     val expected = Person(
-        name = "Alice",
-        id = 1,
-        phone = listOf(PhoneNumber(number = "+15551234567", type = WORK)),
-        email = "alice@squareup.com"
+      name = "Alice",
+      id = 1,
+      phone = listOf(PhoneNumber(number = "+15551234567", type = WORK)),
+      email = "alice@squareup.com"
     )
     val data = NSData.create(
-        base64Encoding = "CgVBbGljZRABGhJhbGljZUBzcXVhcmV1cC5jb20iEAoMKzE1NTUxMjM0NTY3EAI="
+      base64Encoding = "CgVBbGljZRABGhJhbGljZUBzcXVhcmV1cC5jb20iEAoMKzE1NTUxMjM0NTY3EAI="
     )!!
     assertEquals(expected, Person.ADAPTER.decode(data))
   }

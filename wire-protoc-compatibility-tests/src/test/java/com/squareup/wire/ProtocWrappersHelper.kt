@@ -28,28 +28,28 @@ import com.google.protobuf.UInt64Value
 import okio.ByteString
 
 internal fun Double.toDoubleValue(): DoubleValue =
-    DoubleValue.newBuilder().setValue(this).build()
+  DoubleValue.newBuilder().setValue(this).build()
 
 internal fun Float.toFloatValue(): FloatValue =
-    FloatValue.newBuilder().setValue(this).build()
+  FloatValue.newBuilder().setValue(this).build()
 
 internal fun Long.toInt64Value(): Int64Value =
-    Int64Value.newBuilder().setValue(this).build()
+  Int64Value.newBuilder().setValue(this).build()
 
 internal fun Long.toUInt64Value(): UInt64Value =
-    UInt64Value.newBuilder().setValue(this).build()
+  UInt64Value.newBuilder().setValue(this).build()
 
 internal fun Int.toInt32Value(): Int32Value =
-    Int32Value.newBuilder().setValue(this).build()
+  Int32Value.newBuilder().setValue(this).build()
 
 internal fun Int.toUInt32Value(): UInt32Value =
-    UInt32Value.newBuilder().setValue(this).build()
+  UInt32Value.newBuilder().setValue(this).build()
 
 internal fun Boolean.toBoolValue(): BoolValue =
-    BoolValue.newBuilder().setValue(this).build()
+  BoolValue.newBuilder().setValue(this).build()
 
 internal fun String.toStringValue(): StringValue =
-    StringValue.newBuilder().setValue(this).build()
+  StringValue.newBuilder().setValue(this).build()
 
 internal fun ByteString.toBytesValue(): BytesValue =
-    BytesValue.newBuilder().setValue(copyFrom(this.toByteArray())).build()
+  BytesValue.newBuilder().setValue(copyFrom(this.toByteArray())).build()

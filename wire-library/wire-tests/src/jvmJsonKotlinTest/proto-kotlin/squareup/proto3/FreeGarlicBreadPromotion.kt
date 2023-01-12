@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import kotlin.Any
@@ -15,7 +16,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -24,11 +24,11 @@ public class FreeGarlicBreadPromotion(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "isExtraCheesey"
+    jsonName = "isExtraCheesey",
   )
   @JvmField
   public val is_extra_cheesey: Boolean = false,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<FreeGarlicBreadPromotion, FreeGarlicBreadPromotion.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -89,19 +89,27 @@ public class FreeGarlicBreadPromotion(
       FreeGarlicBreadPromotion::class, 
       "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion", 
       PROTO_3, 
-      null
+      null, 
+      "pizza.proto"
     ) {
-      public override fun encodedSize(value: FreeGarlicBreadPromotion): Int {
+      public override fun encodedSize(`value`: FreeGarlicBreadPromotion): Int {
         var size = value.unknownFields.size
         if (value.is_extra_cheesey != false) size += ProtoAdapter.BOOL.encodedSizeWithTag(1,
             value.is_extra_cheesey)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: FreeGarlicBreadPromotion): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: FreeGarlicBreadPromotion): Unit {
         if (value.is_extra_cheesey != false) ProtoAdapter.BOOL.encodeWithTag(writer, 1,
             value.is_extra_cheesey)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: FreeGarlicBreadPromotion):
+          Unit {
+        writer.writeBytes(value.unknownFields)
+        if (value.is_extra_cheesey != false) ProtoAdapter.BOOL.encodeWithTag(writer, 1,
+            value.is_extra_cheesey)
       }
 
       public override fun decode(reader: ProtoReader): FreeGarlicBreadPromotion {
@@ -118,7 +126,7 @@ public class FreeGarlicBreadPromotion(
         )
       }
 
-      public override fun redact(value: FreeGarlicBreadPromotion): FreeGarlicBreadPromotion =
+      public override fun redact(`value`: FreeGarlicBreadPromotion): FreeGarlicBreadPromotion =
           value.copy(
         unknownFields = ByteString.EMPTY
       )

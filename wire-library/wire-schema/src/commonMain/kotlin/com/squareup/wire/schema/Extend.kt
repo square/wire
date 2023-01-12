@@ -29,6 +29,8 @@ data class Extend(
   var type: ProtoType? = null
     private set
 
+  fun member(field: Field): ProtoMember = ProtoMember.get(type!!, field)
+
   fun link(linker: Linker) {
     val linker = linker.withContext(this)
     type = linker.resolveMessageType(name)
@@ -74,24 +76,24 @@ data class Extend(
   companion object {
     @JvmStatic
     fun fromElements(
-      packageName: String?,
+      namespaces: List<String>,
       extendElements: List<ExtendElement>
     ) = extendElements.map {
       Extend(
-          location = it.location,
-          documentation = it.documentation,
-          name = it.name,
-          fields = Field.fromElements(packageName, it.fields, extension = true, oneOf = false)
+        location = it.location,
+        documentation = it.documentation,
+        name = it.name,
+        fields = Field.fromElements(namespaces, it.fields, extension = true, oneOf = false)
       )
     }
 
     @JvmStatic
     fun toElements(extendList: List<Extend>) = extendList.map {
       ExtendElement(
-          location = it.location,
-          name = it.name,
-          documentation = it.documentation,
-          fields = Field.toElements(it.fields)
+        location = it.location,
+        name = it.name,
+        documentation = it.documentation,
+        fields = Field.toElements(it.fields)
       )
     }
   }

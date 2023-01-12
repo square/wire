@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
@@ -19,7 +20,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -36,7 +36,7 @@ public class RouteSummary(
    */
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val point_count: Int? = null,
   /**
@@ -44,7 +44,7 @@ public class RouteSummary(
    */
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val feature_count: Int? = null,
   /**
@@ -52,7 +52,7 @@ public class RouteSummary(
    */
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val distance: Int? = null,
   /**
@@ -60,16 +60,17 @@ public class RouteSummary(
    */
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val elapsed_time: Int? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<RouteSummary, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -86,10 +87,10 @@ public class RouteSummary(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + point_count.hashCode()
-      result = result * 37 + feature_count.hashCode()
-      result = result * 37 + distance.hashCode()
-      result = result * 37 + elapsed_time.hashCode()
+      result = result * 37 + (point_count?.hashCode() ?: 0)
+      result = result * 37 + (feature_count?.hashCode() ?: 0)
+      result = result * 37 + (distance?.hashCode() ?: 0)
+      result = result * 37 + (elapsed_time?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -109,7 +110,7 @@ public class RouteSummary(
     feature_count: Int? = this.feature_count,
     distance: Int? = this.distance,
     elapsed_time: Int? = this.elapsed_time,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): RouteSummary = RouteSummary(point_count, feature_count, distance, elapsed_time, unknownFields)
 
   public companion object {
@@ -119,9 +120,10 @@ public class RouteSummary(
       RouteSummary::class, 
       "type.googleapis.com/routeguide.RouteSummary", 
       PROTO_2, 
-      null
+      null, 
+      "routeguide/RouteGuideProto.proto"
     ) {
-      public override fun encodedSize(value: RouteSummary): Int {
+      public override fun encodedSize(`value`: RouteSummary): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.point_count)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.feature_count)
@@ -130,12 +132,20 @@ public class RouteSummary(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: RouteSummary): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: RouteSummary): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.point_count)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.feature_count)
         ProtoAdapter.INT32.encodeWithTag(writer, 3, value.distance)
         ProtoAdapter.INT32.encodeWithTag(writer, 4, value.elapsed_time)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: RouteSummary): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.INT32.encodeWithTag(writer, 4, value.elapsed_time)
+        ProtoAdapter.INT32.encodeWithTag(writer, 3, value.distance)
+        ProtoAdapter.INT32.encodeWithTag(writer, 2, value.feature_count)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.point_count)
       }
 
       public override fun decode(reader: ProtoReader): RouteSummary {
@@ -161,7 +171,7 @@ public class RouteSummary(
         )
       }
 
-      public override fun redact(value: RouteSummary): RouteSummary = value.copy(
+      public override fun redact(`value`: RouteSummary): RouteSummary = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

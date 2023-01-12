@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.immutableCopyOf
@@ -21,7 +22,6 @@ import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -29,24 +29,25 @@ public class EmbeddedMessage(
   inner_repeated_number: List<Int> = emptyList(),
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val inner_number_after: Int? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<EmbeddedMessage, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.PACKED
+    label = WireField.Label.PACKED,
   )
   public val inner_repeated_number: List<Int> = immutableCopyOf("inner_repeated_number",
       inner_repeated_number)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -62,7 +63,7 @@ public class EmbeddedMessage(
     if (result == 0) {
       result = unknownFields.hashCode()
       result = result * 37 + inner_repeated_number.hashCode()
-      result = result * 37 + inner_number_after.hashCode()
+      result = result * 37 + (inner_number_after?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -79,7 +80,7 @@ public class EmbeddedMessage(
   public fun copy(
     inner_repeated_number: List<Int> = this.inner_repeated_number,
     inner_number_after: Int? = this.inner_number_after,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): EmbeddedMessage = EmbeddedMessage(inner_repeated_number, inner_number_after, unknownFields)
 
   public companion object {
@@ -89,19 +90,26 @@ public class EmbeddedMessage(
       EmbeddedMessage::class, 
       "type.googleapis.com/squareup.protos.packed_encoding.EmbeddedMessage", 
       PROTO_2, 
-      null
+      null, 
+      "packed_encoding.proto"
     ) {
-      public override fun encodedSize(value: EmbeddedMessage): Int {
+      public override fun encodedSize(`value`: EmbeddedMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.inner_repeated_number)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.inner_number_after)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: EmbeddedMessage): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: EmbeddedMessage): Unit {
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.inner_repeated_number)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.inner_number_after)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: EmbeddedMessage): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.INT32.encodeWithTag(writer, 2, value.inner_number_after)
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.inner_repeated_number)
       }
 
       public override fun decode(reader: ProtoReader): EmbeddedMessage {
@@ -121,7 +129,7 @@ public class EmbeddedMessage(
         )
       }
 
-      public override fun redact(value: EmbeddedMessage): EmbeddedMessage = value.copy(
+      public override fun redact(`value`: EmbeddedMessage): EmbeddedMessage = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

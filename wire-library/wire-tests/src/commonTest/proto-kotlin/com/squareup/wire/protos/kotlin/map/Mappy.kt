@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.immutableCopyOf
@@ -28,20 +29,21 @@ import okio.ByteString
 
 public class Mappy(
   things: Map<String, Thing> = emptyMap(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Mappy, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-    adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER",
   )
   public val things: Map<String, Thing> = immutableCopyOf("things", things)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -77,20 +79,26 @@ public class Mappy(
       Mappy::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Mappy", 
       PROTO_2, 
-      null
+      null, 
+      "map.proto"
     ) {
       private val thingsAdapter: ProtoAdapter<Map<String, Thing>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER) }
 
-      public override fun encodedSize(value: Mappy): Int {
+      public override fun encodedSize(`value`: Mappy): Int {
         var size = value.unknownFields.size
         size += thingsAdapter.encodedSizeWithTag(1, value.things)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Mappy): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Mappy): Unit {
         thingsAdapter.encodeWithTag(writer, 1, value.things)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: Mappy): Unit {
+        writer.writeBytes(value.unknownFields)
+        thingsAdapter.encodeWithTag(writer, 1, value.things)
       }
 
       public override fun decode(reader: ProtoReader): Mappy {
@@ -107,7 +115,7 @@ public class Mappy(
         )
       }
 
-      public override fun redact(value: Mappy): Mappy = value.copy(
+      public override fun redact(`value`: Mappy): Mappy = value.copy(
         things = value.things.redactElements(Thing.ADAPTER),
         unknownFields = ByteString.EMPTY
       )

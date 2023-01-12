@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import java.io.IOException;
 import java.lang.Object;
@@ -66,7 +67,7 @@ public final class NoFields extends Message<NoFields, NoFields.Builder> {
 
   private static final class ProtoAdapter_NoFields extends ProtoAdapter<NoFields> {
     public ProtoAdapter_NoFields() {
-      super(FieldEncoding.LENGTH_DELIMITED, NoFields.class, "type.googleapis.com/squareup.protos.edgecases.NoFields", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, NoFields.class, "type.googleapis.com/squareup.protos.edgecases.NoFields", Syntax.PROTO_2, null, "edge_cases.proto");
     }
 
     @Override
@@ -78,6 +79,11 @@ public final class NoFields extends Message<NoFields, NoFields.Builder> {
 
     @Override
     public void encode(ProtoWriter writer, NoFields value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, NoFields value) throws IOException {
       writer.writeBytes(value.unknownFields());
     }
 

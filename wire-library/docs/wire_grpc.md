@@ -241,4 +241,4 @@ implementation("com.squareup.wire:wire-grpc-client:LATEST_VERSION")
  [grpcStreamingCall]: https://square.github.io/wire/3.x/wire-grpc-client/com.squareup.wire/-grpc-streaming-call/
  [messageSink]: https://square.github.io/wire/3.x/wire-runtime/com.squareup.wire/-message-sink/
  [messageSource]: https://square.github.io/wire/3.x/wire-runtime/com.squareup.wire/-message-source/
- [sampleProject]: https://github.com/square/wire/tree/master/wire-grpc-sample
+ [sampleProject]: https://github.com/square/wire/tree/master/samples/wire-grpc-sample

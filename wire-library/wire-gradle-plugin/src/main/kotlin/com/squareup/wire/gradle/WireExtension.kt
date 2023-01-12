@@ -17,10 +17,15 @@ package com.squareup.wire.gradle
 
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.internal.catalog.DelegatingProjectDependency
+import org.gradle.api.provider.Provider
+import org.gradle.api.provider.ProviderConvertible
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.util.PatternFilterable
 
 open class WireExtension(project: Project) {
   private val objectFactory = project.objects
@@ -141,6 +146,7 @@ open class WireExtension(project: Project) {
   /**
    * Source paths for local jars and directories, as well as remote binary dependencies
    */
+  // TODO(Benoit) Delete this because it seems unused? I think the DSL only pass down ProtoRootSet.
   fun sourcePath(vararg sourcePaths: String) {
     this.sourcePaths.addAll(sourcePaths)
   }
@@ -195,23 +201,28 @@ open class WireExtension(project: Project) {
     val protoRootSet = objectFactory.newInstance(ProtoRootSet::class.java)
     action.execute(protoRootSet)
 
+    protoRootSet.validate()
+
     val hasSrcDirs = protoRootSet.srcDirs.isNotEmpty()
     val hasSrcJar = protoRootSet.srcJar != null
-
-    check(!hasSrcDirs || !hasSrcJar) {
-      "Cannot set both srcDirs and srcJars in the same protoPath closure"
-    }
+    val hasSrcJarAsExternalModuleDependency = protoRootSet.srcJarAsExternalModuleDependency != null
+    val hasSrcProjectDependency = protoRootSet.srcProjectDependency != null
+    val hasSrcProject = protoRootSet.srcProject != null
 
     if (hasSrcDirs) {
       // map to SourceDirectorySet which does the work for us!
-      val protoTree = objectFactory.sourceDirectorySet(name, "Wire proto sources for $name.")
-      protoTree.srcDirs(protoRootSet.srcDirs)
-      protoTree.filter.include("**/*.proto")
-      protoTree.filter.include(protoRootSet.includes)
+      val protoTree = objectFactory
+        .sourceDirectorySet(name, "Wire proto sources for $name.")
+        .srcDirs(protoRootSet.srcDirs)
+
+      protoRootSet.filters
+        .ifEmpty { listOf(Include("**/*.proto")) }
+        .forEach { it.act(protoTree.filter) }
+
       sourceTrees.add(protoTree)
     }
 
-    if (hasSrcJar) {
+    if (hasSrcJar || hasSrcJarAsExternalModuleDependency || hasSrcProject || hasSrcProjectDependency) {
       sourceJars.add(protoRootSet)
     }
   }
@@ -246,10 +257,18 @@ open class WireExtension(project: Project) {
     moves += move
   }
 
+  // TODO(Benoit) See how we can make this class better, it's a mess and doesn't scale nicely.
   open class ProtoRootSet {
     val srcDirs = mutableListOf<String>()
     var srcJar: String? = null
+    var srcProject: String? = null
+    var srcProjectDependency: DelegatingProjectDependency? = null
+    var srcJarAsExternalModuleDependency: Provider<MinimalExternalModuleDependency>? = null
     val includes = mutableListOf<String>()
+    val excludes = mutableListOf<String>()
+
+    internal val filters: Collection<Filter>
+      get() = includes.map(::Include) + excludes.map(::Exclude)
 
     fun srcDir(dir: String) {
       srcDirs += dir
@@ -263,8 +282,58 @@ open class WireExtension(project: Project) {
       srcJar = jar
     }
 
+    fun srcJar(provider: Provider<MinimalExternalModuleDependency>) {
+      srcJarAsExternalModuleDependency = provider
+    }
+
+    fun srcJar(convertible: ProviderConvertible<MinimalExternalModuleDependency>) {
+      srcJar(convertible.asProvider())
+    }
+
+    fun srcProject(projectPath: String) {
+      srcProject = projectPath
+    }
+
+    fun srcProject(project: DelegatingProjectDependency) {
+      srcProjectDependency = project
+    }
+
     fun include(vararg includePaths: String) {
       includes += includePaths
     }
+
+    fun exclude(vararg excludePaths: String) {
+      excludes += excludePaths
+    }
+  }
+
+  internal sealed class Filter(val glob: String) {
+    abstract fun act(filter: PatternFilterable)
+  }
+
+  internal class Exclude(glob: String) : Filter(glob) {
+    override fun act(filter: PatternFilterable) {
+      filter.exclude(glob)
+    }
+  }
+
+  internal class Include(glob: String) : Filter(glob) {
+    override fun act(filter: PatternFilterable) {
+      filter.include(glob)
+    }
+  }
+}
+
+private fun WireExtension.ProtoRootSet.validate() {
+  val sources = listOf(
+    srcDirs.isNotEmpty(),
+    srcJar != null,
+    srcJarAsExternalModuleDependency != null,
+    srcProjectDependency != null,
+    srcProject != null,
+  )
+
+  check(sources.count { it } <= 1) {
+    "Only one source can be set among srcDirs, srcJar, and srcProject within one sourcePath or protoPath closure."
   }
 }

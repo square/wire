@@ -25,7 +25,8 @@ actual abstract class ProtoAdapter<E> actual constructor(
   actual val type: KClass<*>?,
   actual val typeUrl: String?,
   actual val syntax: Syntax,
-  actual val identity: E?
+  actual val identity: E?,
+  actual val sourceFile: String?,
 ) {
   internal actual val packedAdapter: ProtoAdapter<List<E>>? = when {
     this is PackedProtoAdapter<*> || this is RepeatedProtoAdapter<*> -> null
@@ -58,8 +59,18 @@ actual abstract class ProtoAdapter<E> actual constructor(
   /** Write non-null `value` to `writer`. */
   actual abstract fun encode(writer: ProtoWriter, value: E)
 
+  /** Write non-null `value` to `writer`. */
+  actual open fun encode(writer: ReverseProtoWriter, value: E) {
+    delegateEncode(writer, value)
+  }
+
   /** Write `tag` and `value` to `writer`. If value is null this does nothing. */
   actual open fun encodeWithTag(writer: ProtoWriter, tag: Int, value: E?) {
+    commonEncodeWithTag(writer, tag, value)
+  }
+
+  /** Write `tag` and `value` to `writer`. If value is null this does nothing. */
+  actual open fun encodeWithTag(writer: ReverseProtoWriter, tag: Int, value: E?) {
     commonEncodeWithTag(writer, tag, value)
   }
 
@@ -111,7 +122,8 @@ actual abstract class ProtoAdapter<E> actual constructor(
       "Unable to pack a length-delimited type."
     }
     return packedAdapter ?: throw UnsupportedOperationException(
-        "Can't create a packed adapter from a packed or repeated adapter.")
+      "Can't create a packed adapter from a packed or repeated adapter."
+    )
   }
 
   /**
@@ -123,7 +135,8 @@ actual abstract class ProtoAdapter<E> actual constructor(
    */
   actual fun asRepeated(): ProtoAdapter<List<E>> {
     return repeatedAdapter ?: throw UnsupportedOperationException(
-        "Can't create a repeated adapter from a repeated or packed adapter.")
+      "Can't create a repeated adapter from a repeated or packed adapter."
+    )
   }
 
   actual class EnumConstantNotFoundException actual constructor(

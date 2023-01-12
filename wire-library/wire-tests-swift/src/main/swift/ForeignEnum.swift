@@ -6,3 +6,8 @@ public enum ForeignEnum : UInt32, CaseIterable, Codable {
     case BAX = 1
 
 }
+
+#if swift(>=5.5)
+extension ForeignEnum : Sendable {
+}
+#endif

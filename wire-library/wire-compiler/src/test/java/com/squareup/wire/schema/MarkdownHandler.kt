@@ -15,46 +15,33 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.wire.WireLogger
-import okio.buffer
-import okio.sink
-import java.nio.file.FileSystem
-import java.nio.file.Files
-import java.nio.file.Path
+import okio.Path
 
-/**
- * This is a sample handler that writes text files that describe types.
- */
-class MarkdownHandler : CustomHandlerBeta {
-  override fun newHandler(
-    schema: Schema,
-    fs: FileSystem,
-    outDirectory: String,
-    logger: WireLogger,
-    profileLoader: ProfileLoader
-  ): Target.SchemaHandler {
-    return object : Target.SchemaHandler {
-      override fun handle(type: Type): Path? {
-        return writeMarkdownFile(type.type, toMarkdown(type))
-      }
+class MarkdownHandlerFactory : SchemaHandler.Factory {
+  override fun create(): SchemaHandler = MarkdownHandler()
+}
 
-      override fun handle(service: Service): List<Path> {
-        return listOf(writeMarkdownFile(service.type, toMarkdown(service)))
-      }
+/** This is a sample handler that writes text files that describe types. */
+private class MarkdownHandler : SchemaHandler() {
+  override fun handle(type: Type, context: SchemaHandler.Context): Path {
+    return writeMarkdownFile(type.type, toMarkdown(type), context)
+  }
 
-      override fun handle(extend: Extend, field: Field): Path? {
-        return null
-      }
+  override fun handle(service: Service, context: SchemaHandler.Context): List<Path> {
+    return listOf(writeMarkdownFile(service.type, toMarkdown(service), context))
+  }
 
-      private fun writeMarkdownFile(protoType: ProtoType, markdown: String): Path {
-        val path = fs.getPath(outDirectory, *toPath(protoType).toTypedArray())
-        Files.createDirectories(path.parent)
-        path.sink().buffer().use { sink ->
-          sink.writeUtf8(markdown)
-        }
-        return path
-      }
-    }
+  override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? {
+    return null
+  }
+
+  private fun writeMarkdownFile(protoType: ProtoType, markdown: String, context: SchemaHandler.Context): Path {
+    val outDirectory = context.outDirectory
+    val fileSystem = context.fileSystem
+    val path = outDirectory / toPath(protoType).joinToString(separator = "/")
+    fileSystem.createDirectories(path.parent!!)
+    fileSystem.write(path) { writeUtf8(markdown) }
+    return path
   }
 
   /** Returns a path like `squareup/colors/Blue.md`. */

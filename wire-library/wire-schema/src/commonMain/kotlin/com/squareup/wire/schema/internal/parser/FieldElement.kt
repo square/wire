@@ -56,16 +56,16 @@ data class FieldElement(
    */
   private fun optionsWithSpecialValues(): List<OptionElement> {
     var options =
-        if (defaultValue == null) {
-          options
-        } else {
-          val protoType = ProtoType.get(type)
-          options + OptionElement.create("default", protoType.toKind(), defaultValue)
-        }
+      if (defaultValue == null) {
+        options
+      } else {
+        val protoType = ProtoType.get(type)
+        options + OptionElement.create("default", protoType.toKind(), defaultValue)
+      }
 
     options =
-        if (jsonName == null) options
-        else options + OptionElement.create("json_name", OptionElement.Kind.STRING, jsonName)
+      if (jsonName == null) options
+      else options + OptionElement.create("json_name", OptionElement.Kind.STRING, jsonName)
 
     return options
   }

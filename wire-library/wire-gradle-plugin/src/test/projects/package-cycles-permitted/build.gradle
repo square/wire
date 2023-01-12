@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-  implementation "com.squareup.wire:wire-runtime-multiplatform:$VERSION_NAME"
+  implementation "com.squareup.wire:wire-runtime:$VERSION_NAME"
 }
 
 wire {

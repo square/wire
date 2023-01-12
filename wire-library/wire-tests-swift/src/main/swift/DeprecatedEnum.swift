@@ -14,3 +14,8 @@ public enum DeprecatedEnum : UInt32, CaseIterable, Codable {
     }
 
 }
+
+#if swift(>=5.5)
+extension DeprecatedEnum : Sendable {
+}
+#endif

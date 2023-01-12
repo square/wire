@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.sanitize
@@ -20,7 +21,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -28,16 +28,17 @@ public class DeprecatedProto(
   @Deprecated(message = "foo is deprecated")
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   public val foo: String? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<DeprecatedProto, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -51,7 +52,7 @@ public class DeprecatedProto(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + foo.hashCode()
+      result = result * 37 + (foo?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -73,17 +74,23 @@ public class DeprecatedProto(
       DeprecatedProto::class, 
       "type.googleapis.com/squareup.protos.kotlin.DeprecatedProto", 
       PROTO_2, 
-      null
+      null, 
+      "deprecated.proto"
     ) {
-      public override fun encodedSize(value: DeprecatedProto): Int {
+      public override fun encodedSize(`value`: DeprecatedProto): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: DeprecatedProto): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: DeprecatedProto): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: DeprecatedProto): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
       }
 
       public override fun decode(reader: ProtoReader): DeprecatedProto {
@@ -100,7 +107,7 @@ public class DeprecatedProto(
         )
       }
 
-      public override fun redact(value: DeprecatedProto): DeprecatedProto = value.copy(
+      public override fun redact(`value`: DeprecatedProto): DeprecatedProto = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

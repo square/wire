@@ -8,4 +8,6 @@ wire {
     srcJar 'src/main/proto/protos.jar'
     include 'squareup/geology/period.proto', 'squareup/dinosaurs/dinosaur.proto'
   }
+  java{
+  }
 }

@@ -30,11 +30,17 @@ class Linker {
   private val requestedTypes: MutableSet<ProtoType>
   private val requestedFields: MutableSet<Field>
   private val permitPackageCycles: Boolean
+  val loadExhaustively: Boolean
 
   /** Errors accumulated by this load. */
   val errors: ErrorCollector
 
-  constructor(loader: Loader, errors: ErrorCollector, permitPackageCycles: Boolean) {
+  constructor(
+    loader: Loader,
+    errors: ErrorCollector,
+    permitPackageCycles: Boolean,
+    loadExhaustively: Boolean
+  ) {
     this.loader = loader
     this.fileLinkers = mutableMapOf()
     this.fileOptionsQueue = mutableQueueOf()
@@ -44,6 +50,7 @@ class Linker {
     this.requestedFields = mutableSetOf()
     this.errors = errors
     this.permitPackageCycles = permitPackageCycles
+    this.loadExhaustively = loadExhaustively
   }
 
   private constructor(enclosing: Linker, additionalContext: Any) {
@@ -56,6 +63,7 @@ class Linker {
     this.requestedFields = enclosing.requestedFields
     this.errors = enclosing.errors.at(additionalContext)
     this.permitPackageCycles = false
+    this.loadExhaustively = enclosing.loadExhaustively
   }
 
   /** Returns a linker for [path], loading the file if necessary. */
@@ -81,6 +89,22 @@ class Linker {
       val fileLinker = FileLinker(sourceFile, withContext(sourceFile))
       fileLinkers[sourceFile.location.path] = fileLinker
       sourceFiles += fileLinker
+    }
+
+    // When loading exhaustively, every import (and transitive import!) is a source file.
+    if (loadExhaustively) {
+      val queue = mutableQueueOf<FileLinker>()
+      queue += fileLinkers.values
+      while (true) {
+        val fileLinker = queue.poll() ?: break
+        for (importPath in fileLinker.protoFile.imports + fileLinker.protoFile.publicImports) {
+          if (importPath !in fileLinkers) {
+            val imported = withContext(fileLinker.protoFile).getFileLinker(importPath)
+            sourceFiles += imported
+            queue += imported
+          }
+        }
+      }
     }
 
     for (fileLinker in sourceFiles) {
@@ -115,6 +139,8 @@ class Linker {
       fileLinker.requireFileOptionsLinked(validate = false)
     }
 
+    validatePackages()
+
     for (fileLinker in sourceFiles) {
       val syntaxRules = SyntaxRules.get(fileLinker.protoFile.syntax)
       fileLinker.validate(syntaxRules)
@@ -130,20 +156,20 @@ class Linker {
 
     val result = mutableListOf<ProtoFile>()
     for (fileLinker in fileLinkers.values) {
-      if (sourceFiles.contains(fileLinker)) {
+      if (fileLinker in sourceFiles) {
         result.add(fileLinker.protoFile)
         continue
       }
 
       // Retain this type if it's used by anything in the source path.
       val anyTypeIsUsed = fileLinker.protoFile.typesAndNestedTypes()
-          .any { type ->
-            requestedTypes.contains(type.type)
-          }
+        .any { type ->
+          requestedTypes.contains(type.type)
+        }
       val anyFieldIsUsed = fileLinker.protoFile.extendList
-          .any { extend ->
-            extend.fields.any { it in requestedFields }
-          }
+        .any { extend ->
+          extend.fields.any { it in requestedFields }
+        }
       if (anyTypeIsUsed || anyFieldIsUsed) {
         result.add(fileLinker.protoFile.retainLinked(requestedTypes.toSet(), requestedFields))
       }
@@ -228,31 +254,19 @@ class Linker {
     return null
   }
 
-  private fun resolveContext(): String {
+  fun resolveContext(): String {
     for (i in contextStack.indices.reversed()) {
-      val context = contextStack[i]
-      when {
-        context is Type -> {
+      when (val context = contextStack[i]) {
+        is Type -> {
           return context.type.toString()
         }
-        context is ProtoFile -> {
+        is ProtoFile -> {
           val packageName = context.packageName
           return packageName ?: ""
-        }
-        context is Field && context.isExtension -> {
-          return context.packageName ?: ""
         }
       }
     }
     throw IllegalStateException()
-  }
-
-  /** Returns the current package name from the context stack. */
-  fun packageName(): String? {
-    for (context in contextStack) {
-      if (context is ProtoFile) return context.packageName
-    }
-    return null
   }
 
   /**
@@ -322,9 +336,9 @@ class Linker {
     requestedFields.add(field)
   }
 
-  /** Returns the field named [field] on the message type of [self]. */
+  /** Returns the field named [field] on the message type of [protoType]. */
   fun dereference(
-    self: Field,
+    protoType: ProtoType,
     field: String
   ): Field? {
     @Suppress("NAME_SHADOWING") var field = field
@@ -332,7 +346,7 @@ class Linker {
       field = field.substring(1, field.length - 1)
     }
 
-    val type = getForOptions(self.type!!)
+    val type = getForOptions(protoType)
     if (type is MessageType) {
       val messageField = type.field(field)
       if (messageField != null) return messageField
@@ -378,8 +392,8 @@ class Linker {
       // We allow JSON collisions for extensions.
       if (!field.isExtension) {
         jsonNameToField
-            .getOrPut(syntaxRules.jsonName(field.name, field.declaredJsonName), { mutableSetOf() })
-            .add(field)
+          .getOrPut(syntaxRules.jsonName(field.name, field.declaredJsonName), { mutableSetOf() })
+          .add(field)
       }
 
       syntaxRules.validateTypeReference(get(field.type!!), errors.at(field))
@@ -414,13 +428,24 @@ class Linker {
       for ((jsonName, fields) in jsonNameToField) {
         if (fields.size > 1) {
           val error = StringBuilder()
-          error.append("multiple fields share same JSON name '${jsonName}':")
+          error.append("multiple fields share same JSON name '$jsonName':")
           fields.forEachIndexed { index, field ->
             error.append("\n  ${index + 1}. ${field.name} (${field.location})")
           }
           errors += error.toString()
         }
       }
+    }
+  }
+
+  private fun validatePackages() {
+    val filesByPackageName: Map<String?, List<FileLinker>> =
+      fileLinkers.values.groupBy { it.protoFile.packageName }
+
+    // Enum constants must be unique within each package.
+    for (fileLinkers in filesByPackageName.values) {
+      val types = fileLinkers.flatMap { it.protoFile.types }
+      withContext(fileLinkers[0].protoFile).validateEnumConstantNameUniqueness(types)
     }
   }
 
@@ -439,8 +464,10 @@ class Linker {
         val error = buildString {
           append("multiple enums share constant $constant:")
           values.forEachIndexed { index, enumType ->
-            append("\n  ${index + 1}. ${enumType.type}.$constant " +
-                "(${enumType.constant(constant)!!.location})")
+            append(
+              "\n  ${index + 1}. ${enumType.type}.$constant " +
+                "(${enumType.constant(constant)!!.location})"
+            )
           }
         }
         errors += error

@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
@@ -27,7 +28,6 @@ import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -42,7 +42,7 @@ public class Person(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   public val name: String = "",
   /**
@@ -51,7 +51,7 @@ public class Person(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   public val id: Int = 0,
   /**
@@ -60,22 +60,24 @@ public class Person(
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   public val email: String = "",
   phones: List<PhoneNumber> = emptyList(),
   aliases: List<String> = emptyList(),
   @field:WireField(
     tag = 6,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    oneofName = "choice",
   )
   public val foo: Int? = null,
   @field:WireField(
     tag = 7,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "choice",
   )
   public val bar: String? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Person, Nothing>(ADAPTER, unknownFields) {
   /**
    * A list of the customer's phone numbers.
@@ -83,14 +85,14 @@ public class Person(
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.proto3.kotlin.person.Person${'$'}PhoneNumber#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   public val phones: List<PhoneNumber> = immutableCopyOf("phones", phones)
 
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   public val aliases: List<String> = immutableCopyOf("aliases", aliases)
 
@@ -102,9 +104,10 @@ public class Person(
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -129,8 +132,8 @@ public class Person(
       result = result * 37 + email.hashCode()
       result = result * 37 + phones.hashCode()
       result = result * 37 + aliases.hashCode()
-      result = result * 37 + foo.hashCode()
-      result = result * 37 + bar.hashCode()
+      result = result * 37 + (foo?.hashCode() ?: 0)
+      result = result * 37 + (bar?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -156,7 +159,7 @@ public class Person(
     aliases: List<String> = this.aliases,
     foo: Int? = this.foo,
     bar: String? = this.bar,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): Person = Person(name, id, email, phones, aliases, foo, bar, unknownFields)
 
   public companion object {
@@ -166,9 +169,10 @@ public class Person(
       Person::class, 
       "type.googleapis.com/squareup.protos3.kotlin.person.Person", 
       PROTO_3, 
-      null
+      null, 
+      "person.proto"
     ) {
-      public override fun encodedSize(value: Person): Int {
+      public override fun encodedSize(`value`: Person): Int {
         var size = value.unknownFields.size
         if (value.name != "") size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         if (value.id != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
@@ -180,7 +184,7 @@ public class Person(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Person): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Person): Unit {
         if (value.name != "") ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         if (value.id != 0) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
         if (value.email != "") ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
@@ -189,6 +193,17 @@ public class Person(
         ProtoAdapter.INT32.encodeWithTag(writer, 6, value.foo)
         ProtoAdapter.STRING.encodeWithTag(writer, 7, value.bar)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: Person): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.encodeWithTag(writer, 7, value.bar)
+        ProtoAdapter.INT32.encodeWithTag(writer, 6, value.foo)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases)
+        PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phones)
+        if (value.email != "") ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
+        if (value.id != 0) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
+        if (value.name != "") ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
       }
 
       public override fun decode(reader: ProtoReader): Person {
@@ -223,7 +238,7 @@ public class Person(
         )
       }
 
-      public override fun redact(value: Person): Person = value.copy(
+      public override fun redact(`value`: Person): Person = value.copy(
         phones = value.phones.redactElements(PhoneNumber.ADAPTER),
         unknownFields = ByteString.EMPTY
       )
@@ -236,7 +251,7 @@ public class Person(
    * Represents the type of the phone number: mobile, home or work.
    */
   public enum class PhoneType(
-    public override val value: Int
+    public override val `value`: Int,
   ) : WireEnum {
     MOBILE(0),
     HOME(1),
@@ -253,11 +268,11 @@ public class Person(
         PROTO_3, 
         PhoneType.MOBILE
       ) {
-        public override fun fromValue(value: Int): PhoneType? = PhoneType.fromValue(value)
+        public override fun fromValue(`value`: Int): PhoneType? = PhoneType.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): PhoneType? = when (value) {
+      public fun fromValue(`value`: Int): PhoneType? = when (value) {
         0 -> MOBILE
         1 -> HOME
         2 -> WORK
@@ -273,7 +288,7 @@ public class Person(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.OMIT_IDENTITY
+      label = WireField.Label.OMIT_IDENTITY,
     )
     public val number: String = "",
     /**
@@ -282,16 +297,17 @@ public class Person(
     @field:WireField(
       tag = 2,
       adapter = "com.squareup.wire.proto3.kotlin.person.Person${'$'}PhoneType#ADAPTER",
-      label = WireField.Label.OMIT_IDENTITY
+      label = WireField.Label.OMIT_IDENTITY,
     )
     public val type: PhoneType = PhoneType.MOBILE,
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<PhoneNumber, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+      level = DeprecationLevel.HIDDEN,
     )
-    public override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw
+        AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -323,7 +339,7 @@ public class Person(
     public fun copy(
       number: String = this.number,
       type: PhoneType = this.type,
-      unknownFields: ByteString = this.unknownFields
+      unknownFields: ByteString = this.unknownFields,
     ): PhoneNumber = PhoneNumber(number, type, unknownFields)
 
     public companion object {
@@ -333,9 +349,10 @@ public class Person(
         PhoneNumber::class, 
         "type.googleapis.com/squareup.protos3.kotlin.person.Person.PhoneNumber", 
         PROTO_3, 
-        null
+        null, 
+        "person.proto"
       ) {
-        public override fun encodedSize(value: PhoneNumber): Int {
+        public override fun encodedSize(`value`: PhoneNumber): Int {
           var size = value.unknownFields.size
           if (value.number != "") size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.number)
           if (value.type != PhoneType.MOBILE) size += PhoneType.ADAPTER.encodedSizeWithTag(2,
@@ -343,10 +360,16 @@ public class Person(
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: PhoneNumber): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: PhoneNumber): Unit {
           if (value.number != "") ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number)
           if (value.type != PhoneType.MOBILE) PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type)
           writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: PhoneNumber): Unit {
+          writer.writeBytes(value.unknownFields)
+          if (value.type != PhoneType.MOBILE) PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type)
+          if (value.number != "") ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number)
         }
 
         public override fun decode(reader: ProtoReader): PhoneNumber {
@@ -370,7 +393,7 @@ public class Person(
           )
         }
 
-        public override fun redact(value: PhoneNumber): PhoneNumber = value.copy(
+        public override fun redact(`value`: PhoneNumber): PhoneNumber = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }

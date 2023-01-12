@@ -1,0 +1,12 @@
+syntax = "proto2";
+
+package squareup.dinosaurs;
+
+option java_package = "com.squareup.dinosaurs";
+
+import "squareup/dinosaurs/dinosaur.proto";
+
+service BattleService {
+  rpc Fight(Dinosaur) returns (Dinosaur) {}
+  rpc Brawl(stream Dinosaur) returns (stream Dinosaur) {}
+}

@@ -1,0 +1,18 @@
+plugins {
+  id 'org.jetbrains.kotlin.jvm'
+  id 'com.squareup.wire'
+}
+
+// This file should be kept in sync with `cache-include-paths-1/build.gradle` with the exception of
+// the missing `include` statement inside `sourcePath`.
+
+wire {
+  sourcePath {
+    srcJar("src/main/proto/protos.jar")
+    include("squareup/geology/period.proto")
+    include("squareup/dinosaurs/dinosaur.proto")
+  }
+
+  kotlin {
+  }
+}

@@ -41,7 +41,7 @@ class AnyMessageTypeAdapter(
     writer.value(value.typeUrl)
 
     val protoAdapter = typeUrlToAdapter[value.typeUrl]
-        ?: throw IOException("Cannot find type for url: ${value.typeUrl}")
+      ?: throw IOException("Cannot find type for url: ${value.typeUrl}")
 
     val delegate = gson.getAdapter(protoAdapter.type!!.java) as TypeAdapter<Message<*, *>>
 
@@ -62,11 +62,11 @@ class AnyMessageTypeAdapter(
 
     val jsonElement = elementAdapter.read(reader)
     val typeUrlEntry = jsonElement.asJsonObject.get("@type")
-        ?: throw IOException("expected @type in ${reader.path}")
+      ?: throw IOException("expected @type in ${reader.path}")
     val typeUrl = typeUrlEntry.asString
 
     val protoAdapter = typeUrlToAdapter[typeUrl]
-        ?: throw IOException("Cannot resolve type: $typeUrl in ${reader.path}")
+      ?: throw IOException("Cannot resolve type: $typeUrl in ${reader.path}")
 
     val delegate = gson.getAdapter(protoAdapter.type!!.java) as TypeAdapter<Message<*, *>>
 

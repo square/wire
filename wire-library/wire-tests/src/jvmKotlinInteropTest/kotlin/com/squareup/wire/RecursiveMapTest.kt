@@ -19,18 +19,17 @@ package com.squareup.wire
 
 import ModelEvaluation
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
 import org.junit.Test
 
 class RecursiveMapTest {
   @Test
   fun createUseBuilderWithoutCrashing() {
     val model = ModelEvaluation.Builder()
-        .name("name")
-        .score(33.0)
-        .models(mapOf())
-        .build()
+      .name("name")
+      .score(33.0)
+      .models(mapOf())
+      .build()
     assertThat(ModelEvaluation.ADAPTER.encodeByteString(model).hex())
-        .isEqualTo("0a046e616d65110000000000804040")
+      .isEqualTo("0a046e616d65110000000000804040")
   }
 }

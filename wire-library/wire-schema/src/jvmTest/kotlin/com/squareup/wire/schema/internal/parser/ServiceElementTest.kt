@@ -26,8 +26,8 @@ class ServiceElementTest {
   @Test
   fun emptyToSchema() {
     val service = ServiceElement(
-        location = location,
-        name = "Service"
+      location = location,
+      name = "Service"
     )
     val expected = "service Service {}\n"
     assertThat(service.toSchema()).isEqualTo(expected)
@@ -36,16 +36,16 @@ class ServiceElementTest {
   @Test
   fun singleToSchema() {
     val service = ServiceElement(
-        location = location,
-        name = "Service",
-        rpcs = listOf(
-            RpcElement(
-                location = location,
-                name = "Name",
-                requestType = "RequestType",
-                responseType = "ResponseType"
-            )
+      location = location,
+      name = "Service",
+      rpcs = listOf(
+        RpcElement(
+          location = location,
+          name = "Name",
+          requestType = "RequestType",
+          responseType = "ResponseType"
         )
+      )
     )
     val expected = """
         |service Service {
@@ -58,21 +58,21 @@ class ServiceElementTest {
   @Test
   fun addMultipleRpcs() {
     val firstName = RpcElement(
-        location = location,
-        name = "FirstName",
-        requestType = "RequestType",
-        responseType = "ResponseType"
+      location = location,
+      name = "FirstName",
+      requestType = "RequestType",
+      responseType = "ResponseType"
     )
     val lastName = RpcElement(
-        location = location,
-        name = "LastName",
-        requestType = "RequestType",
-        responseType = "ResponseType"
+      location = location,
+      name = "LastName",
+      requestType = "RequestType",
+      responseType = "ResponseType"
     )
     val service = ServiceElement(
-        location = location,
-        name = "Service",
-        rpcs = listOf(firstName, lastName)
+      location = location,
+      name = "Service",
+      rpcs = listOf(firstName, lastName)
     )
     assertThat(service.rpcs).hasSize(2)
   }
@@ -80,17 +80,17 @@ class ServiceElementTest {
   @Test
   fun singleWithOptionsToSchema() {
     val service = ServiceElement(
-        location = location,
-        name = "Service",
-        options = listOf(OptionElement.create("foo", Kind.STRING, "bar")),
-        rpcs = listOf(
-            RpcElement(
-                location = location,
-                name = "Name",
-                requestType = "RequestType",
-                responseType = "ResponseType"
-            )
+      location = location,
+      name = "Service",
+      options = listOf(OptionElement.create("foo", Kind.STRING, "bar")),
+      rpcs = listOf(
+        RpcElement(
+          location = location,
+          name = "Name",
+          requestType = "RequestType",
+          responseType = "ResponseType"
         )
+      )
     )
     val expected = """
         |service Service {
@@ -107,17 +107,17 @@ class ServiceElementTest {
     val kitKat = OptionElement.create("kit", Kind.STRING, "kat")
     val fooBar = OptionElement.create("foo", Kind.STRING, "bar")
     val service = ServiceElement(
-        location = location,
-        name = "Service",
-        options = listOf(kitKat, fooBar),
-        rpcs = listOf(
-            RpcElement(
-                location = location,
-                name = "Name",
-                requestType = "RequestType",
-                responseType = "ResponseType"
-            )
+      location = location,
+      name = "Service",
+      options = listOf(kitKat, fooBar),
+      rpcs = listOf(
+        RpcElement(
+          location = location,
+          name = "Name",
+          requestType = "RequestType",
+          responseType = "ResponseType"
         )
+      )
     )
     assertThat(service.options).hasSize(2)
   }
@@ -125,17 +125,17 @@ class ServiceElementTest {
   @Test
   fun singleWithDocumentationToSchema() {
     val service = ServiceElement(
-        location = location,
-        name = "Service",
-        documentation = "Hello",
-        rpcs = listOf(
-            RpcElement(
-                location = location,
-                name = "Name",
-                requestType = "RequestType",
-                responseType = "ResponseType"
-            )
+      location = location,
+      name = "Service",
+      documentation = "Hello",
+      rpcs = listOf(
+        RpcElement(
+          location = location,
+          name = "Name",
+          requestType = "RequestType",
+          responseType = "ResponseType"
         )
+      )
     )
     val expected = """
         |// Hello
@@ -149,15 +149,15 @@ class ServiceElementTest {
   @Test
   fun multipleToSchema() {
     val rpc = RpcElement(
-        location = location,
-        name = "Name",
-        requestType = "RequestType",
-        responseType = "ResponseType"
+      location = location,
+      name = "Name",
+      requestType = "RequestType",
+      responseType = "ResponseType"
     )
     val service = ServiceElement(
-        location = location,
-        name = "Service",
-        rpcs = listOf(rpc, rpc)
+      location = location,
+      name = "Service",
+      rpcs = listOf(rpc, rpc)
     )
     val expected = """
         |service Service {
@@ -172,10 +172,10 @@ class ServiceElementTest {
   @Test
   fun rpcToSchema() {
     val rpc = RpcElement(
-        location = location,
-        name = "Name",
-        requestType = "RequestType",
-        responseType = "ResponseType"
+      location = location,
+      name = "Name",
+      requestType = "RequestType",
+      responseType = "ResponseType"
     )
     val expected = "rpc Name (RequestType) returns (ResponseType);\n"
     assertThat(rpc.toSchema()).isEqualTo(expected)
@@ -184,11 +184,11 @@ class ServiceElementTest {
   @Test
   fun rpcWithDocumentationToSchema() {
     val rpc = RpcElement(
-        location = location,
-        name = "Name",
-        documentation = "Hello",
-        requestType = "RequestType",
-        responseType = "ResponseType"
+      location = location,
+      name = "Name",
+      documentation = "Hello",
+      requestType = "RequestType",
+      responseType = "ResponseType"
     )
     val expected = """
         |// Hello
@@ -200,11 +200,11 @@ class ServiceElementTest {
   @Test
   fun rpcWithOptionsToSchema() {
     val rpc = RpcElement(
-        location = location,
-        name = "Name",
-        requestType = "RequestType",
-        responseType = "ResponseType",
-        options = listOf(OptionElement.create("foo", Kind.STRING, "bar"))
+      location = location,
+      name = "Name",
+      requestType = "RequestType",
+      responseType = "ResponseType",
+      options = listOf(OptionElement.create("foo", Kind.STRING, "bar"))
     )
 
     val expected = """
@@ -218,11 +218,11 @@ class ServiceElementTest {
   @Test
   fun rpcWithRequestStreamingToSchema() {
     val rpc = RpcElement(
-        location = location,
-        name = "Name",
-        requestType = "RequestType",
-        responseType = "ResponseType",
-        requestStreaming = true
+      location = location,
+      name = "Name",
+      requestType = "RequestType",
+      responseType = "ResponseType",
+      requestStreaming = true
     )
     val expected = "rpc Name (stream RequestType) returns (ResponseType);\n"
     assertThat(rpc.toSchema()).isEqualTo(expected)
@@ -231,11 +231,11 @@ class ServiceElementTest {
   @Test
   fun rpcWithResponseStreamingToSchema() {
     val rpc = RpcElement(
-        location = location,
-        name = "Name",
-        requestType = "RequestType",
-        responseType = "ResponseType",
-        responseStreaming = true
+      location = location,
+      name = "Name",
+      requestType = "RequestType",
+      responseType = "ResponseType",
+      responseStreaming = true
     )
     val expected = "rpc Name (RequestType) returns (stream ResponseType);\n"
     assertThat(rpc.toSchema()).isEqualTo(expected)

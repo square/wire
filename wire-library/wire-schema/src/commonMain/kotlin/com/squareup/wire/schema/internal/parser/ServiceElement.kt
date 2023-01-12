@@ -26,7 +26,7 @@ data class ServiceElement(
   val rpcs: List<RpcElement> = emptyList(),
   val options: List<OptionElement> = emptyList()
 ) {
-  fun toSchema() = buildString{
+  fun toSchema() = buildString {
     appendDocumentation(documentation)
     append("service $name {")
     if (options.isNotEmpty()) {

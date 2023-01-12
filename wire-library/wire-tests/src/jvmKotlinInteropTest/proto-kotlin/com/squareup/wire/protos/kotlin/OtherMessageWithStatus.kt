@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
@@ -22,7 +23,7 @@ import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 public class OtherMessageWithStatus(
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<OtherMessageWithStatus, OtherMessageWithStatus.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -58,14 +59,20 @@ public class OtherMessageWithStatus(
       OtherMessageWithStatus::class, 
       "type.googleapis.com/squareup.protos.kotlin.OtherMessageWithStatus", 
       PROTO_2, 
-      null
+      null, 
+      "same_name_enum.proto"
     ) {
-      public override fun encodedSize(value: OtherMessageWithStatus): Int {
+      public override fun encodedSize(`value`: OtherMessageWithStatus): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: OtherMessageWithStatus): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: OtherMessageWithStatus): Unit {
+        writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: OtherMessageWithStatus):
+          Unit {
         writer.writeBytes(value.unknownFields)
       }
 
@@ -76,7 +83,7 @@ public class OtherMessageWithStatus(
         )
       }
 
-      public override fun redact(value: OtherMessageWithStatus): OtherMessageWithStatus =
+      public override fun redact(`value`: OtherMessageWithStatus): OtherMessageWithStatus =
           value.copy(
         unknownFields = ByteString.EMPTY
       )
@@ -86,7 +93,7 @@ public class OtherMessageWithStatus(
   }
 
   public enum class Status(
-    public override val value: Int
+    public override val `value`: Int,
   ) : WireEnum {
     A(1),
     ;
@@ -98,11 +105,11 @@ public class OtherMessageWithStatus(
         PROTO_2, 
         null
       ) {
-        public override fun fromValue(value: Int): Status? = Status.fromValue(value)
+        public override fun fromValue(`value`: Int): Status? = Status.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): Status? = when (value) {
+      public fun fromValue(`value`: Int): Status? = when (value) {
         1 -> A
         else -> null
       }

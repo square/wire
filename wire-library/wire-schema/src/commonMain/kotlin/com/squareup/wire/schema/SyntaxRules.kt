@@ -113,7 +113,6 @@ interface SyntaxRules {
         if (type.syntax == PROTO_3) return
 
         errors += "Proto2 enums cannot be referenced in a proto3 message"
-
       }
 
       override fun isPackedByDefault(

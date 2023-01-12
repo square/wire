@@ -17,7 +17,9 @@ package com.squareup.wire.kotlin.grpcserver
 
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.wire.schema.RepoBuilder
+import com.squareup.wire.buildSchema
+import com.squareup.wire.schema.addLocal
+import okio.Path.Companion.toPath
 import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
@@ -27,19 +29,21 @@ import java.io.File
 class ServiceDescriptorTest {
   @Test
   fun addServiceDescriptor() {
-    val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
-    val service = repoBuilder.schema().getService("routeguide.RouteGuide")
+    val path = "src/test/proto/RouteGuideProto.proto".toPath()
+    val schema = buildSchema { addLocal(path) }
+    val service = schema.getService("routeguide.RouteGuide")
 
     val code = FileSpec.builder("routeguide", "RouteGuide")
       .addType(
         TypeSpec.classBuilder("RouteGuideWireGrpc")
-          .apply { ServiceDescriptorGenerator.addServiceDescriptor(this, service!!) }
+          .apply {
+            ServiceDescriptorGenerator.addServiceDescriptor(this, service!!, schema.protoFile(path), schema)
+          }
           .build()
       )
       .build()
       .toString()
 
-    println(code)
     assertThat(code).isEqualTo(File("src/test/golden/ServiceDescriptor.kt").source().buffer().readUtf8())
   }
 }

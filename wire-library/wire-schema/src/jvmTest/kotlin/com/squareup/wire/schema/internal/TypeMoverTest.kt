@@ -15,8 +15,9 @@
  */
 package com.squareup.wire.schema.internal
 
+import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.ProtoType
-import com.squareup.wire.schema.RepoBuilder
+import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
@@ -32,8 +33,10 @@ class TypeMoverTest {
    *  * Adding an import to the target file required by the target type (roast.proto).
    */
   @Test fun `move type to new file`() {
-    val oldSchema = RepoBuilder()
-        .add("cafe/cafe.proto", """
+    val oldSchema = buildSchema {
+      add(
+        "cafe/cafe.proto".toPath(),
+        """
             |syntax = "proto2";
             |
             |package cafe;
@@ -50,8 +53,10 @@ class TypeMoverTest {
             |  optional bool decaf = 2;
             |}
             """.trimMargin()
-        )
-        .add("cafe/roast.proto", """
+      )
+      add(
+        "cafe/roast.proto".toPath(),
+        """
             |syntax = "proto2";
             |
             |package cafe;
@@ -61,14 +66,16 @@ class TypeMoverTest {
             |  DARK = 2;
             |}
             """.trimMargin()
-        )
-        .schema()
+      )
+    }
 
-    val newSchema = TypeMover(oldSchema,
-        listOf(TypeMover.Move(ProtoType.get("cafe", "EspressoShot"), "cafe/espresso.proto"))
+    val newSchema = TypeMover(
+      oldSchema,
+      listOf(TypeMover.Move(ProtoType.get("cafe", "EspressoShot"), "cafe/espresso.proto"))
     ).move()
 
-    assertThat(newSchema.protoFile("cafe/cafe.proto")!!.toSchema()).isEqualTo("""
+    assertThat(newSchema.protoFile("cafe/cafe.proto")!!.toSchema()).isEqualTo(
+      """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: cafe/cafe.proto
         |
@@ -85,7 +92,8 @@ class TypeMoverTest {
         |}
         |""".trimMargin()
     )
-    assertThat(newSchema.protoFile("cafe/espresso.proto")!!.toSchema()).isEqualTo("""
+    assertThat(newSchema.protoFile("cafe/espresso.proto")!!.toSchema()).isEqualTo(
+      """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: cafe/espresso.proto
         |
@@ -105,8 +113,10 @@ class TypeMoverTest {
   }
 
   @Test fun `move type to existing file`() {
-    val oldSchema = RepoBuilder()
-        .add("cafe/cafe.proto", """
+    val oldSchema = buildSchema {
+      add(
+        "cafe/cafe.proto".toPath(),
+        """
             |syntax = "proto2";
             |
             |package cafe;
@@ -123,8 +133,10 @@ class TypeMoverTest {
             |  optional bool decaf = 2;
             |}
             """.trimMargin()
-        )
-        .add("cafe/roast.proto", """
+      )
+      add(
+        "cafe/roast.proto".toPath(),
+        """
             |syntax = "proto2";
             |
             |package cafe;
@@ -134,14 +146,16 @@ class TypeMoverTest {
             |  DARK = 2;
             |}
             """.trimMargin()
-        )
-        .schema()
+      )
+    }
 
-    val newSchema = TypeMover(oldSchema,
-        listOf(TypeMover.Move(ProtoType.get("cafe", "EspressoShot"), "cafe/roast.proto"))
+    val newSchema = TypeMover(
+      oldSchema,
+      listOf(TypeMover.Move(ProtoType.get("cafe", "EspressoShot"), "cafe/roast.proto"))
     ).move()
 
-    assertThat(newSchema.protoFile("cafe/cafe.proto")!!.toSchema()).isEqualTo("""
+    assertThat(newSchema.protoFile("cafe/cafe.proto")!!.toSchema()).isEqualTo(
+      """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: cafe/cafe.proto
         |
@@ -158,7 +172,8 @@ class TypeMoverTest {
         |}
         |""".trimMargin()
     )
-    assertThat(newSchema.protoFile("cafe/roast.proto")!!.toSchema()).isEqualTo("""
+    assertThat(newSchema.protoFile("cafe/roast.proto")!!.toSchema()).isEqualTo(
+      """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: cafe/roast.proto
         |
@@ -181,8 +196,10 @@ class TypeMoverTest {
   }
 
   @Test fun `multiple moves from single source`() {
-    val oldSchema = RepoBuilder()
-        .add("abc.proto", """
+    val oldSchema = buildSchema {
+      add(
+        "abc.proto".toPath(),
+        """
             |syntax = "proto2";
             |
             |message A {
@@ -197,19 +214,20 @@ class TypeMoverTest {
             |message C {
             |}
             """.trimMargin()
-        )
-        .schema()
+      )
+    }
 
     val newSchema = TypeMover(
-        oldSchema = oldSchema,
-        moves = listOf(
-            TypeMover.Move(ProtoType.get("A"), "a.proto"),
-            TypeMover.Move(ProtoType.get("B"), "b.proto"),
-            TypeMover.Move(ProtoType.get("C"), "c.proto")
-        )
+      oldSchema = oldSchema,
+      moves = listOf(
+        TypeMover.Move(ProtoType.get("A"), "a.proto"),
+        TypeMover.Move(ProtoType.get("B"), "b.proto"),
+        TypeMover.Move(ProtoType.get("C"), "c.proto")
+      )
     ).move()
 
-    assertThat(newSchema.protoFile("abc.proto")!!.toSchema()).isEqualTo("""
+    assertThat(newSchema.protoFile("abc.proto")!!.toSchema()).isEqualTo(
+      """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: abc.proto
         |
@@ -217,7 +235,8 @@ class TypeMoverTest {
         |""".trimMargin()
     )
 
-    assertThat(newSchema.protoFile("a.proto")!!.toSchema()).isEqualTo("""
+    assertThat(newSchema.protoFile("a.proto")!!.toSchema()).isEqualTo(
+      """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: a.proto
         |
@@ -234,7 +253,8 @@ class TypeMoverTest {
         |""".trimMargin()
     )
 
-    assertThat(newSchema.protoFile("b.proto")!!.toSchema()).isEqualTo("""
+    assertThat(newSchema.protoFile("b.proto")!!.toSchema()).isEqualTo(
+      """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: b.proto
         |
@@ -248,7 +268,8 @@ class TypeMoverTest {
         |""".trimMargin()
     )
 
-    assertThat(newSchema.protoFile("c.proto")!!.toSchema()).isEqualTo("""
+    assertThat(newSchema.protoFile("c.proto")!!.toSchema()).isEqualTo(
+      """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: c.proto
         |
@@ -260,8 +281,10 @@ class TypeMoverTest {
   }
 
   @Test fun `move with service dependency`() {
-    val oldSchema = RepoBuilder()
-        .add("abc.proto", """
+    val oldSchema = buildSchema {
+      add(
+        "abc.proto".toPath(),
+        """
             |syntax = "proto2";
             |
             |message A {
@@ -274,18 +297,19 @@ class TypeMoverTest {
             |  rpc Go (A) returns (B);
             |}
             """.trimMargin()
-        )
-        .schema()
+      )
+    }
 
     val newSchema = TypeMover(
-        oldSchema = oldSchema,
-        moves = listOf(
-            TypeMover.Move(ProtoType.get("A"), "a.proto"),
-            TypeMover.Move(ProtoType.get("B"), "b.proto")
-        )
+      oldSchema = oldSchema,
+      moves = listOf(
+        TypeMover.Move(ProtoType.get("A"), "a.proto"),
+        TypeMover.Move(ProtoType.get("B"), "b.proto")
+      )
     ).move()
 
-    assertThat(newSchema.protoFile("abc.proto")!!.toSchema()).isEqualTo("""
+    assertThat(newSchema.protoFile("abc.proto")!!.toSchema()).isEqualTo(
+      """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: abc.proto
         |
@@ -302,8 +326,10 @@ class TypeMoverTest {
   }
 
   @Test fun `swap types`() {
-    val oldSchema = RepoBuilder()
-        .add("a.proto", """
+    val oldSchema = buildSchema {
+      add(
+        "a.proto".toPath(),
+        """
             |syntax = "proto2";
             |
             |import "b.proto";
@@ -312,25 +338,28 @@ class TypeMoverTest {
             |  optional B b = 1;
             |}
             """.trimMargin()
-        )
-        .add("b.proto", """
+      )
+      add(
+        "b.proto".toPath(),
+        """
             |syntax = "proto2";
             |
             |message B {
             |}
             """.trimMargin()
-        )
-        .schema()
+      )
+    }
 
     val newSchema = TypeMover(
-        oldSchema = oldSchema,
-        moves = listOf(
-            TypeMover.Move(ProtoType.get("A"), "b.proto"),
-            TypeMover.Move(ProtoType.get("B"), "a.proto")
-        )
+      oldSchema = oldSchema,
+      moves = listOf(
+        TypeMover.Move(ProtoType.get("A"), "b.proto"),
+        TypeMover.Move(ProtoType.get("B"), "a.proto")
+      )
     ).move()
 
-    assertThat(newSchema.protoFile("b.proto")!!.toSchema()).isEqualTo("""
+    assertThat(newSchema.protoFile("b.proto")!!.toSchema()).isEqualTo(
+      """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: b.proto
         |
@@ -343,7 +372,8 @@ class TypeMoverTest {
         |}
         |""".trimMargin()
     )
-    assertThat(newSchema.protoFile("a.proto")!!.toSchema()).isEqualTo("""
+    assertThat(newSchema.protoFile("a.proto")!!.toSchema()).isEqualTo(
+      """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: a.proto
         |
@@ -355,8 +385,10 @@ class TypeMoverTest {
   }
 
   @Test fun `unrelated unused imports not pruned`() {
-    val oldSchema = RepoBuilder()
-        .add("a.proto", """
+    val oldSchema = buildSchema {
+      add(
+        "a.proto".toPath(),
+        """
             |syntax = "proto2";
             |
             |import "b.proto";
@@ -364,21 +396,24 @@ class TypeMoverTest {
             |message A {
             |}
             """.trimMargin()
-        )
-        .add("b.proto", """
+      )
+      add(
+        "b.proto".toPath(),
+        """
             |syntax = "proto2";
             |""".trimMargin()
-        )
-        .schema()
+      )
+    }
 
     val newSchema = TypeMover(
-        oldSchema = oldSchema,
-        moves = listOf(
-            TypeMover.Move(ProtoType.get("A"), "c.proto")
-        )
+      oldSchema = oldSchema,
+      moves = listOf(
+        TypeMover.Move(ProtoType.get("A"), "c.proto")
+      )
     ).move()
 
-    assertThat(newSchema.protoFile("a.proto")!!.toSchema()).isEqualTo("""
+    assertThat(newSchema.protoFile("a.proto")!!.toSchema()).isEqualTo(
+      """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: a.proto
         |
@@ -390,22 +425,24 @@ class TypeMoverTest {
   }
 
   @Test fun `move inexistent type`() {
-    val oldSchema = RepoBuilder()
-        .add("a.proto", """
+    val oldSchema = buildSchema {
+      add(
+        "a.proto".toPath(),
+        """
             |syntax = "proto2";
             |
             |message A {
             |}
             """.trimMargin()
-        )
-        .schema()
+      )
+    }
 
     try {
       TypeMover(
-          oldSchema = oldSchema,
-          moves = listOf(
-              TypeMover.Move(ProtoType.get("B"), "b.proto")
-          )
+        oldSchema = oldSchema,
+        moves = listOf(
+          TypeMover.Move(ProtoType.get("B"), "b.proto")
+        )
       ).move()
       fail()
     } catch (expected: IllegalArgumentException) {

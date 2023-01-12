@@ -18,15 +18,15 @@ package com.squareup.wire.internal
 import com.squareup.wire.Message
 import com.squareup.wire.OneOf
 import com.squareup.wire.ProtoAdapter
-import com.squareup.wire.Syntax
 import com.squareup.wire.WireField
 import java.lang.reflect.Field
 
 internal class OneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constructor(
   private val messageField: Field,
   builderType: Class<B>,
-  private val key: OneOf.Key<*>
-) : FieldOrOneOfBinding<M, B> {
+  private val key: OneOf.Key<*>,
+  override val writeIdentityValues: Boolean,
+) : FieldOrOneOfBinding<M, B>() {
   private val builderField: Field = builderType.getDeclaredField(messageField.name)
 
   override val tag: Int
@@ -50,13 +50,14 @@ internal class OneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>> intern
   override val isMap: Boolean
     get() = false
 
-  override fun keyAdapter(): ProtoAdapter<*> {
-    error("not a map")
-  }
+  override val isMessage: Boolean
+    get() = Message::class.java.isAssignableFrom(singleAdapter.type?.javaObjectType)
 
-  override fun adapter(): ProtoAdapter<Any> {
-    return key.adapter as ProtoAdapter<Any>
-  }
+  override val keyAdapter
+    get() = error("not a map")
+
+  override val singleAdapter
+    get() = key.adapter as ProtoAdapter<Any>
 
   override fun value(builder: B, value: Any) {
     set(builder, value)
@@ -74,13 +75,5 @@ internal class OneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>> intern
   override fun getFromBuilder(builder: B): Any? {
     val oneOfOrNull = builderField.get(builder) as OneOf<*, *>?
     return oneOfOrNull?.getOrNull(key)
-  }
-
-  override fun singleAdapter(): ProtoAdapter<*> {
-    return adapter()
-  }
-
-  override fun omitFromJson(syntax: Syntax, value: Any?): Boolean {
-    return value == null
   }
 }

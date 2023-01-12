@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+package excluded;
+
+option java_package = "com.excluded";
+
+message Martian {
+  optional string name = 1;
+}

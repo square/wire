@@ -20,7 +20,7 @@ import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 import com.squareup.wire.internal.EnumJsonFormatter
-import com.squareup.wire.internal.RuntimeMessageAdapter
+import com.squareup.wire.internal.createRuntimeMessageAdapter
 
 /**
  * A [TypeAdapterFactory] that allows Wire messages to be serialized and deserialized
@@ -40,12 +40,15 @@ import com.squareup.wire.internal.RuntimeMessageAdapter
  * library. Note that version 1.2 of that API has a
  * [bug](https://code.google.com/p/protobuf-java-format/issues/detail?id=47)
  * in the way it serializes unknown fields, so we use our own approach for this case.
+ *
+ * In Proto3, if a field is set to its default (or identity) value, it will be omitted in the
+ * JSON-encoded data. Set [writeIdentityValues] to true if you want Wire to always write values,
+ * including default ones.
  */
-class WireTypeAdapterFactory(
-  private val typeUrlToAdapter: Map<String, ProtoAdapter<*>>
+class WireTypeAdapterFactory @JvmOverloads constructor(
+  private val typeUrlToAdapter: Map<String, ProtoAdapter<*>> = mapOf(),
+  private val writeIdentityValues: Boolean = false,
 ) : TypeAdapterFactory {
-  constructor() : this(mapOf())
-
   /**
    * Returns a new WireJsonAdapterFactory that can encode the messages for [adapters] if they're
    * used with [AnyMessage].
@@ -54,10 +57,11 @@ class WireTypeAdapterFactory(
     val newMap = typeUrlToAdapter.toMutableMap()
     for (adapter in adapters) {
       val key = adapter.typeUrl ?: throw IllegalArgumentException(
-          "recompile ${adapter.type} to use it with WireTypeAdapterFactory")
+        "recompile ${adapter.type} to use it with WireTypeAdapterFactory"
+      )
       newMap[key] = adapter
     }
-    return WireTypeAdapterFactory(newMap)
+    return WireTypeAdapterFactory(newMap, writeIdentityValues)
   }
 
   /**
@@ -74,8 +78,8 @@ class WireTypeAdapterFactory(
     return when {
       rawType == AnyMessage::class.java -> AnyMessageTypeAdapter(gson, typeUrlToAdapter) as TypeAdapter<T>
       Message::class.java.isAssignableFrom(rawType) -> {
-        val messageAdapter = RuntimeMessageAdapter.create<Nothing, Nothing>(rawType as Class<Nothing>)
-        val jsonAdapters = messageAdapter.jsonAdapters(GsonJsonIntegration, gson)
+        val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(rawType as Class<Nothing>, writeIdentityValues)
+        val jsonAdapters = GsonJsonIntegration.jsonAdapters(messageAdapter, gson)
         MessageTypeAdapter(messageAdapter, jsonAdapters).nullSafe() as TypeAdapter<T>
       }
       WireEnum::class.java.isAssignableFrom(rawType) -> {

@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -34,7 +35,8 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
    */
   @WireField(
       tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      oneofName = "choice"
   )
   public final Integer foo;
 
@@ -43,7 +45,8 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
    */
   @WireField(
       tag = 3,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      oneofName = "choice"
   )
   public final String bar;
 
@@ -52,7 +55,8 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
    */
   @WireField(
       tag = 4,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      oneofName = "choice"
   )
   public final String baz;
 
@@ -161,7 +165,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
 
   private static final class ProtoAdapter_OneOfMessage extends ProtoAdapter<OneOfMessage> {
     public ProtoAdapter_OneOfMessage() {
-      super(FieldEncoding.LENGTH_DELIMITED, OneOfMessage.class, "type.googleapis.com/squareup.protos.oneof.OneOfMessage", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, OneOfMessage.class, "type.googleapis.com/squareup.protos.oneof.OneOfMessage", Syntax.PROTO_2, null, "one_of.proto");
     }
 
     @Override
@@ -180,6 +184,14 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
       ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar);
       ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, OneOfMessage value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz);
+      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo);
     }
 
     @Override

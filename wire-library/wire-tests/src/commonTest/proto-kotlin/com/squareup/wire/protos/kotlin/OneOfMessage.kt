@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.countNonNull
@@ -21,7 +22,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -34,7 +34,8 @@ public class OneOfMessage(
    */
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    oneofName = "choice",
   )
   public val foo: Int? = null,
   /**
@@ -42,7 +43,8 @@ public class OneOfMessage(
    */
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "choice",
   )
   public val bar: String? = null,
   /**
@@ -50,10 +52,11 @@ public class OneOfMessage(
    */
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "choice",
   )
   public val baz: String? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<OneOfMessage, Nothing>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(foo, bar, baz) <= 1) {
@@ -63,9 +66,10 @@ public class OneOfMessage(
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -81,9 +85,9 @@ public class OneOfMessage(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + foo.hashCode()
-      result = result * 37 + bar.hashCode()
-      result = result * 37 + baz.hashCode()
+      result = result * 37 + (foo?.hashCode() ?: 0)
+      result = result * 37 + (bar?.hashCode() ?: 0)
+      result = result * 37 + (baz?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -101,7 +105,7 @@ public class OneOfMessage(
     foo: Int? = this.foo,
     bar: String? = this.bar,
     baz: String? = this.baz,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): OneOfMessage = OneOfMessage(foo, bar, baz, unknownFields)
 
   public companion object {
@@ -111,9 +115,10 @@ public class OneOfMessage(
       OneOfMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.oneof.OneOfMessage", 
       PROTO_2, 
-      null
+      null, 
+      "one_of.proto"
     ) {
-      public override fun encodedSize(value: OneOfMessage): Int {
+      public override fun encodedSize(`value`: OneOfMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo)
         size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar)
@@ -121,11 +126,18 @@ public class OneOfMessage(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: OneOfMessage): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: OneOfMessage): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar)
         ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: OneOfMessage): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz)
+        ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
       }
 
       public override fun decode(reader: ProtoReader): OneOfMessage {
@@ -148,7 +160,7 @@ public class OneOfMessage(
         )
       }
 
-      public override fun redact(value: OneOfMessage): OneOfMessage = value.copy(
+      public override fun redact(`value`: OneOfMessage): OneOfMessage = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

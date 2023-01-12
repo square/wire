@@ -197,6 +197,11 @@ extension Form.Choice : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension Form.Choice : Sendable {
+}
+#endif
+
 #if !WIRE_REMOVE_EQUATABLE
 extension Form.Decision : Equatable {
 }
@@ -204,6 +209,21 @@ extension Form.Decision : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension Form.Decision : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension Form.Decision : Sendable {
+}
+#endif
+
+#if !WIRE_REMOVE_REDACTABLE
+extension Form.Decision : Redactable {
+    public enum RedactedKeys : String, RedactedKey {
+
+        case e
+
+    }
 }
 #endif
 
@@ -216,6 +236,17 @@ extension Form.ButtonElement : Equatable {
 extension Form.ButtonElement : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension Form.ButtonElement : Sendable {
+}
+#endif
+
+extension Form.ButtonElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.ButtonElement"
+    }
+}
 
 extension Form.ButtonElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -236,6 +267,8 @@ extension Form.ButtonElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.ButtonElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -248,6 +281,17 @@ extension Form.LocalImageElement : Equatable {
 extension Form.LocalImageElement : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension Form.LocalImageElement : Sendable {
+}
+#endif
+
+extension Form.LocalImageElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.LocalImageElement"
+    }
+}
 
 extension Form.LocalImageElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -268,6 +312,8 @@ extension Form.LocalImageElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.LocalImageElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -280,6 +326,17 @@ extension Form.RemoteImageElement : Equatable {
 extension Form.RemoteImageElement : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension Form.RemoteImageElement : Sendable {
+}
+#endif
+
+extension Form.RemoteImageElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.RemoteImageElement"
+    }
+}
 
 extension Form.RemoteImageElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -300,6 +357,8 @@ extension Form.RemoteImageElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.RemoteImageElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -312,6 +371,17 @@ extension Form.MoneyElement : Equatable {
 extension Form.MoneyElement : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension Form.MoneyElement : Sendable {
+}
+#endif
+
+extension Form.MoneyElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.MoneyElement"
+    }
+}
 
 extension Form.MoneyElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -332,6 +402,8 @@ extension Form.MoneyElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.MoneyElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -344,6 +416,17 @@ extension Form.SpacerElement : Equatable {
 extension Form.SpacerElement : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension Form.SpacerElement : Sendable {
+}
+#endif
+
+extension Form.SpacerElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.SpacerElement"
+    }
+}
 
 extension Form.SpacerElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -364,6 +447,8 @@ extension Form.SpacerElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.SpacerElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -376,6 +461,17 @@ extension Form.TextElement : Equatable {
 extension Form.TextElement : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension Form.TextElement : Sendable {
+}
+#endif
+
+extension Form.TextElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextElement"
+    }
+}
 
 extension Form.TextElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -419,6 +515,17 @@ extension Form.CustomizedCardElement : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension Form.CustomizedCardElement : Sendable {
+}
+#endif
+
+extension Form.CustomizedCardElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CustomizedCardElement"
+    }
+}
+
 extension Form.CustomizedCardElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -438,6 +545,8 @@ extension Form.CustomizedCardElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.CustomizedCardElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -450,6 +559,17 @@ extension Form.AddressElement : Equatable {
 extension Form.AddressElement : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension Form.AddressElement : Sendable {
+}
+#endif
+
+extension Form.AddressElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.AddressElement"
+    }
+}
 
 extension Form.AddressElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -470,6 +590,8 @@ extension Form.AddressElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.AddressElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -482,6 +604,17 @@ extension Form.TextInputElement : Equatable {
 extension Form.TextInputElement : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension Form.TextInputElement : Sendable {
+}
+#endif
+
+extension Form.TextInputElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextInputElement"
+    }
+}
 
 extension Form.TextInputElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -502,6 +635,8 @@ extension Form.TextInputElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.TextInputElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -514,6 +649,17 @@ extension Form.OptionPickerElement : Equatable {
 extension Form.OptionPickerElement : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension Form.OptionPickerElement : Sendable {
+}
+#endif
+
+extension Form.OptionPickerElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.OptionPickerElement"
+    }
+}
 
 extension Form.OptionPickerElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -534,6 +680,8 @@ extension Form.OptionPickerElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.OptionPickerElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -546,6 +694,17 @@ extension Form.DetailRowElement : Equatable {
 extension Form.DetailRowElement : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension Form.DetailRowElement : Sendable {
+}
+#endif
+
+extension Form.DetailRowElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.DetailRowElement"
+    }
+}
 
 extension Form.DetailRowElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -566,6 +725,8 @@ extension Form.DetailRowElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.DetailRowElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -578,6 +739,17 @@ extension Form.CurrencyConversionFlagsElement : Equatable {
 extension Form.CurrencyConversionFlagsElement : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension Form.CurrencyConversionFlagsElement : Sendable {
+}
+#endif
+
+extension Form.CurrencyConversionFlagsElement : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CurrencyConversionFlagsElement"
+    }
+}
 
 extension Form.CurrencyConversionFlagsElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -598,6 +770,8 @@ extension Form.CurrencyConversionFlagsElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.CurrencyConversionFlagsElement : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif
 
@@ -610,6 +784,17 @@ extension Form : Equatable {
 extension Form : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension Form : Sendable {
+}
+#endif
+
+extension Form : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.oneof.Form"
+    }
+}
 
 extension Form : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -699,7 +884,7 @@ extension Form : Codable {
         } else if container.contains(.currency_conversion_flags_element) {
             let currency_conversion_flags_element = try container.decode(Form.CurrencyConversionFlagsElement.self, forKey: .currency_conversion_flags_element)
             self.choice = .currency_conversion_flags_element(currency_conversion_flags_element)
-        } else  {
+        } else {
             self.choice = nil
         }
         if container.contains(.a) {
@@ -726,7 +911,7 @@ extension Form : Codable {
         } else if container.contains(.h) {
             let h = try container.decode(String.self, forKey: .h)
             self.decision = .h(h)
-        } else  {
+        } else {
             self.decision = nil
         }
     }

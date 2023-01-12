@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
@@ -26,7 +27,6 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -40,7 +40,7 @@ public class SimpleMessage(
    */
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   @JvmField
   public val optional_int32: Int? = null,
@@ -50,7 +50,7 @@ public class SimpleMessage(
   @Deprecated(message = "optional_nested_msg is deprecated")
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER",
   )
   @JvmField
   public val optional_nested_msg: NestedMessage? = null,
@@ -59,13 +59,13 @@ public class SimpleMessage(
    */
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.protos.kotlin.simple.ExternalMessage#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.simple.ExternalMessage#ADAPTER",
   )
   @JvmField
   public val optional_external_msg: ExternalMessage? = null,
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER",
   )
   @JvmField
   public val default_nested_enum: NestedEnum? = null,
@@ -75,7 +75,7 @@ public class SimpleMessage(
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.REQUIRED
+    label = WireField.Label.REQUIRED,
   )
   @JvmField
   public val required_int32: Int,
@@ -85,7 +85,7 @@ public class SimpleMessage(
    */
   @field:WireField(
     tag = 7,
-    adapter = "com.squareup.wire.protos.kotlin.foreign.ForeignEnum#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.foreign.ForeignEnum#ADAPTER",
   )
   @JvmField
   public val default_foreign_enum: ForeignEnum? = null,
@@ -94,7 +94,7 @@ public class SimpleMessage(
    */
   @field:WireField(
     tag = 8,
-    adapter = "com.squareup.wire.protos.kotlin.foreign.ForeignEnum#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.foreign.ForeignEnum#ADAPTER",
   )
   @JvmField
   public val no_default_foreign_enum: ForeignEnum? = null,
@@ -104,7 +104,7 @@ public class SimpleMessage(
   @field:WireField(
     tag = 9,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    declaredName = "package"
+    declaredName = "package",
   )
   @JvmField
   public val package_: String? = null,
@@ -113,7 +113,7 @@ public class SimpleMessage(
    */
   @field:WireField(
     tag = 10,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   @JvmField
   public val result: String? = null,
@@ -122,7 +122,7 @@ public class SimpleMessage(
    */
   @field:WireField(
     tag = 11,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   @JvmField
   public val other: String? = null,
@@ -131,11 +131,11 @@ public class SimpleMessage(
    */
   @field:WireField(
     tag = 12,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   @JvmField
   public val o: String? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<SimpleMessage, SimpleMessage.Builder>(ADAPTER, unknownFields) {
   /**
    * A repeated double, deprecated
@@ -144,7 +144,7 @@ public class SimpleMessage(
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val repeated_double: List<Double> = immutableCopyOf("repeated_double", repeated_double)
@@ -190,18 +190,18 @@ public class SimpleMessage(
     var result_ = super.hashCode
     if (result_ == 0) {
       result_ = unknownFields.hashCode()
-      result_ = result_ * 37 + optional_int32.hashCode()
-      result_ = result_ * 37 + optional_nested_msg.hashCode()
-      result_ = result_ * 37 + optional_external_msg.hashCode()
-      result_ = result_ * 37 + default_nested_enum.hashCode()
+      result_ = result_ * 37 + (optional_int32?.hashCode() ?: 0)
+      result_ = result_ * 37 + (optional_nested_msg?.hashCode() ?: 0)
+      result_ = result_ * 37 + (optional_external_msg?.hashCode() ?: 0)
+      result_ = result_ * 37 + (default_nested_enum?.hashCode() ?: 0)
       result_ = result_ * 37 + required_int32.hashCode()
       result_ = result_ * 37 + repeated_double.hashCode()
-      result_ = result_ * 37 + default_foreign_enum.hashCode()
-      result_ = result_ * 37 + no_default_foreign_enum.hashCode()
-      result_ = result_ * 37 + package_.hashCode()
-      result_ = result_ * 37 + result.hashCode()
-      result_ = result_ * 37 + other.hashCode()
-      result_ = result_ * 37 + o.hashCode()
+      result_ = result_ * 37 + (default_foreign_enum?.hashCode() ?: 0)
+      result_ = result_ * 37 + (no_default_foreign_enum?.hashCode() ?: 0)
+      result_ = result_ * 37 + (package_?.hashCode() ?: 0)
+      result_ = result_ * 37 + (result?.hashCode() ?: 0)
+      result_ = result_ * 37 + (other?.hashCode() ?: 0)
+      result_ = result_ * 37 + (o?.hashCode() ?: 0)
       super.hashCode = result_
     }
     return result_
@@ -238,7 +238,7 @@ public class SimpleMessage(
     result: String? = this.result,
     other: String? = this.other,
     o: String? = this.o,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): SimpleMessage = SimpleMessage(optional_int32, optional_nested_msg, optional_external_msg,
       default_nested_enum, required_int32, repeated_double, default_foreign_enum,
       no_default_foreign_enum, package_, result, other, o, unknownFields)
@@ -411,9 +411,10 @@ public class SimpleMessage(
       SimpleMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage", 
       PROTO_2, 
-      null
+      null, 
+      "simple_message.proto"
     ) {
-      public override fun encodedSize(value: SimpleMessage): Int {
+      public override fun encodedSize(`value`: SimpleMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.optional_int32)
         size += NestedMessage.ADAPTER.encodedSizeWithTag(2, value.optional_nested_msg)
@@ -430,7 +431,7 @@ public class SimpleMessage(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: SimpleMessage): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: SimpleMessage): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.optional_int32)
         NestedMessage.ADAPTER.encodeWithTag(writer, 2, value.optional_nested_msg)
         ExternalMessage.ADAPTER.encodeWithTag(writer, 3, value.optional_external_msg)
@@ -444,6 +445,22 @@ public class SimpleMessage(
         ProtoAdapter.STRING.encodeWithTag(writer, 11, value.other)
         ProtoAdapter.STRING.encodeWithTag(writer, 12, value.o)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: SimpleMessage): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.encodeWithTag(writer, 12, value.o)
+        ProtoAdapter.STRING.encodeWithTag(writer, 11, value.other)
+        ProtoAdapter.STRING.encodeWithTag(writer, 10, value.result)
+        ProtoAdapter.STRING.encodeWithTag(writer, 9, value.package_)
+        ForeignEnum.ADAPTER.encodeWithTag(writer, 8, value.no_default_foreign_enum)
+        ForeignEnum.ADAPTER.encodeWithTag(writer, 7, value.default_foreign_enum)
+        ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 6, value.repeated_double)
+        ProtoAdapter.INT32.encodeWithTag(writer, 5, value.required_int32)
+        NestedEnum.ADAPTER.encodeWithTag(writer, 4, value.default_nested_enum)
+        ExternalMessage.ADAPTER.encodeWithTag(writer, 3, value.optional_external_msg)
+        NestedMessage.ADAPTER.encodeWithTag(writer, 2, value.optional_nested_msg)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.optional_int32)
       }
 
       public override fun decode(reader: ProtoReader): SimpleMessage {
@@ -506,7 +523,7 @@ public class SimpleMessage(
         )
       }
 
-      public override fun redact(value: SimpleMessage): SimpleMessage = value.copy(
+      public override fun redact(`value`: SimpleMessage): SimpleMessage = value.copy(
         optional_nested_msg = value.optional_nested_msg?.let(NestedMessage.ADAPTER::redact),
         optional_external_msg = value.optional_external_msg?.let(ExternalMessage.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
@@ -522,11 +539,11 @@ public class SimpleMessage(
      */
     @field:WireField(
       tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
     )
     @JvmField
     public val bb: Int? = null,
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<NestedMessage, NestedMessage.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -547,7 +564,7 @@ public class SimpleMessage(
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
-        result = result * 37 + bb.hashCode()
+        result = result * 37 + (bb?.hashCode() ?: 0)
         super.hashCode = result
       }
       return result
@@ -587,17 +604,23 @@ public class SimpleMessage(
         NestedMessage::class, 
         "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage.NestedMessage", 
         PROTO_2, 
-        null
+        null, 
+        "simple_message.proto"
       ) {
-        public override fun encodedSize(value: NestedMessage): Int {
+        public override fun encodedSize(`value`: NestedMessage): Int {
           var size = value.unknownFields.size
           size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.bb)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: NestedMessage): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: NestedMessage): Unit {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.bb)
           writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage): Unit {
+          writer.writeBytes(value.unknownFields)
+          ProtoAdapter.INT32.encodeWithTag(writer, 1, value.bb)
         }
 
         public override fun decode(reader: ProtoReader): NestedMessage {
@@ -614,7 +637,7 @@ public class SimpleMessage(
           )
         }
 
-        public override fun redact(value: NestedMessage): NestedMessage = value.copy(
+        public override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -624,7 +647,7 @@ public class SimpleMessage(
   }
 
   public enum class NestedEnum(
-    public override val value: Int
+    public override val `value`: Int,
   ) : WireEnum {
     FOO(1),
     BAR(2),
@@ -640,15 +663,15 @@ public class SimpleMessage(
         PROTO_2, 
         null
       ) {
-        public override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
+        public override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): NestedEnum? = when (value) {
+      public fun fromValue(`value`: Int): NestedEnum? = when (value) {
         1 -> FOO
         2 -> BAR
         3 -> BAZ
-        3 -> BUZ
+        3 -> @Suppress("DEPRECATION") BUZ
         else -> null
       }
     }

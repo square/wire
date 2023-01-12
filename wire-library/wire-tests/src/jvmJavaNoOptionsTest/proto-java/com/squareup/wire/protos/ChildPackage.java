@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -94,7 +95,7 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
 
   private static final class ProtoAdapter_ChildPackage extends ProtoAdapter<ChildPackage> {
     public ProtoAdapter_ChildPackage() {
-      super(FieldEncoding.LENGTH_DELIMITED, ChildPackage.class, "type.googleapis.com/squareup.protos.ChildPackage", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, ChildPackage.class, "type.googleapis.com/squareup.protos.ChildPackage", Syntax.PROTO_2, null, "child_pkg.proto");
     }
 
     @Override
@@ -109,6 +110,12 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
     public void encode(ProtoWriter writer, ChildPackage value) throws IOException {
       ForeignEnum.ADAPTER.encodeWithTag(writer, 1, value.inner_foreign_enum);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, ChildPackage value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      ForeignEnum.ADAPTER.encodeWithTag(writer, 1, value.inner_foreign_enum);
     }
 
     @Override

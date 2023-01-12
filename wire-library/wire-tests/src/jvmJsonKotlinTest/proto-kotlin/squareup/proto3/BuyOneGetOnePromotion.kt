@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.sanitize
@@ -16,7 +17,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -24,11 +24,11 @@ public class BuyOneGetOnePromotion(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   @JvmField
   public val coupon: String = "",
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<BuyOneGetOnePromotion, BuyOneGetOnePromotion.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -87,17 +87,23 @@ public class BuyOneGetOnePromotion(
       BuyOneGetOnePromotion::class, 
       "type.googleapis.com/squareup.proto3.BuyOneGetOnePromotion", 
       PROTO_3, 
-      null
+      null, 
+      "pizza.proto"
     ) {
-      public override fun encodedSize(value: BuyOneGetOnePromotion): Int {
+      public override fun encodedSize(`value`: BuyOneGetOnePromotion): Int {
         var size = value.unknownFields.size
         if (value.coupon != "") size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.coupon)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: BuyOneGetOnePromotion): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: BuyOneGetOnePromotion): Unit {
         if (value.coupon != "") ProtoAdapter.STRING.encodeWithTag(writer, 1, value.coupon)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: BuyOneGetOnePromotion): Unit {
+        writer.writeBytes(value.unknownFields)
+        if (value.coupon != "") ProtoAdapter.STRING.encodeWithTag(writer, 1, value.coupon)
       }
 
       public override fun decode(reader: ProtoReader): BuyOneGetOnePromotion {
@@ -114,7 +120,8 @@ public class BuyOneGetOnePromotion(
         )
       }
 
-      public override fun redact(value: BuyOneGetOnePromotion): BuyOneGetOnePromotion = value.copy(
+      public override fun redact(`value`: BuyOneGetOnePromotion): BuyOneGetOnePromotion =
+          value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

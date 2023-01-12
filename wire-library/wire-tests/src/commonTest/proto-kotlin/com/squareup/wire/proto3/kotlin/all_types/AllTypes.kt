@@ -11,6 +11,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
@@ -35,7 +36,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import kotlin.lazy
@@ -46,237 +46,237 @@ public class AllTypes(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "int32"
+    declaredName = "int32",
   )
   public val proto3_kotlin_int32: Int = 0,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "uint32"
+    declaredName = "uint32",
   )
   public val proto3_kotlin_uint32: Int = 0,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "sint32"
+    declaredName = "sint32",
   )
   public val proto3_kotlin_sint32: Int = 0,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "fixed32"
+    declaredName = "fixed32",
   )
   public val proto3_kotlin_fixed32: Int = 0,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "sfixed32"
+    declaredName = "sfixed32",
   )
   public val proto3_kotlin_sfixed32: Int = 0,
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "int64"
+    declaredName = "int64",
   )
   public val proto3_kotlin_int64: Long = 0L,
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "uint64"
+    declaredName = "uint64",
   )
   public val proto3_kotlin_uint64: Long = 0L,
   @field:WireField(
     tag = 8,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "sint64"
+    declaredName = "sint64",
   )
   public val proto3_kotlin_sint64: Long = 0L,
   @field:WireField(
     tag = 9,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "fixed64"
+    declaredName = "fixed64",
   )
   public val proto3_kotlin_fixed64: Long = 0L,
   @field:WireField(
     tag = 10,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "sfixed64"
+    declaredName = "sfixed64",
   )
   public val proto3_kotlin_sfixed64: Long = 0L,
   @field:WireField(
     tag = 11,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "bool"
+    declaredName = "bool",
   )
   public val proto3_kotlin_bool: Boolean = false,
   @field:WireField(
     tag = 12,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "float"
+    declaredName = "float",
   )
   public val proto3_kotlin_float: Float = 0f,
   @field:WireField(
     tag = 13,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "double"
+    declaredName = "double",
   )
   public val proto3_kotlin_double: Double = 0.0,
   @field:WireField(
     tag = 14,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "string"
+    declaredName = "string",
   )
   public val proto3_kotlin_string: String = "",
   @field:WireField(
     tag = 15,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
     label = WireField.Label.OMIT_IDENTITY,
-    declaredName = "bytes"
+    declaredName = "bytes",
   )
   public val proto3_kotlin_bytes: ByteString = ByteString.EMPTY,
   @field:WireField(
     tag = 16,
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedEnum#ADAPTER",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "nestedEnum"
+    jsonName = "nestedEnum",
   )
   public val nested_enum: NestedEnum = NestedEnum.UNKNOWN,
   @field:WireField(
     tag = 17,
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedMessage#ADAPTER",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "nestedMessage"
+    jsonName = "nestedMessage",
   )
   public val nested_message: NestedMessage? = null,
   @field:WireField(
     tag = 18,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   public val any: AnyMessage? = null,
   @field:WireField(
     tag = 19,
     adapter = "com.squareup.wire.ProtoAdapter#DURATION",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   public val duration: Duration? = null,
   struct: Map<String, *>? = null,
   list_value: List<*>? = null,
-  value: Any? = null,
+  value_: Any? = null,
   null_value: Nothing? = null,
   @field:WireField(
     tag = 24,
     adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   public val empty: Unit? = null,
   @field:WireField(
     tag = 25,
     adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   public val timestamp: Instant? = null,
   @field:WireField(
     tag = 101,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    jsonName = "optInt32"
+    jsonName = "optInt32",
   )
   public val opt_int32: Int? = null,
   @field:WireField(
     tag = 102,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-    jsonName = "optUint32"
+    jsonName = "optUint32",
   )
   public val opt_uint32: Int? = null,
   @field:WireField(
     tag = 103,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-    jsonName = "optSint32"
+    jsonName = "optSint32",
   )
   public val opt_sint32: Int? = null,
   @field:WireField(
     tag = 104,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-    jsonName = "optFixed32"
+    jsonName = "optFixed32",
   )
   public val opt_fixed32: Int? = null,
   @field:WireField(
     tag = 105,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-    jsonName = "optSfixed32"
+    jsonName = "optSfixed32",
   )
   public val opt_sfixed32: Int? = null,
   @field:WireField(
     tag = 106,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
-    jsonName = "optInt64"
+    jsonName = "optInt64",
   )
   public val opt_int64: Long? = null,
   @field:WireField(
     tag = 107,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-    jsonName = "optUint64"
+    jsonName = "optUint64",
   )
   public val opt_uint64: Long? = null,
   @field:WireField(
     tag = 108,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-    jsonName = "optSint64"
+    jsonName = "optSint64",
   )
   public val opt_sint64: Long? = null,
   @field:WireField(
     tag = 109,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-    jsonName = "optFixed64"
+    jsonName = "optFixed64",
   )
   public val opt_fixed64: Long? = null,
   @field:WireField(
     tag = 110,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-    jsonName = "optSfixed64"
+    jsonName = "optSfixed64",
   )
   public val opt_sfixed64: Long? = null,
   @field:WireField(
     tag = 111,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-    jsonName = "optBool"
+    jsonName = "optBool",
   )
   public val opt_bool: Boolean? = null,
   @field:WireField(
     tag = 112,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-    jsonName = "optFloat"
+    jsonName = "optFloat",
   )
   public val opt_float: Float? = null,
   @field:WireField(
     tag = 113,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-    jsonName = "optDouble"
+    jsonName = "optDouble",
   )
   public val opt_double: Double? = null,
   @field:WireField(
     tag = 114,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    jsonName = "optString"
+    jsonName = "optString",
   )
   public val opt_string: String? = null,
   @field:WireField(
     tag = 115,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
-    jsonName = "optBytes"
+    jsonName = "optBytes",
   )
   public val opt_bytes: ByteString? = null,
   rep_int32: List<Int> = emptyList(),
@@ -334,31 +334,36 @@ public class AllTypes(
   @field:WireField(
     tag = 601,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    jsonName = "oneofString"
+    jsonName = "oneofString",
+    oneofName = "choice",
   )
   public val oneof_string: String? = null,
   @field:WireField(
     tag = 602,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    jsonName = "oneofInt32"
+    jsonName = "oneofInt32",
+    oneofName = "choice",
   )
   public val oneof_int32: Int? = null,
   @field:WireField(
     tag = 603,
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedMessage#ADAPTER",
-    jsonName = "oneofNestedMessage"
+    jsonName = "oneofNestedMessage",
+    oneofName = "choice",
   )
   public val oneof_nested_message: NestedMessage? = null,
   @field:WireField(
     tag = 618,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
-    jsonName = "oneofAny"
+    jsonName = "oneofAny",
+    oneofName = "choice",
   )
   public val oneof_any: AnyMessage? = null,
   @field:WireField(
     tag = 619,
     adapter = "com.squareup.wire.ProtoAdapter#DURATION",
-    jsonName = "oneofDuration"
+    jsonName = "oneofDuration",
+    oneofName = "choice",
   )
   public val oneof_duration: Duration? = null,
   oneof_struct: Map<String, *>? = null,
@@ -370,21 +375,23 @@ public class AllTypes(
   @field:WireField(
     tag = 624,
     adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
-    jsonName = "oneofEmpty"
+    jsonName = "oneofEmpty",
+    oneofName = "choice",
   )
   public val oneof_empty: Unit? = null,
   @field:WireField(
     tag = 625,
     adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
-    jsonName = "oneofTimestamp"
+    jsonName = "oneofTimestamp",
+    oneofName = "choice",
   )
   public val oneof_timestamp: Instant? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<AllTypes, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 20,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   public val struct: Map<String, *>? = immutableCopyOfStruct("struct", struct)
 
@@ -392,22 +399,23 @@ public class AllTypes(
     tag = 21,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "listValue"
+    jsonName = "listValue",
   )
   public val list_value: List<*>? = immutableCopyOfStruct("list_value", list_value)
 
   @field:WireField(
     tag = 22,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
+    declaredName = "value",
   )
-  public val value: Any? = immutableCopyOfStruct("value", value)
+  public val value_: Any? = immutableCopyOfStruct("value_", value_)
 
   @field:WireField(
     tag = 23,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "nullValue"
+    jsonName = "nullValue",
   )
   public val null_value: Nothing? = immutableCopyOfStruct("null_value", null_value)
 
@@ -415,7 +423,7 @@ public class AllTypes(
     tag = 201,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REPEATED,
-    jsonName = "repInt32"
+    jsonName = "repInt32",
   )
   public val rep_int32: List<Int> = immutableCopyOf("rep_int32", rep_int32)
 
@@ -423,7 +431,7 @@ public class AllTypes(
     tag = 202,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.REPEATED,
-    jsonName = "repUint32"
+    jsonName = "repUint32",
   )
   public val rep_uint32: List<Int> = immutableCopyOf("rep_uint32", rep_uint32)
 
@@ -431,7 +439,7 @@ public class AllTypes(
     tag = 203,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.REPEATED,
-    jsonName = "repSint32"
+    jsonName = "repSint32",
   )
   public val rep_sint32: List<Int> = immutableCopyOf("rep_sint32", rep_sint32)
 
@@ -439,7 +447,7 @@ public class AllTypes(
     tag = 204,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.REPEATED,
-    jsonName = "repFixed32"
+    jsonName = "repFixed32",
   )
   public val rep_fixed32: List<Int> = immutableCopyOf("rep_fixed32", rep_fixed32)
 
@@ -447,7 +455,7 @@ public class AllTypes(
     tag = 205,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.REPEATED,
-    jsonName = "repSfixed32"
+    jsonName = "repSfixed32",
   )
   public val rep_sfixed32: List<Int> = immutableCopyOf("rep_sfixed32", rep_sfixed32)
 
@@ -455,7 +463,7 @@ public class AllTypes(
     tag = 206,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.REPEATED,
-    jsonName = "repInt64"
+    jsonName = "repInt64",
   )
   public val rep_int64: List<Long> = immutableCopyOf("rep_int64", rep_int64)
 
@@ -463,7 +471,7 @@ public class AllTypes(
     tag = 207,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.REPEATED,
-    jsonName = "repUint64"
+    jsonName = "repUint64",
   )
   public val rep_uint64: List<Long> = immutableCopyOf("rep_uint64", rep_uint64)
 
@@ -471,7 +479,7 @@ public class AllTypes(
     tag = 208,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.REPEATED,
-    jsonName = "repSint64"
+    jsonName = "repSint64",
   )
   public val rep_sint64: List<Long> = immutableCopyOf("rep_sint64", rep_sint64)
 
@@ -479,7 +487,7 @@ public class AllTypes(
     tag = 209,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.REPEATED,
-    jsonName = "repFixed64"
+    jsonName = "repFixed64",
   )
   public val rep_fixed64: List<Long> = immutableCopyOf("rep_fixed64", rep_fixed64)
 
@@ -487,7 +495,7 @@ public class AllTypes(
     tag = 210,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.REPEATED,
-    jsonName = "repSfixed64"
+    jsonName = "repSfixed64",
   )
   public val rep_sfixed64: List<Long> = immutableCopyOf("rep_sfixed64", rep_sfixed64)
 
@@ -495,7 +503,7 @@ public class AllTypes(
     tag = 211,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.REPEATED,
-    jsonName = "repBool"
+    jsonName = "repBool",
   )
   public val rep_bool: List<Boolean> = immutableCopyOf("rep_bool", rep_bool)
 
@@ -503,7 +511,7 @@ public class AllTypes(
     tag = 212,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.REPEATED,
-    jsonName = "repFloat"
+    jsonName = "repFloat",
   )
   public val rep_float: List<Float> = immutableCopyOf("rep_float", rep_float)
 
@@ -511,7 +519,7 @@ public class AllTypes(
     tag = 213,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.REPEATED,
-    jsonName = "repDouble"
+    jsonName = "repDouble",
   )
   public val rep_double: List<Double> = immutableCopyOf("rep_double", rep_double)
 
@@ -519,7 +527,7 @@ public class AllTypes(
     tag = 214,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
-    jsonName = "repString"
+    jsonName = "repString",
   )
   public val rep_string: List<String> = immutableCopyOf("rep_string", rep_string)
 
@@ -527,7 +535,7 @@ public class AllTypes(
     tag = 215,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
     label = WireField.Label.REPEATED,
-    jsonName = "repBytes"
+    jsonName = "repBytes",
   )
   public val rep_bytes: List<ByteString> = immutableCopyOf("rep_bytes", rep_bytes)
 
@@ -535,7 +543,7 @@ public class AllTypes(
     tag = 216,
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedEnum#ADAPTER",
     label = WireField.Label.REPEATED,
-    jsonName = "repNestedEnum"
+    jsonName = "repNestedEnum",
   )
   public val rep_nested_enum: List<NestedEnum> = immutableCopyOf("rep_nested_enum", rep_nested_enum)
 
@@ -543,7 +551,7 @@ public class AllTypes(
     tag = 217,
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedMessage#ADAPTER",
     label = WireField.Label.REPEATED,
-    jsonName = "repNestedMessage"
+    jsonName = "repNestedMessage",
   )
   public val rep_nested_message: List<NestedMessage> = immutableCopyOf("rep_nested_message",
       rep_nested_message)
@@ -552,7 +560,7 @@ public class AllTypes(
     tag = 218,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
     label = WireField.Label.REPEATED,
-    jsonName = "repAny"
+    jsonName = "repAny",
   )
   public val rep_any: List<AnyMessage> = immutableCopyOf("rep_any", rep_any)
 
@@ -560,7 +568,7 @@ public class AllTypes(
     tag = 219,
     adapter = "com.squareup.wire.ProtoAdapter#DURATION",
     label = WireField.Label.REPEATED,
-    jsonName = "repDuration"
+    jsonName = "repDuration",
   )
   public val rep_duration: List<Duration> = immutableCopyOf("rep_duration", rep_duration)
 
@@ -568,7 +576,7 @@ public class AllTypes(
     tag = 220,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
     label = WireField.Label.REPEATED,
-    jsonName = "repStruct"
+    jsonName = "repStruct",
   )
   public val rep_struct: List<Map<String, *>?> = immutableCopyOfStruct("rep_struct", rep_struct)
 
@@ -576,7 +584,7 @@ public class AllTypes(
     tag = 221,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
     label = WireField.Label.REPEATED,
-    jsonName = "repListValue"
+    jsonName = "repListValue",
   )
   public val rep_list_value: List<List<*>?> = immutableCopyOfStruct("rep_list_value",
       rep_list_value)
@@ -585,7 +593,7 @@ public class AllTypes(
     tag = 222,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
     label = WireField.Label.REPEATED,
-    jsonName = "repValue"
+    jsonName = "repValue",
   )
   public val rep_value: List<Any?> = immutableCopyOfStruct("rep_value", rep_value)
 
@@ -593,7 +601,7 @@ public class AllTypes(
     tag = 223,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
     label = WireField.Label.REPEATED,
-    jsonName = "repNullValue"
+    jsonName = "repNullValue",
   )
   public val rep_null_value: List<Nothing?> = immutableCopyOfStruct("rep_null_value",
       rep_null_value)
@@ -602,7 +610,7 @@ public class AllTypes(
     tag = 224,
     adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
     label = WireField.Label.REPEATED,
-    jsonName = "repEmpty"
+    jsonName = "repEmpty",
   )
   public val rep_empty: List<Unit> = immutableCopyOf("rep_empty", rep_empty)
 
@@ -610,7 +618,7 @@ public class AllTypes(
     tag = 225,
     adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
     label = WireField.Label.REPEATED,
-    jsonName = "repTimestamp"
+    jsonName = "repTimestamp",
   )
   public val rep_timestamp: List<Instant> = immutableCopyOf("rep_timestamp", rep_timestamp)
 
@@ -618,7 +626,7 @@ public class AllTypes(
     tag = 301,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.PACKED,
-    jsonName = "packInt32"
+    jsonName = "packInt32",
   )
   public val pack_int32: List<Int> = immutableCopyOf("pack_int32", pack_int32)
 
@@ -626,7 +634,7 @@ public class AllTypes(
     tag = 302,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.PACKED,
-    jsonName = "packUint32"
+    jsonName = "packUint32",
   )
   public val pack_uint32: List<Int> = immutableCopyOf("pack_uint32", pack_uint32)
 
@@ -634,7 +642,7 @@ public class AllTypes(
     tag = 303,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.PACKED,
-    jsonName = "packSint32"
+    jsonName = "packSint32",
   )
   public val pack_sint32: List<Int> = immutableCopyOf("pack_sint32", pack_sint32)
 
@@ -642,7 +650,7 @@ public class AllTypes(
     tag = 304,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.PACKED,
-    jsonName = "packFixed32"
+    jsonName = "packFixed32",
   )
   public val pack_fixed32: List<Int> = immutableCopyOf("pack_fixed32", pack_fixed32)
 
@@ -650,7 +658,7 @@ public class AllTypes(
     tag = 305,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.PACKED,
-    jsonName = "packSfixed32"
+    jsonName = "packSfixed32",
   )
   public val pack_sfixed32: List<Int> = immutableCopyOf("pack_sfixed32", pack_sfixed32)
 
@@ -658,7 +666,7 @@ public class AllTypes(
     tag = 306,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.PACKED,
-    jsonName = "packInt64"
+    jsonName = "packInt64",
   )
   public val pack_int64: List<Long> = immutableCopyOf("pack_int64", pack_int64)
 
@@ -666,7 +674,7 @@ public class AllTypes(
     tag = 307,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.PACKED,
-    jsonName = "packUint64"
+    jsonName = "packUint64",
   )
   public val pack_uint64: List<Long> = immutableCopyOf("pack_uint64", pack_uint64)
 
@@ -674,7 +682,7 @@ public class AllTypes(
     tag = 308,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.PACKED,
-    jsonName = "packSint64"
+    jsonName = "packSint64",
   )
   public val pack_sint64: List<Long> = immutableCopyOf("pack_sint64", pack_sint64)
 
@@ -682,7 +690,7 @@ public class AllTypes(
     tag = 309,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.PACKED,
-    jsonName = "packFixed64"
+    jsonName = "packFixed64",
   )
   public val pack_fixed64: List<Long> = immutableCopyOf("pack_fixed64", pack_fixed64)
 
@@ -690,7 +698,7 @@ public class AllTypes(
     tag = 310,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.PACKED,
-    jsonName = "packSfixed64"
+    jsonName = "packSfixed64",
   )
   public val pack_sfixed64: List<Long> = immutableCopyOf("pack_sfixed64", pack_sfixed64)
 
@@ -698,7 +706,7 @@ public class AllTypes(
     tag = 311,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.PACKED,
-    jsonName = "packBool"
+    jsonName = "packBool",
   )
   public val pack_bool: List<Boolean> = immutableCopyOf("pack_bool", pack_bool)
 
@@ -706,7 +714,7 @@ public class AllTypes(
     tag = 312,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.PACKED,
-    jsonName = "packFloat"
+    jsonName = "packFloat",
   )
   public val pack_float: List<Float> = immutableCopyOf("pack_float", pack_float)
 
@@ -714,7 +722,7 @@ public class AllTypes(
     tag = 313,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.PACKED,
-    jsonName = "packDouble"
+    jsonName = "packDouble",
   )
   public val pack_double: List<Double> = immutableCopyOf("pack_double", pack_double)
 
@@ -722,7 +730,7 @@ public class AllTypes(
     tag = 316,
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedEnum#ADAPTER",
     label = WireField.Label.PACKED,
-    jsonName = "packNestedEnum"
+    jsonName = "packNestedEnum",
   )
   public val pack_nested_enum: List<NestedEnum> = immutableCopyOf("pack_nested_enum",
       pack_nested_enum)
@@ -731,7 +739,7 @@ public class AllTypes(
     tag = 323,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
     label = WireField.Label.PACKED,
-    jsonName = "packNullValue"
+    jsonName = "packNullValue",
   )
   public val pack_null_value: List<Nothing?> = immutableCopyOfStruct("pack_null_value",
       pack_null_value)
@@ -740,7 +748,7 @@ public class AllTypes(
     tag = 501,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    jsonName = "mapInt32Int32"
+    jsonName = "mapInt32Int32",
   )
   public val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32", map_int32_int32)
 
@@ -748,7 +756,7 @@ public class AllTypes(
     tag = 502,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    jsonName = "mapStringString"
+    jsonName = "mapStringString",
   )
   public val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
       map_string_string)
@@ -757,7 +765,7 @@ public class AllTypes(
     tag = 503,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedMessage#ADAPTER",
-    jsonName = "mapStringMessage"
+    jsonName = "mapStringMessage",
   )
   public val map_string_message: Map<String, NestedMessage> = immutableCopyOf("map_string_message",
       map_string_message)
@@ -766,7 +774,7 @@ public class AllTypes(
     tag = 504,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedEnum#ADAPTER",
-    jsonName = "mapStringEnum"
+    jsonName = "mapStringEnum",
   )
   public val map_string_enum: Map<String, NestedEnum> = immutableCopyOf("map_string_enum",
       map_string_enum)
@@ -775,7 +783,7 @@ public class AllTypes(
     tag = 518,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
-    jsonName = "mapInt32Any"
+    jsonName = "mapInt32Any",
   )
   public val map_int32_any: Map<Int, AnyMessage> = immutableCopyOf("map_int32_any", map_int32_any)
 
@@ -783,7 +791,7 @@ public class AllTypes(
     tag = 519,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#DURATION",
-    jsonName = "mapInt32Duration"
+    jsonName = "mapInt32Duration",
   )
   public val map_int32_duration: Map<Int, Duration> = immutableCopyOf("map_int32_duration",
       map_int32_duration)
@@ -792,7 +800,7 @@ public class AllTypes(
     tag = 520,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    jsonName = "mapInt32Struct"
+    jsonName = "mapInt32Struct",
   )
   public val map_int32_struct: Map<Int, Map<String, *>?> =
       immutableCopyOfMapWithStructValues("map_int32_struct", map_int32_struct)
@@ -801,7 +809,7 @@ public class AllTypes(
     tag = 521,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-    jsonName = "mapInt32ListValue"
+    jsonName = "mapInt32ListValue",
   )
   public val map_int32_list_value: Map<Int, List<*>?> =
       immutableCopyOfMapWithStructValues("map_int32_list_value", map_int32_list_value)
@@ -810,7 +818,7 @@ public class AllTypes(
     tag = 522,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    jsonName = "mapInt32Value"
+    jsonName = "mapInt32Value",
   )
   public val map_int32_value: Map<Int, Any?> = immutableCopyOfMapWithStructValues("map_int32_value",
       map_int32_value)
@@ -819,7 +827,7 @@ public class AllTypes(
     tag = 523,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
-    jsonName = "mapInt32NullValue"
+    jsonName = "mapInt32NullValue",
   )
   public val map_int32_null_value: Map<Int, Nothing?> =
       immutableCopyOfMapWithStructValues("map_int32_null_value", map_int32_null_value)
@@ -828,7 +836,7 @@ public class AllTypes(
     tag = 524,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
-    jsonName = "mapInt32Empty"
+    jsonName = "mapInt32Empty",
   )
   public val map_int32_empty: Map<Int, Unit> = immutableCopyOf("map_int32_empty", map_int32_empty)
 
@@ -836,7 +844,7 @@ public class AllTypes(
     tag = 525,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
-    jsonName = "mapInt32Timestamp"
+    jsonName = "mapInt32Timestamp",
   )
   public val map_int32_timestamp: Map<Int, Instant> = immutableCopyOf("map_int32_timestamp",
       map_int32_timestamp)
@@ -844,14 +852,16 @@ public class AllTypes(
   @field:WireField(
     tag = 620,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    jsonName = "oneofStruct"
+    jsonName = "oneofStruct",
+    oneofName = "choice",
   )
   public val oneof_struct: Map<String, *>? = immutableCopyOfStruct("oneof_struct", oneof_struct)
 
   @field:WireField(
     tag = 621,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-    jsonName = "oneofListValue"
+    jsonName = "oneofListValue",
+    oneofName = "choice",
   )
   public val oneof_list_value: List<*>? = immutableCopyOfStruct("oneof_list_value",
       oneof_list_value)
@@ -865,9 +875,10 @@ public class AllTypes(
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -894,7 +905,7 @@ public class AllTypes(
     if (duration != other.duration) return false
     if (struct != other.struct) return false
     if (list_value != other.list_value) return false
-    if (value != other.value) return false
+    if (value_ != other.value_) return false
     if (null_value != other.null_value) return false
     if (empty != other.empty) return false
     if (timestamp != other.timestamp) return false
@@ -997,30 +1008,30 @@ public class AllTypes(
       result = result * 37 + proto3_kotlin_string.hashCode()
       result = result * 37 + proto3_kotlin_bytes.hashCode()
       result = result * 37 + nested_enum.hashCode()
-      result = result * 37 + nested_message.hashCode()
-      result = result * 37 + any.hashCode()
-      result = result * 37 + duration.hashCode()
-      result = result * 37 + struct.hashCode()
-      result = result * 37 + list_value.hashCode()
-      result = result * 37 + value.hashCode()
-      result = result * 37 + null_value.hashCode()
-      result = result * 37 + empty.hashCode()
-      result = result * 37 + timestamp.hashCode()
-      result = result * 37 + opt_int32.hashCode()
-      result = result * 37 + opt_uint32.hashCode()
-      result = result * 37 + opt_sint32.hashCode()
-      result = result * 37 + opt_fixed32.hashCode()
-      result = result * 37 + opt_sfixed32.hashCode()
-      result = result * 37 + opt_int64.hashCode()
-      result = result * 37 + opt_uint64.hashCode()
-      result = result * 37 + opt_sint64.hashCode()
-      result = result * 37 + opt_fixed64.hashCode()
-      result = result * 37 + opt_sfixed64.hashCode()
-      result = result * 37 + opt_bool.hashCode()
-      result = result * 37 + opt_float.hashCode()
-      result = result * 37 + opt_double.hashCode()
-      result = result * 37 + opt_string.hashCode()
-      result = result * 37 + opt_bytes.hashCode()
+      result = result * 37 + (nested_message?.hashCode() ?: 0)
+      result = result * 37 + (any?.hashCode() ?: 0)
+      result = result * 37 + (duration?.hashCode() ?: 0)
+      result = result * 37 + (struct?.hashCode() ?: 0)
+      result = result * 37 + (list_value?.hashCode() ?: 0)
+      result = result * 37 + (value_?.hashCode() ?: 0)
+      result = result * 37 + (null_value?.hashCode() ?: 0)
+      result = result * 37 + (empty?.hashCode() ?: 0)
+      result = result * 37 + (timestamp?.hashCode() ?: 0)
+      result = result * 37 + (opt_int32?.hashCode() ?: 0)
+      result = result * 37 + (opt_uint32?.hashCode() ?: 0)
+      result = result * 37 + (opt_sint32?.hashCode() ?: 0)
+      result = result * 37 + (opt_fixed32?.hashCode() ?: 0)
+      result = result * 37 + (opt_sfixed32?.hashCode() ?: 0)
+      result = result * 37 + (opt_int64?.hashCode() ?: 0)
+      result = result * 37 + (opt_uint64?.hashCode() ?: 0)
+      result = result * 37 + (opt_sint64?.hashCode() ?: 0)
+      result = result * 37 + (opt_fixed64?.hashCode() ?: 0)
+      result = result * 37 + (opt_sfixed64?.hashCode() ?: 0)
+      result = result * 37 + (opt_bool?.hashCode() ?: 0)
+      result = result * 37 + (opt_float?.hashCode() ?: 0)
+      result = result * 37 + (opt_double?.hashCode() ?: 0)
+      result = result * 37 + (opt_string?.hashCode() ?: 0)
+      result = result * 37 + (opt_bytes?.hashCode() ?: 0)
       result = result * 37 + rep_int32.hashCode()
       result = result * 37 + rep_uint32.hashCode()
       result = result * 37 + rep_sint32.hashCode()
@@ -1073,15 +1084,15 @@ public class AllTypes(
       result = result * 37 + map_int32_null_value.hashCode()
       result = result * 37 + map_int32_empty.hashCode()
       result = result * 37 + map_int32_timestamp.hashCode()
-      result = result * 37 + oneof_string.hashCode()
-      result = result * 37 + oneof_int32.hashCode()
-      result = result * 37 + oneof_nested_message.hashCode()
-      result = result * 37 + oneof_any.hashCode()
-      result = result * 37 + oneof_duration.hashCode()
-      result = result * 37 + oneof_struct.hashCode()
-      result = result * 37 + oneof_list_value.hashCode()
-      result = result * 37 + oneof_empty.hashCode()
-      result = result * 37 + oneof_timestamp.hashCode()
+      result = result * 37 + (oneof_string?.hashCode() ?: 0)
+      result = result * 37 + (oneof_int32?.hashCode() ?: 0)
+      result = result * 37 + (oneof_nested_message?.hashCode() ?: 0)
+      result = result * 37 + (oneof_any?.hashCode() ?: 0)
+      result = result * 37 + (oneof_duration?.hashCode() ?: 0)
+      result = result * 37 + (oneof_struct?.hashCode() ?: 0)
+      result = result * 37 + (oneof_list_value?.hashCode() ?: 0)
+      result = result * 37 + (oneof_empty?.hashCode() ?: 0)
+      result = result * 37 + (oneof_timestamp?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -1110,7 +1121,7 @@ public class AllTypes(
     if (duration != null) result += """duration=$duration"""
     if (struct != null) result += """struct=$struct"""
     if (list_value != null) result += """list_value=$list_value"""
-    if (value != null) result += """value=$value"""
+    if (value_ != null) result += """value_=$value_"""
     if (null_value != null) result += """null_value=$null_value"""
     if (empty != null) result += """empty=$empty"""
     if (timestamp != null) result += """timestamp=$timestamp"""
@@ -1217,7 +1228,7 @@ public class AllTypes(
     duration: Duration? = this.duration,
     struct: Map<String, *>? = this.struct,
     list_value: List<*>? = this.list_value,
-    value: Any? = this.value,
+    value_: Any? = this.value_,
     null_value: Nothing? = this.null_value,
     empty: Unit? = this.empty,
     timestamp: Instant? = this.timestamp,
@@ -1297,12 +1308,12 @@ public class AllTypes(
     oneof_list_value: List<*>? = this.oneof_list_value,
     oneof_empty: Unit? = this.oneof_empty,
     oneof_timestamp: Instant? = this.oneof_timestamp,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): AllTypes = AllTypes(proto3_kotlin_int32, proto3_kotlin_uint32, proto3_kotlin_sint32,
       proto3_kotlin_fixed32, proto3_kotlin_sfixed32, proto3_kotlin_int64, proto3_kotlin_uint64,
       proto3_kotlin_sint64, proto3_kotlin_fixed64, proto3_kotlin_sfixed64, proto3_kotlin_bool,
       proto3_kotlin_float, proto3_kotlin_double, proto3_kotlin_string, proto3_kotlin_bytes,
-      nested_enum, nested_message, any, duration, struct, list_value, value, null_value, empty,
+      nested_enum, nested_message, any, duration, struct, list_value, value_, null_value, empty,
       timestamp, opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64,
       opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double,
       opt_string, opt_bytes, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32,
@@ -1324,7 +1335,8 @@ public class AllTypes(
       AllTypes::class, 
       "type.googleapis.com/proto3.kotlin.AllTypes", 
       PROTO_3, 
-      null
+      null, 
+      "all_types.proto"
     ) {
       private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
@@ -1362,7 +1374,7 @@ public class AllTypes(
       private val map_int32_timestampAdapter: ProtoAdapter<Map<Int, Instant>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INSTANT) }
 
-      public override fun encodedSize(value: AllTypes): Int {
+      public override fun encodedSize(`value`: AllTypes): Int {
         var size = value.unknownFields.size
         if (value.proto3_kotlin_int32 != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1,
             value.proto3_kotlin_int32)
@@ -1386,10 +1398,10 @@ public class AllTypes(
             value.proto3_kotlin_sfixed64)
         if (value.proto3_kotlin_bool != false) size += ProtoAdapter.BOOL.encodedSizeWithTag(11,
             value.proto3_kotlin_bool)
-        if (value.proto3_kotlin_float != 0f) size += ProtoAdapter.FLOAT.encodedSizeWithTag(12,
+        if (!value.proto3_kotlin_float.equals(0f)) size += ProtoAdapter.FLOAT.encodedSizeWithTag(12,
             value.proto3_kotlin_float)
-        if (value.proto3_kotlin_double != 0.0) size += ProtoAdapter.DOUBLE.encodedSizeWithTag(13,
-            value.proto3_kotlin_double)
+        if (!value.proto3_kotlin_double.equals(0.0)) size +=
+            ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.proto3_kotlin_double)
         if (value.proto3_kotlin_string != "") size += ProtoAdapter.STRING.encodedSizeWithTag(14,
             value.proto3_kotlin_string)
         if (value.proto3_kotlin_bytes != ByteString.EMPTY) size +=
@@ -1405,8 +1417,8 @@ public class AllTypes(
             value.struct)
         if (value.list_value != null) size += ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(21,
             value.list_value)
-        if (value.value != null) size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(22,
-            value.value)
+        if (value.value_ != null) size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(22,
+            value.value_)
         if (value.null_value != null) size += ProtoAdapter.STRUCT_NULL.encodedSizeWithTag(23,
             value.null_value)
         if (value.empty != null) size += ProtoAdapter.EMPTY.encodedSizeWithTag(24, value.empty)
@@ -1491,7 +1503,7 @@ public class AllTypes(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: AllTypes): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: AllTypes): Unit {
         if (value.proto3_kotlin_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1,
             value.proto3_kotlin_int32)
         if (value.proto3_kotlin_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2,
@@ -1514,9 +1526,9 @@ public class AllTypes(
             value.proto3_kotlin_sfixed64)
         if (value.proto3_kotlin_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11,
             value.proto3_kotlin_bool)
-        if (value.proto3_kotlin_float != 0f) ProtoAdapter.FLOAT.encodeWithTag(writer, 12,
+        if (!value.proto3_kotlin_float.equals(0f)) ProtoAdapter.FLOAT.encodeWithTag(writer, 12,
             value.proto3_kotlin_float)
-        if (value.proto3_kotlin_double != 0.0) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
+        if (!value.proto3_kotlin_double.equals(0.0)) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
             value.proto3_kotlin_double)
         if (value.proto3_kotlin_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14,
             value.proto3_kotlin_string)
@@ -1531,7 +1543,7 @@ public class AllTypes(
         if (value.struct != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 20, value.struct)
         if (value.list_value != null) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 21,
             value.list_value)
-        if (value.value != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 22, value.value)
+        if (value.value_ != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 22, value.value_)
         if (value.null_value != null) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 23,
             value.null_value)
         if (value.empty != null) ProtoAdapter.EMPTY.encodeWithTag(writer, 24, value.empty)
@@ -1615,6 +1627,130 @@ public class AllTypes(
         writer.writeBytes(value.unknownFields)
       }
 
+      public override fun encode(writer: ReverseProtoWriter, `value`: AllTypes): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.INSTANT.encodeWithTag(writer, 625, value.oneof_timestamp)
+        ProtoAdapter.EMPTY.encodeWithTag(writer, 624, value.oneof_empty)
+        ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 621, value.oneof_list_value)
+        ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 620, value.oneof_struct)
+        ProtoAdapter.DURATION.encodeWithTag(writer, 619, value.oneof_duration)
+        AnyMessage.ADAPTER.encodeWithTag(writer, 618, value.oneof_any)
+        NestedMessage.ADAPTER.encodeWithTag(writer, 603, value.oneof_nested_message)
+        ProtoAdapter.INT32.encodeWithTag(writer, 602, value.oneof_int32)
+        ProtoAdapter.STRING.encodeWithTag(writer, 601, value.oneof_string)
+        map_int32_timestampAdapter.encodeWithTag(writer, 525, value.map_int32_timestamp)
+        map_int32_emptyAdapter.encodeWithTag(writer, 524, value.map_int32_empty)
+        map_int32_null_valueAdapter.encodeWithTag(writer, 523, value.map_int32_null_value)
+        map_int32_valueAdapter.encodeWithTag(writer, 522, value.map_int32_value)
+        map_int32_list_valueAdapter.encodeWithTag(writer, 521, value.map_int32_list_value)
+        map_int32_structAdapter.encodeWithTag(writer, 520, value.map_int32_struct)
+        map_int32_durationAdapter.encodeWithTag(writer, 519, value.map_int32_duration)
+        map_int32_anyAdapter.encodeWithTag(writer, 518, value.map_int32_any)
+        map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
+        map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
+        map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
+        map_int32_int32Adapter.encodeWithTag(writer, 501, value.map_int32_int32)
+        ProtoAdapter.STRUCT_NULL.asPacked().encodeWithTag(writer, 323, value.pack_null_value)
+        NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 316, value.pack_nested_enum)
+        ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 313, value.pack_double)
+        ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 312, value.pack_float)
+        ProtoAdapter.BOOL.asPacked().encodeWithTag(writer, 311, value.pack_bool)
+        ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 310, value.pack_sfixed64)
+        ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 309, value.pack_fixed64)
+        ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 308, value.pack_sint64)
+        ProtoAdapter.UINT64.asPacked().encodeWithTag(writer, 307, value.pack_uint64)
+        ProtoAdapter.INT64.asPacked().encodeWithTag(writer, 306, value.pack_int64)
+        ProtoAdapter.SFIXED32.asPacked().encodeWithTag(writer, 305, value.pack_sfixed32)
+        ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 304, value.pack_fixed32)
+        ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 303, value.pack_sint32)
+        ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 302, value.pack_uint32)
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32)
+        ProtoAdapter.INSTANT.asRepeated().encodeWithTag(writer, 225, value.rep_timestamp)
+        ProtoAdapter.EMPTY.asRepeated().encodeWithTag(writer, 224, value.rep_empty)
+        ProtoAdapter.STRUCT_NULL.asRepeated().encodeWithTag(writer, 223, value.rep_null_value)
+        ProtoAdapter.STRUCT_VALUE.asRepeated().encodeWithTag(writer, 222, value.rep_value)
+        ProtoAdapter.STRUCT_LIST.asRepeated().encodeWithTag(writer, 221, value.rep_list_value)
+        ProtoAdapter.STRUCT_MAP.asRepeated().encodeWithTag(writer, 220, value.rep_struct)
+        ProtoAdapter.DURATION.asRepeated().encodeWithTag(writer, 219, value.rep_duration)
+        AnyMessage.ADAPTER.asRepeated().encodeWithTag(writer, 218, value.rep_any)
+        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 217, value.rep_nested_message)
+        NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 216, value.rep_nested_enum)
+        ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 215, value.rep_bytes)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 214, value.rep_string)
+        ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 213, value.rep_double)
+        ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 212, value.rep_float)
+        ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 211, value.rep_bool)
+        ProtoAdapter.SFIXED64.asRepeated().encodeWithTag(writer, 210, value.rep_sfixed64)
+        ProtoAdapter.FIXED64.asRepeated().encodeWithTag(writer, 209, value.rep_fixed64)
+        ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 208, value.rep_sint64)
+        ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 207, value.rep_uint64)
+        ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 206, value.rep_int64)
+        ProtoAdapter.SFIXED32.asRepeated().encodeWithTag(writer, 205, value.rep_sfixed32)
+        ProtoAdapter.FIXED32.asRepeated().encodeWithTag(writer, 204, value.rep_fixed32)
+        ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 203, value.rep_sint32)
+        ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 202, value.rep_uint32)
+        ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32)
+        ProtoAdapter.BYTES.encodeWithTag(writer, 115, value.opt_bytes)
+        ProtoAdapter.STRING.encodeWithTag(writer, 114, value.opt_string)
+        ProtoAdapter.DOUBLE.encodeWithTag(writer, 113, value.opt_double)
+        ProtoAdapter.FLOAT.encodeWithTag(writer, 112, value.opt_float)
+        ProtoAdapter.BOOL.encodeWithTag(writer, 111, value.opt_bool)
+        ProtoAdapter.SFIXED64.encodeWithTag(writer, 110, value.opt_sfixed64)
+        ProtoAdapter.FIXED64.encodeWithTag(writer, 109, value.opt_fixed64)
+        ProtoAdapter.SINT64.encodeWithTag(writer, 108, value.opt_sint64)
+        ProtoAdapter.UINT64.encodeWithTag(writer, 107, value.opt_uint64)
+        ProtoAdapter.INT64.encodeWithTag(writer, 106, value.opt_int64)
+        ProtoAdapter.SFIXED32.encodeWithTag(writer, 105, value.opt_sfixed32)
+        ProtoAdapter.FIXED32.encodeWithTag(writer, 104, value.opt_fixed32)
+        ProtoAdapter.SINT32.encodeWithTag(writer, 103, value.opt_sint32)
+        ProtoAdapter.UINT32.encodeWithTag(writer, 102, value.opt_uint32)
+        ProtoAdapter.INT32.encodeWithTag(writer, 101, value.opt_int32)
+        if (value.timestamp != null) ProtoAdapter.INSTANT.encodeWithTag(writer, 25, value.timestamp)
+        if (value.empty != null) ProtoAdapter.EMPTY.encodeWithTag(writer, 24, value.empty)
+        if (value.null_value != null) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 23,
+            value.null_value)
+        if (value.value_ != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 22, value.value_)
+        if (value.list_value != null) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 21,
+            value.list_value)
+        if (value.struct != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 20, value.struct)
+        if (value.duration != null) ProtoAdapter.DURATION.encodeWithTag(writer, 19, value.duration)
+        if (value.any != null) AnyMessage.ADAPTER.encodeWithTag(writer, 18, value.any)
+        if (value.nested_message != null) NestedMessage.ADAPTER.encodeWithTag(writer, 17,
+            value.nested_message)
+        if (value.nested_enum != NestedEnum.UNKNOWN) NestedEnum.ADAPTER.encodeWithTag(writer, 16,
+            value.nested_enum)
+        if (value.proto3_kotlin_bytes != ByteString.EMPTY) ProtoAdapter.BYTES.encodeWithTag(writer,
+            15, value.proto3_kotlin_bytes)
+        if (value.proto3_kotlin_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14,
+            value.proto3_kotlin_string)
+        if (!value.proto3_kotlin_double.equals(0.0)) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
+            value.proto3_kotlin_double)
+        if (!value.proto3_kotlin_float.equals(0f)) ProtoAdapter.FLOAT.encodeWithTag(writer, 12,
+            value.proto3_kotlin_float)
+        if (value.proto3_kotlin_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11,
+            value.proto3_kotlin_bool)
+        if (value.proto3_kotlin_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10,
+            value.proto3_kotlin_sfixed64)
+        if (value.proto3_kotlin_fixed64 != 0L) ProtoAdapter.FIXED64.encodeWithTag(writer, 9,
+            value.proto3_kotlin_fixed64)
+        if (value.proto3_kotlin_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 8,
+            value.proto3_kotlin_sint64)
+        if (value.proto3_kotlin_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 7,
+            value.proto3_kotlin_uint64)
+        if (value.proto3_kotlin_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 6,
+            value.proto3_kotlin_int64)
+        if (value.proto3_kotlin_sfixed32 != 0) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5,
+            value.proto3_kotlin_sfixed32)
+        if (value.proto3_kotlin_fixed32 != 0) ProtoAdapter.FIXED32.encodeWithTag(writer, 4,
+            value.proto3_kotlin_fixed32)
+        if (value.proto3_kotlin_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3,
+            value.proto3_kotlin_sint32)
+        if (value.proto3_kotlin_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2,
+            value.proto3_kotlin_uint32)
+        if (value.proto3_kotlin_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1,
+            value.proto3_kotlin_int32)
+      }
+
       public override fun decode(reader: ProtoReader): AllTypes {
         var proto3_kotlin_int32: Int = 0
         var proto3_kotlin_uint32: Int = 0
@@ -1637,7 +1773,7 @@ public class AllTypes(
         var duration: Duration? = null
         var struct: Map<String, *>? = null
         var list_value: List<*>? = null
-        var value: Any? = null
+        var value_: Any? = null
         var null_value: Nothing? = null
         var empty: Unit? = null
         var timestamp: Instant? = null
@@ -1744,7 +1880,7 @@ public class AllTypes(
             19 -> duration = ProtoAdapter.DURATION.decode(reader)
             20 -> struct = ProtoAdapter.STRUCT_MAP.decode(reader)
             21 -> list_value = ProtoAdapter.STRUCT_LIST.decode(reader)
-            22 -> value = ProtoAdapter.STRUCT_VALUE.decode(reader)
+            22 -> value_ = ProtoAdapter.STRUCT_VALUE.decode(reader)
             23 -> try {
               null_value = ProtoAdapter.STRUCT_NULL.decode(reader)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
@@ -1869,7 +2005,7 @@ public class AllTypes(
           duration = duration,
           struct = struct,
           list_value = list_value,
-          value = value,
+          value_ = value_,
           null_value = null_value,
           empty = empty,
           timestamp = timestamp,
@@ -1953,13 +2089,13 @@ public class AllTypes(
         )
       }
 
-      public override fun redact(value: AllTypes): AllTypes = value.copy(
+      public override fun redact(`value`: AllTypes): AllTypes = value.copy(
         nested_message = value.nested_message?.let(NestedMessage.ADAPTER::redact),
         any = value.any?.let(AnyMessage.ADAPTER::redact),
         duration = value.duration?.let(ProtoAdapter.DURATION::redact),
         struct = value.struct?.let(ProtoAdapter.STRUCT_MAP::redact),
         list_value = value.list_value?.let(ProtoAdapter.STRUCT_LIST::redact),
-        value = value.value?.let(ProtoAdapter.STRUCT_VALUE::redact),
+        value_ = value.value_?.let(ProtoAdapter.STRUCT_VALUE::redact),
         empty = value.empty?.let(ProtoAdapter.EMPTY::redact),
         timestamp = value.timestamp?.let(ProtoAdapter.INSTANT::redact),
         rep_nested_message = value.rep_nested_message.redactElements(NestedMessage.ADAPTER),
@@ -1993,7 +2129,7 @@ public class AllTypes(
   }
 
   public enum class NestedEnum(
-    public override val value: Int
+    public override val `value`: Int,
   ) : WireEnum {
     UNKNOWN(0),
     A(1),
@@ -2006,11 +2142,11 @@ public class AllTypes(
         PROTO_3, 
         NestedEnum.UNKNOWN
       ) {
-        public override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
+        public override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): NestedEnum? = when (value) {
+      public fun fromValue(`value`: Int): NestedEnum? = when (value) {
         0 -> UNKNOWN
         1 -> A
         else -> null
@@ -2022,16 +2158,17 @@ public class AllTypes(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.OMIT_IDENTITY
+      label = WireField.Label.OMIT_IDENTITY,
     )
     public val a: Int = 0,
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<NestedMessage, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+      level = DeprecationLevel.HIDDEN,
     )
-    public override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw
+        AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -2067,17 +2204,23 @@ public class AllTypes(
         NestedMessage::class, 
         "type.googleapis.com/proto3.kotlin.AllTypes.NestedMessage", 
         PROTO_3, 
-        null
+        null, 
+        "all_types.proto"
       ) {
-        public override fun encodedSize(value: NestedMessage): Int {
+        public override fun encodedSize(`value`: NestedMessage): Int {
           var size = value.unknownFields.size
           if (value.a != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: NestedMessage): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: NestedMessage): Unit {
           if (value.a != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
           writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage): Unit {
+          writer.writeBytes(value.unknownFields)
+          if (value.a != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
         }
 
         public override fun decode(reader: ProtoReader): NestedMessage {
@@ -2094,7 +2237,7 @@ public class AllTypes(
           )
         }
 
-        public override fun redact(value: NestedMessage): NestedMessage = value.copy(
+        public override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }

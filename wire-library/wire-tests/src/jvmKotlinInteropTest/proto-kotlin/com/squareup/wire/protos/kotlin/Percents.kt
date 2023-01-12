@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.sanitize
@@ -16,7 +17,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -26,11 +26,11 @@ public class Percents(
    */
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   @JvmField
   public val text: String? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Percents, Percents.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -51,7 +51,7 @@ public class Percents(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + text.hashCode()
+      result = result * 37 + (text?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -91,17 +91,23 @@ public class Percents(
       Percents::class, 
       "type.googleapis.com/squareup.protos.kotlin.Percents", 
       PROTO_2, 
-      null
+      null, 
+      "percents_in_kdoc.proto"
     ) {
-      public override fun encodedSize(value: Percents): Int {
+      public override fun encodedSize(`value`: Percents): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.text)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Percents): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Percents): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: Percents): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
       }
 
       public override fun decode(reader: ProtoReader): Percents {
@@ -118,7 +124,7 @@ public class Percents(
         )
       }
 
-      public override fun redact(value: Percents): Percents = value.copy(
+      public override fun redact(`value`: Percents): Percents = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

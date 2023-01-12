@@ -27,11 +27,11 @@ actual typealias ProtocolException = java.net.ProtocolException
 
 @Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
 actual inline fun <T> MutableList<T>.toUnmodifiableList(): List<T> =
-    Collections.unmodifiableList(this)
+  Collections.unmodifiableList(this)
 
 @Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
 actual inline fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> =
-    Collections.unmodifiableMap(this)
+  Collections.unmodifiableMap(this)
 
 actual fun camelCase(string: String, upperCamel: Boolean): String {
   return buildString(string.length) {

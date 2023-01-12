@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -20,24 +21,23 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
 public class UsesAny(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.AnyMessage#ADAPTER"
+    adapter = "com.squareup.wire.AnyMessage#ADAPTER",
   )
   @JvmField
   public val just_one: AnyMessage? = null,
   many_anys: List<AnyMessage> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<UsesAny, UsesAny.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val many_anys: List<AnyMessage> = immutableCopyOf("many_anys", many_anys)
@@ -63,7 +63,7 @@ public class UsesAny(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + just_one.hashCode()
+      result = result * 37 + (just_one?.hashCode() ?: 0)
       result = result * 37 + many_anys.hashCode()
       super.hashCode = result
     }
@@ -80,7 +80,7 @@ public class UsesAny(
   public fun copy(
     just_one: AnyMessage? = this.just_one,
     many_anys: List<AnyMessage> = this.many_anys,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): UsesAny = UsesAny(just_one, many_anys, unknownFields)
 
   public class Builder : Message.Builder<UsesAny, Builder>() {
@@ -115,19 +115,26 @@ public class UsesAny(
       UsesAny::class, 
       "type.googleapis.com/squareup.protos.usesany.UsesAny", 
       PROTO_2, 
-      null
+      null, 
+      "uses_any.proto"
     ) {
-      public override fun encodedSize(value: UsesAny): Int {
+      public override fun encodedSize(`value`: UsesAny): Int {
         var size = value.unknownFields.size
         size += AnyMessage.ADAPTER.encodedSizeWithTag(1, value.just_one)
         size += AnyMessage.ADAPTER.asRepeated().encodedSizeWithTag(2, value.many_anys)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: UsesAny): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: UsesAny): Unit {
         AnyMessage.ADAPTER.encodeWithTag(writer, 1, value.just_one)
         AnyMessage.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.many_anys)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: UsesAny): Unit {
+        writer.writeBytes(value.unknownFields)
+        AnyMessage.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.many_anys)
+        AnyMessage.ADAPTER.encodeWithTag(writer, 1, value.just_one)
       }
 
       public override fun decode(reader: ProtoReader): UsesAny {
@@ -147,7 +154,7 @@ public class UsesAny(
         )
       }
 
-      public override fun redact(value: UsesAny): UsesAny = value.copy(
+      public override fun redact(`value`: UsesAny): UsesAny = value.copy(
         just_one = value.just_one?.let(AnyMessage.ADAPTER::redact),
         many_anys = value.many_anys.redactElements(AnyMessage.ADAPTER),
         unknownFields = ByteString.EMPTY

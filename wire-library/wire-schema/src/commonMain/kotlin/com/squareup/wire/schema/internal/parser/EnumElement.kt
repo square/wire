@@ -16,7 +16,6 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.SyntaxRules
 import com.squareup.wire.schema.internal.appendDocumentation
 import com.squareup.wire.schema.internal.appendIndented
 
@@ -25,7 +24,8 @@ data class EnumElement(
   override val name: String,
   override val documentation: String = "",
   override val options: List<OptionElement> = emptyList(),
-  val constants: List<EnumConstantElement> = emptyList()
+  val constants: List<EnumConstantElement> = emptyList(),
+  val reserveds: List<ReservedElement> = emptyList(),
 ) : TypeElement {
   // Enums do not allow nested type declarations.
   override val nestedTypes: List<TypeElement> = emptyList()
@@ -34,7 +34,13 @@ data class EnumElement(
     appendDocumentation(documentation)
     append("enum $name {")
 
-    if (options.isNotEmpty() || constants.isNotEmpty()) {
+    if (reserveds.isNotEmpty()) {
+      append('\n')
+      for (reserved in reserveds) {
+        appendIndented(reserved.toSchema())
+      }
+    }
+    if (reserveds.isEmpty() && (options.isNotEmpty() || constants.isNotEmpty())) {
       append('\n')
     }
 

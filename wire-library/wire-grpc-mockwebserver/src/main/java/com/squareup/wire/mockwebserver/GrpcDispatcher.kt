@@ -97,8 +97,9 @@ class GrpcDispatcher(
     val interfaces = type.interfaces
 
     if (type.isInterface &&
-        interfaces.size == 1 &&
-        interfaces[0] == Service::class.java) {
+      interfaces.size == 1 &&
+      interfaces[0] == Service::class.java
+    ) {
       @Suppress("UNCHECKED_CAST") // Checked reflectively above.
       sink += type as Class<out Service>
       return
@@ -118,7 +119,8 @@ class GrpcDispatcher(
     val endpoint = endpoints[request.path] ?: return delegate.dispatch(request)
 
     if (request.headers["content-type"] != "application/grpc" ||
-        request.method != "POST") {
+      request.method != "POST"
+    ) {
       return delegate.dispatch(request)
     }
 
@@ -141,11 +143,11 @@ class GrpcDispatcher(
     val responseBody = encodeResponse(response, endpoint.grpcMethod.responseAdapter)
 
     return MockResponse()
-        .setHeader("grpc-encoding", "identity")
-        .setHeader("grpc-accept-encoding", "gzip")
-        .setHeader("Content-Type", "application/grpc")
-        .setTrailers(headersOf("grpc-status", "0"))
-        .setBody(responseBody)
+      .setHeader("grpc-encoding", "identity")
+      .setHeader("grpc-accept-encoding", "gzip")
+      .setHeader("Content-Type", "application/grpc")
+      .setTrailers(headersOf("grpc-status", "0"))
+      .setBody(responseBody)
   }
 
   private fun <S : Any> decodeRequest(
@@ -153,9 +155,9 @@ class GrpcDispatcher(
     protoAdapter: ProtoAdapter<S>
   ): S {
     val source = GrpcMessageSource(
-        source = request.body,
-        messageAdapter = protoAdapter,
-        grpcEncoding = request.headers["grpc-encoding"]
+      source = request.body,
+      messageAdapter = protoAdapter,
+      grpcEncoding = request.headers["grpc-encoding"]
     )
     return source.readExactlyOneAndClose()
   }
@@ -166,10 +168,11 @@ class GrpcDispatcher(
   ): Buffer {
     val result = Buffer()
     GrpcMessageSink(
-        sink = result,
-        messageAdapter = protoAdapter,
-        callForCancel = null,
-        grpcEncoding = "identity"
+      sink = result,
+      minMessageToCompress = 0L,
+      messageAdapter = protoAdapter,
+      callForCancel = null,
+      grpcEncoding = "identity",
     ).use {
       it.write(response)
     }
@@ -202,10 +205,10 @@ class GrpcDispatcher(
      * corresponding calls.
      */
     private val nullGrpcClient = GrpcClient.Builder()
-        .callFactory(object : Call.Factory {
-          override fun newCall(it: Request) = NullCall
-        })
-        .baseUrl("https://localhost/")
-        .build()
+      .callFactory(object : Call.Factory {
+        override fun newCall(it: Request) = NullCall
+      })
+      .baseUrl("https://localhost/")
+      .build()
   }
 }

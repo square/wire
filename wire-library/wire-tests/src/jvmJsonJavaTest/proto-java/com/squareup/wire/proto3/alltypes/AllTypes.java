@@ -583,21 +583,24 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 601,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      jsonName = "oneofString"
+      jsonName = "oneofString",
+      oneofName = "choice"
   )
   public final String oneof_string;
 
   @WireField(
       tag = 602,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      jsonName = "oneofInt32"
+      jsonName = "oneofInt32",
+      oneofName = "choice"
   )
   public final Integer oneof_int32;
 
   @WireField(
       tag = 603,
       adapter = "com.squareup.wire.proto3.alltypes.AllTypes$NestedMessage#ADAPTER",
-      jsonName = "oneofNestedMessage"
+      jsonName = "oneofNestedMessage",
+      oneofName = "choice"
   )
   public final NestedMessage oneof_nested_message;
 

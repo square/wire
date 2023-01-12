@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
@@ -15,7 +16,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -25,17 +25,17 @@ import okio.ByteString
 public class MessageUsingMultipleEnums(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.protos.kotlin.MessageWithStatus${'$'}Status#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.MessageWithStatus${'$'}Status#ADAPTER",
   )
   @JvmField
   public val a: MessageWithStatus.Status? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.protos.kotlin.OtherMessageWithStatus${'$'}Status#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.OtherMessageWithStatus${'$'}Status#ADAPTER",
   )
   @JvmField
   public val b: OtherMessageWithStatus.Status? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MessageUsingMultipleEnums, MessageUsingMultipleEnums.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -58,8 +58,8 @@ public class MessageUsingMultipleEnums(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + a.hashCode()
-      result = result * 37 + b.hashCode()
+      result = result * 37 + (a?.hashCode() ?: 0)
+      result = result * 37 + (b?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -76,7 +76,7 @@ public class MessageUsingMultipleEnums(
   public fun copy(
     a: MessageWithStatus.Status? = this.a,
     b: OtherMessageWithStatus.Status? = this.b,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): MessageUsingMultipleEnums = MessageUsingMultipleEnums(a, b, unknownFields)
 
   public class Builder : Message.Builder<MessageUsingMultipleEnums, Builder>() {
@@ -111,19 +111,27 @@ public class MessageUsingMultipleEnums(
       MessageUsingMultipleEnums::class, 
       "type.googleapis.com/squareup.protos.kotlin.MessageUsingMultipleEnums", 
       PROTO_2, 
-      null
+      null, 
+      "same_name_enum.proto"
     ) {
-      public override fun encodedSize(value: MessageUsingMultipleEnums): Int {
+      public override fun encodedSize(`value`: MessageUsingMultipleEnums): Int {
         var size = value.unknownFields.size
         size += MessageWithStatus.Status.ADAPTER.encodedSizeWithTag(1, value.a)
         size += OtherMessageWithStatus.Status.ADAPTER.encodedSizeWithTag(2, value.b)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: MessageUsingMultipleEnums): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: MessageUsingMultipleEnums): Unit {
         MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)
         OtherMessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 2, value.b)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: MessageUsingMultipleEnums):
+          Unit {
+        writer.writeBytes(value.unknownFields)
+        OtherMessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 2, value.b)
+        MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)
       }
 
       public override fun decode(reader: ProtoReader): MessageUsingMultipleEnums {
@@ -151,7 +159,7 @@ public class MessageUsingMultipleEnums(
         )
       }
 
-      public override fun redact(value: MessageUsingMultipleEnums): MessageUsingMultipleEnums =
+      public override fun redact(`value`: MessageUsingMultipleEnums): MessageUsingMultipleEnums =
           value.copy(
         unknownFields = ByteString.EMPTY
       )

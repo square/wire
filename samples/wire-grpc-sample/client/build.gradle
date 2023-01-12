@@ -1,0 +1,49 @@
+plugins {
+  id 'com.android.application'
+  id 'org.jetbrains.kotlin.android'
+}
+
+android {
+  compileSdk 32
+
+  defaultConfig {
+    applicationId "com.squareup.wire.whiteboard"
+    minSdk 30
+    targetSdk 32
+    versionCode 1
+    versionName "1.0"
+
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    vectorDrawables {
+      useSupportLibrary true
+    }
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+    }
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+  kotlinOptions {
+    jvmTarget = '1.8'
+  }
+  packagingOptions {
+    resources {
+      excludes += '/META-INF/{AL2.0,LGPL2.1}'
+    }
+  }
+}
+
+dependencies {
+  implementation(libs.androidx.compose)
+  implementation(libs.androidx.ktx)
+  implementation(libs.contour)
+  implementation(libs.contour)
+  implementation(libs.kotlin.coroutines.android)
+  implementation(libs.wire.grpcClient)
+  implementation(projects.samples.wireGrpcSample.protos)
+}

@@ -77,6 +77,11 @@ public struct Person {
 
 }
 
+#if swift(>=5.5)
+extension Person.PhoneType : Sendable {
+}
+#endif
+
 #if !WIRE_REMOVE_EQUATABLE
 extension Person.PhoneNumber : Equatable {
 }
@@ -86,6 +91,17 @@ extension Person.PhoneNumber : Equatable {
 extension Person.PhoneNumber : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension Person.PhoneNumber : Sendable {
+}
+#endif
+
+extension Person.PhoneNumber : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.person.Person.PhoneNumber"
+    }
+}
 
 extension Person.PhoneNumber : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -133,6 +149,17 @@ extension Person : Equatable {
 extension Person : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension Person : Sendable {
+}
+#endif
+
+extension Person : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.person.Person"
+    }
+}
 
 extension Person : Proto2Codable {
     public init(from reader: ProtoReader) throws {

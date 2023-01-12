@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -106,7 +107,7 @@ public final class A extends Message<A, A.Builder> {
 
   private static final class ProtoAdapter_A extends ProtoAdapter<A> {
     public ProtoAdapter_A() {
-      super(FieldEncoding.LENGTH_DELIMITED, A.class, "type.googleapis.com/squareup.protos.roots.A", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, A.class, "type.googleapis.com/squareup.protos.roots.A", Syntax.PROTO_2, null, "roots.proto");
     }
 
     @Override
@@ -121,6 +122,12 @@ public final class A extends Message<A, A.Builder> {
     public void encode(ProtoWriter writer, A value) throws IOException {
       D.ADAPTER.encodeWithTag(writer, 2, value.d);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, A value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      D.ADAPTER.encodeWithTag(writer, 2, value.d);
     }
 
     @Override

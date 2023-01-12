@@ -56,7 +56,12 @@ annotation class WireField(
    * Name representing this field as it should be used in JSON. This value is set to a non-empty
    * string only when the json name differs from the name as declared in the proto schema.
    */
-  val jsonName: String = ""
+  val jsonName: String = "",
+  /**
+   * Name of the oneof this field belongs to. This value is set to a non-empty string only if the
+   * field is part of a oneof.
+   */
+  val oneofName: String = "",
 ) {
 
   /** A protocol buffer label.  */
@@ -68,7 +73,7 @@ annotation class WireField(
     /** Implies [REPEATED]. */
     PACKED,
     /**
-     * Special label to defines proto3 fields which should not be emitted if their value is equal
+     * Special label to define proto3 fields which should not be emitted if their value is equal
      * to their type's respective identity value. E.g.: a field of type `int32` will not get emitted
      * if its value is `0`.
      */

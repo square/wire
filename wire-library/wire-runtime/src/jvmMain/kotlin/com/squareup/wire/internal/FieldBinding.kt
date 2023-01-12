@@ -15,12 +15,12 @@
  */
 package com.squareup.wire.internal
 
+import com.squareup.wire.KotlinConstructorBuilder
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
-import com.squareup.wire.Syntax
 import com.squareup.wire.WireField
 import java.lang.reflect.Field
-import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 
 /**
  * Read, write, and describe a tag within a message. This class knows how to assign fields to a
@@ -28,64 +28,94 @@ import java.lang.reflect.Method
  */
 class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constructor(
   wireField: WireField,
+  messageType: Class<M>,
   private val messageField: Field,
-  builderType: Class<B>
-) : FieldOrOneOfBinding<M, B> {
+  builderType: Class<B>,
+  override val writeIdentityValues: Boolean,
+) : FieldOrOneOfBinding<M, B>() {
   override val label: WireField.Label = wireField.label
   override val name: String = messageField.name
   override val wireFieldJsonName: String = wireField.jsonName
   override val declaredName: String =
-      if (wireField.declaredName.isEmpty()) messageField.name else wireField.declaredName
+    if (wireField.declaredName.isEmpty()) messageField.name else wireField.declaredName
   override val tag: Int = wireField.tag
   private val keyAdapterString = wireField.keyAdapter
   private val adapterString = wireField.adapter
   override val redacted: Boolean = wireField.redacted
-  private val builderField = getBuilderField(builderType, name)
-  private val builderMethod = getBuilderMethod(builderType, name, messageField.type)
+  private val builderSetter = getBuilderSetter(builderType, wireField)
+  private val builderGetter = getBuilderGetter(builderType, wireField)
+  private val instanceGetter = getInstanceGetter(messageType)
 
-  // Delegate adapters are created lazily; otherwise we could stack overflow!
-  private var singleAdapter: ProtoAdapter<*>? = null
-  private var keyAdapter: ProtoAdapter<*>? = null
-  private var adapter: ProtoAdapter<Any>? = null
+  override val keyAdapter: ProtoAdapter<*>
+    get() = ProtoAdapter.get(keyAdapterString)
+  override val singleAdapter: ProtoAdapter<*>
+    get() = ProtoAdapter.get(adapterString)
 
   override val isMap: Boolean
     get() = keyAdapterString.isNotEmpty()
 
-  private fun getBuilderField(builderType: Class<*>, name: String): Field {
-    try {
-      return builderType.getField(name)
-    } catch (_: NoSuchFieldException) {
-      throw AssertionError("No builder field ${builderType.name}.$name")
-    }
-  }
+  override val isMessage: Boolean
+    get() = Message::class.java.isAssignableFrom(singleAdapter.type?.javaObjectType)
 
-  private fun getBuilderMethod(builderType: Class<*>, name: String, type: Class<*>): Method {
-    try {
-      return builderType.getMethod(name, type)
-    } catch (_: NoSuchMethodException) {
-      throw AssertionError("No builder method ${builderType.name}.$name(${type.name})")
-    }
-  }
-
-  override fun singleAdapter(): ProtoAdapter<*> {
-    return singleAdapter ?: ProtoAdapter.get(adapterString).also { singleAdapter = it }
-  }
-
-  override fun keyAdapter(): ProtoAdapter<*> {
-    return keyAdapter ?: ProtoAdapter.get(keyAdapterString).also { keyAdapter = it }
-  }
-
-  override fun adapter(): ProtoAdapter<Any> {
-    val result = adapter
-    if (result != null) return result
-    if (isMap) {
-      val keyAdapter = keyAdapter() as ProtoAdapter<Any>
-      val valueAdapter = singleAdapter() as ProtoAdapter<Any>
-      return (ProtoAdapter.newMapAdapter(keyAdapter, valueAdapter) as ProtoAdapter<Any>).also {
-        adapter = it
+  private fun getBuilderSetter(builderType: Class<*>, wireField: WireField): (B, Any?) -> Unit {
+    return when {
+      builderType.isAssignableFrom(KotlinConstructorBuilder::class.java) -> { builder, value ->
+        (builder as KotlinConstructorBuilder<*, *>).set(wireField, value)
+      }
+      wireField.label.isOneOf -> {
+        val type = messageField.type
+        val method = try {
+          builderType.getMethod(name, type)
+        } catch (_: NoSuchMethodException) {
+          throw AssertionError("No builder method ${builderType.name}.$name(${type.name})")
+        }
+        { builder, value ->
+          method.invoke(builder, value)
+        }
+      }
+      else -> {
+        val field = try {
+          builderType.getField(name)
+        } catch (_: NoSuchFieldException) {
+          throw AssertionError("No builder field ${builderType.name}.$name")
+        }
+        { builder, value ->
+          field.set(builder, value)
+        }
       }
     }
-    return (singleAdapter().withLabel(label) as ProtoAdapter<Any>).also { adapter = it }
+  }
+
+  private fun getBuilderGetter(builderType: Class<*>, wireField: WireField): (B) -> Any? {
+    return if (builderType.isAssignableFrom(KotlinConstructorBuilder::class.java)) {
+      { builder ->
+        (builder as KotlinConstructorBuilder<*, *>).get(wireField)
+      }
+    } else {
+      val field = try {
+        builderType.getField(name)
+      } catch (_: NoSuchFieldException) {
+        throw AssertionError("No builder field ${builderType.name}.$name")
+      }
+      { builder ->
+        field.get(builder)
+      }
+    }
+  }
+
+  private fun getInstanceGetter(messageType: Class<M>): (M) -> Any? {
+    if (Modifier.isPrivate(messageField.modifiers)) {
+      val fieldName = messageField.name
+      val getterName = if (IS_GETTER_FIELD_NAME_REGEX.matches(fieldName)) {
+        fieldName
+      } else {
+        "get" + fieldName.replaceFirstChar { it.uppercase() }
+      }
+      val getter = messageType.getMethod(getterName)
+      return { instance -> getter.invoke(instance) }
+    } else {
+      return { instance -> messageField.get(instance) }
+    }
   }
 
   /** Accept a single value, independent of whether this value is single or repeated. */
@@ -124,28 +154,14 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   }
 
   /** Assign a single value for required/optional fields, or a list for repeated/packed fields. */
-  override fun set(builder: B, value: Any?) {
-    if (label.isOneOf) {
-      // In order to maintain the 'oneof' invariant, call the builder setter method rather
-      // than setting the builder field directly.
-      builderMethod.invoke(builder, value)
-    } else {
-      builderField.set(builder, value)
-    }
-  }
+  override fun set(builder: B, value: Any?) = builderSetter(builder, value)
 
-  override operator fun get(message: M): Any? = messageField.get(message)
+  override operator fun get(message: M): Any? = instanceGetter(message)
 
-  override fun getFromBuilder(builder: B): Any? = builderField.get(builder)
+  override fun getFromBuilder(builder: B): Any? = builderGetter(builder)
 
-  override fun omitFromJson(syntax: Syntax, value: Any?): Boolean {
-    return omitIdentity(syntax) && value == adapter().identity
-  }
-
-  private fun omitIdentity(syntax: Syntax): Boolean {
-    if (label == WireField.Label.OMIT_IDENTITY) return true
-    if (label.isRepeated && syntax == Syntax.PROTO_3) return true
-    if (isMap && syntax == Syntax.PROTO_3) return true
-    return false
+  companion object {
+    // If a field's name matches this regex, its getter name will match the field name.
+    private val IS_GETTER_FIELD_NAME_REGEX = Regex("^is[^a-z].*$")
   }
 }

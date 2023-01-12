@@ -7,9 +7,11 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import kotlin.Any
 import kotlin.Boolean
+import kotlin.Deprecated
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
@@ -17,8 +19,9 @@ import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
+@Deprecated(message = "NoFields is deprecated")
 public class NoFields(
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<NoFields, NoFields.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -53,14 +56,19 @@ public class NoFields(
       NoFields::class, 
       "type.googleapis.com/squareup.protos.kotlin.NoFields", 
       PROTO_2, 
-      null
+      null, 
+      "no_fields.proto"
     ) {
-      public override fun encodedSize(value: NoFields): Int {
+      public override fun encodedSize(`value`: NoFields): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: NoFields): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: NoFields): Unit {
+        writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: NoFields): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
@@ -71,7 +79,7 @@ public class NoFields(
         )
       }
 
-      public override fun redact(value: NoFields): NoFields = value.copy(
+      public override fun redact(`value`: NoFields): NoFields = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

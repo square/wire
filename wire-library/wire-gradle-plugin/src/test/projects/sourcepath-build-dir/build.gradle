@@ -1,0 +1,28 @@
+plugins {
+  id 'application'
+  id 'com.squareup.wire'
+}
+
+final String OUTPUT_REPO_DIR = "$buildDir/src/main/proto/squareup"
+
+task copyProtos(type: Copy) {
+  from 'src/main/copydir/squareup'
+  include 'dinosaurs/*.proto'
+  include 'geology/*.proto'
+
+  into OUTPUT_REPO_DIR
+  fileMode = 0644
+  includeEmptyDirs false
+}
+
+afterEvaluate {
+  tasks.getByName('generateProtos').dependsOn copyProtos
+}
+
+wire {
+  sourcePath {
+    srcDir OUTPUT_REPO_DIR
+  }
+  java{
+  }
+}

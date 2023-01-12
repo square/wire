@@ -22,6 +22,11 @@ public struct OptionalEnumUser {
 
 }
 
+#if swift(>=5.5)
+extension OptionalEnumUser.OptionalEnum : Sendable {
+}
+#endif
+
 #if !WIRE_REMOVE_EQUATABLE
 extension OptionalEnumUser : Equatable {
 }
@@ -31,6 +36,17 @@ extension OptionalEnumUser : Equatable {
 extension OptionalEnumUser : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension OptionalEnumUser : Sendable {
+}
+#endif
+
+extension OptionalEnumUser : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.OptionalEnumUser"
+    }
+}
 
 extension OptionalEnumUser : Proto2Codable {
     public init(from reader: ProtoReader) throws {

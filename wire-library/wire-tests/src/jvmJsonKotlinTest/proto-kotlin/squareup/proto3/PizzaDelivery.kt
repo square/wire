@@ -10,6 +10,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -25,7 +26,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -34,14 +34,14 @@ public class PizzaDelivery(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "phoneNumber"
+    jsonName = "phoneNumber",
   )
   @JvmField
   public val phone_number: String = "",
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   @JvmField
   public val address: String = "",
@@ -49,7 +49,7 @@ public class PizzaDelivery(
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   @JvmField
   public val promotion: AnyMessage? = null,
@@ -57,7 +57,7 @@ public class PizzaDelivery(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#DURATION",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "deliveredWithinOrFree"
+    jsonName = "deliveredWithinOrFree",
   )
   @JvmField
   public val delivered_within_or_free: Duration? = null,
@@ -66,16 +66,16 @@ public class PizzaDelivery(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "orderedAt"
+    jsonName = "orderedAt",
   )
   @JvmField
   public val ordered_at: Instant? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<PizzaDelivery, PizzaDelivery.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 3,
     adapter = "squareup.proto3.Pizza#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val pizzas: List<Pizza> = immutableCopyOf("pizzas", pizzas)
@@ -83,7 +83,7 @@ public class PizzaDelivery(
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
   )
   @JvmField
   public val loyalty: Map<String, *>? = immutableCopyOfStruct("loyalty", loyalty)
@@ -122,10 +122,10 @@ public class PizzaDelivery(
       result = result * 37 + phone_number.hashCode()
       result = result * 37 + address.hashCode()
       result = result * 37 + pizzas.hashCode()
-      result = result * 37 + promotion.hashCode()
-      result = result * 37 + delivered_within_or_free.hashCode()
-      result = result * 37 + loyalty.hashCode()
-      result = result * 37 + ordered_at.hashCode()
+      result = result * 37 + (promotion?.hashCode() ?: 0)
+      result = result * 37 + (delivered_within_or_free?.hashCode() ?: 0)
+      result = result * 37 + (loyalty?.hashCode() ?: 0)
+      result = result * 37 + (ordered_at?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -152,7 +152,7 @@ public class PizzaDelivery(
     delivered_within_or_free: Duration? = this.delivered_within_or_free,
     loyalty: Map<String, *>? = this.loyalty,
     ordered_at: Instant? = this.ordered_at,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): PizzaDelivery = PizzaDelivery(phone_number, address, pizzas, promotion,
       delivered_within_or_free, loyalty, ordered_at, unknownFields)
 
@@ -233,9 +233,10 @@ public class PizzaDelivery(
       PizzaDelivery::class, 
       "type.googleapis.com/squareup.proto3.PizzaDelivery", 
       PROTO_3, 
-      null
+      null, 
+      "pizza.proto"
     ) {
-      public override fun encodedSize(value: PizzaDelivery): Int {
+      public override fun encodedSize(`value`: PizzaDelivery): Int {
         var size = value.unknownFields.size
         if (value.phone_number != "") size += ProtoAdapter.STRING.encodedSizeWithTag(1,
             value.phone_number)
@@ -252,7 +253,7 @@ public class PizzaDelivery(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: PizzaDelivery): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: PizzaDelivery): Unit {
         if (value.phone_number != "") ProtoAdapter.STRING.encodeWithTag(writer, 1,
             value.phone_number)
         if (value.address != "") ProtoAdapter.STRING.encodeWithTag(writer, 2, value.address)
@@ -264,6 +265,20 @@ public class PizzaDelivery(
         if (value.ordered_at != null) ProtoAdapter.INSTANT.encodeWithTag(writer, 7,
             value.ordered_at)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: PizzaDelivery): Unit {
+        writer.writeBytes(value.unknownFields)
+        if (value.ordered_at != null) ProtoAdapter.INSTANT.encodeWithTag(writer, 7,
+            value.ordered_at)
+        if (value.loyalty != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 6, value.loyalty)
+        if (value.delivered_within_or_free != null) ProtoAdapter.DURATION.encodeWithTag(writer, 5,
+            value.delivered_within_or_free)
+        if (value.promotion != null) AnyMessage.ADAPTER.encodeWithTag(writer, 4, value.promotion)
+        Pizza.ADAPTER.asRepeated().encodeWithTag(writer, 3, value.pizzas)
+        if (value.address != "") ProtoAdapter.STRING.encodeWithTag(writer, 2, value.address)
+        if (value.phone_number != "") ProtoAdapter.STRING.encodeWithTag(writer, 1,
+            value.phone_number)
       }
 
       public override fun decode(reader: ProtoReader): PizzaDelivery {
@@ -298,7 +313,7 @@ public class PizzaDelivery(
         )
       }
 
-      public override fun redact(value: PizzaDelivery): PizzaDelivery = value.copy(
+      public override fun redact(`value`: PizzaDelivery): PizzaDelivery = value.copy(
         pizzas = value.pizzas.redactElements(Pizza.ADAPTER),
         promotion = value.promotion?.let(AnyMessage.ADAPTER::redact),
         delivered_within_or_free =

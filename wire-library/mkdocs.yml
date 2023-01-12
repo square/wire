@@ -41,9 +41,16 @@ nav:
   - 'gRPC': wire_grpc.md
   - 'Stack Overflow ⏏': https://stackoverflow.com/questions/tagged/square-wire?sort=active
   - '3.x API':
+    - 'wire-compiler': 3.x/wire-compiler/com.squareup.wire/index.md
     - 'wire-grpc-client': 3.x/wire-grpc-client/com.squareup.wire/index.md
+    - 'wire-gson-support': 3.x/wire-gson-support/com.squareup.wire/index.md
+    - 'wire-java-generator': 3.x/wire-java-generator/com.squareup.wire/index.md
+    - 'wire-kotlin-generator': 3.x/wire-kotlin-generator/com.squareup.wire/index.md
     - 'wire-moshi-adapter': 3.x/wire-moshi-adapter/com.squareup.wire/index.md
+    - 'wire-reflector': 3.x/wire-reflector/com.squareup.wire/index.md
     - 'wire-runtime': 3.x/wire-runtime/com.squareup.wire/index.md
+    - 'wire-schema': 3.x/wire-schema/com.squareup.wire/index.md
+    - 'wire-swift-generator': 3.x/wire-swift-generator/com.squareup.wire/index.md
   - '2.x API':
     - 'wire-gson-support ⏏': https://square.github.io/wire/2.x/wire-gson-support/
     - 'wire-runtime ⏏': https://square.github.io/wire/2.x/wire-runtime/

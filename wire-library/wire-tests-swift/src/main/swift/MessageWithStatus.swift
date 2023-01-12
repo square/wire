@@ -18,6 +18,11 @@ public struct MessageWithStatus {
 
 }
 
+#if swift(>=5.5)
+extension MessageWithStatus.Status : Sendable {
+}
+#endif
+
 #if !WIRE_REMOVE_EQUATABLE
 extension MessageWithStatus : Equatable {
 }
@@ -27,6 +32,17 @@ extension MessageWithStatus : Equatable {
 extension MessageWithStatus : Hashable {
 }
 #endif
+
+#if swift(>=5.5)
+extension MessageWithStatus : Sendable {
+}
+#endif
+
+extension MessageWithStatus : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.MessageWithStatus"
+    }
+}
 
 extension MessageWithStatus : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -47,5 +63,7 @@ extension MessageWithStatus : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension MessageWithStatus : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif

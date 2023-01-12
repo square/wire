@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -19,14 +20,13 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
 public class ExternalMessage(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
+    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
   )
   @JvmField
   public val f: Float? = null,
@@ -36,7 +36,7 @@ public class ExternalMessage(
    */
   @field:WireField(
     tag = 126,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   @JvmField
   public val barext: Int? = null,
@@ -45,7 +45,7 @@ public class ExternalMessage(
    */
   @field:WireField(
     tag = 127,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   @JvmField
   public val bazext: Int? = null,
@@ -54,7 +54,7 @@ public class ExternalMessage(
    */
   @field:WireField(
     tag = 128,
-    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER",
   )
   @JvmField
   public val nested_message_ext: SimpleMessage.NestedMessage? = null,
@@ -63,11 +63,11 @@ public class ExternalMessage(
    */
   @field:WireField(
     tag = 129,
-    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER",
   )
   @JvmField
   public val nested_enum_ext: SimpleMessage.NestedEnum? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<ExternalMessage, ExternalMessage.Builder>(ADAPTER, unknownFields) {
   /**
    * Extension source: simple_message.proto
@@ -75,7 +75,7 @@ public class ExternalMessage(
   @field:WireField(
     tag = 125,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   @JvmField
   public val fooext: List<Int> = immutableCopyOf("fooext", fooext)
@@ -109,12 +109,12 @@ public class ExternalMessage(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + f.hashCode()
+      result = result * 37 + (f?.hashCode() ?: 0)
       result = result * 37 + fooext.hashCode()
-      result = result * 37 + barext.hashCode()
-      result = result * 37 + bazext.hashCode()
-      result = result * 37 + nested_message_ext.hashCode()
-      result = result * 37 + nested_enum_ext.hashCode()
+      result = result * 37 + (barext?.hashCode() ?: 0)
+      result = result * 37 + (bazext?.hashCode() ?: 0)
+      result = result * 37 + (nested_message_ext?.hashCode() ?: 0)
+      result = result * 37 + (nested_enum_ext?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -138,7 +138,7 @@ public class ExternalMessage(
     bazext: Int? = this.bazext,
     nested_message_ext: SimpleMessage.NestedMessage? = this.nested_message_ext,
     nested_enum_ext: SimpleMessage.NestedEnum? = this.nested_enum_ext,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): ExternalMessage = ExternalMessage(f, fooext, barext, bazext, nested_message_ext,
       nested_enum_ext, unknownFields)
 
@@ -212,9 +212,10 @@ public class ExternalMessage(
       ExternalMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.simple.ExternalMessage", 
       PROTO_2, 
-      null
+      null, 
+      "external_message.proto"
     ) {
-      public override fun encodedSize(value: ExternalMessage): Int {
+      public override fun encodedSize(`value`: ExternalMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.f)
         size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(125, value.fooext)
@@ -226,7 +227,7 @@ public class ExternalMessage(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: ExternalMessage): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: ExternalMessage): Unit {
         ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.f)
         ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 125, value.fooext)
         ProtoAdapter.INT32.encodeWithTag(writer, 126, value.barext)
@@ -234,6 +235,16 @@ public class ExternalMessage(
         SimpleMessage.NestedMessage.ADAPTER.encodeWithTag(writer, 128, value.nested_message_ext)
         SimpleMessage.NestedEnum.ADAPTER.encodeWithTag(writer, 129, value.nested_enum_ext)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: ExternalMessage): Unit {
+        writer.writeBytes(value.unknownFields)
+        SimpleMessage.NestedEnum.ADAPTER.encodeWithTag(writer, 129, value.nested_enum_ext)
+        SimpleMessage.NestedMessage.ADAPTER.encodeWithTag(writer, 128, value.nested_message_ext)
+        ProtoAdapter.INT32.encodeWithTag(writer, 127, value.bazext)
+        ProtoAdapter.INT32.encodeWithTag(writer, 126, value.barext)
+        ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 125, value.fooext)
+        ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.f)
       }
 
       public override fun decode(reader: ProtoReader): ExternalMessage {
@@ -269,7 +280,7 @@ public class ExternalMessage(
         )
       }
 
-      public override fun redact(value: ExternalMessage): ExternalMessage = value.copy(
+      public override fun redact(`value`: ExternalMessage): ExternalMessage = value.copy(
         nested_message_ext =
             value.nested_message_ext?.let(SimpleMessage.NestedMessage.ADAPTER::redact),
         unknownFields = ByteString.EMPTY

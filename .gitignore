@@ -28,3 +28,7 @@ wire-library/docs/contributing.md
 wire-library/docs/index.md
 
 local.properties
+
+# for dependency watching with https://github.com/JakeWharton/dependency-watch/
+watched-deps
+deps-watch.toml

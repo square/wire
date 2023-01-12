@@ -16,7 +16,6 @@
 package com.squareup.wire.internal
 
 import com.squareup.wire.EnumAdapter
-import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Syntax
 import okio.ByteString
@@ -52,28 +51,37 @@ abstract class JsonIntegration<F, A> {
   /** Returns an adapter that applies [jsonStringAdapter] to each value. */
   abstract fun formatterAdapter(jsonStringAdapter: JsonFormatter<*>): A
 
+  /** Returns a message type that supports encoding and decoding JSON objects of type [type]. */
+  fun <M : Any, B : Any> jsonAdapters(
+    adapter: RuntimeMessageAdapter<M, B>,
+    framework: F
+  ): List<A> {
+    val fieldBindings = adapter.fields.values.toTypedArray()
+    return fieldBindings.map { jsonAdapter(framework, adapter.syntax, it) }
+  }
+
   /** Returns a JSON adapter for [field]. */
-  fun <M : Message<M, B>, B : Message.Builder<M, B>> jsonAdapter(
+  private fun <M : Any, B : Any> jsonAdapter(
     framework: F,
     syntax: Syntax,
     field: FieldOrOneOfBinding<M, B>
   ): A {
-    if (field.singleAdapter().isStruct) {
+    if (field.singleAdapter.isStruct) {
       return structAdapter(framework)
     }
 
-    val jsonStringAdapter = jsonFormatter(syntax, field.singleAdapter())
+    val jsonStringAdapter = jsonFormatter(syntax, field.singleAdapter)
     val singleAdapter = when {
       jsonStringAdapter != null -> formatterAdapter(jsonStringAdapter)
-      else -> frameworkAdapter(framework, field.singleAdapter().type?.javaObjectType as Type)
+      else -> frameworkAdapter(framework, field.singleAdapter.type?.javaObjectType as Type)
     }
 
     return when {
       field.label.isRepeated -> listAdapter(singleAdapter)
       field.isMap -> mapAdapter(
-          framework = framework,
-          keyFormatter = mapKeyJsonFormatter(field.keyAdapter()),
-          valueAdapter = singleAdapter
+        framework = framework,
+        keyFormatter = mapKeyJsonFormatter(field.keyAdapter),
+        valueAdapter = singleAdapter
       )
       else -> singleAdapter
     }
@@ -156,10 +164,10 @@ abstract class JsonIntegration<F, A> {
   /** Encodes an unsigned value with quotes, like `"123"`. */
   private object UnsignedLongAsStringJsonFormatter : JsonFormatter<Long> {
     override fun toStringOrNumber(value: Long) =
-        UnsignedLongAsNumberJsonFormatter.toStringOrNumber(value).toString()
+      UnsignedLongAsNumberJsonFormatter.toStringOrNumber(value).toString()
 
     override fun fromString(value: String) =
-        UnsignedLongAsNumberJsonFormatter.fromString(value)
+      UnsignedLongAsNumberJsonFormatter.fromString(value)
   }
 
   /** Encodes an signed value with quotes, like `"-123"`. */

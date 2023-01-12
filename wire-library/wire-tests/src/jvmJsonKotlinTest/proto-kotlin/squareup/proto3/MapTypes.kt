@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.immutableCopyOf
@@ -33,13 +34,13 @@ public class MapTypes(
   map_sint64_sint64: Map<Long, Long> = emptyMap(),
   map_fixed64_fixed64: Map<Long, Long> = emptyMap(),
   map_uint64_uint64: Map<Long, Long> = emptyMap(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MapTypes, MapTypes.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    jsonName = "mapStringString"
+    jsonName = "mapStringString",
   )
   @JvmField
   public val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
@@ -49,7 +50,7 @@ public class MapTypes(
     tag = 2,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    jsonName = "mapInt32Int32"
+    jsonName = "mapInt32Int32",
   )
   @JvmField
   public val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32", map_int32_int32)
@@ -58,7 +59,7 @@ public class MapTypes(
     tag = 3,
     keyAdapter = "com.squareup.wire.ProtoAdapter#SINT32",
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-    jsonName = "mapSint32Sint32"
+    jsonName = "mapSint32Sint32",
   )
   @JvmField
   public val map_sint32_sint32: Map<Int, Int> = immutableCopyOf("map_sint32_sint32",
@@ -68,7 +69,7 @@ public class MapTypes(
     tag = 4,
     keyAdapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-    jsonName = "mapSfixed32Sfixed32"
+    jsonName = "mapSfixed32Sfixed32",
   )
   @JvmField
   public val map_sfixed32_sfixed32: Map<Int, Int> = immutableCopyOf("map_sfixed32_sfixed32",
@@ -78,7 +79,7 @@ public class MapTypes(
     tag = 5,
     keyAdapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-    jsonName = "mapFixed32Fixed32"
+    jsonName = "mapFixed32Fixed32",
   )
   @JvmField
   public val map_fixed32_fixed32: Map<Int, Int> = immutableCopyOf("map_fixed32_fixed32",
@@ -88,7 +89,7 @@ public class MapTypes(
     tag = 6,
     keyAdapter = "com.squareup.wire.ProtoAdapter#UINT32",
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-    jsonName = "mapUint32Uint32"
+    jsonName = "mapUint32Uint32",
   )
   @JvmField
   public val map_uint32_uint32: Map<Int, Int> = immutableCopyOf("map_uint32_uint32",
@@ -98,7 +99,7 @@ public class MapTypes(
     tag = 7,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
-    jsonName = "mapInt64Int64"
+    jsonName = "mapInt64Int64",
   )
   @JvmField
   public val map_int64_int64: Map<Long, Long> = immutableCopyOf("map_int64_int64", map_int64_int64)
@@ -107,7 +108,7 @@ public class MapTypes(
     tag = 8,
     keyAdapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-    jsonName = "mapSfixed64Sfixed64"
+    jsonName = "mapSfixed64Sfixed64",
   )
   @JvmField
   public val map_sfixed64_sfixed64: Map<Long, Long> = immutableCopyOf("map_sfixed64_sfixed64",
@@ -117,7 +118,7 @@ public class MapTypes(
     tag = 9,
     keyAdapter = "com.squareup.wire.ProtoAdapter#SINT64",
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-    jsonName = "mapSint64Sint64"
+    jsonName = "mapSint64Sint64",
   )
   @JvmField
   public val map_sint64_sint64: Map<Long, Long> = immutableCopyOf("map_sint64_sint64",
@@ -127,7 +128,7 @@ public class MapTypes(
     tag = 10,
     keyAdapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-    jsonName = "mapFixed64Fixed64"
+    jsonName = "mapFixed64Fixed64",
   )
   @JvmField
   public val map_fixed64_fixed64: Map<Long, Long> = immutableCopyOf("map_fixed64_fixed64",
@@ -137,7 +138,7 @@ public class MapTypes(
     tag = 11,
     keyAdapter = "com.squareup.wire.ProtoAdapter#UINT64",
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-    jsonName = "mapUint64Uint64"
+    jsonName = "mapUint64Uint64",
   )
   @JvmField
   public val map_uint64_uint64: Map<Long, Long> = immutableCopyOf("map_uint64_uint64",
@@ -228,7 +229,7 @@ public class MapTypes(
     map_sint64_sint64: Map<Long, Long> = this.map_sint64_sint64,
     map_fixed64_fixed64: Map<Long, Long> = this.map_fixed64_fixed64,
     map_uint64_uint64: Map<Long, Long> = this.map_uint64_uint64,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): MapTypes = MapTypes(map_string_string, map_int32_int32, map_sint32_sint32,
       map_sfixed32_sfixed32, map_fixed32_fixed32, map_uint32_uint32, map_int64_int64,
       map_sfixed64_sfixed64, map_sint64_sint64, map_fixed64_fixed64, map_uint64_uint64,
@@ -346,7 +347,8 @@ public class MapTypes(
       MapTypes::class, 
       "type.googleapis.com/squareup.proto3.MapTypes", 
       PROTO_3, 
-      null
+      null, 
+      "map_types.proto"
     ) {
       private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
@@ -381,7 +383,7 @@ public class MapTypes(
       private val map_uint64_uint64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.UINT64, ProtoAdapter.UINT64) }
 
-      public override fun encodedSize(value: MapTypes): Int {
+      public override fun encodedSize(`value`: MapTypes): Int {
         var size = value.unknownFields.size
         size += map_string_stringAdapter.encodedSizeWithTag(1, value.map_string_string)
         size += map_int32_int32Adapter.encodedSizeWithTag(2, value.map_int32_int32)
@@ -397,7 +399,7 @@ public class MapTypes(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: MapTypes): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: MapTypes): Unit {
         map_string_stringAdapter.encodeWithTag(writer, 1, value.map_string_string)
         map_int32_int32Adapter.encodeWithTag(writer, 2, value.map_int32_int32)
         map_sint32_sint32Adapter.encodeWithTag(writer, 3, value.map_sint32_sint32)
@@ -410,6 +412,21 @@ public class MapTypes(
         map_fixed64_fixed64Adapter.encodeWithTag(writer, 10, value.map_fixed64_fixed64)
         map_uint64_uint64Adapter.encodeWithTag(writer, 11, value.map_uint64_uint64)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: MapTypes): Unit {
+        writer.writeBytes(value.unknownFields)
+        map_uint64_uint64Adapter.encodeWithTag(writer, 11, value.map_uint64_uint64)
+        map_fixed64_fixed64Adapter.encodeWithTag(writer, 10, value.map_fixed64_fixed64)
+        map_sint64_sint64Adapter.encodeWithTag(writer, 9, value.map_sint64_sint64)
+        map_sfixed64_sfixed64Adapter.encodeWithTag(writer, 8, value.map_sfixed64_sfixed64)
+        map_int64_int64Adapter.encodeWithTag(writer, 7, value.map_int64_int64)
+        map_uint32_uint32Adapter.encodeWithTag(writer, 6, value.map_uint32_uint32)
+        map_fixed32_fixed32Adapter.encodeWithTag(writer, 5, value.map_fixed32_fixed32)
+        map_sfixed32_sfixed32Adapter.encodeWithTag(writer, 4, value.map_sfixed32_sfixed32)
+        map_sint32_sint32Adapter.encodeWithTag(writer, 3, value.map_sint32_sint32)
+        map_int32_int32Adapter.encodeWithTag(writer, 2, value.map_int32_int32)
+        map_string_stringAdapter.encodeWithTag(writer, 1, value.map_string_string)
       }
 
       public override fun decode(reader: ProtoReader): MapTypes {
@@ -456,7 +473,7 @@ public class MapTypes(
         )
       }
 
-      public override fun redact(value: MapTypes): MapTypes = value.copy(
+      public override fun redact(`value`: MapTypes): MapTypes = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

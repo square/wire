@@ -574,15 +574,15 @@ With Maven:
 ```xml
 <dependency>
   <groupId>com.squareup.wire</groupId>
-  <artifactId>wire-runtime</artifactId>
-  <version>3.6.0</version>
+  <artifactId>wire-runtime-jvm</artifactId>
+  <version>4.4.3</version>
 </dependency>
 ```
 
 With Gradle:
 
 ```groovy
-api "com.squareup.wire:wire-runtime:3.6.0"
+api "com.squareup.wire:wire-runtime:4.4.3"
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
@@ -611,5 +611,5 @@ See [Google's excellent documentation][schema_docs] on the structure and syntax 
  [grpc_docs]: wire-library/docs/wire_grpc.md
  [dl_runtime]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-runtime&v=LATEST
  [dl_compiler]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
- [snap]: https://oss.sonatype.org/content/repositories/snapshots/
+ [snap]: https://s01.oss.sonatype.org/content/repositories/snapshots/
  [wire]: https://square.github.io/wire/

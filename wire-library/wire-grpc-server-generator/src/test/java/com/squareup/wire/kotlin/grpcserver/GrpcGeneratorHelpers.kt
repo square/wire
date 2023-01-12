@@ -29,6 +29,6 @@ private fun getNestedTypes(
     val className = enclosingClassName?.nestedClass(type.type.simpleName)
       ?: ClassName(kotlinPackage, type.type.simpleName)
     return listOf(type.type to className) +
-        getNestedTypes(kotlinPackage, className, type.nestedTypes)
+      getNestedTypes(kotlinPackage, className, type.nestedTypes)
   }
 }

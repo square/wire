@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
@@ -19,23 +20,23 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
 public class OneBytesField(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#BYTES"
+    adapter = "com.squareup.wire.ProtoAdapter#BYTES",
   )
   public val opt_bytes: ByteString? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<OneBytesField, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -49,7 +50,7 @@ public class OneBytesField(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + opt_bytes.hashCode()
+      result = result * 37 + (opt_bytes?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -71,17 +72,23 @@ public class OneBytesField(
       OneBytesField::class, 
       "type.googleapis.com/squareup.protos.kotlin.edgecases.OneBytesField", 
       PROTO_2, 
-      null
+      null, 
+      "edge_cases.proto"
     ) {
-      public override fun encodedSize(value: OneBytesField): Int {
+      public override fun encodedSize(`value`: OneBytesField): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.BYTES.encodedSizeWithTag(1, value.opt_bytes)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: OneBytesField): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: OneBytesField): Unit {
         ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.opt_bytes)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: OneBytesField): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.opt_bytes)
       }
 
       public override fun decode(reader: ProtoReader): OneBytesField {
@@ -98,7 +105,7 @@ public class OneBytesField(
         )
       }
 
-      public override fun redact(value: OneBytesField): OneBytesField = value.copy(
+      public override fun redact(`value`: OneBytesField): OneBytesField = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

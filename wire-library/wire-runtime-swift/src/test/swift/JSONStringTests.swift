@@ -28,6 +28,14 @@ final class JsonStringTests: XCTestCase {
         var c: [Int64]
         @JSONString
         var d: [UInt64]
+        @JSONString
+        var e: Int64?
+        @JSONString
+        var f: Int64?
+        @JSONString
+        var g: UInt64?
+        @JSONString
+        var h: UInt64?
     }
 
     func testSupportedTypes() throws {
@@ -35,25 +43,33 @@ final class JsonStringTests: XCTestCase {
             a: -12,
             b: 13,
             c: [-14],
-            d: [15]
+            d: [15],
+            e: -16,
+            f: nil,
+            g: 17,
+            h: nil
         )
         let expectedJson = """
         {\
         "a":"-12",\
         "b":"13",\
         "c":["-14"],\
-        "d":["15"]\
+        "d":["15"],\
+        "e":"-16",\
+        "f":null,\
+        "g":"17",\
+        "h":null\
         }
         """
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = .sortedKeys // For deterministic output.
 
-        let jsonData = try! encoder.encode(expectedStruct)
+        let jsonData = try encoder.encode(expectedStruct)
         let actualJson = String(data: jsonData, encoding: .utf8)!
         XCTAssertEqual(expectedJson, actualJson)
 
-        let actualStruct = try! JSONDecoder().decode(SupportedTypes.self, from: jsonData)
+        let actualStruct = try JSONDecoder().decode(SupportedTypes.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
     }
 }

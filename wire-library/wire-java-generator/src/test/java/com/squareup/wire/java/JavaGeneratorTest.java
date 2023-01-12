@@ -17,14 +17,16 @@ package com.squareup.wire.java;
 
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.wire.SchemaBuilder;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.PruningRules;
-import com.squareup.wire.schema.RepoBuilder;
 import com.squareup.wire.schema.Schema;
 import java.io.IOException;
+import okio.Path;
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.google.common.truth.Truth.assertThat;
+import static com.squareup.wire.schema.SchemaHelpersKt.addFromTest;
 import static org.junit.Assert.fail;
 
 public final class JavaGeneratorTest {
@@ -47,12 +49,14 @@ public final class JavaGeneratorTest {
   }
 
   @Test public void generateTypeUsesNameAllocatorInMessageBuilderBuild() throws Exception {
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("message.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("message.proto"), ""
             + "message Message {\n"
             + "  required float long = 1;\n"
-            + "}\n");
-    assertThat(repoBuilder.generateCode("Message")).contains(""
+            + "}\n")
+      .build();
+    assertThat(new JavaWithProfilesGenerator(schema)
+      .generateJava("Message")).contains(""
         + "    @Override\n"
         + "    public Message build() {\n"
         + "      if (long_ == null) {\n"
@@ -67,28 +71,30 @@ public final class JavaGeneratorTest {
     for (int i = 1; i < 257; i++) {
       s.append("  repeated int32 field_" + i + " = " + i + ";\n");
     }
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("message.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("message.proto"), ""
             + "message Message {\n"
             + s.toString()
             + "    oneof oneof_name {\n"
             + "       int32 foo = 257;\n"
             + "       int32 bar = 258;\n"
             + "    }\n"
-            + "}\n");
-    assertThat(repoBuilder.generateCode("Message")).contains(""
+            + "}\n")
+      .build();
+    assertThat(new JavaWithProfilesGenerator(schema)
+      .generateJava("Message")).contains(""
         + "public Message(Builder builder, ByteString unknownFields)");
   }
 
   @Test public void map() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("message.proto"), ""
             + "message Message {\n"
             + "  map<string, CdnResource> templates = 1;\n"
             + "  message CdnResource {\n"
             + "  }\n"
             + "}\n")
-        .schema();
+      .build();
     MessageType message = (MessageType) schema.getType("Message");
     JavaGenerator javaGenerator = JavaGenerator.get(schema);
     TypeSpec typeSpec = javaGenerator.generateType(message);
@@ -102,8 +108,8 @@ public final class JavaGeneratorTest {
   }
 
   @Test public void generateAbstractAdapter() throws Exception {
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("message.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("message.proto"), ""
             + "package original.proto;\n"
             + "option java_package = \"original.java\";\n"
             + "import \"foo.proto\";\n"
@@ -113,7 +119,7 @@ public final class JavaGeneratorTest {
             + "  optional foo.proto.CoinFlip coin_flip = 4;\n"
             + "  map<string, foo.proto.Bar> bars = 2;\n"
             + "}\n")
-        .add("foo.proto", ""
+        .add(Path.get("foo.proto"), ""
             + "package foo.proto;\n"
             + "option java_package = \"foo.java\";\n"
             + "message Foo {\n"
@@ -124,20 +130,23 @@ public final class JavaGeneratorTest {
             + "  HEADS = 1;\n"
             + "  TAILS = 2;\n"
             + "}\n")
-        .add("android.wire", ""
-            + "syntax = \"wire2\";\n"
-            + "import \"message.proto\";\n"
-            + "package original.proto;\n"
-            + "type original.proto.ProtoMessage {\n"
-            + "  target target.java.JavaMessage using target.java.JavaMessage#ADAPTER;\n"
-            + "}\n");
-    assertThat(repoBuilder.generateCode("original.proto.ProtoMessage", "android")).isEqualTo(""
+      .build();
+    assertThat(new JavaWithProfilesGenerator(schema)
+      .withProfile("android.wire", ""
+        + "syntax = \"wire2\";\n"
+        + "import \"message.proto\";\n"
+        + "package original.proto;\n"
+        + "type original.proto.ProtoMessage {\n"
+        + "  target target.java.JavaMessage using target.java.JavaMessage#ADAPTER;\n"
+        + "}\n")
+      .generateJava("original.proto.ProtoMessage", "android")).isEqualTo(""
         + "package original.java;\n"
         + "\n"
         + "import com.squareup.wire.FieldEncoding;\n"
         + "import com.squareup.wire.ProtoAdapter;\n"
         + "import com.squareup.wire.ProtoReader;\n"
         + "import com.squareup.wire.ProtoWriter;\n"
+        + "import com.squareup.wire.ReverseProtoWriter;\n"
         + "import com.squareup.wire.Syntax;\n"
         + "import com.squareup.wire.internal.Internal;\n"
         + "import foo.java.Bar;\n"
@@ -155,7 +164,7 @@ public final class JavaGeneratorTest {
         + "  private ProtoAdapter<Map<String, Bar>> bars;\n"
         + "\n"
         + "  public AbstractProtoMessageAdapter() {\n"
-        + "    super(FieldEncoding.LENGTH_DELIMITED, JavaMessage.class, \"type.googleapis.com/original.proto.ProtoMessage\", Syntax.PROTO_2, null);\n"
+        + "    super(FieldEncoding.LENGTH_DELIMITED, JavaMessage.class, \"type.googleapis.com/original.proto.ProtoMessage\", Syntax.PROTO_2, null, \"message.proto\");\n"
         + "  }\n"
         + "\n"
         + "  public abstract Foo field(JavaMessage value);\n"
@@ -185,6 +194,14 @@ public final class JavaGeneratorTest {
         + "    ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 3, numbers(value));\n"
         + "    CoinFlip.ADAPTER.encodeWithTag(writer, 4, coin_flip(value));\n"
         + "    barsAdapter().encodeWithTag(writer, 2, bars(value));\n"
+        + "  }\n"
+        + "\n"
+        + "  @Override\n"
+        + "  public void encode(ReverseProtoWriter writer, JavaMessage value) throws IOException {\n"
+        + "    barsAdapter().encodeWithTag(writer, 2, bars(value));\n"
+        + "    CoinFlip.ADAPTER.encodeWithTag(writer, 4, coin_flip(value));\n"
+        + "    ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 3, numbers(value));\n"
+        + "    Foo.ADAPTER.encodeWithTag(writer, 1, field(value));\n"
         + "  }\n"
         + "\n"
         + "  @Override\n"
@@ -232,8 +249,8 @@ public final class JavaGeneratorTest {
   }
 
   @Test public void generateAbstractAdapterForEnum() throws Exception {
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("message.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("message.proto"), ""
             + "package original.proto;\n"
             + "message ProtoMessage {\n"
             + "  optional CoinFlip coin_flip = 1;\n"
@@ -243,20 +260,23 @@ public final class JavaGeneratorTest {
             + "  HEADS = 1;\n"
             + "  TAILS = 2;\n"
             + "}\n")
-        .add("android.wire", ""
-            + "syntax = \"wire2\";\n"
-            + "import \"message.proto\";\n"
-            + "package original.proto;\n"
-            + "type original.proto.CoinFlip {\n"
-            + "  target target.java.JavaCoinFlip using target.java.JavaCoinFlip#ADAPTER;\n"
-            + "}\n");
-    assertThat(repoBuilder.generateCode("original.proto.CoinFlip", "android")).isEqualTo(""
+      .build();
+    assertThat(new JavaWithProfilesGenerator(schema)
+      .withProfile("android.wire", ""
+        + "syntax = \"wire2\";\n"
+        + "import \"message.proto\";\n"
+        + "package original.proto;\n"
+        + "type original.proto.CoinFlip {\n"
+        + "  target target.java.JavaCoinFlip using target.java.JavaCoinFlip#ADAPTER;\n"
+        + "}\n")
+      .generateJava("original.proto.CoinFlip", "android")).isEqualTo(""
         + "package original.proto;\n"
         + "\n"
         + "import com.squareup.wire.FieldEncoding;\n"
         + "import com.squareup.wire.ProtoAdapter;\n"
         + "import com.squareup.wire.ProtoReader;\n"
         + "import com.squareup.wire.ProtoWriter;\n"
+        + "import com.squareup.wire.ReverseProtoWriter;\n"
         + "import java.io.IOException;\n"
         + "import java.lang.Override;\n"
         + "import java.net.ProtocolException;\n"
@@ -303,6 +323,13 @@ public final class JavaGeneratorTest {
         + "  }\n"
         + "\n"
         + "  @Override\n"
+        + "  public void encode(ReverseProtoWriter writer, JavaCoinFlip value) throws IOException {\n"
+        + "    int i = toValue(value);\n"
+        + "    if (i == -1) throw new ProtocolException(\"Unexpected enum constant: \" + value);\n"
+        + "    writer.writeVarint32(i);\n"
+        + "  }\n"
+        + "\n"
+        + "  @Override\n"
         + "  public JavaCoinFlip decode(ProtoReader reader) throws IOException {\n"
         + "    int value = reader.readVarint32();\n"
         + "    return fromValue(value);\n"
@@ -316,20 +343,22 @@ public final class JavaGeneratorTest {
   }
 
   @Test public void generateAbstractAdapterWithRedactedField() throws IOException {
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("message.proto", ""
+    SchemaBuilder builder = new SchemaBuilder()
+        .add(Path.get("message.proto"), ""
             + "import \"option_redacted.proto\";\n"
             + "message ProtoMessage {\n"
             + "  optional string secret = 1 [(squareup.protos.redacted_option.redacted) = true];\n"
-            + "}\n")
-        .add("option_redacted.proto")
-        .add("android.wire", ""
-            + "syntax = \"wire2\";\n"
-            + "import \"message.proto\";\n"
-            + "type ProtoMessage {\n"
-            + "  target JavaMessage using JavaMessage#ADAPTER;\n"
             + "}\n");
-    assertThat(repoBuilder.generateCode("ProtoMessage", "android")).contains(""
+    addFromTest(builder, Path.get("option_redacted.proto"));
+    Schema schema = builder.build();
+    assertThat(new JavaWithProfilesGenerator(schema)
+      .withProfile("android.wire", ""
+        + "syntax = \"wire2\";\n"
+        + "import \"message.proto\";\n"
+        + "type ProtoMessage {\n"
+        + "  target JavaMessage using JavaMessage#ADAPTER;\n"
+        + "}\n")
+      .generateJava("ProtoMessage", "android")).contains(""
         + "  @Override\n"
         + "  public JavaMessage redact(JavaMessage value) {\n"
         + "    return null;\n"
@@ -337,64 +366,77 @@ public final class JavaGeneratorTest {
   }
 
   @Test public void nestedAbstractAdapterIsStatic() throws IOException {
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("message.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("message.proto"), ""
             + "message A {\n"
             + "  message B {\n"
             + "    optional string c = 1;\n"
             + "  }\n"
             + "}\n")
-        .add("android.wire", ""
-            + "syntax = \"wire2\";\n"
-            + "import \"message.proto\";\n"
-            + "type A.B {\n"
-            + "  target java.lang.String using AbAdapter#INSTANCE;\n"
-            + "}\n");
-    assertThat(repoBuilder.generateCode("A", "android")).contains(""
+      .build();
+    assertThat(new JavaWithProfilesGenerator(schema)
+      .withProfile("android.wire", ""
+        + "syntax = \"wire2\";\n"
+        + "import \"message.proto\";\n"
+        + "type A.B {\n"
+        + "  target java.lang.String using AbAdapter#INSTANCE;\n"
+        + "}\n")
+      .generateJava("A", "android")).contains(""
         + "  public abstract static class AbstractBAdapter extends ProtoAdapter<String> {\n");
   }
-
   /** https://github.com/square/wire/issues/655 */
   @Test public void defaultValues() throws IOException {
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("message.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("message.proto"), ""
             + "message Message {\n"
             + "  optional int32 a = 1 [default = 10 ];\n"
             + "  optional int32 b = 2 [default = 0x20 ];\n"
             + "  optional int64 c = 3 [default = 11 ];\n"
             + "  optional int64 d = 4 [default = 0x21 ];\n"
-            + "}\n");
-    String code = repoBuilder.generateCode("Message");
+            + "  optional float e = 5 [default = inf ];\n"
+            + "  optional double f = 6 [default = -inf ];\n"
+            + "  optional double g = 7 [default = nan ];\n"
+            + "  optional double h = 8 [default = -nan ];\n"
+            + "}\n")
+      .build();
+    String code = new JavaWithProfilesGenerator(schema)
+      .generateJava("Message");
     assertThat(code).contains("  public static final Integer DEFAULT_A = 10;");
     assertThat(code).contains("  public static final Integer DEFAULT_B = 32;");
     assertThat(code).contains("  public static final Long DEFAULT_C = 11L;");
     assertThat(code).contains("  public static final Long DEFAULT_D = 33L;");
+    assertThat(code).contains("  public static final Float DEFAULT_E = Float.POSITIVE_INFINITY;");
+    assertThat(code).contains("  public static final Double DEFAULT_F = Double.NEGATIVE_INFINITY;");
+    assertThat(code).contains("  public static final Double DEFAULT_G = Double.NaN;");
+    assertThat(code).contains("  public static final Double DEFAULT_H = Double.NaN;");
   }
 
   @Test public void defaultValuesMustNotBeOctal() throws IOException {
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("message.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("message.proto"), ""
             + "message Message {\n"
             + "  optional int32 a = 1 [default = 020 ];\n"
             + "  optional int64 b = 2 [default = 021 ];\n"
-            + "}\n");
+            + "}\n")
+      .build();
     try {
-      repoBuilder.generateCode("Message");
+      new JavaWithProfilesGenerator(schema)
+        .generateJava("Message");
       fail();
     } catch (IllegalStateException expected) {
-      assertThat(expected).hasMessage("Octal literal unsupported: 020");
+      assertThat(expected).hasMessageThat().contains("Octal literal unsupported: 020");
     }
   }
 
   @Test public void nullableFieldsWithoutParcelable() throws IOException {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("message.proto"), ""
             + "message A {\n"
             + "  message B {\n"
             + "    optional string c = 1;\n"
             + "  }\n"
             + "}\n")
-        .schema();
+      .build();
     MessageType message = (MessageType) schema.getType("A");
     JavaGenerator javaGenerator = JavaGenerator.get(schema).withAndroidAnnotations(true);
     TypeSpec typeSpec = javaGenerator.generateType(message);
@@ -408,39 +450,38 @@ public final class JavaGeneratorTest {
   }
 
   @Test public void androidSupport() throws IOException {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("message.proto"), ""
             + "message A {\n"
             + "  message B {\n"
             + "    optional string c = 1;\n"
             + "  }\n"
             + "}\n")
-        .schema();
+      .build();
     MessageType message = (MessageType) schema.getType("A");
     JavaGenerator javaGenerator = JavaGenerator.get(schema).withAndroid(true);
     TypeSpec typeSpec = javaGenerator.generateType(message);
-    assertThat(JavaFile.builder("", typeSpec).build().toString()).contains(""
+    String javaOutput = JavaFile.builder("", typeSpec).build().toString();
+    assertThat(javaOutput).contains(""
         + " @WireField(\n"
         + "        tag = 1,\n"
         + "        adapter = \"com.squareup.wire.ProtoAdapter#STRING\"\n"
         + "    )\n"
-        + "    @Nullable\n"
-        + "    public final String c;")
-        .contains(""
+        + "    public final String c;");
+    assertThat(javaOutput).contains(""
         + "public static final Parcelable.Creator<B> CREATOR = AndroidMessage.newCreator(ADAPTER)");
-        ;
   }
 
   @Test
   public void enclosingTypeIsNotMessage() throws IOException {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("message.proto"), ""
             + "message A {\n"
             + "  message B {\n"
             + "  }\n"
             + "  optional B b = 1;\n"
             + "}\n")
-        .schema();
+      .build();
 
     Schema pruned = schema.prune(new PruningRules.Builder()
         .addRoot("A.B")
@@ -448,19 +489,20 @@ public final class JavaGeneratorTest {
 
     JavaGenerator javaGenerator = JavaGenerator.get(schema);
     TypeSpec typeSpec = javaGenerator.generateType(pruned.getType("A"));
-    assertThat(JavaFile.builder("", typeSpec).build().toString())
+    String javaOutput = JavaFile.builder("", typeSpec).build().toString();
+    assertThat(javaOutput)
         .contains(""
             + "public final class A {\n"
             + "  private A() {\n"
             + "    throw new AssertionError();\n"
-            + "  }")
-        .contains("public static final class B extends Message<B, B.Builder> {");
+            + "  }");
+    assertThat(javaOutput).contains("public static final class B extends Message<B, B.Builder> {");
   }
 
   @Test
   public void generateTypeUsesPackageNameOnFieldAndClassNameClash() throws Exception {
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("person.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("person.proto"), ""
             + "package common.proto;\n"
             + "enum Gender {\n"
             + "  Gender_Male = 0;\n"
@@ -468,15 +510,40 @@ public final class JavaGeneratorTest {
             + "}\n"
             + "message Person {\n"
             + "  optional Gender Gender = 1;\n"
-            + "}\n");
-    assertThat(repoBuilder.generateCode("common.proto.Person"))
+            + "}\n")
+      .build();
+    assertThat(new JavaWithProfilesGenerator(schema)
+      .generateJava("common.proto.Person"))
         .contains("public final Gender common_proto_Gender;");
   }
 
   @Test
+  public void buildersOnlyGeneratesNonPublicConstructors() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add(Path.get("message.proto"), ""
+        + "syntax = \"proto2\";\n"
+        + "message SomeMessage {\n"
+        + "  optional string a = 1;\n"
+        + "  optional string b = 2;\n"
+        + "  message InnerMessage {\n"
+        + "    optional string c = 3;\n"
+        + "    optional string d = 8;\n"
+        + "  }\n"
+        + "}\n"
+      )
+      .build();
+    String javaOutput = new JavaWithProfilesGenerator(schema)
+      .generateJava("SomeMessage", null /* profileName */, true /* buildersOnly */);
+    assertThat(javaOutput).contains("  SomeMessage(");
+    assertThat(javaOutput).contains("  InnerMessage(");
+    assertThat(javaOutput).doesNotContain("public SomeMessage(");
+    assertThat(javaOutput).doesNotContain("public InnerMessage(");
+  }
+
+  @Test
   public void generateTypeUsesPackageNameOnFieldAndClassNameClashWithinPackage() throws Exception {
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("a.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("a.proto"), ""
             + "package common.proto;\n"
             + "enum Status {\n"
             + "  Status_Approved = 0;\n"
@@ -492,14 +559,16 @@ public final class JavaGeneratorTest {
             + "  }\n"
             + "  repeated B b = 1;"
             + "  optional AnotherStatus Status = 2;\n"
-            + "}\n");
-    assertThat(repoBuilder.generateCode("common.proto.A"))
+            + "}\n")
+      .build();
+    assertThat(new JavaWithProfilesGenerator(schema)
+      .generateJava("common.proto.A"))
         .contains("public final AnotherStatus common_proto_Status;");
   }
 
   @Test public void fieldHasScalarName() throws Exception {
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("example.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("example.proto"), ""
             + "package squareup.testing.wire;\n"
             + "\n"
             + "option java_package = \"com.squareup.testing.wire\";\n"
@@ -507,8 +576,10 @@ public final class JavaGeneratorTest {
             + "message Data {\n"
             + "  optional string string = 1;\n"
             + "  repeated string values = 2;\n"
-            + "}\n");
-    assertThat(repoBuilder.generateCode("squareup.testing.wire.Data")).contains(""
+            + "}\n")
+      .build();
+    assertThat(new JavaWithProfilesGenerator(schema)
+      .generateJava("squareup.testing.wire.Data")).contains(""
         + "    public Builder string(String string) {\n"
         + "      this.string = string;\n"
         + "      return this;\n"
@@ -516,8 +587,8 @@ public final class JavaGeneratorTest {
   }
 
   @Test public void sanitizeStringsOnPrinting() throws Exception {
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("example.proto", ""
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("example.proto"), ""
             + "message Person {\n"
             + "  required string name = 1;\n"
             + "  required int32 id = 2;\n"
@@ -533,8 +604,10 @@ public final class JavaGeneratorTest {
             + "    WORK = 1;\n"
             + "    MOBILE = 2;\n"
             + "  }\n"
-            + "}\n");
-    String generatedCode = repoBuilder.generateCode("Person");
+            + "}\n")
+      .build();
+    String generatedCode = new JavaWithProfilesGenerator(schema)
+      .generateJava("Person");
     assertThat(generatedCode).contains(""
         + "  public String toString() {\n"
         + "    StringBuilder builder = new StringBuilder();\n"
@@ -554,8 +627,8 @@ public final class JavaGeneratorTest {
   }
 
   @Test public void wirePackageTakesPrecedenceOverJavaPackage() throws IOException {
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("proto_package/person.proto",
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("proto_package/person.proto"),
             "package proto_package;\n"
                 + "import \"wire/extensions.proto\";\n"
                 + "\n"
@@ -564,15 +637,17 @@ public final class JavaGeneratorTest {
                 + "\n"
                 + "message Person {\n"
                 + "	required string name = 1;\n"
-                + "}\n");
-    String code = repoBuilder.generateCode("proto_package.Person");
+                + "}\n")
+      .build();
+    String code = new JavaWithProfilesGenerator(schema)
+      .generateJava("proto_package.Person");
     assertThat(code).contains("package wire_package");
     assertThat(code).contains("class Person");
   }
 
   @Test public void wirePackageTakesPrecedenceOverProtoPackage() throws IOException {
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("proto_package/person.proto",
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("proto_package/person.proto"),
             "package proto_package;\n"
             + "import \"wire/extensions.proto\";\n"
             + "\n"
@@ -580,15 +655,40 @@ public final class JavaGeneratorTest {
             + "\n"
             + "message Person {\n"
             + "	required string name = 1;\n"
-            + "}\n");
-    String code = repoBuilder.generateCode("proto_package.Person");
+            + "}\n")
+      .build();
+    String code = new JavaWithProfilesGenerator(schema)
+      .generateJava("proto_package.Person");
     assertThat(code).contains("package wire_package");
     assertThat(code).contains("class Person");
   }
 
+  @Test public void packageNameUsedIfFieldNameIsSameAsNonScalarTypeName() throws IOException {
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("common/common_message.proto"),
+            "package a.Common;\n"
+          + "option java_package = \"a.common\";"
+          + "message CommonMessage {\n"
+          + "   required string First = 1;\n"
+          + "}\n")
+        .add(Path.get("example.proto"),
+            "package a;\n"
+          + "import \"common/common_message.proto\";\n"
+          + "\n"
+          + "message Example {\n"
+          + "   required Common.CommonMessage CommonMessage = 1;\n"
+          + "}\n")
+      .build();
+    String code = new JavaWithProfilesGenerator(schema)
+      .generateJava("a.Example");
+    assertThat(code).contains("package a");
+    assertThat(code).contains("import a.common.CommonMessage");
+    assertThat(code).contains("public CommonMessage a_CommonMessage");
+  }
+
   @Test public void wirePackageUsedInImport() throws IOException {
-    RepoBuilder repoBuilder = new RepoBuilder()
-        .add("proto_package/person.proto",
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("proto_package/person.proto"),
         "package proto_package;\n"
             + "import \"wire/extensions.proto\";\n"
             + "\n"
@@ -597,15 +697,77 @@ public final class JavaGeneratorTest {
             + "message Person {\n"
             + "	required string name = 1;\n"
             + "}\n")
-        .add("city_package/home.proto",
+        .add(Path.get("city_package/home.proto"),
             "package city_package;\n"
             + "import \"proto_package/person.proto\";\n"
             + "\n"
             + "message Home {\n"
             + "	repeated proto_package.Person person = 1;\n"
-            + "}\n");
-    String code = repoBuilder.generateCode("city_package.Home");
+            + "}\n")
+      .build();
+    String code = new JavaWithProfilesGenerator(schema)
+      .generateJava("city_package.Home");
     assertThat(code).contains("package city_package");
     assertThat(code).contains("import wire_package.Person");
+  }
+
+  @Test public void deprecatedEnum() throws IOException {
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("proto_package/person.proto"),
+            "package proto_package;\n"
+                + "enum Direction {\n"
+                + "  option deprecated = true;\n"
+                + "  NORTH = 1;\n"
+                + "  EAST = 2;\n"
+                + "  SOUTH = 3;\n"
+                + "  WEST = 4;\n"
+                + "}\n")
+      .build();
+    String code = new JavaWithProfilesGenerator(schema)
+      .generateJava("proto_package.Direction");
+    assertThat(code).contains("@Deprecated\npublic enum Direction");
+  }
+
+  @Test public void deprecatedEnumConstant() throws IOException {
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("proto_package/person.proto"),
+            "package proto_package;\n"
+                + "enum Direction {\n"
+                + "  NORTH = 1;\n"
+                + "  EAST = 2 [deprecated = true];\n"
+                + "  SOUTH = 3;\n"
+                + "  WEST = 4;\n"
+                + "}\n")
+      .build();
+    String code = new JavaWithProfilesGenerator(schema)
+      .generateJava("proto_package.Direction");
+    assertThat(code).contains("  @Deprecated\n  EAST(2)");
+  }
+
+  @Test public void deprecatedField() throws IOException {
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("proto_package/person.proto"),
+            "package proto_package;\n"
+                + "message Person {\n"
+                + "  optional string name = 1 [deprecated = true];\n"
+                + "}\n")
+      .build();
+    String code = new JavaWithProfilesGenerator(schema)
+      .generateJava("proto_package.Person");
+    assertThat(code).contains("  @Deprecated\n  public final String name;");
+  }
+
+  @Test public void deprecatedMessage() throws IOException {
+    Schema schema = new SchemaBuilder()
+        .add(Path.get("proto_package/person.proto"),
+            "package proto_package;\n"
+                + "message Person {\n"
+                + "  option deprecated = true;\n"
+                + "  optional string name = 1;\n"
+                + "}\n")
+      .build();
+    String code = new JavaWithProfilesGenerator(schema)
+      .generateJava("proto_package.Person");
+    assertThat(code).contains("@Deprecated\npublic final class Person");
   }
 }

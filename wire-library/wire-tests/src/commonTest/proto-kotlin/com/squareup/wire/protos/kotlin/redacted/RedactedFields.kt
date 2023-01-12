@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.sanitize
@@ -20,7 +21,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -28,17 +28,17 @@ public class RedactedFields(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    redacted = true
+    redacted = true,
   )
   public val a: String? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   public val b: String? = null,
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   public val c: String? = null,
   /**
@@ -46,16 +46,17 @@ public class RedactedFields(
    */
   @field:WireField(
     tag = 10,
-    adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedExtension#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedExtension#ADAPTER",
   )
   public val extension: RedactedExtension? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<RedactedFields, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -72,10 +73,10 @@ public class RedactedFields(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + a.hashCode()
-      result = result * 37 + b.hashCode()
-      result = result * 37 + c.hashCode()
-      result = result * 37 + extension.hashCode()
+      result = result * 37 + (a?.hashCode() ?: 0)
+      result = result * 37 + (b?.hashCode() ?: 0)
+      result = result * 37 + (c?.hashCode() ?: 0)
+      result = result * 37 + (extension?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -95,7 +96,7 @@ public class RedactedFields(
     b: String? = this.b,
     c: String? = this.c,
     extension: RedactedExtension? = this.extension,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): RedactedFields = RedactedFields(a, b, c, extension, unknownFields)
 
   public companion object {
@@ -105,9 +106,10 @@ public class RedactedFields(
       RedactedFields::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedFields", 
       PROTO_2, 
-      null
+      null, 
+      "redacted_test.proto"
     ) {
-      public override fun encodedSize(value: RedactedFields): Int {
+      public override fun encodedSize(`value`: RedactedFields): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.b)
@@ -116,12 +118,20 @@ public class RedactedFields(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: RedactedFields): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: RedactedFields): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.c)
         RedactedExtension.ADAPTER.encodeWithTag(writer, 10, value.extension)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: RedactedFields): Unit {
+        writer.writeBytes(value.unknownFields)
+        RedactedExtension.ADAPTER.encodeWithTag(writer, 10, value.extension)
+        ProtoAdapter.STRING.encodeWithTag(writer, 3, value.c)
+        ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
       }
 
       public override fun decode(reader: ProtoReader): RedactedFields {
@@ -147,7 +157,7 @@ public class RedactedFields(
         )
       }
 
-      public override fun redact(value: RedactedFields): RedactedFields = value.copy(
+      public override fun redact(`value`: RedactedFields): RedactedFields = value.copy(
         a = null,
         extension = value.extension?.let(RedactedExtension.ADAPTER::redact),
         unknownFields = ByteString.EMPTY

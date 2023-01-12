@@ -19,7 +19,7 @@ package squareup.dinosaurs.java;
 
 option java_package = "com.squareup.wire.proto2.dinosaurs.java";
 
-import "proto2/period_java.proto";
+import "period_java.proto";
 
 message Dinosaur {
   /** Common name of this dinosaur, like "Stegosaurus". */

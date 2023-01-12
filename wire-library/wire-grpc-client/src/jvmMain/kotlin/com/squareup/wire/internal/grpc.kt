@@ -20,6 +20,7 @@ import com.squareup.wire.GrpcResponse
 import com.squareup.wire.GrpcStatus
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.use
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.consumeEach
@@ -32,11 +33,13 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okio.BufferedSink
 import okio.IOException
+import java.io.Closeable
 
 internal val APPLICATION_GRPC_MEDIA_TYPE: MediaType = "application/grpc".toMediaType()
 
 /** Returns a new request body that writes [onlyMessage]. */
 internal fun <S : Any> newRequestBody(
+  minMessageToCompress: Long,
   requestAdapter: ProtoAdapter<S>,
   onlyMessage: S
 ): RequestBody {
@@ -45,10 +48,11 @@ internal fun <S : Any> newRequestBody(
 
     override fun writeTo(sink: BufferedSink) {
       val grpcMessageSink = GrpcMessageSink(
-          sink = sink,
-          messageAdapter = requestAdapter,
-          callForCancel = null,
-          grpcEncoding = "gzip"
+        sink = sink,
+        minMessageToCompress = minMessageToCompress,
+        messageAdapter = requestAdapter,
+        callForCancel = null,
+        grpcEncoding = "gzip",
       )
       grpcMessageSink.use {
         it.write(onlyMessage)
@@ -67,17 +71,20 @@ internal fun newDuplexRequestBody(): PipeDuplexRequestBody {
 
 /** Writes messages to the request body. */
 internal fun <S : Any> PipeDuplexRequestBody.messageSink(
+  minMessageToCompress: Long,
   requestAdapter: ProtoAdapter<S>,
   callForCancel: Call
 ) = GrpcMessageSink(
-    sink = createSink(),
-    messageAdapter = requestAdapter,
-    callForCancel = callForCancel,
-    grpcEncoding = "gzip"
+  sink = createSink(),
+  minMessageToCompress = minMessageToCompress,
+  messageAdapter = requestAdapter,
+  callForCancel = callForCancel,
+  grpcEncoding = "gzip",
 )
 
 /** Sends the response messages to the channel. */
 internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
+  grpcCall: RealGrpcStreamingCall<*, R>,
   responseAdapter: ProtoAdapter<R>
 ): Callback {
   return object : Callback {
@@ -87,15 +94,28 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
     }
 
     override fun onResponse(call: Call, response: GrpcResponse) {
+      grpcCall.responseMetadata = response.headers.toMap()
       runBlocking {
         response.use {
           response.messageSource(responseAdapter).use { reader ->
-            while (true) {
-              val message = reader.read() ?: break
-              send(message)
+            var exception: Exception? = null
+            try {
+              while (true) {
+                val message = reader.read() ?: break
+                send(message)
+              }
+              exception = response.grpcResponseToException()
+            } catch (e: IOException) {
+              exception = response.grpcResponseToException(e)
+            } catch (e: Exception) {
+              exception = e
+            } finally {
+              try {
+                close(exception)
+              } catch (_: CancellationException) {
+                // If it's already canceled, there's nothing more to do.
+              }
             }
-
-            close(response.grpcResponseToException())
           }
         }
       }
@@ -109,21 +129,38 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
  * 1. read a message (non blocking, suspending code)
  * 2. write it to the stream (blocking)
  * 3. repeat. We also have to wait for all 2s to end before closing the writer
+ *
+ * If this fails reading a message from the channel, we need to call [MessageSink.cancel]. If it
+ * fails writing a message to the network, we shouldn't call that method.
+ *
+ * If it fails either reading or writing we need to call [MessageSink.close] (via [Closeable.use])
+ * and [ReceiveChannel.cancel].
  */
 internal suspend fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
   requestBody: PipeDuplexRequestBody,
+  minMessageToCompress: Long,
   requestAdapter: ProtoAdapter<S>,
   callForCancel: Call
 ) {
-  requestBody.messageSink(requestAdapter, callForCancel).use { requestWriter ->
-    var success = false
-    try {
-      consumeEach { message ->
-        requestWriter.write(message)
+  val requestWriter = requestBody.messageSink(minMessageToCompress, requestAdapter, callForCancel)
+  try {
+    requestWriter.use {
+      var channelReadFailed = true
+      try {
+        consumeEach { message ->
+          channelReadFailed = false
+          requestWriter.write(message)
+          channelReadFailed = true
+        }
+        channelReadFailed = false
+      } finally {
+        if (channelReadFailed) requestWriter.cancel()
       }
-      success = true
-    } finally {
-      if (!success) requestWriter.cancel()
+    }
+  } catch (e: Throwable) {
+    cancel(CancellationException("Could not write message", e))
+    if (e !is IOException && e !is CancellationException) {
+      throw e
     }
   }
 }
@@ -142,9 +179,10 @@ internal fun <R : Any> GrpcResponse.messageSource(
 private fun GrpcResponse.checkGrpcResponse() {
   val contentType = body!!.contentType()
   if (code != 200 ||
-      contentType == null ||
-      contentType.type != "application" ||
-      contentType.subtype != "grpc" && contentType.subtype != "grpc+proto") {
+    contentType == null ||
+    contentType.type != "application" ||
+    contentType.subtype != "grpc" && contentType.subtype != "grpc+proto"
+  ) {
     throw IOException("expected gRPC but was HTTP status=$code, content-type=$contentType")
   }
 }
@@ -164,17 +202,17 @@ internal fun GrpcResponse.grpcResponseToException(suppressed: IOException? = nul
 
   if (transportException != null) {
     return IOException(
-        "gRPC transport failure" +
-            " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)",
-        transportException
+      "gRPC transport failure" +
+        " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)",
+      transportException
     )
   }
 
   if (grpcStatus != "0") {
     val grpcStatusInt = grpcStatus?.toIntOrNull()
       ?: throw IOException(
-          "gRPC transport failure" +
-              " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)"
+        "gRPC transport failure" +
+          " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)"
       )
 
     return GrpcException(GrpcStatus.get(grpcStatusInt), grpcMessage)

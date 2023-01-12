@@ -1,0 +1,20 @@
+plugins {
+  id 'application'
+  id 'com.squareup.wire'
+}
+
+// See installProtoJars task in wire-gradle-plugin/build.gradle.kts
+repositories {
+  maven {
+    url "file://${projectDir.absolutePath}/../../../../../build/localMaven"
+  }
+}
+
+wire {
+  sourcePath {
+    srcJar libs.allprotos
+    include 'squareup/geology/period.proto'
+  }
+  java{
+  }
+}

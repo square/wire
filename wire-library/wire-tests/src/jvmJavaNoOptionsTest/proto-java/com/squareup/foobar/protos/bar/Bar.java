@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -191,7 +192,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
       private static final class ProtoAdapter_Moo extends ProtoAdapter<Moo> {
         public ProtoAdapter_Moo() {
-          super(FieldEncoding.LENGTH_DELIMITED, Moo.class, "type.googleapis.com/squareup.foobar.Bar.Baz.Moo", Syntax.PROTO_2, null);
+          super(FieldEncoding.LENGTH_DELIMITED, Moo.class, "type.googleapis.com/squareup.foobar.Bar.Baz.Moo", Syntax.PROTO_2, null, "bar.proto");
         }
 
         @Override
@@ -206,6 +207,12 @@ public final class Bar extends Message<Bar, Bar.Builder> {
         public void encode(ProtoWriter writer, Moo value) throws IOException {
           ProtoAdapter.STRING.encodeWithTag(writer, 1, value.boo);
           writer.writeBytes(value.unknownFields());
+        }
+
+        @Override
+        public void encode(ReverseProtoWriter writer, Moo value) throws IOException {
+          writer.writeBytes(value.unknownFields());
+          ProtoAdapter.STRING.encodeWithTag(writer, 1, value.boo);
         }
 
         @Override
@@ -235,7 +242,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
     private static final class ProtoAdapter_Baz extends ProtoAdapter<Baz> {
       public ProtoAdapter_Baz() {
-        super(FieldEncoding.LENGTH_DELIMITED, Baz.class, "type.googleapis.com/squareup.foobar.Bar.Baz", Syntax.PROTO_2, null);
+        super(FieldEncoding.LENGTH_DELIMITED, Baz.class, "type.googleapis.com/squareup.foobar.Bar.Baz", Syntax.PROTO_2, null, "bar.proto");
       }
 
       @Override
@@ -247,6 +254,11 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
       @Override
       public void encode(ProtoWriter writer, Baz value) throws IOException {
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public void encode(ReverseProtoWriter writer, Baz value) throws IOException {
         writer.writeBytes(value.unknownFields());
       }
 
@@ -276,7 +288,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
   private static final class ProtoAdapter_Bar extends ProtoAdapter<Bar> {
     public ProtoAdapter_Bar() {
-      super(FieldEncoding.LENGTH_DELIMITED, Bar.class, "type.googleapis.com/squareup.foobar.Bar", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, Bar.class, "type.googleapis.com/squareup.foobar.Bar", Syntax.PROTO_2, null, "bar.proto");
     }
 
     @Override
@@ -288,6 +300,11 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
     @Override
     public void encode(ProtoWriter writer, Bar value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, Bar value) throws IOException {
       writer.writeBytes(value.unknownFields());
     }
 

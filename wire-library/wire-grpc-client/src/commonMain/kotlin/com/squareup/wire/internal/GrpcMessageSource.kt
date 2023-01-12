@@ -46,7 +46,8 @@ class GrpcMessageSource<T : Any>(
       compressedFlag.toInt() == 0 -> GrpcDecoder.IdentityGrpcDecoder
       compressedFlag.toInt() == 1 -> {
         grpcEncoding?.toGrpcDecoding() ?: throw ProtocolException(
-            "message is encoded but message-encoding header was omitted")
+          "message is encoded but message-encoding header was omitted"
+        )
       }
       else -> throw ProtocolException("unexpected compressed-flag: $compressedFlag")
     }

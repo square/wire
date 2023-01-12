@@ -98,7 +98,8 @@ final class WriteBuffer {
     }
 
     func remove(count: Int, at offset: Int) {
-        memmove(storage.advanced(by: offset), storage.advanced(by: offset + count), self.count - offset)
+        let moveCount = self.count - (offset + count)
+        memmove(storage.advanced(by: offset), storage.advanced(by: offset + count), moveCount)
         self.count -= count
     }
 

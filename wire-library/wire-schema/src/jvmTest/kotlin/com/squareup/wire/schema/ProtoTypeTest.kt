@@ -25,7 +25,7 @@ class ProtoTypeTest {
     assertThat(ProtoType.get("int32")).isSameAs(ProtoType.INT32)
     assertThat(ProtoType.get("Person")).isEqualTo(ProtoType.get("Person"))
     assertThat(ProtoType.get("squareup.protos.person", "Person"))
-        .isEqualTo(ProtoType.get("squareup.protos.person.Person"))
+      .isEqualTo(ProtoType.get("squareup.protos.person.Person"))
   }
 
   @Test
@@ -44,7 +44,7 @@ class ProtoTypeTest {
   @Test
   fun nestedType() {
     assertThat(ProtoType.get("squareup.protos.person.Person").nestedType("PhoneType"))
-        .isEqualTo(ProtoType.get("squareup.protos.person.Person.PhoneType"))
+      .isEqualTo(ProtoType.get("squareup.protos.person.Person.PhoneType"))
   }
 
   @Test

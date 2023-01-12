@@ -1,0 +1,11 @@
+plugins {
+  id 'com.squareup.wire'
+  id 'org.jetbrains.kotlin.jvm'
+}
+
+wire {
+  protoLibrary = true
+
+  kotlin {
+  }
+}

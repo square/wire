@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -114,7 +115,7 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
 
   private static final class ProtoAdapter_RedactedExtension extends ProtoAdapter<RedactedExtension> {
     public ProtoAdapter_RedactedExtension() {
-      super(FieldEncoding.LENGTH_DELIMITED, RedactedExtension.class, "type.googleapis.com/squareup.protos.redacted_test.RedactedExtension", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedExtension.class, "type.googleapis.com/squareup.protos.redacted_test.RedactedExtension", Syntax.PROTO_2, null, "redacted_test.proto");
     }
 
     @Override
@@ -131,6 +132,13 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
       ProtoAdapter.STRING.encodeWithTag(writer, 1, value.d);
       ProtoAdapter.STRING.encodeWithTag(writer, 2, value.e);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, RedactedExtension value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      ProtoAdapter.STRING.encodeWithTag(writer, 2, value.e);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.d);
     }
 
     @Override

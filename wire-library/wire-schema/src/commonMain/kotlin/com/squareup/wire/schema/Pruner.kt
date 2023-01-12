@@ -22,7 +22,7 @@ import com.squareup.wire.schema.internal.mutableQueueOf
  * Creates a new schema that contains only the types selected by the pruning rules, including their
  * transitive dependencies.
  */
-internal class Pruner(
+class Pruner(
   private val schema: Schema,
   private val pruningRules: PruningRules
 ) {
@@ -179,18 +179,15 @@ internal class Pruner(
           checkNotNull(field) { "unexpected member: $member" }
           result.add(field.type)
           options = field.options
-
         } else if (type is EnumType) {
           val constant = type.constant(member)
-              ?: throw IllegalStateException("unexpected member: $member")
+            ?: throw IllegalStateException("unexpected member: $member")
           options = constant.options
-
         } else if (service != null) {
           val rpc = service.rpc(member) ?: throw IllegalStateException("unexpected rpc: $member")
           result.add(rpc.requestType)
           result.add(rpc.responseType)
           options = rpc.options
-
         } else {
           throw IllegalStateException("unexpected member: $member")
         }
@@ -224,22 +221,18 @@ internal class Pruner(
               result.add(get(root, field.name))
             }
           }
-
         } else if (type is EnumType) {
           options = type.options
           for (constant in type.constants) {
             result.add(get(type.type, constant.name))
           }
-
         } else if (type is EnclosingType) {
           options = type.options
-
         } else if (service != null) {
           options = service.options
           for (rpc in service.rpcs) {
             result.add(get(service.type, rpc.name))
           }
-
         } else {
           throw IllegalStateException("unexpected type: $root")
         }

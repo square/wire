@@ -113,4 +113,3 @@ class DagChecker<N>(
     var selfEdge = false
   }
 }
-

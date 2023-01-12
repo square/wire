@@ -16,4 +16,5 @@
 package com.squareup.wire.schema
 
 class SchemaException(errors: List<String>) : RuntimeException(
-    errors.joinToString(separator = "\n"))
+  errors.joinToString(separator = "\n")
+)

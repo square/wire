@@ -52,6 +52,6 @@ internal fun Any?.toValue(): Value {
     is Boolean -> Value.newBuilder().setBoolValue(this).build()
     is Map<*, *> -> Value.newBuilder().setStructValue((this as Map<String, *>).toStruct()).build()
     is List<*> -> Value.newBuilder().setListValue(toListValue()).build()
-    else -> throw IllegalArgumentException("unexpected struct value: ${this}")
+    else -> throw IllegalArgumentException("unexpected struct value: $this")
   }
 }

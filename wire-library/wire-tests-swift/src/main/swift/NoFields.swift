@@ -22,6 +22,17 @@ extension NoFields : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension NoFields : Sendable {
+}
+#endif
+
+extension NoFields : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.NoFields"
+    }
+}
+
 extension NoFields : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -41,5 +52,7 @@ extension NoFields : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension NoFields : Codable {
+    public enum CodingKeys : CodingKey {
+    }
 }
 #endif

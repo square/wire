@@ -7,7 +7,9 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.protos.kotlin.foreign.ForeignEnum
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -23,14 +25,25 @@ import okio.ByteString
 
 @MyMessageOptionTwoOption(91011.0f)
 @MyMessageOptionFourOption(FooBar.FooBarBazEnum.FOO)
+@MyMessageOptionSevenOption([
+  33
+])
+@MyMessageOptionEightOption([
+  "g",
+  "h"
+])
+@MyMessageOptionNineOption([
+  ForeignEnum.BAV
+])
 public class MessageWithOptions(
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MessageWithOptions, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -54,14 +67,19 @@ public class MessageWithOptions(
       MessageWithOptions::class, 
       "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions", 
       PROTO_2, 
-      null
+      null, 
+      "custom_options.proto"
     ) {
-      public override fun encodedSize(value: MessageWithOptions): Int {
+      public override fun encodedSize(`value`: MessageWithOptions): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: MessageWithOptions): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: MessageWithOptions): Unit {
+        writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: MessageWithOptions): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
@@ -72,7 +90,7 @@ public class MessageWithOptions(
         )
       }
 
-      public override fun redact(value: MessageWithOptions): MessageWithOptions = value.copy(
+      public override fun redact(`value`: MessageWithOptions): MessageWithOptions = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

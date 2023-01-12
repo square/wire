@@ -1,22 +1,28 @@
+require_relative 'wire-library/wire-runtime-swift/pod_helpers.rb'
+
 Pod::Spec.new do |s|
+  version = get_version
+
   s.name          = 'Wire'
-  s.version       = "#{ENV['POD_VERSION']}"
+  s.version       = version
   s.license       = { :type => 'apache2', :file => 'LICENSE.txt' }
   s.homepage      = 'https://github.com/square/wire'
   s.authors       = { 'Eric Firestone' => '@firetweet' }
   s.summary       = 'Protocol buffers runtime for Swift.'
-  s.source        = { :git => 'https://github.com/square/wire.git', :tag => "#{ENV['POD_VERSION']}" }
+  s.source        = { :git => 'https://github.com/square/wire.git', :tag => version }
   s.module_name   = 'Wire'
   s.swift_version = '5.0'
 
   s.ios.deployment_target  = '10.0'
   s.osx.deployment_target  = '10.15'
+  s.watchos.deployment_target = '3.0'
 
-  s.source_files  = 'wire-library/wire-runtime-swift/src/main/swift/*.swift'
+  s.source_files  = 'wire-library/wire-runtime-swift/src/main/swift/**/*.swift'
 
   s.test_spec do |test_spec|
     test_spec.ios.deployment_target  = '11.0'
     test_spec.osx.deployment_target  = '10.15'
+    test_spec.watchos.deployment_target = '3.0'
 
     test_spec.script_phase = {
       :name => 'Compile Test Protos',

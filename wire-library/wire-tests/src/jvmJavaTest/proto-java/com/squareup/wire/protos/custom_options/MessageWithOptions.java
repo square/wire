@@ -7,7 +7,9 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
+import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -17,6 +19,13 @@ import okio.ByteString;
 
 @MyMessageOptionTwoOption(91011.0f)
 @MyMessageOptionFourOption(FooBar.FooBarBazEnum.FOO)
+@MyMessageOptionSevenOption({
+        33})
+@MyMessageOptionEightOption({
+        "g",
+        "h"})
+@MyMessageOptionNineOption({
+        ForeignEnum.BAV})
 public final class MessageWithOptions extends Message<MessageWithOptions, MessageWithOptions.Builder> {
   public static final ProtoAdapter<MessageWithOptions> ADAPTER = new ProtoAdapter_MessageWithOptions();
 
@@ -68,7 +77,7 @@ public final class MessageWithOptions extends Message<MessageWithOptions, Messag
 
   private static final class ProtoAdapter_MessageWithOptions extends ProtoAdapter<MessageWithOptions> {
     public ProtoAdapter_MessageWithOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, MessageWithOptions.class, "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, MessageWithOptions.class, "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions", Syntax.PROTO_2, null, "custom_options.proto");
     }
 
     @Override
@@ -80,6 +89,11 @@ public final class MessageWithOptions extends Message<MessageWithOptions, Messag
 
     @Override
     public void encode(ProtoWriter writer, MessageWithOptions value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, MessageWithOptions value) throws IOException {
       writer.writeBytes(value.unknownFields());
     }
 

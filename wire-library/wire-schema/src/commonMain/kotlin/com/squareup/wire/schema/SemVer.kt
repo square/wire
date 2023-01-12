@@ -72,8 +72,8 @@ internal data class SemVer(val version: String) : Comparable<SemVer> {
         val bLimit = b.find(SEPARATORS, startIndex = bPos, endIndex = bSize)
 
         val result = compareSegment(
-            a.substring(aPos, aLimit),
-            b.substring(bPos, bLimit)
+          a.substring(aPos, aLimit),
+          b.substring(bPos, bLimit)
         )
 
         if (result != 0) return result

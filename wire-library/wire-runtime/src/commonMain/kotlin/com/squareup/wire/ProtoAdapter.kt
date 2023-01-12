@@ -26,8 +26,6 @@ import com.squareup.wire.ProtoWriter.Companion.tagSize
 import com.squareup.wire.ProtoWriter.Companion.varint32Size
 import com.squareup.wire.ProtoWriter.Companion.varint64Size
 import com.squareup.wire.internal.Throws
-import com.squareup.wire.internal.missingRequiredFields
-import com.squareup.wire.internal.redactElements
 import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
@@ -43,7 +41,8 @@ expect abstract class ProtoAdapter<E>(
   type: KClass<*>?,
   typeUrl: String?,
   syntax: Syntax,
-  identity: E? = null
+  identity: E? = null,
+  sourceFile: String? = null,
 ) {
   internal val fieldEncoding: FieldEncoding
   val type: KClass<*>?
@@ -66,6 +65,7 @@ expect abstract class ProtoAdapter<E>(
    * A special value that is used when a field is absent from an encoded proto3 message. When
    * encoding a proto3 message, fields that hold this value will be omitted.
    *
+   * ```
    * | TYPE                                           | IDENTITY                      |
    * | :--------------------------------------------- | :---------------------------- |
    * | All numeric types (int32, float, double, etc.) | 0                             |
@@ -74,8 +74,14 @@ expect abstract class ProtoAdapter<E>(
    * | Bytes                                          | empty bytes: ByteString.EMPTY |
    * | Enums                                          | enum constant with tag 0      |
    * | Lists (repeated types)                         | empty list: listOf()          |
+   * ```
    */
   val identity: E?
+
+  /**
+   * Path to the file containing the protobuf definition of this type.
+   */
+  val sourceFile: String?
 
   internal val packedAdapter: ProtoAdapter<List<E>>?
   internal val repeatedAdapter: ProtoAdapter<List<E>>?
@@ -100,9 +106,17 @@ expect abstract class ProtoAdapter<E>(
   @Throws(IOException::class)
   abstract fun encode(writer: ProtoWriter, value: E)
 
+  /** Write non-null `value` to `writer`. */
+  @Throws(IOException::class)
+  open fun encode(writer: ReverseProtoWriter, value: E)
+
   /** Write `tag` and `value` to `writer`. If value is null this does nothing. */
   @Throws(IOException::class)
   open fun encodeWithTag(writer: ProtoWriter, tag: Int, value: E?)
+
+  /** Write `tag` and `value` to `writer`. If value is null this does nothing. */
+  @Throws(IOException::class)
+  open fun encodeWithTag(writer: ReverseProtoWriter, tag: Int, value: E?)
 
   /** Encode `value` and write it to `stream`. */
   @Throws(IOException::class)
@@ -216,6 +230,16 @@ internal inline fun <E> ProtoAdapter<E>.commonEncodedSizeWithTag(tag: Int, value
 }
 
 @Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.delegateEncode(
+  writer: ReverseProtoWriter,
+  value: E
+) {
+  writer.writeForward { forwardWriter ->
+    encode(forwardWriter, value)
+  }
+}
+
+@Suppress("NOTHING_TO_INLINE")
 internal inline fun <E> ProtoAdapter<E>.commonEncodeWithTag(
   writer: ProtoWriter,
   tag: Int,
@@ -230,8 +254,27 @@ internal inline fun <E> ProtoAdapter<E>.commonEncodeWithTag(
 }
 
 @Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonEncodeWithTag(
+  writer: ReverseProtoWriter,
+  tag: Int,
+  value: E?
+) {
+  if (value == null) return
+  if (fieldEncoding == LENGTH_DELIMITED) {
+    val byteCountBefore = writer.byteCount
+    encode(writer, value)
+    writer.writeVarint32(writer.byteCount - byteCountBefore)
+  } else {
+    encode(writer, value)
+  }
+  writer.writeTag(tag, fieldEncoding)
+}
+
+@Suppress("NOTHING_TO_INLINE")
 internal inline fun <E> ProtoAdapter<E>.commonEncode(sink: BufferedSink, value: E) {
-  encode(ProtoWriter(sink), value)
+  val writer = ReverseProtoWriter()
+  encode(writer, value)
+  writer.writeTo(sink)
 }
 
 @Suppress("NOTHING_TO_INLINE")
@@ -285,14 +328,21 @@ internal inline fun <E> ProtoAdapter<E>.commonCreatePacked(): ProtoAdapter<List<
 internal class PackedProtoAdapter<E>(
   private val originalAdapter: ProtoAdapter<E>
 ) : ProtoAdapter<List<E>>(
-    LENGTH_DELIMITED,
-    List::class,
-    null,
-    originalAdapter.syntax,
-    listOf<E>()
+  LENGTH_DELIMITED,
+  List::class,
+  null,
+  originalAdapter.syntax,
+  listOf<E>()
 ) {
   @Throws(IOException::class)
   override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: List<E>?) {
+    if (value != null && value.isNotEmpty()) {
+      super.encodeWithTag(writer, tag, value)
+    }
+  }
+
+  @Throws(IOException::class)
+  override fun encodeWithTag(writer: ReverseProtoWriter, tag: Int, value: List<E>?) {
     if (value != null && value.isNotEmpty()) {
       super.encodeWithTag(writer, tag, value)
     }
@@ -318,6 +368,13 @@ internal class PackedProtoAdapter<E>(
   }
 
   @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: List<E>) {
+    for (i in (value.size - 1) downTo 0) {
+      originalAdapter.encode(writer, value[i])
+    }
+  }
+
+  @Throws(IOException::class)
   override fun decode(reader: ProtoReader): List<E> = listOf(originalAdapter.decode(reader))
 
   override fun redact(value: List<E>): List<E> = emptyList()
@@ -331,11 +388,11 @@ internal inline fun <E> ProtoAdapter<E>.commonCreateRepeated(): ProtoAdapter<Lis
 internal class RepeatedProtoAdapter<E>(
   private val originalAdapter: ProtoAdapter<E>
 ) : ProtoAdapter<List<E>>(
-    originalAdapter.fieldEncoding,
-    List::class,
-    null,
-    originalAdapter.syntax,
-    listOf<E>()
+  originalAdapter.fieldEncoding,
+  List::class,
+  null,
+  originalAdapter.syntax,
+  listOf<E>()
 ) {
   override fun encodedSize(value: List<E>): Int {
     throw UnsupportedOperationException("Repeated values can only be sized with a tag.")
@@ -354,10 +411,22 @@ internal class RepeatedProtoAdapter<E>(
     throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
   }
 
+  override fun encode(writer: ReverseProtoWriter, value: List<E>) {
+    throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
+  }
+
   @Throws(IOException::class)
   override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: List<E>?) {
     if (value == null) return
     for (i in 0 until value.size) {
+      originalAdapter.encodeWithTag(writer, tag, value[i])
+    }
+  }
+
+  @Throws(IOException::class)
+  override fun encodeWithTag(writer: ReverseProtoWriter, tag: Int, value: List<E>?) {
+    if (value == null) return
+    for (i in (value.size - 1) downTo 0) {
       originalAdapter.encodeWithTag(writer, tag, value[i])
     }
   }
@@ -372,11 +441,11 @@ internal class MapProtoAdapter<K, V> internal constructor(
   keyAdapter: ProtoAdapter<K>,
   valueAdapter: ProtoAdapter<V>
 ) : ProtoAdapter<Map<K, V>>(
-    LENGTH_DELIMITED,
-    Map::class,
-    null,
-    valueAdapter.syntax,
-    mapOf<K, V>()
+  LENGTH_DELIMITED,
+  Map::class,
+  null,
+  valueAdapter.syntax,
+  mapOf<K, V>()
 ) {
   private val entryAdapter = MapEntryProtoAdapter(keyAdapter, valueAdapter)
 
@@ -397,6 +466,10 @@ internal class MapProtoAdapter<K, V> internal constructor(
     throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
   }
 
+  override fun encode(writer: ReverseProtoWriter, value: Map<K, V>) {
+    throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
+  }
+
   @Throws(IOException::class)
   override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: Map<K, V>?) {
     if (value == null) return
@@ -406,9 +479,17 @@ internal class MapProtoAdapter<K, V> internal constructor(
   }
 
   @Throws(IOException::class)
+  override fun encodeWithTag(writer: ReverseProtoWriter, tag: Int, value: Map<K, V>?) {
+    if (value == null) return
+    for (entry in value.entries.toTypedArray().apply { reverse() }) {
+      entryAdapter.encodeWithTag(writer, tag, entry)
+    }
+  }
+
+  @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Map<K, V> {
-    var key: K? = null
-    var value: V? = null
+    var key: K? = entryAdapter.keyAdapter.identity
+    var value: V? = entryAdapter.valueAdapter.identity
 
     val token = reader.beginMessage()
     while (true) {
@@ -434,21 +515,27 @@ private class MapEntryProtoAdapter<K, V> internal constructor(
   internal val keyAdapter: ProtoAdapter<K>,
   internal val valueAdapter: ProtoAdapter<V>
 ) : ProtoAdapter<Map.Entry<K, V>>(
-    LENGTH_DELIMITED,
-    Map.Entry::class,
-    null,
-    valueAdapter.syntax
+  LENGTH_DELIMITED,
+  Map.Entry::class,
+  null,
+  valueAdapter.syntax
 ) {
 
   override fun encodedSize(value: Map.Entry<K, V>): Int {
     return keyAdapter.encodedSizeWithTag(1, value.key) +
-        valueAdapter.encodedSizeWithTag(2, value.value)
+      valueAdapter.encodedSizeWithTag(2, value.value)
   }
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Map.Entry<K, V>) {
     keyAdapter.encodeWithTag(writer, 1, value.key)
     valueAdapter.encodeWithTag(writer, 2, value.value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Map.Entry<K, V>) {
+    valueAdapter.encodeWithTag(writer, 2, value.value)
+    keyAdapter.encodeWithTag(writer, 1, value.key)
   }
 
   override fun decode(reader: ProtoReader): Map.Entry<K, V> {
@@ -473,11 +560,11 @@ internal inline fun <K, V> commonNewMapAdapter(
 }
 
 internal fun commonBool(): ProtoAdapter<Boolean> = object : ProtoAdapter<Boolean>(
-    VARINT,
-    Boolean::class,
-    null,
-    Syntax.PROTO_2,
-    false
+  VARINT,
+  Boolean::class,
+  null,
+  Syntax.PROTO_2,
+  false
 ) {
   override fun encodedSize(value: Boolean): Int = FIXED_BOOL_SIZE
 
@@ -487,26 +574,36 @@ internal fun commonBool(): ProtoAdapter<Boolean> = object : ProtoAdapter<Boolean
   }
 
   @Throws(IOException::class)
-  override fun decode(reader: ProtoReader): Boolean = when (val value = reader.readVarint32()) {
+  override fun encode(writer: ReverseProtoWriter, value: Boolean) {
+    writer.writeVarint32(if (value) 1 else 0)
+  }
+
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader): Boolean = when (reader.readVarint32()) {
     0 -> false
-    1 -> true
-    else -> throw IOException("Invalid boolean value 0x" + value.toString(16).padStart(2, '0'))
+    // We are lenient to match protoc behavior.
+    else -> true
   }
 
   override fun redact(value: Boolean): Boolean = throw UnsupportedOperationException()
 }
 
 internal fun commonInt32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
-    VARINT,
-    Int::class,
-    null,
-    Syntax.PROTO_2,
-    0
+  VARINT,
+  Int::class,
+  null,
+  Syntax.PROTO_2,
+  0
 ) {
   override fun encodedSize(value: Int): Int = int32Size(value)
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Int) {
+    writer.writeSignedVarint32(value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Int) {
     writer.writeSignedVarint32(value)
   }
 
@@ -517,16 +614,21 @@ internal fun commonInt32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
 }
 
 internal fun commonUint32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
-    VARINT,
-    Int::class,
-    null,
-    Syntax.PROTO_2,
-    0
+  VARINT,
+  Int::class,
+  null,
+  Syntax.PROTO_2,
+  0
 ) {
   override fun encodedSize(value: Int): Int = varint32Size(value)
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Int) {
+    writer.writeVarint32(value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Int) {
     writer.writeVarint32(value)
   }
 
@@ -537,16 +639,21 @@ internal fun commonUint32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
 }
 
 internal fun commonSint32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
-    VARINT,
-    Int::class,
-    null,
-    Syntax.PROTO_2,
-    0
+  VARINT,
+  Int::class,
+  null,
+  Syntax.PROTO_2,
+  0
 ) {
   override fun encodedSize(value: Int): Int = varint32Size(encodeZigZag32(value))
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Int) {
+    writer.writeVarint32(encodeZigZag32(value))
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Int) {
     writer.writeVarint32(encodeZigZag32(value))
   }
 
@@ -557,16 +664,21 @@ internal fun commonSint32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
 }
 
 internal fun commonFixed32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
-    FieldEncoding.FIXED32,
-    Int::class,
-    null,
-    Syntax.PROTO_2,
-    0
+  FieldEncoding.FIXED32,
+  Int::class,
+  null,
+  Syntax.PROTO_2,
+  0
 ) {
   override fun encodedSize(value: Int): Int = FIXED_32_SIZE
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Int) {
+    writer.writeFixed32(value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Int) {
     writer.writeFixed32(value)
   }
 
@@ -578,16 +690,21 @@ internal fun commonFixed32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
 
 internal fun commonSfixed32() = commonFixed32()
 internal fun commonInt64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
-    VARINT,
-    Long::class,
-    null,
-    Syntax.PROTO_2,
-    0L
+  VARINT,
+  Long::class,
+  null,
+  Syntax.PROTO_2,
+  0L
 ) {
   override fun encodedSize(value: Long): Int = varint64Size(value)
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Long) {
+    writer.writeVarint64(value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Long) {
     writer.writeVarint64(value)
   }
 
@@ -602,16 +719,21 @@ internal fun commonInt64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
  * in JSON.
  */
 internal fun commonUint64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
-    VARINT,
-    Long::class,
-    null,
-    Syntax.PROTO_2,
-    0L
+  VARINT,
+  Long::class,
+  null,
+  Syntax.PROTO_2,
+  0L
 ) {
   override fun encodedSize(value: Long): Int = varint64Size(value)
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Long) {
+    writer.writeVarint64(value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Long) {
     writer.writeVarint64(value)
   }
 
@@ -622,16 +744,21 @@ internal fun commonUint64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
 }
 
 internal fun commonSint64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
-    VARINT,
-    Long::class,
-    null,
-    Syntax.PROTO_2,
-    0L
+  VARINT,
+  Long::class,
+  null,
+  Syntax.PROTO_2,
+  0L
 ) {
   override fun encodedSize(value: Long): Int = varint64Size(encodeZigZag64(value))
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Long) {
+    writer.writeVarint64(encodeZigZag64(value))
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Long) {
     writer.writeVarint64(encodeZigZag64(value))
   }
 
@@ -642,16 +769,21 @@ internal fun commonSint64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
 }
 
 internal fun commonFixed64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
-    FieldEncoding.FIXED64,
-    Long::class,
-    null,
-    Syntax.PROTO_2,
-    0L
+  FieldEncoding.FIXED64,
+  Long::class,
+  null,
+  Syntax.PROTO_2,
+  0L
 ) {
   override fun encodedSize(value: Long): Int = FIXED_64_SIZE
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Long) {
+    writer.writeFixed64(value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Long) {
     writer.writeFixed64(value)
   }
 
@@ -663,16 +795,21 @@ internal fun commonFixed64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
 
 internal fun commonSfixed64() = commonFixed64()
 internal fun commonFloat(): ProtoAdapter<Float> = object : ProtoAdapter<Float>(
-    FieldEncoding.FIXED32,
-    Float::class,
-    null,
-    Syntax.PROTO_2,
-    0.0f
+  FieldEncoding.FIXED32,
+  Float::class,
+  null,
+  Syntax.PROTO_2,
+  0.0f
 ) {
   override fun encodedSize(value: Float): Int = FIXED_32_SIZE
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Float) {
+    writer.writeFixed32(value.toBits())
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Float) {
     writer.writeFixed32(value.toBits())
   }
 
@@ -685,16 +822,21 @@ internal fun commonFloat(): ProtoAdapter<Float> = object : ProtoAdapter<Float>(
 }
 
 internal fun commonDouble(): ProtoAdapter<Double> = object : ProtoAdapter<Double>(
-    FieldEncoding.FIXED64,
-    Double::class,
-    null,
-    Syntax.PROTO_2,
-    0.0
+  FieldEncoding.FIXED64,
+  Double::class,
+  null,
+  Syntax.PROTO_2,
+  0.0
 ) {
   override fun encodedSize(value: Double): Int = FIXED_64_SIZE
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Double) {
+    writer.writeFixed64(value.toBits())
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Double) {
     writer.writeFixed64(value.toBits())
   }
 
@@ -707,16 +849,21 @@ internal fun commonDouble(): ProtoAdapter<Double> = object : ProtoAdapter<Double
 }
 
 internal fun commonString(): ProtoAdapter<String> = object : ProtoAdapter<String>(
-    LENGTH_DELIMITED,
-    String::class,
-    null,
-    Syntax.PROTO_2,
-    ""
+  LENGTH_DELIMITED,
+  String::class,
+  null,
+  Syntax.PROTO_2,
+  ""
 ) {
   override fun encodedSize(value: String): Int = value.utf8Size().toInt()
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: String) {
+    writer.writeString(value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: String) {
     writer.writeString(value)
   }
 
@@ -727,16 +874,21 @@ internal fun commonString(): ProtoAdapter<String> = object : ProtoAdapter<String
 }
 
 internal fun commonBytes(): ProtoAdapter<ByteString> = object : ProtoAdapter<ByteString>(
-    LENGTH_DELIMITED,
-    ByteString::class,
-    null,
-    Syntax.PROTO_2,
-    ByteString.EMPTY
+  LENGTH_DELIMITED,
+  ByteString::class,
+  null,
+  Syntax.PROTO_2,
+  ByteString.EMPTY
 ) {
   override fun encodedSize(value: ByteString): Int = value.size
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: ByteString) {
+    writer.writeBytes(value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: ByteString) {
     writer.writeBytes(value)
   }
 
@@ -747,10 +899,10 @@ internal fun commonBytes(): ProtoAdapter<ByteString> = object : ProtoAdapter<Byt
 }
 
 internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Duration>(
-    LENGTH_DELIMITED,
-    Duration::class,
-    "type.googleapis.com/google.protobuf.Duration",
-    Syntax.PROTO_3
+  LENGTH_DELIMITED,
+  Duration::class,
+  "type.googleapis.com/google.protobuf.Duration",
+  Syntax.PROTO_3
 ) {
   override fun encodedSize(value: Duration): Int {
     var result = 0
@@ -766,6 +918,13 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
     if (seconds != 0L) INT64.encodeWithTag(writer, 1, seconds)
     val nanos = value.sameSignNanos
     if (nanos != 0) INT32.encodeWithTag(writer, 2, nanos)
+  }
+
+  override fun encode(writer: ReverseProtoWriter, value: Duration) {
+    val nanos = value.sameSignNanos
+    if (nanos != 0) INT32.encodeWithTag(writer, 2, nanos)
+    val seconds = value.sameSignSeconds
+    if (seconds != 0L) INT64.encodeWithTag(writer, 1, seconds)
   }
 
   override fun decode(reader: ProtoReader): Duration {
@@ -809,10 +968,10 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
 }
 
 internal fun commonInstant(): ProtoAdapter<Instant> = object : ProtoAdapter<Instant>(
-    LENGTH_DELIMITED,
-    Instant::class,
-    "type.googleapis.com/google.protobuf.Timestamp",
-    Syntax.PROTO_3
+  LENGTH_DELIMITED,
+  Instant::class,
+  "type.googleapis.com/google.protobuf.Timestamp",
+  Syntax.PROTO_3
 ) {
   override fun encodedSize(value: Instant): Int {
     var result = 0
@@ -828,6 +987,13 @@ internal fun commonInstant(): ProtoAdapter<Instant> = object : ProtoAdapter<Inst
     if (seconds != 0L) INT64.encodeWithTag(writer, 1, seconds)
     val nanos = value.getNano()
     if (nanos != 0) INT32.encodeWithTag(writer, 2, nanos)
+  }
+
+  override fun encode(writer: ReverseProtoWriter, value: Instant) {
+    val nanos = value.getNano()
+    if (nanos != 0) INT32.encodeWithTag(writer, 2, nanos)
+    val seconds = value.getEpochSecond()
+    if (seconds != 0L) INT64.encodeWithTag(writer, 1, seconds)
   }
 
   override fun decode(reader: ProtoReader): Instant {
@@ -847,14 +1013,16 @@ internal fun commonInstant(): ProtoAdapter<Instant> = object : ProtoAdapter<Inst
 }
 
 internal fun commonEmpty(): ProtoAdapter<Unit> = object : ProtoAdapter<Unit>(
-    LENGTH_DELIMITED,
-    Unit::class,
-    "type.googleapis.com/google.protobuf.Empty",
-    Syntax.PROTO_3
+  LENGTH_DELIMITED,
+  Unit::class,
+  "type.googleapis.com/google.protobuf.Empty",
+  Syntax.PROTO_3
 ) {
   override fun encodedSize(value: Unit): Int = 0
 
   override fun encode(writer: ProtoWriter, value: Unit) = Unit
+
+  override fun encode(writer: ReverseProtoWriter, value: Unit) = Unit
 
   override fun decode(reader: ProtoReader) {
     reader.forEachTag { tag -> reader.readUnknownField(tag) }
@@ -864,10 +1032,10 @@ internal fun commonEmpty(): ProtoAdapter<Unit> = object : ProtoAdapter<Unit>(
 }
 
 internal fun commonStructMap(): ProtoAdapter<Map<String, *>?> = object : ProtoAdapter<Map<String, *>?>(
-    LENGTH_DELIMITED,
-    Map::class,
-    "type.googleapis.com/google.protobuf.Struct",
-    Syntax.PROTO_3
+  LENGTH_DELIMITED,
+  Map::class,
+  "type.googleapis.com/google.protobuf.Struct",
+  Syntax.PROTO_3
 ) {
   override fun encodedSize(value: Map<String, *>?): Int {
     if (value == null) return 0
@@ -889,6 +1057,21 @@ internal fun commonStructMap(): ProtoAdapter<Map<String, *>?> = object : ProtoAd
       writer.writeVarint32(entrySize)
       STRING.encodeWithTag(writer, 1, k)
       STRUCT_VALUE.encodeWithTag(writer, 2, v)
+    }
+  }
+
+  override fun encode(
+    writer: ReverseProtoWriter,
+    value: Map<String, *>?
+  ) {
+    if (value == null) return
+
+    for ((k, v) in value.entries.toTypedArray().apply { reverse() }) {
+      val byteCountBefore = writer.byteCount
+      STRUCT_VALUE.encodeWithTag(writer, 2, v)
+      STRING.encodeWithTag(writer, 1, k)
+      writer.writeVarint32(writer.byteCount - byteCountBefore)
+      writer.writeTag(1, LENGTH_DELIMITED)
     }
   }
 
@@ -915,10 +1098,10 @@ internal fun commonStructMap(): ProtoAdapter<Map<String, *>?> = object : ProtoAd
 }
 
 internal fun commonStructList(): ProtoAdapter<List<*>?> = object : ProtoAdapter<List<*>?>(
-    LENGTH_DELIMITED,
-    Map::class,
-    "type.googleapis.com/google.protobuf.ListValue",
-    Syntax.PROTO_3
+  LENGTH_DELIMITED,
+  Map::class,
+  "type.googleapis.com/google.protobuf.ListValue",
+  Syntax.PROTO_3
 ) {
   override fun encodedSize(value: List<*>?): Int {
     if (value == null) return 0
@@ -932,9 +1115,15 @@ internal fun commonStructList(): ProtoAdapter<List<*>?> = object : ProtoAdapter<
 
   override fun encode(writer: ProtoWriter, value: List<*>?) {
     if (value == null) return
-
     for (v in value) {
       STRUCT_VALUE.encodeWithTag(writer, 1, v)
+    }
+  }
+
+  override fun encode(writer: ReverseProtoWriter, value: List<*>?) {
+    if (value == null) return
+    for (v in (value.size - 1) downTo 0) {
+      STRUCT_VALUE.encodeWithTag(writer, 1, value[v])
     }
   }
 
@@ -951,10 +1140,10 @@ internal fun commonStructList(): ProtoAdapter<List<*>?> = object : ProtoAdapter<
 }
 
 internal fun commonStructNull(): ProtoAdapter<Nothing?> = object : ProtoAdapter<Nothing?>(
-    VARINT,
-    Nothing::class,
-    "type.googleapis.com/google.protobuf.NullValue",
-    Syntax.PROTO_3
+  VARINT,
+  Nothing::class,
+  "type.googleapis.com/google.protobuf.NullValue",
+  Syntax.PROTO_3
 ) {
   override fun encodedSize(value: Nothing?): Int = varint32Size(0)
 
@@ -967,9 +1156,18 @@ internal fun commonStructNull(): ProtoAdapter<Nothing?> = object : ProtoAdapter<
     writer.writeVarint32(0)
   }
 
+  override fun encode(writer: ReverseProtoWriter, value: Nothing?) {
+    writer.writeVarint32(0)
+  }
+
   override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: Nothing?) {
     writer.writeTag(tag, fieldEncoding)
     encode(writer, value)
+  }
+
+  override fun encodeWithTag(writer: ReverseProtoWriter, tag: Int, value: Nothing?) {
+    encode(writer, value)
+    writer.writeTag(tag, fieldEncoding)
   }
 
   override fun decode(reader: ProtoReader): Nothing? {
@@ -982,10 +1180,10 @@ internal fun commonStructNull(): ProtoAdapter<Nothing?> = object : ProtoAdapter<
 }
 
 internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any?>(
-    LENGTH_DELIMITED,
-    Any::class,
-    "type.googleapis.com/google.protobuf.Value",
-    Syntax.PROTO_3
+  LENGTH_DELIMITED,
+  Any::class,
+  "type.googleapis.com/google.protobuf.Value",
+  Syntax.PROTO_3
 ) {
   override fun encodedSize(value: Any?): Int {
     @Suppress("UNCHECKED_CAST") // Assume map keys are strings.
@@ -1022,11 +1220,35 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
     }
   }
 
+  override fun encode(writer: ReverseProtoWriter, value: Any?) {
+    @Suppress("UNCHECKED_CAST") // Assume map keys are strings.
+    return when (value) {
+      null -> STRUCT_NULL.encodeWithTag(writer, 1, value)
+      is Number -> DOUBLE.encodeWithTag(writer, 2, value.toDouble())
+      is String -> STRING.encodeWithTag(writer, 3, value)
+      is Boolean -> BOOL.encodeWithTag(writer, 4, value)
+      is Map<*, *> -> STRUCT_MAP.encodeWithTag(writer, 5, value as Map<String, *>)
+      is List<*> -> STRUCT_LIST.encodeWithTag(writer, 6, value)
+      else -> throw IllegalArgumentException("unexpected struct value: $value")
+    }
+  }
+
   override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: Any?) {
     if (value == null) {
       writer.writeTag(tag, fieldEncoding)
       writer.writeVarint32(encodedSize(value))
       encode(writer, value)
+    } else {
+      super.encodeWithTag(writer, tag, value)
+    }
+  }
+
+  override fun encodeWithTag(writer: ReverseProtoWriter, tag: Int, value: Any?) {
+    if (value == null) {
+      val byteCountBefore = writer.byteCount
+      encode(writer, value)
+      writer.writeVarint32(writer.byteCount - byteCountBefore)
+      writer.writeTag(tag, fieldEncoding)
     } else {
       super.encodeWithTag(writer, tag, value)
     }
@@ -1062,27 +1284,38 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
   }
 }
 
+/**
+ * Wire implements scalar wrapper types as nullable scalar ones. Protoc omits both null wrappers
+ * and wrappers whose scalar value is the identity value of the scalar type. This is why we are
+ * checking for both null and identities in the wrapper adapter methods.
+ */
 internal fun <T : Any> commonWrapper(delegate: ProtoAdapter<T>, typeUrl: String): ProtoAdapter<T?> {
   return object : ProtoAdapter<T?>(
-      LENGTH_DELIMITED,
-      delegate.type,
-      typeUrl,
-      Syntax.PROTO_3,
-      null
+    LENGTH_DELIMITED,
+    delegate.type,
+    typeUrl,
+    Syntax.PROTO_3,
+    delegate.identity,
   ) {
     override fun encodedSize(value: T?): Int {
-      if (value == null) return 0
+      if (value == null || value == delegate.identity) return 0
       return delegate.encodedSizeWithTag(1, value)
     }
 
     override fun encode(writer: ProtoWriter, value: T?) {
-      if (value != null) {
+      if (value != null && value != delegate.identity) {
+        delegate.encodeWithTag(writer, 1, value)
+      }
+    }
+
+    override fun encode(writer: ReverseProtoWriter, value: T?) {
+      if (value != null && value != delegate.identity) {
         delegate.encodeWithTag(writer, 1, value)
       }
     }
 
     override fun decode(reader: ProtoReader): T? {
-      var result: T? = null
+      var result: T? = delegate.identity
       reader.forEachTag { tag ->
         when (tag) {
           1 -> result = delegate.decode(reader)

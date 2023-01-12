@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
@@ -27,7 +28,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import kotlin.lazy
@@ -38,7 +38,7 @@ public class AllTypes(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myInt32"
+    jsonName = "myInt32",
   )
   @JvmField
   public val my_int32: Int = 0,
@@ -46,7 +46,7 @@ public class AllTypes(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myUint32"
+    jsonName = "myUint32",
   )
   @JvmField
   public val my_uint32: Int = 0,
@@ -54,7 +54,7 @@ public class AllTypes(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "mySint32"
+    jsonName = "mySint32",
   )
   @JvmField
   public val my_sint32: Int = 0,
@@ -62,7 +62,7 @@ public class AllTypes(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myFixed32"
+    jsonName = "myFixed32",
   )
   @JvmField
   public val my_fixed32: Int = 0,
@@ -70,7 +70,7 @@ public class AllTypes(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "mySfixed32"
+    jsonName = "mySfixed32",
   )
   @JvmField
   public val my_sfixed32: Int = 0,
@@ -78,7 +78,7 @@ public class AllTypes(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myInt64"
+    jsonName = "myInt64",
   )
   @JvmField
   public val my_int64: Long = 0L,
@@ -86,7 +86,7 @@ public class AllTypes(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myUint64"
+    jsonName = "myUint64",
   )
   @JvmField
   public val my_uint64: Long = 0L,
@@ -94,7 +94,7 @@ public class AllTypes(
     tag = 8,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "mySint64"
+    jsonName = "mySint64",
   )
   @JvmField
   public val my_sint64: Long = 0L,
@@ -102,7 +102,7 @@ public class AllTypes(
     tag = 9,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myFixed64"
+    jsonName = "myFixed64",
   )
   @JvmField
   public val my_fixed64: Long = 0L,
@@ -110,7 +110,7 @@ public class AllTypes(
     tag = 10,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "mySfixed64"
+    jsonName = "mySfixed64",
   )
   @JvmField
   public val my_sfixed64: Long = 0L,
@@ -118,7 +118,7 @@ public class AllTypes(
     tag = 11,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myBool"
+    jsonName = "myBool",
   )
   @JvmField
   public val my_bool: Boolean = false,
@@ -126,7 +126,7 @@ public class AllTypes(
     tag = 12,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myFloat"
+    jsonName = "myFloat",
   )
   @JvmField
   public val my_float: Float = 0f,
@@ -134,7 +134,7 @@ public class AllTypes(
     tag = 13,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myDouble"
+    jsonName = "myDouble",
   )
   @JvmField
   public val my_double: Double = 0.0,
@@ -142,7 +142,7 @@ public class AllTypes(
     tag = 14,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myString"
+    jsonName = "myString",
   )
   @JvmField
   public val my_string: String = "",
@@ -150,7 +150,7 @@ public class AllTypes(
     tag = 15,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "myBytes"
+    jsonName = "myBytes",
   )
   @JvmField
   public val my_bytes: ByteString = ByteString.EMPTY,
@@ -158,7 +158,7 @@ public class AllTypes(
     tag = 16,
     adapter = "com.squareup.wire.proto3.alltypes.AllTypes${'$'}NestedEnum#ADAPTER",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "nestedEnum"
+    jsonName = "nestedEnum",
   )
   @JvmField
   public val nested_enum: NestedEnum = NestedEnum.UNKNOWN,
@@ -166,112 +166,112 @@ public class AllTypes(
     tag = 17,
     adapter = "com.squareup.wire.proto3.alltypes.AllTypes${'$'}NestedMessage#ADAPTER",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "nestedMessage"
+    jsonName = "nestedMessage",
   )
   @JvmField
   public val nested_message: NestedMessage? = null,
   @field:WireField(
     tag = 101,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    jsonName = "optInt32"
+    jsonName = "optInt32",
   )
   @JvmField
   public val opt_int32: Int? = null,
   @field:WireField(
     tag = 102,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-    jsonName = "optUint32"
+    jsonName = "optUint32",
   )
   @JvmField
   public val opt_uint32: Int? = null,
   @field:WireField(
     tag = 103,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-    jsonName = "optSint32"
+    jsonName = "optSint32",
   )
   @JvmField
   public val opt_sint32: Int? = null,
   @field:WireField(
     tag = 104,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-    jsonName = "optFixed32"
+    jsonName = "optFixed32",
   )
   @JvmField
   public val opt_fixed32: Int? = null,
   @field:WireField(
     tag = 105,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-    jsonName = "optSfixed32"
+    jsonName = "optSfixed32",
   )
   @JvmField
   public val opt_sfixed32: Int? = null,
   @field:WireField(
     tag = 106,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
-    jsonName = "optInt64"
+    jsonName = "optInt64",
   )
   @JvmField
   public val opt_int64: Long? = null,
   @field:WireField(
     tag = 107,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-    jsonName = "optUint64"
+    jsonName = "optUint64",
   )
   @JvmField
   public val opt_uint64: Long? = null,
   @field:WireField(
     tag = 108,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-    jsonName = "optSint64"
+    jsonName = "optSint64",
   )
   @JvmField
   public val opt_sint64: Long? = null,
   @field:WireField(
     tag = 109,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-    jsonName = "optFixed64"
+    jsonName = "optFixed64",
   )
   @JvmField
   public val opt_fixed64: Long? = null,
   @field:WireField(
     tag = 110,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-    jsonName = "optSfixed64"
+    jsonName = "optSfixed64",
   )
   @JvmField
   public val opt_sfixed64: Long? = null,
   @field:WireField(
     tag = 111,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-    jsonName = "optBool"
+    jsonName = "optBool",
   )
   @JvmField
   public val opt_bool: Boolean? = null,
   @field:WireField(
     tag = 112,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-    jsonName = "optFloat"
+    jsonName = "optFloat",
   )
   @JvmField
   public val opt_float: Float? = null,
   @field:WireField(
     tag = 113,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-    jsonName = "optDouble"
+    jsonName = "optDouble",
   )
   @JvmField
   public val opt_double: Double? = null,
   @field:WireField(
     tag = 114,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    jsonName = "optString"
+    jsonName = "optString",
   )
   @JvmField
   public val opt_string: String? = null,
   @field:WireField(
     tag = 115,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
-    jsonName = "optBytes"
+    jsonName = "optBytes",
   )
   @JvmField
   public val opt_bytes: ByteString? = null,
@@ -313,31 +313,34 @@ public class AllTypes(
   @field:WireField(
     tag = 601,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    jsonName = "oneofString"
+    jsonName = "oneofString",
+    oneofName = "choice",
   )
   @JvmField
   public val oneof_string: String? = null,
   @field:WireField(
     tag = 602,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    jsonName = "oneofInt32"
+    jsonName = "oneofInt32",
+    oneofName = "choice",
   )
   @JvmField
   public val oneof_int32: Int? = null,
   @field:WireField(
     tag = 603,
     adapter = "com.squareup.wire.proto3.alltypes.AllTypes${'$'}NestedMessage#ADAPTER",
-    jsonName = "oneofNestedMessage"
+    jsonName = "oneofNestedMessage",
+    oneofName = "choice",
   )
   @JvmField
   public val oneof_nested_message: NestedMessage? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<AllTypes, AllTypes.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 201,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REPEATED,
-    jsonName = "repInt32"
+    jsonName = "repInt32",
   )
   @JvmField
   public val rep_int32: List<Int> = immutableCopyOf("rep_int32", rep_int32)
@@ -346,7 +349,7 @@ public class AllTypes(
     tag = 202,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.REPEATED,
-    jsonName = "repUint32"
+    jsonName = "repUint32",
   )
   @JvmField
   public val rep_uint32: List<Int> = immutableCopyOf("rep_uint32", rep_uint32)
@@ -355,7 +358,7 @@ public class AllTypes(
     tag = 203,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.REPEATED,
-    jsonName = "repSint32"
+    jsonName = "repSint32",
   )
   @JvmField
   public val rep_sint32: List<Int> = immutableCopyOf("rep_sint32", rep_sint32)
@@ -364,7 +367,7 @@ public class AllTypes(
     tag = 204,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.REPEATED,
-    jsonName = "repFixed32"
+    jsonName = "repFixed32",
   )
   @JvmField
   public val rep_fixed32: List<Int> = immutableCopyOf("rep_fixed32", rep_fixed32)
@@ -373,7 +376,7 @@ public class AllTypes(
     tag = 205,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.REPEATED,
-    jsonName = "repSfixed32"
+    jsonName = "repSfixed32",
   )
   @JvmField
   public val rep_sfixed32: List<Int> = immutableCopyOf("rep_sfixed32", rep_sfixed32)
@@ -382,7 +385,7 @@ public class AllTypes(
     tag = 206,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.REPEATED,
-    jsonName = "repInt64"
+    jsonName = "repInt64",
   )
   @JvmField
   public val rep_int64: List<Long> = immutableCopyOf("rep_int64", rep_int64)
@@ -391,7 +394,7 @@ public class AllTypes(
     tag = 207,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.REPEATED,
-    jsonName = "repUint64"
+    jsonName = "repUint64",
   )
   @JvmField
   public val rep_uint64: List<Long> = immutableCopyOf("rep_uint64", rep_uint64)
@@ -400,7 +403,7 @@ public class AllTypes(
     tag = 208,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.REPEATED,
-    jsonName = "repSint64"
+    jsonName = "repSint64",
   )
   @JvmField
   public val rep_sint64: List<Long> = immutableCopyOf("rep_sint64", rep_sint64)
@@ -409,7 +412,7 @@ public class AllTypes(
     tag = 209,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.REPEATED,
-    jsonName = "repFixed64"
+    jsonName = "repFixed64",
   )
   @JvmField
   public val rep_fixed64: List<Long> = immutableCopyOf("rep_fixed64", rep_fixed64)
@@ -418,7 +421,7 @@ public class AllTypes(
     tag = 210,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.REPEATED,
-    jsonName = "repSfixed64"
+    jsonName = "repSfixed64",
   )
   @JvmField
   public val rep_sfixed64: List<Long> = immutableCopyOf("rep_sfixed64", rep_sfixed64)
@@ -427,7 +430,7 @@ public class AllTypes(
     tag = 211,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.REPEATED,
-    jsonName = "repBool"
+    jsonName = "repBool",
   )
   @JvmField
   public val rep_bool: List<Boolean> = immutableCopyOf("rep_bool", rep_bool)
@@ -436,7 +439,7 @@ public class AllTypes(
     tag = 212,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.REPEATED,
-    jsonName = "repFloat"
+    jsonName = "repFloat",
   )
   @JvmField
   public val rep_float: List<Float> = immutableCopyOf("rep_float", rep_float)
@@ -445,7 +448,7 @@ public class AllTypes(
     tag = 213,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.REPEATED,
-    jsonName = "repDouble"
+    jsonName = "repDouble",
   )
   @JvmField
   public val rep_double: List<Double> = immutableCopyOf("rep_double", rep_double)
@@ -454,7 +457,7 @@ public class AllTypes(
     tag = 214,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
-    jsonName = "repString"
+    jsonName = "repString",
   )
   @JvmField
   public val rep_string: List<String> = immutableCopyOf("rep_string", rep_string)
@@ -463,7 +466,7 @@ public class AllTypes(
     tag = 215,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
     label = WireField.Label.REPEATED,
-    jsonName = "repBytes"
+    jsonName = "repBytes",
   )
   @JvmField
   public val rep_bytes: List<ByteString> = immutableCopyOf("rep_bytes", rep_bytes)
@@ -472,7 +475,7 @@ public class AllTypes(
     tag = 216,
     adapter = "com.squareup.wire.proto3.alltypes.AllTypes${'$'}NestedEnum#ADAPTER",
     label = WireField.Label.REPEATED,
-    jsonName = "repNestedEnum"
+    jsonName = "repNestedEnum",
   )
   @JvmField
   public val rep_nested_enum: List<NestedEnum> = immutableCopyOf("rep_nested_enum", rep_nested_enum)
@@ -481,7 +484,7 @@ public class AllTypes(
     tag = 217,
     adapter = "com.squareup.wire.proto3.alltypes.AllTypes${'$'}NestedMessage#ADAPTER",
     label = WireField.Label.REPEATED,
-    jsonName = "repNestedMessage"
+    jsonName = "repNestedMessage",
   )
   @JvmField
   public val rep_nested_message: List<NestedMessage> = immutableCopyOf("rep_nested_message",
@@ -491,7 +494,7 @@ public class AllTypes(
     tag = 301,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.PACKED,
-    jsonName = "packInt32"
+    jsonName = "packInt32",
   )
   @JvmField
   public val pack_int32: List<Int> = immutableCopyOf("pack_int32", pack_int32)
@@ -500,7 +503,7 @@ public class AllTypes(
     tag = 302,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.PACKED,
-    jsonName = "packUint32"
+    jsonName = "packUint32",
   )
   @JvmField
   public val pack_uint32: List<Int> = immutableCopyOf("pack_uint32", pack_uint32)
@@ -509,7 +512,7 @@ public class AllTypes(
     tag = 303,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.PACKED,
-    jsonName = "packSint32"
+    jsonName = "packSint32",
   )
   @JvmField
   public val pack_sint32: List<Int> = immutableCopyOf("pack_sint32", pack_sint32)
@@ -518,7 +521,7 @@ public class AllTypes(
     tag = 304,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.PACKED,
-    jsonName = "packFixed32"
+    jsonName = "packFixed32",
   )
   @JvmField
   public val pack_fixed32: List<Int> = immutableCopyOf("pack_fixed32", pack_fixed32)
@@ -527,7 +530,7 @@ public class AllTypes(
     tag = 305,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.PACKED,
-    jsonName = "packSfixed32"
+    jsonName = "packSfixed32",
   )
   @JvmField
   public val pack_sfixed32: List<Int> = immutableCopyOf("pack_sfixed32", pack_sfixed32)
@@ -536,7 +539,7 @@ public class AllTypes(
     tag = 306,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.PACKED,
-    jsonName = "packInt64"
+    jsonName = "packInt64",
   )
   @JvmField
   public val pack_int64: List<Long> = immutableCopyOf("pack_int64", pack_int64)
@@ -545,7 +548,7 @@ public class AllTypes(
     tag = 307,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.PACKED,
-    jsonName = "packUint64"
+    jsonName = "packUint64",
   )
   @JvmField
   public val pack_uint64: List<Long> = immutableCopyOf("pack_uint64", pack_uint64)
@@ -554,7 +557,7 @@ public class AllTypes(
     tag = 308,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.PACKED,
-    jsonName = "packSint64"
+    jsonName = "packSint64",
   )
   @JvmField
   public val pack_sint64: List<Long> = immutableCopyOf("pack_sint64", pack_sint64)
@@ -563,7 +566,7 @@ public class AllTypes(
     tag = 309,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.PACKED,
-    jsonName = "packFixed64"
+    jsonName = "packFixed64",
   )
   @JvmField
   public val pack_fixed64: List<Long> = immutableCopyOf("pack_fixed64", pack_fixed64)
@@ -572,7 +575,7 @@ public class AllTypes(
     tag = 310,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.PACKED,
-    jsonName = "packSfixed64"
+    jsonName = "packSfixed64",
   )
   @JvmField
   public val pack_sfixed64: List<Long> = immutableCopyOf("pack_sfixed64", pack_sfixed64)
@@ -581,7 +584,7 @@ public class AllTypes(
     tag = 311,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.PACKED,
-    jsonName = "packBool"
+    jsonName = "packBool",
   )
   @JvmField
   public val pack_bool: List<Boolean> = immutableCopyOf("pack_bool", pack_bool)
@@ -590,7 +593,7 @@ public class AllTypes(
     tag = 312,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.PACKED,
-    jsonName = "packFloat"
+    jsonName = "packFloat",
   )
   @JvmField
   public val pack_float: List<Float> = immutableCopyOf("pack_float", pack_float)
@@ -599,7 +602,7 @@ public class AllTypes(
     tag = 313,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.PACKED,
-    jsonName = "packDouble"
+    jsonName = "packDouble",
   )
   @JvmField
   public val pack_double: List<Double> = immutableCopyOf("pack_double", pack_double)
@@ -608,7 +611,7 @@ public class AllTypes(
     tag = 316,
     adapter = "com.squareup.wire.proto3.alltypes.AllTypes${'$'}NestedEnum#ADAPTER",
     label = WireField.Label.PACKED,
-    jsonName = "packNestedEnum"
+    jsonName = "packNestedEnum",
   )
   @JvmField
   public val pack_nested_enum: List<NestedEnum> = immutableCopyOf("pack_nested_enum",
@@ -618,7 +621,7 @@ public class AllTypes(
     tag = 501,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    jsonName = "mapInt32Int32"
+    jsonName = "mapInt32Int32",
   )
   @JvmField
   public val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32", map_int32_int32)
@@ -627,7 +630,7 @@ public class AllTypes(
     tag = 502,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    jsonName = "mapStringString"
+    jsonName = "mapStringString",
   )
   @JvmField
   public val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
@@ -637,7 +640,7 @@ public class AllTypes(
     tag = 503,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.proto3.alltypes.AllTypes${'$'}NestedMessage#ADAPTER",
-    jsonName = "mapStringMessage"
+    jsonName = "mapStringMessage",
   )
   @JvmField
   public val map_string_message: Map<String, NestedMessage> = immutableCopyOf("map_string_message",
@@ -647,7 +650,7 @@ public class AllTypes(
     tag = 504,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.proto3.alltypes.AllTypes${'$'}NestedEnum#ADAPTER",
-    jsonName = "mapStringEnum"
+    jsonName = "mapStringEnum",
   )
   @JvmField
   public val map_string_enum: Map<String, NestedEnum> = immutableCopyOf("map_string_enum",
@@ -832,22 +835,22 @@ public class AllTypes(
       result = result * 37 + my_string.hashCode()
       result = result * 37 + my_bytes.hashCode()
       result = result * 37 + nested_enum.hashCode()
-      result = result * 37 + nested_message.hashCode()
-      result = result * 37 + opt_int32.hashCode()
-      result = result * 37 + opt_uint32.hashCode()
-      result = result * 37 + opt_sint32.hashCode()
-      result = result * 37 + opt_fixed32.hashCode()
-      result = result * 37 + opt_sfixed32.hashCode()
-      result = result * 37 + opt_int64.hashCode()
-      result = result * 37 + opt_uint64.hashCode()
-      result = result * 37 + opt_sint64.hashCode()
-      result = result * 37 + opt_fixed64.hashCode()
-      result = result * 37 + opt_sfixed64.hashCode()
-      result = result * 37 + opt_bool.hashCode()
-      result = result * 37 + opt_float.hashCode()
-      result = result * 37 + opt_double.hashCode()
-      result = result * 37 + opt_string.hashCode()
-      result = result * 37 + opt_bytes.hashCode()
+      result = result * 37 + (nested_message?.hashCode() ?: 0)
+      result = result * 37 + (opt_int32?.hashCode() ?: 0)
+      result = result * 37 + (opt_uint32?.hashCode() ?: 0)
+      result = result * 37 + (opt_sint32?.hashCode() ?: 0)
+      result = result * 37 + (opt_fixed32?.hashCode() ?: 0)
+      result = result * 37 + (opt_sfixed32?.hashCode() ?: 0)
+      result = result * 37 + (opt_int64?.hashCode() ?: 0)
+      result = result * 37 + (opt_uint64?.hashCode() ?: 0)
+      result = result * 37 + (opt_sint64?.hashCode() ?: 0)
+      result = result * 37 + (opt_fixed64?.hashCode() ?: 0)
+      result = result * 37 + (opt_sfixed64?.hashCode() ?: 0)
+      result = result * 37 + (opt_bool?.hashCode() ?: 0)
+      result = result * 37 + (opt_float?.hashCode() ?: 0)
+      result = result * 37 + (opt_double?.hashCode() ?: 0)
+      result = result * 37 + (opt_string?.hashCode() ?: 0)
+      result = result * 37 + (opt_bytes?.hashCode() ?: 0)
       result = result * 37 + rep_int32.hashCode()
       result = result * 37 + rep_uint32.hashCode()
       result = result * 37 + rep_sint32.hashCode()
@@ -883,9 +886,9 @@ public class AllTypes(
       result = result * 37 + map_string_string.hashCode()
       result = result * 37 + map_string_message.hashCode()
       result = result * 37 + map_string_enum.hashCode()
-      result = result * 37 + oneof_string.hashCode()
-      result = result * 37 + oneof_int32.hashCode()
-      result = result * 37 + oneof_nested_message.hashCode()
+      result = result * 37 + (oneof_string?.hashCode() ?: 0)
+      result = result * 37 + (oneof_int32?.hashCode() ?: 0)
+      result = result * 37 + (oneof_nested_message?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -1037,7 +1040,7 @@ public class AllTypes(
     oneof_string: String? = this.oneof_string,
     oneof_int32: Int? = this.oneof_int32,
     oneof_nested_message: NestedMessage? = this.oneof_nested_message,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): AllTypes = AllTypes(my_int32, my_uint32, my_sint32, my_fixed32, my_sfixed32, my_int64,
       my_uint64, my_sint64, my_fixed64, my_sfixed64, my_bool, my_float, my_double, my_string,
       my_bytes, nested_enum, nested_message, opt_int32, opt_uint32, opt_sint32, opt_fixed32,
@@ -1730,7 +1733,8 @@ public class AllTypes(
       AllTypes::class, 
       "type.googleapis.com/squareup.proto3.AllTypes", 
       PROTO_3, 
-      null
+      null, 
+      "all_types_proto3_test_proto3_optional.proto"
     ) {
       private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
@@ -1744,7 +1748,7 @@ public class AllTypes(
       private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
 
-      public override fun encodedSize(value: AllTypes): Int {
+      public override fun encodedSize(`value`: AllTypes): Int {
         var size = value.unknownFields.size
         if (value.my_int32 != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.my_int32)
         if (value.my_uint32 != 0) size += ProtoAdapter.UINT32.encodedSizeWithTag(2, value.my_uint32)
@@ -1763,8 +1767,9 @@ public class AllTypes(
         if (value.my_sfixed64 != 0L) size += ProtoAdapter.SFIXED64.encodedSizeWithTag(10,
             value.my_sfixed64)
         if (value.my_bool != false) size += ProtoAdapter.BOOL.encodedSizeWithTag(11, value.my_bool)
-        if (value.my_float != 0f) size += ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.my_float)
-        if (value.my_double != 0.0) size += ProtoAdapter.DOUBLE.encodedSizeWithTag(13,
+        if (!value.my_float.equals(0f)) size += ProtoAdapter.FLOAT.encodedSizeWithTag(12,
+            value.my_float)
+        if (!value.my_double.equals(0.0)) size += ProtoAdapter.DOUBLE.encodedSizeWithTag(13,
             value.my_double)
         if (value.my_string != "") size += ProtoAdapter.STRING.encodedSizeWithTag(14,
             value.my_string)
@@ -1830,7 +1835,7 @@ public class AllTypes(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: AllTypes): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: AllTypes): Unit {
         if (value.my_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
         if (value.my_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
         if (value.my_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
@@ -1844,8 +1849,9 @@ public class AllTypes(
         if (value.my_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10,
             value.my_sfixed64)
         if (value.my_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.my_bool)
-        if (value.my_float != 0f) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.my_float)
-        if (value.my_double != 0.0) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.my_double)
+        if (!value.my_float.equals(0f)) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.my_float)
+        if (!value.my_double.equals(0.0)) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
+            value.my_double)
         if (value.my_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14, value.my_string)
         if (value.my_bytes != ByteString.EMPTY) ProtoAdapter.BYTES.encodeWithTag(writer, 15,
             value.my_bytes)
@@ -1907,6 +1913,86 @@ public class AllTypes(
         ProtoAdapter.INT32.encodeWithTag(writer, 602, value.oneof_int32)
         NestedMessage.ADAPTER.encodeWithTag(writer, 603, value.oneof_nested_message)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: AllTypes): Unit {
+        writer.writeBytes(value.unknownFields)
+        NestedMessage.ADAPTER.encodeWithTag(writer, 603, value.oneof_nested_message)
+        ProtoAdapter.INT32.encodeWithTag(writer, 602, value.oneof_int32)
+        ProtoAdapter.STRING.encodeWithTag(writer, 601, value.oneof_string)
+        map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
+        map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
+        map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
+        map_int32_int32Adapter.encodeWithTag(writer, 501, value.map_int32_int32)
+        NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 316, value.pack_nested_enum)
+        ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 313, value.pack_double)
+        ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 312, value.pack_float)
+        ProtoAdapter.BOOL.asPacked().encodeWithTag(writer, 311, value.pack_bool)
+        ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 310, value.pack_sfixed64)
+        ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 309, value.pack_fixed64)
+        ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 308, value.pack_sint64)
+        ProtoAdapter.UINT64.asPacked().encodeWithTag(writer, 307, value.pack_uint64)
+        ProtoAdapter.INT64.asPacked().encodeWithTag(writer, 306, value.pack_int64)
+        ProtoAdapter.SFIXED32.asPacked().encodeWithTag(writer, 305, value.pack_sfixed32)
+        ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 304, value.pack_fixed32)
+        ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 303, value.pack_sint32)
+        ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 302, value.pack_uint32)
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32)
+        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 217, value.rep_nested_message)
+        NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 216, value.rep_nested_enum)
+        ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 215, value.rep_bytes)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 214, value.rep_string)
+        ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 213, value.rep_double)
+        ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 212, value.rep_float)
+        ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 211, value.rep_bool)
+        ProtoAdapter.SFIXED64.asRepeated().encodeWithTag(writer, 210, value.rep_sfixed64)
+        ProtoAdapter.FIXED64.asRepeated().encodeWithTag(writer, 209, value.rep_fixed64)
+        ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 208, value.rep_sint64)
+        ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 207, value.rep_uint64)
+        ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 206, value.rep_int64)
+        ProtoAdapter.SFIXED32.asRepeated().encodeWithTag(writer, 205, value.rep_sfixed32)
+        ProtoAdapter.FIXED32.asRepeated().encodeWithTag(writer, 204, value.rep_fixed32)
+        ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 203, value.rep_sint32)
+        ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 202, value.rep_uint32)
+        ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32)
+        ProtoAdapter.BYTES.encodeWithTag(writer, 115, value.opt_bytes)
+        ProtoAdapter.STRING.encodeWithTag(writer, 114, value.opt_string)
+        ProtoAdapter.DOUBLE.encodeWithTag(writer, 113, value.opt_double)
+        ProtoAdapter.FLOAT.encodeWithTag(writer, 112, value.opt_float)
+        ProtoAdapter.BOOL.encodeWithTag(writer, 111, value.opt_bool)
+        ProtoAdapter.SFIXED64.encodeWithTag(writer, 110, value.opt_sfixed64)
+        ProtoAdapter.FIXED64.encodeWithTag(writer, 109, value.opt_fixed64)
+        ProtoAdapter.SINT64.encodeWithTag(writer, 108, value.opt_sint64)
+        ProtoAdapter.UINT64.encodeWithTag(writer, 107, value.opt_uint64)
+        ProtoAdapter.INT64.encodeWithTag(writer, 106, value.opt_int64)
+        ProtoAdapter.SFIXED32.encodeWithTag(writer, 105, value.opt_sfixed32)
+        ProtoAdapter.FIXED32.encodeWithTag(writer, 104, value.opt_fixed32)
+        ProtoAdapter.SINT32.encodeWithTag(writer, 103, value.opt_sint32)
+        ProtoAdapter.UINT32.encodeWithTag(writer, 102, value.opt_uint32)
+        ProtoAdapter.INT32.encodeWithTag(writer, 101, value.opt_int32)
+        if (value.nested_message != null) NestedMessage.ADAPTER.encodeWithTag(writer, 17,
+            value.nested_message)
+        if (value.nested_enum != NestedEnum.UNKNOWN) NestedEnum.ADAPTER.encodeWithTag(writer, 16,
+            value.nested_enum)
+        if (value.my_bytes != ByteString.EMPTY) ProtoAdapter.BYTES.encodeWithTag(writer, 15,
+            value.my_bytes)
+        if (value.my_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14, value.my_string)
+        if (!value.my_double.equals(0.0)) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
+            value.my_double)
+        if (!value.my_float.equals(0f)) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.my_float)
+        if (value.my_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.my_bool)
+        if (value.my_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10,
+            value.my_sfixed64)
+        if (value.my_fixed64 != 0L) ProtoAdapter.FIXED64.encodeWithTag(writer, 9, value.my_fixed64)
+        if (value.my_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 8, value.my_sint64)
+        if (value.my_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 7, value.my_uint64)
+        if (value.my_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 6, value.my_int64)
+        if (value.my_sfixed32 != 0) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5,
+            value.my_sfixed32)
+        if (value.my_fixed32 != 0) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.my_fixed32)
+        if (value.my_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
+        if (value.my_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
+        if (value.my_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
       }
 
       public override fun decode(reader: ProtoReader): AllTypes {
@@ -2142,7 +2228,7 @@ public class AllTypes(
         )
       }
 
-      public override fun redact(value: AllTypes): AllTypes = value.copy(
+      public override fun redact(`value`: AllTypes): AllTypes = value.copy(
         nested_message = value.nested_message?.let(NestedMessage.ADAPTER::redact),
         rep_nested_message = value.rep_nested_message.redactElements(NestedMessage.ADAPTER),
         map_string_message = value.map_string_message.redactElements(NestedMessage.ADAPTER),
@@ -2155,7 +2241,7 @@ public class AllTypes(
   }
 
   public enum class NestedEnum(
-    public override val value: Int
+    public override val `value`: Int,
   ) : WireEnum {
     UNKNOWN(0),
     A(1),
@@ -2168,11 +2254,11 @@ public class AllTypes(
         PROTO_3, 
         NestedEnum.UNKNOWN
       ) {
-        public override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
+        public override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): NestedEnum? = when (value) {
+      public fun fromValue(`value`: Int): NestedEnum? = when (value) {
         0 -> UNKNOWN
         1 -> A
         else -> null
@@ -2184,11 +2270,11 @@ public class AllTypes(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.OMIT_IDENTITY
+      label = WireField.Label.OMIT_IDENTITY,
     )
     @JvmField
     public val a: Int = 0,
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<NestedMessage, NestedMessage.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -2246,17 +2332,23 @@ public class AllTypes(
         NestedMessage::class, 
         "type.googleapis.com/squareup.proto3.AllTypes.NestedMessage", 
         PROTO_3, 
-        null
+        null, 
+        "all_types_proto3_test_proto3_optional.proto"
       ) {
-        public override fun encodedSize(value: NestedMessage): Int {
+        public override fun encodedSize(`value`: NestedMessage): Int {
           var size = value.unknownFields.size
           if (value.a != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: NestedMessage): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: NestedMessage): Unit {
           if (value.a != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
           writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage): Unit {
+          writer.writeBytes(value.unknownFields)
+          if (value.a != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
         }
 
         public override fun decode(reader: ProtoReader): NestedMessage {
@@ -2273,7 +2365,7 @@ public class AllTypes(
           )
         }
 
-        public override fun redact(value: NestedMessage): NestedMessage = value.copy(
+        public override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }

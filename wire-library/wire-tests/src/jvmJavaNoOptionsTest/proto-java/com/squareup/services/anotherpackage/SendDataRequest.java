@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -93,7 +94,7 @@ public final class SendDataRequest extends Message<SendDataRequest, SendDataRequ
 
   private static final class ProtoAdapter_SendDataRequest extends ProtoAdapter<SendDataRequest> {
     public ProtoAdapter_SendDataRequest() {
-      super(FieldEncoding.LENGTH_DELIMITED, SendDataRequest.class, "type.googleapis.com/com.squareup.services.anotherpackage.SendDataRequest", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, SendDataRequest.class, "type.googleapis.com/com.squareup.services.anotherpackage.SendDataRequest", Syntax.PROTO_2, null, "request_response.proto");
     }
 
     @Override
@@ -108,6 +109,12 @@ public final class SendDataRequest extends Message<SendDataRequest, SendDataRequ
     public void encode(ProtoWriter writer, SendDataRequest value) throws IOException {
       ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.data);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, SendDataRequest value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.data);
     }
 
     @Override

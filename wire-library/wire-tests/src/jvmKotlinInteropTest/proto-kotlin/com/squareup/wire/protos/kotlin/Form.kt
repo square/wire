@@ -8,6 +8,7 @@ import com.squareup.wire.OneOf
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
@@ -20,7 +21,6 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.Set
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -30,7 +30,7 @@ public class Form(
   public val choice: OneOf<Choice<*>, *>? = null,
   @JvmField
   public val decision: OneOf<Decision<*>, *>? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Form, Form.Builder>(ADAPTER, unknownFields) {
   public override fun newBuilder(): Builder {
     val builder = Builder()
@@ -53,8 +53,8 @@ public class Form(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + choice.hashCode()
-      result = result * 37 + decision.hashCode()
+      result = result * 37 + (choice?.hashCode() ?: 0)
+      result = result * 37 + (decision?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -63,14 +63,14 @@ public class Form(
   public override fun toString(): String {
     val result = mutableListOf<String>()
     if (choice != null) result += """choice=$choice"""
-    if (decision != null) result += """decision=$decision"""
+    if (decision != null) result += """decision=██"""
     return result.joinToString(prefix = "Form{", separator = ", ", postfix = "}")
   }
 
   public fun copy(
     choice: OneOf<Choice<*>, *>? = this.choice,
     decision: OneOf<Decision<*>, *>? = this.decision,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): Form = Form(choice, decision, unknownFields)
 
   public class Builder : Message.Builder<Form, Builder>() {
@@ -100,9 +100,9 @@ public class Form(
   public class Choice<T>(
     tag: Int,
     adapter: ProtoAdapter<T>,
-    declaredName: String
+    declaredName: String,
   ) : OneOf.Key<T>(tag, adapter, declaredName) {
-    public fun create(value: T) = OneOf(this, value)
+    public fun create(`value`: T) = OneOf(this, value)
 
     public fun decode(reader: ProtoReader): OneOf<Choice<T>, T> = create(adapter.decode(reader))
   }
@@ -110,9 +110,9 @@ public class Form(
   public class Decision<T>(
     tag: Int,
     adapter: ProtoAdapter<T>,
-    declaredName: String
+    declaredName: String,
   ) : OneOf.Key<T>(tag, adapter, declaredName) {
-    public fun create(value: T) = OneOf(this, value)
+    public fun create(`value`: T) = OneOf(this, value)
 
     public fun decode(reader: ProtoReader): OneOf<Decision<T>, T> = create(adapter.decode(reader))
   }
@@ -124,19 +124,26 @@ public class Form(
       Form::class, 
       "type.googleapis.com/squareup.protos.kotlin.oneof.Form", 
       PROTO_2, 
-      null
+      null, 
+      "form.proto"
     ) {
-      public override fun encodedSize(value: Form): Int {
+      public override fun encodedSize(`value`: Form): Int {
         var size = value.unknownFields.size
         if (value.choice != null) size += value.choice.encodedSizeWithTag()
         if (value.decision != null) size += value.decision.encodedSizeWithTag()
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Form): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Form): Unit {
         if (value.choice != null) value.choice.encodeWithTag(writer)
         if (value.decision != null) value.decision.encodeWithTag(writer)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: Form): Unit {
+        writer.writeBytes(value.unknownFields)
+        if (value.decision != null) value.decision.encodeWithTag(writer)
+        if (value.choice != null) value.choice.encodeWithTag(writer)
       }
 
       public override fun decode(reader: ProtoReader): Form {
@@ -168,7 +175,8 @@ public class Form(
         )
       }
 
-      public override fun redact(value: Form): Form = value.copy(
+      public override fun redact(`value`: Form): Form = value.copy(
+        decision = null,
         unknownFields = ByteString.EMPTY
       )
     }
@@ -253,7 +261,7 @@ public class Form(
   }
 
   public class ButtonElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<ButtonElement, ButtonElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -288,14 +296,19 @@ public class Form(
         ButtonElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.ButtonElement", 
         PROTO_2, 
-        null
+        null, 
+        "form.proto"
       ) {
-        public override fun encodedSize(value: ButtonElement): Int {
+        public override fun encodedSize(`value`: ButtonElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: ButtonElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: ButtonElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: ButtonElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -306,7 +319,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: ButtonElement): ButtonElement = value.copy(
+        public override fun redact(`value`: ButtonElement): ButtonElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -316,7 +329,7 @@ public class Form(
   }
 
   public class LocalImageElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<LocalImageElement, LocalImageElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -352,14 +365,19 @@ public class Form(
         LocalImageElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.LocalImageElement", 
         PROTO_2, 
-        null
+        null, 
+        "form.proto"
       ) {
-        public override fun encodedSize(value: LocalImageElement): Int {
+        public override fun encodedSize(`value`: LocalImageElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: LocalImageElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: LocalImageElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: LocalImageElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -370,7 +388,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: LocalImageElement): LocalImageElement = value.copy(
+        public override fun redact(`value`: LocalImageElement): LocalImageElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -380,7 +398,7 @@ public class Form(
   }
 
   public class RemoteImageElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<RemoteImageElement, RemoteImageElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -416,14 +434,19 @@ public class Form(
         RemoteImageElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.RemoteImageElement", 
         PROTO_2, 
-        null
+        null, 
+        "form.proto"
       ) {
-        public override fun encodedSize(value: RemoteImageElement): Int {
+        public override fun encodedSize(`value`: RemoteImageElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: RemoteImageElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: RemoteImageElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: RemoteImageElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -434,7 +457,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: RemoteImageElement): RemoteImageElement = value.copy(
+        public override fun redact(`value`: RemoteImageElement): RemoteImageElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -444,7 +467,7 @@ public class Form(
   }
 
   public class MoneyElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<MoneyElement, MoneyElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -479,14 +502,19 @@ public class Form(
         MoneyElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.MoneyElement", 
         PROTO_2, 
-        null
+        null, 
+        "form.proto"
       ) {
-        public override fun encodedSize(value: MoneyElement): Int {
+        public override fun encodedSize(`value`: MoneyElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: MoneyElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: MoneyElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: MoneyElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -497,7 +525,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: MoneyElement): MoneyElement = value.copy(
+        public override fun redact(`value`: MoneyElement): MoneyElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -507,7 +535,7 @@ public class Form(
   }
 
   public class SpacerElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<SpacerElement, SpacerElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -542,14 +570,19 @@ public class Form(
         SpacerElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.SpacerElement", 
         PROTO_2, 
-        null
+        null, 
+        "form.proto"
       ) {
-        public override fun encodedSize(value: SpacerElement): Int {
+        public override fun encodedSize(`value`: SpacerElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: SpacerElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: SpacerElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: SpacerElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -560,7 +593,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: SpacerElement): SpacerElement = value.copy(
+        public override fun redact(`value`: SpacerElement): SpacerElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -572,11 +605,11 @@ public class Form(
   public class TextElement(
     @field:WireField(
       tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
     )
     @JvmField
     public val text: String? = null,
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<TextElement, TextElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -597,7 +630,7 @@ public class Form(
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
-        result = result * 37 + text.hashCode()
+        result = result * 37 + (text?.hashCode() ?: 0)
         super.hashCode = result
       }
       return result
@@ -634,17 +667,23 @@ public class Form(
         TextElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextElement", 
         PROTO_2, 
-        null
+        null, 
+        "form.proto"
       ) {
-        public override fun encodedSize(value: TextElement): Int {
+        public override fun encodedSize(`value`: TextElement): Int {
           var size = value.unknownFields.size
           size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.text)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: TextElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: TextElement): Unit {
           ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
           writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: TextElement): Unit {
+          writer.writeBytes(value.unknownFields)
+          ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
         }
 
         public override fun decode(reader: ProtoReader): TextElement {
@@ -661,7 +700,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: TextElement): TextElement = value.copy(
+        public override fun redact(`value`: TextElement): TextElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -671,7 +710,7 @@ public class Form(
   }
 
   public class CustomizedCardElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<CustomizedCardElement, CustomizedCardElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -707,14 +746,20 @@ public class Form(
         CustomizedCardElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CustomizedCardElement", 
         PROTO_2, 
-        null
+        null, 
+        "form.proto"
       ) {
-        public override fun encodedSize(value: CustomizedCardElement): Int {
+        public override fun encodedSize(`value`: CustomizedCardElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: CustomizedCardElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: CustomizedCardElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: CustomizedCardElement):
+            Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -725,7 +770,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: CustomizedCardElement): CustomizedCardElement =
+        public override fun redact(`value`: CustomizedCardElement): CustomizedCardElement =
             value.copy(
           unknownFields = ByteString.EMPTY
         )
@@ -736,7 +781,7 @@ public class Form(
   }
 
   public class AddressElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<AddressElement, AddressElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -771,14 +816,19 @@ public class Form(
         AddressElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.AddressElement", 
         PROTO_2, 
-        null
+        null, 
+        "form.proto"
       ) {
-        public override fun encodedSize(value: AddressElement): Int {
+        public override fun encodedSize(`value`: AddressElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: AddressElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: AddressElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: AddressElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -789,7 +839,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: AddressElement): AddressElement = value.copy(
+        public override fun redact(`value`: AddressElement): AddressElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -799,7 +849,7 @@ public class Form(
   }
 
   public class TextInputElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<TextInputElement, TextInputElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -834,14 +884,19 @@ public class Form(
         TextInputElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextInputElement", 
         PROTO_2, 
-        null
+        null, 
+        "form.proto"
       ) {
-        public override fun encodedSize(value: TextInputElement): Int {
+        public override fun encodedSize(`value`: TextInputElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: TextInputElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: TextInputElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: TextInputElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -852,7 +907,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: TextInputElement): TextInputElement = value.copy(
+        public override fun redact(`value`: TextInputElement): TextInputElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -862,7 +917,7 @@ public class Form(
   }
 
   public class OptionPickerElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<OptionPickerElement, OptionPickerElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -898,14 +953,19 @@ public class Form(
         OptionPickerElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.OptionPickerElement", 
         PROTO_2, 
-        null
+        null, 
+        "form.proto"
       ) {
-        public override fun encodedSize(value: OptionPickerElement): Int {
+        public override fun encodedSize(`value`: OptionPickerElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: OptionPickerElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: OptionPickerElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: OptionPickerElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -916,7 +976,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: OptionPickerElement): OptionPickerElement = value.copy(
+        public override fun redact(`value`: OptionPickerElement): OptionPickerElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -926,7 +986,7 @@ public class Form(
   }
 
   public class DetailRowElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<DetailRowElement, DetailRowElement.Builder>(ADAPTER, unknownFields) {
     public override fun newBuilder(): Builder {
       val builder = Builder()
@@ -961,14 +1021,19 @@ public class Form(
         DetailRowElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.DetailRowElement", 
         PROTO_2, 
-        null
+        null, 
+        "form.proto"
       ) {
-        public override fun encodedSize(value: DetailRowElement): Int {
+        public override fun encodedSize(`value`: DetailRowElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: DetailRowElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: DetailRowElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: DetailRowElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -979,7 +1044,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: DetailRowElement): DetailRowElement = value.copy(
+        public override fun redact(`value`: DetailRowElement): DetailRowElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -989,7 +1054,7 @@ public class Form(
   }
 
   public class CurrencyConversionFlagsElement(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<CurrencyConversionFlagsElement, CurrencyConversionFlagsElement.Builder>(ADAPTER,
       unknownFields) {
     public override fun newBuilder(): Builder {
@@ -1026,15 +1091,21 @@ public class Form(
         CurrencyConversionFlagsElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CurrencyConversionFlagsElement", 
         PROTO_2, 
-        null
+        null, 
+        "form.proto"
       ) {
-        public override fun encodedSize(value: CurrencyConversionFlagsElement): Int {
+        public override fun encodedSize(`value`: CurrencyConversionFlagsElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: CurrencyConversionFlagsElement):
+        public override fun encode(writer: ProtoWriter, `value`: CurrencyConversionFlagsElement):
             Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter,
+            `value`: CurrencyConversionFlagsElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -1045,7 +1116,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: CurrencyConversionFlagsElement):
+        public override fun redact(`value`: CurrencyConversionFlagsElement):
             CurrencyConversionFlagsElement = value.copy(
           unknownFields = ByteString.EMPTY
         )

@@ -15,7 +15,7 @@
 */
 package com.squareup.wire
 
-import com.squareup.wire.internal.RuntimeMessageAdapter
+import com.squareup.wire.internal.createRuntimeMessageAdapter
 import com.squareup.wire.protos.kotlin.repeated.Repeated
 import com.squareup.wire.protos.kotlin.repeated.Thing
 import okio.ByteString.Companion.decodeHex
@@ -25,7 +25,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class KotlinRepeatedTest {
-  private val adapter = RuntimeMessageAdapter.create(Repeated::class.java, "square.github.io/wire/unknown", Syntax.PROTO_2)
+  private val adapter = createRuntimeMessageAdapter(
+    Repeated::class.java,
+    "square.github.io/wire/unknown",
+    Syntax.PROTO_2
+  )
 
   @Test fun serialize() {
     assertEquals(BYTES, adapter.encode(THREE).toByteString())
@@ -44,11 +48,11 @@ class KotlinRepeatedTest {
     private val BYTES = "0a050a034f6e650a050a0354776f0a070a055468726565".decodeHex()
     private val EMPTY = Repeated(things = emptyList())
     private val THREE = Repeated(
-        things = listOf(
-            Thing("One"),
-            Thing("Two"),
-            Thing("Three")
-        )
+      things = listOf(
+        Thing("One"),
+        Thing("Two"),
+        Thing("Three")
+      )
     )
   }
 }

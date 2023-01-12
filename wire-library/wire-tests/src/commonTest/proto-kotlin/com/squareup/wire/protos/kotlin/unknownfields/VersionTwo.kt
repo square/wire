@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.immutableCopyOf
@@ -22,61 +23,61 @@ import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
 public class VersionTwo(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val i: Int? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
   public val v2_i: Int? = null,
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
   )
   public val v2_s: String? = null,
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
   )
   public val v2_f32: Int? = null,
   @field:WireField(
     tag = 5,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
   )
   public val v2_f64: Long? = null,
   v2_rs: List<String> = emptyList(),
   @field:WireField(
     tag = 7,
-    adapter = "com.squareup.wire.protos.kotlin.unknownfields.NestedVersionTwo#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.unknownfields.NestedVersionTwo#ADAPTER",
   )
   public val obj: NestedVersionTwo? = null,
   @field:WireField(
     tag = 8,
-    adapter = "com.squareup.wire.protos.kotlin.unknownfields.EnumVersionTwo#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.unknownfields.EnumVersionTwo#ADAPTER",
   )
   public val en: EnumVersionTwo? = null,
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<VersionTwo, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   public val v2_rs: List<String> = immutableCopyOf("v2_rs", v2_rs)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -97,14 +98,14 @@ public class VersionTwo(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + i.hashCode()
-      result = result * 37 + v2_i.hashCode()
-      result = result * 37 + v2_s.hashCode()
-      result = result * 37 + v2_f32.hashCode()
-      result = result * 37 + v2_f64.hashCode()
+      result = result * 37 + (i?.hashCode() ?: 0)
+      result = result * 37 + (v2_i?.hashCode() ?: 0)
+      result = result * 37 + (v2_s?.hashCode() ?: 0)
+      result = result * 37 + (v2_f32?.hashCode() ?: 0)
+      result = result * 37 + (v2_f64?.hashCode() ?: 0)
       result = result * 37 + v2_rs.hashCode()
-      result = result * 37 + obj.hashCode()
-      result = result * 37 + en.hashCode()
+      result = result * 37 + (obj?.hashCode() ?: 0)
+      result = result * 37 + (en?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -132,7 +133,7 @@ public class VersionTwo(
     v2_rs: List<String> = this.v2_rs,
     obj: NestedVersionTwo? = this.obj,
     en: EnumVersionTwo? = this.en,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields,
   ): VersionTwo = VersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, obj, en, unknownFields)
 
   public companion object {
@@ -142,9 +143,10 @@ public class VersionTwo(
       VersionTwo::class, 
       "type.googleapis.com/squareup.protos.kotlin.unknownfields.VersionTwo", 
       PROTO_2, 
-      null
+      null, 
+      "unknown_fields.proto"
     ) {
-      public override fun encodedSize(value: VersionTwo): Int {
+      public override fun encodedSize(`value`: VersionTwo): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.v2_i)
@@ -157,7 +159,7 @@ public class VersionTwo(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: VersionTwo): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: VersionTwo): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.v2_i)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.v2_s)
@@ -167,6 +169,18 @@ public class VersionTwo(
         NestedVersionTwo.ADAPTER.encodeWithTag(writer, 7, value.obj)
         EnumVersionTwo.ADAPTER.encodeWithTag(writer, 8, value.en)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: VersionTwo): Unit {
+        writer.writeBytes(value.unknownFields)
+        EnumVersionTwo.ADAPTER.encodeWithTag(writer, 8, value.en)
+        NestedVersionTwo.ADAPTER.encodeWithTag(writer, 7, value.obj)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.v2_rs)
+        ProtoAdapter.FIXED64.encodeWithTag(writer, 5, value.v2_f64)
+        ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.v2_f32)
+        ProtoAdapter.STRING.encodeWithTag(writer, 3, value.v2_s)
+        ProtoAdapter.INT32.encodeWithTag(writer, 2, value.v2_i)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
       }
 
       public override fun decode(reader: ProtoReader): VersionTwo {
@@ -208,7 +222,7 @@ public class VersionTwo(
         )
       }
 
-      public override fun redact(value: VersionTwo): VersionTwo = value.copy(
+      public override fun redact(`value`: VersionTwo): VersionTwo = value.copy(
         obj = value.obj?.let(NestedVersionTwo.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

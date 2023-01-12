@@ -25,6 +25,17 @@ extension DeprecatedProto : Hashable {
 }
 #endif
 
+#if swift(>=5.5)
+extension DeprecatedProto : Sendable {
+}
+#endif
+
+extension DeprecatedProto : ProtoMessage {
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.DeprecatedProto"
+    }
+}
+
 extension DeprecatedProto : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var foo: String? = nil

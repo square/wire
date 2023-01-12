@@ -36,6 +36,6 @@ internal class EnumTypeAdapter<E>(
     val nextString = input.nextString()
 
     return enumJsonFormatter.fromString(nextString)
-        ?: throw IOException("Unexpected $nextString at path $path")
+      ?: throw IOException("Unexpected $nextString at path $path")
   }
 }

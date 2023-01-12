@@ -31,61 +31,61 @@ class ProtoFileTest {
   @Test
   fun roundTripToElement() {
     val element1 = MessageElement(
-        location = location.at(11, 1),
-        name = "Message1",
-        documentation = "Some comments about Message1"
+      location = location.at(11, 1),
+      name = "Message1",
+      documentation = "Some comments about Message1"
     )
     val element2 = MessageElement(
-        location = location.at(12, 1),
-        name = "Message2",
-        fields = listOf(
-            FieldElement(
-                location = location.at(13, 3),
-                type = "string",
-                name = "field",
-                tag = 1
-            )
+      location = location.at(12, 1),
+      name = "Message2",
+      fields = listOf(
+        FieldElement(
+          location = location.at(13, 3),
+          type = "string",
+          name = "field",
+          tag = 1
         )
+      )
     )
 
     val extend1 = ExtendElement(
-        location = location.at(16, 1),
-        name = "Extend1"
+      location = location.at(16, 1),
+      name = "Extend1"
     )
     val extend2 = ExtendElement(
-        location = location.at(17, 1),
-        name = "Extend2"
+      location = location.at(17, 1),
+      name = "Extend2"
     )
     val option1 = OptionElement.create("kit", OptionElement.Kind.STRING, "kat")
     val option2 = OptionElement.create("foo", OptionElement.Kind.STRING, "bar")
     val service1 = ServiceElement(
-        location = location.at(19, 1),
-        name = "Service1",
-        rpcs = listOf(
-            RpcElement(
-                location = location.at(20, 3),
-                name = "MethodA",
-                requestType = "Message2",
-                responseType = "Message1",
-                options = listOf(
-                    OptionElement.create("methodoption", OptionElement.Kind.NUMBER, 1)
-                )
-            )
+      location = location.at(19, 1),
+      name = "Service1",
+      rpcs = listOf(
+        RpcElement(
+          location = location.at(20, 3),
+          name = "MethodA",
+          requestType = "Message2",
+          responseType = "Message1",
+          options = listOf(
+            OptionElement.create("methodoption", OptionElement.Kind.NUMBER, 1)
+          )
         )
+      )
     )
     val service2 = ServiceElement(
-        location = location.at(24, 1),
-        name = "Service2"
+      location = location.at(24, 1),
+      name = "Service2"
     )
     val fileElement = ProtoFileElement(
-        location = location,
-        packageName = "example.simple",
-        imports = listOf("example.thing"),
-        publicImports = listOf("example.other"),
-        types = listOf(element1, element2),
-        services = listOf(service1, service2),
-        extendDeclarations = listOf(extend1, extend2),
-        options = listOf(option1, option2)
+      location = location,
+      packageName = "example.simple",
+      imports = listOf("example.thing"),
+      publicImports = listOf("example.other"),
+      types = listOf(element1, element2),
+      services = listOf(service1, service2),
+      extendDeclarations = listOf(extend1, extend2),
+      options = listOf(option1, option2)
     )
     val file = ProtoFile.get(fileElement)
 

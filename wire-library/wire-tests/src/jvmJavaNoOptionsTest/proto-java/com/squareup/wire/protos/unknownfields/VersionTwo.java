@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -237,7 +238,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
 
   private static final class ProtoAdapter_VersionTwo extends ProtoAdapter<VersionTwo> {
     public ProtoAdapter_VersionTwo() {
-      super(FieldEncoding.LENGTH_DELIMITED, VersionTwo.class, "type.googleapis.com/squareup.protos.unknownfields.VersionTwo", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, VersionTwo.class, "type.googleapis.com/squareup.protos.unknownfields.VersionTwo", Syntax.PROTO_2, null, "unknown_fields.proto");
     }
 
     @Override
@@ -266,6 +267,19 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
       NestedVersionTwo.ADAPTER.encodeWithTag(writer, 7, value.obj);
       EnumVersionTwo.ADAPTER.encodeWithTag(writer, 8, value.en);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, VersionTwo value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      EnumVersionTwo.ADAPTER.encodeWithTag(writer, 8, value.en);
+      NestedVersionTwo.ADAPTER.encodeWithTag(writer, 7, value.obj);
+      ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.v2_rs);
+      ProtoAdapter.FIXED64.encodeWithTag(writer, 5, value.v2_f64);
+      ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.v2_f32);
+      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.v2_s);
+      ProtoAdapter.INT32.encodeWithTag(writer, 2, value.v2_i);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
     }
 
     @Override

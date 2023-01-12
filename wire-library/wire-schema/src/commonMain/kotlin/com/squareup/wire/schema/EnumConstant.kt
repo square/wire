@@ -42,7 +42,7 @@ data class EnumConstant(
   ) = EnumConstant(location, name, tag, documentation, options.retainAll(schema, markSet))
 
   internal fun retainLinked() =
-      EnumConstant(location, name, tag, documentation, options.retainLinked())
+    EnumConstant(location, name, tag, documentation, options.retainLinked())
 
   companion object {
     private val DEPRECATED = ProtoMember.get(ENUM_VALUE_OPTIONS, "deprecated")
@@ -50,8 +50,8 @@ data class EnumConstant(
     internal fun fromElements(elements: List<EnumConstantElement>) =
       elements.map {
         EnumConstant(
-            it.location, it.name, it.tag, it.documentation,
-            Options(ENUM_VALUE_OPTIONS, it.options)
+          it.location, it.name, it.tag, it.documentation,
+          Options(ENUM_VALUE_OPTIONS, it.options)
         )
       }
 

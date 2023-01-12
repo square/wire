@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.immutableCopyOf
@@ -30,20 +31,21 @@ import okio.ByteString
  */
 public class FeatureDatabase(
   feature: List<Feature> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<FeatureDatabase, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "routeguide.Feature#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
   )
   public val feature: List<Feature> = immutableCopyOf("feature", feature)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw
+      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -79,17 +81,23 @@ public class FeatureDatabase(
       FeatureDatabase::class, 
       "type.googleapis.com/routeguide.FeatureDatabase", 
       PROTO_2, 
-      null
+      null, 
+      "routeguide/RouteGuideProto.proto"
     ) {
-      public override fun encodedSize(value: FeatureDatabase): Int {
+      public override fun encodedSize(`value`: FeatureDatabase): Int {
         var size = value.unknownFields.size
         size += Feature.ADAPTER.asRepeated().encodedSizeWithTag(1, value.feature)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: FeatureDatabase): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: FeatureDatabase): Unit {
         Feature.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.feature)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: FeatureDatabase): Unit {
+        writer.writeBytes(value.unknownFields)
+        Feature.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.feature)
       }
 
       public override fun decode(reader: ProtoReader): FeatureDatabase {
@@ -106,7 +114,7 @@ public class FeatureDatabase(
         )
       }
 
-      public override fun redact(value: FeatureDatabase): FeatureDatabase = value.copy(
+      public override fun redact(`value`: FeatureDatabase): FeatureDatabase = value.copy(
         feature = value.feature.redactElements(Feature.ADAPTER),
         unknownFields = ByteString.EMPTY
       )

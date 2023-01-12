@@ -74,13 +74,13 @@ internal fun Schema.partition(modules: Map<String, Module>): PartitionedSchema {
     }
 
     val ownedTypes = prunedSchema.protoFiles
-        .flatMap { protoFile ->
-          val messageTypes = protoFile.typesAndNestedTypes().map { it.type }
-          val serviceTypes = protoFile.services.map { it.type }
-          messageTypes + serviceTypes
-        }
-        .filter { it !in upstreamTypes }
-        .toSet()
+      .flatMap { protoFile ->
+        val messageTypes = protoFile.typesAndNestedTypes().map { it.type }
+        val serviceTypes = protoFile.services.map { it.type }
+        messageTypes + serviceTypes
+      }
+      .filter { it !in upstreamTypes }
+      .toSet()
 
     partitions[moduleName] = Partition(prunedSchema, ownedTypes, upstreamTypes)
   }

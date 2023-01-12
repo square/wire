@@ -1,12 +1,20 @@
+import com.squareup.wire.schema.SchemaHandler
+
 plugins {
   id 'application'
   id 'com.squareup.wire'
+}
+
+class MyCustomHandlerFactory implements SchemaHandler.Factory {
+  @Override public SchemaHandler create() {
+    throw new RuntimeException("custom handler is running!!");
+  }
 }
 
 wire {
   sourcePath 'src/main/proto'
 
   custom {
-    customHandlerClass = "NoSuchClass"
+    schemaHandlerFactory = new MyCustomHandlerFactory()
   }
 }

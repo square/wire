@@ -1,8 +1,11 @@
 package routeguide
 
+import com.google.protobuf.DescriptorProtos
+import com.google.protobuf.Descriptors
 import com.squareup.wire.kotlin.grpcserver.MessageSinkAdapter
 import com.squareup.wire.kotlin.grpcserver.MessageSourceAdapter
-import io.grpc.BindableService
+import com.squareup.wire.kotlin.grpcserver.WireBindableService
+import com.squareup.wire.kotlin.grpcserver.WireMethodMarshaller
 import io.grpc.CallOptions
 import io.grpc.Channel
 import io.grpc.MethodDescriptor
@@ -19,11 +22,15 @@ import io.grpc.stub.ServerCalls.asyncServerStreamingCall
 import io.grpc.stub.ServerCalls.asyncUnaryCall
 import io.grpc.stub.StreamObserver
 import java.io.InputStream
+import java.lang.Class
 import java.lang.UnsupportedOperationException
 import java.util.concurrent.ExecutorService
+import kotlin.Array
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.Iterator
+import kotlin.collections.Map
+import kotlin.collections.Set
 import kotlin.jvm.Volatile
 
 public object RouteGuideWireGrpc {
@@ -31,6 +38,24 @@ public object RouteGuideWireGrpc {
 
   @Volatile
   private var serviceDescriptor: ServiceDescriptor? = null
+
+  private val descriptorMap: Map<String, DescriptorProtos.FileDescriptorProto> = mapOf(
+    "src/test/proto/RouteGuideProto.proto" to descriptorFor(arrayOf(
+      "CiRzcmMvdGVzdC9wcm90by9Sb3V0ZUd1aWRlUHJvdG8ucHJvdG8SCnJvdXRlZ3VpZGUiLAoFUG9pbnQS",
+      "EAoIbGF0aXR1ZGUYASABKAUSEQoJbG9uZ2l0dWRlGAIgASgFIkkKCVJlY3RhbmdsZRIdCgJsbxgBIAEo",
+      "CzIRLnJvdXRlZ3VpZGUuUG9pbnQSHQoCaGkYAiABKAsyES5yb3V0ZWd1aWRlLlBvaW50IjwKB0ZlYXR1",
+      "cmUSDAoEbmFtZRgBIAEoCRIjCghsb2NhdGlvbhgCIAEoCzIRLnJvdXRlZ3VpZGUuUG9pbnQiNwoPRmVh",
+      "dHVyZURhdGFiYXNlEiQKB2ZlYXR1cmUYASADKAsyEy5yb3V0ZWd1aWRlLkZlYXR1cmUiQQoJUm91dGVO",
+      "b3RlEiMKCGxvY2F0aW9uGAEgASgLMhEucm91dGVndWlkZS5Qb2ludBIPCgdtZXNzYWdlGAIgASgJImIK",
+      "DFJvdXRlU3VtbWFyeRITCgtwb2ludF9jb3VudBgBIAEoBRIVCg1mZWF0dXJlX2NvdW50GAIgASgFEhAK",
+      "CGRpc3RhbmNlGAMgASgFEhQKDGVsYXBzZWRfdGltZRgEIAEoBTL9AQoKUm91dGVHdWlkZRI0CgpHZXRG",
+      "ZWF0dXJlEhEucm91dGVndWlkZS5Qb2ludBoTLnJvdXRlZ3VpZGUuRmVhdHVyZRI8CgxMaXN0RmVhdHVy",
+      "ZXMSFS5yb3V0ZWd1aWRlLlJlY3RhbmdsZRoTLnJvdXRlZ3VpZGUuRmVhdHVyZTABEjwKC1JlY29yZFJv",
+      "dXRlEhEucm91dGVndWlkZS5Qb2ludBoYLnJvdXRlZ3VpZGUuUm91dGVTdW1tYXJ5KAESPQoJUm91dGVD",
+      "aGF0EhUucm91dGVndWlkZS5Sb3V0ZU5vdGUaFS5yb3V0ZWd1aWRlLlJvdXRlTm90ZSgBMAE=",
+    )),
+  )
+
 
   @Volatile
   private var getGetFeatureMethod: MethodDescriptor<Point, Feature>? = null
@@ -44,6 +69,19 @@ public object RouteGuideWireGrpc {
   @Volatile
   private var getRouteChatMethod: MethodDescriptor<RouteNote, RouteNote>? = null
 
+  private fun descriptorFor(`data`: Array<String>): DescriptorProtos.FileDescriptorProto {
+    val str = data.fold(java.lang.StringBuilder()) { b, s -> b.append(s) }.toString()
+    val bytes = java.util.Base64.getDecoder().decode(str)
+    return DescriptorProtos.FileDescriptorProto.parseFrom(bytes)
+  }
+
+  private fun fileDescriptor(path: String, visited: Set<String>): Descriptors.FileDescriptor {
+    val proto = descriptorMap[path]!!
+    val deps = proto.dependencyList.filter { !visited.contains(it) }.map { fileDescriptor(it,
+        visited + path) }
+    return Descriptors.FileDescriptor.buildFrom(proto, deps.toTypedArray())
+  }
+
   public fun getServiceDescriptor(): ServiceDescriptor? {
     var result = serviceDescriptor
     if (result == null) {
@@ -55,6 +93,9 @@ public object RouteGuideWireGrpc {
           .addMethod(getListFeaturesMethod())
           .addMethod(getRecordRouteMethod())
           .addMethod(getRouteChatMethod())
+          .setSchemaDescriptor(io.grpc.protobuf.ProtoFileDescriptorSupplier {
+                fileDescriptor("src/test/proto/RouteGuideProto.proto", emptySet())
+              })
           .build()
           serviceDescriptor = result
         }
@@ -160,12 +201,12 @@ public object RouteGuideWireGrpc {
   public fun newBlockingStub(channel: Channel): RouteGuideBlockingStub =
       RouteGuideBlockingStub(channel)
 
-  public abstract class RouteGuideImplBase : BindableService {
-    public open fun GetFeature(request: Point, response: StreamObserver<Feature>) = throw
+  public abstract class RouteGuideImplBase : WireBindableService {
+    public open fun GetFeature(request: Point, response: StreamObserver<Feature>): Unit = throw
         UnsupportedOperationException()
 
-    public open fun ListFeatures(request: Rectangle, response: StreamObserver<Feature>) = throw
-        UnsupportedOperationException()
+    public open fun ListFeatures(request: Rectangle, response: StreamObserver<Feature>): Unit =
+        throw UnsupportedOperationException()
 
     public open fun RecordRoute(response: StreamObserver<RouteSummary>): StreamObserver<Point> =
         throw UnsupportedOperationException()
@@ -188,49 +229,59 @@ public object RouteGuideWireGrpc {
               asyncBidiStreamingCall(this@RouteGuideImplBase::RouteChat)
             ).build()
 
-    public class PointMarshaller : MethodDescriptor.Marshaller<Point> {
-      public override fun stream(value: Point): InputStream =
+    public class PointMarshaller : WireMethodMarshaller<Point> {
+      public override fun stream(`value`: Point): InputStream =
           Point.ADAPTER.encode(value).inputStream()
+
+      public override fun marshalledClass(): Class<Point> = Point::class.java
 
       public override fun parse(stream: InputStream): Point = Point.ADAPTER.decode(stream)
     }
 
-    public class FeatureMarshaller : MethodDescriptor.Marshaller<Feature> {
-      public override fun stream(value: Feature): InputStream =
+    public class FeatureMarshaller : WireMethodMarshaller<Feature> {
+      public override fun stream(`value`: Feature): InputStream =
           Feature.ADAPTER.encode(value).inputStream()
+
+      public override fun marshalledClass(): Class<Feature> = Feature::class.java
 
       public override fun parse(stream: InputStream): Feature = Feature.ADAPTER.decode(stream)
     }
 
-    public class RectangleMarshaller : MethodDescriptor.Marshaller<Rectangle> {
-      public override fun stream(value: Rectangle): InputStream =
+    public class RectangleMarshaller : WireMethodMarshaller<Rectangle> {
+      public override fun stream(`value`: Rectangle): InputStream =
           Rectangle.ADAPTER.encode(value).inputStream()
+
+      public override fun marshalledClass(): Class<Rectangle> = Rectangle::class.java
 
       public override fun parse(stream: InputStream): Rectangle = Rectangle.ADAPTER.decode(stream)
     }
 
-    public class RouteSummaryMarshaller : MethodDescriptor.Marshaller<RouteSummary> {
-      public override fun stream(value: RouteSummary): InputStream =
+    public class RouteSummaryMarshaller : WireMethodMarshaller<RouteSummary> {
+      public override fun stream(`value`: RouteSummary): InputStream =
           RouteSummary.ADAPTER.encode(value).inputStream()
+
+      public override fun marshalledClass(): Class<RouteSummary> = RouteSummary::class.java
 
       public override fun parse(stream: InputStream): RouteSummary =
           RouteSummary.ADAPTER.decode(stream)
     }
 
-    public class RouteNoteMarshaller : MethodDescriptor.Marshaller<RouteNote> {
-      public override fun stream(value: RouteNote): InputStream =
+    public class RouteNoteMarshaller : WireMethodMarshaller<RouteNote> {
+      public override fun stream(`value`: RouteNote): InputStream =
           RouteNote.ADAPTER.encode(value).inputStream()
+
+      public override fun marshalledClass(): Class<RouteNote> = RouteNote::class.java
 
       public override fun parse(stream: InputStream): RouteNote = RouteNote.ADAPTER.decode(stream)
     }
   }
 
-  public class RouteGuideImplLegacyAdapter(
+  public class BindableAdapter(
     private val streamExecutor: ExecutorService,
     private val GetFeature: () -> RouteGuideGetFeatureBlockingServer,
     private val ListFeatures: () -> RouteGuideListFeaturesBlockingServer,
     private val RecordRoute: () -> RouteGuideRecordRouteBlockingServer,
-    private val RouteChat: () -> RouteGuideRouteChatBlockingServer
+    private val RouteChat: () -> RouteGuideRouteChatBlockingServer,
   ) : RouteGuideImplBase() {
     public override fun GetFeature(request: Point, response: StreamObserver<Feature>): Unit {
       response.onNext(GetFeature().GetFeature(request))

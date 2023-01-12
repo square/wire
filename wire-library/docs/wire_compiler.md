@@ -132,8 +132,17 @@ wire {
     srcDir 'src/main/protos'
     include 'com/example/pizza/**'
   }
+}
+```
 
-  ...
+You can also do the opposite and exclude some files:
+```groovy
+wire {
+  sourcePath {
+    srcDir 'src/main/protos'
+    exclude 'com/example/juice/**'
+    exclude 'com/example/pizza/toppings.proto'
+  }
 }
 ```
 
@@ -189,7 +198,7 @@ Large projects may span multiple modules. To support this Wire has a 'proto path
 schema files on this path are used for linking and validation, but they do not yield files in the
 generated output.
 
-The proto path supports the same inputs as the proto path: directories, `.jar` files, and Maven
+The proto path supports the same inputs as the source path: directories, `.jar` files, and Maven
 coordinates. Similarly, the proto path may be filtered with `include`.
 
 ```groovy
@@ -205,6 +214,11 @@ wire {
   protoPath {
     srcJar 'com.example:countries:1.0.0'
     include 'com/example/geo/country.proto'
+  }
+
+  protoPath {
+    srcDir 'src/main/extra-protos'
+    exclude 'com/example/**'
   }
 
   ...
@@ -352,7 +366,7 @@ Customizing Output
 
 ### Java
 
-Here's an exhaustive Java configuration. Booleans are shown with their non-default behavior.
+Here's an exhaustive Java configuration. Booleans are shown with their default behavior.
 
 ```groovy
 wire {
@@ -374,23 +388,26 @@ wire {
     // True if types emitted for this target should not also be emitted for other
     // targets. Use this to cause multiple outputs to be emitted for the same input
     // type.
-    exclusive = false
+    exclusive = true
 
     // Directory to emit to.
     out "${buildDir}/custom"
 
     // True for emitted types to implement android.os.Parcelable.
-    android = true
+    android = false
 
     // True to enable the androidx.annotation.Nullable annotation where applicable.
-    androidAnnotations = true
+    androidAnnotations = false
 
     // True to emit code that uses reflection for reading, writing, and toString
     // methods which are normally implemented with generated code.
-    compact = true
+    compact = false
+
+    // True to turn visibility of all generated types' constructors to non-public.
+    buildersOnly = false
 
     // True to emit types for options declared on messages, fields, etc.
-    emitDeclaredOptions = false,
+    emitDeclaredOptions = true
 
     // True to emit annotations for options applied on messages, fields, etc.
     emitAppliedOptions = true
@@ -400,8 +417,7 @@ wire {
 
 ### Kotlin
 
-Here's an exhaustive Kotlin configuration. Booleans and enums are shown with their non-default
-behavior.
+Here's an exhaustive Kotlin configuration. Booleans and enums are shown with their default behavior.
 
 ```groovy
 wire {
@@ -423,23 +439,26 @@ wire {
     // True if types emitted for this target should not also be emitted for other
     // targets. Use this to cause multiple outputs to be emitted for the same input
     // type.
-    exclusive = false
+    exclusive = true
 
     // Directory to emit to.
     out "${buildDir}/custom"
 
     // True for emitted types to implement android.os.Parcelable.
-    android = true
+    android = false
 
     // True for emitted types to implement APIs for easier migration from the Java
     // target.
-    javaInterop = true
+    javaInterop = false
+
+    // True to turn visibility of all generated types' constructors to non-public.
+    buildersOnly = false
 
     // True to emit types for options declared on messages, fields, etc.
-    emitDeclaredOptions = false,
+    emitDeclaredOptions = true
 
     // True to emit annotations for options applied on messages, fields, etc.
-    emitAppliedOptions = true,
+    emitAppliedOptions = true
 
     // `suspending` to generate coroutines APIs that require a Kotlin coroutines context.
     // `blocking` to generate blocking APIs callable by Java and Kotlin.
@@ -447,10 +466,15 @@ wire {
 
     // `client` to generate interfaces best suited to sending outbound calls.
     // `server` to generate interfaces best suited to receiving inbound calls.
+    // `none` to not generate services.
     rpcRole = 'server'
 
+    // If set, the value will be appended to generated service type names. If null, their rpcRole
+    // will be used as a suffix instead.
+    nameSuffix = "Suffix"
+
     // True for emitted services to implement one interface per RPC.
-    singleMethodServices = true
+    singleMethodServices = false
   }
 }
 ```
@@ -472,10 +496,12 @@ wire {
 
 ### Custom Handlers
 
-Wire has an unstable API to generate code or other artifacts from a proto schema.
+With a custom schema handler, you can handle a proto schema in any way you want, including code
+generation or other side effects such as validation, logging, etc.
 
-You'll need to implement the [CustomHandlerBeta] interface. See our [MarkdownHandler] for a sample
-implementation. Note that this interface is subject to change.
+You'll need to first extend the [SchemaHandler] class, and then the [SchemaHandler.Factory]
+interface which is to return an instance of the former. See our [recipes][SchemaHandlerRecipes] for
+different use cases' implementations.
 
 Build that into an `jar` artifact and add that as a buildscript dependency to your Gradle project.
 
@@ -488,7 +514,7 @@ buildscript {
 ```
 
 Next configure the Wire plugin to call your custom handler. Here's an exhaustive custom
-configuration. Booleans and enums are shown with their non-default behavior.
+configuration. Booleans and enums are shown with their default behavior.
 
 ```groovy
 wire {
@@ -497,22 +523,23 @@ wire {
    //  * be in the buildscript dependencies for this Gradle project
    //  * be a public class
    //  * have a public no-arguments constructor
-   //  * implement the com.squareup.wire.schema.CustomHandlerBeta interface
-   customHandlerClass = "com.example.MyCustomHandler"
+   //  * implement the com.squareup.wire.schema.SchemaHandler.Factory interface
+   schemaHandlerFactoryClass = "com.example.MyCustomHandlerFactory"
 
    // These options work the same as the java and kotlin targets above.
    includes = ['com.example.pizza.*']
    excludes = ['com.example.sales.*']
-   exclusive = false
+   exclusive = true
    out "${buildDir}/custom"
   }
 }
 ```
 
- [CustomHandlerBeta]: https://github.com/square/wire/blob/5fac94f86879fdd7e412cddbeb51e09a708b2b64/wire-library/wire-compiler/src/main/java/com/squareup/wire/schema/Target.kt#L583-L596
- [MarkdownHandler]: https://github.com/square/wire/blob/ebacb88b1c487a7e7d97ff3729c67907e1f95616/wire-library/wire-compiler/src/test/java/com/squareup/wire/schema/MarkdownHandler.kt
+ [SchemaHandler.Factory]: https://github.com/square/wire/blob/fd0a00ff5b6033ed9d8c2d392ff06338467a026f/wire-library/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L192-L194
+ [SchemaHandlerRecipes]: https://github.com/square/wire/blob/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
+ [SchemaHandler]: https://github.com/square/wire/blob/fd0a00ff5b6033ed9d8c2d392ff06338467a026f/wire-library/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L24
  [gradle]: https://gradle.org/
  [kotlinpoet]: https://github.com/square/kotlinpoet
  [maven_coordinates]: https://maven.apache.org/pom.html#Maven_Coordinates
- [r8]: https://developer.android.com/studio/build/shrink-code
  [proguard]: https://www.guardsquare.com/en/products/proguard
+ [r8]: https://developer.android.com/studio/build/shrink-code
