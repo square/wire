@@ -18,21 +18,38 @@ import Foundation
 import XCTest
 @testable import Wire
 
-final class JsonEnumTests: XCTestCase {
-    public enum EnumType : UInt32, CaseIterable, Codable {
+final class ProtoEnumEncodedTests: XCTestCase {
+    public enum EnumType : UInt32, ProtoEnum {
         case ONE = 1
         case TWO = 2
+
+        public init?(_ description: String) {
+            guard let result = Self.allCases.first(where: { $0.description == description }) else {
+                return nil
+            }
+            self = result
+        }
+
+        public var description: String {
+            switch self {
+            case .ONE:
+                return "ONE"
+
+            case .TWO:
+                return "TWO"
+            }
+        }
     }
 }
 
 // MARK: - Non-optional
 
-extension JsonEnumTests {
+extension ProtoEnumEncodedTests {
     struct SupportedTypes : Codable, Equatable {
-        @JSONEnum
+        @ProtoEnumEncoded
         var a: EnumType
 
-        @JSONEnum
+        @ProtoEnumEncoded
         var b: EnumType
     }
 
@@ -156,12 +173,12 @@ extension JsonEnumTests {
 
 // MARK: - Optional
 
-extension JsonEnumTests {
+extension ProtoEnumEncodedTests {
     struct OptionalTypes : Codable, Equatable {
-        @JSONOptionalEnum
+        @ProtoEnumOptionalEncoded
         var a: EnumType?
 
-        @JSONOptionalEnum
+        @ProtoEnumOptionalEncoded
         var b: EnumType?
     }
 
@@ -254,10 +271,10 @@ extension JsonEnumTests {
 
 // MARK: - Array
 
-extension JsonEnumTests {
+extension ProtoEnumEncodedTests {
 
     struct ArrayTypes : Codable, Equatable {
-        @JSONEnumArray
+        @ProtoEnumArrayEncoded
         var results: [EnumType]
     }
 
