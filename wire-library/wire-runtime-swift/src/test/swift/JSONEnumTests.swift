@@ -297,17 +297,6 @@ extension JsonEnumTests {
         XCTAssertEqual(expectedStruct, actualStruct)
     }
 
-    func testDecodingNilArray() throws {
-        let expectedStruct = ArrayTypes(
-            results: []
-        )
-        let json = "{}"
-
-        let jsonData = json.data(using: .utf8)!
-        let actualStruct = try! JSONDecoder().decode(ArrayTypes.self, from: jsonData)
-        XCTAssertEqual(expectedStruct, actualStruct)
-    }
-
     func testDecodingUnknownArrayValue() throws {
         let json = """
         {\

@@ -57,16 +57,3 @@ public struct JSONEnumArray<T : CaseIterable & Hashable & RawRepresentable> : Co
 extension JSONEnumArray : Sendable where T : Sendable {
 }
 #endif
-
-public extension KeyedDecodingContainer {
-    func decode<T: CaseIterable & Hashable & RawRepresentable>(
-        _: JSONEnumArray<T>.Type,
-        forKey key: Key
-    ) throws -> JSONEnumArray<T> {
-        if let value = try decodeIfPresent(JSONEnumArray<T>.self, forKey: key) {
-            return value
-        } else {
-            return JSONEnumArray(wrappedValue: [])
-        }
-    }
-}
