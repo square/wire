@@ -16,6 +16,10 @@
 
 import Foundation
 
+/**
+ Converts enums to/from their string equivalent when serializing to/from JSON.
+ This matches the Proto3 JSON spec: https://developers.google.com/protocol-buffers/docs/proto3#json
+ */
 @propertyWrapper
 public struct JSONOptionalEnum<T : CaseIterable & Hashable & RawRepresentable> : Codable, Hashable where T.RawValue == UInt32 {
     private var storage: JSONEnum<T>?
