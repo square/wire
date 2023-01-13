@@ -207,25 +207,82 @@ extension JsonEnumTests {
 
 // MARK: - Array
 
-/*
 extension JsonEnumTests {
 
     struct ArrayTypes : Codable, Equatable {
-        @JSONEnum
-        var a: EnumType?
-
-        @JSONEnum
-        var b: EnumType?
+        @JSONEnumArray
+        var results: [EnumType]
     }
 
-    func testEncodingArray() throw {
+    func testEncodingArray() throws {
+        let expectedStruct = ArrayTypes(
+            results: [.ONE, .TWO]
+        )
+        let expectedJson = """
+        {\
+        "results":["ONE","TWO"]\
+        }
+        """
+
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys // For deterministic output.
+
+        let jsonData = try! encoder.encode(expectedStruct)
+        let actualJson = String(data: jsonData, encoding: .utf8)!
+        XCTAssertEqual(expectedJson, actualJson)
+
+        let actualStruct = try! JSONDecoder().decode(ArrayTypes.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
     }
 
-    func testDecodingArray() throw {
+    func testDecodingArray() throws {
+        let expectedStruct = ArrayTypes(
+            results: [.ONE, .TWO]
+        )
+        let json = """
+        {\
+        "results":["ONE",2]\
+        }
+        """
+
+        let jsonData = json.data(using: .utf8)!
+        let actualStruct = try! JSONDecoder().decode(ArrayTypes.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
     }
 
-    func testDecodingUnknownValue() throw {
+    func testDecodingNilArray() throws {
+        let expectedStruct = ArrayTypes(
+            results: []
+        )
+        let json = "{}"
+
+        let jsonData = json.data(using: .utf8)!
+        let actualStruct = try! JSONDecoder().decode(ArrayTypes.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+    }
+
+    func testDecodingUnknownValue() throws {
+        let json = """
+        {\
+        "results":["ONE","ZZZ"]\
+        }
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        XCTAssertThrowsError(
+            try JSONDecoder().decode(ArrayTypes.self, from: jsonData)
+        ) { error in
+            guard let error = error as? ProtoDecoder.Error else {
+                XCTFail("Invalid error type for \(error)")
+                return
+            }
+
+            guard case let .unknownEnumString(_, string) = error else {
+                XCTFail("Invalid error case for \(error)")
+                return
+            }
+
+            XCTAssertEqual(string, "ZZZ")
+        }
     }
 }
-*/
-
