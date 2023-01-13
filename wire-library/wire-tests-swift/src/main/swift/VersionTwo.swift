@@ -13,7 +13,7 @@ public struct VersionTwo {
     public var v2_f64: UInt64?
     public var v2_rs: [String]
     public var obj: NestedVersionTwo?
-    @JSONOptionalEnum
+    @ProtoEnumOptionalEncoded
     public var en: EnumVersionTwo?
     public var unknownFields: Data = .init()
 

@@ -13,9 +13,9 @@ public struct FooBar {
     public var fred: [Float]
     public var daisy: Double?
     public var nested: [FooBar]
-    @JSONOptionalEnum
+    @ProtoEnumOptionalEncoded
     public var ext: FooBarBazEnum?
-    @JSONEnumArray
+    @ProtoEnumArrayEncoded
     public var rep: [FooBarBazEnum]
     public var more_string: String?
     public var unknownFields: Data = .init()
@@ -46,7 +46,7 @@ public struct FooBar {
 
     public struct Nested {
 
-        @JSONOptionalEnum
+        @ProtoEnumOptionalEncoded
         public var value: FooBarBazEnum?
         public var unknownFields: Data = .init()
 

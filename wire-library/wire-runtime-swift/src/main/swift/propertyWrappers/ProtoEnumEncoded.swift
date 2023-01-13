@@ -16,8 +16,8 @@
 
 import Foundation
 
-#warning("Add case iterable")
-public protocol ProtoEnum : LosslessStringConvertible, Hashable, RawRepresentable where RawValue == UInt32 {
+/// Common protocol that all Wire generated enums conform to
+public protocol ProtoEnum : LosslessStringConvertible, CaseIterable, Hashable, RawRepresentable where RawValue == UInt32 {
 }
 /**
  Converts enums to/from their field and string equivalent when serializing via Codable.
@@ -49,7 +49,7 @@ extension ProtoEnumEncoded : Codable {
     public func encode(to encoder: Encoder) throws {
         switch encoder.enumEncodingStrategy {
         case .string:
-            try String(describing: wrappedValue).encode(to: encoder)
+            try wrappedValue.description.encode(to: encoder)
 
         case .integer:
             try wrappedValue.rawValue.encode(to: encoder)
@@ -57,14 +57,14 @@ extension ProtoEnumEncoded : Codable {
     }
 
     private init(string: String) throws {
-        guard let value = T.allCases.first(where: { "\($0)" == string }) else {
+        guard let value = T(string) else {
             throw ProtoDecoder.Error.unknownEnumString(type: T.self, string: string)
         }
         self.wrappedValue = value
     }
 
     private init(fieldNumber: UInt32) throws {
-        guard let value = T.init(rawValue: fieldNumber) else {
+        guard let value = T(rawValue: fieldNumber) else {
             throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: fieldNumber)
         }
         self.wrappedValue = value
