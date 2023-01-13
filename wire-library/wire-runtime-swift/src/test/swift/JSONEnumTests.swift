@@ -23,7 +23,11 @@ final class JsonEnumTests: XCTestCase {
         case ONE = 1
         case TWO = 2
     }
+}
 
+// MARK: - Non-optional
+
+extension JsonEnumTests {
     struct SupportedTypes : Codable, Equatable {
         @JSONEnum
         var a: EnumType
@@ -124,3 +128,84 @@ final class JsonEnumTests: XCTestCase {
         }
     }
 }
+
+
+/*
+// MARK: - Optional
+
+extension JsonEnumTests {
+    struct OptionalTypes : Codable, Equatable {
+        @JSONEnum
+        var a: EnumType?
+
+        @JSONEnum
+        var b: EnumType?
+    }
+
+    func testEncodingNil() throw {
+        let expectedStruct = SupportedTypes(
+            a: nil,
+            b: .TWO
+        )
+        let expectedJson = """
+        {\
+        "b":"TWO"\
+        }
+        """
+
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys // For deterministic output.
+
+        let jsonData = try! encoder.encode(expectedStruct)
+        let actualJson = String(data: jsonData, encoding: .utf8)!
+        XCTAssertEqual(expectedJson, actualJson)
+
+        let actualStruct = try! JSONDecoder().decode(SupportedTypes.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+    }
+
+    func testDecodingNil() throws {
+        let expectedStruct = SupportedTypes(
+            a: .ONE,
+            b: .TWO
+        )
+        let json = """
+        {\
+        "a":"ONE",\
+        "b":2\
+        }
+        """
+
+        let jsonData = json.data(using: .utf8)!
+        let actualStruct = try! JSONDecoder().decode(SupportedTypes.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+
+    }
+}
+
+ */
+
+// MARK: - Array
+
+/*
+extension JsonEnumTests {
+
+    struct ArrayTypes : Codable, Equatable {
+        @JSONEnum
+        var a: EnumType?
+
+        @JSONEnum
+        var b: EnumType?
+    }
+
+    func testEncodingArray() throw {
+    }
+
+    func testDecodingArray() throw {
+    }
+
+    func testDecodingUnknownValue() throw {
+    }
+}
+*/
+

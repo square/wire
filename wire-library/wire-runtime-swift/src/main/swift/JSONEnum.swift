@@ -59,3 +59,6 @@ public struct JSONEnum<T : CaseIterable & Hashable & RawRepresentable> : Codable
         self.wrappedValue = value
     }
 }
+
+extension JSONEnum : Sendable where T : Sendable {
+}
