@@ -21,7 +21,7 @@ import Foundation
  This matches the Proto3 JSON spec: https://developers.google.com/protocol-buffers/docs/proto3#json
  */
 @propertyWrapper
-public struct ProtoEnumOptionalEncoded<T : ProtoEnum> : Hashable {
+public struct ProtoEnumOptionalEncoded<T : ProtoEnum> {
     private var storage: ProtoEnumEncoded<T>?
 
     public var wrappedValue: T? {
@@ -58,6 +58,12 @@ extension ProtoEnumOptionalEncoded : Codable {
     public func encode(to encoder: Encoder) throws {
         try storage.encode(to: encoder)
     }
+}
+
+extension ProtoEnumOptionalEncoded : Equatable where T : Equatable {
+}
+
+extension ProtoEnumOptionalEncoded : Hashable where T : Hashable {
 }
 
 #if swift(>=5.5)

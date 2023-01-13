@@ -19,18 +19,11 @@ import XCTest
 @testable import Wire
 
 final class ProtoEnumEncodedTests: XCTestCase {
-    public enum EnumType : UInt32, ProtoEnum {
+    enum EnumType : UInt32, ProtoEnum {
         case ONE = 1
         case TWO = 2
 
-        public init?(_ description: String) {
-            guard let result = Self.allCases.first(where: { $0.description == description }) else {
-                return nil
-            }
-            self = result
-        }
-
-        public var description: String {
+        var description: String {
             switch self {
             case .ONE:
                 return "ONE"

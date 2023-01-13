@@ -67,11 +67,19 @@ public struct FooBar {
 
     }
 
-    public enum FooBarBazEnum : UInt32, CaseIterable, Codable {
+    public enum FooBarBazEnum : UInt32, CaseIterable, Codable, ProtoEnum {
 
         case FOO = 1
         case BAR = 2
         case BAZ = 3
+
+        public var description: String {
+            switch self {
+            case .FOO: return "FOO"
+            case .BAR: return "BAR"
+            case .BAZ: return "BAZ"
+            }
+        }
 
     }
 

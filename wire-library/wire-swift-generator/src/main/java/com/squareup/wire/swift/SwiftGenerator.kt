@@ -59,6 +59,7 @@ class SwiftGenerator private constructor(
   private val protoMessage = DeclaredTypeName.typeName("Wire.ProtoMessage")
   private val protoReader = DeclaredTypeName.typeName("Wire.ProtoReader")
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
+  private val protoEnum = DeclaredTypeName.typeName("Wire.ProtoEnum")
   private val heap = DeclaredTypeName.typeName("Wire.Heap")
   private val indirect = DeclaredTypeName.typeName("Wire.Indirect")
   private val redactable = DeclaredTypeName.typeName("Wire.Redactable")
@@ -972,6 +973,7 @@ class SwiftGenerator private constructor(
       .addSuperType(UINT32)
       .addSuperType(CASE_ITERABLE)
       .addSuperType(codable)
+      .addSuperType(protoEnum)
       .apply {
         val sendableExtension = ExtensionSpec.builder(enumName)
           .addSuperType(sendable)
@@ -997,6 +999,24 @@ class SwiftGenerator private constructor(
               .build()
           )
         }
+
+        addProperty(
+          PropertySpec.varBuilder("description", STRING)
+            .addModifiers(PUBLIC)
+            .getter(
+              FunctionSpec.getterBuilder()
+                .beginControlFlow("switch", "self")
+                .apply {
+                  type.constants.forEach { constant ->
+                    addStatement("case .%1N: return \"%1N\"", constant.name)
+                  }
+                }
+                .endControlFlow("switch")
+                .build()
+            )
+            .build()
+        )
+
         // Swift won't synthesize CaseIterable conformance if any constants contain an availability
         // attribute. https://bugs.swift.org/browse/SR-7151
         if (type.constants.any { it.isDeprecated }) {

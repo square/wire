@@ -16,15 +16,12 @@
 
 import Foundation
 
-/// Common protocol that all Wire generated enums conform to
-public protocol ProtoEnum : LosslessStringConvertible, CaseIterable, Hashable, RawRepresentable where RawValue == UInt32 {
-}
 /**
  Converts enums to/from their field and string equivalent when serializing via Codable.
  This matches the Proto3 JSON spec: https://developers.google.com/protocol-buffers/docs/proto3#json
  */
 @propertyWrapper
-public struct ProtoEnumEncoded<T : ProtoEnum> : Hashable {
+public struct ProtoEnumEncoded<T : ProtoEnum> {
     public var wrappedValue: T
 
     public init(wrappedValue: T) {
@@ -69,6 +66,12 @@ extension ProtoEnumEncoded : Codable {
         }
         self.wrappedValue = value
     }
+}
+
+extension ProtoEnumEncoded : Equatable where T : Equatable {
+}
+
+extension ProtoEnumEncoded : Hashable where T : Hashable {
 }
 
 #if swift(>=5.5)

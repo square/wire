@@ -21,13 +21,15 @@ import Foundation
  This matches the Proto3 JSON spec: https://developers.google.com/protocol-buffers/docs/proto3#json
  */
 @propertyWrapper
-public struct ProtoEnumArrayEncoded<T : ProtoEnum> : Codable, Hashable {
+public struct ProtoEnumArrayEncoded<T : ProtoEnum> {
     public var wrappedValue: [T]
 
     public init(wrappedValue: [T]) {
         self.wrappedValue = wrappedValue
     }
+}
 
+extension ProtoEnumArrayEncoded : Codable {
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
 
@@ -51,6 +53,12 @@ public struct ProtoEnumArrayEncoded<T : ProtoEnum> : Codable, Hashable {
             contentsOf: wrappedValue.lazy.map(ProtoEnumEncoded.init(wrappedValue:))
         )
     }
+}
+
+extension ProtoEnumArrayEncoded : Equatable where T : Equatable {
+}
+
+extension ProtoEnumArrayEncoded : Hashable where T : Hashable {
 }
 
 #if swift(>=5.5)
