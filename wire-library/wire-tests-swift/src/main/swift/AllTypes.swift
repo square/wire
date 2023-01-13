@@ -1443,15 +1443,15 @@ fileprivate struct _AllTypes {
     public var opt_sint32: Int32?
     public var opt_fixed32: UInt32?
     public var opt_sfixed32: Int32?
-    @JSONString
+    @StringEncoded
     public var opt_int64: Int64?
-    @JSONString
+    @StringEncoded
     public var opt_uint64: UInt64?
-    @JSONString
+    @StringEncoded
     public var opt_sint64: Int64?
-    @JSONString
+    @StringEncoded
     public var opt_fixed64: UInt64?
-    @JSONString
+    @StringEncoded
     public var opt_sfixed64: Int64?
     public var opt_bool: Bool?
     public var opt_float: Float?
@@ -1466,15 +1466,15 @@ fileprivate struct _AllTypes {
     public var req_sint32: Int32
     public var req_fixed32: UInt32
     public var req_sfixed32: Int32
-    @JSONString
+    @StringEncoded
     public var req_int64: Int64
-    @JSONString
+    @StringEncoded
     public var req_uint64: UInt64
-    @JSONString
+    @StringEncoded
     public var req_sint64: Int64
-    @JSONString
+    @StringEncoded
     public var req_fixed64: UInt64
-    @JSONString
+    @StringEncoded
     public var req_sfixed64: Int64
     public var req_bool: Bool
     public var req_float: Float
@@ -1494,15 +1494,20 @@ fileprivate struct _AllTypes {
     public var rep_fixed32: [UInt32]
     @DefaultEmpty
     public var rep_sfixed32: [Int32]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var rep_int64: [Int64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var rep_uint64: [UInt64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var rep_sint64: [Int64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var rep_fixed64: [UInt64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var rep_sfixed64: [Int64]
     @DefaultEmpty
     public var rep_bool: [Bool]
@@ -1529,15 +1534,20 @@ fileprivate struct _AllTypes {
     public var pack_fixed32: [UInt32]
     @DefaultEmpty
     public var pack_sfixed32: [Int32]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var pack_int64: [Int64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var pack_uint64: [UInt64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var pack_sint64: [Int64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var pack_fixed64: [UInt64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var pack_sfixed64: [Int64]
     @DefaultEmpty
     public var pack_bool: [Bool]
@@ -1553,15 +1563,15 @@ fileprivate struct _AllTypes {
     public var default_sint32: Int32?
     public var default_fixed32: UInt32?
     public var default_sfixed32: Int32?
-    @JSONString
+    @StringEncoded
     public var default_int64: Int64?
-    @JSONString
+    @StringEncoded
     public var default_uint64: UInt64?
-    @JSONString
+    @StringEncoded
     public var default_sint64: Int64?
-    @JSONString
+    @StringEncoded
     public var default_fixed64: UInt64?
-    @JSONString
+    @StringEncoded
     public var default_sfixed64: Int64?
     public var default_bool: Bool?
     public var default_float: Float?
@@ -1583,15 +1593,15 @@ fileprivate struct _AllTypes {
     public var ext_opt_sint32: Int32?
     public var ext_opt_fixed32: UInt32?
     public var ext_opt_sfixed32: Int32?
-    @JSONString
+    @StringEncoded
     public var ext_opt_int64: Int64?
-    @JSONString
+    @StringEncoded
     public var ext_opt_uint64: UInt64?
-    @JSONString
+    @StringEncoded
     public var ext_opt_sint64: Int64?
-    @JSONString
+    @StringEncoded
     public var ext_opt_fixed64: UInt64?
-    @JSONString
+    @StringEncoded
     public var ext_opt_sfixed64: Int64?
     public var ext_opt_bool: Bool?
     public var ext_opt_float: Float?
@@ -1611,15 +1621,20 @@ fileprivate struct _AllTypes {
     public var ext_rep_fixed32: [UInt32]
     @DefaultEmpty
     public var ext_rep_sfixed32: [Int32]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var ext_rep_int64: [Int64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var ext_rep_uint64: [UInt64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var ext_rep_sint64: [Int64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var ext_rep_fixed64: [UInt64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var ext_rep_sfixed64: [Int64]
     @DefaultEmpty
     public var ext_rep_bool: [Bool]
@@ -1646,15 +1661,20 @@ fileprivate struct _AllTypes {
     public var ext_pack_fixed32: [UInt32]
     @DefaultEmpty
     public var ext_pack_sfixed32: [Int32]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var ext_pack_int64: [Int64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var ext_pack_uint64: [UInt64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var ext_pack_sint64: [Int64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var ext_pack_fixed64: [UInt64]
-    @JSONString
+    @DefaultEmpty
+    @StringEncodedValues
     public var ext_pack_sfixed64: [Int64]
     @DefaultEmpty
     public var ext_pack_bool: [Bool]

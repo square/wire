@@ -746,8 +746,10 @@ class SwiftGenerator private constructor(
           property.addAttribute("JSONEnum")
         }
       }
-      if (field.typeName.needsJsonString()) {
-        property.addAttribute("JSONString")
+      if (field.typeName.needsStringEncoded()) {
+        property.addAttribute("StringEncoded")
+      } else if (field.typeName.needsStringEncodedValues()) {
+        property.addAttribute("StringEncodedValues")
       }
       if (isIndirect(type, field)) {
         property.addAttribute(AttributeSpec.builder(indirect).build())
@@ -952,24 +954,21 @@ class SwiftGenerator private constructor(
     }
 
   private fun Field.needsDefaultEmpty(): Boolean {
-    // This is a temporary thing
-    if (typeName.needsJsonString()) {
-      return false
-    }
-
     return isRepeated || isMap
   }
 
-  private fun TypeName.needsJsonString(): Boolean {
+  private fun TypeName.needsStringEncoded(): Boolean {
     val self = makeNonOptional()
-    if (self == INT64 || self == UINT64) {
-      return true
-    }
+    return self == INT64 || self == UINT64
+  }
+
+  private fun TypeName.needsStringEncodedValues(): Boolean {
+    val self = makeNonOptional()
     if (self is ParameterizedTypeName) {
       when (self.rawType) {
-        ARRAY -> return self.typeArguments[0].needsJsonString()
-        DICTIONARY -> return self.typeArguments[0].needsJsonString() ||
-          self.typeArguments[1].needsJsonString()
+        ARRAY -> return self.typeArguments[0].needsStringEncoded()
+        DICTIONARY -> return self.typeArguments[0].needsStringEncoded() ||
+          self.typeArguments[1].needsStringEncoded()
       }
     }
     return false

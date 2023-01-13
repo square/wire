@@ -15,7 +15,7 @@
  */
 
 @propertyWrapper
-@available(*, deprecated, message: "Replace with StringEncoded and friends")
+@available(*, deprecated, message: "Replace with StringEncoded and StringEncodedValues")
 public struct JSONString<T : Hashable> : Hashable, Codable {
     public var wrappedValue: T
 
