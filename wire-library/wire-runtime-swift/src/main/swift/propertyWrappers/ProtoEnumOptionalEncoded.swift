@@ -17,26 +17,28 @@
 import Foundation
 
 /**
- Converts enums to/from their string equivalent when serializing to/from JSON.
+ Converts enums to/from their field and string equivalent when serializing via Codable.
  This matches the Proto3 JSON spec: https://developers.google.com/protocol-buffers/docs/proto3#json
  */
 @propertyWrapper
-public struct JSONOptionalEnum<T : CaseIterable & Hashable & RawRepresentable> : Codable, Hashable where T.RawValue == UInt32 {
-    private var storage: JSONEnum<T>?
+public struct ProtoEnumOptionalEncoded<T : ProtoEnum> : Hashable {
+    private var storage: ProtoEnumEncoded<T>?
 
     public var wrappedValue: T? {
         get {
             storage?.wrappedValue
         }
         set {
-            storage = newValue.map(JSONEnum.init(wrappedValue:))
+            storage = newValue.map(ProtoEnumEncoded.init(wrappedValue:))
         }
     }
 
     public init(wrappedValue: T?) {
-        storage = wrappedValue.map(JSONEnum.init(wrappedValue:))
+        storage = wrappedValue.map(ProtoEnumEncoded.init(wrappedValue:))
     }
+}
 
+extension ProtoEnumOptionalEncoded : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
@@ -45,10 +47,10 @@ public struct JSONOptionalEnum<T : CaseIterable & Hashable & RawRepresentable> :
         } else {
             switch decoder.enumDecodingStrategy {
             case .shouldSkip:
-                storage = try? container.decode(JSONEnum<T>.self)
+                storage = try? container.decode(ProtoEnumEncoded<T>.self)
 
             case .shouldThrow:
-                storage = try container.decode(JSONEnum<T>.self)
+                storage = try container.decode(ProtoEnumEncoded<T>.self)
             }
         }
     }
@@ -59,19 +61,19 @@ public struct JSONOptionalEnum<T : CaseIterable & Hashable & RawRepresentable> :
 }
 
 #if swift(>=5.5)
-extension JSONOptionalEnum : Sendable where T : Sendable {
+extension ProtoEnumOptionalEncoded : Sendable where T : Sendable {
 }
 #endif
 
 public extension KeyedDecodingContainer {
     func decode<T: CaseIterable & Hashable & RawRepresentable>(
-        _: JSONOptionalEnum<T>.Type,
+        _: ProtoEnumOptionalEncoded<T>.Type,
         forKey key: Key
-    ) throws -> JSONOptionalEnum<T> {
-        if let value = try decodeIfPresent(JSONOptionalEnum<T>.self, forKey: key) {
+    ) throws -> ProtoEnumOptionalEncoded<T> {
+        if let value = try decodeIfPresent(ProtoEnumOptionalEncoded<T>.self, forKey: key) {
             return value
         } else {
-            return JSONOptionalEnum(wrappedValue: nil)
+            return ProtoEnumOptionalEncoded(wrappedValue: nil)
         }
     }
 }

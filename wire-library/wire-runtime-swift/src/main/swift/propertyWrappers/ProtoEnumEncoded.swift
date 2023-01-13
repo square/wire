@@ -16,18 +16,23 @@
 
 import Foundation
 
+#warning("Add case iterable")
+public protocol ProtoEnum : LosslessStringConvertible, Hashable, RawRepresentable where RawValue == UInt32 {
+}
 /**
- Converts enums to/from their string equivalent when serializing to/from JSON.
+ Converts enums to/from their field and string equivalent when serializing via Codable.
  This matches the Proto3 JSON spec: https://developers.google.com/protocol-buffers/docs/proto3#json
  */
 @propertyWrapper
-public struct JSONEnum<T : CaseIterable & Hashable & RawRepresentable> : Codable, Hashable where T.RawValue == UInt32 {
+public struct ProtoEnumEncoded<T : ProtoEnum> : Hashable {
     public var wrappedValue: T
 
     public init(wrappedValue: T) {
         self.wrappedValue = wrappedValue
     }
+}
 
+extension ProtoEnumEncoded : Codable {
     public init(from decoder: Decoder) throws {
         // We support decoding from either the string value or the field index.
         let container = try decoder.singleValueContainer()
@@ -67,6 +72,6 @@ public struct JSONEnum<T : CaseIterable & Hashable & RawRepresentable> : Codable
 }
 
 #if swift(>=5.5)
-extension JSONEnum : Sendable where T : Sendable {
+extension ProtoEnumEncoded : Sendable where T : Sendable {
 }
 #endif

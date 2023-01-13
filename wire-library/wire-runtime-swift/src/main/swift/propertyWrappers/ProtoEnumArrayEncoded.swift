@@ -17,11 +17,11 @@
 import Foundation
 
 /**
- Converts enums to/from their string equivalent when serializing to/from JSON.
+ Converts enums to/from their field and string equivalent when serializing via Codable.
  This matches the Proto3 JSON spec: https://developers.google.com/protocol-buffers/docs/proto3#json
  */
 @propertyWrapper
-public struct JSONEnumArray<T : CaseIterable & Hashable & RawRepresentable> : Codable, Hashable where T.RawValue == UInt32 {
+public struct ProtoEnumArrayEncoded<T : ProtoEnum> : Codable, Hashable {
     public var wrappedValue: [T]
 
     public init(wrappedValue: [T]) {
@@ -37,7 +37,7 @@ public struct JSONEnumArray<T : CaseIterable & Hashable & RawRepresentable> : Co
         }
 
         while !container.isAtEnd {
-            let value = try container.decode(JSONOptionalEnum<T>.self)
+            let value = try container.decode(ProtoEnumOptionalEncoded<T>.self)
             guard let value = value.wrappedValue else {
                 continue
             }
@@ -48,12 +48,12 @@ public struct JSONEnumArray<T : CaseIterable & Hashable & RawRepresentable> : Co
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         try container.encode(
-            contentsOf: wrappedValue.lazy.map(JSONEnum.init(wrappedValue:))
+            contentsOf: wrappedValue.lazy.map(ProtoEnumEncoded.init(wrappedValue:))
         )
     }
 }
 
 #if swift(>=5.5)
-extension JSONEnumArray : Sendable where T : Sendable {
+extension ProtoEnumArrayEncoded : Sendable where T : Sendable {
 }
 #endif
