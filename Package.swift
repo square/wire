@@ -28,7 +28,6 @@ let package = Package(
             dependencies: ["Wire"],
             path: "wire-library/wire-runtime-swift/src/test/swift"
         ),
-        /*
         .target(
             name: "WireTests",
             dependencies: ["Wire"],
@@ -39,7 +38,6 @@ let package = Package(
             dependencies: ["WireTests"],
             path: "wire-library/wire-tests-swift/src/test/swift"
         ),
-         */
     ],
     swiftLanguageVersions: [.v5]
 )
