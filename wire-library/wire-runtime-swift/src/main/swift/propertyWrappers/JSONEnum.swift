@@ -16,26 +16,6 @@
 
 import Foundation
 
-/// The encoding strategy to use for JSONEnum types'
-/// Defaults to .string
-public enum EnumEncodingStrategy {
-    case string
-    case integer
-}
-
-extension CodingUserInfoKey {
-    /// Control the encoding of Enums
-    /// - SeeAlso: EnumEncodingStrategy
-    public static let wireEnumEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumEncoding")!
-}
-
-private extension Encoder {
-    var enumEncodingStrategy: EnumEncodingStrategy {
-        let preferred = userInfo[.wireEnumEncodingStrategy] as? EnumEncodingStrategy
-        return preferred ?? .string
-    }
-}
-
 /**
  Converts enums to/from their string equivalent when serializing to/from JSON.
  This matches the Proto3 JSON spec: https://developers.google.com/protocol-buffers/docs/proto3#json

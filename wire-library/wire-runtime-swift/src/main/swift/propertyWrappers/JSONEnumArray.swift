@@ -37,14 +37,19 @@ public struct JSONEnumArray<T : CaseIterable & Hashable & RawRepresentable> : Co
         }
 
         while !container.isAtEnd {
-            let value = try container.decode(JSONEnum<T>.self)
-            wrappedValue.append(value.wrappedValue)
+            let value = try container.decode(JSONOptionalEnum<T>.self)
+            guard let value = value.wrappedValue else {
+                continue
+            }
+            wrappedValue.append(value)
         }
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
-        try container.encode(contentsOf: wrappedValue.lazy.map(JSONEnum.init(wrappedValue:)))
+        try container.encode(
+            contentsOf: wrappedValue.lazy.map(JSONEnum.init(wrappedValue:))
+        )
     }
 }
 

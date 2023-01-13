@@ -203,6 +203,53 @@ extension JsonEnumTests {
         let actualStruct = try! JSONDecoder().decode(OptionalTypes.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
     }
+
+    func testDecodingUnknownOptionalValue() throws {
+        let json = """
+        {\
+        "a":"ONE",\
+        "b":7\
+        }
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        XCTAssertThrowsError(
+            try JSONDecoder().decode(OptionalTypes.self, from: jsonData)
+        ) { error in
+            guard let error = error as? ProtoDecoder.Error else {
+                XCTFail("Invalid error type for \(error)")
+                return
+            }
+
+            guard case let .unknownEnumCase(_, fieldNumber) = error else {
+                XCTFail("Invalid error case for \(error)")
+                return
+            }
+
+            XCTAssertEqual(fieldNumber, 7)
+        }
+    }
+
+    func testLossyDecodingUnknownOptionalValue() throws {
+        let expectedStruct = OptionalTypes(
+            a: .ONE,
+            b: nil
+        )
+        
+        let json = """
+        {\
+        "a":"ONE",\
+        "b":7\
+        }
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        decoder.userInfo[.wireEnumDecodingStrategy] = EnumDecodingStrategy.shouldSkip
+
+        let decoded = try decoder.decode(OptionalTypes.self, from: jsonData)
+        XCTAssertEqual(decoded, expectedStruct)
+    }
 }
 
 // MARK: - Array
@@ -261,7 +308,7 @@ extension JsonEnumTests {
         XCTAssertEqual(expectedStruct, actualStruct)
     }
 
-    func testDecodingUnknownValue() throws {
+    func testDecodingUnknownArrayValue() throws {
         let json = """
         {\
         "results":["ONE","ZZZ"]\
@@ -284,5 +331,23 @@ extension JsonEnumTests {
 
             XCTAssertEqual(string, "ZZZ")
         }
+    }
+
+    func testLossyDecodingUnknownArrayValue() throws {
+        let expectedStruct = ArrayTypes(
+            results: [.ONE]
+        )
+        let json = """
+        {\
+        "results":["ONE","ZZZ"]\
+        }
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        decoder.userInfo[.wireEnumDecodingStrategy] = EnumDecodingStrategy.shouldSkip
+
+        let decoded = try decoder.decode(ArrayTypes.self, from: jsonData)
+        XCTAssertEqual(decoded, expectedStruct)
     }
 }

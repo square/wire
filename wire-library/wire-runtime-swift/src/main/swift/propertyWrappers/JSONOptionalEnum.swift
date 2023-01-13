@@ -43,7 +43,13 @@ public struct JSONOptionalEnum<T : CaseIterable & Hashable & RawRepresentable> :
         if container.decodeNil() {
             storage = nil
         } else {
-            storage = try container.decode(JSONEnum<T>.self)
+            switch decoder.enumDecodingStrategy {
+            case .shouldSkip:
+                storage = try? container.decode(JSONEnum<T>.self)
+
+            case .shouldThrow:
+                storage = try container.decode(JSONEnum<T>.self)
+            }
         }
     }
 
