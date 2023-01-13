@@ -71,4 +71,56 @@ final class JsonEnumTests: XCTestCase {
         let actualStruct = try! JSONDecoder().decode(SupportedTypes.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
     }
+
+    func testDecodingUnknownString() throws {
+        let json = """
+        {\
+        "a":"ZZZ",\
+        "b":2\
+        }
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        XCTAssertThrowsError(
+            try JSONDecoder().decode(SupportedTypes.self, from: jsonData)
+        ) { error in
+            guard let error = error as? ProtoDecoder.Error else {
+                XCTFail("Invalid error type for \(error)")
+                return
+            }
+
+            guard case let .unknownEnumString(_, string) = error else {
+                XCTFail("Invalid error case for \(error)")
+                return
+            }
+
+            XCTAssertEqual(string, "ZZZ")
+        }
+    }
+
+    func testDecodingUnknownFieldNumber() throws {
+        let json = """
+        {\
+        "a":"ONE",\
+        "b":7\
+        }
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        XCTAssertThrowsError(
+            try JSONDecoder().decode(SupportedTypes.self, from: jsonData)
+        ) { error in
+            guard let error = error as? ProtoDecoder.Error else {
+                XCTFail("Invalid error type for \(error)")
+                return
+            }
+
+            guard case let .unknownEnumCase(_, fieldNumber) = error else {
+                XCTFail("Invalid error case for \(error)")
+                return
+            }
+
+            XCTAssertEqual(fieldNumber, 7)
+        }
+    }
 }
