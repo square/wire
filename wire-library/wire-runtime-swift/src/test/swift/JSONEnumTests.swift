@@ -36,7 +36,7 @@ extension JsonEnumTests {
         var b: EnumType
     }
 
-    func testEncoding() throws {
+    func testEncodingString() throws {
         let expectedStruct = SupportedTypes(
             a: .ONE,
             b: .TWO
@@ -49,6 +49,30 @@ extension JsonEnumTests {
         """
 
         let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys // For deterministic output.
+
+        let jsonData = try! encoder.encode(expectedStruct)
+        let actualJson = String(data: jsonData, encoding: .utf8)!
+        XCTAssertEqual(expectedJson, actualJson)
+
+        let actualStruct = try! JSONDecoder().decode(SupportedTypes.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+    }
+
+    func testEncodingInteger() throws {
+        let expectedStruct = SupportedTypes(
+            a: .ONE,
+            b: .TWO
+        )
+        let expectedJson = """
+        {\
+        "a":1,\
+        "b":2\
+        }
+        """
+
+        let encoder = JSONEncoder()
+        encoder.userInfo[.wireEnumEncodingStrategy] = EnumEncodingStrategy.integer
         encoder.outputFormatting = .sortedKeys // For deterministic output.
 
         let jsonData = try! encoder.encode(expectedStruct)

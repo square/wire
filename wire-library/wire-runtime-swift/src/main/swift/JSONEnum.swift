@@ -16,6 +16,26 @@
 
 import Foundation
 
+/// The encoding strategy to use for JSONEnum types'
+/// Defaults to .string
+public enum EnumEncodingStrategy {
+    case string
+    case integer
+}
+
+extension CodingUserInfoKey {
+    /// Control the encoding of Enums
+    /// - SeeAlso: EnumEncodingStrategy
+    public static let wireEnumEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumEncoding")!
+}
+
+private extension Encoder {
+    var enumEncodingStrategy: EnumEncodingStrategy {
+        let preferred = userInfo[.wireEnumEncodingStrategy] as? EnumEncodingStrategy
+        return preferred ?? .string
+    }
+}
+
 /**
  Converts enums to/from their string equivalent when serializing to/from JSON.
  This matches the Proto3 JSON spec: https://developers.google.com/protocol-buffers/docs/proto3#json
@@ -42,7 +62,13 @@ public struct JSONEnum<T : CaseIterable & Hashable & RawRepresentable> : Codable
     }
 
     public func encode(to encoder: Encoder) throws {
-        try String(describing: wrappedValue).encode(to: encoder)
+        switch encoder.enumEncodingStrategy {
+        case .string:
+            try String(describing: wrappedValue).encode(to: encoder)
+
+        case .integer:
+            try wrappedValue.rawValue.encode(to: encoder)
+        }
     }
 
     private init(string: String) throws {
