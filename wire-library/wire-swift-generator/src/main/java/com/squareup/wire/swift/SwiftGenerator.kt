@@ -972,7 +972,6 @@ class SwiftGenerator private constructor(
       .addModifiers(PUBLIC)
       .addSuperType(UINT32)
       .addSuperType(CASE_ITERABLE)
-      .addSuperType(codable)
       .addSuperType(protoEnum)
       .apply {
         val sendableExtension = ExtensionSpec.builder(enumName)

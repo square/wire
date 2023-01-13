@@ -10,7 +10,7 @@ public struct OtherMessageWithStatus {
     public init() {
     }
 
-    public enum Status : UInt32, CaseIterable, Codable, ProtoEnum {
+    public enum Status : UInt32, CaseIterable, ProtoEnum {
 
         case A = 1
 

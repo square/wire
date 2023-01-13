@@ -67,7 +67,7 @@ public struct FooBar {
 
     }
 
-    public enum FooBarBazEnum : UInt32, CaseIterable, Codable, ProtoEnum {
+    public enum FooBarBazEnum : UInt32, CaseIterable, ProtoEnum {
 
         case FOO = 1
         case BAR = 2

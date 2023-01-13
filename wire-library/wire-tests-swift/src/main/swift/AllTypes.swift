@@ -1416,7 +1416,7 @@ public struct AllTypes {
         }
     }
 
-    public enum NestedEnum : UInt32, CaseIterable, Codable, ProtoEnum {
+    public enum NestedEnum : UInt32, CaseIterable, ProtoEnum {
 
         case UNKNOWN = 0
         case A = 1

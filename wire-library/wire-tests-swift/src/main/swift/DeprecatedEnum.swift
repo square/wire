@@ -2,7 +2,7 @@
 // Source: squareup.protos.kotlin.DeprecatedEnum in deprecated_enum.proto
 import Wire
 
-public enum DeprecatedEnum : UInt32, CaseIterable, Codable, ProtoEnum {
+public enum DeprecatedEnum : UInt32, CaseIterable, ProtoEnum {
 
     @available(*, deprecated)
     case DISABLED = 1
