@@ -124,4 +124,25 @@ public extension KeyedDecodingContainer {
 
         return results
     }
+
+    func decode<T: ProtoEnum>(
+        _: Set<T>.Type,
+        forKey key: Key
+    ) throws -> Set<T> {
+        var container = try nestedUnkeyedContainer(forKey: key)
+
+        var results: Set<T> = []
+        if let count = container.count {
+            results.reserveCapacity(count)
+        }
+
+        while !container.isAtEnd {
+            let box = try container.decodeIfPresent(BoxedEnum<T>.self)
+            if let value = box?.value {
+                results.insert(value)
+            }
+        }
+
+        return results
+    }
 }
