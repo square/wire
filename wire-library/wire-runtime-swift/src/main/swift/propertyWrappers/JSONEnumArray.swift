@@ -53,8 +53,10 @@ public struct JSONEnumArray<T : CaseIterable & Hashable & RawRepresentable> : Co
     }
 }
 
+#if swift(>=5.5)
 extension JSONEnumArray : Sendable where T : Sendable {
 }
+#endif
 
 public extension KeyedDecodingContainer {
     func decode<T: CaseIterable & Hashable & RawRepresentable>(

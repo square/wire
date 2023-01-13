@@ -58,8 +58,10 @@ public struct JSONOptionalEnum<T : CaseIterable & Hashable & RawRepresentable> :
     }
 }
 
+#if swift(>=5.5)
 extension JSONOptionalEnum : Sendable where T : Sendable {
 }
+#endif
 
 public extension KeyedDecodingContainer {
     func decode<T: CaseIterable & Hashable & RawRepresentable>(

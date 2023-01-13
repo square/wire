@@ -82,8 +82,10 @@ public struct JSONString<T : Hashable> : Hashable, Codable {
 
 }
 
+#if swift(>=5.5)
 extension JSONString : Sendable where T : Sendable {
 }
+#endif
 
 private extension Decoder {
     func decodeStringIfPresentToInt64() throws -> Int64? {

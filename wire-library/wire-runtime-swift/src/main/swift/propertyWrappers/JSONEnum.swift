@@ -66,5 +66,7 @@ public struct JSONEnum<T : CaseIterable & Hashable & RawRepresentable> : Codable
     }
 }
 
+#if swift(>=5.5)
 extension JSONEnum : Sendable where T : Sendable {
 }
+#endif
