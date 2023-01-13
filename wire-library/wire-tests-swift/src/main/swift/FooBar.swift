@@ -15,7 +15,7 @@ public struct FooBar {
     public var nested: [FooBar]
     @JSONOptionalEnum
     public var ext: FooBarBazEnum?
-    @JSONEnum
+    @JSONEnumArray
     public var rep: [FooBarBazEnum]
     public var more_string: String?
     public var unknownFields: Data = .init()

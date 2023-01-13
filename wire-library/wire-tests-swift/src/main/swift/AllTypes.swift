@@ -1504,7 +1504,7 @@ fileprivate struct _AllTypes {
     public var rep_double: [Double]
     public var rep_string: [String]
     public var rep_bytes: [Data]
-    @JSONEnum
+    @JSONEnumArray
     public var rep_nested_enum: [AllTypes.NestedEnum]
     public var rep_nested_message: [AllTypes.NestedMessage]
     public var pack_int32: [Int32]
@@ -1525,7 +1525,7 @@ fileprivate struct _AllTypes {
     public var pack_bool: [Bool]
     public var pack_float: [Float]
     public var pack_double: [Double]
-    @JSONEnum
+    @JSONEnumArray
     public var pack_nested_enum: [AllTypes.NestedEnum]
     public var default_int32: Int32?
     public var default_uint32: UInt32?
@@ -1596,7 +1596,7 @@ fileprivate struct _AllTypes {
     public var ext_rep_double: [Double]
     public var ext_rep_string: [String]
     public var ext_rep_bytes: [Data]
-    @JSONEnum
+    @JSONEnumArray
     public var ext_rep_nested_enum: [AllTypes.NestedEnum]
     public var ext_rep_nested_message: [AllTypes.NestedMessage]
     public var ext_pack_int32: [Int32]
@@ -1617,7 +1617,7 @@ fileprivate struct _AllTypes {
     public var ext_pack_bool: [Bool]
     public var ext_pack_float: [Float]
     public var ext_pack_double: [Double]
-    @JSONEnum
+    @JSONEnumArray
     public var ext_pack_nested_enum: [AllTypes.NestedEnum]
     public var unknownFields: Data = .init()
 
