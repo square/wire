@@ -63,6 +63,12 @@ extension JSONOptionalEnum : Sendable where T : Sendable {
 }
 #endif
 
+extension JSONOptionalEnum: EmptyInitializable {
+    public init() {
+        self.init(wrappedValue: nil)
+    }
+}
+
 public extension KeyedDecodingContainer {
     func decode<T: CaseIterable & Hashable & RawRepresentable>(
         _: JSONOptionalEnum<T>.Type,

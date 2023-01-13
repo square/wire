@@ -11,6 +11,7 @@ public struct VersionTwo {
     public var v2_f32: UInt32?
     @JSONString
     public var v2_f64: UInt64?
+    @DefaultEmpty
     public var v2_rs: [String]
     public var obj: NestedVersionTwo?
     @JSONOptionalEnum

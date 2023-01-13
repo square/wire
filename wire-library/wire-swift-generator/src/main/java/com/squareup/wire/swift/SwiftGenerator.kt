@@ -732,6 +732,10 @@ class SwiftGenerator private constructor(
       if (!forStorageType && field.isDeprecated) {
         property.addAttribute(deprecated)
       }
+      if (field.needsDefaultEmpty()) {
+        property.addAttribute("DefaultEmpty")
+      }
+
       val prototype = field.type
       if (prototype != null && schema.getType(prototype) is EnumType) {
         if (field.isRepeated) {
@@ -946,6 +950,15 @@ class SwiftGenerator private constructor(
       ProtoType.FIXED32, ProtoType.FIXED64 -> "fixed"
       else -> null
     }
+
+  private fun Field.needsDefaultEmpty(): Boolean {
+    // This is a temporary thing
+    if (typeName.needsJsonString()) {
+      return false
+    }
+
+    return isRepeated || isMap
+  }
 
   private fun TypeName.needsJsonString(): Boolean {
     val self = makeNonOptional()

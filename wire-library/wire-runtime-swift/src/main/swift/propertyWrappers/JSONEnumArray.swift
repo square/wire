@@ -53,6 +53,12 @@ public struct JSONEnumArray<T : CaseIterable & Hashable & RawRepresentable> : Co
     }
 }
 
+extension JSONEnumArray: EmptyInitializable {
+    public init() {
+        self.init(wrappedValue: [])
+    }
+}
+
 #if swift(>=5.5)
 extension JSONEnumArray : Sendable where T : Sendable {
 }

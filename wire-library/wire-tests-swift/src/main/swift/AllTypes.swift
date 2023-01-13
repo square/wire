@@ -1484,10 +1484,15 @@ fileprivate struct _AllTypes {
     @JSONEnum
     public var req_nested_enum: AllTypes.NestedEnum
     public var req_nested_message: AllTypes.NestedMessage
+    @DefaultEmpty
     public var rep_int32: [Int32]
+    @DefaultEmpty
     public var rep_uint32: [UInt32]
+    @DefaultEmpty
     public var rep_sint32: [Int32]
+    @DefaultEmpty
     public var rep_fixed32: [UInt32]
+    @DefaultEmpty
     public var rep_sfixed32: [Int32]
     @JSONString
     public var rep_int64: [Int64]
@@ -1499,18 +1504,30 @@ fileprivate struct _AllTypes {
     public var rep_fixed64: [UInt64]
     @JSONString
     public var rep_sfixed64: [Int64]
+    @DefaultEmpty
     public var rep_bool: [Bool]
+    @DefaultEmpty
     public var rep_float: [Float]
+    @DefaultEmpty
     public var rep_double: [Double]
+    @DefaultEmpty
     public var rep_string: [String]
+    @DefaultEmpty
     public var rep_bytes: [Data]
+    @DefaultEmpty
     @JSONEnumArray
     public var rep_nested_enum: [AllTypes.NestedEnum]
+    @DefaultEmpty
     public var rep_nested_message: [AllTypes.NestedMessage]
+    @DefaultEmpty
     public var pack_int32: [Int32]
+    @DefaultEmpty
     public var pack_uint32: [UInt32]
+    @DefaultEmpty
     public var pack_sint32: [Int32]
+    @DefaultEmpty
     public var pack_fixed32: [UInt32]
+    @DefaultEmpty
     public var pack_sfixed32: [Int32]
     @JSONString
     public var pack_int64: [Int64]
@@ -1522,9 +1539,13 @@ fileprivate struct _AllTypes {
     public var pack_fixed64: [UInt64]
     @JSONString
     public var pack_sfixed64: [Int64]
+    @DefaultEmpty
     public var pack_bool: [Bool]
+    @DefaultEmpty
     public var pack_float: [Float]
+    @DefaultEmpty
     public var pack_double: [Double]
+    @DefaultEmpty
     @JSONEnumArray
     public var pack_nested_enum: [AllTypes.NestedEnum]
     public var default_int32: Int32?
@@ -1549,9 +1570,13 @@ fileprivate struct _AllTypes {
     public var default_bytes: Data?
     @JSONOptionalEnum
     public var default_nested_enum: AllTypes.NestedEnum?
+    @DefaultEmpty
     public var map_int32_int32: [Int32 : Int32]
+    @DefaultEmpty
     public var map_string_string: [String : String]
+    @DefaultEmpty
     public var map_string_message: [String : AllTypes.NestedMessage]
+    @DefaultEmpty
     public var map_string_enum: [String : AllTypes.NestedEnum]
     public var ext_opt_int32: Int32?
     public var ext_opt_uint32: UInt32?
@@ -1576,10 +1601,15 @@ fileprivate struct _AllTypes {
     @JSONOptionalEnum
     public var ext_opt_nested_enum: AllTypes.NestedEnum?
     public var ext_opt_nested_message: AllTypes.NestedMessage?
+    @DefaultEmpty
     public var ext_rep_int32: [Int32]
+    @DefaultEmpty
     public var ext_rep_uint32: [UInt32]
+    @DefaultEmpty
     public var ext_rep_sint32: [Int32]
+    @DefaultEmpty
     public var ext_rep_fixed32: [UInt32]
+    @DefaultEmpty
     public var ext_rep_sfixed32: [Int32]
     @JSONString
     public var ext_rep_int64: [Int64]
@@ -1591,18 +1621,30 @@ fileprivate struct _AllTypes {
     public var ext_rep_fixed64: [UInt64]
     @JSONString
     public var ext_rep_sfixed64: [Int64]
+    @DefaultEmpty
     public var ext_rep_bool: [Bool]
+    @DefaultEmpty
     public var ext_rep_float: [Float]
+    @DefaultEmpty
     public var ext_rep_double: [Double]
+    @DefaultEmpty
     public var ext_rep_string: [String]
+    @DefaultEmpty
     public var ext_rep_bytes: [Data]
+    @DefaultEmpty
     @JSONEnumArray
     public var ext_rep_nested_enum: [AllTypes.NestedEnum]
+    @DefaultEmpty
     public var ext_rep_nested_message: [AllTypes.NestedMessage]
+    @DefaultEmpty
     public var ext_pack_int32: [Int32]
+    @DefaultEmpty
     public var ext_pack_uint32: [UInt32]
+    @DefaultEmpty
     public var ext_pack_sint32: [Int32]
+    @DefaultEmpty
     public var ext_pack_fixed32: [UInt32]
+    @DefaultEmpty
     public var ext_pack_sfixed32: [Int32]
     @JSONString
     public var ext_pack_int64: [Int64]
@@ -1614,9 +1656,13 @@ fileprivate struct _AllTypes {
     public var ext_pack_fixed64: [UInt64]
     @JSONString
     public var ext_pack_sfixed64: [Int64]
+    @DefaultEmpty
     public var ext_pack_bool: [Bool]
+    @DefaultEmpty
     public var ext_pack_float: [Float]
+    @DefaultEmpty
     public var ext_pack_double: [Double]
+    @DefaultEmpty
     @JSONEnumArray
     public var ext_pack_nested_enum: [AllTypes.NestedEnum]
     public var unknownFields: Data = .init()

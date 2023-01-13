@@ -10,11 +10,14 @@ public struct FooBar {
     public var baz: Nested?
     @JSONString
     public var qux: UInt64?
+    @DefaultEmpty
     public var fred: [Float]
     public var daisy: Double?
+    @DefaultEmpty
     public var nested: [FooBar]
     @JSONOptionalEnum
     public var ext: FooBarBazEnum?
+    @DefaultEmpty
     @JSONEnumArray
     public var rep: [FooBarBazEnum]
     public var more_string: String?
@@ -58,6 +61,7 @@ public struct FooBar {
 
     public struct More {
 
+        @DefaultEmpty
         public var serial: [Int32]
         public var unknownFields: Data = .init()
 
