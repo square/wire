@@ -130,25 +130,25 @@ extension JsonEnumTests {
 }
 
 
-/*
 // MARK: - Optional
 
 extension JsonEnumTests {
     struct OptionalTypes : Codable, Equatable {
-        @JSONEnum
+        @JSONOptionalEnum
         var a: EnumType?
 
-        @JSONEnum
+        @JSONOptionalEnum
         var b: EnumType?
     }
 
-    func testEncodingNil() throw {
-        let expectedStruct = SupportedTypes(
+    func testEncodingNil() throws {
+        let expectedStruct = OptionalTypes(
             a: nil,
             b: .TWO
         )
         let expectedJson = """
         {\
+        "a":null,\
         "b":"TWO"\
         }
         """
@@ -160,30 +160,26 @@ extension JsonEnumTests {
         let actualJson = String(data: jsonData, encoding: .utf8)!
         XCTAssertEqual(expectedJson, actualJson)
 
-        let actualStruct = try! JSONDecoder().decode(SupportedTypes.self, from: jsonData)
+        let actualStruct = try! JSONDecoder().decode(OptionalTypes.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
     }
 
     func testDecodingNil() throws {
-        let expectedStruct = SupportedTypes(
-            a: .ONE,
+        let expectedStruct = OptionalTypes(
+            a: nil,
             b: .TWO
         )
         let json = """
         {\
-        "a":"ONE",\
         "b":2\
         }
         """
 
         let jsonData = json.data(using: .utf8)!
-        let actualStruct = try! JSONDecoder().decode(SupportedTypes.self, from: jsonData)
+        let actualStruct = try! JSONDecoder().decode(OptionalTypes.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
-
     }
 }
-
- */
 
 // MARK: - Array
 

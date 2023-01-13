@@ -8,9 +8,9 @@ import Wire
  */
 public struct MessageUsingMultipleEnums {
 
-    @JSONEnum
+    @JSONOptionalEnum
     public var a: MessageWithStatus.Status?
-    @JSONEnum
+    @JSONOptionalEnum
     public var b: OtherMessageWithStatus.Status?
     public var unknownFields: Data = .init()
 

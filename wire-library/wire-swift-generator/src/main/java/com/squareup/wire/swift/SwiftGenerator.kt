@@ -734,7 +734,11 @@ class SwiftGenerator private constructor(
       }
       val prototype = field.type
       if (prototype != null && schema.getType(prototype) is EnumType) {
-        property.addAttribute("JSONEnum")
+        if (field.typeName.optional) {
+          property.addAttribute("JSONOptionalEnum")
+        } else {
+          property.addAttribute("JSONEnum")
+        }
       }
       if (field.typeName.needsJsonString()) {
         property.addAttribute("JSONString")
