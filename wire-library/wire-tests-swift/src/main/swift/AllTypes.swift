@@ -1465,7 +1465,6 @@ fileprivate struct _AllTypes {
     public var opt_double: Double?
     public var opt_string: String?
     public var opt_bytes: Data?
-    @ProtoEnumOptionalEncoded
     public var opt_nested_enum: AllTypes.NestedEnum?
     public var opt_nested_message: AllTypes.NestedMessage?
     public var req_int32: Int32
@@ -1488,7 +1487,6 @@ fileprivate struct _AllTypes {
     public var req_double: Double
     public var req_string: String
     public var req_bytes: Data
-    @ProtoEnumEncoded
     public var req_nested_enum: AllTypes.NestedEnum
     public var req_nested_message: AllTypes.NestedMessage
     public var rep_int32: [Int32]
@@ -1511,7 +1509,6 @@ fileprivate struct _AllTypes {
     public var rep_double: [Double]
     public var rep_string: [String]
     public var rep_bytes: [Data]
-    @ProtoEnumArrayEncoded
     public var rep_nested_enum: [AllTypes.NestedEnum]
     public var rep_nested_message: [AllTypes.NestedMessage]
     public var pack_int32: [Int32]
@@ -1532,7 +1529,6 @@ fileprivate struct _AllTypes {
     public var pack_bool: [Bool]
     public var pack_float: [Float]
     public var pack_double: [Double]
-    @ProtoEnumArrayEncoded
     public var pack_nested_enum: [AllTypes.NestedEnum]
     public var default_int32: Int32?
     public var default_uint32: UInt32?
@@ -1554,7 +1550,6 @@ fileprivate struct _AllTypes {
     public var default_double: Double?
     public var default_string: String?
     public var default_bytes: Data?
-    @ProtoEnumOptionalEncoded
     public var default_nested_enum: AllTypes.NestedEnum?
     public var map_int32_int32: [Int32 : Int32]
     public var map_string_string: [String : String]
@@ -1580,7 +1575,6 @@ fileprivate struct _AllTypes {
     public var ext_opt_double: Double?
     public var ext_opt_string: String?
     public var ext_opt_bytes: Data?
-    @ProtoEnumOptionalEncoded
     public var ext_opt_nested_enum: AllTypes.NestedEnum?
     public var ext_opt_nested_message: AllTypes.NestedMessage?
     public var ext_rep_int32: [Int32]
@@ -1603,7 +1597,6 @@ fileprivate struct _AllTypes {
     public var ext_rep_double: [Double]
     public var ext_rep_string: [String]
     public var ext_rep_bytes: [Data]
-    @ProtoEnumArrayEncoded
     public var ext_rep_nested_enum: [AllTypes.NestedEnum]
     public var ext_rep_nested_message: [AllTypes.NestedMessage]
     public var ext_pack_int32: [Int32]
@@ -1624,7 +1617,6 @@ fileprivate struct _AllTypes {
     public var ext_pack_bool: [Bool]
     public var ext_pack_float: [Float]
     public var ext_pack_double: [Double]
-    @ProtoEnumArrayEncoded
     public var ext_pack_nested_enum: [AllTypes.NestedEnum]
     public var unknownFields: Data = .init()
 

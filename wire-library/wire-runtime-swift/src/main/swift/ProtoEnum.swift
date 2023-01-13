@@ -17,6 +17,8 @@
 import Foundation
 
 /// Common protocol that all Wire generated enums conform to
+/// - Note: All ProtoEnums will convert to/from their field and string equivalent when serializing via Codable.
+/// This matches the Proto3 JSON spec: https://developers.google.com/protocol-buffers/docs/proto3#json
 public protocol ProtoEnum : LosslessStringConvertible, CaseIterable, RawRepresentable, Codable where RawValue == UInt32 {
 }
 
@@ -26,5 +28,100 @@ extension ProtoEnum {
             return nil
         }
         self = result
+    }
+
+    public init(from decoder: Decoder) throws {
+        // We support decoding from either the string value or the field index.
+        let container = try decoder.singleValueContainer()
+
+        if let string = try? container.decode(String.self) {
+            guard let value = Self(string) else {
+                throw ProtoDecoder.Error.unknownEnumString(type: Self.self, string: string)
+            }
+            self = value
+        } else {
+            // If the value wasn't a string, then look for the field index instead.
+            let fieldNumber = try container.decode(UInt32.self)
+            guard let value = Self(rawValue: fieldNumber) else {
+                throw ProtoDecoder.Error.unknownEnumCase(type: Self.self, fieldNumber: fieldNumber)
+            }
+
+            self = value
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+
+        switch encoder.enumEncodingStrategy {
+        case .string:
+            try container.encode(description)
+
+        case .integer:
+            try container.encode(rawValue)
+        }
+    }
+}
+
+/// This  type gives me access to `decoder.enumDecodingStrategy`
+private struct BoxedEnum<T: ProtoEnum> : Decodable {
+    let value: T?
+
+    init(value: T? = nil) {
+        self.value = value
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+
+        guard !container.decodeNil() else {
+            self.init()
+            return
+        }
+
+        switch decoder.enumDecodingStrategy {
+        case .shouldSkip:
+            let value = try? container.decode(T.self)
+            self.init(value: value)
+
+        case .shouldThrow:
+            let value = try container.decode(T.self)
+            self.init(value: value)
+        }
+    }
+}
+
+public extension KeyedDecodingContainer {
+    func decodeIfPresent<T: ProtoEnum>(
+        _: T.Type,
+        forKey key: Key
+    ) throws -> T? {
+        guard contains(key) else {
+            return nil
+        }
+
+        let box = try decode(BoxedEnum<T>.self, forKey: key)
+        return box.value
+    }
+
+    func decode<T: ProtoEnum>(
+        _: Array<T>.Type,
+        forKey key: Key
+    ) throws -> [T] {
+        var container = try nestedUnkeyedContainer(forKey: key)
+
+        var results: [T] = []
+        if let count = container.count {
+            results.reserveCapacity(count)
+        }
+
+        while !container.isAtEnd {
+            let box = try container.decodeIfPresent(BoxedEnum<T>.self)
+            if let value = box?.value {
+                results.append(value)
+            }
+        }
+
+        return results
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright 2023 Square Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import Foundation
 import XCTest
 @testable import Wire
 
-final class ProtoEnumEncodedTests: XCTestCase {
+final class ProtoEnumCodableTests: XCTestCase {
     enum EnumType : UInt32, ProtoEnum {
         case ONE = 1
         case TWO = 2
@@ -37,12 +37,9 @@ final class ProtoEnumEncodedTests: XCTestCase {
 
 // MARK: - Non-optional
 
-extension ProtoEnumEncodedTests {
+extension ProtoEnumCodableTests {
     struct SupportedTypes : Codable, Equatable {
-        @ProtoEnumEncoded
         var a: EnumType
-
-        @ProtoEnumEncoded
         var b: EnumType
     }
 
@@ -166,12 +163,9 @@ extension ProtoEnumEncodedTests {
 
 // MARK: - Optional
 
-extension ProtoEnumEncodedTests {
+extension ProtoEnumCodableTests {
     struct OptionalTypes : Codable, Equatable {
-        @ProtoEnumOptionalEncoded
         var a: EnumType?
-
-        @ProtoEnumOptionalEncoded
         var b: EnumType?
     }
 
@@ -182,7 +176,6 @@ extension ProtoEnumEncodedTests {
         )
         let expectedJson = """
         {\
-        "a":null,\
         "b":"TWO"\
         }
         """
@@ -197,6 +190,30 @@ extension ProtoEnumEncodedTests {
         let actualStruct = try! JSONDecoder().decode(OptionalTypes.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
     }
+
+    func testEncodingIntegerNil() throws {
+        let expectedStruct = OptionalTypes(
+            a: nil,
+            b: .TWO
+        )
+        let expectedJson = """
+        {\
+        "b":2\
+        }
+        """
+
+        let encoder = JSONEncoder()
+        encoder.userInfo[.wireEnumEncodingStrategy] = EnumEncodingStrategy.integer
+        encoder.outputFormatting = .sortedKeys // For deterministic output.
+
+        let jsonData = try! encoder.encode(expectedStruct)
+        let actualJson = String(data: jsonData, encoding: .utf8)!
+        XCTAssertEqual(expectedJson, actualJson)
+
+        let actualStruct = try! JSONDecoder().decode(OptionalTypes.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+    }
+
 
     func testDecodingNil() throws {
         let expectedStruct = OptionalTypes(
@@ -245,7 +262,7 @@ extension ProtoEnumEncodedTests {
             a: .ONE,
             b: nil
         )
-        
+
         let json = """
         {\
         "a":"ONE",\
@@ -264,10 +281,9 @@ extension ProtoEnumEncodedTests {
 
 // MARK: - Array
 
-extension ProtoEnumEncodedTests {
+extension ProtoEnumCodableTests {
 
     struct ArrayTypes : Codable, Equatable {
-        @ProtoEnumArrayEncoded
         var results: [EnumType]
     }
 
@@ -287,6 +303,31 @@ extension ProtoEnumEncodedTests {
         let jsonData = try! encoder.encode(expectedStruct)
         let actualJson = String(data: jsonData, encoding: .utf8)!
         XCTAssertEqual(expectedJson, actualJson)
+
+        let actualStruct = try! JSONDecoder().decode(ArrayTypes.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+    }
+
+    func testEncodingNumericArray() throws {
+        let expectedStruct = ArrayTypes(
+            results: [.ONE, .TWO]
+        )
+        let expectedJson = """
+        {\
+        "results":[1,2]\
+        }
+        """
+
+        let encoder = JSONEncoder()
+        encoder.userInfo[.wireEnumEncodingStrategy] = EnumEncodingStrategy.integer
+        encoder.outputFormatting = .sortedKeys // For deterministic output.
+
+        let jsonData = try! encoder.encode(expectedStruct)
+        let actualJson = String(data: jsonData, encoding: .utf8)!
+        XCTAssertEqual(expectedJson, actualJson)
+
+        let raw = try! JSONDecoder().decode([String: [Int]].self, from: jsonData)
+        print(raw)
 
         let actualStruct = try! JSONDecoder().decode(ArrayTypes.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
@@ -334,11 +375,11 @@ extension ProtoEnumEncodedTests {
 
     func testLossyDecodingUnknownArrayValue() throws {
         let expectedStruct = ArrayTypes(
-            results: [.ONE]
+            results: [.ONE, .TWO]
         )
         let json = """
         {\
-        "results":["ONE","ZZZ"]\
+        "results":["ONE","ZZZ","TWO"]\
         }
         """
         let jsonData = json.data(using: .utf8)!

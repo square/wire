@@ -16,16 +16,16 @@
 
 import Foundation
 
-/// The encoding strategy to use for ProtoEnumEncoded types
+/// The encoding strategy to use for ProtoEnum types
 /// Defaults to .string
 public enum EnumEncodingStrategy {
     case string
     case integer
 }
 
-/// The decoding strategy to use for ProtoEnumEncoded types
+/// The decoding strategy to use for ProtoEnum types
 /// Defaults to .shouldThrow
-/// - Note: @ProtoEnumEncoded will _always_ throw
+/// - Note: Non-optional values will _always_ throw
 public enum EnumDecodingStrategy {
     case shouldThrow
     case shouldSkip

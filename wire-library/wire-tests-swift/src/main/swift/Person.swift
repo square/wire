@@ -72,7 +72,6 @@ public struct Person {
         /**
          * The type of phone stored here.
          */
-        @ProtoEnumOptionalEncoded
         public var type: PhoneType?
         public var unknownFields: Data = .init()
 

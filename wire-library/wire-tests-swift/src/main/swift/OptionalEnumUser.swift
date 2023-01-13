@@ -5,7 +5,6 @@ import Wire
 
 public struct OptionalEnumUser {
 
-    @ProtoEnumOptionalEncoded
     public var optional_enum: OptionalEnum?
     public var unknownFields: Data = .init()
 
