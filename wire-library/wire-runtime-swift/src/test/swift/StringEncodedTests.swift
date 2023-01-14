@@ -41,7 +41,11 @@ final class StringEncodedTests: XCTestCase {
         var i: [Int64]
         @DefaultEmpty
         @StringEncodedValues
-        var j: [UInt64]
+        var j: Set<UInt64>
+        @StringEncodedValues
+        var k: Set<Int64>
+        @StringEncodedValues
+        var l: [Int64?]
     }
 
     func testSupportedTypes() throws {
@@ -55,7 +59,9 @@ final class StringEncodedTests: XCTestCase {
             g: 17,
             h: nil,
             i: [],
-            j: []
+            j: [],
+            k: [1],
+            l: [1, nil, 2]
         )
 
         let inputJson = """
@@ -66,6 +72,8 @@ final class StringEncodedTests: XCTestCase {
         "d":["15"],\
         "e":"-16",\
         "g":"17",\
+        "k":["1"],\
+        "l":["1",null,"2"]\
         }
         """
 
@@ -80,7 +88,9 @@ final class StringEncodedTests: XCTestCase {
         "g":"17",\
         "h":null,\
         "i":[],\
-        "j":[]\
+        "j":[],\
+        "k":["1"],\
+        "l":["1",null,"2"]\
         }
         """
 

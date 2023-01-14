@@ -30,7 +30,12 @@ extension StringEncoded : Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
-        let stringValue = try container.decode(String?.self)
+        let stringValue: String?
+        if container.decodeNil() {
+            stringValue = nil
+        } else {
+            stringValue = try container.decode(String?.self)
+        }
         let value = try Self.create(optionalEncodedValue: stringValue)
 
         self.wrappedValue = value
