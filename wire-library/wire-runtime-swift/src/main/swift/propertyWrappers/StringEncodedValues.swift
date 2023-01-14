@@ -16,12 +16,24 @@
 
 import Foundation
 
+public protocol SequenceInitializableCollection: Collection {
+    init<S: Sequence>(_ contentsOf: S) where S.Element == Element
+}
+
+extension Array : SequenceInitializableCollection {}
+extension Set : SequenceInitializableCollection {}
+
 /// Converts an array of values to/from their string equivalent when serializing with Codable.
 @propertyWrapper
-public struct StringEncodedValues<Value: StringCodable> {
-    public var wrappedValue: [Value]
+public struct StringEncodedValues<ValuesHolder>
+where ValuesHolder : SequenceInitializableCollection,
+      ValuesHolder.Element : StringCodable
+{
+    public typealias Value = ValuesHolder.Element
 
-    public init(wrappedValue: [Value]) {
+    public var wrappedValue: ValuesHolder
+
+    public init(wrappedValue: ValuesHolder) {
         self.wrappedValue = wrappedValue
     }
 }
@@ -40,7 +52,7 @@ extension StringEncodedValues : Codable {
             results.append(value)
         }
 
-        self.init(wrappedValue: results)
+        self.init(wrappedValue: ValuesHolder(results))
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -53,19 +65,19 @@ extension StringEncodedValues : Codable {
     }
 }
 
-extension StringEncodedValues : EmptyInitializable {
+extension StringEncodedValues : EmptyInitializable where ValuesHolder : EmptyInitializable {
     public init() {
-        self.init(wrappedValue: [])
+        self.init(wrappedValue: .init())
     }
 }
 
-extension StringEncodedValues : Equatable where Value : Equatable {
+extension StringEncodedValues : Equatable where ValuesHolder : Equatable {
 }
 
-extension StringEncodedValues : Hashable where Value : Hashable {
+extension StringEncodedValues : Hashable where ValuesHolder : Hashable {
 }
 
 #if swift(>=5.5)
-extension StringEncodedValues : Sendable where Value : Sendable {
+extension StringEncodedValues : Sendable where ValuesHolder : Sendable {
 }
 #endif
