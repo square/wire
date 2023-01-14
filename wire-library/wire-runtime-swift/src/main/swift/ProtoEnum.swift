@@ -116,8 +116,8 @@ public extension KeyedDecodingContainer {
         }
 
         while !container.isAtEnd {
-            let box = try container.decodeIfPresent(BoxedEnum<T>.self)
-            if let value = box?.value {
+            let box = try container.decode(BoxedEnum<T>.self)
+            if let value = box.value {
                 results.append(value)
             }
         }
@@ -137,8 +137,8 @@ public extension KeyedDecodingContainer {
         }
 
         while !container.isAtEnd {
-            let box = try container.decodeIfPresent(BoxedEnum<T>.self)
-            if let value = box?.value {
+            let box = try container.decode(BoxedEnum<T>.self)
+            if let value = box.value {
                 results.insert(value)
             }
         }
