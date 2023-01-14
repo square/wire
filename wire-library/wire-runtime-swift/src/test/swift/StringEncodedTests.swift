@@ -109,3 +109,113 @@ final class StringEncodedTests: XCTestCase {
         XCTAssertEqual(expectedJson, actualJson)
     }
 }
+
+extension StringEncodedTests {
+    struct SimpleStruct : Codable, Equatable {
+        @StringEncoded
+        var number: Int64?
+        @DefaultEmpty
+        @StringEncodedValues
+        var array: [Int64]
+    }
+
+    func testEmptyInflates() throws {
+        let json = "{}"
+        let expectedStruct = SimpleStruct(number: nil, array: [])
+
+        let jsonData = json.data(using: .utf8)!
+
+        let actualStruct = try JSONDecoder().decode(SimpleStruct.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+    }
+
+    func testNullInflates() throws {
+        let json = """
+        {"number":null}
+        """
+        let expectedStruct = SimpleStruct(number: nil, array: [])
+
+        let jsonData = json.data(using: .utf8)!
+
+        let actualStruct = try JSONDecoder().decode(SimpleStruct.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+    }
+
+    func testInvalidSingleDataThrows() throws {
+        let json = """
+        {"number":"abc"}
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        XCTAssertThrowsError(
+            try JSONDecoder().decode(SimpleStruct.self, from: jsonData)
+        ) { error in
+            switch error {
+            case ProtoDecoder.Error.unparsableString(_, let value):
+                XCTAssertEqual(value, "abc")
+
+            default:
+                XCTFail("Invalid error: \(error)")
+            }
+        }
+    }
+
+    func testInvalidSingleDataContentThrows() throws {
+        let json = """
+        {"number":2}
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        XCTAssertThrowsError(
+            try JSONDecoder().decode(SimpleStruct.self, from: jsonData)
+        ) { error in
+            switch error {
+            case DecodingError.typeMismatch:
+                break
+
+            default:
+                XCTFail("Invalid error: \(error)")
+            }
+        }
+    }
+
+    func testInvalidArrayDataThrows() throws {
+        let json = """
+        {\
+        "number":"2",\
+        "array":["abc"]}
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        XCTAssertThrowsError(
+            try JSONDecoder().decode(SimpleStruct.self, from: jsonData)
+        ) { error in
+            switch error {
+            case ProtoDecoder.Error.unparsableString(_, let value):
+                XCTAssertEqual(value, "abc")
+
+            default:
+                XCTFail("Invalid error: \(error)")
+            }
+        }
+    }
+
+    func testNullArrayDataThrows() throws {
+        let json = """
+        {"array":[null]}
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        XCTAssertThrowsError(
+            try JSONDecoder().decode(SimpleStruct.self, from: jsonData)
+        ) { error in
+            switch error {
+            case ProtoDecoder.Error.unparsableString(_, let value):
+                XCTAssertNil(value)
+
+            default:
+                XCTFail("Invalid error: \(error)")
+            }
+        }
+    }
+}
