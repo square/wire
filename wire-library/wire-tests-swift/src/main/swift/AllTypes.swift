@@ -1583,12 +1583,16 @@ fileprivate struct _AllTypes {
     public var default_bytes: Data?
     public var default_nested_enum: AllTypes.NestedEnum?
     @DefaultEmpty
+    @ProtoMap
     public var map_int32_int32: [Int32 : Int32]
     @DefaultEmpty
+    @ProtoMap
     public var map_string_string: [String : String]
     @DefaultEmpty
+    @ProtoMap
     public var map_string_message: [String : AllTypes.NestedMessage]
     @DefaultEmpty
+    @ProtoMap
     public var map_string_enum: [String : AllTypes.NestedEnum]
     public var ext_opt_int32: Int32?
     public var ext_opt_uint32: UInt32?

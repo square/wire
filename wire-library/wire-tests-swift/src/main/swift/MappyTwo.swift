@@ -6,12 +6,16 @@ import Wire
 public struct MappyTwo {
 
     @DefaultEmpty
+    @ProtoMap
     public var stringEnums: [String : ValueEnum]
     @DefaultEmpty
+    @ProtoMap
     public var intThings: [Int64 : Thing]
     @DefaultEmpty
+    @ProtoMapStringEncodedValues
     public var stringInts: [String : Int64]
     @DefaultEmpty
+    @ProtoMap
     public var intThingsTwo: [Int32 : Thing]
     public var unknownFields: Data = .init()
 

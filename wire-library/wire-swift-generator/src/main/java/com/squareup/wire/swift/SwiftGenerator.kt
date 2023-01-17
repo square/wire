@@ -742,6 +742,14 @@ class SwiftGenerator private constructor(
       } else if (field.typeName.needsStringEncodedValues()) {
         property.addAttribute("StringEncodedValues")
       }
+      if (field.isMap) {
+        if (field.typeName.needsStringEncodedMap()) {
+          property.addAttribute("ProtoMapStringEncodedValues")
+        } else {
+          property.addAttribute("ProtoMap")
+        }
+      }
+
       if (isIndirect(type, field)) {
         property.addAttribute(AttributeSpec.builder(indirect).build())
       }
@@ -959,6 +967,17 @@ class SwiftGenerator private constructor(
     if (self is ParameterizedTypeName) {
       return when (self.rawType) {
         ARRAY -> self.typeArguments[0].needsStringEncoded()
+        else -> false
+      }
+    }
+    return false
+  }
+
+  private fun TypeName.needsStringEncodedMap(): Boolean {
+    val self = makeNonOptional()
+    if (self is ParameterizedTypeName) {
+      return when (self.rawType) {
+        DICTIONARY -> self.typeArguments[1].needsStringEncoded()
         else -> false
       }
     }

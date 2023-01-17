@@ -33,6 +33,7 @@ public enum EnumDecodingStrategy {
 
 /// The decoding strategy to use for StringEncoded types that are themselves Decodable
 /// Defaults to .disallowRawDecoding
+/// - Note: ProtoMap Dictionary keys are always decoded as strings
 public enum StringEncodedDecodingStrategy {
     case disallowRawDecoding
     case allowRawDecoding
@@ -40,6 +41,7 @@ public enum StringEncodedDecodingStrategy {
 
 /// The encoding strategy to use for StringEncoded types that are themselves Encodable
 /// Defaults to .string
+/// - Note: ProtoMap Dictionary keys are always encoded as strings
 public enum StringEncodedEncodingStrategy {
     case string
     case raw

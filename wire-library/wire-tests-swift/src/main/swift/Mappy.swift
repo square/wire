@@ -6,6 +6,7 @@ import Wire
 public struct Mappy {
 
     @DefaultEmpty
+    @ProtoMap
     public var things: [String : Thing]
     public var unknownFields: Data = .init()
 
