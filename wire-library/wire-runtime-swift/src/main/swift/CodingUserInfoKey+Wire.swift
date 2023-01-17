@@ -17,6 +17,8 @@
 import Foundation
 
 extension ProtoDecoder {
+    /// The Decoding strategy to use for ProtoEnum types
+    /// Defaults to .throwError
     public typealias CodableEnumDecodingStrategy = UnknownEnumValueDecodingStrategy
 }
 
