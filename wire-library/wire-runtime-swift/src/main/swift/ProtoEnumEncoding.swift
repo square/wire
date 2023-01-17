@@ -16,19 +16,13 @@
 
 import Foundation
 
-/// The encoding strategy to use for ProtoEnum types
-/// Defaults to .string
-public enum EnumEncodingStrategy {
-    case string
-    case integer
-}
-
-/// The decoding strategy to use for ProtoEnum types
-/// Defaults to .shouldThrow
-/// - Note: Non-optional values will _always_ throw
-public enum EnumDecodingStrategy {
-    case shouldThrow
-    case shouldSkip
+extension ProtoEncoder {
+    /// The encoding strategy to use for ProtoEnum types
+    /// Defaults to .string
+    public enum JSONEnumEncodingStrategy {
+        case string
+        case integer
+    }
 }
 
 /// The decoding strategy to use for StringEncoded types that are themselves Decodable
@@ -46,26 +40,27 @@ public enum StringEncodedEncodingStrategy {
 }
 
 extension CodingUserInfoKey {
-    /// Control the encoding of the raw value of Enums
-    /// - SeeAlso: EnumEncodingStrategy
+    /// Control the encoding of ProtoEnum types
+    /// - SeeAlso: ProtoEncoder.JSONEnumEncodingStrategy
     public static let wireEnumEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumEncodingStrategy")!
 
-    /// Control the decoding of Enums
-    /// - SeeAlso: EnumDecodingStrategy
-    public static let wireEnumDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.wireEnumDecodingStrategy")!
+    /// Control the decoding of ProtoEnum types
+    /// - Note: Non-optional values will _always_ throw
+    /// - SeeAlso: ProtoDecoder.UnknownEnumValueDecodingStrategy
+    public static let wireEnumDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumDecodingStrategy")!
 
     /// Control the decoding of StringEncoded values that are themselves Decodable
     /// - SeeAlso: StringEncodedDecodingStrategy
-    public static let wireStringEncodedDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.wireStringEncodedDecodingStrategy")!
+    public static let wireStringEncodedDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.StringEncodedDecodingStrategy")!
 
     /// Control the encoding of StringEncoded values that are themselves Encodable
     /// - SeeAlso: StringEncodedEncodingStrategy
-    static let wireStringEncodedEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.wireStringEncodedEncodingStrategy")!
+    static let wireStringEncodedEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.StringEncodedEncodingStrategy")!
 }
 
 extension Encoder {
-    var enumEncodingStrategy: EnumEncodingStrategy {
-        let preferred = userInfo[.wireEnumEncodingStrategy] as? EnumEncodingStrategy
+    var enumEncodingStrategy: ProtoEncoder.JSONEnumEncodingStrategy {
+        let preferred = userInfo[.wireEnumEncodingStrategy] as? ProtoEncoder.JSONEnumEncodingStrategy
         return preferred ?? .string
     }
 
@@ -76,9 +71,9 @@ extension Encoder {
 }
 
 extension Decoder {
-    var enumDecodingStrategy: EnumDecodingStrategy {
-        let preferred = userInfo[.wireEnumDecodingStrategy] as? EnumDecodingStrategy
-        return preferred ?? .shouldThrow
+    var enumDecodingStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy {
+        let preferred = userInfo[.wireEnumDecodingStrategy] as? ProtoDecoder.UnknownEnumValueDecodingStrategy
+        return preferred ?? .throwError
     }
 
     var stringEncodedDecodingStrategy: StringEncodedDecodingStrategy {

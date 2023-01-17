@@ -80,11 +80,11 @@ private struct BoxedEnum<T: ProtoEnum> : Decodable {
         }
 
         switch decoder.enumDecodingStrategy {
-        case .shouldSkip:
+        case .returnNil:
             let value = try? container.decode(T.self)
             self.init(value: value)
 
-        case .shouldThrow:
+        case .throwError:
             let value = try container.decode(T.self)
             self.init(value: value)
         }
