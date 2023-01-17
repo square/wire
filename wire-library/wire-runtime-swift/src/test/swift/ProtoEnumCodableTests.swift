@@ -79,7 +79,7 @@ extension ProtoEnumCodableTests {
         """
 
         let encoder = JSONEncoder()
-        encoder.userInfo[.wireEnumEncodingStrategy] = EnumEncodingStrategy.integer
+        encoder.userInfo[.wireEnumEncodingStrategy] = ProtoEncoder.JSONEnumEncodingStrategy.integer
         encoder.outputFormatting = .sortedKeys // For deterministic output.
 
         let jsonData = try! encoder.encode(expectedStruct)
@@ -203,7 +203,7 @@ extension ProtoEnumCodableTests {
         """
 
         let encoder = JSONEncoder()
-        encoder.userInfo[.wireEnumEncodingStrategy] = EnumEncodingStrategy.integer
+        encoder.userInfo[.wireEnumEncodingStrategy] = ProtoEncoder.JSONEnumEncodingStrategy.integer
         encoder.outputFormatting = .sortedKeys // For deterministic output.
 
         let jsonData = try! encoder.encode(expectedStruct)
@@ -272,7 +272,7 @@ extension ProtoEnumCodableTests {
         let jsonData = json.data(using: .utf8)!
 
         let decoder = JSONDecoder()
-        decoder.userInfo[.wireEnumDecodingStrategy] = EnumDecodingStrategy.shouldSkip
+        decoder.userInfo[.wireEnumDecodingStrategy] = ProtoDecoder.UnknownEnumValueDecodingStrategy.returnNil
 
         let decoded = try decoder.decode(OptionalTypes.self, from: jsonData)
         XCTAssertEqual(decoded, expectedStruct)
@@ -319,7 +319,7 @@ extension ProtoEnumCodableTests {
         """
 
         let encoder = JSONEncoder()
-        encoder.userInfo[.wireEnumEncodingStrategy] = EnumEncodingStrategy.integer
+        encoder.userInfo[.wireEnumEncodingStrategy] = ProtoEncoder.JSONEnumEncodingStrategy.integer
         encoder.outputFormatting = .sortedKeys // For deterministic output.
 
         let jsonData = try! encoder.encode(expectedStruct)
@@ -385,7 +385,7 @@ extension ProtoEnumCodableTests {
         let jsonData = json.data(using: .utf8)!
 
         let decoder = JSONDecoder()
-        decoder.userInfo[.wireEnumDecodingStrategy] = EnumDecodingStrategy.shouldSkip
+        decoder.userInfo[.wireEnumDecodingStrategy] = ProtoDecoder.UnknownEnumValueDecodingStrategy.returnNil
 
         let decoded = try decoder.decode(ArrayTypes.self, from: jsonData)
         XCTAssertEqual(decoded, expectedStruct)

@@ -16,41 +16,36 @@
 
 import Foundation
 
-/// The encoding strategy to use for ProtoEnum types
-/// Defaults to .string
-public enum EnumEncodingStrategy {
-    case string
-    case integer
-}
-
-/// The decoding strategy to use for ProtoEnum types
-/// Defaults to .shouldThrow
-/// - Note: Non-optional values will _always_ throw
-public enum EnumDecodingStrategy {
-    case shouldThrow
-    case shouldSkip
+extension ProtoEncoder {
+    /// The encoding strategy to use for ProtoEnum types
+    /// Defaults to .string
+    public enum JSONEnumEncodingStrategy {
+        case string
+        case integer
+    }
 }
 
 extension CodingUserInfoKey {
-    /// Control the encoding of the raw value of Enums
-    /// - SeeAlso: EnumEncodingStrategy
+    /// Control the encoding of ProtoEnum types
+    /// - SeeAlso: ProtoEncoder.JSONEnumEncodingStrategy
     public static let wireEnumEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumEncodingStrategy")!
 
-    /// Control the decoding of Enums
-    /// - SeeAlso: EnumDecodingStrategy
-    public static let wireEnumDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.wireEnumDecodingStrategy")!
+    /// Control the decoding of ProtoEnum types
+    /// - Note: Non-optional values will _always_ throw
+    /// - SeeAlso: ProtoDecoder.UnknownEnumValueDecodingStrategy
+    public static let wireEnumDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumDecodingStrategy")!
 }
 
 extension Encoder {
-    var enumEncodingStrategy: EnumEncodingStrategy {
-        let preferred = userInfo[.wireEnumEncodingStrategy] as? EnumEncodingStrategy
+    var enumEncodingStrategy: ProtoEncoder.JSONEnumEncodingStrategy {
+        let preferred = userInfo[.wireEnumEncodingStrategy] as? ProtoEncoder.JSONEnumEncodingStrategy
         return preferred ?? .string
     }
 }
 
 extension Decoder {
-    var enumDecodingStrategy: EnumDecodingStrategy {
-        let prefered = userInfo[.wireEnumDecodingStrategy] as? EnumDecodingStrategy
-        return prefered ?? .shouldThrow
+    var enumDecodingStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy {
+        let prefered = userInfo[.wireEnumDecodingStrategy] as? ProtoDecoder.UnknownEnumValueDecodingStrategy
+        return prefered ?? .throwError
     }
 }
