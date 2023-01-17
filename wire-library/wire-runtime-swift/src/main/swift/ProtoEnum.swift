@@ -53,7 +53,7 @@ extension ProtoEnum {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
 
-        switch encoder.enumEncodingStrategy {
+        switch encoder.protoEnumEncodingStrategy {
         case .string:
             try container.encode(description)
 
@@ -79,7 +79,7 @@ private struct BoxedEnum<T: ProtoEnum> : Decodable {
             return
         }
 
-        switch decoder.enumDecodingStrategy {
+        switch decoder.protoEnumDecodingStrategy {
         case .returnNil:
             let value = try? container.decode(T.self)
             self.init(value: value)

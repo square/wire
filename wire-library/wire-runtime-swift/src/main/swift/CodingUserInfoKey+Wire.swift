@@ -16,16 +16,24 @@
 
 import Foundation
 
-extension ProtoDecoder {
+extension JSONDecoder {
     /// The Decoding strategy to use for ProtoEnum types
     /// Defaults to .throwError
-    public typealias CodableEnumDecodingStrategy = UnknownEnumValueDecodingStrategy
+    public enum EnumDecodingStrategy {
+        /// Throws an error when encountering unknown enum values in single-value fields or collections.
+        case throwError
+        /// Defaults the unknown enum value to nil for single-value fields.
+        ///
+        /// With this option, unknown values in collections are removed from the collection in which they originated where possible.
+        /// - Note: This is "free" for `Array<Enum>` and `Set<Enum>`
+        case returnNil
+    }
 }
 
-extension ProtoEncoder {
+extension JSONEncoder {
     /// The encoding strategy to use for ProtoEnum types
     /// Defaults to .string
-    public enum CodableEnumEncodingStrategy {
+    public enum EnumEncodingStrategy {
         /// Encodes the name of the case as the value, like `"myEnum": "FOO"`
         case string
         /// Encodes the field value of the case as the value, like `"myEnum": 3`
@@ -33,27 +41,57 @@ extension ProtoEncoder {
     }
 }
 
-extension CodingUserInfoKey {
+public extension CodingUserInfoKey {
     /// Control the encoding of ProtoEnum types
-    /// - SeeAlso: ProtoEncoder.CodableEnumEncodingStrategy
-    public static let wireEnumEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumEncodingStrategy")!
+    ///
+    /// You probably will want to just set `JSONEncoder.enumEncodingStrategy`
+    /// - SeeAlso: JSONEncoder.EnumEncodingStrategy
+    static let wireEnumEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumEncodingStrategy")!
 
     /// Control the decoding of ProtoEnum types
+    ///
+    /// You probably will want to just set `JSONDecoder.enumEncodingStrategy`
     /// - Note: Non-optional values will _always_ throw
-    /// - SeeAlso: ProtoDecoder.CodableEnumDecodingStrategy
-    public static let wireEnumDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumDecodingStrategy")!
+    /// - SeeAlso: JSONDecoder.EnumDecodingStrategy
+    static let wireEnumDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumDecodingStrategy")!
 }
 
 extension Encoder {
-    var enumEncodingStrategy: ProtoEncoder.CodableEnumEncodingStrategy {
-        let preferred = userInfo[.wireEnumEncodingStrategy] as? ProtoEncoder.CodableEnumEncodingStrategy
+    var protoEnumEncodingStrategy: JSONEncoder.EnumEncodingStrategy {
+        let preferred = userInfo[.wireEnumEncodingStrategy] as? JSONEncoder.EnumEncodingStrategy
         return preferred ?? .string
     }
 }
 
 extension Decoder {
-    var enumDecodingStrategy: ProtoDecoder.CodableEnumDecodingStrategy {
-        let prefered = userInfo[.wireEnumDecodingStrategy] as? ProtoDecoder.CodableEnumDecodingStrategy
-        return prefered ?? .throwError
+    var protoEnumDecodingStrategy: JSONDecoder.EnumDecodingStrategy {
+        let preferred = userInfo[.wireEnumDecodingStrategy] as? JSONDecoder.EnumDecodingStrategy
+        return preferred ?? .throwError
+    }
+}
+
+// MARK: - JSON Coders
+
+extension JSONEncoder {
+    public var protoEnumEncodingStrategy: JSONEncoder.EnumEncodingStrategy {
+        get {
+            let preferred = userInfo[.wireEnumEncodingStrategy] as? JSONEncoder.EnumEncodingStrategy
+            return preferred ?? .string
+        }
+        set {
+            userInfo[.wireEnumEncodingStrategy] = newValue
+        }
+    }
+}
+
+extension JSONDecoder {
+    public var protoEnumDecodingStrategy: JSONDecoder.EnumDecodingStrategy {
+        get {
+            let preferred = userInfo[.wireEnumDecodingStrategy] as? JSONDecoder.EnumDecodingStrategy
+            return preferred ?? .throwError
+        }
+        set {
+            userInfo[.wireEnumDecodingStrategy] = newValue
+        }
     }
 }
