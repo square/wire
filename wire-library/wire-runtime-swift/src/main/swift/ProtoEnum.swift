@@ -31,7 +31,7 @@ extension ProtoEnum {
     }
 
     public init(from decoder: Decoder) throws {
-        // We support decoding from either the string value or the field index.
+        // We support decoding from either the string value or the field number.
         let container = try decoder.singleValueContainer()
 
         if let string = try? container.decode(String.self) {
@@ -63,7 +63,7 @@ extension ProtoEnum {
     }
 }
 
-/// This  type gives me access to `decoder.enumDecodingStrategy`
+/// This type gives access to `decoder.enumDecodingStrategy`
 private struct BoxedEnum<T: ProtoEnum> : Decodable {
     let value: T?
 
