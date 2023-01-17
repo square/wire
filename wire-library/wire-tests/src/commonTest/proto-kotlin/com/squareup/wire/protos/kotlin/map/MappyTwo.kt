@@ -35,6 +35,7 @@ public class MappyTwo(
   stringEnums: Map<String, ValueEnum> = emptyMap(),
   intThings: Map<Long, Thing> = emptyMap(),
   stringInts: Map<String, Long> = emptyMap(),
+  intThingsTwo: Map<Int, Thing> = emptyMap(),
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MappyTwo, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
@@ -58,6 +59,13 @@ public class MappyTwo(
   )
   public val stringInts: Map<String, Long> = immutableCopyOf("stringInts", stringInts)
 
+  @field:WireField(
+    tag = 4,
+    keyAdapter = "com.squareup.wire.ProtoAdapter#SINT32",
+    adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER",
+  )
+  public val intThingsTwo: Map<Int, Thing> = immutableCopyOf("intThingsTwo", intThingsTwo)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
@@ -72,6 +80,7 @@ public class MappyTwo(
     if (stringEnums != other.stringEnums) return false
     if (intThings != other.intThings) return false
     if (stringInts != other.stringInts) return false
+    if (intThingsTwo != other.intThingsTwo) return false
     return true
   }
 
@@ -82,6 +91,7 @@ public class MappyTwo(
       result = result * 37 + stringEnums.hashCode()
       result = result * 37 + intThings.hashCode()
       result = result * 37 + stringInts.hashCode()
+      result = result * 37 + intThingsTwo.hashCode()
       super.hashCode = result
     }
     return result
@@ -92,6 +102,7 @@ public class MappyTwo(
     if (stringEnums.isNotEmpty()) result += """stringEnums=$stringEnums"""
     if (intThings.isNotEmpty()) result += """intThings=$intThings"""
     if (stringInts.isNotEmpty()) result += """stringInts=$stringInts"""
+    if (intThingsTwo.isNotEmpty()) result += """intThingsTwo=$intThingsTwo"""
     return result.joinToString(prefix = "MappyTwo{", separator = ", ", postfix = "}")
   }
 
@@ -99,8 +110,9 @@ public class MappyTwo(
     stringEnums: Map<String, ValueEnum> = this.stringEnums,
     intThings: Map<Long, Thing> = this.intThings,
     stringInts: Map<String, Long> = this.stringInts,
+    intThingsTwo: Map<Int, Thing> = this.intThingsTwo,
     unknownFields: ByteString = this.unknownFields,
-  ): MappyTwo = MappyTwo(stringEnums, intThings, stringInts, unknownFields)
+  ): MappyTwo = MappyTwo(stringEnums, intThings, stringInts, intThingsTwo, unknownFields)
 
   public companion object {
     @JvmField
@@ -121,11 +133,15 @@ public class MappyTwo(
       private val stringIntsAdapter: ProtoAdapter<Map<String, Long>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.SINT64) }
 
+      private val intThingsTwoAdapter: ProtoAdapter<Map<Int, Thing>> by lazy {
+          ProtoAdapter.newMapAdapter(ProtoAdapter.SINT32, Thing.ADAPTER) }
+
       public override fun encodedSize(`value`: MappyTwo): Int {
         var size = value.unknownFields.size
         size += stringEnumsAdapter.encodedSizeWithTag(1, value.stringEnums)
         size += intThingsAdapter.encodedSizeWithTag(2, value.intThings)
         size += stringIntsAdapter.encodedSizeWithTag(3, value.stringInts)
+        size += intThingsTwoAdapter.encodedSizeWithTag(4, value.intThingsTwo)
         return size
       }
 
@@ -133,11 +149,13 @@ public class MappyTwo(
         stringEnumsAdapter.encodeWithTag(writer, 1, value.stringEnums)
         intThingsAdapter.encodeWithTag(writer, 2, value.intThings)
         stringIntsAdapter.encodeWithTag(writer, 3, value.stringInts)
+        intThingsTwoAdapter.encodeWithTag(writer, 4, value.intThingsTwo)
         writer.writeBytes(value.unknownFields)
       }
 
       public override fun encode(writer: ReverseProtoWriter, `value`: MappyTwo): Unit {
         writer.writeBytes(value.unknownFields)
+        intThingsTwoAdapter.encodeWithTag(writer, 4, value.intThingsTwo)
         stringIntsAdapter.encodeWithTag(writer, 3, value.stringInts)
         intThingsAdapter.encodeWithTag(writer, 2, value.intThings)
         stringEnumsAdapter.encodeWithTag(writer, 1, value.stringEnums)
@@ -147,11 +165,13 @@ public class MappyTwo(
         val stringEnums = mutableMapOf<String, ValueEnum>()
         val intThings = mutableMapOf<Long, Thing>()
         val stringInts = mutableMapOf<String, Long>()
+        val intThingsTwo = mutableMapOf<Int, Thing>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> stringEnums.putAll(stringEnumsAdapter.decode(reader))
             2 -> intThings.putAll(intThingsAdapter.decode(reader))
             3 -> stringInts.putAll(stringIntsAdapter.decode(reader))
+            4 -> intThingsTwo.putAll(intThingsTwoAdapter.decode(reader))
             else -> reader.readUnknownField(tag)
           }
         }
@@ -159,12 +179,14 @@ public class MappyTwo(
           stringEnums = stringEnums,
           intThings = intThings,
           stringInts = stringInts,
+          intThingsTwo = intThingsTwo,
           unknownFields = unknownFields
         )
       }
 
       public override fun redact(`value`: MappyTwo): MappyTwo = value.copy(
         intThings = value.intThings.redactElements(Thing.ADAPTER),
+        intThingsTwo = value.intThingsTwo.redactElements(Thing.ADAPTER),
         unknownFields = ByteString.EMPTY
       )
     }

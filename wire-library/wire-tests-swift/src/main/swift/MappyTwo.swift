@@ -11,16 +11,20 @@ public struct MappyTwo {
     public var intThings: [Int64 : Thing]
     @DefaultEmpty
     public var stringInts: [String : Int64]
+    @DefaultEmpty
+    public var intThingsTwo: [Int32 : Thing]
     public var unknownFields: Data = .init()
 
     public init(
         stringEnums: [String : ValueEnum] = [:],
         intThings: [Int64 : Thing] = [:],
-        stringInts: [String : Int64] = [:]
+        stringInts: [String : Int64] = [:],
+        intThingsTwo: [Int32 : Thing] = [:]
     ) {
         self.stringEnums = stringEnums
         self.intThings = intThings
         self.stringInts = stringInts
+        self.intThingsTwo = intThingsTwo
     }
 
     public enum ValueEnum : UInt32, CaseIterable, ProtoEnum {
@@ -72,6 +76,7 @@ extension MappyTwo : Proto2Codable {
         var stringEnums: [String : MappyTwo.ValueEnum] = [:]
         var intThings: [Int64 : Thing] = [:]
         var stringInts: [String : Int64] = [:]
+        var intThingsTwo: [Int32 : Thing] = [:]
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
@@ -79,6 +84,7 @@ extension MappyTwo : Proto2Codable {
             case 1: try reader.decode(into: &stringEnums)
             case 2: try reader.decode(into: &intThings, keyEncoding: .signed)
             case 3: try reader.decode(into: &stringInts, valueEncoding: .signed)
+            case 4: try reader.decode(into: &intThingsTwo, keyEncoding: .signed)
             default: try reader.readUnknownField(tag: tag)
             }
         }
@@ -87,12 +93,14 @@ extension MappyTwo : Proto2Codable {
         self.stringEnums = stringEnums
         self.intThings = intThings
         self.stringInts = stringInts
+        self.intThingsTwo = intThingsTwo
     }
 
     public func encode(to writer: ProtoWriter) throws {
         try writer.encode(tag: 1, value: self.stringEnums)
         try writer.encode(tag: 2, value: self.intThings, keyEncoding: .signed)
         try writer.encode(tag: 3, value: self.stringInts, valueEncoding: .signed)
+        try writer.encode(tag: 4, value: self.intThingsTwo, keyEncoding: .signed)
         try writer.writeUnknownFields(unknownFields)
     }
 }
@@ -104,6 +112,7 @@ extension MappyTwo : Codable {
         case stringEnums
         case intThings
         case stringInts
+        case intThingsTwo
 
     }
 }

@@ -14,6 +14,7 @@ import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
+import java.lang.Integer;
 import java.lang.Long;
 import java.lang.Object;
 import java.lang.Override;
@@ -48,17 +49,25 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
   )
   public final Map<String, Long> stringInts;
 
+  @WireField(
+      tag = 4,
+      keyAdapter = "com.squareup.wire.ProtoAdapter#SINT32",
+      adapter = "com.squareup.wire.map.Thing#ADAPTER"
+  )
+  public final Map<Integer, Thing> intThingsTwo;
+
   public MappyTwo(Map<String, ValueEnum> stringEnums, Map<Long, Thing> intThings,
-      Map<String, Long> stringInts) {
-    this(stringEnums, intThings, stringInts, ByteString.EMPTY);
+      Map<String, Long> stringInts, Map<Integer, Thing> intThingsTwo) {
+    this(stringEnums, intThings, stringInts, intThingsTwo, ByteString.EMPTY);
   }
 
   public MappyTwo(Map<String, ValueEnum> stringEnums, Map<Long, Thing> intThings,
-      Map<String, Long> stringInts, ByteString unknownFields) {
+      Map<String, Long> stringInts, Map<Integer, Thing> intThingsTwo, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.stringEnums = Internal.immutableCopyOf("stringEnums", stringEnums);
     this.intThings = Internal.immutableCopyOf("intThings", intThings);
     this.stringInts = Internal.immutableCopyOf("stringInts", stringInts);
+    this.intThingsTwo = Internal.immutableCopyOf("intThingsTwo", intThingsTwo);
   }
 
   @Override
@@ -67,6 +76,7 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
     builder.stringEnums = Internal.copyOf(stringEnums);
     builder.intThings = Internal.copyOf(intThings);
     builder.stringInts = Internal.copyOf(stringInts);
+    builder.intThingsTwo = Internal.copyOf(intThingsTwo);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -79,7 +89,8 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
     return unknownFields().equals(o.unknownFields())
         && stringEnums.equals(o.stringEnums)
         && intThings.equals(o.intThings)
-        && stringInts.equals(o.stringInts);
+        && stringInts.equals(o.stringInts)
+        && intThingsTwo.equals(o.intThingsTwo);
   }
 
   @Override
@@ -90,6 +101,7 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
       result = result * 37 + stringEnums.hashCode();
       result = result * 37 + intThings.hashCode();
       result = result * 37 + stringInts.hashCode();
+      result = result * 37 + intThingsTwo.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -101,6 +113,7 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
     if (!stringEnums.isEmpty()) builder.append(", stringEnums=").append(stringEnums);
     if (!intThings.isEmpty()) builder.append(", intThings=").append(intThings);
     if (!stringInts.isEmpty()) builder.append(", stringInts=").append(stringInts);
+    if (!intThingsTwo.isEmpty()) builder.append(", intThingsTwo=").append(intThingsTwo);
     return builder.replace(0, 2, "MappyTwo{").append('}').toString();
   }
 
@@ -111,10 +124,13 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
 
     public Map<String, Long> stringInts;
 
+    public Map<Integer, Thing> intThingsTwo;
+
     public Builder() {
       stringEnums = Internal.newMutableMap();
       intThings = Internal.newMutableMap();
       stringInts = Internal.newMutableMap();
+      intThingsTwo = Internal.newMutableMap();
     }
 
     public Builder stringEnums(Map<String, ValueEnum> stringEnums) {
@@ -135,9 +151,15 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
       return this;
     }
 
+    public Builder intThingsTwo(Map<Integer, Thing> intThingsTwo) {
+      Internal.checkElementsNotNull(intThingsTwo);
+      this.intThingsTwo = intThingsTwo;
+      return this;
+    }
+
     @Override
     public MappyTwo build() {
-      return new MappyTwo(stringEnums, intThings, stringInts, super.buildUnknownFields());
+      return new MappyTwo(stringEnums, intThings, stringInts, intThingsTwo, super.buildUnknownFields());
     }
   }
 
@@ -192,6 +214,8 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
 
     private ProtoAdapter<Map<String, Long>> stringInts;
 
+    private ProtoAdapter<Map<Integer, Thing>> intThingsTwo;
+
     public ProtoAdapter_MappyTwo() {
       super(FieldEncoding.LENGTH_DELIMITED, MappyTwo.class, "type.googleapis.com/com.squareup.wire.map.MappyTwo", Syntax.PROTO_2, null, "map.proto");
     }
@@ -202,6 +226,7 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
       result += stringEnumsAdapter().encodedSizeWithTag(1, value.stringEnums);
       result += intThingsAdapter().encodedSizeWithTag(2, value.intThings);
       result += stringIntsAdapter().encodedSizeWithTag(3, value.stringInts);
+      result += intThingsTwoAdapter().encodedSizeWithTag(4, value.intThingsTwo);
       result += value.unknownFields().size();
       return result;
     }
@@ -211,12 +236,14 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
       stringEnumsAdapter().encodeWithTag(writer, 1, value.stringEnums);
       intThingsAdapter().encodeWithTag(writer, 2, value.intThings);
       stringIntsAdapter().encodeWithTag(writer, 3, value.stringInts);
+      intThingsTwoAdapter().encodeWithTag(writer, 4, value.intThingsTwo);
       writer.writeBytes(value.unknownFields());
     }
 
     @Override
     public void encode(ReverseProtoWriter writer, MappyTwo value) throws IOException {
       writer.writeBytes(value.unknownFields());
+      intThingsTwoAdapter().encodeWithTag(writer, 4, value.intThingsTwo);
       stringIntsAdapter().encodeWithTag(writer, 3, value.stringInts);
       intThingsAdapter().encodeWithTag(writer, 2, value.intThings);
       stringEnumsAdapter().encodeWithTag(writer, 1, value.stringEnums);
@@ -231,6 +258,7 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
           case 1: builder.stringEnums.putAll(stringEnumsAdapter().decode(reader)); break;
           case 2: builder.intThings.putAll(intThingsAdapter().decode(reader)); break;
           case 3: builder.stringInts.putAll(stringIntsAdapter().decode(reader)); break;
+          case 4: builder.intThingsTwo.putAll(intThingsTwoAdapter().decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }
@@ -244,6 +272,7 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
     public MappyTwo redact(MappyTwo value) {
       Builder builder = value.newBuilder();
       Internal.redactElements(builder.intThings, Thing.ADAPTER);
+      Internal.redactElements(builder.intThingsTwo, Thing.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }
@@ -271,6 +300,15 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
       if (result == null) {
         result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.SINT64);
         stringInts = result;
+      }
+      return result;
+    }
+
+    private ProtoAdapter<Map<Integer, Thing>> intThingsTwoAdapter() {
+      ProtoAdapter<Map<Integer, Thing>> result = intThingsTwo;
+      if (result == null) {
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.SINT32, Thing.ADAPTER);
+        intThingsTwo = result;
       }
       return result;
     }
