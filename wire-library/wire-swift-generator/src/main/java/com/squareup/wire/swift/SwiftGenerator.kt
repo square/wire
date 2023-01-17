@@ -83,6 +83,11 @@ class SwiftGenerator private constructor(
     get() = schema.getType(this) is EnumType
   private val Type.typeName
     get() = type.typeName
+  private val ProtoType.isStringEncoded
+    get() = when (this) {
+      ProtoType.SINT64, ProtoType.FIXED64 -> true
+      else -> false
+    }
 
   fun generatedTypeName(type: Type) = type.typeName
 
@@ -743,9 +748,9 @@ class SwiftGenerator private constructor(
         property.addAttribute("StringEncodedValues")
       }
       if (field.isMap) {
-        if (field.typeName.needsEnumEncodedMap()) {
+        if (field.valueType.isEnum) {
           property.addAttribute("ProtoMapEnumValues")
-        } else if (field.typeName.needsStringEncodedMap()) {
+        } else if (field.valueType.isStringEncoded) {
           property.addAttribute("ProtoMapStringEncodedValues")
         } else {
           property.addAttribute("ProtoMap")
@@ -969,33 +974,6 @@ class SwiftGenerator private constructor(
     if (self is ParameterizedTypeName) {
       return when (self.rawType) {
         ARRAY -> self.typeArguments[0].needsStringEncoded()
-        else -> false
-      }
-    }
-    return false
-  }
-
-  private fun TypeName.needsStringEncodedMap(): Boolean {
-    val self = makeNonOptional()
-    if (self is ParameterizedTypeName) {
-      return when (self.rawType) {
-        DICTIONARY -> self.typeArguments[1].needsStringEncoded()
-        else -> false
-      }
-    }
-    return false
-  }
-
-  private fun TypeName.needsEnumEncodedMap(): Boolean {
-    val self = makeNonOptional()
-    if (self is ParameterizedTypeName) {
-      when (self.rawType) {
-        DICTIONARY -> println(self.typeArguments[1])
-        else -> {}
-      }
-
-      return when (self.rawType) {
-        DICTIONARY -> false// self.typeArguments[1].isEnum
         else -> false
       }
     }

@@ -1592,7 +1592,7 @@ fileprivate struct _AllTypes {
     @ProtoMap
     public var map_string_message: [String : AllTypes.NestedMessage]
     @DefaultEmpty
-    @ProtoMap
+    @ProtoMapEnumValues
     public var map_string_enum: [String : AllTypes.NestedEnum]
     public var ext_opt_int32: Int32?
     public var ext_opt_uint32: UInt32?

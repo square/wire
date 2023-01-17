@@ -6,7 +6,7 @@ import Wire
 public struct MappyTwo {
 
     @DefaultEmpty
-    @ProtoMap
+    @ProtoMapEnumValues
     public var string_enums: [String : ValueEnum]
     @DefaultEmpty
     @ProtoMap
