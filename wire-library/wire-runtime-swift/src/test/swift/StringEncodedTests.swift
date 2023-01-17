@@ -238,13 +238,13 @@ extension StringEncodedTests {
         let jsonData = json.data(using: .utf8)!
 
         let decoder = JSONDecoder()
-        decoder.userInfo[.wireStringEncodedDecodingStrategy] = ProtoDecoder.CodableStringEncodedDecodingStrategy.allowRawDecoding
+        decoder.stringEncodedDecodingStrategy = .allowRawDecoding
 
         let actualStruct = try decoder.decode(SimpleStruct.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
 
         let encoder = JSONEncoder()
-        encoder.userInfo[.wireStringEncodedEncodingStrategy] = ProtoEncoder.CodableStringEncodedEncodingStrategy.raw
+        encoder.stringEncodedEncodingStrategy = .raw
 
         let actualJSONData = try encoder.encode(actualStruct)
         let actualJSON = String(data: actualJSONData, encoding: .utf8)!
