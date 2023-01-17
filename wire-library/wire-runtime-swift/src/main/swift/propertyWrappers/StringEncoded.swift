@@ -30,15 +30,39 @@ extension StringEncoded : Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
-        let stringValue: String?
-        if container.decodeNil() {
-            stringValue = nil
-        } else {
-            stringValue = try container.decode(String?.self)
+        guard !container.decodeNil() else {
+            let value = try Self.create(optionalEncodedValue: nil)
+            self.init(wrappedValue: value)
+            return
         }
-        let value = try Self.create(optionalEncodedValue: stringValue)
 
-        self.wrappedValue = value
+        switch decoder.stringEncodedDecodingStrategy {
+        case .allowRawDecoding:
+            guard let decodableType = Value.self as? Decodable.Type else {
+                fallthrough
+            }
+            if let stringValue = try? container.decode(String.self) {
+                let value = try Self.create(optionalEncodedValue: stringValue)
+                self.init(wrappedValue: value)
+            } else {
+                let rawValue = try container.decode(decodableType)
+                guard let value = rawValue as? Value else {
+                    throw DecodingError.typeMismatch(
+                        Value.self,
+                        DecodingError.Context(
+                            codingPath: decoder.codingPath,
+                            debugDescription: "Could not convert \(rawValue) to \(Value.self)"
+                        )
+                    )
+                }
+                self.init(wrappedValue: value)
+            }
+
+        default:
+            let stringValue = try container.decode(String.self)
+            let value = try Self.create(optionalEncodedValue: stringValue)
+            self.init(wrappedValue: value)
+        }
     }
 
     private static func create(optionalEncodedValue: String?) throws -> Value {
@@ -64,7 +88,16 @@ extension StringEncoded : Encodable {
         if shouldEncodeNil() {
             try container.encodeNil()
         } else {
-            try container.encode(wrappedValue.stringEncodedValue())
+            switch encoder.stringEncodedEnccodingStrategy {
+            case .raw:
+                guard let value = wrappedValue as? Encodable else {
+                    fallthrough
+                }
+                try container.encode(value)
+
+            case .string:
+                try container.encode(wrappedValue.stringEncodedValue())
+            }
         }
     }
 

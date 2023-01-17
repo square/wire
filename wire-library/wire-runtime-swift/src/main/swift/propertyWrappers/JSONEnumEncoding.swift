@@ -31,6 +31,20 @@ public enum EnumDecodingStrategy {
     case shouldSkip
 }
 
+/// The decoding strategy to use for StringEncoded types that are themselves Decodable
+/// Defaults to .disallowRawDecoding
+public enum StringEncodedDecodingStrategy {
+    case disallowRawDecoding
+    case allowRawDecoding
+}
+
+/// The encoding strategy to use for StringEncoded types that are themselves Encodable
+/// Defaults to .string
+public enum StringEncodedEncodingStrategy {
+    case string
+    case raw
+}
+
 extension CodingUserInfoKey {
     /// Control the encoding of the raw value of Enums
     /// - SeeAlso: EnumEncodingStrategy
@@ -39,6 +53,14 @@ extension CodingUserInfoKey {
     /// Control the decoding of Enums
     /// - SeeAlso: EnumDecodingStrategy
     public static let wireEnumDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.wireEnumDecodingStrategy")!
+
+    /// Control the decoding of StringEncoded values that are themselves Decodable
+    /// - SeeAlso: StringEncodedDecodingStrategy
+    public static let wireStringEncodedDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.wireStringEncodedDecodingStrategy")!
+
+    /// Control the encoding of StringEncoded values that are themselves Encodable
+    /// - SeeAlso: StringEncodedEncodingStrategy
+    static let wireStringEncodedEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.wireStringEncodedEncodingStrategy")!
 }
 
 extension Encoder {
@@ -46,11 +68,21 @@ extension Encoder {
         let preferred = userInfo[.wireEnumEncodingStrategy] as? EnumEncodingStrategy
         return preferred ?? .string
     }
+
+    var stringEncodedEnccodingStrategy: StringEncodedEncodingStrategy {
+        let preferred = userInfo[.wireStringEncodedEncodingStrategy] as? StringEncodedEncodingStrategy
+        return preferred ?? .string
+    }
 }
 
 extension Decoder {
     var enumDecodingStrategy: EnumDecodingStrategy {
-        let prefered = userInfo[.wireEnumDecodingStrategy] as? EnumDecodingStrategy
-        return prefered ?? .shouldThrow
+        let preferred = userInfo[.wireEnumDecodingStrategy] as? EnumDecodingStrategy
+        return preferred ?? .shouldThrow
+    }
+
+    var stringEncodedDecodingStrategy: StringEncodedDecodingStrategy {
+        let preferred = userInfo[.wireStringEncodedDecodingStrategy] as? StringEncodedDecodingStrategy
+        return preferred ?? .disallowRawDecoding
     }
 }

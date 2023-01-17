@@ -19,6 +19,11 @@ import XCTest
 @testable import Wire
 
 final class StringEncodedTests: XCTestCase {
+}
+
+// MARK: - Round Trip happy path
+
+extension StringEncodedTests {
     struct SupportedTypes : Codable, Equatable {
         @StringEncoded
         var a: Int64
@@ -109,6 +114,8 @@ final class StringEncodedTests: XCTestCase {
         XCTAssertEqual(expectedJson, actualJson)
     }
 }
+
+// MARK: - Edge Cases and Failures
 
 extension StringEncodedTests {
     struct SimpleStruct : Codable, Equatable {
@@ -217,5 +224,34 @@ extension StringEncodedTests {
                 XCTFail("Invalid error: \(error)")
             }
         }
+    }
+}
+
+// MARK: - Raw Codable
+
+extension StringEncodedTests {
+    func testRawEncodingRoundTrip() throws {
+        let json = """
+        {\
+        "number":2,\
+        "array":[1,3]\
+        }
+        """
+        let expectedStruct = SimpleStruct(number: 2, array: [1,3])
+
+        let jsonData = json.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        decoder.userInfo[.wireStringEncodedDecodingStrategy] = StringEncodedDecodingStrategy.allowRawDecoding
+
+        let actualStruct = try decoder.decode(SimpleStruct.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+
+        let encoder = JSONEncoder()
+        encoder.userInfo[.wireStringEncodedEncodingStrategy] = StringEncodedEncodingStrategy.raw
+
+        let actualJSONData = try encoder.encode(actualStruct)
+        let actualJSON = String(data: actualJSONData, encoding: .utf8)!
+        XCTAssertEqual(actualJSON, json)
     }
 }
