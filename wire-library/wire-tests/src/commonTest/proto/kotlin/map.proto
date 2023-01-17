@@ -21,18 +21,6 @@ message Mappy {
   map<string, Thing> things = 1;
 }
 
-message MappyTwo {
-    enum ValueEnum {
-      DEFAULT = 0;
-      FOO = 1;
-      BAR = 2;
-    }
-
-    map<string, ValueEnum> stringEnums = 1;
-    map<sint64, Thing> intThings = 2;
-    map<string, sint64> stringInts = 3;
-}
-
 message Thing {
   optional string name = 1;
 }
