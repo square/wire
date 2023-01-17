@@ -965,10 +965,9 @@ class SwiftGenerator private constructor(
   private fun TypeName.needsStringEncodedValues(): Boolean {
     val self = makeNonOptional()
     if (self is ParameterizedTypeName) {
-      when (self.rawType) {
-        ARRAY -> return self.typeArguments[0].needsStringEncoded()
-        DICTIONARY -> return self.typeArguments[0].needsStringEncoded() ||
-          self.typeArguments[1].needsStringEncoded()
+      return when (self.rawType) {
+        ARRAY -> self.typeArguments[0].needsStringEncoded()
+        DICTIONARY -> false
       }
     }
     return false
