@@ -743,7 +743,9 @@ class SwiftGenerator private constructor(
         property.addAttribute("StringEncodedValues")
       }
       if (field.isMap) {
-        if (field.typeName.needsStringEncodedMap()) {
+        if (field.typeName.needsEnumEncodedMap()) {
+          property.addAttribute("ProtoMapEnumValues")
+        } else if (field.typeName.needsStringEncodedMap()) {
           property.addAttribute("ProtoMapStringEncodedValues")
         } else {
           property.addAttribute("ProtoMap")
@@ -978,6 +980,17 @@ class SwiftGenerator private constructor(
     if (self is ParameterizedTypeName) {
       return when (self.rawType) {
         DICTIONARY -> self.typeArguments[1].needsStringEncoded()
+        else -> false
+      }
+    }
+    return false
+  }
+
+  private fun TypeName.needsEnumEncodedMap(): Boolean {
+    val self = makeNonOptional()
+    if (self is ParameterizedTypeName) {
+      return when (self.rawType) {
+        DICTIONARY -> self.typeArguments[1].isEnum
         else -> false
       }
     }

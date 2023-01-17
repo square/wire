@@ -71,6 +71,59 @@ extension ProtoMap : Sendable where Key : Sendable, Value : Sendable {
 }
 #endif
 
+// MARK: - ProtoMapEnumValues
+
+@propertyWrapper
+public struct ProtoMapEnumValues<Key : Hashable & LosslessStringConvertible, Value : ProtoEnum> {
+    public var wrappedValue: [Key: Value]
+
+    public init(wrappedValue: [Key: Value]) {
+        self.wrappedValue = wrappedValue
+    }
+}
+
+extension ProtoMapEnumValues : Encodable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        for kvp in wrappedValue {
+            let codingKey = StringCodingKey(stringValue: kvp.key.description)
+            try container.encode(kvp.value, forKey: codingKey)
+        }
+    }
+}
+
+extension ProtoMapEnumValues : Decodable {
+    public init(from decoder: Decoder) throws {
+        wrappedValue = [:]
+
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        for codingKey in container.allKeys {
+            guard let key = Key(codingKey.stringValue) else {
+                throw ProtoDecoder.Error.unparsableString(type: Key.self, value: codingKey.stringValue)
+            }
+
+            wrappedValue[key] = try container.decode(BoxedEnum<Value>.self, forKey: codingKey).value
+        }
+    }
+}
+
+extension ProtoMapEnumValues : Equatable where Value : Equatable {
+}
+
+extension ProtoMapEnumValues : Hashable where Value : Hashable {
+}
+
+extension ProtoMapEnumValues : EmptyInitializable {
+    public init() {
+        self.init(wrappedValue: [:])
+    }
+}
+
+#if swift(>=5.5)
+extension ProtoMapEnumValues : Sendable where Key : Sendable, Value : Sendable {
+}
+#endif
+
 // MARK: - ProtoMapStringEncodedValues
 
 @propertyWrapper
