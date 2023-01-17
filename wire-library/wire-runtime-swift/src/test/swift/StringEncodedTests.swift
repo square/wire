@@ -257,17 +257,73 @@ extension StringEncodedTests {
 extension StringEncodedTests {
     struct DictionaryStruct : Codable, Equatable {
         @DefaultEmpty
-        @ProtoMapStringEncodedValues
-        var valueDictionary: [String: Int64]
-
-        @DefaultEmpty
         @ProtoMap
-        var keyedDictionary: [Int64: String]
+        var keys: [Int64: String]
 
         @DefaultEmpty
         @ProtoMapStringEncodedValues
-        var keyValueDictionary: [Int64: Int64]
+        var values: [String: Int64]
+
+        @DefaultEmpty
+        @ProtoMapStringEncodedValues
+        var both: [Int64: Int64]
     }
 
-    #warning("Add tests")
+    func testMapRoundTrip() throws {
+        let json = """
+        {\
+        "keys":{"2":"c"},\
+        "values":{"a":"1"},\
+        "both":{"3":"4"}\
+        }
+        """
+        let expectedStruct = DictionaryStruct(
+            keys: [2 : "c"],
+            values: ["a": 1],
+            both: [3 : 4]
+        )
+
+        let jsonData = json.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+
+        let actualStruct = try decoder.decode(DictionaryStruct.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+
+        let encoder = JSONEncoder()
+
+        let actualJSONData = try encoder.encode(actualStruct)
+        let actualJSON = String(data: actualJSONData, encoding: .utf8)!
+        XCTAssertEqual(actualJSON, json)
+    }
+
+    func testMapRawEncodingRoundTrip() throws {
+        let json = """
+        {\
+        "keys":{"2":"c"},\
+        "values":{"a":1},\
+        "both":{"3":4}\
+        }
+        """
+        let expectedStruct = DictionaryStruct(
+            keys: [2 : "c"],
+            values: ["a": 1],
+            both: [3 : 4]
+        )
+
+        let jsonData = json.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        decoder.userInfo[.wireStringEncodedDecodingStrategy] = StringEncodedDecodingStrategy.allowRawDecoding
+
+        let actualStruct = try decoder.decode(DictionaryStruct.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+
+        let encoder = JSONEncoder()
+        encoder.userInfo[.wireStringEncodedEncodingStrategy] = StringEncodedEncodingStrategy.raw
+
+        let actualJSONData = try encoder.encode(actualStruct)
+        let actualJSON = String(data: actualJSONData, encoding: .utf8)!
+        XCTAssertEqual(actualJSON, json)
+    }
 }
