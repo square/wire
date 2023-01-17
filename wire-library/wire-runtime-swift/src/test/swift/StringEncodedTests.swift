@@ -238,13 +238,13 @@ extension StringEncodedTests {
         let jsonData = json.data(using: .utf8)!
 
         let decoder = JSONDecoder()
-        decoder.userInfo[.wireStringEncodedDecodingStrategy] = StringEncodedDecodingStrategy.allowRawDecoding
+        decoder.userInfo[.wireStringEncodedDecodingStrategy] = ProtoDecoder.CodableStringEncodedDecodingStrategy.allowRawDecoding
 
         let actualStruct = try decoder.decode(SimpleStruct.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
 
         let encoder = JSONEncoder()
-        encoder.userInfo[.wireStringEncodedEncodingStrategy] = StringEncodedEncodingStrategy.raw
+        encoder.userInfo[.wireStringEncodedEncodingStrategy] = ProtoEncoder.CodableStringEncodedEncodingStrategy.raw
 
         let actualJSONData = try encoder.encode(actualStruct)
         let actualJSON = String(data: actualJSONData, encoding: .utf8)!
@@ -314,13 +314,13 @@ extension StringEncodedTests {
         let jsonData = json.data(using: .utf8)!
 
         let decoder = JSONDecoder()
-        decoder.userInfo[.wireStringEncodedDecodingStrategy] = StringEncodedDecodingStrategy.allowRawDecoding
+        decoder.userInfo[.wireStringEncodedDecodingStrategy] = ProtoDecoder.CodableStringEncodedDecodingStrategy.allowRawDecoding
 
         let actualStruct = try decoder.decode(DictionaryStruct.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
 
         let encoder = JSONEncoder()
-        encoder.userInfo[.wireStringEncodedEncodingStrategy] = StringEncodedEncodingStrategy.raw
+        encoder.userInfo[.wireStringEncodedEncodingStrategy] = ProtoEncoder.CodableStringEncodedEncodingStrategy.raw
 
         let actualJSONData = try encoder.encode(actualStruct)
         let actualJSON = String(data: actualJSONData, encoding: .utf8)!

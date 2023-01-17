@@ -34,8 +34,9 @@ public final class ProtoDecoder {
     public enum UnknownEnumValueDecodingStrategy {
         /// Throws an error when encountering unknown enum values in single-value fields or collections.
         case throwError
-        /// Defaults the unknown enum value to nil for single-value fields. With this option, unknown values in collections are removed
-        /// from the collection in which they originated and added to a collection for the same tag in unknown fields.
+        /// Defaults the unknown enum value to nil for single-value fields.
+        /// With this option, unknown values in collections are removed from the collection in which they originated.
+        /// When decoding a Proto, unknown values are then added to a collection for the same tag in unknown fields.
         case returnNil
     }
 
