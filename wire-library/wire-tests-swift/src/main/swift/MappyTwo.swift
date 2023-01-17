@@ -7,28 +7,28 @@ public struct MappyTwo {
 
     @DefaultEmpty
     @ProtoMap
-    public var stringEnums: [String : ValueEnum]
+    public var string_enums: [String : ValueEnum]
     @DefaultEmpty
     @ProtoMap
-    public var intThings: [Int64 : Thing]
+    public var int_things: [Int64 : Thing]
     @DefaultEmpty
     @ProtoMapStringEncodedValues
-    public var stringInts: [String : Int64]
+    public var string_ints: [String : Int64]
     @DefaultEmpty
     @ProtoMap
-    public var intThingsTwo: [Int32 : Thing]
+    public var int_things_two: [Int32 : Thing]
     public var unknownFields: Data = .init()
 
     public init(
-        stringEnums: [String : ValueEnum] = [:],
-        intThings: [Int64 : Thing] = [:],
-        stringInts: [String : Int64] = [:],
-        intThingsTwo: [Int32 : Thing] = [:]
+        string_enums: [String : ValueEnum] = [:],
+        int_things: [Int64 : Thing] = [:],
+        string_ints: [String : Int64] = [:],
+        int_things_two: [Int32 : Thing] = [:]
     ) {
-        self.stringEnums = stringEnums
-        self.intThings = intThings
-        self.stringInts = stringInts
-        self.intThingsTwo = intThingsTwo
+        self.string_enums = string_enums
+        self.int_things = int_things
+        self.string_ints = string_ints
+        self.int_things_two = int_things_two
     }
 
     public enum ValueEnum : UInt32, CaseIterable, ProtoEnum {
@@ -77,34 +77,34 @@ extension MappyTwo : ProtoMessage {
 
 extension MappyTwo : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        var stringEnums: [String : MappyTwo.ValueEnum] = [:]
-        var intThings: [Int64 : Thing] = [:]
-        var stringInts: [String : Int64] = [:]
-        var intThingsTwo: [Int32 : Thing] = [:]
+        var string_enums: [String : MappyTwo.ValueEnum] = [:]
+        var int_things: [Int64 : Thing] = [:]
+        var string_ints: [String : Int64] = [:]
+        var int_things_two: [Int32 : Thing] = [:]
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
-            case 1: try reader.decode(into: &stringEnums)
-            case 2: try reader.decode(into: &intThings, keyEncoding: .signed)
-            case 3: try reader.decode(into: &stringInts, valueEncoding: .signed)
-            case 4: try reader.decode(into: &intThingsTwo, keyEncoding: .signed)
+            case 1: try reader.decode(into: &string_enums)
+            case 2: try reader.decode(into: &int_things, keyEncoding: .signed)
+            case 3: try reader.decode(into: &string_ints, valueEncoding: .signed)
+            case 4: try reader.decode(into: &int_things_two, keyEncoding: .signed)
             default: try reader.readUnknownField(tag: tag)
             }
         }
         self.unknownFields = try reader.endMessage(token: token)
 
-        self.stringEnums = stringEnums
-        self.intThings = intThings
-        self.stringInts = stringInts
-        self.intThingsTwo = intThingsTwo
+        self.string_enums = string_enums
+        self.int_things = int_things
+        self.string_ints = string_ints
+        self.int_things_two = int_things_two
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.stringEnums)
-        try writer.encode(tag: 2, value: self.intThings, keyEncoding: .signed)
-        try writer.encode(tag: 3, value: self.stringInts, valueEncoding: .signed)
-        try writer.encode(tag: 4, value: self.intThingsTwo, keyEncoding: .signed)
+        try writer.encode(tag: 1, value: self.string_enums)
+        try writer.encode(tag: 2, value: self.int_things, keyEncoding: .signed)
+        try writer.encode(tag: 3, value: self.string_ints, valueEncoding: .signed)
+        try writer.encode(tag: 4, value: self.int_things_two, keyEncoding: .signed)
         try writer.writeUnknownFields(unknownFields)
     }
 }
@@ -113,10 +113,10 @@ extension MappyTwo : Proto2Codable {
 extension MappyTwo : Codable {
     public enum CodingKeys : String, CodingKey {
 
-        case stringEnums
-        case intThings
-        case stringInts
-        case intThingsTwo
+        case string_enums
+        case int_things
+        case string_ints
+        case int_things_two
 
     }
 }

@@ -989,8 +989,13 @@ class SwiftGenerator private constructor(
   private fun TypeName.needsEnumEncodedMap(): Boolean {
     val self = makeNonOptional()
     if (self is ParameterizedTypeName) {
+      when (self.rawType) {
+        DICTIONARY -> println(self.typeArguments[1])
+        else -> {}
+      }
+
       return when (self.rawType) {
-        DICTIONARY -> self.typeArguments[1].isEnum
+        DICTIONARY -> false// self.typeArguments[1].isEnum
         else -> false
       }
     }

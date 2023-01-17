@@ -28,10 +28,10 @@ message MappyTwo {
       BAR = 2;
     }
 
-    map<string, ValueEnum> stringEnums = 1;
-    map<sint64, Thing> intThings = 2;
-    map<string, sint64> stringInts = 3;
-    map<sint32, Thing> intThingsTwo = 4;
+    map<string, ValueEnum> string_enums = 1;
+    map<sint64, Thing> int_things = 2;
+    map<string, sint64> string_ints = 3;
+    map<sint32, Thing> int_things_two = 4;
 }
 
 message Thing {

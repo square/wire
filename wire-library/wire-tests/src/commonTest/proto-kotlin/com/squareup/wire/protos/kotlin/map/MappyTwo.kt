@@ -32,10 +32,10 @@ import kotlin.lazy
 import okio.ByteString
 
 public class MappyTwo(
-  stringEnums: Map<String, ValueEnum> = emptyMap(),
-  intThings: Map<Long, Thing> = emptyMap(),
-  stringInts: Map<String, Long> = emptyMap(),
-  intThingsTwo: Map<Int, Thing> = emptyMap(),
+  string_enums: Map<String, ValueEnum> = emptyMap(),
+  int_things: Map<Long, Thing> = emptyMap(),
+  string_ints: Map<String, Long> = emptyMap(),
+  int_things_two: Map<Int, Thing> = emptyMap(),
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MappyTwo, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
@@ -43,28 +43,28 @@ public class MappyTwo(
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.protos.kotlin.map.MappyTwo${'$'}ValueEnum#ADAPTER",
   )
-  public val stringEnums: Map<String, ValueEnum> = immutableCopyOf("stringEnums", stringEnums)
+  public val string_enums: Map<String, ValueEnum> = immutableCopyOf("string_enums", string_enums)
 
   @field:WireField(
     tag = 2,
     keyAdapter = "com.squareup.wire.ProtoAdapter#SINT64",
     adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER",
   )
-  public val intThings: Map<Long, Thing> = immutableCopyOf("intThings", intThings)
+  public val int_things: Map<Long, Thing> = immutableCopyOf("int_things", int_things)
 
   @field:WireField(
     tag = 3,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
   )
-  public val stringInts: Map<String, Long> = immutableCopyOf("stringInts", stringInts)
+  public val string_ints: Map<String, Long> = immutableCopyOf("string_ints", string_ints)
 
   @field:WireField(
     tag = 4,
     keyAdapter = "com.squareup.wire.ProtoAdapter#SINT32",
     adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER",
   )
-  public val intThingsTwo: Map<Int, Thing> = immutableCopyOf("intThingsTwo", intThingsTwo)
+  public val int_things_two: Map<Int, Thing> = immutableCopyOf("int_things_two", int_things_two)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
@@ -77,10 +77,10 @@ public class MappyTwo(
     if (other === this) return true
     if (other !is MappyTwo) return false
     if (unknownFields != other.unknownFields) return false
-    if (stringEnums != other.stringEnums) return false
-    if (intThings != other.intThings) return false
-    if (stringInts != other.stringInts) return false
-    if (intThingsTwo != other.intThingsTwo) return false
+    if (string_enums != other.string_enums) return false
+    if (int_things != other.int_things) return false
+    if (string_ints != other.string_ints) return false
+    if (int_things_two != other.int_things_two) return false
     return true
   }
 
@@ -88,10 +88,10 @@ public class MappyTwo(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + stringEnums.hashCode()
-      result = result * 37 + intThings.hashCode()
-      result = result * 37 + stringInts.hashCode()
-      result = result * 37 + intThingsTwo.hashCode()
+      result = result * 37 + string_enums.hashCode()
+      result = result * 37 + int_things.hashCode()
+      result = result * 37 + string_ints.hashCode()
+      result = result * 37 + int_things_two.hashCode()
       super.hashCode = result
     }
     return result
@@ -99,20 +99,20 @@ public class MappyTwo(
 
   public override fun toString(): String {
     val result = mutableListOf<String>()
-    if (stringEnums.isNotEmpty()) result += """stringEnums=$stringEnums"""
-    if (intThings.isNotEmpty()) result += """intThings=$intThings"""
-    if (stringInts.isNotEmpty()) result += """stringInts=$stringInts"""
-    if (intThingsTwo.isNotEmpty()) result += """intThingsTwo=$intThingsTwo"""
+    if (string_enums.isNotEmpty()) result += """string_enums=$string_enums"""
+    if (int_things.isNotEmpty()) result += """int_things=$int_things"""
+    if (string_ints.isNotEmpty()) result += """string_ints=$string_ints"""
+    if (int_things_two.isNotEmpty()) result += """int_things_two=$int_things_two"""
     return result.joinToString(prefix = "MappyTwo{", separator = ", ", postfix = "}")
   }
 
   public fun copy(
-    stringEnums: Map<String, ValueEnum> = this.stringEnums,
-    intThings: Map<Long, Thing> = this.intThings,
-    stringInts: Map<String, Long> = this.stringInts,
-    intThingsTwo: Map<Int, Thing> = this.intThingsTwo,
+    string_enums: Map<String, ValueEnum> = this.string_enums,
+    int_things: Map<Long, Thing> = this.int_things,
+    string_ints: Map<String, Long> = this.string_ints,
+    int_things_two: Map<Int, Thing> = this.int_things_two,
     unknownFields: ByteString = this.unknownFields,
-  ): MappyTwo = MappyTwo(stringEnums, intThings, stringInts, intThingsTwo, unknownFields)
+  ): MappyTwo = MappyTwo(string_enums, int_things, string_ints, int_things_two, unknownFields)
 
   public companion object {
     @JvmField
@@ -124,69 +124,69 @@ public class MappyTwo(
       null, 
       "map.proto"
     ) {
-      private val stringEnumsAdapter: ProtoAdapter<Map<String, ValueEnum>> by lazy {
+      private val string_enumsAdapter: ProtoAdapter<Map<String, ValueEnum>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ValueEnum.ADAPTER) }
 
-      private val intThingsAdapter: ProtoAdapter<Map<Long, Thing>> by lazy {
+      private val int_thingsAdapter: ProtoAdapter<Map<Long, Thing>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.SINT64, Thing.ADAPTER) }
 
-      private val stringIntsAdapter: ProtoAdapter<Map<String, Long>> by lazy {
+      private val string_intsAdapter: ProtoAdapter<Map<String, Long>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.SINT64) }
 
-      private val intThingsTwoAdapter: ProtoAdapter<Map<Int, Thing>> by lazy {
+      private val int_things_twoAdapter: ProtoAdapter<Map<Int, Thing>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.SINT32, Thing.ADAPTER) }
 
       public override fun encodedSize(`value`: MappyTwo): Int {
         var size = value.unknownFields.size
-        size += stringEnumsAdapter.encodedSizeWithTag(1, value.stringEnums)
-        size += intThingsAdapter.encodedSizeWithTag(2, value.intThings)
-        size += stringIntsAdapter.encodedSizeWithTag(3, value.stringInts)
-        size += intThingsTwoAdapter.encodedSizeWithTag(4, value.intThingsTwo)
+        size += string_enumsAdapter.encodedSizeWithTag(1, value.string_enums)
+        size += int_thingsAdapter.encodedSizeWithTag(2, value.int_things)
+        size += string_intsAdapter.encodedSizeWithTag(3, value.string_ints)
+        size += int_things_twoAdapter.encodedSizeWithTag(4, value.int_things_two)
         return size
       }
 
       public override fun encode(writer: ProtoWriter, `value`: MappyTwo): Unit {
-        stringEnumsAdapter.encodeWithTag(writer, 1, value.stringEnums)
-        intThingsAdapter.encodeWithTag(writer, 2, value.intThings)
-        stringIntsAdapter.encodeWithTag(writer, 3, value.stringInts)
-        intThingsTwoAdapter.encodeWithTag(writer, 4, value.intThingsTwo)
+        string_enumsAdapter.encodeWithTag(writer, 1, value.string_enums)
+        int_thingsAdapter.encodeWithTag(writer, 2, value.int_things)
+        string_intsAdapter.encodeWithTag(writer, 3, value.string_ints)
+        int_things_twoAdapter.encodeWithTag(writer, 4, value.int_things_two)
         writer.writeBytes(value.unknownFields)
       }
 
       public override fun encode(writer: ReverseProtoWriter, `value`: MappyTwo): Unit {
         writer.writeBytes(value.unknownFields)
-        intThingsTwoAdapter.encodeWithTag(writer, 4, value.intThingsTwo)
-        stringIntsAdapter.encodeWithTag(writer, 3, value.stringInts)
-        intThingsAdapter.encodeWithTag(writer, 2, value.intThings)
-        stringEnumsAdapter.encodeWithTag(writer, 1, value.stringEnums)
+        int_things_twoAdapter.encodeWithTag(writer, 4, value.int_things_two)
+        string_intsAdapter.encodeWithTag(writer, 3, value.string_ints)
+        int_thingsAdapter.encodeWithTag(writer, 2, value.int_things)
+        string_enumsAdapter.encodeWithTag(writer, 1, value.string_enums)
       }
 
       public override fun decode(reader: ProtoReader): MappyTwo {
-        val stringEnums = mutableMapOf<String, ValueEnum>()
-        val intThings = mutableMapOf<Long, Thing>()
-        val stringInts = mutableMapOf<String, Long>()
-        val intThingsTwo = mutableMapOf<Int, Thing>()
+        val string_enums = mutableMapOf<String, ValueEnum>()
+        val int_things = mutableMapOf<Long, Thing>()
+        val string_ints = mutableMapOf<String, Long>()
+        val int_things_two = mutableMapOf<Int, Thing>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> stringEnums.putAll(stringEnumsAdapter.decode(reader))
-            2 -> intThings.putAll(intThingsAdapter.decode(reader))
-            3 -> stringInts.putAll(stringIntsAdapter.decode(reader))
-            4 -> intThingsTwo.putAll(intThingsTwoAdapter.decode(reader))
+            1 -> string_enums.putAll(string_enumsAdapter.decode(reader))
+            2 -> int_things.putAll(int_thingsAdapter.decode(reader))
+            3 -> string_ints.putAll(string_intsAdapter.decode(reader))
+            4 -> int_things_two.putAll(int_things_twoAdapter.decode(reader))
             else -> reader.readUnknownField(tag)
           }
         }
         return MappyTwo(
-          stringEnums = stringEnums,
-          intThings = intThings,
-          stringInts = stringInts,
-          intThingsTwo = intThingsTwo,
+          string_enums = string_enums,
+          int_things = int_things,
+          string_ints = string_ints,
+          int_things_two = int_things_two,
           unknownFields = unknownFields
         )
       }
 
       public override fun redact(`value`: MappyTwo): MappyTwo = value.copy(
-        intThings = value.intThings.redactElements(Thing.ADAPTER),
-        intThingsTwo = value.intThingsTwo.redactElements(Thing.ADAPTER),
+        int_things = value.int_things.redactElements(Thing.ADAPTER),
+        int_things_two = value.int_things_two.redactElements(Thing.ADAPTER),
         unknownFields = ByteString.EMPTY
       )
     }

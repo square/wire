@@ -459,11 +459,6 @@ extension ProtoEnumCodableTests {
     }
 
     func testLossyDecodingUnknownDictionaryValue() throws {
-        let expectedStruct = DictionaryTypes(
-            standard: ["b": .ONE],
-            protoMap: [:]
-        )
-
         let json = """
         {\
         "standard":{"a":"ZZZ","b":"ONE"}\
@@ -471,11 +466,25 @@ extension ProtoEnumCodableTests {
         """
         let jsonData = json.data(using: .utf8)!
 
+        // There's basically no good solution here
         let decoder = JSONDecoder()
         decoder.userInfo[.wireEnumDecodingStrategy] = ProtoDecoder.CodableEnumDecodingStrategy.returnNil
 
-        let decoded = try decoder.decode(DictionaryTypes.self, from: jsonData)
-        XCTAssertEqual(decoded, expectedStruct)
+        XCTAssertThrowsError(
+            try decoder.decode(DictionaryTypes.self, from: jsonData)
+        ) { error in
+            guard let error = error as? ProtoDecoder.Error else {
+                XCTFail("Invalid error type for \(error)")
+                return
+            }
+
+            guard case let .unknownEnumString(_, string) = error else {
+                XCTFail("Invalid error case for \(error)")
+                return
+            }
+
+            XCTAssertEqual(string, "ZZZ")
+        }
     }
 
     func testLossyDecodingUnknownProtoMapValue() throws {
