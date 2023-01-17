@@ -16,10 +16,14 @@
 
 import Foundation
 
+extension ProtoDecoder {
+    public typealias CodableEnumDecodingStrategy = UnknownEnumValueDecodingStrategy
+}
+
 extension ProtoEncoder {
     /// The encoding strategy to use for ProtoEnum types
     /// Defaults to .string
-    public enum JSONEnumEncodingStrategy {
+    public enum CodableEnumEncodingStrategy {
         case string
         case integer
     }
@@ -27,25 +31,25 @@ extension ProtoEncoder {
 
 extension CodingUserInfoKey {
     /// Control the encoding of ProtoEnum types
-    /// - SeeAlso: ProtoEncoder.JSONEnumEncodingStrategy
+    /// - SeeAlso: ProtoEncoder.CodableEnumEncodingStrategy
     public static let wireEnumEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumEncodingStrategy")!
 
     /// Control the decoding of ProtoEnum types
     /// - Note: Non-optional values will _always_ throw
-    /// - SeeAlso: ProtoDecoder.UnknownEnumValueDecodingStrategy
+    /// - SeeAlso: ProtoDecoder.CodableEnumDecodingStrategy
     public static let wireEnumDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumDecodingStrategy")!
 }
 
 extension Encoder {
-    var enumEncodingStrategy: ProtoEncoder.JSONEnumEncodingStrategy {
-        let preferred = userInfo[.wireEnumEncodingStrategy] as? ProtoEncoder.JSONEnumEncodingStrategy
+    var enumEncodingStrategy: ProtoEncoder.CodableEnumEncodingStrategy {
+        let preferred = userInfo[.wireEnumEncodingStrategy] as? ProtoEncoder.CodableEnumEncodingStrategy
         return preferred ?? .string
     }
 }
 
 extension Decoder {
-    var enumDecodingStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy {
-        let prefered = userInfo[.wireEnumDecodingStrategy] as? ProtoDecoder.UnknownEnumValueDecodingStrategy
+    var enumDecodingStrategy: ProtoDecoder.CodableEnumDecodingStrategy {
+        let prefered = userInfo[.wireEnumDecodingStrategy] as? ProtoDecoder.CodableEnumDecodingStrategy
         return prefered ?? .throwError
     }
 }
