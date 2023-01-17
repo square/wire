@@ -967,7 +967,7 @@ class SwiftGenerator private constructor(
     if (self is ParameterizedTypeName) {
       return when (self.rawType) {
         ARRAY -> self.typeArguments[0].needsStringEncoded()
-        DICTIONARY -> false
+        else -> false
       }
     }
     return false
