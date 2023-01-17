@@ -251,17 +251,3 @@ extension StringEncodedTests {
         XCTAssertEqual(actualJSON, json)
     }
 }
-
-// MARK: - Dictionaries
-
-extension StringEncodedTests {
-    #warning("Add types and tests")
-    struct DictionaryStruct : Codable, Equatable {
-        @DefaultEmpty
-        var valueDictionary: [String: Int64]
-        @DefaultEmpty
-        var keyedDictionary: [Int64: String]
-        @DefaultEmpty
-        var keyValueDictionary: [Int64: Int64]
-    }
-}
