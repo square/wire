@@ -7,7 +7,6 @@ public struct VersionOne {
 
     public var i: Int32?
     public var obj: NestedVersionOne?
-    @JSONOptionalEnum
     public var en: EnumVersionOne?
     public var unknownFields: Data = .init()
 

@@ -23,11 +23,19 @@ public struct MappyTwo {
         self.stringInts = stringInts
     }
 
-    public enum ValueEnum : UInt32, CaseIterable, Codable {
+    public enum ValueEnum : UInt32, CaseIterable, ProtoEnum {
 
         case DEFAULT = 0
         case FOO = 1
         case BAR = 2
+
+        public var description: String {
+            switch self {
+            case .DEFAULT: return "DEFAULT"
+            case .FOO: return "FOO"
+            case .BAR: return "BAR"
+            }
+        }
 
     }
 

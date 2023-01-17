@@ -10,9 +10,15 @@ public struct OtherMessageWithStatus {
     public init() {
     }
 
-    public enum Status : UInt32, CaseIterable, Codable {
+    public enum Status : UInt32, CaseIterable, ProtoEnum {
 
         case A = 1
+
+        public var description: String {
+            switch self {
+            case .A: return "A"
+            }
+        }
 
     }
 

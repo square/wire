@@ -15,10 +15,8 @@ public struct FooBar {
     public var daisy: Double?
     @DefaultEmpty
     public var nested: [FooBar]
-    @JSONOptionalEnum
     public var ext: FooBarBazEnum?
     @DefaultEmpty
-    @JSONEnumArray
     public var rep: [FooBarBazEnum]
     public var more_string: String?
     public var unknownFields: Data = .init()
@@ -49,7 +47,6 @@ public struct FooBar {
 
     public struct Nested {
 
-        @JSONOptionalEnum
         public var value: FooBarBazEnum?
         public var unknownFields: Data = .init()
 
@@ -71,11 +68,19 @@ public struct FooBar {
 
     }
 
-    public enum FooBarBazEnum : UInt32, CaseIterable, Codable {
+    public enum FooBarBazEnum : UInt32, CaseIterable, ProtoEnum {
 
         case FOO = 1
         case BAR = 2
         case BAZ = 3
+
+        public var description: String {
+            switch self {
+            case .FOO: return "FOO"
+            case .BAR: return "BAR"
+            case .BAZ: return "BAZ"
+            }
+        }
 
     }
 

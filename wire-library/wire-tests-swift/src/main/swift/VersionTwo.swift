@@ -14,7 +14,6 @@ public struct VersionTwo {
     @DefaultEmpty
     public var v2_rs: [String]
     public var obj: NestedVersionTwo?
-    @JSONOptionalEnum
     public var en: EnumVersionTwo?
     public var unknownFields: Data = .init()
 
