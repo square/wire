@@ -26,7 +26,9 @@ extension ProtoEncoder {
     /// The encoding strategy to use for ProtoEnum types
     /// Defaults to .string
     public enum CodableEnumEncodingStrategy {
+        /// Encodes the name of the case as the value, like `"myEnum": "FOO"`
         case string
+        /// Encodes the field value of the case as the value, like `"myEnum": 3`
         case integer
     }
 }

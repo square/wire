@@ -214,7 +214,6 @@ extension ProtoEnumCodableTests {
         XCTAssertEqual(expectedStruct, actualStruct)
     }
 
-
     func testDecodingNil() throws {
         let expectedStruct = OptionalTypes(
             a: nil,
