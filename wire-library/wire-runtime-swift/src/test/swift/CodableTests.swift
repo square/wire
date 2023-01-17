@@ -29,10 +29,10 @@ final class CodableTests: XCTestCase {
           "repeated_int32":[1,2,3],
           "opt_uint64":"4",
           "opt_double":6,
-          "map_int32_string":[
-            1,"foo",
-            2,"bar"
-          ],
+          "map_int32_string":{
+            "1":"foo",
+            "2":"bar"
+          },
           "opt_bytes":"ASNF",
           "opt_uint32":3,
           "opt_enum":0,
@@ -68,10 +68,10 @@ final class CodableTests: XCTestCase {
           "repeated_int32":[1,2,3],
           "req_uint64":"4",
           "req_double":6,
-          "map_int32_string":[
-            1,"foo",
-            2,"bar"
-          ],
+          "map_int32_string":{
+            "1":"foo",
+            "2":"bar"
+          },
           "req_bytes":"ASNF",
           "req_uint32":3,
           "req_enum":0,
@@ -121,7 +121,7 @@ final class CodableTests: XCTestCase {
 
         let expected = """
         {
-          "map_int32_string":[1,"foo"],
+          "map_int32_string":{"1":"foo"},
           "opt_bytes":"ASNF",
           "opt_double":6,
           "opt_enum":"UNKNOWN",
@@ -158,7 +158,7 @@ final class CodableTests: XCTestCase {
 
         let expected = """
         {
-          "map_int32_string":[1,"foo"],
+          "map_int32_string":{"1":"foo"},
           "repeated_int32":[1,2,3],
           "repeated_string":["foo","bar","baz"],
           "req_bytes":"ASNF",
