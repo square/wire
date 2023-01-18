@@ -34,8 +34,9 @@ public final class ProtoDecoder {
     public enum UnknownEnumValueDecodingStrategy {
         /// Throws an error when encountering unknown enum values in single-value fields or collections.
         case throwError
-        /// Defaults the unknown enum value to nil for single-value fields. With this option, unknown values in collections are removed
-        /// from the collection in which they originated and added to a collection for the same tag in unknown fields.
+        /// Defaults the unknown enum value to nil for single-value fields.
+        /// With this option, unknown values in collections are removed from the collection in which they originated.
+        /// When decoding a Proto, unknown values are then added to a collection for the same tag in unknown fields.
         case returnNil
     }
 
@@ -57,6 +58,7 @@ public final class ProtoDecoder {
         case unexpectedFieldNumberInMap(_: UInt32)
         case unexpectedFieldNumberInBoxedValue(_: UInt32)
         case unknownEnumCase(type: Any.Type, fieldNumber: UInt32)
+        case unknownEnumString(type: Any.Type, string: String)
         case unterminatedGroup(fieldNumber: UInt32)
 
         var localizedDescription: String {
@@ -97,6 +99,8 @@ public final class ProtoDecoder {
                 return "Map entry includes the field number \(fieldNumber), but only 1 and 2 are allowed."
             case let .unknownEnumCase(type, fieldNumber):
                 return "Unknown case with value \(fieldNumber) found for enum of type \(String(describing: type))."
+            case let .unknownEnumString(type, string):
+                return "Unknown case with string value \(string) found for enum of type \(String(describing: type))."
             case let .unterminatedGroup(fieldNumber):
                 return "The group with field number \(fieldNumber) has no matching end-group key."
             }

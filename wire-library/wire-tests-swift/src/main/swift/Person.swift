@@ -44,7 +44,7 @@ public struct Person {
     /**
      * Represents the type of the phone number: mobile, home or work.
      */
-    public enum PhoneType : UInt32, CaseIterable, Codable {
+    public enum PhoneType : UInt32, CaseIterable, ProtoEnum {
 
         case MOBILE = 0
         case HOME = 1
@@ -52,6 +52,14 @@ public struct Person {
          * Could be phone or fax.
          */
         case WORK = 2
+
+        public var description: String {
+            switch self {
+            case .MOBILE: return "MOBILE"
+            case .HOME: return "HOME"
+            case .WORK: return "WORK"
+            }
+        }
 
     }
 

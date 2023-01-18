@@ -31,7 +31,7 @@ final class JsonLitmusTest : XCTestCase {
     {\
     "email":"luke@skywalker.net",\
     "id":42,\
-    "phone":[{"number":"800-555-1234","type":2}],\
+    "phone":[{"number":"800-555-1234","type":"WORK"}],\
     "name":"Luke Skywalker",\
     "aliases":["Nerfherder"]\
     }

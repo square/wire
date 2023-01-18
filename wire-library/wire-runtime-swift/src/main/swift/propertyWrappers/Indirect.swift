@@ -64,5 +64,7 @@ extension Indirect : Equatable where T : Equatable {
 extension Indirect : Hashable where T : Hashable {
 }
 
+#if swift(>=5.5)
 extension Indirect : Sendable where T : Sendable {
 }
+#endif

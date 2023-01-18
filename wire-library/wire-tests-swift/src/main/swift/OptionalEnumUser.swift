@@ -12,10 +12,17 @@ public struct OptionalEnumUser {
         self.optional_enum = optional_enum
     }
 
-    public enum OptionalEnum : UInt32, CaseIterable, Codable {
+    public enum OptionalEnum : UInt32, CaseIterable, ProtoEnum {
 
         case FOO = 1
         case BAR = 2
+
+        public var description: String {
+            switch self {
+            case .FOO: return "FOO"
+            case .BAR: return "BAR"
+            }
+        }
 
     }
 

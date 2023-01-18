@@ -1416,10 +1416,17 @@ public struct AllTypes {
         }
     }
 
-    public enum NestedEnum : UInt32, CaseIterable, Codable {
+    public enum NestedEnum : UInt32, CaseIterable, ProtoEnum {
 
         case UNKNOWN = 0
         case A = 1
+
+        public var description: String {
+            switch self {
+            case .UNKNOWN: return "UNKNOWN"
+            case .A: return "A"
+            }
+        }
 
     }
 
