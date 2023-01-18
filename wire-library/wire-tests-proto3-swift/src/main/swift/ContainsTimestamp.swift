@@ -61,19 +61,35 @@ extension ContainsTimestamp : Proto3Codable {
 extension ContainsTimestamp : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: ContainsTimestamp.CodingKeys.self)
-        self.timestamp = try container.decodeIfPresent(Timestamp.self, forKey: .timestamp)
+        self.timestamp = try container.decodeIfPresent(Timestamp.self, forKey: "timestamp")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: ContainsTimestamp.CodingKeys.self)
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.timestamp != nil {
-            try container.encode(self.timestamp, forKey: .timestamp)
+            try container.encode(self.timestamp, forKey: "timestamp")
         }
     }
 
-    public enum CodingKeys : String, CodingKey {
+    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
 
-        case timestamp
+        public let stringValue: String
+        public let intValue: Int?
+
+        public init(stringValue: String) {
+            self.stringValue = stringValue
+            self.intValue = nil
+        }
+
+        public init?(intValue: Int) {
+            self.stringValue = intValue.description
+            self.intValue = intValue
+        }
+
+        public init(stringLiteral: String) {
+            self.stringValue = stringLiteral
+            self.intValue = nil
+        }
 
     }
 }

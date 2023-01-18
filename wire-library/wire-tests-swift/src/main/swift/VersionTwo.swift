@@ -112,54 +112,63 @@ extension VersionTwo : Proto2Codable {
 extension VersionTwo : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: VersionTwo.CodingKeys.self)
-        self.i = try container.decodeIfPresent(Int32.self, forKey: .i)
-        self.v2_i = try container.decodeIfPresent(Int32.self, forKey: .v2_i)
-        self.v2_s = try container.decodeIfPresent(String.self, forKey: .v2_s)
-        self.v2_f32 = try container.decodeIfPresent(UInt32.self, forKey: .v2_f32)
-        self.v2_f64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: .v2_f64)?.wrappedValue
-        self.v2_rs = try container.decodeIfPresent([String].self, forKey: .v2_rs) ?? []
-        self.obj = try container.decodeIfPresent(NestedVersionTwo.self, forKey: .obj)
-        self.en = try container.decodeIfPresent(EnumVersionTwo.self, forKey: .en)
+        self.i = try container.decodeIfPresent(Int32.self, forKey: "i")
+        self.v2_i = try container.decodeIfPresent(Int32.self, forKey: "v2_i")
+        self.v2_s = try container.decodeIfPresent(String.self, forKey: "v2_s")
+        self.v2_f32 = try container.decodeIfPresent(UInt32.self, forKey: "v2_f32")
+        self.v2_f64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "v2_f64")?.wrappedValue
+        self.v2_rs = try container.decodeIfPresent([String].self, forKey: "v2_rs") ?? []
+        self.obj = try container.decodeIfPresent(NestedVersionTwo.self, forKey: "obj")
+        self.en = try container.decodeIfPresent(EnumVersionTwo.self, forKey: "en")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: VersionTwo.CodingKeys.self)
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.i != nil {
-            try container.encode(self.i, forKey: .i)
+            try container.encode(self.i, forKey: "i")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.v2_i != nil {
-            try container.encode(self.v2_i, forKey: .v2_i)
+            try container.encode(self.v2_i, forKey: "v2_i")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.v2_s != nil {
-            try container.encode(self.v2_s, forKey: .v2_s)
+            try container.encode(self.v2_s, forKey: "v2_s")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.v2_f32 != nil {
-            try container.encode(self.v2_f32, forKey: .v2_f32)
+            try container.encode(self.v2_f32, forKey: "v2_f32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.v2_f64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.v2_f64), forKey: .v2_f64)
+            try container.encode(StringEncoded(wrappedValue: self.v2_f64), forKey: "v2_f64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.v2_rs.isEmpty {
-            try container.encode(self.v2_rs, forKey: .v2_rs)
+            try container.encode(self.v2_rs, forKey: "v2_rs")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.obj != nil {
-            try container.encode(self.obj, forKey: .obj)
+            try container.encode(self.obj, forKey: "obj")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.en != nil {
-            try container.encode(self.en, forKey: .en)
+            try container.encode(self.en, forKey: "en")
         }
     }
 
-    public enum CodingKeys : String, CodingKey {
+    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
 
-        case i
-        case v2_i
-        case v2_s
-        case v2_f32
-        case v2_f64
-        case v2_rs
-        case obj
-        case en
+        public let stringValue: String
+        public let intValue: Int?
+
+        public init(stringValue: String) {
+            self.stringValue = stringValue
+            self.intValue = nil
+        }
+
+        public init?(intValue: Int) {
+            self.stringValue = intValue.description
+            self.intValue = intValue
+        }
+
+        public init(stringLiteral: String) {
+            self.stringValue = stringLiteral
+            self.intValue = nil
+        }
 
     }
 }

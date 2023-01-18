@@ -120,20 +120,35 @@ extension Duration : Proto3Codable {
 extension Duration : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Duration.CodingKeys.self)
-        self.seconds = try container.decode(StringEncoded<Int64>.self, forKey: .seconds).wrappedValue
-        self.nanos = try container.decode(Int32.self, forKey: .nanos)
+        self.seconds = try container.decode(StringEncoded<Int64>.self, forKey: "seconds").wrappedValue
+        self.nanos = try container.decode(Int32.self, forKey: "nanos")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Duration.CodingKeys.self)
-        try container.encode(StringEncoded(wrappedValue: self.seconds), forKey: .seconds)
-        try container.encode(self.nanos, forKey: .nanos)
+        try container.encode(StringEncoded(wrappedValue: self.seconds), forKey: "seconds")
+        try container.encode(self.nanos, forKey: "nanos")
     }
 
-    public enum CodingKeys : String, CodingKey {
+    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
 
-        case seconds
-        case nanos
+        public let stringValue: String
+        public let intValue: Int?
+
+        public init(stringValue: String) {
+            self.stringValue = stringValue
+            self.intValue = nil
+        }
+
+        public init?(intValue: Int) {
+            self.stringValue = intValue.description
+            self.intValue = intValue
+        }
+
+        public init(stringLiteral: String) {
+            self.stringValue = stringLiteral
+            self.intValue = nil
+        }
 
     }
 }

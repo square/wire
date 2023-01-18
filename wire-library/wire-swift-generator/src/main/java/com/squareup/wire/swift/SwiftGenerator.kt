@@ -27,6 +27,7 @@ import io.outfoxx.swiftpoet.FLOAT
 import io.outfoxx.swiftpoet.FileMemberSpec
 import io.outfoxx.swiftpoet.FileSpec
 import io.outfoxx.swiftpoet.FunctionSpec
+import io.outfoxx.swiftpoet.INT
 import io.outfoxx.swiftpoet.INT32
 import io.outfoxx.swiftpoet.INT64
 import io.outfoxx.swiftpoet.Modifier.FILEPRIVATE
@@ -78,8 +79,9 @@ class SwiftGenerator private constructor(
 
   private val codable = DeclaredTypeName.typeName("Swift.Codable")
   private val codingKey = DeclaredTypeName.typeName("Swift.CodingKey")
-  private val encoder = DeclaredTypeName.typeName("Swift.Encoder")
   private val decoder = DeclaredTypeName.typeName("Swift.Decoder")
+  private val encoder = DeclaredTypeName.typeName("Swift.Encoder")
+  private val expressibleByStringLiteral = DeclaredTypeName.typeName("Swift.ExpressibleByStringLiteral")
 
   private val deprecated = AttributeSpec.builder("available").addArguments("*", "deprecated").build()
 
@@ -585,24 +587,62 @@ class SwiftGenerator private constructor(
       .addSuperType(codable)
       .apply {
         val codingKeys = structType.nestedType("CodingKeys")
-        // Define the keys which are the set of all direct properties and the properties within
-        // each oneof.
+
         addType(
-          TypeSpec.enumBuilder(codingKeys)
-            .addModifiers(PUBLIC)
-            .apply {
-              // Coding keys still need to be specified on empty messages in order to prevent `unknownFields` from
-              // getting serialized via JSON/Codable. In this case, the keys cannot conform to `RawRepresentable`
-              // in order to compile.
-              if (type.fieldsAndOneOfFields.isNotEmpty()) {
-                addSuperType(STRING)
-              }
-              addSuperType(codingKey)
-              type.fieldsAndOneOfFields.forEach { field ->
-                addEnumCase(field.name)
-              }
+          if (type.fieldsAndOneOfFields.isNotEmpty()) {
+            TypeSpec.structBuilder(codingKeys)
+              .addModifiers(PUBLIC)
+              .addSuperType(codingKey)
+              .addSuperType(expressibleByStringLiteral)
+              .apply {
+                addProperty(
+                  PropertySpec.builder("stringValue", STRING, PUBLIC)
+                    .build()
+                )
+                addProperty(
+                  PropertySpec.builder("intValue", INT.makeOptional(), PUBLIC)
+                    .build()
+                )
+
+                addFunction(
+                  FunctionSpec.constructorBuilder()
+                    .addModifiers(PUBLIC)
+                    .addParameter("stringValue", STRING)
+                    .addStatement("self.stringValue = stringValue")
+                    .addStatement("self.intValue = nil")
+                    .build()
+                )
+
+                addFunction(
+                  FunctionSpec.constructorBuilder()
+                    .addModifiers(PUBLIC)
+                    .addParameter("intValue", INT)
+                    .addStatement("self.stringValue = intValue.description")
+                    .addStatement("self.intValue = intValue")
+                    .failable(true)
+                    .build()
+                )
+
+                addFunction(
+                  FunctionSpec.constructorBuilder()
+                    .addModifiers(PUBLIC)
+                    .addParameter("stringLiteral", STRING)
+                    .addStatement("self.stringValue = stringLiteral")
+                    .addStatement("self.intValue = nil")
+                    .build()
+                )
             }
             .build()
+          } else {
+            // Coding keys still need to be specified on empty messages in order to prevent `unknownFields` from
+            // getting serialized via JSON/Codable. In this case, the keys cannot conform to `RawRepresentable`
+            // in order to compile.
+
+            TypeSpec.enumBuilder(codingKeys)
+              .addModifiers(PUBLIC)
+              .addSuperType(codingKey)
+              .build()
+          }
         )
 
         // We cannot rely upon built-in Codable support since the we need to support multiple keys.
@@ -657,13 +697,13 @@ class SwiftGenerator private constructor(
                     }
 
                     addStatement(
-                      "self.%1N = try container.decodeIfPresent(%2T.self, forKey: .%1N)$suffix$fallback",
+                      "self.%1N = try container.decodeIfPresent(%2T.self, forKey: %1S)$suffix$fallback",
                       field.name,
                       typeName
                     )
                   } else {
                     addStatement(
-                      "self.%1N = try container.decode(%2T.self, forKey: .%1N)$suffix",
+                      "self.%1N = try container.decode(%2T.self, forKey: %1S)$suffix",
                       field.name,
                       typeName
                     )
@@ -673,14 +713,20 @@ class SwiftGenerator private constructor(
                 type.oneOfs.forEach { oneOf ->
                   oneOf.fields.forEachIndexed { index, field ->
                     if (index == 0) {
-                      beginControlFlow("if", "container.contains(.%N)", field.name)
+                      beginControlFlow(
+                        "if",
+                        "let %1N = try container.decodeIfPresent(%2T.self, forKey: %1S)",
+                        field.name,
+                        field.typeName.makeNonOptional()
+                      )
                     } else {
-                      nextControlFlow("else if", "container.contains(.%N)", field.name)
+                      nextControlFlow(
+                        "else if",
+                        "let %1N = try container.decodeIfPresent(%2T.self, forKey: %1S)",
+                        field.name,
+                        field.typeName.makeNonOptional()
+                      )
                     }
-                    addStatement(
-                      "let %1N = try container.decode(%2T.self, forKey: .%1N)", field.name,
-                      field.typeName.makeNonOptional()
-                    )
                     addStatement("self.%1N = .%2N(%2N)", oneOf.name, field.name)
                   }
                   nextControlFlow("else", "")
@@ -716,9 +762,9 @@ class SwiftGenerator private constructor(
                     }
 
                     if (wrapper != null) {
-                      addStatement("try container.encode(%2T(wrappedValue: self.%1N), forKey: .%1N)", field.name, wrapper)
+                      addStatement("try container.encode(%2T(wrappedValue: self.%1N), forKey: %1S)", field.name, wrapper)
                     } else {
-                      addStatement("try container.encode(self.%1N, forKey: .%1N)", field.name)
+                      addStatement("try container.encode(self.%1N, forKey: %1S)", field.name)
                     }
                   }
 
@@ -739,7 +785,7 @@ class SwiftGenerator private constructor(
                   beginControlFlow("switch", "self.%N", oneOf.name)
                   oneOf.fields.forEach { field ->
                     addStatement(
-                      "case .%1N(let %1N): try container.encode(%1N, forKey: .%1N)", field.name
+                      "case .%1N(let %1N): try container.encode(%1N, forKey: %1S)", field.name
                     )
                   }
                   addStatement("case %T.none: break", OPTIONAL)

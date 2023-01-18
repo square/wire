@@ -80,19 +80,35 @@ extension OptionalEnumUser : Proto2Codable {
 extension OptionalEnumUser : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: OptionalEnumUser.CodingKeys.self)
-        self.optional_enum = try container.decodeIfPresent(OptionalEnumUser.OptionalEnum.self, forKey: .optional_enum)
+        self.optional_enum = try container.decodeIfPresent(OptionalEnumUser.OptionalEnum.self, forKey: "optional_enum")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: OptionalEnumUser.CodingKeys.self)
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.optional_enum != nil {
-            try container.encode(self.optional_enum, forKey: .optional_enum)
+            try container.encode(self.optional_enum, forKey: "optional_enum")
         }
     }
 
-    public enum CodingKeys : String, CodingKey {
+    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
 
-        case optional_enum
+        public let stringValue: String
+        public let intValue: Int?
+
+        public init(stringValue: String) {
+            self.stringValue = stringValue
+            self.intValue = nil
+        }
+
+        public init?(intValue: Int) {
+            self.stringValue = intValue.description
+            self.intValue = intValue
+        }
+
+        public init(stringLiteral: String) {
+            self.stringValue = stringLiteral
+            self.intValue = nil
+        }
 
     }
 }

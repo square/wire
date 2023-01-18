@@ -61,19 +61,35 @@ extension Thing : Proto2Codable {
 extension Thing : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Thing.CodingKeys.self)
-        self.name = try container.decodeIfPresent(String.self, forKey: .name)
+        self.name = try container.decodeIfPresent(String.self, forKey: "name")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Thing.CodingKeys.self)
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.name != nil {
-            try container.encode(self.name, forKey: .name)
+            try container.encode(self.name, forKey: "name")
         }
     }
 
-    public enum CodingKeys : String, CodingKey {
+    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
 
-        case name
+        public let stringValue: String
+        public let intValue: Int?
+
+        public init(stringValue: String) {
+            self.stringValue = stringValue
+            self.intValue = nil
+        }
+
+        public init?(intValue: Int) {
+            self.stringValue = intValue.description
+            self.intValue = intValue
+        }
+
+        public init(stringLiteral: String) {
+            self.stringValue = stringLiteral
+            self.intValue = nil
+        }
 
     }
 }

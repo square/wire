@@ -128,19 +128,35 @@ extension FooBar.Nested : Proto2Codable {
 extension FooBar.Nested : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: FooBar.Nested.CodingKeys.self)
-        self.value = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: .value)
+        self.value = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "value")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: FooBar.Nested.CodingKeys.self)
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.value != nil {
-            try container.encode(self.value, forKey: .value)
+            try container.encode(self.value, forKey: "value")
         }
     }
 
-    public enum CodingKeys : String, CodingKey {
+    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
 
-        case value
+        public let stringValue: String
+        public let intValue: Int?
+
+        public init(stringValue: String) {
+            self.stringValue = stringValue
+            self.intValue = nil
+        }
+
+        public init?(intValue: Int) {
+            self.stringValue = intValue.description
+            self.intValue = intValue
+        }
+
+        public init(stringLiteral: String) {
+            self.stringValue = stringLiteral
+            self.intValue = nil
+        }
 
     }
 }
@@ -193,19 +209,35 @@ extension FooBar.More : Proto2Codable {
 extension FooBar.More : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: FooBar.More.CodingKeys.self)
-        self.serial = try container.decodeIfPresent([Int32].self, forKey: .serial) ?? []
+        self.serial = try container.decodeIfPresent([Int32].self, forKey: "serial") ?? []
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: FooBar.More.CodingKeys.self)
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.serial.isEmpty {
-            try container.encode(self.serial, forKey: .serial)
+            try container.encode(self.serial, forKey: "serial")
         }
     }
 
-    public enum CodingKeys : String, CodingKey {
+    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
 
-        case serial
+        public let stringValue: String
+        public let intValue: Int?
+
+        public init(stringValue: String) {
+            self.stringValue = stringValue
+            self.intValue = nil
+        }
+
+        public init?(intValue: Int) {
+            self.stringValue = intValue.description
+            self.intValue = intValue
+        }
+
+        public init(stringLiteral: String) {
+            self.stringValue = stringLiteral
+            self.intValue = nil
+        }
 
     }
 }
@@ -299,64 +331,71 @@ extension FooBar : Proto2Codable {
 extension FooBar : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: FooBar.CodingKeys.self)
-        self.foo = try container.decodeIfPresent(Int32.self, forKey: .foo)
-        self.bar = try container.decodeIfPresent(String.self, forKey: .bar)
-        self.baz = try container.decodeIfPresent(FooBar.Nested.self, forKey: .baz)
-        self.qux = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: .qux)?.wrappedValue
-        self.fred = try container.decodeIfPresent([Float].self, forKey: .fred) ?? []
-        self.daisy = try container.decodeIfPresent(Double.self, forKey: .daisy)
-        self.nested = try container.decodeIfPresent([FooBar].self, forKey: .nested) ?? []
-        self.ext = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: .ext)
-        self.rep = try container.decodeIfPresent([FooBar.FooBarBazEnum].self, forKey: .rep) ?? []
-        self.more_string = try container.decodeIfPresent(String.self, forKey: .more_string)
+        self.foo = try container.decodeIfPresent(Int32.self, forKey: "foo")
+        self.bar = try container.decodeIfPresent(String.self, forKey: "bar")
+        self.baz = try container.decodeIfPresent(FooBar.Nested.self, forKey: "baz")
+        self.qux = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "qux")?.wrappedValue
+        self.fred = try container.decodeIfPresent([Float].self, forKey: "fred") ?? []
+        self.daisy = try container.decodeIfPresent(Double.self, forKey: "daisy")
+        self.nested = try container.decodeIfPresent([FooBar].self, forKey: "nested") ?? []
+        self.ext = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "ext")
+        self.rep = try container.decodeIfPresent([FooBar.FooBarBazEnum].self, forKey: "rep") ?? []
+        self.more_string = try container.decodeIfPresent(String.self, forKey: "more_string")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: FooBar.CodingKeys.self)
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.foo != nil {
-            try container.encode(self.foo, forKey: .foo)
+            try container.encode(self.foo, forKey: "foo")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.bar != nil {
-            try container.encode(self.bar, forKey: .bar)
+            try container.encode(self.bar, forKey: "bar")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.baz != nil {
-            try container.encode(self.baz, forKey: .baz)
+            try container.encode(self.baz, forKey: "baz")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.qux != nil {
-            try container.encode(StringEncoded(wrappedValue: self.qux), forKey: .qux)
+            try container.encode(StringEncoded(wrappedValue: self.qux), forKey: "qux")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.fred.isEmpty {
-            try container.encode(self.fred, forKey: .fred)
+            try container.encode(self.fred, forKey: "fred")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.daisy != nil {
-            try container.encode(self.daisy, forKey: .daisy)
+            try container.encode(self.daisy, forKey: "daisy")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.nested.isEmpty {
-            try container.encode(self.nested, forKey: .nested)
+            try container.encode(self.nested, forKey: "nested")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext != nil {
-            try container.encode(self.ext, forKey: .ext)
+            try container.encode(self.ext, forKey: "ext")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep.isEmpty {
-            try container.encode(self.rep, forKey: .rep)
+            try container.encode(self.rep, forKey: "rep")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.more_string != nil {
-            try container.encode(self.more_string, forKey: .more_string)
+            try container.encode(self.more_string, forKey: "more_string")
         }
     }
 
-    public enum CodingKeys : String, CodingKey {
+    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
 
-        case foo
-        case bar
-        case baz
-        case qux
-        case fred
-        case daisy
-        case nested
-        case ext
-        case rep
-        case more_string
+        public let stringValue: String
+        public let intValue: Int?
+
+        public init(stringValue: String) {
+            self.stringValue = stringValue
+            self.intValue = nil
+        }
+
+        public init?(intValue: Int) {
+            self.stringValue = intValue.description
+            self.intValue = intValue
+        }
+
+        public init(stringLiteral: String) {
+            self.stringValue = stringLiteral
+            self.intValue = nil
+        }
 
     }
 }

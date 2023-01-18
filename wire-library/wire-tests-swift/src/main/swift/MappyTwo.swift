@@ -105,34 +105,47 @@ extension MappyTwo : Proto2Codable {
 extension MappyTwo : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: MappyTwo.CodingKeys.self)
-        self.string_enums = try container.decodeIfPresent(ProtoMapEnumValues<String, MappyTwo.ValueEnum>.self, forKey: .string_enums)?.wrappedValue ?? [:]
-        self.int_things = try container.decodeIfPresent(ProtoMap<Int64, Thing>.self, forKey: .int_things)?.wrappedValue ?? [:]
-        self.string_ints = try container.decodeIfPresent(ProtoMapStringEncodedValues<String, Int64>.self, forKey: .string_ints)?.wrappedValue ?? [:]
-        self.int_things_two = try container.decodeIfPresent(ProtoMap<Int32, Thing>.self, forKey: .int_things_two)?.wrappedValue ?? [:]
+        self.string_enums = try container.decodeIfPresent(ProtoMapEnumValues<String, MappyTwo.ValueEnum>.self, forKey: "string_enums")?.wrappedValue ?? [:]
+        self.int_things = try container.decodeIfPresent(ProtoMap<Int64, Thing>.self, forKey: "int_things")?.wrappedValue ?? [:]
+        self.string_ints = try container.decodeIfPresent(ProtoMapStringEncodedValues<String, Int64>.self, forKey: "string_ints")?.wrappedValue ?? [:]
+        self.int_things_two = try container.decodeIfPresent(ProtoMap<Int32, Thing>.self, forKey: "int_things_two")?.wrappedValue ?? [:]
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: MappyTwo.CodingKeys.self)
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.string_enums.isEmpty {
-            try container.encode(ProtoMapEnumValues(wrappedValue: self.string_enums), forKey: .string_enums)
+            try container.encode(ProtoMapEnumValues(wrappedValue: self.string_enums), forKey: "string_enums")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.int_things.isEmpty {
-            try container.encode(ProtoMap(wrappedValue: self.int_things), forKey: .int_things)
+            try container.encode(ProtoMap(wrappedValue: self.int_things), forKey: "int_things")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.string_ints.isEmpty {
-            try container.encode(ProtoMapStringEncodedValues(wrappedValue: self.string_ints), forKey: .string_ints)
+            try container.encode(ProtoMapStringEncodedValues(wrappedValue: self.string_ints), forKey: "string_ints")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.int_things_two.isEmpty {
-            try container.encode(ProtoMap(wrappedValue: self.int_things_two), forKey: .int_things_two)
+            try container.encode(ProtoMap(wrappedValue: self.int_things_two), forKey: "int_things_two")
         }
     }
 
-    public enum CodingKeys : String, CodingKey {
+    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
 
-        case string_enums
-        case int_things
-        case string_ints
-        case int_things_two
+        public let stringValue: String
+        public let intValue: Int?
+
+        public init(stringValue: String) {
+            self.stringValue = stringValue
+            self.intValue = nil
+        }
+
+        public init?(intValue: Int) {
+            self.stringValue = intValue.description
+            self.intValue = intValue
+        }
+
+        public init(stringLiteral: String) {
+            self.stringValue = stringLiteral
+            self.intValue = nil
+        }
 
     }
 }
