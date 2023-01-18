@@ -18,6 +18,18 @@ pod gen ./Wire.podspec
 open gen/Wire/Wire.xcworkspace
 ```
 
+You can also just `open Package.swift`.
+
+### Codegen
+
+To generate all swift protos, there are three different invocations:
+
+```
+./gradlew -p wire-library :wire-runtime-swift:generateTestProtos
+./gradlew -p wire-library generateSwiftProto
+./gradlew generateSwiftTests
+```
+
 ### Running Tests On the Command Line
 
 To build the runtime and run the [Swift tests](./src/test) from the command line using Gradle,
