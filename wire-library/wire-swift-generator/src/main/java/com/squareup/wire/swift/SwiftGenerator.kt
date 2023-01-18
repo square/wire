@@ -60,14 +60,22 @@ class SwiftGenerator private constructor(
   private val protoReader = DeclaredTypeName.typeName("Wire.ProtoReader")
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
   private val protoEnum = DeclaredTypeName.typeName("Wire.ProtoEnum")
+
   private val heap = DeclaredTypeName.typeName("Wire.Heap")
   private val indirect = DeclaredTypeName.typeName("Wire.Indirect")
+  private val protoMap = DeclaredTypeName.typeName("Wire.ProtoMap")
+  private val protoMapEnumValues = DeclaredTypeName.typeName("Wire.ProtoMapEnumValues")
+  private val protoMapStringEncodedValues = DeclaredTypeName.typeName("Wire.ProtoMapStringEncodedValues")
   private val redactable = DeclaredTypeName.typeName("Wire.Redactable")
   private val redactedKey = DeclaredTypeName.typeName("Wire.RedactedKey")
+  private val stringEncoded = DeclaredTypeName.typeName("Wire.StringEncoded")
+  private val stringEncodedValues = DeclaredTypeName.typeName("Wire.StringEncodedValues")
+
   private val equatable = DeclaredTypeName.typeName("Swift.Equatable")
   private val hashable = DeclaredTypeName.typeName("Swift.Hashable")
   private val sendable = DeclaredTypeName.typeName("Swift.Sendable")
   private val uncheckedSendable = TypeVariableName.typeVariable("@unchecked Sendable")
+
   private val codable = DeclaredTypeName.typeName("Swift.Codable")
   private val codingKey = DeclaredTypeName.typeName("Swift.CodingKey")
   private val encoder = DeclaredTypeName.typeName("Swift.Encoder")
@@ -501,11 +509,7 @@ class SwiftGenerator private constructor(
             } else {
               CodeBlock.of("try %1T.checkIfMissing(%2N, %2S)", structType, field.name)
             }
-            if (isIndirect(type, field)) {
-              addStatement("_%N = %T(value: %L)", field.name, indirect, initializer)
-            } else {
-              addStatement("self.%N = %L", field.name, initializer)
-            }
+            addStatement("self.%N = %L", field.name, initializer)
           }
           type.oneOfs.forEach { oneOf ->
             addStatement("self.%1N = %1N", oneOf.name)
@@ -601,9 +605,8 @@ class SwiftGenerator private constructor(
             .build()
         )
 
-        // If there are any oneofs we cannot rely on the built-in Codable support since the
-        // keys of the nested associated enum are flattened into the enclosing parent.
-        if (type.oneOfs.isNotEmpty()) {
+        // We cannot rely upon built-in Codable support since the we need to support multiple keys.
+        if (type.fieldsAndOneOfFields.isNotEmpty()) {
           addFunction(
             FunctionSpec.constructorBuilder()
               .addParameter("from", "decoder", decoder)
@@ -612,11 +615,61 @@ class SwiftGenerator private constructor(
               .addStatement("let container = try decoder.container(keyedBy: %T.self)", codingKeys)
               .apply {
                 type.fields.forEach { field ->
-                  addStatement(
-                    "self.%1N = try container.decode(%2T.self, forKey: .%1N)", field.name,
-                    field.typeName
-                  )
+                  var typeName: TypeName = field.typeName.makeNonOptional()
+
+                  if (field.typeName.needsStringEncoded()) {
+                    typeName = stringEncoded.parameterizedBy(typeName)
+                  } else if (field.typeName.needsStringEncodedValues()) {
+                    typeName = stringEncodedValues.parameterizedBy(typeName)
+                  } else if (field.isMap && typeName is ParameterizedTypeName) {
+                    if (field.valueType.isEnum) {
+                      typeName = protoMapEnumValues.parameterizedBy(
+                        *typeName.typeArguments.toTypedArray()
+                      )
+                    } else if (field.valueType.isStringEncoded) {
+                      typeName = protoMapStringEncodedValues.parameterizedBy(
+                        *typeName.typeArguments.toTypedArray()
+                      )
+                    } else {
+                      typeName = protoMap.parameterizedBy(
+                        *typeName.typeArguments.toTypedArray()
+                      )
+                    }
+                  }
+
+                  val suffix = if (typeName != field.typeName.makeNonOptional()) {
+                    if (field.isRepeated || field.isMap || field.typeName.optional) {
+                      "?.wrappedValue"
+                    } else {
+                      ".wrappedValue"
+                    }
+                  } else {
+                    ""
+                  }
+
+                  if (field.isRepeated || field.isMap || field.typeName.optional) {
+                    val fallback = if (field.isRepeated) {
+                      " ?? []"
+                    } else if (field.isMap) {
+                      " ?? [:]"
+                    } else {
+                      ""
+                    }
+
+                    addStatement(
+                      "self.%1N = try container.decodeIfPresent(%2T.self, forKey: .%1N)$suffix$fallback",
+                      field.name,
+                      typeName
+                    )
+                  } else {
+                    addStatement(
+                      "self.%1N = try container.decode(%2T.self, forKey: .%1N)$suffix",
+                      field.name,
+                      typeName
+                    )
+                  }
                 }
+
                 type.oneOfs.forEach { oneOf ->
                   oneOf.fields.forEachIndexed { index, field ->
                     if (index == 0) {
@@ -645,8 +698,43 @@ class SwiftGenerator private constructor(
               .addStatement("var container = encoder.container(keyedBy: %T.self)", codingKeys)
               .apply {
                 type.fields.forEach { field ->
-                  addStatement("try container.encode(self.%1N, forKey: .%1N)", field.name)
+                  fun addEncode() {
+                    val wrapper = if (field.typeName.needsStringEncoded()) {
+                      stringEncoded
+                    } else if (field.typeName.needsStringEncodedValues()) {
+                      stringEncodedValues
+                    } else if (field.isMap) {
+                      if (field.valueType.isEnum) {
+                        protoMapEnumValues
+                      } else if (field.valueType.isStringEncoded) {
+                        protoMapStringEncodedValues
+                      } else {
+                        protoMap
+                      }
+                    } else {
+                      null
+                    }
+
+                    if (wrapper != null) {
+                      addStatement("try container.encode(%2T(wrappedValue: self.%1N), forKey: .%1N)", field.name, wrapper)
+                    } else {
+                      addStatement("try container.encode(self.%1N, forKey: .%1N)", field.name)
+                    }
+                  }
+
+                  if (field.typeName.optional) {
+                    beginControlFlow("if", "encoder.protoDefaultValuesEncodingStrategy == .emit || self.%N != nil", field.name)
+                    addEncode()
+                    endControlFlow("if")
+                  } else if (field.isRepeated || field.isMap) {
+                    beginControlFlow("if", "encoder.protoDefaultValuesEncodingStrategy == .emit || !self.%N.isEmpty", field.name)
+                    addEncode()
+                    endControlFlow("if")
+                  } else {
+                    addEncode()
+                  }
                 }
+
                 type.oneOfs.forEach { oneOf ->
                   beginControlFlow("switch", "self.%N", oneOf.name)
                   oneOf.fields.forEach { field ->
@@ -711,11 +799,7 @@ class SwiftGenerator private constructor(
         .addParameters(type, oneOfEnumNames, includeDefaults)
         .apply {
           type.fields.forEach { field ->
-            if (isIndirect(type, field)) {
-              addStatement("_%1N = %2T(value: %1N)", field.name, indirect)
-            } else {
-              addStatement("self.%1N = %1N", field.name)
-            }
+            addStatement("self.%1N = %1N", field.name)
           }
           type.oneOfs.forEach { oneOf ->
             addStatement("self.%1N = %1N", oneOf.name)
@@ -738,25 +822,6 @@ class SwiftGenerator private constructor(
       if (!forStorageType && field.isDeprecated) {
         property.addAttribute(deprecated)
       }
-
-      if (field.needsDefaultEmpty()) {
-        property.addAttribute("DefaultEmpty")
-      }
-      if (field.typeName.needsStringEncoded()) {
-        property.addAttribute("StringEncoded")
-      } else if (field.typeName.needsStringEncodedValues()) {
-        property.addAttribute("StringEncodedValues")
-      }
-      if (field.isMap) {
-        if (field.valueType.isEnum) {
-          property.addAttribute("ProtoMapEnumValues")
-        } else if (field.valueType.isStringEncoded) {
-          property.addAttribute("ProtoMapStringEncodedValues")
-        } else {
-          property.addAttribute("ProtoMap")
-        }
-      }
-
       if (isIndirect(type, field)) {
         property.addAttribute(AttributeSpec.builder(indirect).build())
       }
@@ -959,10 +1024,6 @@ class SwiftGenerator private constructor(
       ProtoType.FIXED32, ProtoType.FIXED64 -> "fixed"
       else -> null
     }
-
-  private fun Field.needsDefaultEmpty(): Boolean {
-    return isRepeated || isMap
-  }
 
   private fun TypeName.needsStringEncoded(): Boolean {
     val self = makeNonOptional()

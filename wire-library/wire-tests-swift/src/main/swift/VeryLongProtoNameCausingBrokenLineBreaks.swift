@@ -62,6 +62,18 @@ extension VeryLongProtoNameCausingBrokenLineBreaks : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension VeryLongProtoNameCausingBrokenLineBreaks : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: VeryLongProtoNameCausingBrokenLineBreaks.CodingKeys.self)
+        self.foo = try container.decodeIfPresent(String.self, forKey: .foo)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: VeryLongProtoNameCausingBrokenLineBreaks.CodingKeys.self)
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.foo != nil {
+            try container.encode(self.foo, forKey: .foo)
+        }
+    }
+
     public enum CodingKeys : String, CodingKey {
 
         case foo

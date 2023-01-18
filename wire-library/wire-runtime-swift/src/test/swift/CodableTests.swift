@@ -215,3 +215,6 @@ private extension String {
     }
 
 }
+
+#warning("Add tests for null / empty encoding / decoding")
+#warning("Add tests for key names")

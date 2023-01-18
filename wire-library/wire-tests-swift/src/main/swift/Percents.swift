@@ -62,6 +62,18 @@ extension Percents : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Percents : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: Percents.CodingKeys.self)
+        self.text = try container.decodeIfPresent(String.self, forKey: .text)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: Percents.CodingKeys.self)
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.text != nil {
+            try container.encode(self.text, forKey: .text)
+        }
+    }
+
     public enum CodingKeys : String, CodingKey {
 
         case text

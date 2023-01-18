@@ -75,6 +75,26 @@ extension VersionOne : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension VersionOne : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: VersionOne.CodingKeys.self)
+        self.i = try container.decodeIfPresent(Int32.self, forKey: .i)
+        self.obj = try container.decodeIfPresent(NestedVersionOne.self, forKey: .obj)
+        self.en = try container.decodeIfPresent(EnumVersionOne.self, forKey: .en)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: VersionOne.CodingKeys.self)
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.i != nil {
+            try container.encode(self.i, forKey: .i)
+        }
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.obj != nil {
+            try container.encode(self.obj, forKey: .obj)
+        }
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.en != nil {
+            try container.encode(self.en, forKey: .en)
+        }
+    }
+
     public enum CodingKeys : String, CodingKey {
 
         case i

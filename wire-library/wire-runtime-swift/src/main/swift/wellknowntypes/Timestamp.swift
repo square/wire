@@ -64,7 +64,6 @@ public struct Timestamp {
      * 1970-01-01T00:00:00Z. Must be from from 0001-01-01T00:00:00Z to
      * 9999-12-31T23:59:59Z inclusive.
      */
-    @StringEncoded
     public var seconds: Int64
     /**
      * Non-negative fractions of a second at nanosecond resolution. Negative
@@ -131,6 +130,18 @@ extension Timestamp : Proto3Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Timestamp : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: Timestamp.CodingKeys.self)
+        self.seconds = try container.decode(StringEncoded<Int64>.self, forKey: .seconds).wrappedValue
+        self.nanos = try container.decode(Int32.self, forKey: .nanos)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: Timestamp.CodingKeys.self)
+        try container.encode(StringEncoded(wrappedValue: self.seconds), forKey: .seconds)
+        try container.encode(self.nanos, forKey: .nanos)
+    }
+
     public enum CodingKeys : String, CodingKey {
 
         case seconds

@@ -5,7 +5,6 @@ import Wire
 
 public struct EmbeddedMessage {
 
-    @DefaultEmpty
     public var inner_repeated_number: [Int32]
     public var inner_number_after: Int32?
     public var unknownFields: Data = .init()
@@ -66,6 +65,22 @@ extension EmbeddedMessage : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension EmbeddedMessage : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: EmbeddedMessage.CodingKeys.self)
+        self.inner_repeated_number = try container.decodeIfPresent([Int32].self, forKey: .inner_repeated_number) ?? []
+        self.inner_number_after = try container.decodeIfPresent(Int32.self, forKey: .inner_number_after)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: EmbeddedMessage.CodingKeys.self)
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.inner_repeated_number.isEmpty {
+            try container.encode(self.inner_repeated_number, forKey: .inner_repeated_number)
+        }
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.inner_number_after != nil {
+            try container.encode(self.inner_number_after, forKey: .inner_number_after)
+        }
+    }
+
     public enum CodingKeys : String, CodingKey {
 
         case inner_repeated_number

@@ -59,6 +59,18 @@ extension ContainsDuration : Proto3Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension ContainsDuration : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: ContainsDuration.CodingKeys.self)
+        self.duration = try container.decodeIfPresent(Duration.self, forKey: .duration)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: ContainsDuration.CodingKeys.self)
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.duration != nil {
+            try container.encode(self.duration, forKey: .duration)
+        }
+    }
+
     public enum CodingKeys : String, CodingKey {
 
         case duration

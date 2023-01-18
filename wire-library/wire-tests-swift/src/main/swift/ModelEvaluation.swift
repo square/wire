@@ -22,8 +22,6 @@ public struct ModelEvaluation {
 
     public var name: String?
     public var score: Double?
-    @DefaultEmpty
-    @ProtoMap
     public var models: [String : ModelEvaluation]
     public var unknownFields: Data = .init()
 
@@ -92,6 +90,26 @@ extension ModelEvaluation : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension ModelEvaluation : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: ModelEvaluation.CodingKeys.self)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name)
+        self.score = try container.decodeIfPresent(Double.self, forKey: .score)
+        self.models = try container.decodeIfPresent(ProtoMap<String, ModelEvaluation>.self, forKey: .models)?.wrappedValue ?? [:]
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: ModelEvaluation.CodingKeys.self)
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.name != nil {
+            try container.encode(self.name, forKey: .name)
+        }
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.score != nil {
+            try container.encode(self.score, forKey: .score)
+        }
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.models.isEmpty {
+            try container.encode(ProtoMap(wrappedValue: self.models), forKey: .models)
+        }
+    }
+
     public enum CodingKeys : String, CodingKey {
 
         case name

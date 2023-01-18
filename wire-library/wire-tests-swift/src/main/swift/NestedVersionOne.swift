@@ -59,6 +59,18 @@ extension NestedVersionOne : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension NestedVersionOne : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: NestedVersionOne.CodingKeys.self)
+        self.i = try container.decodeIfPresent(Int32.self, forKey: .i)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: NestedVersionOne.CodingKeys.self)
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.i != nil {
+            try container.encode(self.i, forKey: .i)
+        }
+    }
+
     public enum CodingKeys : String, CodingKey {
 
         case i

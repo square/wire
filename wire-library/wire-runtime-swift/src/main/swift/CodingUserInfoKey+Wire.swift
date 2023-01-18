@@ -60,6 +60,25 @@ extension JSONEncoder {
         /// Encodes the raw Encodable value, like `"myValue": 1`
         case raw
     }
+
+    /// The encoding strategy to use for key names
+    /// Defaults to .camelCase
+    public enum KeyNameEncodingStrategy {
+        // Convert key names to `camelCase`
+        case camelCase
+        // Maintain the original field names, typically `snake_case`
+        case fieldName
+    }
+
+    /// The encoding strategy to use for optional values and collections
+    /// Defaults to .skip
+    public enum DefaultValuesEncodingStrategy {
+        // Skip "default" values
+        case skip
+        // Emit values
+        case emit
+    }
+
 }
 
 public extension CodingUserInfoKey {
@@ -83,9 +102,17 @@ public extension CodingUserInfoKey {
     /// Control the decoding of StringEncoded values that are themselves Decodable
     /// - SeeAlso: JSONDecoder.StringEncodedDecodingStrategy
     static let wireStringEncodedDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.StringEncodedDecodingStrategy")!
+
+    /// Control the encoding of proto key names
+    /// - SeeAlso: JSONEncoder.KeyNameEncodingStrategy
+    static let wireKeyNameEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.KeyNameEncodingStrategy")!
+
+    /// Control the encoding of "default" values
+    /// - SeeAlso: JSONEncoder.DefaultValuesEncodingStrategy
+    static let wireDefaultValuesEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.DefaultValuesEncodingStrategy")!
 }
 
-extension Encoder {
+public extension Encoder {
     var protoEnumEncodingStrategy: JSONEncoder.EnumEncodingStrategy {
         let preferred = userInfo[.wireEnumEncodingStrategy] as? JSONEncoder.EnumEncodingStrategy
         return preferred ?? .string
@@ -95,9 +122,19 @@ extension Encoder {
         let preferred = userInfo[.wireStringEncodedEncodingStrategy] as? JSONEncoder.StringEncodedEncodingStrategy
         return preferred ?? .string
     }
+
+    var protoKeyNameEncodingStrategy: JSONEncoder.KeyNameEncodingStrategy {
+        let preferred = userInfo[.wireKeyNameEncodingStrategy] as? JSONEncoder.KeyNameEncodingStrategy
+        return preferred ?? .camelCase
+    }
+
+    var protoDefaultValuesEncodingStrategy: JSONEncoder.DefaultValuesEncodingStrategy {
+        let preferred = userInfo[.wireDefaultValuesEncodingStrategy] as? JSONEncoder.DefaultValuesEncodingStrategy
+        return preferred ?? .skip
+    }
 }
 
-extension Decoder {
+public extension Decoder {
     var protoEnumDecodingStrategy: JSONDecoder.EnumDecodingStrategy {
         let preferred = userInfo[.wireEnumDecodingStrategy] as? JSONDecoder.EnumDecodingStrategy
         return preferred ?? .throwError
@@ -129,6 +166,26 @@ extension JSONEncoder {
         }
         set {
             userInfo[.wireStringEncodedEncodingStrategy] = newValue
+        }
+    }
+
+    var protoKeyNameEncodingStrategy: JSONEncoder.KeyNameEncodingStrategy {
+        get {
+            let preferred = userInfo[.wireKeyNameEncodingStrategy] as? JSONEncoder.KeyNameEncodingStrategy
+            return preferred ?? .camelCase
+        }
+        set {
+            userInfo[.wireKeyNameEncodingStrategy] = newValue
+        }
+    }
+
+    var protoDefaultValuesEncodingStrategy: JSONEncoder.DefaultValuesEncodingStrategy {
+        get {
+            let preferred = userInfo[.wireDefaultValuesEncodingStrategy] as? JSONEncoder.DefaultValuesEncodingStrategy
+            return preferred ?? .skip
+        }
+        set {
+            userInfo[.wireDefaultValuesEncodingStrategy] = newValue
         }
     }
 }

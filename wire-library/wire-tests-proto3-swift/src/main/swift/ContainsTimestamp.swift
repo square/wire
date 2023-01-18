@@ -59,6 +59,18 @@ extension ContainsTimestamp : Proto3Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension ContainsTimestamp : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: ContainsTimestamp.CodingKeys.self)
+        self.timestamp = try container.decodeIfPresent(Timestamp.self, forKey: .timestamp)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: ContainsTimestamp.CodingKeys.self)
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.timestamp != nil {
+            try container.encode(self.timestamp, forKey: .timestamp)
+        }
+    }
+
     public enum CodingKeys : String, CodingKey {
 
         case timestamp

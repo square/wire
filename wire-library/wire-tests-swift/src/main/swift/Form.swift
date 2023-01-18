@@ -497,6 +497,18 @@ extension Form.TextElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.TextElement : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: Form.TextElement.CodingKeys.self)
+        self.text = try container.decodeIfPresent(String.self, forKey: .text)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: Form.TextElement.CodingKeys.self)
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.text != nil {
+            try container.encode(self.text, forKey: .text)
+        }
+    }
+
     public enum CodingKeys : String, CodingKey {
 
         case text

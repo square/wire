@@ -78,6 +78,18 @@ extension OptionalEnumUser : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension OptionalEnumUser : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: OptionalEnumUser.CodingKeys.self)
+        self.optional_enum = try container.decodeIfPresent(OptionalEnumUser.OptionalEnum.self, forKey: .optional_enum)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: OptionalEnumUser.CodingKeys.self)
+        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.optional_enum != nil {
+            try container.encode(self.optional_enum, forKey: .optional_enum)
+        }
+    }
+
     public enum CodingKeys : String, CodingKey {
 
         case optional_enum
