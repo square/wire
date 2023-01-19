@@ -1909,6 +1909,7 @@ extension AllTypes.NestedMessage : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: AllTypes.NestedMessage.CodingKeys.self)
+
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.a != nil {
             try container.encode(self.a, forKey: "a")
         }
@@ -2528,507 +2529,642 @@ extension AllTypes : Codable {
 extension _AllTypes : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: _AllTypes.CodingKeys.self)
-        self.opt_int32 = try container.decodeIfPresent(Int32.self, forKey: "optInt32")
-        self.opt_uint32 = try container.decodeIfPresent(UInt32.self, forKey: "optUint32")
-        self.opt_sint32 = try container.decodeIfPresent(Int32.self, forKey: "optSint32")
-        self.opt_fixed32 = try container.decodeIfPresent(UInt32.self, forKey: "optFixed32")
-        self.opt_sfixed32 = try container.decodeIfPresent(Int32.self, forKey: "optSfixed32")
-        self.opt_int64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "optInt64")?.wrappedValue
-        self.opt_uint64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "optUint64")?.wrappedValue
-        self.opt_sint64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "optSint64")?.wrappedValue
-        self.opt_fixed64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "optFixed64")?.wrappedValue
-        self.opt_sfixed64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "optSfixed64")?.wrappedValue
-        self.opt_bool = try container.decodeIfPresent(Bool.self, forKey: "optBool")
-        self.opt_float = try container.decodeIfPresent(Float.self, forKey: "optFloat")
-        self.opt_double = try container.decodeIfPresent(Double.self, forKey: "optDouble")
-        self.opt_string = try container.decodeIfPresent(String.self, forKey: "optString")
-        self.opt_bytes = try container.decodeIfPresent(Data.self, forKey: "optBytes")
-        self.opt_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "optNestedEnum")
-        self.opt_nested_message = try container.decodeIfPresent(AllTypes.NestedMessage.self, forKey: "optNestedMessage")
-        self.req_int32 = try container.decode(Int32.self, forKey: "reqInt32")
-        self.req_uint32 = try container.decode(UInt32.self, forKey: "reqUint32")
-        self.req_sint32 = try container.decode(Int32.self, forKey: "reqSint32")
-        self.req_fixed32 = try container.decode(UInt32.self, forKey: "reqFixed32")
-        self.req_sfixed32 = try container.decode(Int32.self, forKey: "reqSfixed32")
-        self.req_int64 = try container.decode(StringEncoded<Int64>.self, forKey: "reqInt64").wrappedValue
-        self.req_uint64 = try container.decode(StringEncoded<UInt64>.self, forKey: "reqUint64").wrappedValue
-        self.req_sint64 = try container.decode(StringEncoded<Int64>.self, forKey: "reqSint64").wrappedValue
-        self.req_fixed64 = try container.decode(StringEncoded<UInt64>.self, forKey: "reqFixed64").wrappedValue
-        self.req_sfixed64 = try container.decode(StringEncoded<Int64>.self, forKey: "reqSfixed64").wrappedValue
-        self.req_bool = try container.decode(Bool.self, forKey: "reqBool")
-        self.req_float = try container.decode(Float.self, forKey: "reqFloat")
-        self.req_double = try container.decode(Double.self, forKey: "reqDouble")
-        self.req_string = try container.decode(String.self, forKey: "reqString")
-        self.req_bytes = try container.decode(Data.self, forKey: "reqBytes")
-        self.req_nested_enum = try container.decode(AllTypes.NestedEnum.self, forKey: "reqNestedEnum")
-        self.req_nested_message = try container.decode(AllTypes.NestedMessage.self, forKey: "reqNestedMessage")
-        self.rep_int32 = try container.decodeIfPresent([Int32].self, forKey: "repInt32") ?? []
-        self.rep_uint32 = try container.decodeIfPresent([UInt32].self, forKey: "repUint32") ?? []
-        self.rep_sint32 = try container.decodeIfPresent([Int32].self, forKey: "repSint32") ?? []
-        self.rep_fixed32 = try container.decodeIfPresent([UInt32].self, forKey: "repFixed32") ?? []
-        self.rep_sfixed32 = try container.decodeIfPresent([Int32].self, forKey: "repSfixed32") ?? []
-        self.rep_int64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "repInt64")?.wrappedValue ?? []
-        self.rep_uint64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "repUint64")?.wrappedValue ?? []
-        self.rep_sint64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "repSint64")?.wrappedValue ?? []
-        self.rep_fixed64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "repFixed64")?.wrappedValue ?? []
-        self.rep_sfixed64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "repSfixed64")?.wrappedValue ?? []
-        self.rep_bool = try container.decodeIfPresent([Bool].self, forKey: "repBool") ?? []
-        self.rep_float = try container.decodeIfPresent([Float].self, forKey: "repFloat") ?? []
-        self.rep_double = try container.decodeIfPresent([Double].self, forKey: "repDouble") ?? []
-        self.rep_string = try container.decodeIfPresent([String].self, forKey: "repString") ?? []
-        self.rep_bytes = try container.decodeIfPresent([Data].self, forKey: "repBytes") ?? []
-        self.rep_nested_enum = try container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "repNestedEnum") ?? []
-        self.rep_nested_message = try container.decodeIfPresent([AllTypes.NestedMessage].self, forKey: "repNestedMessage") ?? []
-        self.pack_int32 = try container.decodeIfPresent([Int32].self, forKey: "packInt32") ?? []
-        self.pack_uint32 = try container.decodeIfPresent([UInt32].self, forKey: "packUint32") ?? []
-        self.pack_sint32 = try container.decodeIfPresent([Int32].self, forKey: "packSint32") ?? []
-        self.pack_fixed32 = try container.decodeIfPresent([UInt32].self, forKey: "packFixed32") ?? []
-        self.pack_sfixed32 = try container.decodeIfPresent([Int32].self, forKey: "packSfixed32") ?? []
-        self.pack_int64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "packInt64")?.wrappedValue ?? []
-        self.pack_uint64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "packUint64")?.wrappedValue ?? []
-        self.pack_sint64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "packSint64")?.wrappedValue ?? []
-        self.pack_fixed64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "packFixed64")?.wrappedValue ?? []
-        self.pack_sfixed64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "packSfixed64")?.wrappedValue ?? []
-        self.pack_bool = try container.decodeIfPresent([Bool].self, forKey: "packBool") ?? []
-        self.pack_float = try container.decodeIfPresent([Float].self, forKey: "packFloat") ?? []
-        self.pack_double = try container.decodeIfPresent([Double].self, forKey: "packDouble") ?? []
-        self.pack_nested_enum = try container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "packNestedEnum") ?? []
-        self.default_int32 = try container.decodeIfPresent(Int32.self, forKey: "defaultInt32")
-        self.default_uint32 = try container.decodeIfPresent(UInt32.self, forKey: "defaultUint32")
-        self.default_sint32 = try container.decodeIfPresent(Int32.self, forKey: "defaultSint32")
-        self.default_fixed32 = try container.decodeIfPresent(UInt32.self, forKey: "defaultFixed32")
-        self.default_sfixed32 = try container.decodeIfPresent(Int32.self, forKey: "defaultSfixed32")
-        self.default_int64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "defaultInt64")?.wrappedValue
-        self.default_uint64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "defaultUint64")?.wrappedValue
-        self.default_sint64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "defaultSint64")?.wrappedValue
-        self.default_fixed64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "defaultFixed64")?.wrappedValue
-        self.default_sfixed64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "defaultSfixed64")?.wrappedValue
-        self.default_bool = try container.decodeIfPresent(Bool.self, forKey: "defaultBool")
-        self.default_float = try container.decodeIfPresent(Float.self, forKey: "defaultFloat")
-        self.default_double = try container.decodeIfPresent(Double.self, forKey: "defaultDouble")
-        self.default_string = try container.decodeIfPresent(String.self, forKey: "defaultString")
-        self.default_bytes = try container.decodeIfPresent(Data.self, forKey: "defaultBytes")
-        self.default_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "defaultNestedEnum")
-        self.map_int32_int32 = try container.decodeIfPresent(ProtoMap<Int32, Int32>.self, forKey: "mapInt32Int32")?.wrappedValue ?? [:]
-        self.map_string_string = try container.decodeIfPresent(ProtoMap<String, String>.self, forKey: "mapStringString")?.wrappedValue ?? [:]
-        self.map_string_message = try container.decodeIfPresent(ProtoMap<String, AllTypes.NestedMessage>.self, forKey: "mapStringMessage")?.wrappedValue ?? [:]
-        self.map_string_enum = try container.decodeIfPresent(ProtoMapEnumValues<String, AllTypes.NestedEnum>.self, forKey: "mapStringEnum")?.wrappedValue ?? [:]
-        self.ext_opt_int32 = try container.decodeIfPresent(Int32.self, forKey: "extOptInt32")
-        self.ext_opt_uint32 = try container.decodeIfPresent(UInt32.self, forKey: "extOptUint32")
-        self.ext_opt_sint32 = try container.decodeIfPresent(Int32.self, forKey: "extOptSint32")
-        self.ext_opt_fixed32 = try container.decodeIfPresent(UInt32.self, forKey: "extOptFixed32")
-        self.ext_opt_sfixed32 = try container.decodeIfPresent(Int32.self, forKey: "extOptSfixed32")
-        self.ext_opt_int64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "extOptInt64")?.wrappedValue
-        self.ext_opt_uint64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "extOptUint64")?.wrappedValue
-        self.ext_opt_sint64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "extOptSint64")?.wrappedValue
-        self.ext_opt_fixed64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "extOptFixed64")?.wrappedValue
-        self.ext_opt_sfixed64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "extOptSfixed64")?.wrappedValue
-        self.ext_opt_bool = try container.decodeIfPresent(Bool.self, forKey: "extOptBool")
-        self.ext_opt_float = try container.decodeIfPresent(Float.self, forKey: "extOptFloat")
-        self.ext_opt_double = try container.decodeIfPresent(Double.self, forKey: "extOptDouble")
-        self.ext_opt_string = try container.decodeIfPresent(String.self, forKey: "extOptString")
-        self.ext_opt_bytes = try container.decodeIfPresent(Data.self, forKey: "extOptBytes")
-        self.ext_opt_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "extOptNestedEnum")
-        self.ext_opt_nested_message = try container.decodeIfPresent(AllTypes.NestedMessage.self, forKey: "extOptNestedMessage")
-        self.ext_rep_int32 = try container.decodeIfPresent([Int32].self, forKey: "extRepInt32") ?? []
-        self.ext_rep_uint32 = try container.decodeIfPresent([UInt32].self, forKey: "extRepUint32") ?? []
-        self.ext_rep_sint32 = try container.decodeIfPresent([Int32].self, forKey: "extRepSint32") ?? []
-        self.ext_rep_fixed32 = try container.decodeIfPresent([UInt32].self, forKey: "extRepFixed32") ?? []
-        self.ext_rep_sfixed32 = try container.decodeIfPresent([Int32].self, forKey: "extRepSfixed32") ?? []
-        self.ext_rep_int64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "extRepInt64")?.wrappedValue ?? []
-        self.ext_rep_uint64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "extRepUint64")?.wrappedValue ?? []
-        self.ext_rep_sint64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "extRepSint64")?.wrappedValue ?? []
-        self.ext_rep_fixed64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "extRepFixed64")?.wrappedValue ?? []
-        self.ext_rep_sfixed64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "extRepSfixed64")?.wrappedValue ?? []
-        self.ext_rep_bool = try container.decodeIfPresent([Bool].self, forKey: "extRepBool") ?? []
-        self.ext_rep_float = try container.decodeIfPresent([Float].self, forKey: "extRepFloat") ?? []
-        self.ext_rep_double = try container.decodeIfPresent([Double].self, forKey: "extRepDouble") ?? []
-        self.ext_rep_string = try container.decodeIfPresent([String].self, forKey: "extRepString") ?? []
-        self.ext_rep_bytes = try container.decodeIfPresent([Data].self, forKey: "extRepBytes") ?? []
-        self.ext_rep_nested_enum = try container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "extRepNestedEnum") ?? []
-        self.ext_rep_nested_message = try container.decodeIfPresent([AllTypes.NestedMessage].self, forKey: "extRepNestedMessage") ?? []
-        self.ext_pack_int32 = try container.decodeIfPresent([Int32].self, forKey: "extPackInt32") ?? []
-        self.ext_pack_uint32 = try container.decodeIfPresent([UInt32].self, forKey: "extPackUint32") ?? []
-        self.ext_pack_sint32 = try container.decodeIfPresent([Int32].self, forKey: "extPackSint32") ?? []
-        self.ext_pack_fixed32 = try container.decodeIfPresent([UInt32].self, forKey: "extPackFixed32") ?? []
-        self.ext_pack_sfixed32 = try container.decodeIfPresent([Int32].self, forKey: "extPackSfixed32") ?? []
-        self.ext_pack_int64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "extPackInt64")?.wrappedValue ?? []
-        self.ext_pack_uint64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "extPackUint64")?.wrappedValue ?? []
-        self.ext_pack_sint64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "extPackSint64")?.wrappedValue ?? []
-        self.ext_pack_fixed64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "extPackFixed64")?.wrappedValue ?? []
-        self.ext_pack_sfixed64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "extPackSfixed64")?.wrappedValue ?? []
-        self.ext_pack_bool = try container.decodeIfPresent([Bool].self, forKey: "extPackBool") ?? []
-        self.ext_pack_float = try container.decodeIfPresent([Float].self, forKey: "extPackFloat") ?? []
-        self.ext_pack_double = try container.decodeIfPresent([Double].self, forKey: "extPackDouble") ?? []
-        self.ext_pack_nested_enum = try container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "extPackNestedEnum") ?? []
+        self.opt_int32 = try container.decodeIfPresent(Int32.self, forKey: "optInt32") ??
+                try container.decodeIfPresent(Int32.self, forKey: "opt_int32")
+        self.opt_uint32 = try container.decodeIfPresent(UInt32.self, forKey: "optUint32") ??
+                try container.decodeIfPresent(UInt32.self, forKey: "opt_uint32")
+        self.opt_sint32 = try container.decodeIfPresent(Int32.self, forKey: "optSint32") ??
+                try container.decodeIfPresent(Int32.self, forKey: "opt_sint32")
+        self.opt_fixed32 = try container.decodeIfPresent(UInt32.self, forKey: "optFixed32") ??
+                try container.decodeIfPresent(UInt32.self, forKey: "opt_fixed32")
+        self.opt_sfixed32 = try container.decodeIfPresent(Int32.self, forKey: "optSfixed32") ??
+                try container.decodeIfPresent(Int32.self, forKey: "opt_sfixed32")
+        self.opt_int64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "optInt64") ??
+                try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "opt_int64")?.wrappedValue
+        self.opt_uint64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "optUint64") ??
+                try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "opt_uint64")?.wrappedValue
+        self.opt_sint64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "optSint64") ??
+                try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "opt_sint64")?.wrappedValue
+        self.opt_fixed64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "optFixed64") ??
+                try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "opt_fixed64")?.wrappedValue
+        self.opt_sfixed64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "optSfixed64") ??
+                try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "opt_sfixed64")?.wrappedValue
+        self.opt_bool = try container.decodeIfPresent(Bool.self, forKey: "optBool") ??
+                try container.decodeIfPresent(Bool.self, forKey: "opt_bool")
+        self.opt_float = try container.decodeIfPresent(Float.self, forKey: "optFloat") ??
+                try container.decodeIfPresent(Float.self, forKey: "opt_float")
+        self.opt_double = try container.decodeIfPresent(Double.self, forKey: "optDouble") ??
+                try container.decodeIfPresent(Double.self, forKey: "opt_double")
+        self.opt_string = try container.decodeIfPresent(String.self, forKey: "optString") ??
+                try container.decodeIfPresent(String.self, forKey: "opt_string")
+        self.opt_bytes = try container.decodeIfPresent(Data.self, forKey: "optBytes") ??
+                try container.decodeIfPresent(Data.self, forKey: "opt_bytes")
+        self.opt_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "optNestedEnum") ??
+                try container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "opt_nested_enum")
+        self.opt_nested_message = try container.decodeIfPresent(AllTypes.NestedMessage.self, forKey: "optNestedMessage") ??
+                try container.decodeIfPresent(AllTypes.NestedMessage.self, forKey: "opt_nested_message")
+        self.req_int32 = try container.decodeIfPresent(Int32.self, forKey: "reqInt32") ??
+                try container.decode(Int32.self, forKey: "req_int32")
+        self.req_uint32 = try container.decodeIfPresent(UInt32.self, forKey: "reqUint32") ??
+                try container.decode(UInt32.self, forKey: "req_uint32")
+        self.req_sint32 = try container.decodeIfPresent(Int32.self, forKey: "reqSint32") ??
+                try container.decode(Int32.self, forKey: "req_sint32")
+        self.req_fixed32 = try container.decodeIfPresent(UInt32.self, forKey: "reqFixed32") ??
+                try container.decode(UInt32.self, forKey: "req_fixed32")
+        self.req_sfixed32 = try container.decodeIfPresent(Int32.self, forKey: "reqSfixed32") ??
+                try container.decode(Int32.self, forKey: "req_sfixed32")
+        self.req_int64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "reqInt64") ??
+                try container.decode(StringEncoded<Int64>.self, forKey: "req_int64").wrappedValue
+        self.req_uint64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "reqUint64") ??
+                try container.decode(StringEncoded<UInt64>.self, forKey: "req_uint64").wrappedValue
+        self.req_sint64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "reqSint64") ??
+                try container.decode(StringEncoded<Int64>.self, forKey: "req_sint64").wrappedValue
+        self.req_fixed64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "reqFixed64") ??
+                try container.decode(StringEncoded<UInt64>.self, forKey: "req_fixed64").wrappedValue
+        self.req_sfixed64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "reqSfixed64") ??
+                try container.decode(StringEncoded<Int64>.self, forKey: "req_sfixed64").wrappedValue
+        self.req_bool = try container.decodeIfPresent(Bool.self, forKey: "reqBool") ??
+                try container.decode(Bool.self, forKey: "req_bool")
+        self.req_float = try container.decodeIfPresent(Float.self, forKey: "reqFloat") ??
+                try container.decode(Float.self, forKey: "req_float")
+        self.req_double = try container.decodeIfPresent(Double.self, forKey: "reqDouble") ??
+                try container.decode(Double.self, forKey: "req_double")
+        self.req_string = try container.decodeIfPresent(String.self, forKey: "reqString") ??
+                try container.decode(String.self, forKey: "req_string")
+        self.req_bytes = try container.decodeIfPresent(Data.self, forKey: "reqBytes") ??
+                try container.decode(Data.self, forKey: "req_bytes")
+        self.req_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "reqNestedEnum") ??
+                try container.decode(AllTypes.NestedEnum.self, forKey: "req_nested_enum")
+        self.req_nested_message = try container.decodeIfPresent(AllTypes.NestedMessage.self, forKey: "reqNestedMessage") ??
+                try container.decode(AllTypes.NestedMessage.self, forKey: "req_nested_message")
+        self.rep_int32 = try container.decodeIfPresent([Int32].self, forKey: "repInt32") ??
+                try container.decodeIfPresent([Int32].self, forKey: "rep_int32") ?? []
+        self.rep_uint32 = try container.decodeIfPresent([UInt32].self, forKey: "repUint32") ??
+                try container.decodeIfPresent([UInt32].self, forKey: "rep_uint32") ?? []
+        self.rep_sint32 = try container.decodeIfPresent([Int32].self, forKey: "repSint32") ??
+                try container.decodeIfPresent([Int32].self, forKey: "rep_sint32") ?? []
+        self.rep_fixed32 = try container.decodeIfPresent([UInt32].self, forKey: "repFixed32") ??
+                try container.decodeIfPresent([UInt32].self, forKey: "rep_fixed32") ?? []
+        self.rep_sfixed32 = try container.decodeIfPresent([Int32].self, forKey: "repSfixed32") ??
+                try container.decodeIfPresent([Int32].self, forKey: "rep_sfixed32") ?? []
+        self.rep_int64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "repInt64") ??
+                try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "rep_int64")?.wrappedValue ?? []
+        self.rep_uint64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "repUint64") ??
+                try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "rep_uint64")?.wrappedValue ?? []
+        self.rep_sint64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "repSint64") ??
+                try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "rep_sint64")?.wrappedValue ?? []
+        self.rep_fixed64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "repFixed64") ??
+                try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "rep_fixed64")?.wrappedValue ?? []
+        self.rep_sfixed64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "repSfixed64") ??
+                try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "rep_sfixed64")?.wrappedValue ?? []
+        self.rep_bool = try container.decodeIfPresent([Bool].self, forKey: "repBool") ??
+                try container.decodeIfPresent([Bool].self, forKey: "rep_bool") ?? []
+        self.rep_float = try container.decodeIfPresent([Float].self, forKey: "repFloat") ??
+                try container.decodeIfPresent([Float].self, forKey: "rep_float") ?? []
+        self.rep_double = try container.decodeIfPresent([Double].self, forKey: "repDouble") ??
+                try container.decodeIfPresent([Double].self, forKey: "rep_double") ?? []
+        self.rep_string = try container.decodeIfPresent([String].self, forKey: "repString") ??
+                try container.decodeIfPresent([String].self, forKey: "rep_string") ?? []
+        self.rep_bytes = try container.decodeIfPresent([Data].self, forKey: "repBytes") ??
+                try container.decodeIfPresent([Data].self, forKey: "rep_bytes") ?? []
+        self.rep_nested_enum = try container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "repNestedEnum") ??
+                try container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "rep_nested_enum") ?? []
+        self.rep_nested_message = try container.decodeIfPresent([AllTypes.NestedMessage].self, forKey: "repNestedMessage") ??
+                try container.decodeIfPresent([AllTypes.NestedMessage].self, forKey: "rep_nested_message") ?? []
+        self.pack_int32 = try container.decodeIfPresent([Int32].self, forKey: "packInt32") ??
+                try container.decodeIfPresent([Int32].self, forKey: "pack_int32") ?? []
+        self.pack_uint32 = try container.decodeIfPresent([UInt32].self, forKey: "packUint32") ??
+                try container.decodeIfPresent([UInt32].self, forKey: "pack_uint32") ?? []
+        self.pack_sint32 = try container.decodeIfPresent([Int32].self, forKey: "packSint32") ??
+                try container.decodeIfPresent([Int32].self, forKey: "pack_sint32") ?? []
+        self.pack_fixed32 = try container.decodeIfPresent([UInt32].self, forKey: "packFixed32") ??
+                try container.decodeIfPresent([UInt32].self, forKey: "pack_fixed32") ?? []
+        self.pack_sfixed32 = try container.decodeIfPresent([Int32].self, forKey: "packSfixed32") ??
+                try container.decodeIfPresent([Int32].self, forKey: "pack_sfixed32") ?? []
+        self.pack_int64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "packInt64") ??
+                try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "pack_int64")?.wrappedValue ?? []
+        self.pack_uint64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "packUint64") ??
+                try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "pack_uint64")?.wrappedValue ?? []
+        self.pack_sint64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "packSint64") ??
+                try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "pack_sint64")?.wrappedValue ?? []
+        self.pack_fixed64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "packFixed64") ??
+                try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "pack_fixed64")?.wrappedValue ?? []
+        self.pack_sfixed64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "packSfixed64") ??
+                try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "pack_sfixed64")?.wrappedValue ?? []
+        self.pack_bool = try container.decodeIfPresent([Bool].self, forKey: "packBool") ??
+                try container.decodeIfPresent([Bool].self, forKey: "pack_bool") ?? []
+        self.pack_float = try container.decodeIfPresent([Float].self, forKey: "packFloat") ??
+                try container.decodeIfPresent([Float].self, forKey: "pack_float") ?? []
+        self.pack_double = try container.decodeIfPresent([Double].self, forKey: "packDouble") ??
+                try container.decodeIfPresent([Double].self, forKey: "pack_double") ?? []
+        self.pack_nested_enum = try container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "packNestedEnum") ??
+                try container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "pack_nested_enum") ?? []
+        self.default_int32 = try container.decodeIfPresent(Int32.self, forKey: "defaultInt32") ??
+                try container.decodeIfPresent(Int32.self, forKey: "default_int32")
+        self.default_uint32 = try container.decodeIfPresent(UInt32.self, forKey: "defaultUint32") ??
+                try container.decodeIfPresent(UInt32.self, forKey: "default_uint32")
+        self.default_sint32 = try container.decodeIfPresent(Int32.self, forKey: "defaultSint32") ??
+                try container.decodeIfPresent(Int32.self, forKey: "default_sint32")
+        self.default_fixed32 = try container.decodeIfPresent(UInt32.self, forKey: "defaultFixed32") ??
+                try container.decodeIfPresent(UInt32.self, forKey: "default_fixed32")
+        self.default_sfixed32 = try container.decodeIfPresent(Int32.self, forKey: "defaultSfixed32") ??
+                try container.decodeIfPresent(Int32.self, forKey: "default_sfixed32")
+        self.default_int64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "defaultInt64") ??
+                try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "default_int64")?.wrappedValue
+        self.default_uint64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "defaultUint64") ??
+                try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "default_uint64")?.wrappedValue
+        self.default_sint64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "defaultSint64") ??
+                try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "default_sint64")?.wrappedValue
+        self.default_fixed64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "defaultFixed64") ??
+                try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "default_fixed64")?.wrappedValue
+        self.default_sfixed64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "defaultSfixed64") ??
+                try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "default_sfixed64")?.wrappedValue
+        self.default_bool = try container.decodeIfPresent(Bool.self, forKey: "defaultBool") ??
+                try container.decodeIfPresent(Bool.self, forKey: "default_bool")
+        self.default_float = try container.decodeIfPresent(Float.self, forKey: "defaultFloat") ??
+                try container.decodeIfPresent(Float.self, forKey: "default_float")
+        self.default_double = try container.decodeIfPresent(Double.self, forKey: "defaultDouble") ??
+                try container.decodeIfPresent(Double.self, forKey: "default_double")
+        self.default_string = try container.decodeIfPresent(String.self, forKey: "defaultString") ??
+                try container.decodeIfPresent(String.self, forKey: "default_string")
+        self.default_bytes = try container.decodeIfPresent(Data.self, forKey: "defaultBytes") ??
+                try container.decodeIfPresent(Data.self, forKey: "default_bytes")
+        self.default_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "defaultNestedEnum") ??
+                try container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "default_nested_enum")
+        self.map_int32_int32 = try container.decodeIfPresent(ProtoMap<Int32, Int32>.self, forKey: "mapInt32Int32") ??
+                try container.decodeIfPresent(ProtoMap<Int32, Int32>.self, forKey: "map_int32_int32")?.wrappedValue ?? [:]
+        self.map_string_string = try container.decodeIfPresent(ProtoMap<String, String>.self, forKey: "mapStringString") ??
+                try container.decodeIfPresent(ProtoMap<String, String>.self, forKey: "map_string_string")?.wrappedValue ?? [:]
+        self.map_string_message = try container.decodeIfPresent(ProtoMap<String, AllTypes.NestedMessage>.self, forKey: "mapStringMessage") ??
+                try container.decodeIfPresent(ProtoMap<String, AllTypes.NestedMessage>.self, forKey: "map_string_message")?.wrappedValue ?? [:]
+        self.map_string_enum = try container.decodeIfPresent(ProtoMapEnumValues<String, AllTypes.NestedEnum>.self, forKey: "mapStringEnum") ??
+                try container.decodeIfPresent(ProtoMapEnumValues<String, AllTypes.NestedEnum>.self, forKey: "map_string_enum")?.wrappedValue ?? [:]
+        self.ext_opt_int32 = try container.decodeIfPresent(Int32.self, forKey: "extOptInt32") ??
+                try container.decodeIfPresent(Int32.self, forKey: "ext_opt_int32")
+        self.ext_opt_uint32 = try container.decodeIfPresent(UInt32.self, forKey: "extOptUint32") ??
+                try container.decodeIfPresent(UInt32.self, forKey: "ext_opt_uint32")
+        self.ext_opt_sint32 = try container.decodeIfPresent(Int32.self, forKey: "extOptSint32") ??
+                try container.decodeIfPresent(Int32.self, forKey: "ext_opt_sint32")
+        self.ext_opt_fixed32 = try container.decodeIfPresent(UInt32.self, forKey: "extOptFixed32") ??
+                try container.decodeIfPresent(UInt32.self, forKey: "ext_opt_fixed32")
+        self.ext_opt_sfixed32 = try container.decodeIfPresent(Int32.self, forKey: "extOptSfixed32") ??
+                try container.decodeIfPresent(Int32.self, forKey: "ext_opt_sfixed32")
+        self.ext_opt_int64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "extOptInt64") ??
+                try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "ext_opt_int64")?.wrappedValue
+        self.ext_opt_uint64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "extOptUint64") ??
+                try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "ext_opt_uint64")?.wrappedValue
+        self.ext_opt_sint64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "extOptSint64") ??
+                try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "ext_opt_sint64")?.wrappedValue
+        self.ext_opt_fixed64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "extOptFixed64") ??
+                try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "ext_opt_fixed64")?.wrappedValue
+        self.ext_opt_sfixed64 = try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "extOptSfixed64") ??
+                try container.decodeIfPresent(StringEncoded<Int64>.self, forKey: "ext_opt_sfixed64")?.wrappedValue
+        self.ext_opt_bool = try container.decodeIfPresent(Bool.self, forKey: "extOptBool") ??
+                try container.decodeIfPresent(Bool.self, forKey: "ext_opt_bool")
+        self.ext_opt_float = try container.decodeIfPresent(Float.self, forKey: "extOptFloat") ??
+                try container.decodeIfPresent(Float.self, forKey: "ext_opt_float")
+        self.ext_opt_double = try container.decodeIfPresent(Double.self, forKey: "extOptDouble") ??
+                try container.decodeIfPresent(Double.self, forKey: "ext_opt_double")
+        self.ext_opt_string = try container.decodeIfPresent(String.self, forKey: "extOptString") ??
+                try container.decodeIfPresent(String.self, forKey: "ext_opt_string")
+        self.ext_opt_bytes = try container.decodeIfPresent(Data.self, forKey: "extOptBytes") ??
+                try container.decodeIfPresent(Data.self, forKey: "ext_opt_bytes")
+        self.ext_opt_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "extOptNestedEnum") ??
+                try container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "ext_opt_nested_enum")
+        self.ext_opt_nested_message = try container.decodeIfPresent(AllTypes.NestedMessage.self, forKey: "extOptNestedMessage") ??
+                try container.decodeIfPresent(AllTypes.NestedMessage.self, forKey: "ext_opt_nested_message")
+        self.ext_rep_int32 = try container.decodeIfPresent([Int32].self, forKey: "extRepInt32") ??
+                try container.decodeIfPresent([Int32].self, forKey: "ext_rep_int32") ?? []
+        self.ext_rep_uint32 = try container.decodeIfPresent([UInt32].self, forKey: "extRepUint32") ??
+                try container.decodeIfPresent([UInt32].self, forKey: "ext_rep_uint32") ?? []
+        self.ext_rep_sint32 = try container.decodeIfPresent([Int32].self, forKey: "extRepSint32") ??
+                try container.decodeIfPresent([Int32].self, forKey: "ext_rep_sint32") ?? []
+        self.ext_rep_fixed32 = try container.decodeIfPresent([UInt32].self, forKey: "extRepFixed32") ??
+                try container.decodeIfPresent([UInt32].self, forKey: "ext_rep_fixed32") ?? []
+        self.ext_rep_sfixed32 = try container.decodeIfPresent([Int32].self, forKey: "extRepSfixed32") ??
+                try container.decodeIfPresent([Int32].self, forKey: "ext_rep_sfixed32") ?? []
+        self.ext_rep_int64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "extRepInt64") ??
+                try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "ext_rep_int64")?.wrappedValue ?? []
+        self.ext_rep_uint64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "extRepUint64") ??
+                try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "ext_rep_uint64")?.wrappedValue ?? []
+        self.ext_rep_sint64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "extRepSint64") ??
+                try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "ext_rep_sint64")?.wrappedValue ?? []
+        self.ext_rep_fixed64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "extRepFixed64") ??
+                try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "ext_rep_fixed64")?.wrappedValue ?? []
+        self.ext_rep_sfixed64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "extRepSfixed64") ??
+                try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "ext_rep_sfixed64")?.wrappedValue ?? []
+        self.ext_rep_bool = try container.decodeIfPresent([Bool].self, forKey: "extRepBool") ??
+                try container.decodeIfPresent([Bool].self, forKey: "ext_rep_bool") ?? []
+        self.ext_rep_float = try container.decodeIfPresent([Float].self, forKey: "extRepFloat") ??
+                try container.decodeIfPresent([Float].self, forKey: "ext_rep_float") ?? []
+        self.ext_rep_double = try container.decodeIfPresent([Double].self, forKey: "extRepDouble") ??
+                try container.decodeIfPresent([Double].self, forKey: "ext_rep_double") ?? []
+        self.ext_rep_string = try container.decodeIfPresent([String].self, forKey: "extRepString") ??
+                try container.decodeIfPresent([String].self, forKey: "ext_rep_string") ?? []
+        self.ext_rep_bytes = try container.decodeIfPresent([Data].self, forKey: "extRepBytes") ??
+                try container.decodeIfPresent([Data].self, forKey: "ext_rep_bytes") ?? []
+        self.ext_rep_nested_enum = try container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "extRepNestedEnum") ??
+                try container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "ext_rep_nested_enum") ?? []
+        self.ext_rep_nested_message = try container.decodeIfPresent([AllTypes.NestedMessage].self, forKey: "extRepNestedMessage") ??
+                try container.decodeIfPresent([AllTypes.NestedMessage].self, forKey: "ext_rep_nested_message") ?? []
+        self.ext_pack_int32 = try container.decodeIfPresent([Int32].self, forKey: "extPackInt32") ??
+                try container.decodeIfPresent([Int32].self, forKey: "ext_pack_int32") ?? []
+        self.ext_pack_uint32 = try container.decodeIfPresent([UInt32].self, forKey: "extPackUint32") ??
+                try container.decodeIfPresent([UInt32].self, forKey: "ext_pack_uint32") ?? []
+        self.ext_pack_sint32 = try container.decodeIfPresent([Int32].self, forKey: "extPackSint32") ??
+                try container.decodeIfPresent([Int32].self, forKey: "ext_pack_sint32") ?? []
+        self.ext_pack_fixed32 = try container.decodeIfPresent([UInt32].self, forKey: "extPackFixed32") ??
+                try container.decodeIfPresent([UInt32].self, forKey: "ext_pack_fixed32") ?? []
+        self.ext_pack_sfixed32 = try container.decodeIfPresent([Int32].self, forKey: "extPackSfixed32") ??
+                try container.decodeIfPresent([Int32].self, forKey: "ext_pack_sfixed32") ?? []
+        self.ext_pack_int64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "extPackInt64") ??
+                try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "ext_pack_int64")?.wrappedValue ?? []
+        self.ext_pack_uint64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "extPackUint64") ??
+                try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "ext_pack_uint64")?.wrappedValue ?? []
+        self.ext_pack_sint64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "extPackSint64") ??
+                try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "ext_pack_sint64")?.wrappedValue ?? []
+        self.ext_pack_fixed64 = try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "extPackFixed64") ??
+                try container.decodeIfPresent(StringEncodedValues<[UInt64]>.self, forKey: "ext_pack_fixed64")?.wrappedValue ?? []
+        self.ext_pack_sfixed64 = try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "extPackSfixed64") ??
+                try container.decodeIfPresent(StringEncodedValues<[Int64]>.self, forKey: "ext_pack_sfixed64")?.wrappedValue ?? []
+        self.ext_pack_bool = try container.decodeIfPresent([Bool].self, forKey: "extPackBool") ??
+                try container.decodeIfPresent([Bool].self, forKey: "ext_pack_bool") ?? []
+        self.ext_pack_float = try container.decodeIfPresent([Float].self, forKey: "extPackFloat") ??
+                try container.decodeIfPresent([Float].self, forKey: "ext_pack_float") ?? []
+        self.ext_pack_double = try container.decodeIfPresent([Double].self, forKey: "extPackDouble") ??
+                try container.decodeIfPresent([Double].self, forKey: "ext_pack_double") ?? []
+        self.ext_pack_nested_enum = try container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "extPackNestedEnum") ??
+                try container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "ext_pack_nested_enum") ?? []
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: _AllTypes.CodingKeys.self)
+        let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_int32 != nil {
-            try container.encode(self.opt_int32, forKey: "optInt32")
+            try container.encode(self.opt_int32, forKey: preferCamelCase ? "optInt32" : "opt_int32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_uint32 != nil {
-            try container.encode(self.opt_uint32, forKey: "optUint32")
+            try container.encode(self.opt_uint32, forKey: preferCamelCase ? "optUint32" : "opt_uint32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_sint32 != nil {
-            try container.encode(self.opt_sint32, forKey: "optSint32")
+            try container.encode(self.opt_sint32, forKey: preferCamelCase ? "optSint32" : "opt_sint32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_fixed32 != nil {
-            try container.encode(self.opt_fixed32, forKey: "optFixed32")
+            try container.encode(self.opt_fixed32, forKey: preferCamelCase ? "optFixed32" : "opt_fixed32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_sfixed32 != nil {
-            try container.encode(self.opt_sfixed32, forKey: "optSfixed32")
+            try container.encode(self.opt_sfixed32, forKey: preferCamelCase ? "optSfixed32" : "opt_sfixed32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_int64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.opt_int64), forKey: "optInt64")
+            try container.encode(StringEncoded(wrappedValue: self.opt_int64), forKey: preferCamelCase ? "optInt64" : "opt_int64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_uint64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.opt_uint64), forKey: "optUint64")
+            try container.encode(StringEncoded(wrappedValue: self.opt_uint64), forKey: preferCamelCase ? "optUint64" : "opt_uint64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_sint64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.opt_sint64), forKey: "optSint64")
+            try container.encode(StringEncoded(wrappedValue: self.opt_sint64), forKey: preferCamelCase ? "optSint64" : "opt_sint64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_fixed64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.opt_fixed64), forKey: "optFixed64")
+            try container.encode(StringEncoded(wrappedValue: self.opt_fixed64), forKey: preferCamelCase ? "optFixed64" : "opt_fixed64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_sfixed64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.opt_sfixed64), forKey: "optSfixed64")
+            try container.encode(StringEncoded(wrappedValue: self.opt_sfixed64), forKey: preferCamelCase ? "optSfixed64" : "opt_sfixed64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_bool != nil {
-            try container.encode(self.opt_bool, forKey: "optBool")
+            try container.encode(self.opt_bool, forKey: preferCamelCase ? "optBool" : "opt_bool")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_float != nil {
-            try container.encode(self.opt_float, forKey: "optFloat")
+            try container.encode(self.opt_float, forKey: preferCamelCase ? "optFloat" : "opt_float")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_double != nil {
-            try container.encode(self.opt_double, forKey: "optDouble")
+            try container.encode(self.opt_double, forKey: preferCamelCase ? "optDouble" : "opt_double")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_string != nil {
-            try container.encode(self.opt_string, forKey: "optString")
+            try container.encode(self.opt_string, forKey: preferCamelCase ? "optString" : "opt_string")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_bytes != nil {
-            try container.encode(self.opt_bytes, forKey: "optBytes")
+            try container.encode(self.opt_bytes, forKey: preferCamelCase ? "optBytes" : "opt_bytes")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_nested_enum != nil {
-            try container.encode(self.opt_nested_enum, forKey: "optNestedEnum")
+            try container.encode(self.opt_nested_enum, forKey: preferCamelCase ? "optNestedEnum" : "opt_nested_enum")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_nested_message != nil {
-            try container.encode(self.opt_nested_message, forKey: "optNestedMessage")
+            try container.encode(self.opt_nested_message, forKey: preferCamelCase ? "optNestedMessage" : "opt_nested_message")
         }
-        try container.encode(self.req_int32, forKey: "reqInt32")
-        try container.encode(self.req_uint32, forKey: "reqUint32")
-        try container.encode(self.req_sint32, forKey: "reqSint32")
-        try container.encode(self.req_fixed32, forKey: "reqFixed32")
-        try container.encode(self.req_sfixed32, forKey: "reqSfixed32")
-        try container.encode(StringEncoded(wrappedValue: self.req_int64), forKey: "reqInt64")
-        try container.encode(StringEncoded(wrappedValue: self.req_uint64), forKey: "reqUint64")
-        try container.encode(StringEncoded(wrappedValue: self.req_sint64), forKey: "reqSint64")
-        try container.encode(StringEncoded(wrappedValue: self.req_fixed64), forKey: "reqFixed64")
-        try container.encode(StringEncoded(wrappedValue: self.req_sfixed64), forKey: "reqSfixed64")
-        try container.encode(self.req_bool, forKey: "reqBool")
-        try container.encode(self.req_float, forKey: "reqFloat")
-        try container.encode(self.req_double, forKey: "reqDouble")
-        try container.encode(self.req_string, forKey: "reqString")
-        try container.encode(self.req_bytes, forKey: "reqBytes")
-        try container.encode(self.req_nested_enum, forKey: "reqNestedEnum")
-        try container.encode(self.req_nested_message, forKey: "reqNestedMessage")
+        try container.encode(self.req_int32, forKey: preferCamelCase ? "reqInt32" : "req_int32")
+        try container.encode(self.req_uint32, forKey: preferCamelCase ? "reqUint32" : "req_uint32")
+        try container.encode(self.req_sint32, forKey: preferCamelCase ? "reqSint32" : "req_sint32")
+        try container.encode(self.req_fixed32, forKey: preferCamelCase ? "reqFixed32" : "req_fixed32")
+        try container.encode(self.req_sfixed32, forKey: preferCamelCase ? "reqSfixed32" : "req_sfixed32")
+        try container.encode(StringEncoded(wrappedValue: self.req_int64), forKey: preferCamelCase ? "reqInt64" : "req_int64")
+        try container.encode(StringEncoded(wrappedValue: self.req_uint64), forKey: preferCamelCase ? "reqUint64" : "req_uint64")
+        try container.encode(StringEncoded(wrappedValue: self.req_sint64), forKey: preferCamelCase ? "reqSint64" : "req_sint64")
+        try container.encode(StringEncoded(wrappedValue: self.req_fixed64), forKey: preferCamelCase ? "reqFixed64" : "req_fixed64")
+        try container.encode(StringEncoded(wrappedValue: self.req_sfixed64), forKey: preferCamelCase ? "reqSfixed64" : "req_sfixed64")
+        try container.encode(self.req_bool, forKey: preferCamelCase ? "reqBool" : "req_bool")
+        try container.encode(self.req_float, forKey: preferCamelCase ? "reqFloat" : "req_float")
+        try container.encode(self.req_double, forKey: preferCamelCase ? "reqDouble" : "req_double")
+        try container.encode(self.req_string, forKey: preferCamelCase ? "reqString" : "req_string")
+        try container.encode(self.req_bytes, forKey: preferCamelCase ? "reqBytes" : "req_bytes")
+        try container.encode(self.req_nested_enum, forKey: preferCamelCase ? "reqNestedEnum" : "req_nested_enum")
+        try container.encode(self.req_nested_message, forKey: preferCamelCase ? "reqNestedMessage" : "req_nested_message")
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_int32.isEmpty {
-            try container.encode(self.rep_int32, forKey: "repInt32")
+            try container.encode(self.rep_int32, forKey: preferCamelCase ? "repInt32" : "rep_int32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_uint32.isEmpty {
-            try container.encode(self.rep_uint32, forKey: "repUint32")
+            try container.encode(self.rep_uint32, forKey: preferCamelCase ? "repUint32" : "rep_uint32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_sint32.isEmpty {
-            try container.encode(self.rep_sint32, forKey: "repSint32")
+            try container.encode(self.rep_sint32, forKey: preferCamelCase ? "repSint32" : "rep_sint32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_fixed32.isEmpty {
-            try container.encode(self.rep_fixed32, forKey: "repFixed32")
+            try container.encode(self.rep_fixed32, forKey: preferCamelCase ? "repFixed32" : "rep_fixed32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_sfixed32.isEmpty {
-            try container.encode(self.rep_sfixed32, forKey: "repSfixed32")
+            try container.encode(self.rep_sfixed32, forKey: preferCamelCase ? "repSfixed32" : "rep_sfixed32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_int64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.rep_int64), forKey: "repInt64")
+            try container.encode(StringEncodedValues(wrappedValue: self.rep_int64), forKey: preferCamelCase ? "repInt64" : "rep_int64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_uint64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.rep_uint64), forKey: "repUint64")
+            try container.encode(StringEncodedValues(wrappedValue: self.rep_uint64), forKey: preferCamelCase ? "repUint64" : "rep_uint64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_sint64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.rep_sint64), forKey: "repSint64")
+            try container.encode(StringEncodedValues(wrappedValue: self.rep_sint64), forKey: preferCamelCase ? "repSint64" : "rep_sint64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_fixed64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.rep_fixed64), forKey: "repFixed64")
+            try container.encode(StringEncodedValues(wrappedValue: self.rep_fixed64), forKey: preferCamelCase ? "repFixed64" : "rep_fixed64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_sfixed64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.rep_sfixed64), forKey: "repSfixed64")
+            try container.encode(StringEncodedValues(wrappedValue: self.rep_sfixed64), forKey: preferCamelCase ? "repSfixed64" : "rep_sfixed64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_bool.isEmpty {
-            try container.encode(self.rep_bool, forKey: "repBool")
+            try container.encode(self.rep_bool, forKey: preferCamelCase ? "repBool" : "rep_bool")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_float.isEmpty {
-            try container.encode(self.rep_float, forKey: "repFloat")
+            try container.encode(self.rep_float, forKey: preferCamelCase ? "repFloat" : "rep_float")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_double.isEmpty {
-            try container.encode(self.rep_double, forKey: "repDouble")
+            try container.encode(self.rep_double, forKey: preferCamelCase ? "repDouble" : "rep_double")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_string.isEmpty {
-            try container.encode(self.rep_string, forKey: "repString")
+            try container.encode(self.rep_string, forKey: preferCamelCase ? "repString" : "rep_string")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_bytes.isEmpty {
-            try container.encode(self.rep_bytes, forKey: "repBytes")
+            try container.encode(self.rep_bytes, forKey: preferCamelCase ? "repBytes" : "rep_bytes")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_nested_enum.isEmpty {
-            try container.encode(self.rep_nested_enum, forKey: "repNestedEnum")
+            try container.encode(self.rep_nested_enum, forKey: preferCamelCase ? "repNestedEnum" : "rep_nested_enum")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_nested_message.isEmpty {
-            try container.encode(self.rep_nested_message, forKey: "repNestedMessage")
+            try container.encode(self.rep_nested_message, forKey: preferCamelCase ? "repNestedMessage" : "rep_nested_message")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_int32.isEmpty {
-            try container.encode(self.pack_int32, forKey: "packInt32")
+            try container.encode(self.pack_int32, forKey: preferCamelCase ? "packInt32" : "pack_int32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_uint32.isEmpty {
-            try container.encode(self.pack_uint32, forKey: "packUint32")
+            try container.encode(self.pack_uint32, forKey: preferCamelCase ? "packUint32" : "pack_uint32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_sint32.isEmpty {
-            try container.encode(self.pack_sint32, forKey: "packSint32")
+            try container.encode(self.pack_sint32, forKey: preferCamelCase ? "packSint32" : "pack_sint32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_fixed32.isEmpty {
-            try container.encode(self.pack_fixed32, forKey: "packFixed32")
+            try container.encode(self.pack_fixed32, forKey: preferCamelCase ? "packFixed32" : "pack_fixed32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_sfixed32.isEmpty {
-            try container.encode(self.pack_sfixed32, forKey: "packSfixed32")
+            try container.encode(self.pack_sfixed32, forKey: preferCamelCase ? "packSfixed32" : "pack_sfixed32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_int64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.pack_int64), forKey: "packInt64")
+            try container.encode(StringEncodedValues(wrappedValue: self.pack_int64), forKey: preferCamelCase ? "packInt64" : "pack_int64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_uint64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.pack_uint64), forKey: "packUint64")
+            try container.encode(StringEncodedValues(wrappedValue: self.pack_uint64), forKey: preferCamelCase ? "packUint64" : "pack_uint64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_sint64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.pack_sint64), forKey: "packSint64")
+            try container.encode(StringEncodedValues(wrappedValue: self.pack_sint64), forKey: preferCamelCase ? "packSint64" : "pack_sint64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_fixed64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.pack_fixed64), forKey: "packFixed64")
+            try container.encode(StringEncodedValues(wrappedValue: self.pack_fixed64), forKey: preferCamelCase ? "packFixed64" : "pack_fixed64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_sfixed64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.pack_sfixed64), forKey: "packSfixed64")
+            try container.encode(StringEncodedValues(wrappedValue: self.pack_sfixed64), forKey: preferCamelCase ? "packSfixed64" : "pack_sfixed64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_bool.isEmpty {
-            try container.encode(self.pack_bool, forKey: "packBool")
+            try container.encode(self.pack_bool, forKey: preferCamelCase ? "packBool" : "pack_bool")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_float.isEmpty {
-            try container.encode(self.pack_float, forKey: "packFloat")
+            try container.encode(self.pack_float, forKey: preferCamelCase ? "packFloat" : "pack_float")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_double.isEmpty {
-            try container.encode(self.pack_double, forKey: "packDouble")
+            try container.encode(self.pack_double, forKey: preferCamelCase ? "packDouble" : "pack_double")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_nested_enum.isEmpty {
-            try container.encode(self.pack_nested_enum, forKey: "packNestedEnum")
+            try container.encode(self.pack_nested_enum, forKey: preferCamelCase ? "packNestedEnum" : "pack_nested_enum")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_int32 != nil {
-            try container.encode(self.default_int32, forKey: "defaultInt32")
+            try container.encode(self.default_int32, forKey: preferCamelCase ? "defaultInt32" : "default_int32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_uint32 != nil {
-            try container.encode(self.default_uint32, forKey: "defaultUint32")
+            try container.encode(self.default_uint32, forKey: preferCamelCase ? "defaultUint32" : "default_uint32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_sint32 != nil {
-            try container.encode(self.default_sint32, forKey: "defaultSint32")
+            try container.encode(self.default_sint32, forKey: preferCamelCase ? "defaultSint32" : "default_sint32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_fixed32 != nil {
-            try container.encode(self.default_fixed32, forKey: "defaultFixed32")
+            try container.encode(self.default_fixed32, forKey: preferCamelCase ? "defaultFixed32" : "default_fixed32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_sfixed32 != nil {
-            try container.encode(self.default_sfixed32, forKey: "defaultSfixed32")
+            try container.encode(self.default_sfixed32, forKey: preferCamelCase ? "defaultSfixed32" : "default_sfixed32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_int64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.default_int64), forKey: "defaultInt64")
+            try container.encode(StringEncoded(wrappedValue: self.default_int64), forKey: preferCamelCase ? "defaultInt64" : "default_int64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_uint64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.default_uint64), forKey: "defaultUint64")
+            try container.encode(StringEncoded(wrappedValue: self.default_uint64), forKey: preferCamelCase ? "defaultUint64" : "default_uint64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_sint64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.default_sint64), forKey: "defaultSint64")
+            try container.encode(StringEncoded(wrappedValue: self.default_sint64), forKey: preferCamelCase ? "defaultSint64" : "default_sint64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_fixed64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.default_fixed64), forKey: "defaultFixed64")
+            try container.encode(StringEncoded(wrappedValue: self.default_fixed64), forKey: preferCamelCase ? "defaultFixed64" : "default_fixed64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_sfixed64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.default_sfixed64), forKey: "defaultSfixed64")
+            try container.encode(StringEncoded(wrappedValue: self.default_sfixed64), forKey: preferCamelCase ? "defaultSfixed64" : "default_sfixed64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_bool != nil {
-            try container.encode(self.default_bool, forKey: "defaultBool")
+            try container.encode(self.default_bool, forKey: preferCamelCase ? "defaultBool" : "default_bool")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_float != nil {
-            try container.encode(self.default_float, forKey: "defaultFloat")
+            try container.encode(self.default_float, forKey: preferCamelCase ? "defaultFloat" : "default_float")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_double != nil {
-            try container.encode(self.default_double, forKey: "defaultDouble")
+            try container.encode(self.default_double, forKey: preferCamelCase ? "defaultDouble" : "default_double")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_string != nil {
-            try container.encode(self.default_string, forKey: "defaultString")
+            try container.encode(self.default_string, forKey: preferCamelCase ? "defaultString" : "default_string")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_bytes != nil {
-            try container.encode(self.default_bytes, forKey: "defaultBytes")
+            try container.encode(self.default_bytes, forKey: preferCamelCase ? "defaultBytes" : "default_bytes")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_nested_enum != nil {
-            try container.encode(self.default_nested_enum, forKey: "defaultNestedEnum")
+            try container.encode(self.default_nested_enum, forKey: preferCamelCase ? "defaultNestedEnum" : "default_nested_enum")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.map_int32_int32.isEmpty {
-            try container.encode(ProtoMap(wrappedValue: self.map_int32_int32), forKey: "mapInt32Int32")
+            try container.encode(ProtoMap(wrappedValue: self.map_int32_int32), forKey: preferCamelCase ? "mapInt32Int32" : "map_int32_int32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.map_string_string.isEmpty {
-            try container.encode(ProtoMap(wrappedValue: self.map_string_string), forKey: "mapStringString")
+            try container.encode(ProtoMap(wrappedValue: self.map_string_string), forKey: preferCamelCase ? "mapStringString" : "map_string_string")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.map_string_message.isEmpty {
-            try container.encode(ProtoMap(wrappedValue: self.map_string_message), forKey: "mapStringMessage")
+            try container.encode(ProtoMap(wrappedValue: self.map_string_message), forKey: preferCamelCase ? "mapStringMessage" : "map_string_message")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.map_string_enum.isEmpty {
-            try container.encode(ProtoMapEnumValues(wrappedValue: self.map_string_enum), forKey: "mapStringEnum")
+            try container.encode(ProtoMapEnumValues(wrappedValue: self.map_string_enum), forKey: preferCamelCase ? "mapStringEnum" : "map_string_enum")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_int32 != nil {
-            try container.encode(self.ext_opt_int32, forKey: "extOptInt32")
+            try container.encode(self.ext_opt_int32, forKey: preferCamelCase ? "extOptInt32" : "ext_opt_int32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_uint32 != nil {
-            try container.encode(self.ext_opt_uint32, forKey: "extOptUint32")
+            try container.encode(self.ext_opt_uint32, forKey: preferCamelCase ? "extOptUint32" : "ext_opt_uint32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_sint32 != nil {
-            try container.encode(self.ext_opt_sint32, forKey: "extOptSint32")
+            try container.encode(self.ext_opt_sint32, forKey: preferCamelCase ? "extOptSint32" : "ext_opt_sint32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_fixed32 != nil {
-            try container.encode(self.ext_opt_fixed32, forKey: "extOptFixed32")
+            try container.encode(self.ext_opt_fixed32, forKey: preferCamelCase ? "extOptFixed32" : "ext_opt_fixed32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_sfixed32 != nil {
-            try container.encode(self.ext_opt_sfixed32, forKey: "extOptSfixed32")
+            try container.encode(self.ext_opt_sfixed32, forKey: preferCamelCase ? "extOptSfixed32" : "ext_opt_sfixed32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_int64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.ext_opt_int64), forKey: "extOptInt64")
+            try container.encode(StringEncoded(wrappedValue: self.ext_opt_int64), forKey: preferCamelCase ? "extOptInt64" : "ext_opt_int64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_uint64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.ext_opt_uint64), forKey: "extOptUint64")
+            try container.encode(StringEncoded(wrappedValue: self.ext_opt_uint64), forKey: preferCamelCase ? "extOptUint64" : "ext_opt_uint64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_sint64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.ext_opt_sint64), forKey: "extOptSint64")
+            try container.encode(StringEncoded(wrappedValue: self.ext_opt_sint64), forKey: preferCamelCase ? "extOptSint64" : "ext_opt_sint64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_fixed64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.ext_opt_fixed64), forKey: "extOptFixed64")
+            try container.encode(StringEncoded(wrappedValue: self.ext_opt_fixed64), forKey: preferCamelCase ? "extOptFixed64" : "ext_opt_fixed64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_sfixed64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.ext_opt_sfixed64), forKey: "extOptSfixed64")
+            try container.encode(StringEncoded(wrappedValue: self.ext_opt_sfixed64), forKey: preferCamelCase ? "extOptSfixed64" : "ext_opt_sfixed64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_bool != nil {
-            try container.encode(self.ext_opt_bool, forKey: "extOptBool")
+            try container.encode(self.ext_opt_bool, forKey: preferCamelCase ? "extOptBool" : "ext_opt_bool")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_float != nil {
-            try container.encode(self.ext_opt_float, forKey: "extOptFloat")
+            try container.encode(self.ext_opt_float, forKey: preferCamelCase ? "extOptFloat" : "ext_opt_float")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_double != nil {
-            try container.encode(self.ext_opt_double, forKey: "extOptDouble")
+            try container.encode(self.ext_opt_double, forKey: preferCamelCase ? "extOptDouble" : "ext_opt_double")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_string != nil {
-            try container.encode(self.ext_opt_string, forKey: "extOptString")
+            try container.encode(self.ext_opt_string, forKey: preferCamelCase ? "extOptString" : "ext_opt_string")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_bytes != nil {
-            try container.encode(self.ext_opt_bytes, forKey: "extOptBytes")
+            try container.encode(self.ext_opt_bytes, forKey: preferCamelCase ? "extOptBytes" : "ext_opt_bytes")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_nested_enum != nil {
-            try container.encode(self.ext_opt_nested_enum, forKey: "extOptNestedEnum")
+            try container.encode(self.ext_opt_nested_enum, forKey: preferCamelCase ? "extOptNestedEnum" : "ext_opt_nested_enum")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_nested_message != nil {
-            try container.encode(self.ext_opt_nested_message, forKey: "extOptNestedMessage")
+            try container.encode(self.ext_opt_nested_message, forKey: preferCamelCase ? "extOptNestedMessage" : "ext_opt_nested_message")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_int32.isEmpty {
-            try container.encode(self.ext_rep_int32, forKey: "extRepInt32")
+            try container.encode(self.ext_rep_int32, forKey: preferCamelCase ? "extRepInt32" : "ext_rep_int32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_uint32.isEmpty {
-            try container.encode(self.ext_rep_uint32, forKey: "extRepUint32")
+            try container.encode(self.ext_rep_uint32, forKey: preferCamelCase ? "extRepUint32" : "ext_rep_uint32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_sint32.isEmpty {
-            try container.encode(self.ext_rep_sint32, forKey: "extRepSint32")
+            try container.encode(self.ext_rep_sint32, forKey: preferCamelCase ? "extRepSint32" : "ext_rep_sint32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_fixed32.isEmpty {
-            try container.encode(self.ext_rep_fixed32, forKey: "extRepFixed32")
+            try container.encode(self.ext_rep_fixed32, forKey: preferCamelCase ? "extRepFixed32" : "ext_rep_fixed32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_sfixed32.isEmpty {
-            try container.encode(self.ext_rep_sfixed32, forKey: "extRepSfixed32")
+            try container.encode(self.ext_rep_sfixed32, forKey: preferCamelCase ? "extRepSfixed32" : "ext_rep_sfixed32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_int64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_int64), forKey: "extRepInt64")
+            try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_int64), forKey: preferCamelCase ? "extRepInt64" : "ext_rep_int64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_uint64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_uint64), forKey: "extRepUint64")
+            try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_uint64), forKey: preferCamelCase ? "extRepUint64" : "ext_rep_uint64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_sint64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_sint64), forKey: "extRepSint64")
+            try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_sint64), forKey: preferCamelCase ? "extRepSint64" : "ext_rep_sint64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_fixed64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_fixed64), forKey: "extRepFixed64")
+            try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_fixed64), forKey: preferCamelCase ? "extRepFixed64" : "ext_rep_fixed64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_sfixed64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_sfixed64), forKey: "extRepSfixed64")
+            try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_sfixed64), forKey: preferCamelCase ? "extRepSfixed64" : "ext_rep_sfixed64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_bool.isEmpty {
-            try container.encode(self.ext_rep_bool, forKey: "extRepBool")
+            try container.encode(self.ext_rep_bool, forKey: preferCamelCase ? "extRepBool" : "ext_rep_bool")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_float.isEmpty {
-            try container.encode(self.ext_rep_float, forKey: "extRepFloat")
+            try container.encode(self.ext_rep_float, forKey: preferCamelCase ? "extRepFloat" : "ext_rep_float")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_double.isEmpty {
-            try container.encode(self.ext_rep_double, forKey: "extRepDouble")
+            try container.encode(self.ext_rep_double, forKey: preferCamelCase ? "extRepDouble" : "ext_rep_double")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_string.isEmpty {
-            try container.encode(self.ext_rep_string, forKey: "extRepString")
+            try container.encode(self.ext_rep_string, forKey: preferCamelCase ? "extRepString" : "ext_rep_string")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_bytes.isEmpty {
-            try container.encode(self.ext_rep_bytes, forKey: "extRepBytes")
+            try container.encode(self.ext_rep_bytes, forKey: preferCamelCase ? "extRepBytes" : "ext_rep_bytes")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_nested_enum.isEmpty {
-            try container.encode(self.ext_rep_nested_enum, forKey: "extRepNestedEnum")
+            try container.encode(self.ext_rep_nested_enum, forKey: preferCamelCase ? "extRepNestedEnum" : "ext_rep_nested_enum")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_nested_message.isEmpty {
-            try container.encode(self.ext_rep_nested_message, forKey: "extRepNestedMessage")
+            try container.encode(self.ext_rep_nested_message, forKey: preferCamelCase ? "extRepNestedMessage" : "ext_rep_nested_message")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_int32.isEmpty {
-            try container.encode(self.ext_pack_int32, forKey: "extPackInt32")
+            try container.encode(self.ext_pack_int32, forKey: preferCamelCase ? "extPackInt32" : "ext_pack_int32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_uint32.isEmpty {
-            try container.encode(self.ext_pack_uint32, forKey: "extPackUint32")
+            try container.encode(self.ext_pack_uint32, forKey: preferCamelCase ? "extPackUint32" : "ext_pack_uint32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_sint32.isEmpty {
-            try container.encode(self.ext_pack_sint32, forKey: "extPackSint32")
+            try container.encode(self.ext_pack_sint32, forKey: preferCamelCase ? "extPackSint32" : "ext_pack_sint32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_fixed32.isEmpty {
-            try container.encode(self.ext_pack_fixed32, forKey: "extPackFixed32")
+            try container.encode(self.ext_pack_fixed32, forKey: preferCamelCase ? "extPackFixed32" : "ext_pack_fixed32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_sfixed32.isEmpty {
-            try container.encode(self.ext_pack_sfixed32, forKey: "extPackSfixed32")
+            try container.encode(self.ext_pack_sfixed32, forKey: preferCamelCase ? "extPackSfixed32" : "ext_pack_sfixed32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_int64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_int64), forKey: "extPackInt64")
+            try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_int64), forKey: preferCamelCase ? "extPackInt64" : "ext_pack_int64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_uint64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_uint64), forKey: "extPackUint64")
+            try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_uint64), forKey: preferCamelCase ? "extPackUint64" : "ext_pack_uint64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_sint64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_sint64), forKey: "extPackSint64")
+            try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_sint64), forKey: preferCamelCase ? "extPackSint64" : "ext_pack_sint64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_fixed64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_fixed64), forKey: "extPackFixed64")
+            try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_fixed64), forKey: preferCamelCase ? "extPackFixed64" : "ext_pack_fixed64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_sfixed64.isEmpty {
-            try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_sfixed64), forKey: "extPackSfixed64")
+            try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_sfixed64), forKey: preferCamelCase ? "extPackSfixed64" : "ext_pack_sfixed64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_bool.isEmpty {
-            try container.encode(self.ext_pack_bool, forKey: "extPackBool")
+            try container.encode(self.ext_pack_bool, forKey: preferCamelCase ? "extPackBool" : "ext_pack_bool")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_float.isEmpty {
-            try container.encode(self.ext_pack_float, forKey: "extPackFloat")
+            try container.encode(self.ext_pack_float, forKey: preferCamelCase ? "extPackFloat" : "ext_pack_float")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_double.isEmpty {
-            try container.encode(self.ext_pack_double, forKey: "extPackDouble")
+            try container.encode(self.ext_pack_double, forKey: preferCamelCase ? "extPackDouble" : "ext_pack_double")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_nested_enum.isEmpty {
-            try container.encode(self.ext_pack_nested_enum, forKey: "extPackNestedEnum")
+            try container.encode(self.ext_pack_nested_enum, forKey: preferCamelCase ? "extPackNestedEnum" : "ext_pack_nested_enum")
         }
     }
 

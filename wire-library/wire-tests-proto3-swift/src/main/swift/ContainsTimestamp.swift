@@ -66,6 +66,7 @@ extension ContainsTimestamp : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: ContainsTimestamp.CodingKeys.self)
+
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.timestamp != nil {
             try container.encode(self.timestamp, forKey: "timestamp")
         }

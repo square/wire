@@ -114,6 +114,7 @@ extension RedactedOneOf : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: RedactedOneOf.CodingKeys.self)
+
         switch self.a {
         case .b(let b): try container.encode(b, forKey: "b")
         case .c(let c): try container.encode(c, forKey: "c")

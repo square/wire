@@ -133,6 +133,7 @@ extension FooBar.Nested : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: FooBar.Nested.CodingKeys.self)
+
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.value != nil {
             try container.encode(self.value, forKey: "value")
         }
@@ -214,6 +215,7 @@ extension FooBar.More : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: FooBar.More.CodingKeys.self)
+
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.serial.isEmpty {
             try container.encode(self.serial, forKey: "serial")
         }
@@ -340,11 +342,14 @@ extension FooBar : Codable {
         self.nested = try container.decodeIfPresent([FooBar].self, forKey: "nested") ?? []
         self.ext = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "ext")
         self.rep = try container.decodeIfPresent([FooBar.FooBarBazEnum].self, forKey: "rep") ?? []
-        self.more_string = try container.decodeIfPresent(String.self, forKey: "moreString")
+        self.more_string = try container.decodeIfPresent(String.self, forKey: "moreString") ??
+                try container.decodeIfPresent(String.self, forKey: "more_string")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: FooBar.CodingKeys.self)
+        let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.foo != nil {
             try container.encode(self.foo, forKey: "foo")
         }
@@ -373,7 +378,7 @@ extension FooBar : Codable {
             try container.encode(self.rep, forKey: "rep")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.more_string != nil {
-            try container.encode(self.more_string, forKey: "moreString")
+            try container.encode(self.more_string, forKey: preferCamelCase ? "moreString" : "more_string")
         }
     }
 

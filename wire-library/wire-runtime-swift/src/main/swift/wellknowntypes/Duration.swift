@@ -126,6 +126,7 @@ extension Duration : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Duration.CodingKeys.self)
+
         try container.encode(StringEncoded(wrappedValue: self.seconds), forKey: "seconds")
         try container.encode(self.nanos, forKey: "nanos")
     }

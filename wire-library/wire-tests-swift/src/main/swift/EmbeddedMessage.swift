@@ -67,17 +67,21 @@ extension EmbeddedMessage : Proto2Codable {
 extension EmbeddedMessage : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: EmbeddedMessage.CodingKeys.self)
-        self.inner_repeated_number = try container.decodeIfPresent([Int32].self, forKey: "innerRepeatedNumber") ?? []
-        self.inner_number_after = try container.decodeIfPresent(Int32.self, forKey: "innerNumberAfter")
+        self.inner_repeated_number = try container.decodeIfPresent([Int32].self, forKey: "innerRepeatedNumber") ??
+                try container.decodeIfPresent([Int32].self, forKey: "inner_repeated_number") ?? []
+        self.inner_number_after = try container.decodeIfPresent(Int32.self, forKey: "innerNumberAfter") ??
+                try container.decodeIfPresent(Int32.self, forKey: "inner_number_after")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: EmbeddedMessage.CodingKeys.self)
+        let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.inner_repeated_number.isEmpty {
-            try container.encode(self.inner_repeated_number, forKey: "innerRepeatedNumber")
+            try container.encode(self.inner_repeated_number, forKey: preferCamelCase ? "innerRepeatedNumber" : "inner_repeated_number")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.inner_number_after != nil {
-            try container.encode(self.inner_number_after, forKey: "innerNumberAfter")
+            try container.encode(self.inner_number_after, forKey: preferCamelCase ? "innerNumberAfter" : "inner_number_after")
         }
     }
 

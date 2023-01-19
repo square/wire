@@ -76,6 +76,7 @@ extension MessageUsingMultipleEnums : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: MessageUsingMultipleEnums.CodingKeys.self)
+
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.a != nil {
             try container.encode(self.a, forKey: "a")
         }

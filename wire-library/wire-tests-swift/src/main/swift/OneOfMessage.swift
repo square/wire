@@ -124,6 +124,7 @@ extension OneOfMessage : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: OneOfMessage.CodingKeys.self)
+
         switch self.choice {
         case .foo(let foo): try container.encode(foo, forKey: "foo")
         case .bar(let bar): try container.encode(bar, forKey: "bar")

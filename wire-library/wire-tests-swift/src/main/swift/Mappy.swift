@@ -66,6 +66,7 @@ extension Mappy : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Mappy.CodingKeys.self)
+
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.things.isEmpty {
             try container.encode(ProtoMap(wrappedValue: self.things), forKey: "things")
         }

@@ -67,17 +67,21 @@ extension OuterMessage : Proto2Codable {
 extension OuterMessage : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: OuterMessage.CodingKeys.self)
-        self.outer_number_before = try container.decodeIfPresent(Int32.self, forKey: "outerNumberBefore")
-        self.embedded_message = try container.decodeIfPresent(EmbeddedMessage.self, forKey: "embeddedMessage")
+        self.outer_number_before = try container.decodeIfPresent(Int32.self, forKey: "outerNumberBefore") ??
+                try container.decodeIfPresent(Int32.self, forKey: "outer_number_before")
+        self.embedded_message = try container.decodeIfPresent(EmbeddedMessage.self, forKey: "embeddedMessage") ??
+                try container.decodeIfPresent(EmbeddedMessage.self, forKey: "embedded_message")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: OuterMessage.CodingKeys.self)
+        let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.outer_number_before != nil {
-            try container.encode(self.outer_number_before, forKey: "outerNumberBefore")
+            try container.encode(self.outer_number_before, forKey: preferCamelCase ? "outerNumberBefore" : "outer_number_before")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.embedded_message != nil {
-            try container.encode(self.embedded_message, forKey: "embeddedMessage")
+            try container.encode(self.embedded_message, forKey: preferCamelCase ? "embeddedMessage" : "embedded_message")
         }
     }
 

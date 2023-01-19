@@ -66,6 +66,7 @@ extension NestedVersionOne : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: NestedVersionOne.CodingKeys.self)
+
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.i != nil {
             try container.encode(self.i, forKey: "i")
         }

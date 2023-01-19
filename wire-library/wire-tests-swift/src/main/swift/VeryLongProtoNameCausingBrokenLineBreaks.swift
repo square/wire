@@ -69,6 +69,7 @@ extension VeryLongProtoNameCausingBrokenLineBreaks : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: VeryLongProtoNameCausingBrokenLineBreaks.CodingKeys.self)
+
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.foo != nil {
             try container.encode(self.foo, forKey: "foo")
         }

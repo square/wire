@@ -66,6 +66,7 @@ extension Thing : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Thing.CodingKeys.self)
+
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.name != nil {
             try container.encode(self.name, forKey: "name")
         }

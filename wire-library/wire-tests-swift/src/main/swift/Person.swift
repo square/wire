@@ -146,6 +146,7 @@ extension Person.PhoneNumber : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Person.PhoneNumber.CodingKeys.self)
+
         try container.encode(self.number, forKey: "number")
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.type != nil {
             try container.encode(self.type, forKey: "type")
@@ -248,6 +249,7 @@ extension Person : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Person.CodingKeys.self)
+
         try container.encode(self.name, forKey: "name")
         try container.encode(self.id, forKey: "id")
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.email != nil {

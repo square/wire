@@ -109,8 +109,8 @@ class SwiftGenerator private constructor(
   internal val Field.valueType: ProtoType
     get() = type!!.valueType!!
 
-  private val Field.codableName: String
-    get() = jsonName?.takeIf { it != name } ?: camelCase(name)
+  private val Field.codableName: String?
+    get() = jsonName?.takeIf { it != name } ?: camelCase(name).takeIf { it != name }
 
   private val Field.typeName: TypeName
     get() {
@@ -691,6 +691,13 @@ class SwiftGenerator private constructor(
                     ""
                   }
 
+                  val (prefix, args) = field.codableName?.let { codableName ->
+                    Pair(
+                      "try container.decodeIfPresent(%2T.self, forKey: %3S) ??\n",
+                      arrayOf(field.name, typeName, codableName)
+                    )
+                  } ?: Pair("", arrayOf(field.name, typeName))
+
                   if (field.isRepeated || field.isMap || field.typeName.optional) {
                     val fallback = if (field.isRepeated) {
                       " ?? []"
@@ -701,38 +708,45 @@ class SwiftGenerator private constructor(
                     }
 
                     addStatement(
-                      "self.%1N = try container.decodeIfPresent(%3T.self, forKey: %2S)$suffix$fallback",
-                      field.name,
-                      field.codableName,
-                      typeName
+                      "self.%1N = ${prefix}try container.decodeIfPresent(%2T.self, forKey: %1S)$suffix$fallback",
+                      *args
                     )
                   } else {
                     addStatement(
-                      "self.%1N = try container.decode(%3T.self, forKey: %2S)$suffix",
-                      field.name,
-                      field.codableName,
-                      typeName
+                      "self.%1N = ${prefix}try container.decode(%2T.self, forKey: %1S)$suffix",
+                      *args
                     )
                   }
                 }
 
                 type.oneOfs.forEach { oneOf ->
-                  oneOf.fields.forEachIndexed { index, field ->
+                  oneOf.fields.fold(mutableListOf<Pair<Field, String>>()) { memo, field ->
+                    field.codableName?.let { codableName ->
+                      memo.add(Pair(field, codableName))
+                    }
+                    memo.add(Pair(field, field.name))
+
+                    memo
+                  }.forEachIndexed { index, pair ->
+                    val (field, keyName) = pair
+
+                    val typeName = field.typeName.makeNonOptional()
+
                     if (index == 0) {
                       beginControlFlow(
                         "if",
-                        "let %1N = try container.decodeIfPresent(%3T.self, forKey: %2S)",
+                        "let %1N = try container.decodeIfPresent(%2T.self, forKey: %3S)",
                         field.name,
-                        field.codableName,
-                        field.typeName.makeNonOptional()
+                        typeName,
+                        keyName
                       )
                     } else {
                       nextControlFlow(
                         "else if",
-                        "let %1N = try container.decodeIfPresent(%3T.self, forKey: %2S)",
+                        "let %1N = try container.decodeIfPresent(%2T.self, forKey: %3S)",
                         field.name,
-                        field.codableName,
-                        field.typeName.makeNonOptional()
+                        typeName,
+                        keyName
                       )
                     }
                     addStatement("self.%1N = .%2N(%2N)", oneOf.name, field.name)
@@ -751,6 +765,11 @@ class SwiftGenerator private constructor(
               .throws(true)
               .addStatement("var container = encoder.container(keyedBy: %T.self)", codingKeys)
               .apply {
+                if (type.fields.any { it.codableName != null }) {
+                  addStatement("let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase")
+                }
+                addStatement("")
+
                 type.fields.forEach { field ->
                   fun addEncode() {
                     val wrapper = if (field.typeName.needsStringEncoded()) {
@@ -770,17 +789,28 @@ class SwiftGenerator private constructor(
                     }
 
                     if (wrapper != null) {
+                      val (keys, args) = field.codableName?.let { codableName ->
+                        Pair(
+                          "preferCamelCase ? %3S : %1S",
+                          arrayOf(field.name, wrapper, codableName)
+                        )
+                      } ?: Pair("%1S", arrayOf(field.name, wrapper))
+
                       addStatement(
-                        "try container.encode(%3T(wrappedValue: self.%1N), forKey: %2S)",
-                        field.name,
-                        field.codableName,
-                        wrapper
+                        "try container.encode(%2T(wrappedValue: self.%1N), forKey: $keys)",
+                        *args
                       )
                     } else {
+                      val (keys, args) = field.codableName?.let { codableName ->
+                        Pair(
+                          "preferCamelCase ? %2S : %1S",
+                          arrayOf(field.name, codableName)
+                        )
+                      } ?: Pair("%1S", arrayOf(field.name))
+
                       addStatement(
-                        "try container.encode(self.%1N, forKey: %2S)",
-                        field.name,
-                        field.codableName
+                        "try container.encode(self.%1N, forKey: $keys)",
+                        *args
                       )
                     }
                   }
@@ -801,10 +831,16 @@ class SwiftGenerator private constructor(
                 type.oneOfs.forEach { oneOf ->
                   beginControlFlow("switch", "self.%N", oneOf.name)
                   oneOf.fields.forEach { field ->
+                    val (keys, args) = field.codableName?.let { codableName ->
+                      Pair(
+                        "preferCamelCase ? %2S : %1S",
+                        arrayOf(field.name, codableName)
+                      )
+                    } ?: Pair("%1S", arrayOf(field.name))
+
                     addStatement(
-                      "case .%1N(let %1N): try container.encode(%1N, forKey: %2S)",
-                      field.name,
-                      field.codableName
+                      "case .%1N(let %1N): try container.encode(%1N, forKey: $keys)",
+                      *args
                     )
                   }
                   addStatement("case %T.none: break", OPTIONAL)
