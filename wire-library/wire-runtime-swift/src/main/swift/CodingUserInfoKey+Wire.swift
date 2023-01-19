@@ -148,8 +148,8 @@ public extension Decoder {
 
 // MARK: - JSON Coders
 
-extension JSONEncoder {
-    public var protoEnumEncodingStrategy: JSONEncoder.EnumEncodingStrategy {
+public extension JSONEncoder {
+    var protoEnumEncodingStrategy: JSONEncoder.EnumEncodingStrategy {
         get {
             let preferred = userInfo[.wireEnumEncodingStrategy] as? JSONEncoder.EnumEncodingStrategy
             return preferred ?? .string
@@ -159,7 +159,7 @@ extension JSONEncoder {
         }
     }
 
-    public var stringEncodedEncodingStrategy: JSONEncoder.StringEncodedEncodingStrategy {
+    var stringEncodedEncodingStrategy: JSONEncoder.StringEncodedEncodingStrategy {
         get {
             let preferred = userInfo[.wireStringEncodedEncodingStrategy] as? JSONEncoder.StringEncodedEncodingStrategy
             return preferred ?? .string
@@ -190,8 +190,8 @@ extension JSONEncoder {
     }
 }
 
-extension JSONDecoder {
-    public var protoEnumDecodingStrategy: JSONDecoder.EnumDecodingStrategy {
+public extension JSONDecoder {
+    var protoEnumDecodingStrategy: JSONDecoder.EnumDecodingStrategy {
         get {
             let preferred = userInfo[.wireEnumDecodingStrategy] as? JSONDecoder.EnumDecodingStrategy
             return preferred ?? .throwError
@@ -201,7 +201,7 @@ extension JSONDecoder {
         }
     }
 
-    public var stringEncodedDecodingStrategy: JSONDecoder.StringEncodedDecodingStrategy {
+    var stringEncodedDecodingStrategy: JSONDecoder.StringEncodedDecodingStrategy {
         get {
             let preferred = userInfo[.wireStringEncodedDecodingStrategy] as? JSONDecoder.StringEncodedDecodingStrategy
             return preferred ?? .disallowRawDecoding

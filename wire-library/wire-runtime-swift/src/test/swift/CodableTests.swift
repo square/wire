@@ -19,9 +19,11 @@ import Wire
 import XCTest
 
 final class CodableTests: XCTestCase {
+}
 
-    // MARK: - Decode Tests
+// MARK: - Decode Tests
 
+extension CodableTests {
     func testDecodeOptional() throws {
         let json = """
         {
@@ -99,9 +101,11 @@ final class CodableTests: XCTestCase {
 
         try assertDecode(json: json, expected: expected)
     }
+}
 
-    // MARK: - Encode Tests
+// MARK: - Encode Tests
 
+extension CodableTests {
     func testEncodeOptional() throws {
         // Only include one value in maps until https://bugs.swift.org/browse/SR-13414 is fixed.
         let proto = SimpleOptional2(
@@ -136,7 +140,9 @@ final class CodableTests: XCTestCase {
         }
         """
 
-        try assertEncode(proto: proto, expected: expected)
+        try assertEncode(proto: proto, expected: expected) { encoder in
+            encoder.protoKeyNameEncodingStrategy = .fieldName
+        }
     }
 
     func testEncodeRequired() throws {
@@ -173,19 +179,31 @@ final class CodableTests: XCTestCase {
         }
         """
 
-        try assertEncode(proto: proto, expected: expected)
+        try assertEncode(proto: proto, expected: expected) { encoder in
+            encoder.protoKeyNameEncodingStrategy = .fieldName
+        }
     }
+}
 
-    // MARK: - Private Methods
+#warning("Add tests for null / empty encoding / decoding")
+#warning("Add tests for key names")
 
+// MARK: - Private Methods
+
+extension CodableTests {
     private func assertDecode<P: Decodable & Equatable>(
         json: String,
         expected: P,
         file: StaticString = #file,
-        line: UInt = #line
+        line: UInt = #line,
+        configuration: (JSONDecoder) -> Void = { _ in }
     ) throws {
         let json = json.compacted()
-        let proto = try JSONDecoder().decode(P.self, from: json.data(using: .utf8)!)
+
+        let decoder = JSONDecoder()
+        configuration(decoder)
+
+        let proto = try decoder.decode(P.self, from: json.data(using: .utf8)!)
         XCTAssertEqual(proto, expected, file: file, line: line)
     }
 
@@ -193,11 +211,14 @@ final class CodableTests: XCTestCase {
         proto: P,
         expected: String,
         file: StaticString = #file,
-        line: UInt = #line
+        line: UInt = #line,
+        configuration: (JSONEncoder) -> Void = { _ in }
     ) throws {
         let expected = expected.compacted()
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = .sortedKeys
+        configuration(encoder)
 
         let json = String(data: try encoder.encode(proto), encoding: .utf8)
         XCTAssertEqual(json, expected, file: file, line: line)
@@ -215,6 +236,3 @@ private extension String {
     }
 
 }
-
-#warning("Add tests for null / empty encoding / decoding")
-#warning("Add tests for key names")
