@@ -951,6 +951,7 @@ extension Form : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Form.CodingKeys.self)
+        let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
 
         switch self.choice {
         case .button_element(let button_element): try container.encode(button_element, forKey: preferCamelCase ? "buttonElement" : "button_element")

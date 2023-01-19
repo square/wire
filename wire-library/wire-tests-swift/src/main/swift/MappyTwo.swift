@@ -105,14 +105,14 @@ extension MappyTwo : Proto2Codable {
 extension MappyTwo : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: MappyTwo.CodingKeys.self)
-        self.string_enums = try container.decodeIfPresent(ProtoMapEnumValues<String, MappyTwo.ValueEnum>.self, forKey: "stringEnums") ??
-                try container.decodeIfPresent(ProtoMapEnumValues<String, MappyTwo.ValueEnum>.self, forKey: "string_enums")?.wrappedValue ?? [:]
-        self.int_things = try container.decodeIfPresent(ProtoMap<Int64, Thing>.self, forKey: "intThings") ??
-                try container.decodeIfPresent(ProtoMap<Int64, Thing>.self, forKey: "int_things")?.wrappedValue ?? [:]
-        self.string_ints = try container.decodeIfPresent(ProtoMapStringEncodedValues<String, Int64>.self, forKey: "stringInts") ??
-                try container.decodeIfPresent(ProtoMapStringEncodedValues<String, Int64>.self, forKey: "string_ints")?.wrappedValue ?? [:]
-        self.int_things_two = try container.decodeIfPresent(ProtoMap<Int32, Thing>.self, forKey: "intThingsTwo") ??
-                try container.decodeIfPresent(ProtoMap<Int32, Thing>.self, forKey: "int_things_two")?.wrappedValue ?? [:]
+        self.string_enums = try container.decodeIfPresent(ProtoMapEnumValues<String, MappyTwo.ValueEnum>.self, forKey: "stringEnums")?.wrappedValue ??
+                container.decodeIfPresent(ProtoMapEnumValues<String, MappyTwo.ValueEnum>.self, forKey: "string_enums")?.wrappedValue ?? [:]
+        self.int_things = try container.decodeIfPresent(ProtoMap<Int64, Thing>.self, forKey: "intThings")?.wrappedValue ??
+                container.decodeIfPresent(ProtoMap<Int64, Thing>.self, forKey: "int_things")?.wrappedValue ?? [:]
+        self.string_ints = try container.decodeIfPresent(ProtoMapStringEncodedValues<String, Int64>.self, forKey: "stringInts")?.wrappedValue ??
+                container.decodeIfPresent(ProtoMapStringEncodedValues<String, Int64>.self, forKey: "string_ints")?.wrappedValue ?? [:]
+        self.int_things_two = try container.decodeIfPresent(ProtoMap<Int32, Thing>.self, forKey: "intThingsTwo")?.wrappedValue ??
+                container.decodeIfPresent(ProtoMap<Int32, Thing>.self, forKey: "int_things_two")?.wrappedValue ?? [:]
     }
 
     public func encode(to encoder: Encoder) throws {

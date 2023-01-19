@@ -68,9 +68,9 @@ extension EmbeddedMessage : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: EmbeddedMessage.CodingKeys.self)
         self.inner_repeated_number = try container.decodeIfPresent([Int32].self, forKey: "innerRepeatedNumber") ??
-                try container.decodeIfPresent([Int32].self, forKey: "inner_repeated_number") ?? []
+                container.decodeIfPresent([Int32].self, forKey: "inner_repeated_number") ?? []
         self.inner_number_after = try container.decodeIfPresent(Int32.self, forKey: "innerNumberAfter") ??
-                try container.decodeIfPresent(Int32.self, forKey: "inner_number_after")
+                container.decodeIfPresent(Int32.self, forKey: "inner_number_after")
     }
 
     public func encode(to encoder: Encoder) throws {

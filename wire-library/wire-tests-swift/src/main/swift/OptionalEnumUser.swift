@@ -81,7 +81,7 @@ extension OptionalEnumUser : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: OptionalEnumUser.CodingKeys.self)
         self.optional_enum = try container.decodeIfPresent(OptionalEnumUser.OptionalEnum.self, forKey: "optionalEnum") ??
-                try container.decodeIfPresent(OptionalEnumUser.OptionalEnum.self, forKey: "optional_enum")
+                container.decodeIfPresent(OptionalEnumUser.OptionalEnum.self, forKey: "optional_enum")
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -692,11 +692,16 @@ class SwiftGenerator private constructor(
                   }
 
                   val (prefix, args) = field.codableName?.let { codableName ->
+                    val wrapped = if (typeName != field.typeName.makeNonOptional()) {
+                      "?.wrappedValue"
+                    } else {
+                      ""
+                    }
                     Pair(
-                      "try container.decodeIfPresent(%2T.self, forKey: %3S) ??\n",
+                      "try container.decodeIfPresent(%2T.self, forKey: %3S)$wrapped ??\n",
                       arrayOf(field.name, typeName, codableName)
                     )
-                  } ?: Pair("", arrayOf(field.name, typeName))
+                  } ?: Pair("try ", arrayOf(field.name, typeName))
 
                   if (field.isRepeated || field.isMap || field.typeName.optional) {
                     val fallback = if (field.isRepeated) {
@@ -708,12 +713,12 @@ class SwiftGenerator private constructor(
                     }
 
                     addStatement(
-                      "self.%1N = ${prefix}try container.decodeIfPresent(%2T.self, forKey: %1S)$suffix$fallback",
+                      "self.%1N = ${prefix}container.decodeIfPresent(%2T.self, forKey: %1S)$suffix$fallback",
                       *args
                     )
                   } else {
                     addStatement(
-                      "self.%1N = ${prefix}try container.decode(%2T.self, forKey: %1S)$suffix",
+                      "self.%1N = ${prefix}container.decode(%2T.self, forKey: %1S)$suffix",
                       *args
                     )
                   }
@@ -765,7 +770,7 @@ class SwiftGenerator private constructor(
               .throws(true)
               .addStatement("var container = encoder.container(keyedBy: %T.self)", codingKeys)
               .apply {
-                if (type.fields.any { it.codableName != null }) {
+                if (type.fieldsAndOneOfFields.any { it.codableName != null }) {
                   addStatement("let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase")
                 }
                 addStatement("")

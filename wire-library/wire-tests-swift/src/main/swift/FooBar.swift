@@ -343,7 +343,7 @@ extension FooBar : Codable {
         self.ext = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "ext")
         self.rep = try container.decodeIfPresent([FooBar.FooBarBazEnum].self, forKey: "rep") ?? []
         self.more_string = try container.decodeIfPresent(String.self, forKey: "moreString") ??
-                try container.decodeIfPresent(String.self, forKey: "more_string")
+                container.decodeIfPresent(String.self, forKey: "more_string")
     }
 
     public func encode(to encoder: Encoder) throws {
