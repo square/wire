@@ -113,11 +113,11 @@ extension VersionTwo : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: VersionTwo.CodingKeys.self)
         self.i = try container.decodeIfPresent(Int32.self, forKey: "i")
-        self.v2_i = try container.decodeIfPresent(Int32.self, forKey: "v2_i")
-        self.v2_s = try container.decodeIfPresent(String.self, forKey: "v2_s")
-        self.v2_f32 = try container.decodeIfPresent(UInt32.self, forKey: "v2_f32")
-        self.v2_f64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "v2_f64")?.wrappedValue
-        self.v2_rs = try container.decodeIfPresent([String].self, forKey: "v2_rs") ?? []
+        self.v2_i = try container.decodeIfPresent(Int32.self, forKey: "v2I")
+        self.v2_s = try container.decodeIfPresent(String.self, forKey: "v2S")
+        self.v2_f32 = try container.decodeIfPresent(UInt32.self, forKey: "v2F32")
+        self.v2_f64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "v2F64")?.wrappedValue
+        self.v2_rs = try container.decodeIfPresent([String].self, forKey: "v2Rs") ?? []
         self.obj = try container.decodeIfPresent(NestedVersionTwo.self, forKey: "obj")
         self.en = try container.decodeIfPresent(EnumVersionTwo.self, forKey: "en")
     }
@@ -128,19 +128,19 @@ extension VersionTwo : Codable {
             try container.encode(self.i, forKey: "i")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.v2_i != nil {
-            try container.encode(self.v2_i, forKey: "v2_i")
+            try container.encode(self.v2_i, forKey: "v2I")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.v2_s != nil {
-            try container.encode(self.v2_s, forKey: "v2_s")
+            try container.encode(self.v2_s, forKey: "v2S")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.v2_f32 != nil {
-            try container.encode(self.v2_f32, forKey: "v2_f32")
+            try container.encode(self.v2_f32, forKey: "v2F32")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.v2_f64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.v2_f64), forKey: "v2_f64")
+            try container.encode(StringEncoded(wrappedValue: self.v2_f64), forKey: "v2F64")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.v2_rs.isEmpty {
-            try container.encode(self.v2_rs, forKey: "v2_rs")
+            try container.encode(self.v2_rs, forKey: "v2Rs")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.obj != nil {
             try container.encode(self.obj, forKey: "obj")

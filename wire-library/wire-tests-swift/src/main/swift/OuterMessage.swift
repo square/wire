@@ -67,17 +67,17 @@ extension OuterMessage : Proto2Codable {
 extension OuterMessage : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: OuterMessage.CodingKeys.self)
-        self.outer_number_before = try container.decodeIfPresent(Int32.self, forKey: "outer_number_before")
-        self.embedded_message = try container.decodeIfPresent(EmbeddedMessage.self, forKey: "embedded_message")
+        self.outer_number_before = try container.decodeIfPresent(Int32.self, forKey: "outerNumberBefore")
+        self.embedded_message = try container.decodeIfPresent(EmbeddedMessage.self, forKey: "embeddedMessage")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: OuterMessage.CodingKeys.self)
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.outer_number_before != nil {
-            try container.encode(self.outer_number_before, forKey: "outer_number_before")
+            try container.encode(self.outer_number_before, forKey: "outerNumberBefore")
         }
         if encoder.protoDefaultValuesEncodingStrategy == .emit || self.embedded_message != nil {
-            try container.encode(self.embedded_message, forKey: "embedded_message")
+            try container.encode(self.embedded_message, forKey: "embeddedMessage")
         }
     }
 

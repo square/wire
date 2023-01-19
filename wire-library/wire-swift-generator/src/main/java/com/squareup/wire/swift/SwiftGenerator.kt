@@ -2,6 +2,7 @@ package com.squareup.wire.swift
 
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.Syntax.PROTO_3
+import com.squareup.wire.internal.camelCase
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
@@ -107,6 +108,9 @@ class SwiftGenerator private constructor(
     get() = type!!.keyType!!
   internal val Field.valueType: ProtoType
     get() = type!!.valueType!!
+
+  private val Field.codableName: String
+    get() = jsonName?.takeIf { it != name } ?: camelCase(name)
 
   private val Field.typeName: TypeName
     get() {
@@ -697,14 +701,16 @@ class SwiftGenerator private constructor(
                     }
 
                     addStatement(
-                      "self.%1N = try container.decodeIfPresent(%2T.self, forKey: %1S)$suffix$fallback",
+                      "self.%1N = try container.decodeIfPresent(%3T.self, forKey: %2S)$suffix$fallback",
                       field.name,
+                      field.codableName,
                       typeName
                     )
                   } else {
                     addStatement(
-                      "self.%1N = try container.decode(%2T.self, forKey: %1S)$suffix",
+                      "self.%1N = try container.decode(%3T.self, forKey: %2S)$suffix",
                       field.name,
+                      field.codableName,
                       typeName
                     )
                   }
@@ -715,15 +721,17 @@ class SwiftGenerator private constructor(
                     if (index == 0) {
                       beginControlFlow(
                         "if",
-                        "let %1N = try container.decodeIfPresent(%2T.self, forKey: %1S)",
+                        "let %1N = try container.decodeIfPresent(%3T.self, forKey: %2S)",
                         field.name,
+                        field.codableName,
                         field.typeName.makeNonOptional()
                       )
                     } else {
                       nextControlFlow(
                         "else if",
-                        "let %1N = try container.decodeIfPresent(%2T.self, forKey: %1S)",
+                        "let %1N = try container.decodeIfPresent(%3T.self, forKey: %2S)",
                         field.name,
+                        field.codableName,
                         field.typeName.makeNonOptional()
                       )
                     }
@@ -762,9 +770,18 @@ class SwiftGenerator private constructor(
                     }
 
                     if (wrapper != null) {
-                      addStatement("try container.encode(%2T(wrappedValue: self.%1N), forKey: %1S)", field.name, wrapper)
+                      addStatement(
+                        "try container.encode(%3T(wrappedValue: self.%1N), forKey: %2S)",
+                        field.name,
+                        field.codableName,
+                        wrapper
+                      )
                     } else {
-                      addStatement("try container.encode(self.%1N, forKey: %1S)", field.name)
+                      addStatement(
+                        "try container.encode(self.%1N, forKey: %2S)",
+                        field.name,
+                        field.codableName
+                      )
                     }
                   }
 
@@ -785,7 +802,9 @@ class SwiftGenerator private constructor(
                   beginControlFlow("switch", "self.%N", oneOf.name)
                   oneOf.fields.forEach { field ->
                     addStatement(
-                      "case .%1N(let %1N): try container.encode(%1N, forKey: %1S)", field.name
+                      "case .%1N(let %1N): try container.encode(%1N, forKey: %2S)",
+                      field.name,
+                      field.codableName
                     )
                   }
                   addStatement("case %T.none: break", OPTIONAL)
