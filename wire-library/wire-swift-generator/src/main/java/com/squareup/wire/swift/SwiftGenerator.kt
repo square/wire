@@ -212,7 +212,7 @@ class SwiftGenerator private constructor(
                   storageParams += CodeBlock.of("%1N: %1N", oneOf.name)
                 }
                 addStatement(
-                  "_storage = %T(value: %T(%L))", heap, storageType,
+                  "self.storage = %T(%L)", storageType,
                   storageParams.joinToCode(separator = ",%W")
                 )
               }
@@ -222,7 +222,7 @@ class SwiftGenerator private constructor(
             FunctionSpec.builder("copyStorage")
               .addModifiers(PRIVATE, MUTATING)
               .beginControlFlow("if", "!isKnownUniquelyReferenced(&_%N)", storageName)
-              .addStatement("_%1N = %2T(value: %1N)", storageName, heap)
+              .addStatement("self.%1N = %1N", storageName)
               .endControlFlow("if")
               .build()
           )
@@ -304,7 +304,7 @@ class SwiftGenerator private constructor(
             .addModifiers(PUBLIC)
             .addParameter("from", "reader", protoReader)
             .throws(true)
-            .addStatement("_%N = %T(value: try %T(from: reader))", storageName, heap, storageType)
+            .addStatement("self.%N = try %T(from: reader)", storageName, storageType)
             .build()
         )
         .addFunction(

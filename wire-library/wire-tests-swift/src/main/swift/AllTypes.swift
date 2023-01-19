@@ -1349,7 +1349,7 @@ public struct AllTypes {
         ext_pack_double: [Double] = [],
         ext_pack_nested_enum: [NestedEnum] = []
     ) {
-        _storage = Heap(value: _AllTypes(opt_int32: opt_int32, opt_uint32: opt_uint32,
+        self.storage = _AllTypes(opt_int32: opt_int32, opt_uint32: opt_uint32,
                 opt_sint32: opt_sint32, opt_fixed32: opt_fixed32, opt_sfixed32: opt_sfixed32,
                 opt_int64: opt_int64, opt_uint64: opt_uint64, opt_sint64: opt_sint64,
                 opt_fixed64: opt_fixed64, opt_sfixed64: opt_sfixed64, opt_bool: opt_bool,
@@ -1407,12 +1407,12 @@ public struct AllTypes {
                 ext_pack_sint64: ext_pack_sint64, ext_pack_fixed64: ext_pack_fixed64,
                 ext_pack_sfixed64: ext_pack_sfixed64, ext_pack_bool: ext_pack_bool,
                 ext_pack_float: ext_pack_float, ext_pack_double: ext_pack_double,
-                ext_pack_nested_enum: ext_pack_nested_enum))
+                ext_pack_nested_enum: ext_pack_nested_enum)
     }
 
     private mutating func copyStorage() {
         if !isKnownUniquelyReferenced(&_storage) {
-            _storage = Heap(value: storage)
+            self.storage = storage
         }
     }
 
@@ -1956,7 +1956,7 @@ extension AllTypes : @unchecked Sendable {
 
 extension AllTypes : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        _storage = Heap(value: try _AllTypes(from: reader))
+        self.storage = try _AllTypes(from: reader)
     }
 
     public func encode(to writer: ProtoWriter) throws {
