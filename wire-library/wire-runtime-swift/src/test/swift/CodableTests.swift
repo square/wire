@@ -185,8 +185,113 @@ extension CodableTests {
     }
 }
 
-#warning("Add tests for null / empty encoding / decoding")
-#warning("Add tests for key names")
+// MARK: - Empty Payloads
+
+extension CodableTests {
+    func testDecodesEmptyProto() throws {
+        try assertDecode(json: "{}", expected: SimpleOptional2())
+
+    }
+
+    func testEncodesEmptyProto() throws {
+        try assertEncode(proto: SimpleOptional2(), expected: "{}")
+    }
+
+    func testEncodesEmptyProtoWithDefaults() throws {
+        let json = """
+        {
+          "map_int32_string":{},
+          "opt_bytes":null,
+          "opt_double":null,
+          "opt_enum":null,
+          "opt_float":null,
+          "opt_int32":null,
+          "opt_int64":null,
+          "opt_string":null,
+          "opt_uint32":null,
+          "opt_uint64":null,
+          "repeated_int32":[],
+          "repeated_string":[]
+        }
+        """
+
+        try assertEncode(proto: SimpleOptional2(), expected: json) { encoder in
+            encoder.protoKeyNameEncodingStrategy = .fieldName
+            encoder.protoDefaultValuesEncodingStrategy = .emit
+        }
+    }
+
+    func testDecodesDefaultValues() throws {
+        let json = """
+        {
+          "map_int32_string":{},
+          "opt_bytes":null,
+          "opt_double":null,
+          "opt_enum":null,
+          "opt_float":null,
+          "opt_int32":null,
+          "opt_int64":null,
+          "opt_string":null,
+          "opt_uint32":null,
+          "opt_uint64":null,
+          "repeated_int32":[],
+          "repeated_string":[]
+        }
+        """
+
+        try assertDecode(json: json, expected: SimpleOptional2())
+    }
+}
+
+// MARK: - Key Names
+
+extension CodableTests {
+    func testEncodedKeyNamesDefaultToCamelCase() throws {
+        let json = """
+        {
+          "mapInt32String":{"1":"foo"},
+          "optDouble":6,
+          "optEnum":"A",
+          "repeatedString":["B"]
+        }
+        """
+
+        let proto = SimpleOptional2(
+            opt_double: 6,
+            opt_enum: .A,
+            repeated_string: ["B"],
+            map_int32_string: [1 : "foo"]
+        )
+
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testDecodePrefersCamelCase() throws {
+        let json = """
+        {
+          "mapInt32String":{"1":"foo"},
+          "map_int32_string":{"2":"bar"},
+          "optDouble":6,
+          "opt_double":8,
+          "optEnum":"A",
+          "opt_enum":"UNKNOWN",
+          "repeatedString":["B"],
+          "repeated_string":["C"],
+          "opt_int64":"5"
+        }
+        """
+
+        let proto = SimpleOptional2(
+            opt_int64: 5,
+            opt_double: 6,
+            opt_enum: .A,
+            repeated_string: ["B"],
+            map_int32_string: [1 : "foo"]
+        )
+
+        try assertDecode(json: json, expected: proto)
+    }
+}
 
 // MARK: - Private Methods
 
