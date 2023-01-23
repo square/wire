@@ -25,7 +25,6 @@ import io.outfoxx.swiftpoet.DeclaredTypeName
 import io.outfoxx.swiftpoet.EnumerationCaseSpec
 import io.outfoxx.swiftpoet.ExtensionSpec
 import io.outfoxx.swiftpoet.FLOAT
-import io.outfoxx.swiftpoet.FLOAT64
 import io.outfoxx.swiftpoet.FileMemberSpec
 import io.outfoxx.swiftpoet.FileSpec
 import io.outfoxx.swiftpoet.FunctionSpec
@@ -99,7 +98,6 @@ class SwiftGenerator private constructor(
   private val TypeName.isStringEncoded
     get() = when (this.makeNonOptional()) {
       INT64, UINT64 -> true
-      FLOAT64 -> true // not actually possible
       else -> false
     }
 

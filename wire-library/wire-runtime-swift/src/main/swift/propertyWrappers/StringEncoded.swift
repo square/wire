@@ -36,33 +36,42 @@ extension StringEncoded : Decodable {
             return
         }
 
-        switch decoder.stringEncodedDecodingStrategy {
-        case .allowRawDecoding:
-            guard let decodableType = Value.self as? Decodable.Type else {
-                fallthrough
-            }
-            if let stringValue = try? container.decode(String.self) {
-                let value = try Self.create(optionalEncodedValue: stringValue)
-                self.init(wrappedValue: value)
-            } else {
-                let rawValue = try container.decode(decodableType)
-                guard let value = rawValue as? Value else {
-                    throw DecodingError.typeMismatch(
-                        Value.self,
-                        DecodingError.Context(
-                            codingPath: decoder.codingPath,
-                            debugDescription: "Could not convert \(rawValue) to \(Value.self)"
-                        )
-                    )
-                }
-                self.init(wrappedValue: value)
-            }
-
-        default:
-            let stringValue = try container.decode(String.self)
-            let value = try Self.create(optionalEncodedValue: stringValue)
-            self.init(wrappedValue: value)
+        guard let stringValue = try? container.decode(String.self) else {
+            try self.init(from: decoder, as: Value.self as? Decodable.Type, in: container)
+            return
         }
+
+        let value = try Self.create(optionalEncodedValue: stringValue)
+        self.init(wrappedValue: value)
+    }
+
+    private init(
+        from decoder: Decoder,
+        as decodableType: Decodable.Type?,
+        in container: SingleValueDecodingContainer
+    ) throws {
+        guard let decodableType = decodableType else {
+            throw DecodingError.typeMismatch(
+                Value.self,
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Encoded value was not a String"
+                )
+            )
+        }
+
+        let rawValue = try container.decode(decodableType)
+        guard let value = rawValue as? Value else {
+            throw DecodingError.typeMismatch(
+                Value.self,
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Could not convert \(rawValue) to \(Value.self)"
+                )
+            )
+        }
+
+        self.init(wrappedValue: value)
     }
 
     private static func create(optionalEncodedValue: String?) throws -> Value {

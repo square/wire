@@ -29,16 +29,6 @@ extension JSONDecoder {
         /// - Note: For dictionaries, it is necessary to wrap it in `@ProtoMapEnumValues`
         case returnNil
     }
-
-    /// The decoding strategy to use for StringEncoded types that are themselves Decodable
-    /// Defaults to .disallowRawDecoding
-    /// - Note: ProtoMap Dictionary keys are always decoded as strings
-    public enum StringEncodedDecodingStrategy {
-        /// Throws an error when encountering non-`String` values in single-value fields or collections.
-        case disallowRawDecoding
-        /// Attempt to decode the raw Decodable value when encountering non-`String` values in single-value fields or collections.
-        case allowRawDecoding
-    }
 }
 
 extension JSONEncoder {
@@ -99,10 +89,6 @@ public extension CodingUserInfoKey {
     /// - SeeAlso: JSONEncoder.StringEncodedEncodingStrategy
     static let wireStringEncodedEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.StringEncodedEncodingStrategy")!
 
-    /// Control the decoding of StringEncoded values that are themselves Decodable
-    /// - SeeAlso: JSONDecoder.StringEncodedDecodingStrategy
-    static let wireStringEncodedDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.StringEncodedDecodingStrategy")!
-
     /// Control the encoding of proto key names
     /// - SeeAlso: JSONEncoder.KeyNameEncodingStrategy
     static let wireKeyNameEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.KeyNameEncodingStrategy")!
@@ -138,11 +124,6 @@ public extension Decoder {
     var protoEnumDecodingStrategy: JSONDecoder.EnumDecodingStrategy {
         let preferred = userInfo[.wireEnumDecodingStrategy] as? JSONDecoder.EnumDecodingStrategy
         return preferred ?? .throwError
-    }
-
-    var stringEncodedDecodingStrategy: JSONDecoder.StringEncodedDecodingStrategy {
-        let preferred = userInfo[.wireStringEncodedDecodingStrategy] as? JSONDecoder.StringEncodedDecodingStrategy
-        return preferred ?? .disallowRawDecoding
     }
 }
 
@@ -198,16 +179,6 @@ public extension JSONDecoder {
         }
         set {
             userInfo[.wireEnumDecodingStrategy] = newValue
-        }
-    }
-
-    var stringEncodedDecodingStrategy: JSONDecoder.StringEncodedDecodingStrategy {
-        get {
-            let preferred = userInfo[.wireStringEncodedDecodingStrategy] as? JSONDecoder.StringEncodedDecodingStrategy
-            return preferred ?? .disallowRawDecoding
-        }
-        set {
-            userInfo[.wireStringEncodedDecodingStrategy] = newValue
         }
     }
 }
