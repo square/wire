@@ -84,7 +84,10 @@ extension ProtoMap : Sendable where Key : Sendable, Value : Sendable {
 // MARK: - ProtoMapEnumValues
 
 @propertyWrapper
-public struct ProtoMapEnumValues<Key : Hashable & LosslessStringConvertible, Value : ProtoEnum> {
+public struct ProtoMapEnumValues<
+    Key : Hashable & LosslessStringConvertible,
+    Value : ProtoEnum
+> {
     public var wrappedValue: [Key: Value]
 
     public init(wrappedValue: [Key: Value]) {
@@ -137,7 +140,10 @@ extension ProtoMapEnumValues : Sendable where Key : Sendable, Value : Sendable {
 // MARK: - ProtoMapStringEncodedValues
 
 @propertyWrapper
-public struct ProtoMapStringEncodedValues<Key : Hashable & LosslessStringConvertible, Value : StringCodable> {
+public struct ProtoMapStringEncodedValues<
+    Key : Hashable & LosslessStringConvertible,
+    Value : StringCodable & Codable
+> {
     public var wrappedValue: [Key: Value]
 
     public init(wrappedValue: [Key: Value]) {

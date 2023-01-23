@@ -27,7 +27,7 @@ extension Set : SequenceInitializableCollection {}
 @propertyWrapper
 public struct StringEncodedValues<ValuesHolder>
 where ValuesHolder : SequenceInitializableCollection,
-      ValuesHolder.Element : StringCodable
+      ValuesHolder.Element : StringCodable & Codable
 {
     public typealias Value = ValuesHolder.Element
 

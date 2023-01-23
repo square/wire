@@ -18,7 +18,7 @@ import Foundation
 
 /// Converts values to/from their string equivalent when serializing with Codable.
 @propertyWrapper
-public struct StringEncoded<Value : StringCodable> {
+public struct StringEncoded<Value : StringCodable & Codable> {
     public var wrappedValue: Value
 
     public init(wrappedValue: Value) {
@@ -36,41 +36,13 @@ extension StringEncoded : Decodable {
             return
         }
 
-        guard let stringValue = try? container.decode(String.self) else {
-            try self.init(from: decoder, as: Value.self as? Decodable.Type, in: container)
+        if let stringValue = try? container.decode(String.self) {
+            let value = try Self.create(optionalEncodedValue: stringValue)
+            self.init(wrappedValue: value)
             return
         }
 
-        let value = try Self.create(optionalEncodedValue: stringValue)
-        self.init(wrappedValue: value)
-    }
-
-    private init(
-        from decoder: Decoder,
-        as decodableType: Decodable.Type?,
-        in container: SingleValueDecodingContainer
-    ) throws {
-        guard let decodableType = decodableType else {
-            throw DecodingError.typeMismatch(
-                Value.self,
-                DecodingError.Context(
-                    codingPath: decoder.codingPath,
-                    debugDescription: "Encoded value was not a String"
-                )
-            )
-        }
-
-        let rawValue = try container.decode(decodableType)
-        guard let value = rawValue as? Value else {
-            throw DecodingError.typeMismatch(
-                Value.self,
-                DecodingError.Context(
-                    codingPath: decoder.codingPath,
-                    debugDescription: "Could not convert \(rawValue) to \(Value.self)"
-                )
-            )
-        }
-
+        let value = try container.decode(Value.self)
         self.init(wrappedValue: value)
     }
 
@@ -99,10 +71,7 @@ extension StringEncoded : Encodable {
         } else {
             switch encoder.stringEncodedEnccodingStrategy {
             case .raw:
-                guard let value = wrappedValue as? Encodable else {
-                    fallthrough
-                }
-                try container.encode(value)
+                try container.encode(wrappedValue)
 
             case .string:
                 try container.encode(wrappedValue.stringEncodedValue())
