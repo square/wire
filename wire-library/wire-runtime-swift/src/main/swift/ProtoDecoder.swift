@@ -57,6 +57,7 @@ public final class ProtoDecoder {
         case unexpectedEndGroupFieldNumber(expected: UInt32?, found: UInt32)
         case unexpectedFieldNumberInMap(_: UInt32)
         case unexpectedFieldNumberInBoxedValue(_: UInt32)
+        case unparsableString(type: Any.Type, value: String?)
         case unknownEnumCase(type: Any.Type, fieldNumber: UInt32)
         case unknownEnumString(type: Any.Type, string: String)
         case unterminatedGroup(fieldNumber: UInt32)
@@ -95,6 +96,8 @@ public final class ProtoDecoder {
                 }
             case let .unexpectedFieldNumberInBoxedValue(fieldNumber):
                 return "Boxed value includes the field number \(fieldNumber), but only field 1 is allowed."
+            case let .unparsableString(type, value):
+                return "Unknown string encoded type with value \(value ?? "<nil>") for type \(String(describing: type))"
             case let .unexpectedFieldNumberInMap(fieldNumber):
                 return "Map entry includes the field number \(fieldNumber), but only 1 and 2 are allowed."
             case let .unknownEnumCase(type, fieldNumber):

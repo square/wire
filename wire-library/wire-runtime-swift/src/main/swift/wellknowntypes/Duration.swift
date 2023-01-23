@@ -50,7 +50,7 @@ public struct Duration {
      * Signed seconds of the span of time. Must be from -315,576,000,000
      * to +315,576,000,000 inclusive.
      */
-    @JSONString
+    @StringEncoded
     public var seconds: Int64
     /**
      * Signed fractions of a second at nanosecond resolution of the span

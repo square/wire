@@ -23,7 +23,9 @@ public struct Person {
     /**
      * A list of the customer's phone numbers.
      */
+    @DefaultEmpty
     public var phone: [PhoneNumber]
+    @DefaultEmpty
     public var aliases: [String]
     public var unknownFields: Data = .init()
 

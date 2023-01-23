@@ -22,6 +22,7 @@ public struct ModelEvaluation {
 
     public var name: String?
     public var score: Double?
+    @DefaultEmpty
     public var models: [String : ModelEvaluation]
     public var unknownFields: Data = .init()
 

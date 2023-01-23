@@ -5,6 +5,7 @@ import Wire
 
 public struct EmbeddedMessage {
 
+    @DefaultEmpty
     public var inner_repeated_number: [Int32]
     public var inner_number_after: Int32?
     public var unknownFields: Data = .init()

@@ -12,13 +12,9 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
-import kotlin.AssertionError
 import kotlin.Boolean
-import kotlin.Deprecated
-import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Long
-import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
 import kotlin.jvm.JvmField
@@ -29,15 +25,16 @@ public class SomeMessage internal constructor(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
   )
+  @JvmField
   public val opt_int32: Int? = null,
   unknownFields: ByteString = ByteString.EMPTY,
-) : Message<SomeMessage, Nothing>(ADAPTER, unknownFields) {
-  @Deprecated(
-    message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN,
-  )
-  public override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+) : Message<SomeMessage, SomeMessage.Builder>(ADAPTER, unknownFields) {
+  public override fun newBuilder(): Builder {
+    val builder = Builder()
+    builder.opt_int32 = opt_int32
+    builder.addUnknownFields(unknownFields)
+    return builder
+  }
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -65,6 +62,21 @@ public class SomeMessage internal constructor(
 
   public fun copy(opt_int32: Int? = this.opt_int32, unknownFields: ByteString = this.unknownFields):
       SomeMessage = SomeMessage(opt_int32, unknownFields)
+
+  public class Builder : Message.Builder<SomeMessage, Builder>() {
+    @JvmField
+    public var opt_int32: Int? = null
+
+    public fun opt_int32(opt_int32: Int?): Builder {
+      this.opt_int32 = opt_int32
+      return this
+    }
+
+    public override fun build(): SomeMessage = SomeMessage(
+      opt_int32 = opt_int32,
+      unknownFields = buildUnknownFields()
+    )
+  }
 
   public companion object {
     @JvmField
@@ -119,15 +131,16 @@ public class SomeMessage internal constructor(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
     )
+    @JvmField
     public val a: Int? = null,
     unknownFields: ByteString = ByteString.EMPTY,
-  ) : Message<NestedMessage, Nothing>(ADAPTER, unknownFields) {
-    @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN,
-    )
-    public override fun newBuilder(): Nothing = throw
-        AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  ) : Message<NestedMessage, NestedMessage.Builder>(ADAPTER, unknownFields) {
+    public override fun newBuilder(): Builder {
+      val builder = Builder()
+      builder.a = a
+      builder.addUnknownFields(unknownFields)
+      return builder
+    }
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -155,6 +168,21 @@ public class SomeMessage internal constructor(
 
     public fun copy(a: Int? = this.a, unknownFields: ByteString = this.unknownFields): NestedMessage
         = NestedMessage(a, unknownFields)
+
+    public class Builder : Message.Builder<NestedMessage, Builder>() {
+      @JvmField
+      public var a: Int? = null
+
+      public fun a(a: Int?): Builder {
+        this.a = a
+        return this
+      }
+
+      public override fun build(): NestedMessage = NestedMessage(
+        a = a,
+        unknownFields = buildUnknownFields()
+      )
+    }
 
     public companion object {
       @JvmField

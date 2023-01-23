@@ -28,6 +28,15 @@ extension JSONDecoder {
         /// - Note: This is "free" for `Array<Enum>` and `Set<Enum>`
         case returnNil
     }
+
+    /// The decoding strategy to use for StringEncoded types that are themselves Decodable
+    /// Defaults to .disallowRawDecoding
+    public enum StringEncodedDecodingStrategy {
+        /// Throws an error when encountering non-`String` values in single-value fields or collections.
+        case disallowRawDecoding
+        /// Attempt to decode the raw Decodable value when encountering non-`String` values in single-value fields or collections.
+        case allowRawDecoding
+    }
 }
 
 extension JSONEncoder {
@@ -38,6 +47,15 @@ extension JSONEncoder {
         case string
         /// Encodes the field value of the case as the value, like `"myEnum": 3`
         case integer
+    }
+
+    /// The encoding strategy to use for StringEncoded types that are themselves Encodable
+    /// Defaults to .string
+    public enum StringEncodedEncodingStrategy {
+        /// Encodes the string-encoded value, like `"myValue": "1"`
+        case string
+        /// Encodes the raw Encodable value, like `"myValue": 1`
+        case raw
     }
 }
 
@@ -54,11 +72,24 @@ public extension CodingUserInfoKey {
     /// - Note: Non-optional values will _always_ throw
     /// - SeeAlso: JSONDecoder.EnumDecodingStrategy
     static let wireEnumDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumDecodingStrategy")!
+
+    /// Control the encoding of StringEncoded values that are themselves Encodable
+    /// - SeeAlso: JSONEncoder.StringEncodedEncodingStrategy
+    static let wireStringEncodedEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.StringEncodedEncodingStrategy")!
+
+    /// Control the decoding of StringEncoded values that are themselves Decodable
+    /// - SeeAlso: JSONDecoder.StringEncodedDecodingStrategy
+    static let wireStringEncodedDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.StringEncodedDecodingStrategy")!
 }
 
 extension Encoder {
     var protoEnumEncodingStrategy: JSONEncoder.EnumEncodingStrategy {
         let preferred = userInfo[.wireEnumEncodingStrategy] as? JSONEncoder.EnumEncodingStrategy
+        return preferred ?? .string
+    }
+
+    var stringEncodedEnccodingStrategy: JSONEncoder.StringEncodedEncodingStrategy {
+        let preferred = userInfo[.wireStringEncodedEncodingStrategy] as? JSONEncoder.StringEncodedEncodingStrategy
         return preferred ?? .string
     }
 }
@@ -67,6 +98,11 @@ extension Decoder {
     var protoEnumDecodingStrategy: JSONDecoder.EnumDecodingStrategy {
         let preferred = userInfo[.wireEnumDecodingStrategy] as? JSONDecoder.EnumDecodingStrategy
         return preferred ?? .throwError
+    }
+
+    var stringEncodedDecodingStrategy: JSONDecoder.StringEncodedDecodingStrategy {
+        let preferred = userInfo[.wireStringEncodedDecodingStrategy] as? JSONDecoder.StringEncodedDecodingStrategy
+        return preferred ?? .disallowRawDecoding
     }
 }
 
@@ -82,6 +118,16 @@ extension JSONEncoder {
             userInfo[.wireEnumEncodingStrategy] = newValue
         }
     }
+
+    public var stringEncodedEncodingStrategy: JSONEncoder.StringEncodedEncodingStrategy {
+        get {
+            let preferred = userInfo[.wireStringEncodedEncodingStrategy] as? JSONEncoder.StringEncodedEncodingStrategy
+            return preferred ?? .string
+        }
+        set {
+            userInfo[.wireStringEncodedEncodingStrategy] = newValue
+        }
+    }
 }
 
 extension JSONDecoder {
@@ -92,6 +138,16 @@ extension JSONDecoder {
         }
         set {
             userInfo[.wireEnumDecodingStrategy] = newValue
+        }
+    }
+
+    public var stringEncodedDecodingStrategy: JSONDecoder.StringEncodedDecodingStrategy {
+        get {
+            let preferred = userInfo[.wireStringEncodedDecodingStrategy] as? JSONDecoder.StringEncodedDecodingStrategy
+            return preferred ?? .disallowRawDecoding
+        }
+        set {
+            userInfo[.wireStringEncodedDecodingStrategy] = newValue
         }
     }
 }
