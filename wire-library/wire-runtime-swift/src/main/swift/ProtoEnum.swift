@@ -64,7 +64,7 @@ extension ProtoEnum {
 }
 
 /// This type gives access to `decoder.enumDecodingStrategy`
-private struct BoxedEnum<T: ProtoEnum> : Decodable {
+struct BoxedEnum<T: ProtoEnum> : Decodable {
     let value: T?
 
     init(value: T? = nil) {

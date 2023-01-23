@@ -24,6 +24,7 @@ import io.outfoxx.swiftpoet.DeclaredTypeName
 import io.outfoxx.swiftpoet.EnumerationCaseSpec
 import io.outfoxx.swiftpoet.ExtensionSpec
 import io.outfoxx.swiftpoet.FLOAT
+import io.outfoxx.swiftpoet.FLOAT64
 import io.outfoxx.swiftpoet.FileMemberSpec
 import io.outfoxx.swiftpoet.FileSpec
 import io.outfoxx.swiftpoet.FunctionSpec
@@ -83,6 +84,13 @@ class SwiftGenerator private constructor(
     get() = schema.getType(this) is EnumType
   private val Type.typeName
     get() = type.typeName
+
+  private val TypeName.isStringEncoded
+    get() = when (this.makeNonOptional()) {
+      INT64, UINT64 -> true
+      FLOAT64 -> true // not actually possible
+      else -> false
+    }
 
   fun generatedTypeName(type: Type) = type.typeName
 
@@ -737,11 +745,21 @@ class SwiftGenerator private constructor(
       if (field.needsDefaultEmpty()) {
         property.addAttribute("DefaultEmpty")
       }
-      if (field.typeName.needsStringEncoded()) {
+      if (field.typeName.isStringEncoded) {
         property.addAttribute("StringEncoded")
       } else if (field.typeName.needsStringEncodedValues()) {
         property.addAttribute("StringEncodedValues")
       }
+      if (field.isMap) {
+        if (field.valueType.isEnum) {
+          property.addAttribute("ProtoMapEnumValues")
+        } else if (field.valueType.typeName.isStringEncoded) {
+          property.addAttribute("ProtoMapStringEncodedValues")
+        } else {
+          property.addAttribute("ProtoMap")
+        }
+      }
+
       if (isIndirect(type, field)) {
         property.addAttribute(AttributeSpec.builder(indirect).build())
       }
@@ -949,16 +967,11 @@ class SwiftGenerator private constructor(
     return isRepeated || isMap
   }
 
-  private fun TypeName.needsStringEncoded(): Boolean {
-    val self = makeNonOptional()
-    return self == INT64 || self == UINT64
-  }
-
   private fun TypeName.needsStringEncodedValues(): Boolean {
     val self = makeNonOptional()
     if (self is ParameterizedTypeName) {
       return when (self.rawType) {
-        ARRAY -> self.typeArguments[0].needsStringEncoded()
+        ARRAY -> self.typeArguments[0].isStringEncoded
         else -> false
       }
     }

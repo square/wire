@@ -20,11 +20,15 @@ import XCTest
 
 final class ProtoEnumCodableTests: XCTestCase {
     enum EnumType : UInt32, ProtoEnum {
+        case DO_NOT_USE = 0
         case ONE = 1
         case TWO = 2
 
         var description: String {
             switch self {
+            case .DO_NOT_USE:
+                return "DO_NOT_USE"
+
             case .ONE:
                 return "ONE"
 
@@ -387,6 +391,118 @@ extension ProtoEnumCodableTests {
         decoder.protoEnumDecodingStrategy = .returnNil
 
         let decoded = try decoder.decode(ArrayTypes.self, from: jsonData)
+        XCTAssertEqual(decoded, expectedStruct)
+    }
+}
+
+// MARK: - Maps
+
+extension ProtoEnumCodableTests {
+    struct DictionaryTypes : Codable, Equatable {
+        @DefaultEmpty
+        var standard: [String: EnumType]
+
+        @DefaultEmpty
+        @ProtoMapEnumValues
+        var protoMap: [String: EnumType]
+    }
+
+    func testDecodingUnknownDictionaryValue() throws {
+        let json = """
+        {\
+        "standard":{"a":"ZZZ","b":"ONE"}\
+        }
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        XCTAssertThrowsError(
+            try JSONDecoder().decode(DictionaryTypes.self, from: jsonData)
+        ) { error in
+            guard let error = error as? ProtoDecoder.Error else {
+                XCTFail("Invalid error type for \(error)")
+                return
+            }
+
+            guard case let .unknownEnumString(_, string) = error else {
+                XCTFail("Invalid error case for \(error)")
+                return
+            }
+
+            XCTAssertEqual(string, "ZZZ")
+        }
+    }
+
+    func testDecodingUnknownProtoMapValue() throws {
+        let json = """
+        {\
+        "protoMap":{"a":"ZZZ","b":"ONE"}\
+        }
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        XCTAssertThrowsError(
+            try JSONDecoder().decode(DictionaryTypes.self, from: jsonData)
+        ) { error in
+            guard let error = error as? ProtoDecoder.Error else {
+                XCTFail("Invalid error type for \(error)")
+                return
+            }
+
+            guard case let .unknownEnumString(_, string) = error else {
+                XCTFail("Invalid error case for \(error)")
+                return
+            }
+
+            XCTAssertEqual(string, "ZZZ")
+        }
+    }
+
+    func testLossyDecodingUnknownDictionaryValue() throws {
+        let json = """
+        {\
+        "standard":{"a":"ZZZ","b":"ONE"}\
+        }
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        // There's basically no good solution here
+        let decoder = JSONDecoder()
+        decoder.protoEnumDecodingStrategy = .returnNil
+
+        XCTAssertThrowsError(
+            try decoder.decode(DictionaryTypes.self, from: jsonData)
+        ) { error in
+            guard let error = error as? ProtoDecoder.Error else {
+                XCTFail("Invalid error type for \(error)")
+                return
+            }
+
+            guard case let .unknownEnumString(_, string) = error else {
+                XCTFail("Invalid error case for \(error)")
+                return
+            }
+
+            XCTAssertEqual(string, "ZZZ")
+        }
+    }
+
+    func testLossyDecodingUnknownProtoMapValue() throws {
+        let expectedStruct = DictionaryTypes(
+            standard: [:],
+            protoMap: ["b": .ONE]
+        )
+
+        let json = """
+        {\
+        "protoMap":{"a":"ZZZ","b":"ONE"}\
+        }
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        decoder.protoEnumDecodingStrategy = .returnNil
+
+        let decoded = try decoder.decode(DictionaryTypes.self, from: jsonData)
         XCTAssertEqual(decoded, expectedStruct)
     }
 }

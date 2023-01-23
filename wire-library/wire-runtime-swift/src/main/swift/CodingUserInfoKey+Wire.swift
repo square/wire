@@ -26,11 +26,13 @@ extension JSONDecoder {
         ///
         /// With this option, unknown values in collections are removed from the collection in which they originated where possible.
         /// - Note: This is "free" for `Array<Enum>` and `Set<Enum>`
+        /// - Note: For dictionaries, it is necessary to wrap it in `@ProtoMapEnumValues`
         case returnNil
     }
 
     /// The decoding strategy to use for StringEncoded types that are themselves Decodable
     /// Defaults to .disallowRawDecoding
+    /// - Note: ProtoMap Dictionary keys are always decoded as strings
     public enum StringEncodedDecodingStrategy {
         /// Throws an error when encountering non-`String` values in single-value fields or collections.
         case disallowRawDecoding
@@ -51,6 +53,7 @@ extension JSONEncoder {
 
     /// The encoding strategy to use for StringEncoded types that are themselves Encodable
     /// Defaults to .string
+    /// - Note: ProtoMap Dictionary keys are always encoded as strings
     public enum StringEncodedEncodingStrategy {
         /// Encodes the string-encoded value, like `"myValue": "1"`
         case string
