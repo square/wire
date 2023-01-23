@@ -168,6 +168,7 @@ extension StringEncodedTests {
     }
 
     func testInvalidSingleDataContentThrows() throws {
+        // This will fail because the default is .disallowRawDecoding
         let json = """
         {"number":2}
         """
