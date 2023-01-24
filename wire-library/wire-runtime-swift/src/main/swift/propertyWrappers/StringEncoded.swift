@@ -31,13 +31,13 @@ extension StringEncoded : Decodable {
         let container = try decoder.singleValueContainer()
 
         guard !container.decodeNil() else {
-            let value = try Self.create(optionalEncodedValue: nil)
+            let value = try Self.create(optionalEncodedValue: nil, from: decoder)
             self.init(wrappedValue: value)
             return
         }
 
         if let stringValue = try? container.decode(String.self) {
-            let value = try Self.create(optionalEncodedValue: stringValue)
+            let value = try Self.create(optionalEncodedValue: stringValue, from: decoder)
             self.init(wrappedValue: value)
             return
         }
@@ -46,11 +46,14 @@ extension StringEncoded : Decodable {
         self.init(wrappedValue: value)
     }
 
-    private static func create(optionalEncodedValue: String?) throws -> Value {
+    private static func create(
+        optionalEncodedValue: String?,
+        from decoder: Decoder
+    ) throws -> Value {
         guard let encodedValue = optionalEncodedValue else {
             return try valueForNil()
         }
-        return try Value(encodedValue: encodedValue)
+        return try Value(encodedValue: encodedValue, from: decoder)
     }
 
     private static func valueForNil() throws -> Value {
@@ -69,12 +72,12 @@ extension StringEncoded : Encodable {
         if shouldEncodeNil() {
             try container.encodeNil()
         } else {
-            switch encoder.stringEncodedEnccodingStrategy {
+            switch encoder.stringEncodedEncodingStrategy {
             case .raw:
                 try container.encode(wrappedValue)
 
             case .string:
-                try container.encode(wrappedValue.stringEncodedValue())
+                try container.encode(wrappedValue.stringEncodedValue(in: encoder))
             }
         }
     }

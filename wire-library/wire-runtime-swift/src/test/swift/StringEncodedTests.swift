@@ -115,6 +115,78 @@ extension StringEncodedTests {
     }
 }
 
+// MARK: - Data
+
+extension StringEncodedTests {
+    struct DataStruct : Codable, Equatable {
+        @DefaultEmpty
+        @StringEncoded
+        var data: Data
+    }
+
+    func testNullInflatesData() throws {
+        let json = """
+        {"data":null}
+        """
+        let expectedStruct = DataStruct(data: .init())
+
+        let jsonData = json.data(using: .utf8)!
+
+        let actualStruct = try JSONDecoder().decode(DataStruct.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+    }
+
+    func testRoundtripEncodingData() throws {
+        let string = "Hello World"
+
+        let json = """
+        {"data":"SGVsbG8gV29ybGQ="}
+        """
+
+        let expectedStruct = DataStruct(data: string.data(using: .utf8)!)
+
+        let jsonData = json.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+
+        let actualStruct = try decoder.decode(DataStruct.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+
+        let encoder = JSONEncoder()
+
+        let actualJSONData = try encoder.encode(actualStruct)
+        let actualJSON = String(data: actualJSONData, encoding: .utf8)!
+        XCTAssertEqual(actualJSON, json)
+
+        let decodedString = String(data: actualStruct.data, encoding: .utf8)
+        XCTAssertEqual(string, decodedString)
+    }
+
+    func testRoundtripEncodingURLSafeData() throws {
+        let data = Data(base64Encoded: "ab+e/fg=")!
+
+        let json = """
+        {"data":"ab-e_fg"}
+        """
+
+        let expectedStruct = DataStruct(data: data)
+
+        let jsonData = json.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+
+        let actualStruct = try decoder.decode(DataStruct.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+
+        let encoder = JSONEncoder()
+        encoder.stringEncodedDataEncodingStrategy = .base64url
+
+        let actualJSONData = try encoder.encode(actualStruct)
+        let actualJSON = String(data: actualJSONData, encoding: .utf8)!
+        XCTAssertEqual(actualJSON, json)
+    }
+}
+
 // MARK: - Edge Cases and Failures
 
 extension StringEncodedTests {

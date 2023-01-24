@@ -41,14 +41,22 @@ extension JSONEncoder {
         case integer
     }
 
-    /// The encoding strategy to use for StringEncoded types that are themselves Encodable
+    /// The encoding strategy to use for StringEncoded types
     /// Defaults to .string
-    /// - Note: ProtoMap Dictionary keys are always encoded as strings
     public enum StringEncodedEncodingStrategy {
         /// Encodes the string-encoded value, like `"myValue": "1"`
         case string
         /// Encodes the raw Encodable value, like `"myValue": 1`
         case raw
+    }
+
+    /// The encoding strategy to use for StringEncoded Data types when using string encoding
+    /// Defaults to .base64
+    public enum StringEncodedDataEncodingStrategy {
+        /// Use standard base64 encoding
+        case base64
+        /// Use base64 URL-safe encoding
+        case base64url
     }
 
     /// The encoding strategy to use for key names
@@ -85,9 +93,13 @@ public extension CodingUserInfoKey {
     /// - SeeAlso: JSONDecoder.EnumDecodingStrategy
     static let wireEnumDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumDecodingStrategy")!
 
-    /// Control the encoding of StringEncoded values that are themselves Encodable
+    /// Control the encoding of StringEncoded values
     /// - SeeAlso: JSONEncoder.StringEncodedEncodingStrategy
     static let wireStringEncodedEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.StringEncodedEncodingStrategy")!
+
+    /// Control the encoding of StringEncoded Data values
+    /// - SeeAlso: JSONEncoder.stringEncodedDataEncodingStrategy
+    static let wireStringEncodedDataEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.StringEncodedDataEncodingStrategy")!
 
     /// Control the encoding of proto key names
     /// - SeeAlso: JSONEncoder.KeyNameEncodingStrategy
@@ -104,9 +116,15 @@ public extension Encoder {
         return preferred ?? .string
     }
 
-    var stringEncodedEnccodingStrategy: JSONEncoder.StringEncodedEncodingStrategy {
+    var stringEncodedEncodingStrategy: JSONEncoder.StringEncodedEncodingStrategy {
         let preferred = userInfo[.wireStringEncodedEncodingStrategy] as? JSONEncoder.StringEncodedEncodingStrategy
         return preferred ?? .string
+    }
+
+    var stringEncodedDataEncodingStrategy: JSONEncoder.StringEncodedDataEncodingStrategy {
+        let preferred = userInfo[.wireStringEncodedDataEncodingStrategy] as? JSONEncoder
+            .StringEncodedDataEncodingStrategy
+        return preferred ?? .base64
     }
 
     var protoKeyNameEncodingStrategy: JSONEncoder.KeyNameEncodingStrategy {
@@ -147,6 +165,16 @@ public extension JSONEncoder {
         }
         set {
             userInfo[.wireStringEncodedEncodingStrategy] = newValue
+        }
+    }
+
+    var stringEncodedDataEncodingStrategy: JSONEncoder.StringEncodedDataEncodingStrategy {
+        get {
+            let preferred = userInfo[.wireStringEncodedDataEncodingStrategy] as? JSONEncoder.StringEncodedDataEncodingStrategy
+            return preferred ?? .base64
+        }
+        set {
+            userInfo[.wireStringEncodedDataEncodingStrategy] = newValue
         }
     }
 

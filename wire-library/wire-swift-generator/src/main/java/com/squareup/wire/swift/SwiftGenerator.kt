@@ -98,6 +98,7 @@ class SwiftGenerator private constructor(
   private val TypeName.isStringEncoded
     get() = when (this.makeNonOptional()) {
       INT64, UINT64 -> true
+      DATA -> true
       else -> false
     }
 
