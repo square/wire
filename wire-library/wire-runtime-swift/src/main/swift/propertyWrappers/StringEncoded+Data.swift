@@ -71,8 +71,9 @@ public extension Data {
         base64urlEncoded base64urlString: String,
         options: Data.Base64DecodingOptions = []
     ) {
+        // https://en.wikipedia.org/wiki/Base64#Output_padding
         let count = base64urlString.count
-        let remainder = 8 - (count % 8)
+        let remainder = 4 - (count % 4)
         let desiredLength = count + remainder
 
         let base64String = base64urlString
