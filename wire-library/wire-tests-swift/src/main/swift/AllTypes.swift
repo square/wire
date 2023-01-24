@@ -2522,6 +2522,15 @@ extension _AllTypes : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension AllTypes : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.storage = try container.decode(_AllTypes.self)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(storage)
+    }
 }
 #endif
 
