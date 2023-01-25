@@ -41,8 +41,6 @@ extension Data : StringCodable {
     }
 }
 
-extension Data : EmptyInitializable {}
-
 public extension Data {
     func base64urlEncodedData(options: Data.Base64EncodingOptions = []) -> Data {
         let string = base64urlEncodedString(options: options)
