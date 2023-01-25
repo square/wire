@@ -31,13 +31,13 @@ extension StringEncoded : Decodable {
         let container = try decoder.singleValueContainer()
 
         guard !container.decodeNil() else {
-            let value = try Self.create(optionalEncodedValue: nil, from: decoder)
+            let value = try Self.create(optionalEncodedValue: nil)
             self.init(wrappedValue: value)
             return
         }
 
         if let stringValue = try? container.decode(String.self) {
-            let value = try Self.create(optionalEncodedValue: stringValue, from: decoder)
+            let value = try Self.create(optionalEncodedValue: stringValue)
             self.init(wrappedValue: value)
             return
         }
@@ -47,13 +47,12 @@ extension StringEncoded : Decodable {
     }
 
     private static func create(
-        optionalEncodedValue: String?,
-        from decoder: Decoder
+        optionalEncodedValue: String?
     ) throws -> Value {
         guard let encodedValue = optionalEncodedValue else {
             return try valueForNil()
         }
-        return try Value(encodedValue: encodedValue, from: decoder)
+        return try Value(encodedValue: encodedValue)
     }
 
     private static func valueForNil() throws -> Value {
@@ -72,7 +71,7 @@ extension StringEncoded : Encodable {
         if shouldEncodeNil() {
             try container.encodeNil()
         } else {
-            try container.encode(wrappedValue.stringEncodedValue(in: encoder))
+            try container.encode(wrappedValue.stringEncodedValue())
         }
     }
 

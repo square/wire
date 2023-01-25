@@ -17,11 +17,11 @@
 import Foundation
 
 extension Data : StringCodable {
-    public func stringEncodedValue(in encoder: Encoder) throws -> String {
+    public func stringEncodedValue() throws -> String {
         return base64EncodedString()
     }
 
-    public init(encodedValue: String, from decoder: Decoder) throws {
+    public init(encodedValue: String) throws {
         let possibleValue = Data(base64Encoded: encodedValue) ??
             Data(base64URLEncoded: encodedValue)
 
