@@ -19,8 +19,8 @@ import Foundation
 #if swift(>=5.7)
 
 @available(macOS 13, iOS 16, watchOS 9, tvOS 16, *)
-private extension Swift.Duration {
-    var nanos: Int32 {
+extension Swift.Duration {
+    fileprivate var nanos: Int32 {
         let nanos = components.attoseconds * 1_000_000_000
         return Int32(truncatingIfNeeded: nanos)
     }
