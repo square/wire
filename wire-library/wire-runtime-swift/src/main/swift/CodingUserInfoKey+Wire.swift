@@ -64,7 +64,7 @@ extension JSONEncoder {
         case fieldName
     }
 
-    /// The encoding strategy to use for optional values and collections
+    /// The encoding strategy to use when a value is equivalent to its proto default
     /// - Note: Defaults to .skip
     /// - SeeAlso: [Proto3 JSON Mapping](https://developers.google.com/protocol-buffers/docs/proto3#json)
     public enum DefaultValuesEncodingStrategy {
