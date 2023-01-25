@@ -51,7 +51,7 @@ extension JSONEncoder {
         case raw
     }
 
-    /// The encoding strategy to use for key names
+    /// The encoding strategy to use for key names in Codable implementations
     /// Defaults to .camelCase
     public enum KeyNameEncodingStrategy {
         // Convert key names to `camelCase`
