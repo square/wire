@@ -1903,38 +1903,17 @@ extension AllTypes.NestedMessage : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension AllTypes.NestedMessage : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: AllTypes.NestedMessage.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.a = try container.decodeIfPresent(Int32.self, forKey: "a")
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: AllTypes.NestedMessage.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.a != nil {
+        if includeDefaults || self.a != nil {
             try container.encode(self.a, forKey: "a")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif
@@ -2537,7 +2516,7 @@ extension AllTypes : Codable {
 #if !WIRE_REMOVE_CODABLE
 extension _AllTypes : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: _AllTypes.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.opt_int32 = try container.decodeIfPresent(Int32.self, forKey: "optInt32") ??
                 container.decodeIfPresent(Int32.self, forKey: "opt_int32")
         self.opt_uint32 = try container.decodeIfPresent(UInt32.self, forKey: "optUint32") ??
@@ -2807,58 +2786,59 @@ extension _AllTypes : Codable {
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: _AllTypes.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_int32 != nil {
+        if includeDefaults || self.opt_int32 != nil {
             try container.encode(self.opt_int32, forKey: preferCamelCase ? "optInt32" : "opt_int32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_uint32 != nil {
+        if includeDefaults || self.opt_uint32 != nil {
             try container.encode(self.opt_uint32, forKey: preferCamelCase ? "optUint32" : "opt_uint32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_sint32 != nil {
+        if includeDefaults || self.opt_sint32 != nil {
             try container.encode(self.opt_sint32, forKey: preferCamelCase ? "optSint32" : "opt_sint32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_fixed32 != nil {
+        if includeDefaults || self.opt_fixed32 != nil {
             try container.encode(self.opt_fixed32, forKey: preferCamelCase ? "optFixed32" : "opt_fixed32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_sfixed32 != nil {
+        if includeDefaults || self.opt_sfixed32 != nil {
             try container.encode(self.opt_sfixed32, forKey: preferCamelCase ? "optSfixed32" : "opt_sfixed32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_int64 != nil {
+        if includeDefaults || self.opt_int64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.opt_int64), forKey: preferCamelCase ? "optInt64" : "opt_int64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_uint64 != nil {
+        if includeDefaults || self.opt_uint64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.opt_uint64), forKey: preferCamelCase ? "optUint64" : "opt_uint64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_sint64 != nil {
+        if includeDefaults || self.opt_sint64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.opt_sint64), forKey: preferCamelCase ? "optSint64" : "opt_sint64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_fixed64 != nil {
+        if includeDefaults || self.opt_fixed64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.opt_fixed64), forKey: preferCamelCase ? "optFixed64" : "opt_fixed64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_sfixed64 != nil {
+        if includeDefaults || self.opt_sfixed64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.opt_sfixed64), forKey: preferCamelCase ? "optSfixed64" : "opt_sfixed64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_bool != nil {
+        if includeDefaults || self.opt_bool != nil {
             try container.encode(self.opt_bool, forKey: preferCamelCase ? "optBool" : "opt_bool")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_float != nil {
+        if includeDefaults || self.opt_float != nil {
             try container.encode(self.opt_float, forKey: preferCamelCase ? "optFloat" : "opt_float")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_double != nil {
+        if includeDefaults || self.opt_double != nil {
             try container.encode(self.opt_double, forKey: preferCamelCase ? "optDouble" : "opt_double")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_string != nil {
+        if includeDefaults || self.opt_string != nil {
             try container.encode(self.opt_string, forKey: preferCamelCase ? "optString" : "opt_string")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_bytes != nil {
+        if includeDefaults || self.opt_bytes != nil {
             try container.encode(StringEncoded(wrappedValue: self.opt_bytes), forKey: preferCamelCase ? "optBytes" : "opt_bytes")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_nested_enum != nil {
+        if includeDefaults || self.opt_nested_enum != nil {
             try container.encode(self.opt_nested_enum, forKey: preferCamelCase ? "optNestedEnum" : "opt_nested_enum")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.opt_nested_message != nil {
+        if includeDefaults || self.opt_nested_message != nil {
             try container.encode(self.opt_nested_message, forKey: preferCamelCase ? "optNestedMessage" : "opt_nested_message")
         }
         try container.encode(self.req_int32, forKey: preferCamelCase ? "reqInt32" : "req_int32")
@@ -2878,325 +2858,303 @@ extension _AllTypes : Codable {
         try container.encode(StringEncoded(wrappedValue: self.req_bytes), forKey: preferCamelCase ? "reqBytes" : "req_bytes")
         try container.encode(self.req_nested_enum, forKey: preferCamelCase ? "reqNestedEnum" : "req_nested_enum")
         try container.encode(self.req_nested_message, forKey: preferCamelCase ? "reqNestedMessage" : "req_nested_message")
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_int32.isEmpty {
+        if includeDefaults || !self.rep_int32.isEmpty {
             try container.encode(self.rep_int32, forKey: preferCamelCase ? "repInt32" : "rep_int32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_uint32.isEmpty {
+        if includeDefaults || !self.rep_uint32.isEmpty {
             try container.encode(self.rep_uint32, forKey: preferCamelCase ? "repUint32" : "rep_uint32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_sint32.isEmpty {
+        if includeDefaults || !self.rep_sint32.isEmpty {
             try container.encode(self.rep_sint32, forKey: preferCamelCase ? "repSint32" : "rep_sint32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_fixed32.isEmpty {
+        if includeDefaults || !self.rep_fixed32.isEmpty {
             try container.encode(self.rep_fixed32, forKey: preferCamelCase ? "repFixed32" : "rep_fixed32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_sfixed32.isEmpty {
+        if includeDefaults || !self.rep_sfixed32.isEmpty {
             try container.encode(self.rep_sfixed32, forKey: preferCamelCase ? "repSfixed32" : "rep_sfixed32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_int64.isEmpty {
+        if includeDefaults || !self.rep_int64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.rep_int64), forKey: preferCamelCase ? "repInt64" : "rep_int64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_uint64.isEmpty {
+        if includeDefaults || !self.rep_uint64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.rep_uint64), forKey: preferCamelCase ? "repUint64" : "rep_uint64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_sint64.isEmpty {
+        if includeDefaults || !self.rep_sint64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.rep_sint64), forKey: preferCamelCase ? "repSint64" : "rep_sint64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_fixed64.isEmpty {
+        if includeDefaults || !self.rep_fixed64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.rep_fixed64), forKey: preferCamelCase ? "repFixed64" : "rep_fixed64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_sfixed64.isEmpty {
+        if includeDefaults || !self.rep_sfixed64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.rep_sfixed64), forKey: preferCamelCase ? "repSfixed64" : "rep_sfixed64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_bool.isEmpty {
+        if includeDefaults || !self.rep_bool.isEmpty {
             try container.encode(self.rep_bool, forKey: preferCamelCase ? "repBool" : "rep_bool")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_float.isEmpty {
+        if includeDefaults || !self.rep_float.isEmpty {
             try container.encode(self.rep_float, forKey: preferCamelCase ? "repFloat" : "rep_float")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_double.isEmpty {
+        if includeDefaults || !self.rep_double.isEmpty {
             try container.encode(self.rep_double, forKey: preferCamelCase ? "repDouble" : "rep_double")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_string.isEmpty {
+        if includeDefaults || !self.rep_string.isEmpty {
             try container.encode(self.rep_string, forKey: preferCamelCase ? "repString" : "rep_string")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_bytes.isEmpty {
+        if includeDefaults || !self.rep_bytes.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.rep_bytes), forKey: preferCamelCase ? "repBytes" : "rep_bytes")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_nested_enum.isEmpty {
+        if includeDefaults || !self.rep_nested_enum.isEmpty {
             try container.encode(self.rep_nested_enum, forKey: preferCamelCase ? "repNestedEnum" : "rep_nested_enum")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep_nested_message.isEmpty {
+        if includeDefaults || !self.rep_nested_message.isEmpty {
             try container.encode(self.rep_nested_message, forKey: preferCamelCase ? "repNestedMessage" : "rep_nested_message")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_int32.isEmpty {
+        if includeDefaults || !self.pack_int32.isEmpty {
             try container.encode(self.pack_int32, forKey: preferCamelCase ? "packInt32" : "pack_int32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_uint32.isEmpty {
+        if includeDefaults || !self.pack_uint32.isEmpty {
             try container.encode(self.pack_uint32, forKey: preferCamelCase ? "packUint32" : "pack_uint32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_sint32.isEmpty {
+        if includeDefaults || !self.pack_sint32.isEmpty {
             try container.encode(self.pack_sint32, forKey: preferCamelCase ? "packSint32" : "pack_sint32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_fixed32.isEmpty {
+        if includeDefaults || !self.pack_fixed32.isEmpty {
             try container.encode(self.pack_fixed32, forKey: preferCamelCase ? "packFixed32" : "pack_fixed32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_sfixed32.isEmpty {
+        if includeDefaults || !self.pack_sfixed32.isEmpty {
             try container.encode(self.pack_sfixed32, forKey: preferCamelCase ? "packSfixed32" : "pack_sfixed32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_int64.isEmpty {
+        if includeDefaults || !self.pack_int64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.pack_int64), forKey: preferCamelCase ? "packInt64" : "pack_int64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_uint64.isEmpty {
+        if includeDefaults || !self.pack_uint64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.pack_uint64), forKey: preferCamelCase ? "packUint64" : "pack_uint64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_sint64.isEmpty {
+        if includeDefaults || !self.pack_sint64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.pack_sint64), forKey: preferCamelCase ? "packSint64" : "pack_sint64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_fixed64.isEmpty {
+        if includeDefaults || !self.pack_fixed64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.pack_fixed64), forKey: preferCamelCase ? "packFixed64" : "pack_fixed64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_sfixed64.isEmpty {
+        if includeDefaults || !self.pack_sfixed64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.pack_sfixed64), forKey: preferCamelCase ? "packSfixed64" : "pack_sfixed64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_bool.isEmpty {
+        if includeDefaults || !self.pack_bool.isEmpty {
             try container.encode(self.pack_bool, forKey: preferCamelCase ? "packBool" : "pack_bool")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_float.isEmpty {
+        if includeDefaults || !self.pack_float.isEmpty {
             try container.encode(self.pack_float, forKey: preferCamelCase ? "packFloat" : "pack_float")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_double.isEmpty {
+        if includeDefaults || !self.pack_double.isEmpty {
             try container.encode(self.pack_double, forKey: preferCamelCase ? "packDouble" : "pack_double")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.pack_nested_enum.isEmpty {
+        if includeDefaults || !self.pack_nested_enum.isEmpty {
             try container.encode(self.pack_nested_enum, forKey: preferCamelCase ? "packNestedEnum" : "pack_nested_enum")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_int32 != nil {
+        if includeDefaults || self.default_int32 != nil {
             try container.encode(self.default_int32, forKey: preferCamelCase ? "defaultInt32" : "default_int32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_uint32 != nil {
+        if includeDefaults || self.default_uint32 != nil {
             try container.encode(self.default_uint32, forKey: preferCamelCase ? "defaultUint32" : "default_uint32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_sint32 != nil {
+        if includeDefaults || self.default_sint32 != nil {
             try container.encode(self.default_sint32, forKey: preferCamelCase ? "defaultSint32" : "default_sint32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_fixed32 != nil {
+        if includeDefaults || self.default_fixed32 != nil {
             try container.encode(self.default_fixed32, forKey: preferCamelCase ? "defaultFixed32" : "default_fixed32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_sfixed32 != nil {
+        if includeDefaults || self.default_sfixed32 != nil {
             try container.encode(self.default_sfixed32, forKey: preferCamelCase ? "defaultSfixed32" : "default_sfixed32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_int64 != nil {
+        if includeDefaults || self.default_int64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.default_int64), forKey: preferCamelCase ? "defaultInt64" : "default_int64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_uint64 != nil {
+        if includeDefaults || self.default_uint64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.default_uint64), forKey: preferCamelCase ? "defaultUint64" : "default_uint64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_sint64 != nil {
+        if includeDefaults || self.default_sint64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.default_sint64), forKey: preferCamelCase ? "defaultSint64" : "default_sint64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_fixed64 != nil {
+        if includeDefaults || self.default_fixed64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.default_fixed64), forKey: preferCamelCase ? "defaultFixed64" : "default_fixed64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_sfixed64 != nil {
+        if includeDefaults || self.default_sfixed64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.default_sfixed64), forKey: preferCamelCase ? "defaultSfixed64" : "default_sfixed64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_bool != nil {
+        if includeDefaults || self.default_bool != nil {
             try container.encode(self.default_bool, forKey: preferCamelCase ? "defaultBool" : "default_bool")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_float != nil {
+        if includeDefaults || self.default_float != nil {
             try container.encode(self.default_float, forKey: preferCamelCase ? "defaultFloat" : "default_float")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_double != nil {
+        if includeDefaults || self.default_double != nil {
             try container.encode(self.default_double, forKey: preferCamelCase ? "defaultDouble" : "default_double")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_string != nil {
+        if includeDefaults || self.default_string != nil {
             try container.encode(self.default_string, forKey: preferCamelCase ? "defaultString" : "default_string")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_bytes != nil {
+        if includeDefaults || self.default_bytes != nil {
             try container.encode(StringEncoded(wrappedValue: self.default_bytes), forKey: preferCamelCase ? "defaultBytes" : "default_bytes")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.default_nested_enum != nil {
+        if includeDefaults || self.default_nested_enum != nil {
             try container.encode(self.default_nested_enum, forKey: preferCamelCase ? "defaultNestedEnum" : "default_nested_enum")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.map_int32_int32.isEmpty {
+        if includeDefaults || !self.map_int32_int32.isEmpty {
             try container.encode(ProtoMap(wrappedValue: self.map_int32_int32), forKey: preferCamelCase ? "mapInt32Int32" : "map_int32_int32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.map_string_string.isEmpty {
+        if includeDefaults || !self.map_string_string.isEmpty {
             try container.encode(ProtoMap(wrappedValue: self.map_string_string), forKey: preferCamelCase ? "mapStringString" : "map_string_string")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.map_string_message.isEmpty {
+        if includeDefaults || !self.map_string_message.isEmpty {
             try container.encode(ProtoMap(wrappedValue: self.map_string_message), forKey: preferCamelCase ? "mapStringMessage" : "map_string_message")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.map_string_enum.isEmpty {
+        if includeDefaults || !self.map_string_enum.isEmpty {
             try container.encode(ProtoMapEnumValues(wrappedValue: self.map_string_enum), forKey: preferCamelCase ? "mapStringEnum" : "map_string_enum")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_int32 != nil {
+        if includeDefaults || self.ext_opt_int32 != nil {
             try container.encode(self.ext_opt_int32, forKey: preferCamelCase ? "extOptInt32" : "ext_opt_int32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_uint32 != nil {
+        if includeDefaults || self.ext_opt_uint32 != nil {
             try container.encode(self.ext_opt_uint32, forKey: preferCamelCase ? "extOptUint32" : "ext_opt_uint32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_sint32 != nil {
+        if includeDefaults || self.ext_opt_sint32 != nil {
             try container.encode(self.ext_opt_sint32, forKey: preferCamelCase ? "extOptSint32" : "ext_opt_sint32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_fixed32 != nil {
+        if includeDefaults || self.ext_opt_fixed32 != nil {
             try container.encode(self.ext_opt_fixed32, forKey: preferCamelCase ? "extOptFixed32" : "ext_opt_fixed32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_sfixed32 != nil {
+        if includeDefaults || self.ext_opt_sfixed32 != nil {
             try container.encode(self.ext_opt_sfixed32, forKey: preferCamelCase ? "extOptSfixed32" : "ext_opt_sfixed32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_int64 != nil {
+        if includeDefaults || self.ext_opt_int64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.ext_opt_int64), forKey: preferCamelCase ? "extOptInt64" : "ext_opt_int64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_uint64 != nil {
+        if includeDefaults || self.ext_opt_uint64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.ext_opt_uint64), forKey: preferCamelCase ? "extOptUint64" : "ext_opt_uint64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_sint64 != nil {
+        if includeDefaults || self.ext_opt_sint64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.ext_opt_sint64), forKey: preferCamelCase ? "extOptSint64" : "ext_opt_sint64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_fixed64 != nil {
+        if includeDefaults || self.ext_opt_fixed64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.ext_opt_fixed64), forKey: preferCamelCase ? "extOptFixed64" : "ext_opt_fixed64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_sfixed64 != nil {
+        if includeDefaults || self.ext_opt_sfixed64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.ext_opt_sfixed64), forKey: preferCamelCase ? "extOptSfixed64" : "ext_opt_sfixed64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_bool != nil {
+        if includeDefaults || self.ext_opt_bool != nil {
             try container.encode(self.ext_opt_bool, forKey: preferCamelCase ? "extOptBool" : "ext_opt_bool")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_float != nil {
+        if includeDefaults || self.ext_opt_float != nil {
             try container.encode(self.ext_opt_float, forKey: preferCamelCase ? "extOptFloat" : "ext_opt_float")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_double != nil {
+        if includeDefaults || self.ext_opt_double != nil {
             try container.encode(self.ext_opt_double, forKey: preferCamelCase ? "extOptDouble" : "ext_opt_double")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_string != nil {
+        if includeDefaults || self.ext_opt_string != nil {
             try container.encode(self.ext_opt_string, forKey: preferCamelCase ? "extOptString" : "ext_opt_string")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_bytes != nil {
+        if includeDefaults || self.ext_opt_bytes != nil {
             try container.encode(StringEncoded(wrappedValue: self.ext_opt_bytes), forKey: preferCamelCase ? "extOptBytes" : "ext_opt_bytes")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_nested_enum != nil {
+        if includeDefaults || self.ext_opt_nested_enum != nil {
             try container.encode(self.ext_opt_nested_enum, forKey: preferCamelCase ? "extOptNestedEnum" : "ext_opt_nested_enum")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext_opt_nested_message != nil {
+        if includeDefaults || self.ext_opt_nested_message != nil {
             try container.encode(self.ext_opt_nested_message, forKey: preferCamelCase ? "extOptNestedMessage" : "ext_opt_nested_message")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_int32.isEmpty {
+        if includeDefaults || !self.ext_rep_int32.isEmpty {
             try container.encode(self.ext_rep_int32, forKey: preferCamelCase ? "extRepInt32" : "ext_rep_int32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_uint32.isEmpty {
+        if includeDefaults || !self.ext_rep_uint32.isEmpty {
             try container.encode(self.ext_rep_uint32, forKey: preferCamelCase ? "extRepUint32" : "ext_rep_uint32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_sint32.isEmpty {
+        if includeDefaults || !self.ext_rep_sint32.isEmpty {
             try container.encode(self.ext_rep_sint32, forKey: preferCamelCase ? "extRepSint32" : "ext_rep_sint32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_fixed32.isEmpty {
+        if includeDefaults || !self.ext_rep_fixed32.isEmpty {
             try container.encode(self.ext_rep_fixed32, forKey: preferCamelCase ? "extRepFixed32" : "ext_rep_fixed32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_sfixed32.isEmpty {
+        if includeDefaults || !self.ext_rep_sfixed32.isEmpty {
             try container.encode(self.ext_rep_sfixed32, forKey: preferCamelCase ? "extRepSfixed32" : "ext_rep_sfixed32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_int64.isEmpty {
+        if includeDefaults || !self.ext_rep_int64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_int64), forKey: preferCamelCase ? "extRepInt64" : "ext_rep_int64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_uint64.isEmpty {
+        if includeDefaults || !self.ext_rep_uint64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_uint64), forKey: preferCamelCase ? "extRepUint64" : "ext_rep_uint64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_sint64.isEmpty {
+        if includeDefaults || !self.ext_rep_sint64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_sint64), forKey: preferCamelCase ? "extRepSint64" : "ext_rep_sint64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_fixed64.isEmpty {
+        if includeDefaults || !self.ext_rep_fixed64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_fixed64), forKey: preferCamelCase ? "extRepFixed64" : "ext_rep_fixed64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_sfixed64.isEmpty {
+        if includeDefaults || !self.ext_rep_sfixed64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_sfixed64), forKey: preferCamelCase ? "extRepSfixed64" : "ext_rep_sfixed64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_bool.isEmpty {
+        if includeDefaults || !self.ext_rep_bool.isEmpty {
             try container.encode(self.ext_rep_bool, forKey: preferCamelCase ? "extRepBool" : "ext_rep_bool")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_float.isEmpty {
+        if includeDefaults || !self.ext_rep_float.isEmpty {
             try container.encode(self.ext_rep_float, forKey: preferCamelCase ? "extRepFloat" : "ext_rep_float")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_double.isEmpty {
+        if includeDefaults || !self.ext_rep_double.isEmpty {
             try container.encode(self.ext_rep_double, forKey: preferCamelCase ? "extRepDouble" : "ext_rep_double")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_string.isEmpty {
+        if includeDefaults || !self.ext_rep_string.isEmpty {
             try container.encode(self.ext_rep_string, forKey: preferCamelCase ? "extRepString" : "ext_rep_string")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_bytes.isEmpty {
+        if includeDefaults || !self.ext_rep_bytes.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_bytes), forKey: preferCamelCase ? "extRepBytes" : "ext_rep_bytes")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_nested_enum.isEmpty {
+        if includeDefaults || !self.ext_rep_nested_enum.isEmpty {
             try container.encode(self.ext_rep_nested_enum, forKey: preferCamelCase ? "extRepNestedEnum" : "ext_rep_nested_enum")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_rep_nested_message.isEmpty {
+        if includeDefaults || !self.ext_rep_nested_message.isEmpty {
             try container.encode(self.ext_rep_nested_message, forKey: preferCamelCase ? "extRepNestedMessage" : "ext_rep_nested_message")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_int32.isEmpty {
+        if includeDefaults || !self.ext_pack_int32.isEmpty {
             try container.encode(self.ext_pack_int32, forKey: preferCamelCase ? "extPackInt32" : "ext_pack_int32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_uint32.isEmpty {
+        if includeDefaults || !self.ext_pack_uint32.isEmpty {
             try container.encode(self.ext_pack_uint32, forKey: preferCamelCase ? "extPackUint32" : "ext_pack_uint32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_sint32.isEmpty {
+        if includeDefaults || !self.ext_pack_sint32.isEmpty {
             try container.encode(self.ext_pack_sint32, forKey: preferCamelCase ? "extPackSint32" : "ext_pack_sint32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_fixed32.isEmpty {
+        if includeDefaults || !self.ext_pack_fixed32.isEmpty {
             try container.encode(self.ext_pack_fixed32, forKey: preferCamelCase ? "extPackFixed32" : "ext_pack_fixed32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_sfixed32.isEmpty {
+        if includeDefaults || !self.ext_pack_sfixed32.isEmpty {
             try container.encode(self.ext_pack_sfixed32, forKey: preferCamelCase ? "extPackSfixed32" : "ext_pack_sfixed32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_int64.isEmpty {
+        if includeDefaults || !self.ext_pack_int64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_int64), forKey: preferCamelCase ? "extPackInt64" : "ext_pack_int64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_uint64.isEmpty {
+        if includeDefaults || !self.ext_pack_uint64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_uint64), forKey: preferCamelCase ? "extPackUint64" : "ext_pack_uint64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_sint64.isEmpty {
+        if includeDefaults || !self.ext_pack_sint64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_sint64), forKey: preferCamelCase ? "extPackSint64" : "ext_pack_sint64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_fixed64.isEmpty {
+        if includeDefaults || !self.ext_pack_fixed64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_fixed64), forKey: preferCamelCase ? "extPackFixed64" : "ext_pack_fixed64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_sfixed64.isEmpty {
+        if includeDefaults || !self.ext_pack_sfixed64.isEmpty {
             try container.encode(StringEncodedValues(wrappedValue: self.ext_pack_sfixed64), forKey: preferCamelCase ? "extPackSfixed64" : "ext_pack_sfixed64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_bool.isEmpty {
+        if includeDefaults || !self.ext_pack_bool.isEmpty {
             try container.encode(self.ext_pack_bool, forKey: preferCamelCase ? "extPackBool" : "ext_pack_bool")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_float.isEmpty {
+        if includeDefaults || !self.ext_pack_float.isEmpty {
             try container.encode(self.ext_pack_float, forKey: preferCamelCase ? "extPackFloat" : "ext_pack_float")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_double.isEmpty {
+        if includeDefaults || !self.ext_pack_double.isEmpty {
             try container.encode(self.ext_pack_double, forKey: preferCamelCase ? "extPackDouble" : "ext_pack_double")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.ext_pack_nested_enum.isEmpty {
+        if includeDefaults || !self.ext_pack_nested_enum.isEmpty {
             try container.encode(self.ext_pack_nested_enum, forKey: preferCamelCase ? "extPackNestedEnum" : "ext_pack_nested_enum")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif

@@ -102,7 +102,7 @@ extension RedactedOneOf : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension RedactedOneOf : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: RedactedOneOf.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         if let b = try container.decodeIfPresent(Int32.self, forKey: "b") {
             self.a = .b(b)
         } else if let c = try container.decodeIfPresent(String.self, forKey: "c") {
@@ -113,35 +113,13 @@ extension RedactedOneOf : Codable {
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: RedactedOneOf.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
 
         switch self.a {
         case .b(let b): try container.encode(b, forKey: "b")
         case .c(let c): try container.encode(c, forKey: "c")
         case Optional.none: break
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif

@@ -127,38 +127,17 @@ extension FooBar.Nested : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension FooBar.Nested : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: FooBar.Nested.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.value = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "value")
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: FooBar.Nested.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.value != nil {
+        if includeDefaults || self.value != nil {
             try container.encode(self.value, forKey: "value")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif
@@ -209,38 +188,17 @@ extension FooBar.More : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension FooBar.More : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: FooBar.More.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.serial = try container.decodeIfPresent([Int32].self, forKey: "serial") ?? []
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: FooBar.More.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.serial.isEmpty {
+        if includeDefaults || !self.serial.isEmpty {
             try container.encode(self.serial, forKey: "serial")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif
@@ -332,7 +290,7 @@ extension FooBar : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension FooBar : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: FooBar.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.foo = try container.decodeIfPresent(Int32.self, forKey: "foo")
         self.bar = try container.decodeIfPresent(String.self, forKey: "bar")
         self.baz = try container.decodeIfPresent(FooBar.Nested.self, forKey: "baz")
@@ -347,61 +305,40 @@ extension FooBar : Codable {
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: FooBar.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.foo != nil {
+        if includeDefaults || self.foo != nil {
             try container.encode(self.foo, forKey: "foo")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.bar != nil {
+        if includeDefaults || self.bar != nil {
             try container.encode(self.bar, forKey: "bar")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.baz != nil {
+        if includeDefaults || self.baz != nil {
             try container.encode(self.baz, forKey: "baz")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.qux != nil {
+        if includeDefaults || self.qux != nil {
             try container.encode(StringEncoded(wrappedValue: self.qux), forKey: "qux")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.fred.isEmpty {
+        if includeDefaults || !self.fred.isEmpty {
             try container.encode(self.fred, forKey: "fred")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.daisy != nil {
+        if includeDefaults || self.daisy != nil {
             try container.encode(self.daisy, forKey: "daisy")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.nested.isEmpty {
+        if includeDefaults || !self.nested.isEmpty {
             try container.encode(self.nested, forKey: "nested")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext != nil {
+        if includeDefaults || self.ext != nil {
             try container.encode(self.ext, forKey: "ext")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep.isEmpty {
+        if includeDefaults || !self.rep.isEmpty {
             try container.encode(self.rep, forKey: "rep")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.more_string != nil {
+        if includeDefaults || self.more_string != nil {
             try container.encode(self.more_string, forKey: preferCamelCase ? "moreString" : "more_string")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif
