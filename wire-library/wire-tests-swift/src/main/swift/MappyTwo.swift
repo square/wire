@@ -104,7 +104,7 @@ extension MappyTwo : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension MappyTwo : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: MappyTwo.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.string_enums = try container.decodeIfPresent(ProtoMapEnumValues<String, MappyTwo.ValueEnum>.self, forKey: "stringEnums")?.wrappedValue ??
                 container.decodeIfPresent(ProtoMapEnumValues<String, MappyTwo.ValueEnum>.self, forKey: "string_enums")?.wrappedValue ?? [:]
         self.int_things = try container.decodeIfPresent(ProtoMap<Int64, Thing>.self, forKey: "intThings")?.wrappedValue ??
@@ -116,43 +116,22 @@ extension MappyTwo : Codable {
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: MappyTwo.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.string_enums.isEmpty {
+        if includeDefaults || !self.string_enums.isEmpty {
             try container.encode(ProtoMapEnumValues(wrappedValue: self.string_enums), forKey: preferCamelCase ? "stringEnums" : "string_enums")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.int_things.isEmpty {
+        if includeDefaults || !self.int_things.isEmpty {
             try container.encode(ProtoMap(wrappedValue: self.int_things), forKey: preferCamelCase ? "intThings" : "int_things")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.string_ints.isEmpty {
+        if includeDefaults || !self.string_ints.isEmpty {
             try container.encode(ProtoMapStringEncodedValues(wrappedValue: self.string_ints), forKey: preferCamelCase ? "stringInts" : "string_ints")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.int_things_two.isEmpty {
+        if includeDefaults || !self.int_things_two.isEmpty {
             try container.encode(ProtoMap(wrappedValue: self.int_things_two), forKey: preferCamelCase ? "intThingsTwo" : "int_things_two")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif

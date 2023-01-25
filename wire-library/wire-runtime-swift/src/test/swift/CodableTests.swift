@@ -190,7 +190,6 @@ extension CodableTests {
 extension CodableTests {
     func testDecodesEmptyProto() throws {
         try assertDecode(json: "{}", expected: SimpleOptional2())
-
     }
 
     func testEncodesEmptyProto() throws {
@@ -217,7 +216,7 @@ extension CodableTests {
 
         try assertEncode(proto: SimpleOptional2(), expected: json) { encoder in
             encoder.protoKeyNameEncodingStrategy = .fieldName
-            encoder.protoDefaultValuesEncodingStrategy = .emit
+            encoder.protoDefaultValuesEncodingStrategy = .include
         }
     }
 
