@@ -69,7 +69,7 @@ extension StringEncoded : Encodable {
         if shouldEncodeNil() {
             try container.encodeNil()
         } else {
-            switch encoder.stringEncodedEnccodingStrategy {
+            switch encoder.stringEncodedEncodingStrategy {
             case .raw:
                 try container.encode(wrappedValue)
 
