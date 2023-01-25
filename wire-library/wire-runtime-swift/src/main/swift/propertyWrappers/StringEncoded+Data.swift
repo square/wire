@@ -35,17 +35,17 @@ extension Data : StringCodable {
     }
 }
 
-public extension Data {
+extension Data {
     /// Returns Base-64 URL-Safe encoded data.
     /// - SeeAlso: [RFC4648](https://www.rfc-editor.org/rfc/rfc4648#section-5)
-    func base64URLEncodedData(options: Data.Base64EncodingOptions = []) -> Data {
+    public func base64URLEncodedData(options: Data.Base64EncodingOptions = []) -> Data {
         let string = base64URLEncodedString(options: options)
         return Data(string.utf8)
     }
 
     /// Returns a Base-64 URL-Safe encoded string.
     /// - SeeAlso: [RFC4648](https://www.rfc-editor.org/rfc/rfc4648#section-5)
-    func base64URLEncodedString(options: Data.Base64EncodingOptions = []) -> String {
+    public func base64URLEncodedString(options: Data.Base64EncodingOptions = []) -> String {
         let base64 = base64EncodedString(options: options)
         return base64
             .replacingOccurrences(of: "/", with: "_")
@@ -55,7 +55,7 @@ public extension Data {
 
     /// Initialize Data from Base-64 URL-Safe encoded data.
     /// - SeeAlso: [RFC4648](https://www.rfc-editor.org/rfc/rfc4648#section-5)
-    init?(
+    public init?(
         base64URLEncoded base64URLData: Data,
         options: Data.Base64DecodingOptions = []
     ) {
@@ -67,7 +67,7 @@ public extension Data {
 
     /// Initialize Data from a Base-64 URL-Safe encoded string.
     /// - SeeAlso: [RFC4648](https://www.rfc-editor.org/rfc/rfc4648#section-5)
-    init?(
+    public init?(
         base64URLEncoded base64URLString: String,
         options: Data.Base64DecodingOptions = []
     ) {
