@@ -85,7 +85,7 @@ extension Wire.Duration : Codable {
 
         case 2:
             seconds = Int64(components[0])
-            nanos = Int32(components[1])
+            nanos = Int32(components[1].padding(toLength: 9, withPad: "0", startingAt: 0)).map { $0 / 1_000_000_000 }
 
         default:
             seconds = nil

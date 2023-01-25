@@ -20,14 +20,14 @@ extension TimeInterval {
     func decomposed() -> (seconds: Int64, nanos: Int32) {
         let seconds = Int64(self.rounded())
         let remainder = self.remainder(dividingBy: 1)
-        let nanos = Int32(remainder * pow(10, 9))
+        let nanos = Int32(remainder * 1_000_000_000)
 
         return (seconds, nanos)
     }
 
     init(seconds: Int64, nanos: Int32) {
         self.init(seconds)
-        self += TimeInterval(nanos) / pow(10, 9)
+        self += TimeInterval(nanos) / 1_000_000_000
     }
 }
 
