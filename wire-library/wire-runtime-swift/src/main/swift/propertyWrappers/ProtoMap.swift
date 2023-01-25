@@ -70,12 +70,6 @@ extension ProtoMap : Equatable where Value : Equatable {
 extension ProtoMap : Hashable where Value : Hashable {
 }
 
-extension ProtoMap : EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: [:])
-    }
-}
-
 #if swift(>=5.5)
 extension ProtoMap : Sendable where Key : Sendable, Value : Sendable {
 }
@@ -124,12 +118,6 @@ extension ProtoMapEnumValues : Equatable where Value : Equatable {
 }
 
 extension ProtoMapEnumValues : Hashable where Value : Hashable {
-}
-
-extension ProtoMapEnumValues : EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: [:])
-    }
 }
 
 #if swift(>=5.5)
@@ -181,12 +169,6 @@ extension ProtoMapStringEncodedValues : Equatable where Value : Equatable {
 }
 
 extension ProtoMapStringEncodedValues : Hashable where Value : Hashable {
-}
-
-extension ProtoMapStringEncodedValues : EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: [:])
-    }
 }
 
 #if swift(>=5.5)
