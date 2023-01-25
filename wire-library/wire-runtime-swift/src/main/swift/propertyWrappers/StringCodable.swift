@@ -22,13 +22,13 @@ public typealias StringCodable = StringEncodable & StringDecodable
 /// Protocol that enables Encodable support via the @StringEncoded property wrapper
 public protocol StringEncodable {
     /// Serialize an encoded value via `String`
-    func stringEncodedValue(in encoder: Encoder) throws -> String
+    func stringEncodedValue() throws -> String
 }
 
 /// Protocol that enables Decodable support via the @StringEncoded property wrapper
 public protocol StringDecodable {
     /// Losslessly deserialize a value derived from `encodedValue`
-    init(encodedValue: String, from decoder: Decoder) throws
+    init(encodedValue: String) throws
 }
 
 extension Int64: StringCodable {}
@@ -37,13 +37,13 @@ extension UInt64: StringCodable {}
 // MARK: - LosslessStringConvertible
 
 extension StringEncodable where Self : LosslessStringConvertible {
-    public func stringEncodedValue(in encoder: Encoder) throws -> String {
+    public func stringEncodedValue() throws -> String {
         return description
     }
 }
 
 extension StringDecodable where Self : LosslessStringConvertible {
-    public init(encodedValue: String, from decoder: Decoder) throws {
+    public init(encodedValue: String) throws {
         guard let value = Self.init(encodedValue) else {
             throw ProtoDecoder.Error.unparsableString(type: Self.self, value: encodedValue)
         }
@@ -74,11 +74,11 @@ enum StringEncodedError : Error {
 }
 
 extension Optional : StringEncodable, OptionalStringEncodable where Wrapped : StringEncodable {
-    public func stringEncodedValue(in encoder: Encoder) throws -> String {
+    public func stringEncodedValue() throws -> String {
         guard let value = self else {
             throw StringEncodedError.encodingNil
         }
-        return try value.stringEncodedValue(in: encoder)
+        return try value.stringEncodedValue()
     }
 
     public func shouldEncodeNil() -> Bool {
@@ -87,8 +87,8 @@ extension Optional : StringEncodable, OptionalStringEncodable where Wrapped : St
 }
 
 extension Optional : StringDecodable, OptionalStringDecodable where Wrapped : StringDecodable {
-    public init(encodedValue: String, from decoder: Decoder) throws {
-        self = try Wrapped(encodedValue: encodedValue, from: decoder)
+    public init(encodedValue: String) throws {
+        self = try Wrapped(encodedValue: encodedValue)
     }
 
     public static func valueForNil() throws -> Self {
