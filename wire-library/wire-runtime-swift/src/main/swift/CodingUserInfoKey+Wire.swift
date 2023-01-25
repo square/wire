@@ -101,7 +101,7 @@ extension CodingUserInfoKey {
 
     /// Control the encoding of StringEncoded values
     ///
-    /// You probably will want to just set `JSONEncoder.stringEncodedEnccodingStrategy`
+    /// You probably will want to just set `JSONEncoder.stringEncodedEncodingStrategy`
     /// - SeeAlso: JSONEncoder.StringEncodedEncodingStrategy
     public static let wireStringEncodedEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.StringEncodedEncodingStrategy")!
 
@@ -130,7 +130,7 @@ extension Encoder {
         return preferred ?? .string
     }
 
-    public var stringEncodedEnccodingStrategy: JSONEncoder.StringEncodedEncodingStrategy {
+    public var stringEncodedEncodingStrategy: JSONEncoder.StringEncodedEncodingStrategy {
         let preferred = userInfo[.wireStringEncodedEncodingStrategy] as? JSONEncoder.StringEncodedEncodingStrategy
         return preferred ?? .string
     }
