@@ -16,6 +16,36 @@
 
 import Foundation
 
+#if swift(>=5.7)
+
+@available(macOS 13, iOS 16, watchOS 9, tvOS 16, *)
+private extension Swift.Duration {
+    var nanos: Int32 {
+        let nanos = components.attoseconds * 1_000_000_000
+        return Int32(truncatingIfNeeded: nanos)
+    }
+}
+
+@available(macOS 13, iOS 16, watchOS 9, tvOS 16, *)
+extension Wire.Duration {
+    public var attos: Int64 {
+        Int64(nanos) / 1_000_000_000
+    }
+
+    public func toSwiftDuration() -> Swift.Duration {
+        return Swift.Duration(secondsComponent: seconds, attosecondsComponent: attos)
+    }
+
+    public init(duration: Swift.Duration) {
+        self.init(
+            seconds: duration.components.seconds,
+            nanos: duration.nanos
+        )
+    }
+}
+
+#endif
+
 #if !WIRE_REMOVE_CODABLE
 
 extension Wire.Duration : Codable {
