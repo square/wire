@@ -110,15 +110,12 @@ extension OneOfMessage : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension OneOfMessage : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: OneOfMessage.CodingKeys.self)
-        if container.contains(.foo) {
-            let foo = try container.decode(Int32.self, forKey: .foo)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        if let foo = try container.decodeIfPresent(Int32.self, forKey: "foo") {
             self.choice = .foo(foo)
-        } else if container.contains(.bar) {
-            let bar = try container.decode(String.self, forKey: .bar)
+        } else if let bar = try container.decodeIfPresent(String.self, forKey: "bar") {
             self.choice = .bar(bar)
-        } else if container.contains(.baz) {
-            let baz = try container.decode(String.self, forKey: .baz)
+        } else if let baz = try container.decodeIfPresent(String.self, forKey: "baz") {
             self.choice = .baz(baz)
         } else {
             self.choice = nil
@@ -126,21 +123,14 @@ extension OneOfMessage : Codable {
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: OneOfMessage.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+
         switch self.choice {
-        case .foo(let foo): try container.encode(foo, forKey: .foo)
-        case .bar(let bar): try container.encode(bar, forKey: .bar)
-        case .baz(let baz): try container.encode(baz, forKey: .baz)
+        case .foo(let foo): try container.encode(foo, forKey: "foo")
+        case .bar(let bar): try container.encode(bar, forKey: "bar")
+        case .baz(let baz): try container.encode(baz, forKey: "baz")
         case Optional.none: break
         }
-    }
-
-    public enum CodingKeys : String, CodingKey {
-
-        case foo
-        case bar
-        case baz
-
     }
 }
 #endif

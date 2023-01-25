@@ -167,26 +167,6 @@ extension StringEncodedTests {
         }
     }
 
-    func testInvalidSingleDataContentThrows() throws {
-        // This will fail because the default is .disallowRawDecoding
-        let json = """
-        {"number":2}
-        """
-        let jsonData = json.data(using: .utf8)!
-
-        XCTAssertThrowsError(
-            try JSONDecoder().decode(SimpleStruct.self, from: jsonData)
-        ) { error in
-            switch error {
-            case DecodingError.typeMismatch:
-                break
-
-            default:
-                XCTFail("Invalid error: \(error)")
-            }
-        }
-    }
-
     func testInvalidArrayDataThrows() throws {
         let json = """
         {\
@@ -239,7 +219,6 @@ extension StringEncodedTests {
         let jsonData = json.data(using: .utf8)!
 
         let decoder = JSONDecoder()
-        decoder.stringEncodedDecodingStrategy = .allowRawDecoding
 
         let actualStruct = try decoder.decode(SimpleStruct.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
@@ -315,7 +294,6 @@ extension StringEncodedTests {
         let jsonData = json.data(using: .utf8)!
 
         let decoder = JSONDecoder()
-        decoder.stringEncodedDecodingStrategy = .allowRawDecoding
 
         let actualStruct = try decoder.decode(DictionaryStruct.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)

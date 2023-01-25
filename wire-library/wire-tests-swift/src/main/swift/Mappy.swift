@@ -5,8 +5,6 @@ import Wire
 
 public struct Mappy {
 
-    @DefaultEmpty
-    @ProtoMap
     public var things: [String : Thing]
     public var unknownFields: Data = .init()
 
@@ -61,10 +59,18 @@ extension Mappy : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Mappy : Codable {
-    public enum CodingKeys : String, CodingKey {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.things = try container.decodeIfPresent(ProtoMap<String, Thing>.self, forKey: "things")?.wrappedValue ?? [:]
+    }
 
-        case things
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
+        if includeDefaults || !self.things.isEmpty {
+            try container.encode(ProtoMap(wrappedValue: self.things), forKey: "things")
+        }
     }
 }
 #endif

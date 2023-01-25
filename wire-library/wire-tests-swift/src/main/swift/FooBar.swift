@@ -8,15 +8,11 @@ public struct FooBar {
     public var foo: Int32?
     public var bar: String?
     public var baz: Nested?
-    @StringEncoded
     public var qux: UInt64?
-    @DefaultEmpty
     public var fred: [Float]
     public var daisy: Double?
-    @DefaultEmpty
     public var nested: [FooBar]
     public var ext: FooBarBazEnum?
-    @DefaultEmpty
     public var rep: [FooBarBazEnum]
     public var more_string: String?
     public var unknownFields: Data = .init()
@@ -58,7 +54,6 @@ public struct FooBar {
 
     public struct More {
 
-        @DefaultEmpty
         public var serial: [Int32]
         public var unknownFields: Data = .init()
 
@@ -131,10 +126,18 @@ extension FooBar.Nested : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension FooBar.Nested : Codable {
-    public enum CodingKeys : String, CodingKey {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.value = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "value")
+    }
 
-        case value
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
+        if includeDefaults || self.value != nil {
+            try container.encode(self.value, forKey: "value")
+        }
     }
 }
 #endif
@@ -184,10 +187,18 @@ extension FooBar.More : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension FooBar.More : Codable {
-    public enum CodingKeys : String, CodingKey {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.serial = try container.decodeIfPresent([Int32].self, forKey: "serial") ?? []
+    }
 
-        case serial
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
+        if includeDefaults || !self.serial.isEmpty {
+            try container.encode(self.serial, forKey: "serial")
+        }
     }
 }
 #endif
@@ -278,19 +289,56 @@ extension FooBar : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension FooBar : Codable {
-    public enum CodingKeys : String, CodingKey {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.foo = try container.decodeIfPresent(Int32.self, forKey: "foo")
+        self.bar = try container.decodeIfPresent(String.self, forKey: "bar")
+        self.baz = try container.decodeIfPresent(FooBar.Nested.self, forKey: "baz")
+        self.qux = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "qux")?.wrappedValue
+        self.fred = try container.decodeIfPresent([Float].self, forKey: "fred") ?? []
+        self.daisy = try container.decodeIfPresent(Double.self, forKey: "daisy")
+        self.nested = try container.decodeIfPresent([FooBar].self, forKey: "nested") ?? []
+        self.ext = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "ext")
+        self.rep = try container.decodeIfPresent([FooBar.FooBarBazEnum].self, forKey: "rep") ?? []
+        self.more_string = try container.decodeIfPresent(String.self, forKey: "moreString") ??
+                container.decodeIfPresent(String.self, forKey: "more_string")
+    }
 
-        case foo
-        case bar
-        case baz
-        case qux
-        case fred
-        case daisy
-        case nested
-        case ext
-        case rep
-        case more_string
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
+        if includeDefaults || self.foo != nil {
+            try container.encode(self.foo, forKey: "foo")
+        }
+        if includeDefaults || self.bar != nil {
+            try container.encode(self.bar, forKey: "bar")
+        }
+        if includeDefaults || self.baz != nil {
+            try container.encode(self.baz, forKey: "baz")
+        }
+        if includeDefaults || self.qux != nil {
+            try container.encode(StringEncoded(wrappedValue: self.qux), forKey: "qux")
+        }
+        if includeDefaults || !self.fred.isEmpty {
+            try container.encode(self.fred, forKey: "fred")
+        }
+        if includeDefaults || self.daisy != nil {
+            try container.encode(self.daisy, forKey: "daisy")
+        }
+        if includeDefaults || !self.nested.isEmpty {
+            try container.encode(self.nested, forKey: "nested")
+        }
+        if includeDefaults || self.ext != nil {
+            try container.encode(self.ext, forKey: "ext")
+        }
+        if includeDefaults || !self.rep.isEmpty {
+            try container.encode(self.rep, forKey: "rep")
+        }
+        if includeDefaults || self.more_string != nil {
+            try container.encode(self.more_string, forKey: preferCamelCase ? "moreString" : "more_string")
+        }
     }
 }
 #endif

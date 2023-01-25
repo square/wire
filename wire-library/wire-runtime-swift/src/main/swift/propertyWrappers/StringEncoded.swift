@@ -18,7 +18,7 @@ import Foundation
 
 /// Converts values to/from their string equivalent when serializing with Codable.
 @propertyWrapper
-public struct StringEncoded<Value : StringCodable> {
+public struct StringEncoded<Value : StringCodable & Codable> {
     public var wrappedValue: Value
 
     public init(wrappedValue: Value) {
@@ -36,33 +36,14 @@ extension StringEncoded : Decodable {
             return
         }
 
-        switch decoder.stringEncodedDecodingStrategy {
-        case .allowRawDecoding:
-            guard let decodableType = Value.self as? Decodable.Type else {
-                fallthrough
-            }
-            if let stringValue = try? container.decode(String.self) {
-                let value = try Self.create(optionalEncodedValue: stringValue)
-                self.init(wrappedValue: value)
-            } else {
-                let rawValue = try container.decode(decodableType)
-                guard let value = rawValue as? Value else {
-                    throw DecodingError.typeMismatch(
-                        Value.self,
-                        DecodingError.Context(
-                            codingPath: decoder.codingPath,
-                            debugDescription: "Could not convert \(rawValue) to \(Value.self)"
-                        )
-                    )
-                }
-                self.init(wrappedValue: value)
-            }
-
-        default:
-            let stringValue = try container.decode(String.self)
+        if let stringValue = try? container.decode(String.self) {
             let value = try Self.create(optionalEncodedValue: stringValue)
             self.init(wrappedValue: value)
+            return
         }
+
+        let value = try container.decode(Value.self)
+        self.init(wrappedValue: value)
     }
 
     private static func create(optionalEncodedValue: String?) throws -> Value {
@@ -88,12 +69,9 @@ extension StringEncoded : Encodable {
         if shouldEncodeNil() {
             try container.encodeNil()
         } else {
-            switch encoder.stringEncodedEnccodingStrategy {
+            switch encoder.stringEncodedEncodingStrategy {
             case .raw:
-                guard let value = wrappedValue as? Encodable else {
-                    fallthrough
-                }
-                try container.encode(value)
+                try container.encode(wrappedValue)
 
             case .string:
                 try container.encode(wrappedValue.stringEncodedValue())
@@ -107,12 +85,6 @@ extension StringEncoded : Encodable {
         } else {
             return false
         }
-    }
-}
-
-extension StringEncoded : EmptyInitializable where Value: EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: Value())
     }
 }
 

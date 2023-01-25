@@ -102,12 +102,10 @@ extension RedactedOneOf : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension RedactedOneOf : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: RedactedOneOf.CodingKeys.self)
-        if container.contains(.b) {
-            let b = try container.decode(Int32.self, forKey: .b)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        if let b = try container.decodeIfPresent(Int32.self, forKey: "b") {
             self.a = .b(b)
-        } else if container.contains(.c) {
-            let c = try container.decode(String.self, forKey: .c)
+        } else if let c = try container.decodeIfPresent(String.self, forKey: "c") {
             self.a = .c(c)
         } else {
             self.a = nil
@@ -115,19 +113,13 @@ extension RedactedOneOf : Codable {
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: RedactedOneOf.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+
         switch self.a {
-        case .b(let b): try container.encode(b, forKey: .b)
-        case .c(let c): try container.encode(c, forKey: .c)
+        case .b(let b): try container.encode(b, forKey: "b")
+        case .c(let c): try container.encode(c, forKey: "c")
         case Optional.none: break
         }
-    }
-
-    public enum CodingKeys : String, CodingKey {
-
-        case b
-        case c
-
     }
 }
 #endif

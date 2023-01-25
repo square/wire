@@ -23,9 +23,7 @@ public struct Person {
     /**
      * A list of the customer's phone numbers.
      */
-    @DefaultEmpty
     public var phone: [PhoneNumber]
-    @DefaultEmpty
     public var aliases: [String]
     public var unknownFields: Data = .init()
 
@@ -140,11 +138,20 @@ extension Person.PhoneNumber : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Person.PhoneNumber : Codable {
-    public enum CodingKeys : String, CodingKey {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.number = try container.decode(String.self, forKey: "number")
+        self.type = try container.decodeIfPresent(Person.PhoneType.self, forKey: "type")
+    }
 
-        case number
-        case type
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
+        try container.encode(self.number, forKey: "number")
+        if includeDefaults || self.type != nil {
+            try container.encode(self.type, forKey: "type")
+        }
     }
 }
 #endif
@@ -210,14 +217,30 @@ extension Person : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Person : Codable {
-    public enum CodingKeys : String, CodingKey {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.name = try container.decode(String.self, forKey: "name")
+        self.id = try container.decode(Int32.self, forKey: "id")
+        self.email = try container.decodeIfPresent(String.self, forKey: "email")
+        self.phone = try container.decodeIfPresent([Person.PhoneNumber].self, forKey: "phone") ?? []
+        self.aliases = try container.decodeIfPresent([String].self, forKey: "aliases") ?? []
+    }
 
-        case name
-        case id
-        case email
-        case phone
-        case aliases
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
+        try container.encode(self.name, forKey: "name")
+        try container.encode(self.id, forKey: "id")
+        if includeDefaults || self.email != nil {
+            try container.encode(self.email, forKey: "email")
+        }
+        if includeDefaults || !self.phone.isEmpty {
+            try container.encode(self.phone, forKey: "phone")
+        }
+        if includeDefaults || !self.aliases.isEmpty {
+            try container.encode(self.aliases, forKey: "aliases")
+        }
     }
 }
 #endif

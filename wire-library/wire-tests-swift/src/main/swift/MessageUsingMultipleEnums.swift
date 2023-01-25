@@ -68,11 +68,22 @@ extension MessageUsingMultipleEnums : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension MessageUsingMultipleEnums : Codable {
-    public enum CodingKeys : String, CodingKey {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.a = try container.decodeIfPresent(MessageWithStatus.Status.self, forKey: "a")
+        self.b = try container.decodeIfPresent(OtherMessageWithStatus.Status.self, forKey: "b")
+    }
 
-        case a
-        case b
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
+        if includeDefaults || self.a != nil {
+            try container.encode(self.a, forKey: "a")
+        }
+        if includeDefaults || self.b != nil {
+            try container.encode(self.b, forKey: "b")
+        }
     }
 }
 #endif

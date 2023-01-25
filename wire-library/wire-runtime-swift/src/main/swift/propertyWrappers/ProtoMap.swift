@@ -70,12 +70,6 @@ extension ProtoMap : Equatable where Value : Equatable {
 extension ProtoMap : Hashable where Value : Hashable {
 }
 
-extension ProtoMap : EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: [:])
-    }
-}
-
 #if swift(>=5.5)
 extension ProtoMap : Sendable where Key : Sendable, Value : Sendable {
 }
@@ -84,7 +78,10 @@ extension ProtoMap : Sendable where Key : Sendable, Value : Sendable {
 // MARK: - ProtoMapEnumValues
 
 @propertyWrapper
-public struct ProtoMapEnumValues<Key : Hashable & LosslessStringConvertible, Value : ProtoEnum> {
+public struct ProtoMapEnumValues<
+    Key : Hashable & LosslessStringConvertible,
+    Value : ProtoEnum
+> {
     public var wrappedValue: [Key: Value]
 
     public init(wrappedValue: [Key: Value]) {
@@ -123,12 +120,6 @@ extension ProtoMapEnumValues : Equatable where Value : Equatable {
 extension ProtoMapEnumValues : Hashable where Value : Hashable {
 }
 
-extension ProtoMapEnumValues : EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: [:])
-    }
-}
-
 #if swift(>=5.5)
 extension ProtoMapEnumValues : Sendable where Key : Sendable, Value : Sendable {
 }
@@ -137,7 +128,10 @@ extension ProtoMapEnumValues : Sendable where Key : Sendable, Value : Sendable {
 // MARK: - ProtoMapStringEncodedValues
 
 @propertyWrapper
-public struct ProtoMapStringEncodedValues<Key : Hashable & LosslessStringConvertible, Value : StringCodable> {
+public struct ProtoMapStringEncodedValues<
+    Key : Hashable & LosslessStringConvertible,
+    Value : StringCodable & Codable
+> {
     public var wrappedValue: [Key: Value]
 
     public init(wrappedValue: [Key: Value]) {
@@ -175,12 +169,6 @@ extension ProtoMapStringEncodedValues : Equatable where Value : Equatable {
 }
 
 extension ProtoMapStringEncodedValues : Hashable where Value : Hashable {
-}
-
-extension ProtoMapStringEncodedValues : EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: [:])
-    }
 }
 
 #if swift(>=5.5)

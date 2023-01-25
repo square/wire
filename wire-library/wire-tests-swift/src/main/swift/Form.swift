@@ -497,10 +497,18 @@ extension Form.TextElement : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.TextElement : Codable {
-    public enum CodingKeys : String, CodingKey {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.text = try container.decodeIfPresent(String.self, forKey: "text")
+    }
 
-        case text
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
+        if includeDefaults || self.text != nil {
+            try container.encode(self.text, forKey: "text")
+        }
     }
 }
 #endif
@@ -847,69 +855,73 @@ extension Form : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension Form : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: Form.CodingKeys.self)
-        if container.contains(.button_element) {
-            let button_element = try container.decode(Form.ButtonElement.self, forKey: .button_element)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        if let button_element = try container.decodeIfPresent(Form.ButtonElement.self, forKey: "buttonElement") {
             self.choice = .button_element(button_element)
-        } else if container.contains(.local_image_element) {
-            let local_image_element = try container.decode(Form.LocalImageElement.self, forKey: .local_image_element)
+        } else if let button_element = try container.decodeIfPresent(Form.ButtonElement.self, forKey: "button_element") {
+            self.choice = .button_element(button_element)
+        } else if let local_image_element = try container.decodeIfPresent(Form.LocalImageElement.self, forKey: "localImageElement") {
             self.choice = .local_image_element(local_image_element)
-        } else if container.contains(.remote_image_element) {
-            let remote_image_element = try container.decode(Form.RemoteImageElement.self, forKey: .remote_image_element)
+        } else if let local_image_element = try container.decodeIfPresent(Form.LocalImageElement.self, forKey: "local_image_element") {
+            self.choice = .local_image_element(local_image_element)
+        } else if let remote_image_element = try container.decodeIfPresent(Form.RemoteImageElement.self, forKey: "remoteImageElement") {
             self.choice = .remote_image_element(remote_image_element)
-        } else if container.contains(.money_element) {
-            let money_element = try container.decode(Form.MoneyElement.self, forKey: .money_element)
+        } else if let remote_image_element = try container.decodeIfPresent(Form.RemoteImageElement.self, forKey: "remote_image_element") {
+            self.choice = .remote_image_element(remote_image_element)
+        } else if let money_element = try container.decodeIfPresent(Form.MoneyElement.self, forKey: "moneyElement") {
             self.choice = .money_element(money_element)
-        } else if container.contains(.spacer_element) {
-            let spacer_element = try container.decode(Form.SpacerElement.self, forKey: .spacer_element)
+        } else if let money_element = try container.decodeIfPresent(Form.MoneyElement.self, forKey: "money_element") {
+            self.choice = .money_element(money_element)
+        } else if let spacer_element = try container.decodeIfPresent(Form.SpacerElement.self, forKey: "spacerElement") {
             self.choice = .spacer_element(spacer_element)
-        } else if container.contains(.text_element) {
-            let text_element = try container.decode(Form.TextElement.self, forKey: .text_element)
+        } else if let spacer_element = try container.decodeIfPresent(Form.SpacerElement.self, forKey: "spacer_element") {
+            self.choice = .spacer_element(spacer_element)
+        } else if let text_element = try container.decodeIfPresent(Form.TextElement.self, forKey: "textElement") {
             self.choice = .text_element(text_element)
-        } else if container.contains(.customized_card_element) {
-            let customized_card_element = try container.decode(Form.CustomizedCardElement.self, forKey: .customized_card_element)
+        } else if let text_element = try container.decodeIfPresent(Form.TextElement.self, forKey: "text_element") {
+            self.choice = .text_element(text_element)
+        } else if let customized_card_element = try container.decodeIfPresent(Form.CustomizedCardElement.self, forKey: "customizedCardElement") {
             self.choice = .customized_card_element(customized_card_element)
-        } else if container.contains(.address_element) {
-            let address_element = try container.decode(Form.AddressElement.self, forKey: .address_element)
+        } else if let customized_card_element = try container.decodeIfPresent(Form.CustomizedCardElement.self, forKey: "customized_card_element") {
+            self.choice = .customized_card_element(customized_card_element)
+        } else if let address_element = try container.decodeIfPresent(Form.AddressElement.self, forKey: "addressElement") {
             self.choice = .address_element(address_element)
-        } else if container.contains(.text_input_element) {
-            let text_input_element = try container.decode(Form.TextInputElement.self, forKey: .text_input_element)
+        } else if let address_element = try container.decodeIfPresent(Form.AddressElement.self, forKey: "address_element") {
+            self.choice = .address_element(address_element)
+        } else if let text_input_element = try container.decodeIfPresent(Form.TextInputElement.self, forKey: "textInputElement") {
             self.choice = .text_input_element(text_input_element)
-        } else if container.contains(.option_picker_element) {
-            let option_picker_element = try container.decode(Form.OptionPickerElement.self, forKey: .option_picker_element)
+        } else if let text_input_element = try container.decodeIfPresent(Form.TextInputElement.self, forKey: "text_input_element") {
+            self.choice = .text_input_element(text_input_element)
+        } else if let option_picker_element = try container.decodeIfPresent(Form.OptionPickerElement.self, forKey: "optionPickerElement") {
             self.choice = .option_picker_element(option_picker_element)
-        } else if container.contains(.detail_row_element) {
-            let detail_row_element = try container.decode(Form.DetailRowElement.self, forKey: .detail_row_element)
+        } else if let option_picker_element = try container.decodeIfPresent(Form.OptionPickerElement.self, forKey: "option_picker_element") {
+            self.choice = .option_picker_element(option_picker_element)
+        } else if let detail_row_element = try container.decodeIfPresent(Form.DetailRowElement.self, forKey: "detailRowElement") {
             self.choice = .detail_row_element(detail_row_element)
-        } else if container.contains(.currency_conversion_flags_element) {
-            let currency_conversion_flags_element = try container.decode(Form.CurrencyConversionFlagsElement.self, forKey: .currency_conversion_flags_element)
+        } else if let detail_row_element = try container.decodeIfPresent(Form.DetailRowElement.self, forKey: "detail_row_element") {
+            self.choice = .detail_row_element(detail_row_element)
+        } else if let currency_conversion_flags_element = try container.decodeIfPresent(Form.CurrencyConversionFlagsElement.self, forKey: "currencyConversionFlagsElement") {
+            self.choice = .currency_conversion_flags_element(currency_conversion_flags_element)
+        } else if let currency_conversion_flags_element = try container.decodeIfPresent(Form.CurrencyConversionFlagsElement.self, forKey: "currency_conversion_flags_element") {
             self.choice = .currency_conversion_flags_element(currency_conversion_flags_element)
         } else {
             self.choice = nil
         }
-        if container.contains(.a) {
-            let a = try container.decode(String.self, forKey: .a)
+        if let a = try container.decodeIfPresent(String.self, forKey: "a") {
             self.decision = .a(a)
-        } else if container.contains(.b) {
-            let b = try container.decode(String.self, forKey: .b)
+        } else if let b = try container.decodeIfPresent(String.self, forKey: "b") {
             self.decision = .b(b)
-        } else if container.contains(.c) {
-            let c = try container.decode(String.self, forKey: .c)
+        } else if let c = try container.decodeIfPresent(String.self, forKey: "c") {
             self.decision = .c(c)
-        } else if container.contains(.d) {
-            let d = try container.decode(String.self, forKey: .d)
+        } else if let d = try container.decodeIfPresent(String.self, forKey: "d") {
             self.decision = .d(d)
-        } else if container.contains(.e) {
-            let e = try container.decode(String.self, forKey: .e)
+        } else if let e = try container.decodeIfPresent(String.self, forKey: "e") {
             self.decision = .e(e)
-        } else if container.contains(.f) {
-            let f = try container.decode(String.self, forKey: .f)
+        } else if let f = try container.decodeIfPresent(String.self, forKey: "f") {
             self.decision = .f(f)
-        } else if container.contains(.g) {
-            let g = try container.decode(String.self, forKey: .g)
+        } else if let g = try container.decodeIfPresent(String.self, forKey: "g") {
             self.decision = .g(g)
-        } else if container.contains(.h) {
-            let h = try container.decode(String.self, forKey: .h)
+        } else if let h = try container.decodeIfPresent(String.self, forKey: "h") {
             self.decision = .h(h)
         } else {
             self.decision = nil
@@ -917,58 +929,35 @@ extension Form : Codable {
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: Form.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+
         switch self.choice {
-        case .button_element(let button_element): try container.encode(button_element, forKey: .button_element)
-        case .local_image_element(let local_image_element): try container.encode(local_image_element, forKey: .local_image_element)
-        case .remote_image_element(let remote_image_element): try container.encode(remote_image_element, forKey: .remote_image_element)
-        case .money_element(let money_element): try container.encode(money_element, forKey: .money_element)
-        case .spacer_element(let spacer_element): try container.encode(spacer_element, forKey: .spacer_element)
-        case .text_element(let text_element): try container.encode(text_element, forKey: .text_element)
-        case .customized_card_element(let customized_card_element): try container.encode(customized_card_element, forKey: .customized_card_element)
-        case .address_element(let address_element): try container.encode(address_element, forKey: .address_element)
-        case .text_input_element(let text_input_element): try container.encode(text_input_element, forKey: .text_input_element)
-        case .option_picker_element(let option_picker_element): try container.encode(option_picker_element, forKey: .option_picker_element)
-        case .detail_row_element(let detail_row_element): try container.encode(detail_row_element, forKey: .detail_row_element)
-        case .currency_conversion_flags_element(let currency_conversion_flags_element): try container.encode(currency_conversion_flags_element, forKey: .currency_conversion_flags_element)
+        case .button_element(let button_element): try container.encode(button_element, forKey: preferCamelCase ? "buttonElement" : "button_element")
+        case .local_image_element(let local_image_element): try container.encode(local_image_element, forKey: preferCamelCase ? "localImageElement" : "local_image_element")
+        case .remote_image_element(let remote_image_element): try container.encode(remote_image_element, forKey: preferCamelCase ? "remoteImageElement" : "remote_image_element")
+        case .money_element(let money_element): try container.encode(money_element, forKey: preferCamelCase ? "moneyElement" : "money_element")
+        case .spacer_element(let spacer_element): try container.encode(spacer_element, forKey: preferCamelCase ? "spacerElement" : "spacer_element")
+        case .text_element(let text_element): try container.encode(text_element, forKey: preferCamelCase ? "textElement" : "text_element")
+        case .customized_card_element(let customized_card_element): try container.encode(customized_card_element, forKey: preferCamelCase ? "customizedCardElement" : "customized_card_element")
+        case .address_element(let address_element): try container.encode(address_element, forKey: preferCamelCase ? "addressElement" : "address_element")
+        case .text_input_element(let text_input_element): try container.encode(text_input_element, forKey: preferCamelCase ? "textInputElement" : "text_input_element")
+        case .option_picker_element(let option_picker_element): try container.encode(option_picker_element, forKey: preferCamelCase ? "optionPickerElement" : "option_picker_element")
+        case .detail_row_element(let detail_row_element): try container.encode(detail_row_element, forKey: preferCamelCase ? "detailRowElement" : "detail_row_element")
+        case .currency_conversion_flags_element(let currency_conversion_flags_element): try container.encode(currency_conversion_flags_element, forKey: preferCamelCase ? "currencyConversionFlagsElement" : "currency_conversion_flags_element")
         case Optional.none: break
         }
         switch self.decision {
-        case .a(let a): try container.encode(a, forKey: .a)
-        case .b(let b): try container.encode(b, forKey: .b)
-        case .c(let c): try container.encode(c, forKey: .c)
-        case .d(let d): try container.encode(d, forKey: .d)
-        case .e(let e): try container.encode(e, forKey: .e)
-        case .f(let f): try container.encode(f, forKey: .f)
-        case .g(let g): try container.encode(g, forKey: .g)
-        case .h(let h): try container.encode(h, forKey: .h)
+        case .a(let a): try container.encode(a, forKey: "a")
+        case .b(let b): try container.encode(b, forKey: "b")
+        case .c(let c): try container.encode(c, forKey: "c")
+        case .d(let d): try container.encode(d, forKey: "d")
+        case .e(let e): try container.encode(e, forKey: "e")
+        case .f(let f): try container.encode(f, forKey: "f")
+        case .g(let g): try container.encode(g, forKey: "g")
+        case .h(let h): try container.encode(h, forKey: "h")
         case Optional.none: break
         }
-    }
-
-    public enum CodingKeys : String, CodingKey {
-
-        case button_element
-        case local_image_element
-        case remote_image_element
-        case money_element
-        case spacer_element
-        case text_element
-        case customized_card_element
-        case address_element
-        case text_input_element
-        case option_picker_element
-        case detail_row_element
-        case currency_conversion_flags_element
-        case a
-        case b
-        case c
-        case d
-        case e
-        case f
-        case g
-        case h
-
     }
 }
 #endif

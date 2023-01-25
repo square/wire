@@ -27,7 +27,7 @@ extension Set : SequenceInitializableCollection {}
 @propertyWrapper
 public struct StringEncodedValues<ValuesHolder>
 where ValuesHolder : SequenceInitializableCollection,
-      ValuesHolder.Element : StringCodable
+      ValuesHolder.Element : StringCodable & Codable
 {
     public typealias Value = ValuesHolder.Element
 
@@ -62,12 +62,6 @@ extension StringEncodedValues : Codable {
             let wrapped = StringEncoded(wrappedValue: value)
             try container.encode(wrapped)
         }
-    }
-}
-
-extension StringEncodedValues : EmptyInitializable where ValuesHolder : EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: .init())
     }
 }
 

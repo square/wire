@@ -19,9 +19,11 @@ import Wire
 import XCTest
 
 final class CodableTests: XCTestCase {
+}
 
-    // MARK: - Decode Tests
+// MARK: - Decode Tests
 
+extension CodableTests {
     func testDecodeOptional() throws {
         let json = """
         {
@@ -99,9 +101,11 @@ final class CodableTests: XCTestCase {
 
         try assertDecode(json: json, expected: expected)
     }
+}
 
-    // MARK: - Encode Tests
+// MARK: - Encode Tests
 
+extension CodableTests {
     func testEncodeOptional() throws {
         // Only include one value in maps until https://bugs.swift.org/browse/SR-13414 is fixed.
         let proto = SimpleOptional2(
@@ -136,7 +140,9 @@ final class CodableTests: XCTestCase {
         }
         """
 
-        try assertEncode(proto: proto, expected: expected)
+        try assertEncode(proto: proto, expected: expected) { encoder in
+            encoder.protoKeyNameEncodingStrategy = .fieldName
+        }
     }
 
     func testEncodeRequired() throws {
@@ -173,19 +179,135 @@ final class CodableTests: XCTestCase {
         }
         """
 
-        try assertEncode(proto: proto, expected: expected)
+        try assertEncode(proto: proto, expected: expected) { encoder in
+            encoder.protoKeyNameEncodingStrategy = .fieldName
+        }
+    }
+}
+
+// MARK: - Empty Payloads
+
+extension CodableTests {
+    func testDecodesEmptyProto() throws {
+        try assertDecode(json: "{}", expected: SimpleOptional2())
     }
 
-    // MARK: - Private Methods
+    func testEncodesEmptyProto() throws {
+        try assertEncode(proto: SimpleOptional2(), expected: "{}")
+    }
 
+    func testEncodesEmptyProtoWithDefaults() throws {
+        let json = """
+        {
+          "map_int32_string":{},
+          "opt_bytes":null,
+          "opt_double":null,
+          "opt_enum":null,
+          "opt_float":null,
+          "opt_int32":null,
+          "opt_int64":null,
+          "opt_string":null,
+          "opt_uint32":null,
+          "opt_uint64":null,
+          "repeated_int32":[],
+          "repeated_string":[]
+        }
+        """
+
+        try assertEncode(proto: SimpleOptional2(), expected: json) { encoder in
+            encoder.protoKeyNameEncodingStrategy = .fieldName
+            encoder.protoDefaultValuesEncodingStrategy = .include
+        }
+    }
+
+    func testDecodesDefaultValues() throws {
+        let json = """
+        {
+          "map_int32_string":{},
+          "opt_bytes":null,
+          "opt_double":null,
+          "opt_enum":null,
+          "opt_float":null,
+          "opt_int32":null,
+          "opt_int64":null,
+          "opt_string":null,
+          "opt_uint32":null,
+          "opt_uint64":null,
+          "repeated_int32":[],
+          "repeated_string":[]
+        }
+        """
+
+        try assertDecode(json: json, expected: SimpleOptional2())
+    }
+}
+
+// MARK: - Key Names
+
+extension CodableTests {
+    func testEncodedKeyNamesDefaultToCamelCase() throws {
+        let json = """
+        {
+          "mapInt32String":{"1":"foo"},
+          "optDouble":6,
+          "optEnum":"A",
+          "repeatedString":["B"]
+        }
+        """
+
+        let proto = SimpleOptional2(
+            opt_double: 6,
+            opt_enum: .A,
+            repeated_string: ["B"],
+            map_int32_string: [1 : "foo"]
+        )
+
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testDecodePrefersCamelCase() throws {
+        let json = """
+        {
+          "mapInt32String":{"1":"foo"},
+          "map_int32_string":{"2":"bar"},
+          "optDouble":6,
+          "opt_double":8,
+          "optEnum":"A",
+          "opt_enum":"UNKNOWN",
+          "repeatedString":["B"],
+          "repeated_string":["C"],
+          "opt_int64":"5"
+        }
+        """
+
+        let proto = SimpleOptional2(
+            opt_int64: 5,
+            opt_double: 6,
+            opt_enum: .A,
+            repeated_string: ["B"],
+            map_int32_string: [1 : "foo"]
+        )
+
+        try assertDecode(json: json, expected: proto)
+    }
+}
+
+// MARK: - Private Methods
+
+extension CodableTests {
     private func assertDecode<P: Decodable & Equatable>(
         json: String,
         expected: P,
         file: StaticString = #file,
-        line: UInt = #line
+        line: UInt = #line,
+        configuration: (JSONDecoder) -> Void = { _ in }
     ) throws {
         let json = json.compacted()
-        let proto = try JSONDecoder().decode(P.self, from: json.data(using: .utf8)!)
+
+        let decoder = JSONDecoder()
+        configuration(decoder)
+
+        let proto = try decoder.decode(P.self, from: json.data(using: .utf8)!)
         XCTAssertEqual(proto, expected, file: file, line: line)
     }
 
@@ -193,11 +315,14 @@ final class CodableTests: XCTestCase {
         proto: P,
         expected: String,
         file: StaticString = #file,
-        line: UInt = #line
+        line: UInt = #line,
+        configuration: (JSONEncoder) -> Void = { _ in }
     ) throws {
         let expected = expected.compacted()
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = .sortedKeys
+        configuration(encoder)
 
         let json = String(data: try encoder.encode(proto), encoding: .utf8)
         XCTAssertEqual(json, expected, file: file, line: line)

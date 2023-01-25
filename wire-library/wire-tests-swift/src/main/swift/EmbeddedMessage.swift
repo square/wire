@@ -5,7 +5,6 @@ import Wire
 
 public struct EmbeddedMessage {
 
-    @DefaultEmpty
     public var inner_repeated_number: [Int32]
     public var inner_number_after: Int32?
     public var unknownFields: Data = .init()
@@ -66,11 +65,25 @@ extension EmbeddedMessage : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension EmbeddedMessage : Codable {
-    public enum CodingKeys : String, CodingKey {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.inner_repeated_number = try container.decodeIfPresent([Int32].self, forKey: "innerRepeatedNumber") ??
+                container.decodeIfPresent([Int32].self, forKey: "inner_repeated_number") ?? []
+        self.inner_number_after = try container.decodeIfPresent(Int32.self, forKey: "innerNumberAfter") ??
+                container.decodeIfPresent(Int32.self, forKey: "inner_number_after")
+    }
 
-        case inner_repeated_number
-        case inner_number_after
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
+        if includeDefaults || !self.inner_repeated_number.isEmpty {
+            try container.encode(self.inner_repeated_number, forKey: preferCamelCase ? "innerRepeatedNumber" : "inner_repeated_number")
+        }
+        if includeDefaults || self.inner_number_after != nil {
+            try container.encode(self.inner_number_after, forKey: preferCamelCase ? "innerNumberAfter" : "inner_number_after")
+        }
     }
 }
 #endif

@@ -22,8 +22,13 @@ public enum Indirect<T : ProtoCodable> {
 
     indirect case some(T)
 
+    @available(*, deprecated, message: "Replace with init(wrappedValue:)")
     public init(value: T?) {
-        if let value = value {
+        self.init(wrappedValue: value)
+    }
+
+    public init(wrappedValue: T?) {
+        if let value = wrappedValue {
           self = .some(value)
         } else {
           self = .none
@@ -50,7 +55,7 @@ public enum Indirect<T : ProtoCodable> {
 extension Indirect : Codable where T : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        self.init(value: try container.decode(T.self))
+        self.init(wrappedValue: try container.decode(T.self))
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -9,9 +9,7 @@ public struct NestedVersionTwo {
     public var v2_i: Int32?
     public var v2_s: String?
     public var v2_f32: UInt32?
-    @StringEncoded
     public var v2_f64: UInt64?
-    @DefaultEmpty
     public var v2_rs: [String]
     public var unknownFields: Data = .init()
 
@@ -98,15 +96,44 @@ extension NestedVersionTwo : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension NestedVersionTwo : Codable {
-    public enum CodingKeys : String, CodingKey {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.i = try container.decodeIfPresent(Int32.self, forKey: "i")
+        self.v2_i = try container.decodeIfPresent(Int32.self, forKey: "v2I") ??
+                container.decodeIfPresent(Int32.self, forKey: "v2_i")
+        self.v2_s = try container.decodeIfPresent(String.self, forKey: "v2S") ??
+                container.decodeIfPresent(String.self, forKey: "v2_s")
+        self.v2_f32 = try container.decodeIfPresent(UInt32.self, forKey: "v2F32") ??
+                container.decodeIfPresent(UInt32.self, forKey: "v2_f32")
+        self.v2_f64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "v2F64")?.wrappedValue ??
+                container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "v2_f64")?.wrappedValue
+        self.v2_rs = try container.decodeIfPresent([String].self, forKey: "v2Rs") ??
+                container.decodeIfPresent([String].self, forKey: "v2_rs") ?? []
+    }
 
-        case i
-        case v2_i
-        case v2_s
-        case v2_f32
-        case v2_f64
-        case v2_rs
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
+        if includeDefaults || self.i != nil {
+            try container.encode(self.i, forKey: "i")
+        }
+        if includeDefaults || self.v2_i != nil {
+            try container.encode(self.v2_i, forKey: preferCamelCase ? "v2I" : "v2_i")
+        }
+        if includeDefaults || self.v2_s != nil {
+            try container.encode(self.v2_s, forKey: preferCamelCase ? "v2S" : "v2_s")
+        }
+        if includeDefaults || self.v2_f32 != nil {
+            try container.encode(self.v2_f32, forKey: preferCamelCase ? "v2F32" : "v2_f32")
+        }
+        if includeDefaults || self.v2_f64 != nil {
+            try container.encode(StringEncoded(wrappedValue: self.v2_f64), forKey: preferCamelCase ? "v2F64" : "v2_f64")
+        }
+        if includeDefaults || !self.v2_rs.isEmpty {
+            try container.encode(self.v2_rs, forKey: preferCamelCase ? "v2Rs" : "v2_rs")
+        }
     }
 }
 #endif

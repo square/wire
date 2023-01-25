@@ -28,8 +28,13 @@ public final class Heap<T> {
 
     public var wrappedValue: T
 
+    @available(*, deprecated, message: "Replace with init(wrappedValue:)")
     public init(value: T) {
         self.wrappedValue = value
+    }
+
+    public init(wrappedValue: T) {
+        self.wrappedValue = wrappedValue
     }
 
 }
@@ -39,7 +44,7 @@ public final class Heap<T> {
 extension Heap : Codable where T : Codable {
     convenience public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        self.init(value: try container.decode(T.self))
+        self.init(wrappedValue: try container.decode(T.self))
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -50,7 +50,6 @@ public struct Duration {
      * Signed seconds of the span of time. Must be from -315,576,000,000
      * to +315,576,000,000 inclusive.
      */
-    @StringEncoded
     public var seconds: Int64
     /**
      * Signed fractions of a second at nanosecond resolution of the span
@@ -119,11 +118,17 @@ extension Duration : Proto3Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension Duration : Codable {
-    public enum CodingKeys : String, CodingKey {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.seconds = try container.decode(StringEncoded<Int64>.self, forKey: "seconds").wrappedValue
+        self.nanos = try container.decode(Int32.self, forKey: "nanos")
+    }
 
-        case seconds
-        case nanos
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
 
+        try container.encode(StringEncoded(wrappedValue: self.seconds), forKey: "seconds")
+        try container.encode(self.nanos, forKey: "nanos")
     }
 }
 #endif

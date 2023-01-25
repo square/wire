@@ -65,11 +65,25 @@ extension OuterMessage : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension OuterMessage : Codable {
-    public enum CodingKeys : String, CodingKey {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.outer_number_before = try container.decodeIfPresent(Int32.self, forKey: "outerNumberBefore") ??
+                container.decodeIfPresent(Int32.self, forKey: "outer_number_before")
+        self.embedded_message = try container.decodeIfPresent(EmbeddedMessage.self, forKey: "embeddedMessage") ??
+                container.decodeIfPresent(EmbeddedMessage.self, forKey: "embedded_message")
+    }
 
-        case outer_number_before
-        case embedded_message
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
+        if includeDefaults || self.outer_number_before != nil {
+            try container.encode(self.outer_number_before, forKey: preferCamelCase ? "outerNumberBefore" : "outer_number_before")
+        }
+        if includeDefaults || self.embedded_message != nil {
+            try container.encode(self.embedded_message, forKey: preferCamelCase ? "embeddedMessage" : "embedded_message")
+        }
     }
 }
 #endif
