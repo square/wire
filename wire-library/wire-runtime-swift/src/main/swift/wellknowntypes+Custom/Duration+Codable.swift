@@ -21,7 +21,7 @@ import Foundation
 @available(macOS 13, iOS 16, watchOS 9, tvOS 16, *)
 extension Swift.Duration {
     fileprivate var nanos: Int32 {
-        let nanos = components.attoseconds * 1_000_000_000
+        let nanos = components.attoseconds / 1_000_000_000
         return Int32(truncatingIfNeeded: nanos)
     }
 }
@@ -29,7 +29,7 @@ extension Swift.Duration {
 @available(macOS 13, iOS 16, watchOS 9, tvOS 16, *)
 extension Wire.Duration {
     public var attos: Int64 {
-        Int64(nanos) / 1_000_000_000
+        Int64(nanos) * 1_000_000_000
     }
 
     public func toSwiftDuration() -> Swift.Duration {
