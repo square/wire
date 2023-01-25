@@ -162,7 +162,7 @@ extension StringEncodedTests {
         XCTAssertEqual(string, decodedString)
     }
 
-    func testRoundtripEncodingURLSafeData() throws {
+    func testDecodingURLSafeData() throws {
         let data = Data(base64Encoded: "ab+e/fg=")!
 
         let json = """
@@ -177,13 +177,6 @@ extension StringEncodedTests {
 
         let actualStruct = try decoder.decode(DataStruct.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
-
-        let encoder = JSONEncoder()
-        encoder.stringEncodedDataEncodingStrategy = .base64url
-
-        let actualJSONData = try encoder.encode(actualStruct)
-        let actualJSON = String(data: actualJSONData, encoding: .utf8)!
-        XCTAssertEqual(actualJSON, json)
     }
 }
 
@@ -279,7 +272,7 @@ extension StringEncodedTests {
         }
     }
 
-    func testRawEncodingRoundTrip() throws {
+    func testRawDecodingRoundTrip() throws {
         let json = """
         {\
         "number":2,\
@@ -294,13 +287,6 @@ extension StringEncodedTests {
 
         let actualStruct = try decoder.decode(SimpleStruct.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
-
-        let encoder = JSONEncoder()
-        encoder.stringEncodedEncodingStrategy = .raw
-
-        let actualJSONData = try encoder.encode(actualStruct)
-        let actualJSON = String(data: actualJSONData, encoding: .utf8)!
-        XCTAssertEqual(actualJSON, json)
     }
 }
 
@@ -349,7 +335,7 @@ extension StringEncodedTests {
         XCTAssertEqual(actualJSON, json)
     }
 
-    func testMapRawEncodingRoundTrip() throws {
+    func testMapRawDecoding() throws {
         let json = """
         {\
         "keys":{"2":"c"},\
@@ -369,12 +355,5 @@ extension StringEncodedTests {
 
         let actualStruct = try decoder.decode(DictionaryStruct.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
-
-        let encoder = JSONEncoder()
-        encoder.stringEncodedEncodingStrategy = .raw
-
-        let actualJSONData = try encoder.encode(actualStruct)
-        let actualJSON = String(data: actualJSONData, encoding: .utf8)!
-        XCTAssertEqual(actualJSON, json)
     }
 }

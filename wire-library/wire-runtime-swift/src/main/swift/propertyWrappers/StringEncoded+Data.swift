@@ -18,18 +18,12 @@ import Foundation
 
 extension Data : StringCodable {
     public func stringEncodedValue(in encoder: Encoder) throws -> String {
-        switch encoder.stringEncodedDataEncodingStrategy {
-        case .base64:
-            return base64EncodedString()
-
-        case .base64url:
-            return base64urlEncodedString()
-        }
+        return base64EncodedString()
     }
 
     public init(encodedValue: String, from decoder: Decoder) throws {
         let possibleValue = Data(base64Encoded: encodedValue) ??
-            Data(base64urlEncoded: encodedValue)
+            Data(base64URLEncoded: encodedValue)
 
         guard let value = possibleValue else {
             throw ProtoDecoder.Error.unparsableString(
@@ -42,12 +36,16 @@ extension Data : StringCodable {
 }
 
 public extension Data {
-    func base64urlEncodedData(options: Data.Base64EncodingOptions = []) -> Data {
-        let string = base64urlEncodedString(options: options)
+    /// Returns Base-64 URL-Safe encoded data.
+    /// - SeeAlso: [RFC4648](https://www.rfc-editor.org/rfc/rfc4648#section-5)
+    func base64URLEncodedData(options: Data.Base64EncodingOptions = []) -> Data {
+        let string = base64URLEncodedString(options: options)
         return Data(string.utf8)
     }
 
-    func base64urlEncodedString(options: Data.Base64EncodingOptions = []) -> String {
+    /// Returns a Base-64 URL-Safe encoded string.
+    /// - SeeAlso: [RFC4648](https://www.rfc-editor.org/rfc/rfc4648#section-5)
+    func base64URLEncodedString(options: Data.Base64EncodingOptions = []) -> String {
         let base64 = base64EncodedString(options: options)
         return base64
             .replacingOccurrences(of: "/", with: "_")
@@ -55,26 +53,30 @@ public extension Data {
             .replacingOccurrences(of: "=", with: "")
     }
 
+    /// Initialize Data from Base-64 URL-Safe encoded data.
+    /// - SeeAlso: [RFC4648](https://www.rfc-editor.org/rfc/rfc4648#section-5)
     init?(
-        base64urlEncoded base64urlData: Data,
+        base64URLEncoded base64URLData: Data,
         options: Data.Base64DecodingOptions = []
     ) {
-        guard let base64urlString = String(data: base64urlData, encoding: .utf8) else {
+        guard let base64URLString = String(data: base64URLData, encoding: .utf8) else {
             return nil
         }
-        self.init(base64urlEncoded: base64urlString, options: options)
+        self.init(base64URLEncoded: base64URLString, options: options)
     }
 
+    /// Initialize Data from a Base-64 URL-Safe encoded string.
+    /// - SeeAlso: [RFC4648](https://www.rfc-editor.org/rfc/rfc4648#section-5)
     init?(
-        base64urlEncoded base64urlString: String,
+        base64URLEncoded base64URLString: String,
         options: Data.Base64DecodingOptions = []
     ) {
         // https://en.wikipedia.org/wiki/Base64#Output_padding
-        let count = base64urlString.count
+        let count = base64URLString.count
         let remainder = 4 - (count % 4)
         let desiredLength = count + remainder
 
-        let base64String = base64urlString
+        let base64String = base64URLString
             .replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
             .padding(toLength: desiredLength, withPad: "=", startingAt: 0)

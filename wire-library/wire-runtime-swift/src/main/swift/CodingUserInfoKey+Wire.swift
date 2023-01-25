@@ -43,26 +43,6 @@ extension JSONEncoder {
         case integer
     }
 
-    /// The encoding strategy to use for StringEncoded types
-    /// - Note: Defaults to .string
-    /// - SeeAlso: [Proto3 JSON Mapping](https://developers.google.com/protocol-buffers/docs/proto3#json)
-    public enum StringEncodedEncodingStrategy {
-        /// Encodes the string-encoded value, like `"myValue": "1"`
-        case string
-        /// Encodes the raw Encodable value, like `"myValue": 1`
-        case raw
-    }
-
-    /// The encoding strategy to use for StringEncoded Data types when using string encoding
-    /// - Note: Defaults to .base64
-    /// - SeeAlso: [Proto3 JSON Mapping](https://developers.google.com/protocol-buffers/docs/proto3#json)
-    public enum StringEncodedDataEncodingStrategy {
-        /// Use standard base64 encoding
-        case base64
-        /// Use base64 URL-safe encoding
-        case base64url
-    }
-
     /// The encoding strategy to use for key names in Codable implementations
     /// - Note: Defaults to .camelCase
     /// - SeeAlso: [Proto3 JSON Mapping](https://developers.google.com/protocol-buffers/docs/proto3#json)
@@ -99,18 +79,6 @@ extension CodingUserInfoKey {
     /// - SeeAlso: JSONDecoder.EnumDecodingStrategy
     public static let wireEnumDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumDecodingStrategy")!
 
-    /// Control the encoding of StringEncoded values
-    ///
-    /// You probably will want to just set `JSONEncoder.stringEncodedEncodingStrategy`
-    /// - SeeAlso: JSONEncoder.StringEncodedEncodingStrategy
-    public static let wireStringEncodedEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.StringEncodedEncodingStrategy")!
-
-    /// Control the encoding of StringEncoded Data values
-    ///
-    /// You probably will want to just set `JSONEncoder.stringEncodedDataEncodingStrategy`
-    /// - SeeAlso: JSONEncoder.StringEncodedDataEncodingStrategy
-    public static let wireStringEncodedDataEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.StringEncodedDataEncodingStrategy")!
-
     /// Control the encoding of proto key names
     ///
     /// You probably will want to just set `JSONEncoder.protoKeyNameEncodingStrategy`
@@ -128,17 +96,6 @@ extension Encoder {
     public var protoEnumEncodingStrategy: JSONEncoder.EnumEncodingStrategy {
         let preferred = userInfo[.wireEnumEncodingStrategy] as? JSONEncoder.EnumEncodingStrategy
         return preferred ?? .string
-    }
-
-    public var stringEncodedEncodingStrategy: JSONEncoder.StringEncodedEncodingStrategy {
-        let preferred = userInfo[.wireStringEncodedEncodingStrategy] as? JSONEncoder.StringEncodedEncodingStrategy
-        return preferred ?? .string
-    }
-
-    public var stringEncodedDataEncodingStrategy: JSONEncoder.StringEncodedDataEncodingStrategy {
-        let preferred = userInfo[.wireStringEncodedDataEncodingStrategy] as? JSONEncoder
-            .StringEncodedDataEncodingStrategy
-        return preferred ?? .base64
     }
 
     public var protoKeyNameEncodingStrategy: JSONEncoder.KeyNameEncodingStrategy {
@@ -169,26 +126,6 @@ extension JSONEncoder {
         }
         set {
             userInfo[.wireEnumEncodingStrategy] = newValue
-        }
-    }
-
-    public var stringEncodedEncodingStrategy: JSONEncoder.StringEncodedEncodingStrategy {
-        get {
-            let preferred = userInfo[.wireStringEncodedEncodingStrategy] as? JSONEncoder.StringEncodedEncodingStrategy
-            return preferred ?? .string
-        }
-        set {
-            userInfo[.wireStringEncodedEncodingStrategy] = newValue
-        }
-    }
-
-    public var stringEncodedDataEncodingStrategy: JSONEncoder.StringEncodedDataEncodingStrategy {
-        get {
-            let preferred = userInfo[.wireStringEncodedDataEncodingStrategy] as? JSONEncoder.StringEncodedDataEncodingStrategy
-            return preferred ?? .base64
-        }
-        set {
-            userInfo[.wireStringEncodedDataEncodingStrategy] = newValue
         }
     }
 
