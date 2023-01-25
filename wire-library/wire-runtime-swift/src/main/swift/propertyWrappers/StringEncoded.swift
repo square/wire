@@ -46,7 +46,9 @@ extension StringEncoded : Decodable {
         self.init(wrappedValue: value)
     }
 
-    private static func create(optionalEncodedValue: String?) throws -> Value {
+    private static func create(
+        optionalEncodedValue: String?
+    ) throws -> Value {
         guard let encodedValue = optionalEncodedValue else {
             return try valueForNil()
         }
@@ -69,13 +71,7 @@ extension StringEncoded : Encodable {
         if shouldEncodeNil() {
             try container.encodeNil()
         } else {
-            switch encoder.stringEncodedEncodingStrategy {
-            case .raw:
-                try container.encode(wrappedValue)
-
-            case .string:
-                try container.encode(wrappedValue.stringEncodedValue())
-            }
+            try container.encode(wrappedValue.stringEncodedValue())
         }
     }
 

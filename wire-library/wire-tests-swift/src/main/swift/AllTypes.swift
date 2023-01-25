@@ -2501,6 +2501,15 @@ extension _AllTypes : Proto2Codable {
 
 #if !WIRE_REMOVE_CODABLE
 extension AllTypes : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.storage = try container.decode(_AllTypes.self)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(storage)
+    }
 }
 #endif
 
@@ -2536,8 +2545,8 @@ extension _AllTypes : Codable {
                 container.decodeIfPresent(Double.self, forKey: "opt_double")
         self.opt_string = try container.decodeIfPresent(String.self, forKey: "optString") ??
                 container.decodeIfPresent(String.self, forKey: "opt_string")
-        self.opt_bytes = try container.decodeIfPresent(Data.self, forKey: "optBytes") ??
-                container.decodeIfPresent(Data.self, forKey: "opt_bytes")
+        self.opt_bytes = try container.decodeIfPresent(StringEncoded<Data>.self, forKey: "optBytes")?.wrappedValue ??
+                container.decodeIfPresent(StringEncoded<Data>.self, forKey: "opt_bytes")?.wrappedValue
         self.opt_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "optNestedEnum") ??
                 container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "opt_nested_enum")
         self.opt_nested_message = try container.decodeIfPresent(AllTypes.NestedMessage.self, forKey: "optNestedMessage") ??
@@ -2570,8 +2579,8 @@ extension _AllTypes : Codable {
                 container.decode(Double.self, forKey: "req_double")
         self.req_string = try container.decodeIfPresent(String.self, forKey: "reqString") ??
                 container.decode(String.self, forKey: "req_string")
-        self.req_bytes = try container.decodeIfPresent(Data.self, forKey: "reqBytes") ??
-                container.decode(Data.self, forKey: "req_bytes")
+        self.req_bytes = try container.decodeIfPresent(StringEncoded<Data>.self, forKey: "reqBytes")?.wrappedValue ??
+                container.decode(StringEncoded<Data>.self, forKey: "req_bytes").wrappedValue
         self.req_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "reqNestedEnum") ??
                 container.decode(AllTypes.NestedEnum.self, forKey: "req_nested_enum")
         self.req_nested_message = try container.decodeIfPresent(AllTypes.NestedMessage.self, forKey: "reqNestedMessage") ??
@@ -2604,8 +2613,8 @@ extension _AllTypes : Codable {
                 container.decodeIfPresent([Double].self, forKey: "rep_double") ?? []
         self.rep_string = try container.decodeIfPresent([String].self, forKey: "repString") ??
                 container.decodeIfPresent([String].self, forKey: "rep_string") ?? []
-        self.rep_bytes = try container.decodeIfPresent([Data].self, forKey: "repBytes") ??
-                container.decodeIfPresent([Data].self, forKey: "rep_bytes") ?? []
+        self.rep_bytes = try container.decodeIfPresent(StringEncodedValues<[Data]>.self, forKey: "repBytes")?.wrappedValue ??
+                container.decodeIfPresent(StringEncodedValues<[Data]>.self, forKey: "rep_bytes")?.wrappedValue ?? []
         self.rep_nested_enum = try container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "repNestedEnum") ??
                 container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "rep_nested_enum") ?? []
         self.rep_nested_message = try container.decodeIfPresent([AllTypes.NestedMessage].self, forKey: "repNestedMessage") ??
@@ -2666,8 +2675,8 @@ extension _AllTypes : Codable {
                 container.decodeIfPresent(Double.self, forKey: "default_double")
         self.default_string = try container.decodeIfPresent(String.self, forKey: "defaultString") ??
                 container.decodeIfPresent(String.self, forKey: "default_string")
-        self.default_bytes = try container.decodeIfPresent(Data.self, forKey: "defaultBytes") ??
-                container.decodeIfPresent(Data.self, forKey: "default_bytes")
+        self.default_bytes = try container.decodeIfPresent(StringEncoded<Data>.self, forKey: "defaultBytes")?.wrappedValue ??
+                container.decodeIfPresent(StringEncoded<Data>.self, forKey: "default_bytes")?.wrappedValue
         self.default_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "defaultNestedEnum") ??
                 container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "default_nested_enum")
         self.map_int32_int32 = try container.decodeIfPresent(ProtoMap<Int32, Int32>.self, forKey: "mapInt32Int32")?.wrappedValue ??
@@ -2706,8 +2715,8 @@ extension _AllTypes : Codable {
                 container.decodeIfPresent(Double.self, forKey: "ext_opt_double")
         self.ext_opt_string = try container.decodeIfPresent(String.self, forKey: "extOptString") ??
                 container.decodeIfPresent(String.self, forKey: "ext_opt_string")
-        self.ext_opt_bytes = try container.decodeIfPresent(Data.self, forKey: "extOptBytes") ??
-                container.decodeIfPresent(Data.self, forKey: "ext_opt_bytes")
+        self.ext_opt_bytes = try container.decodeIfPresent(StringEncoded<Data>.self, forKey: "extOptBytes")?.wrappedValue ??
+                container.decodeIfPresent(StringEncoded<Data>.self, forKey: "ext_opt_bytes")?.wrappedValue
         self.ext_opt_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "extOptNestedEnum") ??
                 container.decodeIfPresent(AllTypes.NestedEnum.self, forKey: "ext_opt_nested_enum")
         self.ext_opt_nested_message = try container.decodeIfPresent(AllTypes.NestedMessage.self, forKey: "extOptNestedMessage") ??
@@ -2740,8 +2749,8 @@ extension _AllTypes : Codable {
                 container.decodeIfPresent([Double].self, forKey: "ext_rep_double") ?? []
         self.ext_rep_string = try container.decodeIfPresent([String].self, forKey: "extRepString") ??
                 container.decodeIfPresent([String].self, forKey: "ext_rep_string") ?? []
-        self.ext_rep_bytes = try container.decodeIfPresent([Data].self, forKey: "extRepBytes") ??
-                container.decodeIfPresent([Data].self, forKey: "ext_rep_bytes") ?? []
+        self.ext_rep_bytes = try container.decodeIfPresent(StringEncodedValues<[Data]>.self, forKey: "extRepBytes")?.wrappedValue ??
+                container.decodeIfPresent(StringEncodedValues<[Data]>.self, forKey: "ext_rep_bytes")?.wrappedValue ?? []
         self.ext_rep_nested_enum = try container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "extRepNestedEnum") ??
                 container.decodeIfPresent([AllTypes.NestedEnum].self, forKey: "ext_rep_nested_enum") ?? []
         self.ext_rep_nested_message = try container.decodeIfPresent([AllTypes.NestedMessage].self, forKey: "extRepNestedMessage") ??
@@ -2824,7 +2833,7 @@ extension _AllTypes : Codable {
             try container.encode(self.opt_string, forKey: preferCamelCase ? "optString" : "opt_string")
         }
         if includeDefaults || self.opt_bytes != nil {
-            try container.encode(self.opt_bytes, forKey: preferCamelCase ? "optBytes" : "opt_bytes")
+            try container.encode(StringEncoded(wrappedValue: self.opt_bytes), forKey: preferCamelCase ? "optBytes" : "opt_bytes")
         }
         if includeDefaults || self.opt_nested_enum != nil {
             try container.encode(self.opt_nested_enum, forKey: preferCamelCase ? "optNestedEnum" : "opt_nested_enum")
@@ -2846,7 +2855,7 @@ extension _AllTypes : Codable {
         try container.encode(self.req_float, forKey: preferCamelCase ? "reqFloat" : "req_float")
         try container.encode(self.req_double, forKey: preferCamelCase ? "reqDouble" : "req_double")
         try container.encode(self.req_string, forKey: preferCamelCase ? "reqString" : "req_string")
-        try container.encode(self.req_bytes, forKey: preferCamelCase ? "reqBytes" : "req_bytes")
+        try container.encode(StringEncoded(wrappedValue: self.req_bytes), forKey: preferCamelCase ? "reqBytes" : "req_bytes")
         try container.encode(self.req_nested_enum, forKey: preferCamelCase ? "reqNestedEnum" : "req_nested_enum")
         try container.encode(self.req_nested_message, forKey: preferCamelCase ? "reqNestedMessage" : "req_nested_message")
         if includeDefaults || !self.rep_int32.isEmpty {
@@ -2892,7 +2901,7 @@ extension _AllTypes : Codable {
             try container.encode(self.rep_string, forKey: preferCamelCase ? "repString" : "rep_string")
         }
         if includeDefaults || !self.rep_bytes.isEmpty {
-            try container.encode(self.rep_bytes, forKey: preferCamelCase ? "repBytes" : "rep_bytes")
+            try container.encode(StringEncodedValues(wrappedValue: self.rep_bytes), forKey: preferCamelCase ? "repBytes" : "rep_bytes")
         }
         if includeDefaults || !self.rep_nested_enum.isEmpty {
             try container.encode(self.rep_nested_enum, forKey: preferCamelCase ? "repNestedEnum" : "rep_nested_enum")
@@ -2985,7 +2994,7 @@ extension _AllTypes : Codable {
             try container.encode(self.default_string, forKey: preferCamelCase ? "defaultString" : "default_string")
         }
         if includeDefaults || self.default_bytes != nil {
-            try container.encode(self.default_bytes, forKey: preferCamelCase ? "defaultBytes" : "default_bytes")
+            try container.encode(StringEncoded(wrappedValue: self.default_bytes), forKey: preferCamelCase ? "defaultBytes" : "default_bytes")
         }
         if includeDefaults || self.default_nested_enum != nil {
             try container.encode(self.default_nested_enum, forKey: preferCamelCase ? "defaultNestedEnum" : "default_nested_enum")
@@ -3045,7 +3054,7 @@ extension _AllTypes : Codable {
             try container.encode(self.ext_opt_string, forKey: preferCamelCase ? "extOptString" : "ext_opt_string")
         }
         if includeDefaults || self.ext_opt_bytes != nil {
-            try container.encode(self.ext_opt_bytes, forKey: preferCamelCase ? "extOptBytes" : "ext_opt_bytes")
+            try container.encode(StringEncoded(wrappedValue: self.ext_opt_bytes), forKey: preferCamelCase ? "extOptBytes" : "ext_opt_bytes")
         }
         if includeDefaults || self.ext_opt_nested_enum != nil {
             try container.encode(self.ext_opt_nested_enum, forKey: preferCamelCase ? "extOptNestedEnum" : "ext_opt_nested_enum")
@@ -3096,7 +3105,7 @@ extension _AllTypes : Codable {
             try container.encode(self.ext_rep_string, forKey: preferCamelCase ? "extRepString" : "ext_rep_string")
         }
         if includeDefaults || !self.ext_rep_bytes.isEmpty {
-            try container.encode(self.ext_rep_bytes, forKey: preferCamelCase ? "extRepBytes" : "ext_rep_bytes")
+            try container.encode(StringEncodedValues(wrappedValue: self.ext_rep_bytes), forKey: preferCamelCase ? "extRepBytes" : "ext_rep_bytes")
         }
         if includeDefaults || !self.ext_rep_nested_enum.isEmpty {
             try container.encode(self.ext_rep_nested_enum, forKey: preferCamelCase ? "extRepNestedEnum" : "ext_rep_nested_enum")

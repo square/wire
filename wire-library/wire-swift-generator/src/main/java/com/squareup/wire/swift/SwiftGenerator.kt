@@ -99,6 +99,7 @@ class SwiftGenerator private constructor(
   private val TypeName.isStringEncoded
     get() = when (this.makeNonOptional()) {
       INT64, UINT64 -> true
+      DATA -> true
       else -> false
     }
 
@@ -330,9 +331,7 @@ class SwiftGenerator private constructor(
         .build()
       fileMembers += FileMemberSpec.builder(storageProtoCodableExtension).build()
 
-      val structCodableExtension = ExtensionSpec.builder(structType)
-        .addSuperType(codable)
-        .build()
+      val structCodableExtension = heapCodableExtension(structType, storageName, storageType)
       fileMembers += FileMemberSpec.builder(structCodableExtension)
         .addGuard("!$FLAG_REMOVE_CODABLE")
         .build()
@@ -584,6 +583,36 @@ class SwiftGenerator private constructor(
       PROTO_2 -> proto2Codable
       PROTO_3 -> proto3Codable
     }
+
+  private fun heapCodableExtension(
+    structType: DeclaredTypeName,
+    storageName: String,
+    storageType: DeclaredTypeName,
+  ): ExtensionSpec {
+    return ExtensionSpec.builder(structType)
+      .addSuperType(codable)
+      .apply {
+        addFunction(
+          FunctionSpec.constructorBuilder()
+            .addParameter("from", "decoder", decoder)
+            .addModifiers(PUBLIC)
+            .throws(true)
+            .addStatement("let container = try decoder.singleValueContainer()")
+            .addStatement("self.%N = try container.decode(%T.self)", storageName, storageType)
+            .build()
+          )
+        addFunction(
+          FunctionSpec.builder("encode")
+            .addParameter("to", "encoder", encoder)
+            .addModifiers(PUBLIC)
+            .throws(true)
+            .addStatement("var container = encoder.singleValueContainer()")
+            .addStatement("try container.encode(%N)", storageName)
+            .build()
+          )
+      }
+      .build()
+  }
 
   private fun messageCodableExtension(
     type: MessageType,

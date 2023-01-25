@@ -18,7 +18,7 @@ import Foundation
 
 extension JSONDecoder {
     /// The Decoding strategy to use for ProtoEnum types
-    /// Defaults to .throwError
+    /// - Note: Defaults to .throwError
     /// - SeeAlso: [Proto3 JSON Mapping](https://developers.google.com/protocol-buffers/docs/proto3#json)
     public enum EnumDecodingStrategy {
         /// Throws an error when encountering unknown enum values in single-value fields or collections.
@@ -41,17 +41,6 @@ extension JSONEncoder {
         case string
         /// Encodes the field value of the case as the value, like `"myEnum": 3`
         case integer
-    }
-
-    /// The encoding strategy to use for StringEncoded types that are themselves Encodable
-    /// - Note: Defaults to .string
-    /// - Note: ProtoMap Dictionary keys are always encoded as strings
-    /// - SeeAlso: [Proto3 JSON Mapping](https://developers.google.com/protocol-buffers/docs/proto3#json)
-    public enum StringEncodedEncodingStrategy {
-        /// Encodes the string-encoded value, like `"myValue": "1"`
-        case string
-        /// Encodes the raw Encodable value, like `"myValue": 1`
-        case raw
     }
 
     /// The encoding strategy to use for key names in Codable implementations
@@ -90,12 +79,6 @@ extension CodingUserInfoKey {
     /// - SeeAlso: JSONDecoder.EnumDecodingStrategy
     public static let wireEnumDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumDecodingStrategy")!
 
-    /// Control the encoding of StringEncoded values that are themselves Encodable
-    ///
-    /// You probably will want to just set `JSONEncoder.stringEncodedEncodingStrategy`
-    /// - SeeAlso: JSONEncoder.StringEncodedEncodingStrategy
-    public static let wireStringEncodedEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.StringEncodedEncodingStrategy")!
-
     /// Control the encoding of proto key names
     ///
     /// You probably will want to just set `JSONEncoder.protoKeyNameEncodingStrategy`
@@ -112,11 +95,6 @@ extension CodingUserInfoKey {
 extension Encoder {
     public var protoEnumEncodingStrategy: JSONEncoder.EnumEncodingStrategy {
         let preferred = userInfo[.wireEnumEncodingStrategy] as? JSONEncoder.EnumEncodingStrategy
-        return preferred ?? .string
-    }
-
-    public var stringEncodedEncodingStrategy: JSONEncoder.StringEncodedEncodingStrategy {
-        let preferred = userInfo[.wireStringEncodedEncodingStrategy] as? JSONEncoder.StringEncodedEncodingStrategy
         return preferred ?? .string
     }
 
@@ -148,16 +126,6 @@ extension JSONEncoder {
         }
         set {
             userInfo[.wireEnumEncodingStrategy] = newValue
-        }
-    }
-
-    public var stringEncodedEncodingStrategy: JSONEncoder.StringEncodedEncodingStrategy {
-        get {
-            let preferred = userInfo[.wireStringEncodedEncodingStrategy] as? JSONEncoder.StringEncodedEncodingStrategy
-            return preferred ?? .string
-        }
-        set {
-            userInfo[.wireStringEncodedEncodingStrategy] = newValue
         }
     }
 

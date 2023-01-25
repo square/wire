@@ -87,6 +87,9 @@ extension Dictionary : EmptyInitializable {
 extension Set : EmptyInitializable {
 }
 
+extension Data : EmptyInitializable {
+}
+
 extension ProtoMap : EmptyInitializable {
     public init() {
         self.init(wrappedValue: [:])
