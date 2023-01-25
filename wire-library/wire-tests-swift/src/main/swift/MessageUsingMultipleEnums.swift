@@ -76,11 +76,12 @@ extension MessageUsingMultipleEnums : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: MessageUsingMultipleEnums.CodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.a != nil {
+        if includeDefaults || self.a != nil {
             try container.encode(self.a, forKey: "a")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.b != nil {
+        if includeDefaults || self.b != nil {
             try container.encode(self.b, forKey: "b")
         }
     }

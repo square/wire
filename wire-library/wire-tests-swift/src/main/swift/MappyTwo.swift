@@ -118,17 +118,18 @@ extension MappyTwo : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: MappyTwo.CodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.string_enums.isEmpty {
+        if includeDefaults || !self.string_enums.isEmpty {
             try container.encode(ProtoMapEnumValues(wrappedValue: self.string_enums), forKey: preferCamelCase ? "stringEnums" : "string_enums")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.int_things.isEmpty {
+        if includeDefaults || !self.int_things.isEmpty {
             try container.encode(ProtoMap(wrappedValue: self.int_things), forKey: preferCamelCase ? "intThings" : "int_things")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.string_ints.isEmpty {
+        if includeDefaults || !self.string_ints.isEmpty {
             try container.encode(ProtoMapStringEncodedValues(wrappedValue: self.string_ints), forKey: preferCamelCase ? "stringInts" : "string_ints")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.int_things_two.isEmpty {
+        if includeDefaults || !self.int_things_two.isEmpty {
             try container.encode(ProtoMap(wrappedValue: self.int_things_two), forKey: preferCamelCase ? "intThingsTwo" : "int_things_two")
         }
     }

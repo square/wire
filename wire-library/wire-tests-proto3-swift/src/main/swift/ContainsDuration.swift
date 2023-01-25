@@ -66,8 +66,9 @@ extension ContainsDuration : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: ContainsDuration.CodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.duration != nil {
+        if includeDefaults || self.duration != nil {
             try container.encode(self.duration, forKey: "duration")
         }
     }

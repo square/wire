@@ -133,8 +133,9 @@ extension FooBar.Nested : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: FooBar.Nested.CodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.value != nil {
+        if includeDefaults || self.value != nil {
             try container.encode(self.value, forKey: "value")
         }
     }
@@ -215,8 +216,9 @@ extension FooBar.More : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: FooBar.More.CodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.serial.isEmpty {
+        if includeDefaults || !self.serial.isEmpty {
             try container.encode(self.serial, forKey: "serial")
         }
     }
@@ -349,35 +351,36 @@ extension FooBar : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: FooBar.CodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.foo != nil {
+        if includeDefaults || self.foo != nil {
             try container.encode(self.foo, forKey: "foo")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.bar != nil {
+        if includeDefaults || self.bar != nil {
             try container.encode(self.bar, forKey: "bar")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.baz != nil {
+        if includeDefaults || self.baz != nil {
             try container.encode(self.baz, forKey: "baz")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.qux != nil {
+        if includeDefaults || self.qux != nil {
             try container.encode(StringEncoded(wrappedValue: self.qux), forKey: "qux")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.fred.isEmpty {
+        if includeDefaults || !self.fred.isEmpty {
             try container.encode(self.fred, forKey: "fred")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.daisy != nil {
+        if includeDefaults || self.daisy != nil {
             try container.encode(self.daisy, forKey: "daisy")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.nested.isEmpty {
+        if includeDefaults || !self.nested.isEmpty {
             try container.encode(self.nested, forKey: "nested")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.ext != nil {
+        if includeDefaults || self.ext != nil {
             try container.encode(self.ext, forKey: "ext")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.rep.isEmpty {
+        if includeDefaults || !self.rep.isEmpty {
             try container.encode(self.rep, forKey: "rep")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.more_string != nil {
+        if includeDefaults || self.more_string != nil {
             try container.encode(self.more_string, forKey: preferCamelCase ? "moreString" : "more_string")
         }
     }

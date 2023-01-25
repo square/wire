@@ -84,14 +84,15 @@ extension VersionOne : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: VersionOne.CodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.i != nil {
+        if includeDefaults || self.i != nil {
             try container.encode(self.i, forKey: "i")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.obj != nil {
+        if includeDefaults || self.obj != nil {
             try container.encode(self.obj, forKey: "obj")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.en != nil {
+        if includeDefaults || self.en != nil {
             try container.encode(self.en, forKey: "en")
         }
     }

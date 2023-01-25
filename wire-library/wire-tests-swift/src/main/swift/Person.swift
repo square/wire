@@ -146,9 +146,10 @@ extension Person.PhoneNumber : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Person.PhoneNumber.CodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encode(self.number, forKey: "number")
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.type != nil {
+        if includeDefaults || self.type != nil {
             try container.encode(self.type, forKey: "type")
         }
     }
@@ -249,16 +250,17 @@ extension Person : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Person.CodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encode(self.name, forKey: "name")
         try container.encode(self.id, forKey: "id")
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.email != nil {
+        if includeDefaults || self.email != nil {
             try container.encode(self.email, forKey: "email")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.phone.isEmpty {
+        if includeDefaults || !self.phone.isEmpty {
             try container.encode(self.phone, forKey: "phone")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.aliases.isEmpty {
+        if includeDefaults || !self.aliases.isEmpty {
             try container.encode(self.aliases, forKey: "aliases")
         }
     }

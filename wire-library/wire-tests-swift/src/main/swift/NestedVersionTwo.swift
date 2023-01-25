@@ -114,23 +114,24 @@ extension NestedVersionTwo : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: NestedVersionTwo.CodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.i != nil {
+        if includeDefaults || self.i != nil {
             try container.encode(self.i, forKey: "i")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.v2_i != nil {
+        if includeDefaults || self.v2_i != nil {
             try container.encode(self.v2_i, forKey: preferCamelCase ? "v2I" : "v2_i")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.v2_s != nil {
+        if includeDefaults || self.v2_s != nil {
             try container.encode(self.v2_s, forKey: preferCamelCase ? "v2S" : "v2_s")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.v2_f32 != nil {
+        if includeDefaults || self.v2_f32 != nil {
             try container.encode(self.v2_f32, forKey: preferCamelCase ? "v2F32" : "v2_f32")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.v2_f64 != nil {
+        if includeDefaults || self.v2_f64 != nil {
             try container.encode(StringEncoded(wrappedValue: self.v2_f64), forKey: preferCamelCase ? "v2F64" : "v2_f64")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.v2_rs.isEmpty {
+        if includeDefaults || !self.v2_rs.isEmpty {
             try container.encode(self.v2_rs, forKey: preferCamelCase ? "v2Rs" : "v2_rs")
         }
     }

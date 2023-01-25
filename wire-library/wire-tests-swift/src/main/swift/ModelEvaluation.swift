@@ -99,14 +99,15 @@ extension ModelEvaluation : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: ModelEvaluation.CodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.name != nil {
+        if includeDefaults || self.name != nil {
             try container.encode(self.name, forKey: "name")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.score != nil {
+        if includeDefaults || self.score != nil {
             try container.encode(self.score, forKey: "score")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.models.isEmpty {
+        if includeDefaults || !self.models.isEmpty {
             try container.encode(ProtoMap(wrappedValue: self.models), forKey: "models")
         }
     }

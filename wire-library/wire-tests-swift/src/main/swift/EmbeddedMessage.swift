@@ -76,11 +76,12 @@ extension EmbeddedMessage : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: EmbeddedMessage.CodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || !self.inner_repeated_number.isEmpty {
+        if includeDefaults || !self.inner_repeated_number.isEmpty {
             try container.encode(self.inner_repeated_number, forKey: preferCamelCase ? "innerRepeatedNumber" : "inner_repeated_number")
         }
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.inner_number_after != nil {
+        if includeDefaults || self.inner_number_after != nil {
             try container.encode(self.inner_number_after, forKey: preferCamelCase ? "innerNumberAfter" : "inner_number_after")
         }
     }

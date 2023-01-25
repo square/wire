@@ -774,6 +774,9 @@ class SwiftGenerator private constructor(
                 if (type.fieldsAndOneOfFields.any { it.codableName != null }) {
                   addStatement("let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase")
                 }
+                if (type.fields.any { it.typeName.optional || it.isRepeated || it.isMap }) {
+                  addStatement("let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include")
+                }
                 addStatement("")
 
                 type.fields.forEach { field ->
@@ -822,11 +825,11 @@ class SwiftGenerator private constructor(
                   }
 
                   if (field.typeName.optional) {
-                    beginControlFlow("if", "encoder.protoDefaultValuesEncodingStrategy == .emit || self.%N != nil", field.name)
+                    beginControlFlow("if", "includeDefaults || self.%N != nil", field.name)
                     addEncode()
                     endControlFlow("if")
                   } else if (field.isRepeated || field.isMap) {
-                    beginControlFlow("if", "encoder.protoDefaultValuesEncodingStrategy == .emit || !self.%N.isEmpty", field.name)
+                    beginControlFlow("if", "includeDefaults || !self.%N.isEmpty", field.name)
                     addEncode()
                     endControlFlow("if")
                   } else {

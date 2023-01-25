@@ -70,8 +70,8 @@ extension JSONEncoder {
     public enum DefaultValuesEncodingStrategy {
         // Skip "default" values
         case skip
-        // Emit values
-        case emit
+        // Include "default" values
+        case include
     }
 
 }

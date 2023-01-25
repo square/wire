@@ -69,8 +69,9 @@ extension Percents : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Percents.CodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if encoder.protoDefaultValuesEncodingStrategy == .emit || self.text != nil {
+        if includeDefaults || self.text != nil {
             try container.encode(self.text, forKey: "text")
         }
     }
