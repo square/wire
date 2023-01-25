@@ -15,19 +15,11 @@
  */
 
 import Foundation
+import Wire
 
 /// Allow creation of an instance with an empty `init()`
 public protocol EmptyInitializable {
     init()
-}
-
-extension Array: EmptyInitializable {
-}
-
-extension Dictionary: EmptyInitializable {
-}
-
-extension Set: EmptyInitializable {
 }
 
 @propertyWrapper
@@ -81,5 +73,47 @@ public extension KeyedDecodingContainer {
         } else {
             return DefaultEmpty()
         }
+    }
+}
+
+// MARK: - Implementations
+
+extension Array : EmptyInitializable {
+}
+
+extension Dictionary : EmptyInitializable {
+}
+
+extension Set : EmptyInitializable {
+}
+
+extension ProtoMap : EmptyInitializable {
+    public init() {
+        self.init(wrappedValue: [:])
+    }
+}
+
+extension ProtoMapEnumValues : EmptyInitializable {
+    public init() {
+        self.init(wrappedValue: [:])
+    }
+}
+
+
+extension ProtoMapStringEncodedValues : EmptyInitializable {
+    public init() {
+        self.init(wrappedValue: [:])
+    }
+}
+
+
+extension StringEncoded : EmptyInitializable where Value: EmptyInitializable {
+    public init() {
+        self.init(wrappedValue: Value())
+    }
+}
+extension StringEncodedValues : EmptyInitializable where ValuesHolder : EmptyInitializable {
+    public init() {
+        self.init(wrappedValue: .init())
     }
 }

@@ -91,12 +91,6 @@ extension StringEncoded : Encodable {
     }
 }
 
-extension StringEncoded : EmptyInitializable where Value: EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: Value())
-    }
-}
-
 extension StringEncoded : Equatable where Value : Equatable {
 }
 
