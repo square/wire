@@ -73,6 +73,8 @@ class SwiftGenerator private constructor(
   private val stringEncoded = DeclaredTypeName.typeName("Wire.StringEncoded")
   private val stringEncodedValues = DeclaredTypeName.typeName("Wire.StringEncodedValues")
 
+  private val stringLiteralCodingKeys = DeclaredTypeName.typeName("Wire.StringLiteralCodingKeys")
+
   private val equatable = DeclaredTypeName.typeName("Swift.Equatable")
   private val hashable = DeclaredTypeName.typeName("Swift.Hashable")
   private val sendable = DeclaredTypeName.typeName("Swift.Sendable")
@@ -82,7 +84,6 @@ class SwiftGenerator private constructor(
   private val codingKey = DeclaredTypeName.typeName("Swift.CodingKey")
   private val decoder = DeclaredTypeName.typeName("Swift.Decoder")
   private val encoder = DeclaredTypeName.typeName("Swift.Encoder")
-  private val expressibleByStringLiteral = DeclaredTypeName.typeName("Swift.ExpressibleByStringLiteral")
 
   private val deprecated = AttributeSpec.builder("available").addArguments("*", "deprecated").build()
 
@@ -591,54 +592,14 @@ class SwiftGenerator private constructor(
     return ExtensionSpec.builder(structType)
       .addSuperType(codable)
       .apply {
-        val codingKeys = structType.nestedType("CodingKeys")
+        val codingKeys = if (type.fieldsAndOneOfFields.isEmpty()) {
+          structType.nestedType("CodingKeys")
+        } else {
+          stringLiteralCodingKeys
+        }
 
-        addType(
-          if (type.fieldsAndOneOfFields.isNotEmpty()) {
-            TypeSpec.structBuilder(codingKeys)
-              .addModifiers(PUBLIC)
-              .addSuperType(codingKey)
-              .addSuperType(expressibleByStringLiteral)
-              .apply {
-                addProperty(
-                  PropertySpec.builder("stringValue", STRING, PUBLIC)
-                    .build()
-                )
-                addProperty(
-                  PropertySpec.builder("intValue", INT.makeOptional(), PUBLIC)
-                    .build()
-                )
-
-                addFunction(
-                  FunctionSpec.constructorBuilder()
-                    .addModifiers(PUBLIC)
-                    .addParameter("stringValue", STRING)
-                    .addStatement("self.stringValue = stringValue")
-                    .addStatement("self.intValue = nil")
-                    .build()
-                )
-
-                addFunction(
-                  FunctionSpec.constructorBuilder()
-                    .addModifiers(PUBLIC)
-                    .addParameter("intValue", INT)
-                    .addStatement("self.stringValue = intValue.description")
-                    .addStatement("self.intValue = intValue")
-                    .failable(true)
-                    .build()
-                )
-
-                addFunction(
-                  FunctionSpec.constructorBuilder()
-                    .addModifiers(PUBLIC)
-                    .addParameter("stringLiteral", STRING)
-                    .addStatement("self.stringValue = stringLiteral")
-                    .addStatement("self.intValue = nil")
-                    .build()
-                )
-            }
-            .build()
-          } else {
+        if (type.fieldsAndOneOfFields.isEmpty()) {
+          addType(
             // Coding keys still need to be specified on empty messages in order to prevent `unknownFields` from
             // getting serialized via JSON/Codable. In this case, the keys cannot conform to `RawRepresentable`
             // in order to compile.
@@ -647,8 +608,8 @@ class SwiftGenerator private constructor(
               .addModifiers(PUBLIC)
               .addSuperType(codingKey)
               .build()
-          }
-        )
+          )
+        }
 
         // We cannot rely upon built-in Codable support since we need to support multiple keys.
         if (type.fieldsAndOneOfFields.isNotEmpty()) {

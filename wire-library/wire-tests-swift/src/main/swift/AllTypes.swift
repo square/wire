@@ -1903,39 +1903,17 @@ extension AllTypes.NestedMessage : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension AllTypes.NestedMessage : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: AllTypes.NestedMessage.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.a = try container.decodeIfPresent(Int32.self, forKey: "a")
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: AllTypes.NestedMessage.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || self.a != nil {
             try container.encode(self.a, forKey: "a")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif
@@ -2529,7 +2507,7 @@ extension AllTypes : Codable {
 #if !WIRE_REMOVE_CODABLE
 extension _AllTypes : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: _AllTypes.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.opt_int32 = try container.decodeIfPresent(Int32.self, forKey: "optInt32") ??
                 container.decodeIfPresent(Int32.self, forKey: "opt_int32")
         self.opt_uint32 = try container.decodeIfPresent(UInt32.self, forKey: "optUint32") ??
@@ -2799,7 +2777,7 @@ extension _AllTypes : Codable {
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: _AllTypes.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
@@ -3168,28 +3146,6 @@ extension _AllTypes : Codable {
         if includeDefaults || !self.ext_pack_nested_enum.isEmpty {
             try container.encode(self.ext_pack_nested_enum, forKey: preferCamelCase ? "extPackNestedEnum" : "ext_pack_nested_enum")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif

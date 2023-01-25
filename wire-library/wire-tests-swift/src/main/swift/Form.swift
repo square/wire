@@ -498,39 +498,17 @@ extension Form.TextElement : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension Form.TextElement : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: Form.TextElement.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.text = try container.decodeIfPresent(String.self, forKey: "text")
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: Form.TextElement.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || self.text != nil {
             try container.encode(self.text, forKey: "text")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif
@@ -877,7 +855,7 @@ extension Form : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension Form : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: Form.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         if let button_element = try container.decodeIfPresent(Form.ButtonElement.self, forKey: "buttonElement") {
             self.choice = .button_element(button_element)
         } else if let button_element = try container.decodeIfPresent(Form.ButtonElement.self, forKey: "button_element") {
@@ -951,7 +929,7 @@ extension Form : Codable {
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: Form.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
 
         switch self.choice {
@@ -980,28 +958,6 @@ extension Form : Codable {
         case .h(let h): try container.encode(h, forKey: "h")
         case Optional.none: break
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif

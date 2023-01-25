@@ -66,7 +66,7 @@ extension EmbeddedMessage : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension EmbeddedMessage : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: EmbeddedMessage.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.inner_repeated_number = try container.decodeIfPresent([Int32].self, forKey: "innerRepeatedNumber") ??
                 container.decodeIfPresent([Int32].self, forKey: "inner_repeated_number") ?? []
         self.inner_number_after = try container.decodeIfPresent(Int32.self, forKey: "innerNumberAfter") ??
@@ -74,7 +74,7 @@ extension EmbeddedMessage : Codable {
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: EmbeddedMessage.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
@@ -84,28 +84,6 @@ extension EmbeddedMessage : Codable {
         if includeDefaults || self.inner_number_after != nil {
             try container.encode(self.inner_number_after, forKey: preferCamelCase ? "innerNumberAfter" : "inner_number_after")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif

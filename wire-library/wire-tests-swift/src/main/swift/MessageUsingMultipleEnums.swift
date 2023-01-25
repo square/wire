@@ -69,13 +69,13 @@ extension MessageUsingMultipleEnums : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension MessageUsingMultipleEnums : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: MessageUsingMultipleEnums.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.a = try container.decodeIfPresent(MessageWithStatus.Status.self, forKey: "a")
         self.b = try container.decodeIfPresent(OtherMessageWithStatus.Status.self, forKey: "b")
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: MessageUsingMultipleEnums.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || self.a != nil {
@@ -84,28 +84,6 @@ extension MessageUsingMultipleEnums : Codable {
         if includeDefaults || self.b != nil {
             try container.encode(self.b, forKey: "b")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif

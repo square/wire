@@ -60,39 +60,17 @@ extension Thing : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension Thing : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: Thing.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.name = try container.decodeIfPresent(String.self, forKey: "name")
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: Thing.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || self.name != nil {
             try container.encode(self.name, forKey: "name")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif

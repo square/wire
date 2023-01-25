@@ -193,3 +193,25 @@ extension JSONDecoder {
         }
     }
 }
+
+// MARK: - String-Friendly Coding Keys
+
+public struct StringLiteralCodingKeys : CodingKey, ExpressibleByStringLiteral {
+    public let stringValue: String
+    public let intValue: Int?
+
+    public init(stringValue: String) {
+        self.stringValue = stringValue
+        self.intValue = nil
+    }
+
+    public init?(intValue: Int) {
+        self.stringValue = intValue.description
+        self.intValue = intValue
+    }
+
+    public init(stringLiteral: String) {
+        self.stringValue = stringLiteral
+        self.intValue = nil
+    }
+}

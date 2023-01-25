@@ -216,7 +216,7 @@ extension CodableTests {
 
         try assertEncode(proto: SimpleOptional2(), expected: json) { encoder in
             encoder.protoKeyNameEncodingStrategy = .fieldName
-            encoder.protoDefaultValuesEncodingStrategy = .emit
+            encoder.protoDefaultValuesEncodingStrategy = .include
         }
     }
 

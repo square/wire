@@ -139,41 +139,19 @@ extension Person.PhoneNumber : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension Person.PhoneNumber : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: Person.PhoneNumber.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.number = try container.decode(String.self, forKey: "number")
         self.type = try container.decodeIfPresent(Person.PhoneType.self, forKey: "type")
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: Person.PhoneNumber.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encode(self.number, forKey: "number")
         if includeDefaults || self.type != nil {
             try container.encode(self.type, forKey: "type")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif
@@ -240,7 +218,7 @@ extension Person : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension Person : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: Person.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.name = try container.decode(String.self, forKey: "name")
         self.id = try container.decode(Int32.self, forKey: "id")
         self.email = try container.decodeIfPresent(String.self, forKey: "email")
@@ -249,7 +227,7 @@ extension Person : Codable {
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: Person.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encode(self.name, forKey: "name")
@@ -263,28 +241,6 @@ extension Person : Codable {
         if includeDefaults || !self.aliases.isEmpty {
             try container.encode(self.aliases, forKey: "aliases")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif

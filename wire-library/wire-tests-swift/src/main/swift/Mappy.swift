@@ -60,39 +60,17 @@ extension Mappy : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension Mappy : Codable {
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: Mappy.CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.things = try container.decodeIfPresent(ProtoMap<String, Thing>.self, forKey: "things")?.wrappedValue ?? [:]
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: Mappy.CodingKeys.self)
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || !self.things.isEmpty {
             try container.encode(ProtoMap(wrappedValue: self.things), forKey: "things")
         }
-    }
-
-    public struct CodingKeys : CodingKey, ExpressibleByStringLiteral {
-
-        public let stringValue: String
-        public let intValue: Int?
-
-        public init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        public init?(intValue: Int) {
-            self.stringValue = intValue.description
-            self.intValue = intValue
-        }
-
-        public init(stringLiteral: String) {
-            self.stringValue = stringLiteral
-            self.intValue = nil
-        }
-
     }
 }
 #endif
