@@ -19,6 +19,7 @@ import Foundation
 extension JSONDecoder {
     /// The Decoding strategy to use for ProtoEnum types
     /// Defaults to .throwError
+    /// - SeeAlso: [Proto3 JSON Mapping](https://developers.google.com/protocol-buffers/docs/proto3#json)
     public enum EnumDecodingStrategy {
         /// Throws an error when encountering unknown enum values in single-value fields or collections.
         case throwError
@@ -33,7 +34,8 @@ extension JSONDecoder {
 
 extension JSONEncoder {
     /// The encoding strategy to use for ProtoEnum types
-    /// Defaults to .string
+    /// - Note: Defaults to .string
+    /// - SeeAlso: [Proto3 JSON Mapping](https://developers.google.com/protocol-buffers/docs/proto3#json)
     public enum EnumEncodingStrategy {
         /// Encodes the name of the case as the value, like `"myEnum": "FOO"`
         case string
@@ -42,8 +44,9 @@ extension JSONEncoder {
     }
 
     /// The encoding strategy to use for StringEncoded types that are themselves Encodable
-    /// Defaults to .string
+    /// - Note: Defaults to .string
     /// - Note: ProtoMap Dictionary keys are always encoded as strings
+    /// - SeeAlso: [Proto3 JSON Mapping](https://developers.google.com/protocol-buffers/docs/proto3#json)
     public enum StringEncodedEncodingStrategy {
         /// Encodes the string-encoded value, like `"myValue": "1"`
         case string
@@ -52,7 +55,8 @@ extension JSONEncoder {
     }
 
     /// The encoding strategy to use for key names in Codable implementations
-    /// Defaults to .camelCase
+    /// - Note: Defaults to .camelCase
+    /// - SeeAlso: [Proto3 JSON Mapping](https://developers.google.com/protocol-buffers/docs/proto3#json)
     public enum KeyNameEncodingStrategy {
         // Convert key names to `camelCase`
         case camelCase
@@ -61,7 +65,8 @@ extension JSONEncoder {
     }
 
     /// The encoding strategy to use for optional values and collections
-    /// Defaults to .skip
+    /// - Note: Defaults to .skip
+    /// - SeeAlso: [Proto3 JSON Mapping](https://developers.google.com/protocol-buffers/docs/proto3#json)
     public enum DefaultValuesEncodingStrategy {
         // Skip "default" values
         case skip
@@ -86,14 +91,20 @@ public extension CodingUserInfoKey {
     static let wireEnumDecodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.EnumDecodingStrategy")!
 
     /// Control the encoding of StringEncoded values that are themselves Encodable
+    ///
+    /// You probably will want to just set `JSONEncoder.stringEncodedEnccodingStrategy`
     /// - SeeAlso: JSONEncoder.StringEncodedEncodingStrategy
     static let wireStringEncodedEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.StringEncodedEncodingStrategy")!
 
     /// Control the encoding of proto key names
+    ///
+    /// You probably will want to just set `JSONEncoder.protoKeyNameEncodingStrategy`
     /// - SeeAlso: JSONEncoder.KeyNameEncodingStrategy
     static let wireKeyNameEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.KeyNameEncodingStrategy")!
 
     /// Control the encoding of "default" values
+    ///
+    /// You probably will want to just set `JSONEncoder.protoDefaultValuesEncodingStrategy`
     /// - SeeAlso: JSONEncoder.DefaultValuesEncodingStrategy
     static let wireDefaultValuesEncodingStrategy = CodingUserInfoKey(rawValue: "com.squareup.wire.DefaultValuesEncodingStrategy")!
 }
