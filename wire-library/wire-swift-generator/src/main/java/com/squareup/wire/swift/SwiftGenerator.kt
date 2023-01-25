@@ -650,7 +650,7 @@ class SwiftGenerator private constructor(
           }
         )
 
-        // We cannot rely upon built-in Codable support since the we need to support multiple keys.
+        // We cannot rely upon built-in Codable support since we need to support multiple keys.
         if (type.fieldsAndOneOfFields.isNotEmpty()) {
           addFunction(
             FunctionSpec.constructorBuilder()
