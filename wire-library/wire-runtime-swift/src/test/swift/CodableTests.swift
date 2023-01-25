@@ -292,6 +292,23 @@ extension CodableTests {
     }
 }
 
+// MARK: - Heap Types
+
+extension CodableTests {
+    func testHeapRoundtrip() throws {
+        let proto = SwiftStackOverflow(value3: "hello")
+        let json = """
+        {
+          "value3":"hello"
+        }
+        """
+
+        try assertEncode(proto: proto, expected: json)
+        try assertDecode(json: json, expected: proto)
+    }
+}
+
+
 // MARK: - Private Methods
 
 extension CodableTests {

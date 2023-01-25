@@ -1,0 +1,35 @@
+/*
+ * Copyright 2020 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto2";
+
+message SwiftStackOverflow {
+    optional string value1 = 1;
+    optional string value2 = 2;
+    optional string value3 = 3;
+    optional string value4 = 4;
+    optional string value5 = 5;
+    optional string value6 = 6;
+    optional string value7 = 7;
+    optional string value8 = 8;
+    optional string value9 = 9;
+    optional string value10 = 10;
+    optional string value11 = 11;
+    optional string value12 = 12;
+    optional string value13 = 13;
+    optional string value14 = 14;
+    optional string value15 = 15;
+    optional string value16 = 16;
+}
