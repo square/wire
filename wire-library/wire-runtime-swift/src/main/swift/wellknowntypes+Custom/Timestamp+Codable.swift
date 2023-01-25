@@ -44,6 +44,32 @@ extension Wire.Timestamp {
             nanos: decomposed.nanos
         )
     }
+
+    private var timeIntervalSinceReferenceDate: TimeInterval {
+        // This should be marginally less lossy than using Epoch time
+        TimeInterval(
+            seconds: seconds - Int64(Date.timeIntervalBetween1970AndReferenceDate),
+            nanos: nanos
+        )
+    }
+
+    private init(timeIntervalSinceReferenceDate: TimeInterval) {
+        // This should be marginally less lossy than using Epoch time
+        let decomposed = timeIntervalSinceReferenceDate.decomposed()
+
+        self.init(
+            seconds: decomposed.seconds + Int64(Date.timeIntervalBetween1970AndReferenceDate),
+            nanos: decomposed.nanos
+        )
+    }
+
+    public var date: Date {
+        Date(timeIntervalSinceReferenceDate: timeIntervalSinceReferenceDate)
+    }
+
+    public init(date: Date) {
+        self.init(timeIntervalSinceReferenceDate: date.timeIntervalSinceReferenceDate)
+    }
 }
 
 #if !WIRE_REMOVE_CODABLE
@@ -58,18 +84,18 @@ extension Wire.Timestamp : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
 
-        let date = Date(timeIntervalSince1970: timeIntervalSince1970)
         let string = rfc3339.string(from: date)
         try container.encode(string)
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
+
         let string = try container.decode(String.self)
         guard let date = rfc3339.date(from: string) else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Could not create RFC3339 date from \(string)")
         }
-        self.init(timeIntervalSince1970: date.timeIntervalSince1970)
+        self.init(date: date)
     }
 }
 
