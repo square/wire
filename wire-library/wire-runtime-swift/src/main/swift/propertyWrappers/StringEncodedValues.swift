@@ -65,12 +65,6 @@ extension StringEncodedValues : Codable {
     }
 }
 
-extension StringEncodedValues : EmptyInitializable where ValuesHolder : EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: .init())
-    }
-}
-
 extension StringEncodedValues : Equatable where ValuesHolder : Equatable {
 }
 
