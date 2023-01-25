@@ -293,6 +293,32 @@ extension CodableTests {
     }
 }
 
+// MARK: - Duration and Timestamp
+
+extension CodableTests {
+    struct DurationAndTimestamp: Equatable, Codable {
+        var duration: Wire.Duration
+        var timestamp: Wire.Timestamp
+    }
+
+    func testDurationRoundtrip() throws {
+        let json = """
+        {
+          "duration":"10s",
+          "timestamp":"2023-01-25T00:02:33Z"
+        }
+        """
+
+        let proto = DurationAndTimestamp(
+            duration: Duration(seconds: 10, nanos: 0),
+            timestamp: Timestamp(seconds: 1674604953, nanos: 0)
+        )
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+}
+
 // MARK: - Private Methods
 
 extension CodableTests {
