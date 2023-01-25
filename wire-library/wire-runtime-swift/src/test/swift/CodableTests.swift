@@ -190,7 +190,6 @@ extension CodableTests {
 extension CodableTests {
     func testDecodesEmptyProto() throws {
         try assertDecode(json: "{}", expected: SimpleOptional2())
-
     }
 
     func testEncodesEmptyProto() throws {
