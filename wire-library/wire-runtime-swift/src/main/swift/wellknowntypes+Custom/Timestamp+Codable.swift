@@ -32,16 +32,12 @@ extension TimeInterval {
 }
 
 extension Wire.Timestamp {
-    /// Creates a timestamp equivalent to the this value
-    /// - Note: This is somewhat lossy
-    public var timeInterval: TimeInterval {
+    public var timeIntervalSince1970: TimeInterval {
         TimeInterval(seconds: seconds, nanos: nanos)
     }
 
-    /// Initialize a Wire Timestamp from a TimeInterval.
-    /// - Note: This is somewhat lossy
-    public init(timeInterval: TimeInterval) {
-        let decomposed = timeInterval.decomposed()
+    public init(timeIntervalSince1970: TimeInterval) {
+        let decomposed = timeIntervalSince1970.decomposed()
 
         self.init(
             seconds: decomposed.seconds,
@@ -62,19 +58,18 @@ extension Wire.Timestamp : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
 
-        let date = Date(timeIntervalSinceReferenceDate: timeInterval)
+        let date = Date(timeIntervalSince1970: timeIntervalSince1970)
         let string = rfc3339.string(from: date)
         try container.encode(string)
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-
         let string = try container.decode(String.self)
         guard let date = rfc3339.date(from: string) else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Could not create RFC3339 date from \(string)")
         }
-        self.init(timeInterval: date.timeIntervalSinceReferenceDate)
+        self.init(timeIntervalSince1970: date.timeIntervalSince1970)
     }
 }
 
