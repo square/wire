@@ -73,13 +73,30 @@ extension Wire.Duration : Codable {
         guard let last = string.popLast(), last == "s" else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid duration format \(string)")
         }
-        guard let interval = TimeInterval(string) else {
+
+        let seconds: Int64?
+        let nanos: Int32?
+
+        let components = string.split(separator: ".")
+        switch components.count {
+        case 1:
+            seconds = Int64(components[0])
+            nanos = 0
+
+        case 2:
+            seconds = Int64(components[0])
+            nanos = Int32(components[1])
+
+        default:
+            seconds = nil
+            nanos = nil
+        }
+
+        guard let seconds = seconds, let nanos = nanos else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid duration \(string)s")
         }
 
-        let decomposed = interval.decomposed()
-
-        self.init(seconds: decomposed.seconds, nanos: decomposed.nanos)
+        self.init(seconds: seconds, nanos: nanos)
     }
 }
 
