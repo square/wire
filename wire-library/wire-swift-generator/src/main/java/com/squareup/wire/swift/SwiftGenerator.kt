@@ -657,10 +657,8 @@ class SwiftGenerator private constructor(
                 type.fields.forEach { field ->
                   var typeName: TypeName = field.typeName.makeNonOptional()
 
-                  if (field.typeName.isStringEncoded) {
-                    typeName = stringEncoded.parameterizedBy(typeName)
-                  } else if (field.typeName.needsStringEncodedValues()) {
-                    typeName = stringEncodedValues.parameterizedBy(typeName)
+                  if (field.isRepeated && typeName.needsStringEncodedValues() && typeName is ParameterizedTypeName) {
+                    typeName = typeName.typeArguments[0]
                   } else if (field.isMap && typeName is ParameterizedTypeName) {
                     if (field.valueType.isEnum) {
                       typeName = protoMapEnumValues.parameterizedBy(
@@ -688,7 +686,9 @@ class SwiftGenerator private constructor(
                   }
 
                   var suffix = if (typeName != field.typeName.makeNonOptional()) {
-                    if (field.isRepeated || field.isMap || field.typeName.optional) {
+                    if (field.isRepeated) {
+                      ""
+                    } else if (field.isMap || field.typeName.optional) {
                       "?.wrappedValue"
                     } else {
                       ".wrappedValue"
@@ -705,6 +705,12 @@ class SwiftGenerator private constructor(
                   var (decode, forKeys) = field.codableName?.let {
                     Pair("decodeFirst", "forKeys")
                   } ?: Pair("decode", "forKey")
+
+                  if (field.typeName.isStringEncoded) {
+                    decode += "StringEncoded"
+                  } else if (field.typeName.needsStringEncodedValues()) {
+                    decode += "StringEncodedValues"
+                  }
 
                   if (fallback != null) {
                     decode += "IfPresent"

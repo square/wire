@@ -294,7 +294,7 @@ extension FooBar : Codable {
         self.foo = try container.decodeIfPresent(Int32.self, forKey: "foo")
         self.bar = try container.decodeIfPresent(String.self, forKey: "bar")
         self.baz = try container.decodeIfPresent(FooBar.Nested.self, forKey: "baz")
-        self.qux = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "qux")?.wrappedValue
+        self.qux = try container.decodeStringEncodedIfPresent(UInt64.self, forKey: "qux")
         self.fred = try container.decodeIfPresent([Float].self, forKey: "fred") ?? []
         self.daisy = try container.decodeIfPresent(Double.self, forKey: "daisy")
         self.nested = try container.decodeIfPresent([FooBar].self, forKey: "nested") ?? []
