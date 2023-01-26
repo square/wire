@@ -677,7 +677,17 @@ class SwiftGenerator private constructor(
                     }
                   }
 
-                  val suffix = if (typeName != field.typeName.makeNonOptional()) {
+                  val fallback: String? = if (field.isRepeated) {
+                    " ?? []"
+                  } else if (field.isMap) {
+                    " ?? [:]"
+                  } else if (field.typeName.optional) {
+                    ""
+                  } else {
+                    null
+                  }
+
+                  var suffix = if (typeName != field.typeName.makeNonOptional()) {
                     if (field.isRepeated || field.isMap || field.typeName.optional) {
                       "?.wrappedValue"
                     } else {
@@ -687,37 +697,25 @@ class SwiftGenerator private constructor(
                     ""
                   }
 
-                  val (prefix, args) = field.codableName?.let { codableName ->
-                    val wrapped = if (typeName != field.typeName.makeNonOptional()) {
-                      "?.wrappedValue"
-                    } else {
-                      ""
-                    }
-                    Pair(
-                      "try container.decodeIfPresent(%2T.self, forKey: %3S)$wrapped ??\n",
-                      arrayOf(field.name, typeName, codableName)
-                    )
-                  } ?: Pair("try ", arrayOf(field.name, typeName))
+                  val keys = listOf(field.codableName, field.name)
+                    .filterNotNull()
+                    .map { CodeBlock.of("%S", it) }
+                    .joinToCode()
 
-                  if (field.isRepeated || field.isMap || field.typeName.optional) {
-                    val fallback = if (field.isRepeated) {
-                      " ?? []"
-                    } else if (field.isMap) {
-                      " ?? [:]"
-                    } else {
-                      ""
-                    }
+                  var (decode, forKeys) = field.codableName?.let {
+                    Pair("decodeFirst", "forKeys")
+                  } ?: Pair("decode", "forKey")
 
-                    addStatement(
-                      "self.%1N = ${prefix}container.decodeIfPresent(%2T.self, forKey: %1S)$suffix$fallback",
-                      *args
-                    )
-                  } else {
-                    addStatement(
-                      "self.%1N = ${prefix}container.decode(%2T.self, forKey: %1S)$suffix",
-                      *args
-                    )
+                  if (fallback != null) {
+                    decode += "IfPresent"
+                    suffix += fallback
                   }
+
+                  addStatement(
+                    "self.%1N = try container.$decode(%2T.self, $forKeys: $keys)$suffix",
+                    field.name,
+                    typeName
+                  )
                 }
 
                 type.oneOfs.forEach { oneOf ->

@@ -113,16 +113,11 @@ extension VersionTwo : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.i = try container.decodeIfPresent(Int32.self, forKey: "i")
-        self.v2_i = try container.decodeIfPresent(Int32.self, forKey: "v2I") ??
-                container.decodeIfPresent(Int32.self, forKey: "v2_i")
-        self.v2_s = try container.decodeIfPresent(String.self, forKey: "v2S") ??
-                container.decodeIfPresent(String.self, forKey: "v2_s")
-        self.v2_f32 = try container.decodeIfPresent(UInt32.self, forKey: "v2F32") ??
-                container.decodeIfPresent(UInt32.self, forKey: "v2_f32")
-        self.v2_f64 = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "v2F64")?.wrappedValue ??
-                container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "v2_f64")?.wrappedValue
-        self.v2_rs = try container.decodeIfPresent([String].self, forKey: "v2Rs") ??
-                container.decodeIfPresent([String].self, forKey: "v2_rs") ?? []
+        self.v2_i = try container.decodeFirstIfPresent(Int32.self, forKeys: "v2I", "v2_i")
+        self.v2_s = try container.decodeFirstIfPresent(String.self, forKeys: "v2S", "v2_s")
+        self.v2_f32 = try container.decodeFirstIfPresent(UInt32.self, forKeys: "v2F32", "v2_f32")
+        self.v2_f64 = try container.decodeFirstIfPresent(StringEncoded<UInt64>.self, forKeys: "v2F64", "v2_f64")?.wrappedValue
+        self.v2_rs = try container.decodeFirstIfPresent([String].self, forKeys: "v2Rs", "v2_rs") ?? []
         self.obj = try container.decodeIfPresent(NestedVersionTwo.self, forKey: "obj")
         self.en = try container.decodeIfPresent(EnumVersionTwo.self, forKey: "en")
     }
