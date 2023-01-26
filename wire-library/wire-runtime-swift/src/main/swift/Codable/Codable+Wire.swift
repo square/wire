@@ -16,52 +16,21 @@
 
 import Foundation
 
-private func prefixedSequence<Value>(
-    initialValue: Value,
-    additionalValues: [Value]
-) -> UnfoldSequence<Value, Int> {
-    return sequence(state: -1) { index in
-        defer {
-            index += 1
-        }
-        switch index {
-        case -1:
-            return initialValue
-
-        case 0..<additionalValues.count:
-            return additionalValues[index]
-
-        default:
-            return nil
-        }
-    }
-}
-
 extension KeyedDecodingContainer {
     public func decodeFirstIfPresent<T>(
         _ type: T.Type,
         forKeys firstKey: Key,
-        _ additionalKeys: Key...
+        _ secondKey: Key
     ) throws -> T? where T : Decodable {
-        let seq = prefixedSequence(initialValue: firstKey, additionalValues: additionalKeys)
-
-        return try seq.lazy.compactMap { key in
-            try decodeIfPresent(type, forKey: key)
-        }.first
+        return try decodeIfPresent(type, forKey: firstKey) ?? decodeIfPresent(type, forKey: secondKey)
     }
 
     public func decodeFirst<T>(
         _ type: T.Type,
         forKeys firstKey: Key,
-        _ additionalKeys: Key...
+        _ secondKey: Key
     ) throws -> T where T : Decodable {
-        let seq = prefixedSequence(initialValue: firstKey, additionalValues: additionalKeys)
-
-        let value = try seq.lazy.compactMap { key in
-            try decodeIfPresent(type, forKey: key)
-        }.first
-
-        guard let value else {
+        guard let value = try decodeFirstIfPresent(type, forKeys: firstKey, secondKey) else {
             throw DecodingError.keyNotFound(
                 firstKey,
                 DecodingError.Context(
