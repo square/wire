@@ -382,7 +382,8 @@ extension CodableTests {
             timestamp: Timestamp(date: .distantFuture)
         )
 
-        // In theory, we should use a much further distant future; however, there woudl be rounding errors at play
+        // Swift's Date has less precision than Timestamp, so ideally we'd support something further in the future than Date.distantFuture
+        // but our current implementation makes use of Date, and so we eventually would start encountering rounding errors.
         try assertDecode(json: json, expected: proto)
         try assertEncode(proto: proto, expected: json)
     }
@@ -390,16 +391,27 @@ extension CodableTests {
     func testSmallDurationRoundtrip() throws {
         let json = """
         {
-          "duration":"1.000000010s",
+          "duration":"0.100s",
           "timestamp":"0001-01-01T00:00:00Z"
         }
         """
         let proto = DurationAndTimestamp(
-            duration: Duration(seconds: 1, nanos: 10),
+            duration: Duration(seconds: 0, nanos: 100_000_000),
             timestamp: Timestamp(date: .distantPast)
         )
 
-        // In theory, we should use a much further distant future; however, there woudl be rounding errors at play
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testVerySmallDurationRoundtrip() throws {
+        let json = """
+        {"duration":"1.000000010s"}
+        """
+        let proto = DurationAndTimestamp(
+            duration: Duration(seconds: 1, nanos: 10)
+        )
+
         try assertDecode(json: json, expected: proto)
         try assertEncode(proto: proto, expected: json)
     }
