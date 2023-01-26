@@ -116,8 +116,8 @@ extension VersionTwo : Codable {
         self.v2_i = try container.decodeFirstIfPresent(Int32.self, forKeys: "v2I", "v2_i")
         self.v2_s = try container.decodeFirstIfPresent(String.self, forKeys: "v2S", "v2_s")
         self.v2_f32 = try container.decodeFirstIfPresent(UInt32.self, forKeys: "v2F32", "v2_f32")
-        self.v2_f64 = try container.decodeFirstStringEncodedIfPresent(UInt64.self, forKeys: "v2F64", "v2_f64")
-        self.v2_rs = try container.decodeFirstIfPresent([String].self, forKeys: "v2Rs", "v2_rs") ?? []
+        self.v2_f64 = try container.decodeFirstIfPresent(stringEncoded: UInt64.self, forKeys: "v2F64", "v2_f64")
+        self.v2_rs = try container.decodeFirstProtoArray(String.self, forKeys: "v2Rs", "v2_rs")
         self.obj = try container.decodeIfPresent(NestedVersionTwo.self, forKey: "obj")
         self.en = try container.decodeIfPresent(EnumVersionTwo.self, forKey: "en")
     }

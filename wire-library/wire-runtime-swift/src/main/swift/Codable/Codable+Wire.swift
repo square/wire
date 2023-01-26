@@ -48,32 +48,30 @@ extension KeyedDecodingContainer {
 // MARK: - decodeStringEncoded()
 
 extension KeyedDecodingContainer {
-#warning("Revisit generics")
-
-    public func decodeStringEncoded<T: StringCodable & Codable>(
-        _ type: T.Type,
+    public func decode<T: StringDecodable & Decodable>(
+        stringEncoded type: T.Type,
         forKey key: Key
     ) throws -> T {
         try decode(StringEncoded<T>.self, forKey: key).wrappedValue
     }
 
-    public func decodeStringEncodedIfPresent<T: StringCodable & Codable>(
-        _ type: T.Type,
+    public func decodeIfPresent<T: StringDecodable & Decodable>(
+        stringEncoded type: T.Type,
         forKey key: Key
     ) throws -> T? {
         try decodeIfPresent(StringEncoded<T>.self, forKey: key)?.wrappedValue
     }
 
-    public func decodeFirstStringEncoded<T : StringCodable & Codable>(
-        _ type: T.Type,
+    public func decodeFirst<T : StringDecodable & Decodable>(
+        stringEncoded type: T.Type,
         forKeys firstKey: Key,
         _ secondKey: Key
     ) throws -> T {
         try decodeFirst(StringEncoded<T>.self, forKeys: firstKey, secondKey).wrappedValue
     }
 
-    public func decodeFirstStringEncodedIfPresent<T : StringCodable & Codable>(
-        _ type: T.Type,
+    public func decodeFirstIfPresent<T : StringDecodable & Decodable>(
+        stringEncoded type: T.Type,
         forKeys firstKey: Key,
         _ secondKey: Key
     ) throws -> T? {
@@ -81,21 +79,36 @@ extension KeyedDecodingContainer {
     }
 }
 
-// MARK: - decodeStringEncodedValues()
+// MARK: - decodeProtoArray()
 
 extension KeyedDecodingContainer {
-    public func decodeStringEncodedValues<T : StringCodable & Codable>(
+    public func decodeProtoArray<T : Decodable>(
         _ type: T.Type,
         forKey key: Key
     ) throws -> [T] {
-        try decode(StringEncodedValues<Array<T>>.self, forKey: key).wrappedValue
+        try decodeIfPresent(Array<T>.self, forKey: key) ?? []
     }
 
-    public func decodeFirstStringEncodedValues<T : StringCodable & Codable>(
+    public func decodeFirstProtoArray<T : Decodable>(
         _ type: T.Type,
         forKeys firstKey: Key,
         _ secondKey: Key
     ) throws -> [T] {
-        try decodeFirst(StringEncodedValues<Array<T>>.self, forKeys: firstKey, secondKey).wrappedValue
+        try decodeFirstIfPresent(Array<T>.self, forKeys: firstKey, secondKey) ?? []
+    }
+
+    public func decodeProtoArray<T : StringDecodable & Decodable>(
+        stringEncoded type: T.Type,
+        forKey key: Key
+    ) throws -> [T] {
+        try decodeIfPresent(StringEncodedValues<Array<T>>.self, forKey: key)?.wrappedValue ?? []
+    }
+
+    public func decodeFirstProtoArray<T : StringDecodable & Decodable>(
+        stringEncoded type: T.Type,
+        forKeys firstKey: Key,
+        _ secondKey: Key
+    ) throws -> [T] {
+        try decodeFirstIfPresent(StringEncodedValues<Array<T>>.self, forKeys: firstKey, secondKey)?.wrappedValue ?? []
     }
 }

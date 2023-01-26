@@ -18,7 +18,7 @@ import Foundation
 
 /// Converts values to/from their string equivalent when serializing with Codable.
 @propertyWrapper
-public struct StringEncoded<Value : StringCodable & Codable> {
+public struct StringEncoded<Value> {
     public var wrappedValue: Value
 
     public init(wrappedValue: Value) {
@@ -26,7 +26,7 @@ public struct StringEncoded<Value : StringCodable & Codable> {
     }
 }
 
-extension StringEncoded : Decodable {
+extension StringEncoded : Decodable where Value : StringDecodable & Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
@@ -64,7 +64,7 @@ extension StringEncoded : Decodable {
     }
 }
 
-extension StringEncoded : Encodable {
+extension StringEncoded : Encodable where Value : StringEncodable & Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
 
@@ -96,7 +96,7 @@ extension StringEncoded : Sendable where Value : Sendable {
 #endif
 
 public extension KeyedDecodingContainer {
-    func decode<T: OptionalStringCodable>(
+    func decode<T: OptionalStringCodable & Codable>(
         _: StringEncoded<T>.Type,
         forKey key: Key
     ) throws -> StringEncoded<T> {

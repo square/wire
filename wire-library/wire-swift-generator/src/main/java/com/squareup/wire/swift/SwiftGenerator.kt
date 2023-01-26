@@ -657,7 +657,7 @@ class SwiftGenerator private constructor(
                 type.fields.forEach { field ->
                   var typeName: TypeName = field.typeName.makeNonOptional()
 
-                  if (field.isRepeated && typeName.needsStringEncodedValues() && typeName is ParameterizedTypeName) {
+                  if (field.isRepeated && typeName is ParameterizedTypeName) {
                     typeName = typeName.typeArguments[0]
                   } else if (field.isMap && typeName is ParameterizedTypeName) {
                     if (field.valueType.isEnum) {
@@ -675,9 +675,7 @@ class SwiftGenerator private constructor(
                     }
                   }
 
-                  val fallback: String? = if (field.isRepeated) {
-                    " ?? []"
-                  } else if (field.isMap) {
+                  val fallback: String? = if (field.isMap) {
                     " ?? [:]"
                   } else if (field.typeName.optional) {
                     ""
@@ -685,10 +683,8 @@ class SwiftGenerator private constructor(
                     null
                   }
 
-                  var suffix = if (typeName != field.typeName.makeNonOptional()) {
-                    if (field.isRepeated) {
-                      ""
-                    } else if (field.isMap || field.typeName.optional) {
+                  var suffix = if (typeName != field.typeName.makeNonOptional() && !field.isRepeated) {
+                    if (field.isMap || field.typeName.optional) {
                       "?.wrappedValue"
                     } else {
                       ".wrappedValue"
@@ -706,19 +702,25 @@ class SwiftGenerator private constructor(
                     Pair("decodeFirst", "forKeys")
                   } ?: Pair("decode", "forKey")
 
-                  if (field.typeName.isStringEncoded) {
-                    decode += "StringEncoded"
-                  } else if (field.typeName.needsStringEncodedValues()) {
-                    decode += "StringEncodedValues"
+                  val decodePrefix = if (field.typeName.needsStringEncodedValues()) {
+                    "stringEncoded: "
+                  } else if (field.typeName.isStringEncoded) {
+                    "stringEncoded: "
+                  } else {
+                    ""
                   }
 
-                  if (fallback != null && !field.typeName.needsStringEncodedValues()) {
+                  if (field.isRepeated) {
+                    decode += "ProtoArray"
+                  }
+
+                  if (fallback != null) {
                     decode += "IfPresent"
                     suffix += fallback
                   }
 
                   addStatement(
-                    "self.%1N = try container.$decode(%2T.self, $forKeys: $keys)$suffix",
+                    "self.%1N = try container.$decode($decodePrefix%2T.self, $forKeys: $keys)$suffix",
                     field.name,
                     typeName
                   )

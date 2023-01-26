@@ -25,10 +25,7 @@ extension Set : SequenceInitializableCollection {}
 
 /// Converts an array of values to/from their string equivalent when serializing with Codable.
 @propertyWrapper
-public struct StringEncodedValues<ValuesHolder>
-where ValuesHolder : SequenceInitializableCollection,
-      ValuesHolder.Element : StringCodable & Codable
-{
+public struct StringEncodedValues<ValuesHolder : SequenceInitializableCollection> {
     public typealias Value = ValuesHolder.Element
 
     public var wrappedValue: ValuesHolder
@@ -38,7 +35,7 @@ where ValuesHolder : SequenceInitializableCollection,
     }
 }
 
-extension StringEncodedValues : Codable {
+extension StringEncodedValues : Decodable where ValuesHolder.Element : StringDecodable & Decodable {
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
 
@@ -54,7 +51,9 @@ extension StringEncodedValues : Codable {
 
         self.init(wrappedValue: ValuesHolder(results))
     }
+}
 
+extension StringEncodedValues : Encodable where ValuesHolder.Element : StringEncodable & Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
 
