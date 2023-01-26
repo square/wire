@@ -687,17 +687,14 @@ class SwiftGenerator private constructor(
                     ""
                   }
 
-                  val (prefix, args) = field.codableName?.let { codableName ->
-                    val wrapped = if (typeName != field.typeName.makeNonOptional()) {
-                      "?.wrappedValue"
-                    } else {
-                      ""
-                    }
-                    Pair(
-                      "try container.decodeIfPresent(%2T.self, forKey: %3S)$wrapped ??\n",
-                      arrayOf(field.name, typeName, codableName)
-                    )
-                  } ?: Pair("try ", arrayOf(field.name, typeName))
+                  val keys = listOf(field.codableName, field.name)
+                    .filterNotNull()
+                    .map { CodeBlock.of("%S", it) }
+                    .joinToCode()
+
+                    val (decode, forKeys) = field.codableName?.let {
+                        Pair("decodeFirst", "forKeys")
+                    } ?: Pair("decode", "forKey")
 
                   if (field.isRepeated || field.isMap || field.typeName.optional) {
                     val fallback = if (field.isRepeated) {
@@ -709,13 +706,15 @@ class SwiftGenerator private constructor(
                     }
 
                     addStatement(
-                      "self.%1N = ${prefix}container.decodeIfPresent(%2T.self, forKey: %1S)$suffix$fallback",
-                      *args
+                      "self.%1N = try container.${decode}IfPresent(%2T.self, $forKeys: $keys)$suffix$fallback",
+                      field.name,
+                      typeName
                     )
                   } else {
                     addStatement(
-                      "self.%1N = ${prefix}container.decode(%2T.self, forKey: %1S)$suffix",
-                      *args
+                      "self.%1N = try container.${decode}(%2T.self, $forKeys: $keys)$suffix",
+                      field.name,
+                      typeName
                     )
                   }
                 }

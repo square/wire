@@ -300,8 +300,7 @@ extension FooBar : Codable {
         self.nested = try container.decodeIfPresent([FooBar].self, forKey: "nested") ?? []
         self.ext = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "ext")
         self.rep = try container.decodeIfPresent([FooBar.FooBarBazEnum].self, forKey: "rep") ?? []
-        self.more_string = try container.decodeIfPresent(String.self, forKey: "moreString") ??
-                container.decodeIfPresent(String.self, forKey: "more_string")
+        self.more_string = try container.decodeFirstIfPresent(String.self, forKeys: "moreString", "more_string")
     }
 
     public func encode(to encoder: Encoder) throws {
