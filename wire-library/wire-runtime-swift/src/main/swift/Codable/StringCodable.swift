@@ -20,13 +20,13 @@ import Foundation
 public typealias StringCodable = StringEncodable & StringDecodable
 
 /// Protocol that enables Encodable support via the @StringEncoded property wrapper
-public protocol StringEncodable {
+public protocol StringEncodable : Encodable {
     /// Serialize an encoded value via `String`
     func stringEncodedValue() throws -> String
 }
 
 /// Protocol that enables Decodable support via the @StringEncoded property wrapper
-public protocol StringDecodable {
+public protocol StringDecodable : Decodable {
     /// Losslessly deserialize a value derived from `encodedValue`
     init(encodedValue: String) throws
 }

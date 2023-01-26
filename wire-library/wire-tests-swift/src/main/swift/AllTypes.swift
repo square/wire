@@ -2556,16 +2556,16 @@ extension _AllTypes : Codable {
         self.rep_sint32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "repSint32", "rep_sint32")
         self.rep_fixed32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "repFixed32", "rep_fixed32")
         self.rep_sfixed32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "repSfixed32", "rep_sfixed32")
-        self.rep_int64 = try container.decodeProtoArray(stringEncoded: Int64.self, firstOfKeys: "repInt64", "rep_int64")
-        self.rep_uint64 = try container.decodeProtoArray(stringEncoded: UInt64.self, firstOfKeys: "repUint64", "rep_uint64")
-        self.rep_sint64 = try container.decodeProtoArray(stringEncoded: Int64.self, firstOfKeys: "repSint64", "rep_sint64")
-        self.rep_fixed64 = try container.decodeProtoArray(stringEncoded: UInt64.self, firstOfKeys: "repFixed64", "rep_fixed64")
-        self.rep_sfixed64 = try container.decodeProtoArray(stringEncoded: Int64.self, firstOfKeys: "repSfixed64", "rep_sfixed64")
+        self.rep_int64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "repInt64", "rep_int64")
+        self.rep_uint64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "repUint64", "rep_uint64")
+        self.rep_sint64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "repSint64", "rep_sint64")
+        self.rep_fixed64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "repFixed64", "rep_fixed64")
+        self.rep_sfixed64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "repSfixed64", "rep_sfixed64")
         self.rep_bool = try container.decodeProtoArray(Bool.self, firstOfKeys: "repBool", "rep_bool")
         self.rep_float = try container.decodeProtoArray(Float.self, firstOfKeys: "repFloat", "rep_float")
         self.rep_double = try container.decodeProtoArray(Double.self, firstOfKeys: "repDouble", "rep_double")
         self.rep_string = try container.decodeProtoArray(String.self, firstOfKeys: "repString", "rep_string")
-        self.rep_bytes = try container.decodeProtoArray(stringEncoded: Data.self, firstOfKeys: "repBytes", "rep_bytes")
+        self.rep_bytes = try container.decodeProtoArray(Data.self, firstOfKeys: "repBytes", "rep_bytes")
         self.rep_nested_enum = try container.decodeProtoArray(AllTypes.NestedEnum.self, firstOfKeys: "repNestedEnum", "rep_nested_enum")
         self.rep_nested_message = try container.decodeProtoArray(AllTypes.NestedMessage.self, firstOfKeys: "repNestedMessage", "rep_nested_message")
         self.pack_int32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "packInt32", "pack_int32")
@@ -2573,11 +2573,11 @@ extension _AllTypes : Codable {
         self.pack_sint32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "packSint32", "pack_sint32")
         self.pack_fixed32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "packFixed32", "pack_fixed32")
         self.pack_sfixed32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "packSfixed32", "pack_sfixed32")
-        self.pack_int64 = try container.decodeProtoArray(stringEncoded: Int64.self, firstOfKeys: "packInt64", "pack_int64")
-        self.pack_uint64 = try container.decodeProtoArray(stringEncoded: UInt64.self, firstOfKeys: "packUint64", "pack_uint64")
-        self.pack_sint64 = try container.decodeProtoArray(stringEncoded: Int64.self, firstOfKeys: "packSint64", "pack_sint64")
-        self.pack_fixed64 = try container.decodeProtoArray(stringEncoded: UInt64.self, firstOfKeys: "packFixed64", "pack_fixed64")
-        self.pack_sfixed64 = try container.decodeProtoArray(stringEncoded: Int64.self, firstOfKeys: "packSfixed64", "pack_sfixed64")
+        self.pack_int64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "packInt64", "pack_int64")
+        self.pack_uint64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "packUint64", "pack_uint64")
+        self.pack_sint64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "packSint64", "pack_sint64")
+        self.pack_fixed64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "packFixed64", "pack_fixed64")
+        self.pack_sfixed64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "packSfixed64", "pack_sfixed64")
         self.pack_bool = try container.decodeProtoArray(Bool.self, firstOfKeys: "packBool", "pack_bool")
         self.pack_float = try container.decodeProtoArray(Float.self, firstOfKeys: "packFloat", "pack_float")
         self.pack_double = try container.decodeProtoArray(Double.self, firstOfKeys: "packDouble", "pack_double")
@@ -2598,10 +2598,10 @@ extension _AllTypes : Codable {
         self.default_string = try container.decodeIfPresent(String.self, firstOfKeys: "defaultString", "default_string")
         self.default_bytes = try container.decodeIfPresent(stringEncoded: Data.self, firstOfKeys: "defaultBytes", "default_bytes")
         self.default_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, firstOfKeys: "defaultNestedEnum", "default_nested_enum")
-        self.map_int32_int32 = try container.decodeIfPresent(ProtoMap<Int32, Int32>.self, firstOfKeys: "mapInt32Int32", "map_int32_int32")?.wrappedValue ?? [:]
-        self.map_string_string = try container.decodeIfPresent(ProtoMap<String, String>.self, firstOfKeys: "mapStringString", "map_string_string")?.wrappedValue ?? [:]
-        self.map_string_message = try container.decodeIfPresent(ProtoMap<String, AllTypes.NestedMessage>.self, firstOfKeys: "mapStringMessage", "map_string_message")?.wrappedValue ?? [:]
-        self.map_string_enum = try container.decodeIfPresent(ProtoMapEnumValues<String, AllTypes.NestedEnum>.self, firstOfKeys: "mapStringEnum", "map_string_enum")?.wrappedValue ?? [:]
+        self.map_int32_int32 = try container.decodeProtoMap([Int32 : Int32].self, firstOfKeys: "mapInt32Int32", "map_int32_int32")
+        self.map_string_string = try container.decodeProtoMap([String : String].self, firstOfKeys: "mapStringString", "map_string_string")
+        self.map_string_message = try container.decodeProtoMap([String : AllTypes.NestedMessage].self, firstOfKeys: "mapStringMessage", "map_string_message")
+        self.map_string_enum = try container.decodeProtoMap([String : AllTypes.NestedEnum].self, firstOfKeys: "mapStringEnum", "map_string_enum")
         self.ext_opt_int32 = try container.decodeIfPresent(Int32.self, firstOfKeys: "extOptInt32", "ext_opt_int32")
         self.ext_opt_uint32 = try container.decodeIfPresent(UInt32.self, firstOfKeys: "extOptUint32", "ext_opt_uint32")
         self.ext_opt_sint32 = try container.decodeIfPresent(Int32.self, firstOfKeys: "extOptSint32", "ext_opt_sint32")
@@ -2624,16 +2624,16 @@ extension _AllTypes : Codable {
         self.ext_rep_sint32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extRepSint32", "ext_rep_sint32")
         self.ext_rep_fixed32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "extRepFixed32", "ext_rep_fixed32")
         self.ext_rep_sfixed32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extRepSfixed32", "ext_rep_sfixed32")
-        self.ext_rep_int64 = try container.decodeProtoArray(stringEncoded: Int64.self, firstOfKeys: "extRepInt64", "ext_rep_int64")
-        self.ext_rep_uint64 = try container.decodeProtoArray(stringEncoded: UInt64.self, firstOfKeys: "extRepUint64", "ext_rep_uint64")
-        self.ext_rep_sint64 = try container.decodeProtoArray(stringEncoded: Int64.self, firstOfKeys: "extRepSint64", "ext_rep_sint64")
-        self.ext_rep_fixed64 = try container.decodeProtoArray(stringEncoded: UInt64.self, firstOfKeys: "extRepFixed64", "ext_rep_fixed64")
-        self.ext_rep_sfixed64 = try container.decodeProtoArray(stringEncoded: Int64.self, firstOfKeys: "extRepSfixed64", "ext_rep_sfixed64")
+        self.ext_rep_int64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extRepInt64", "ext_rep_int64")
+        self.ext_rep_uint64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "extRepUint64", "ext_rep_uint64")
+        self.ext_rep_sint64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extRepSint64", "ext_rep_sint64")
+        self.ext_rep_fixed64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "extRepFixed64", "ext_rep_fixed64")
+        self.ext_rep_sfixed64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extRepSfixed64", "ext_rep_sfixed64")
         self.ext_rep_bool = try container.decodeProtoArray(Bool.self, firstOfKeys: "extRepBool", "ext_rep_bool")
         self.ext_rep_float = try container.decodeProtoArray(Float.self, firstOfKeys: "extRepFloat", "ext_rep_float")
         self.ext_rep_double = try container.decodeProtoArray(Double.self, firstOfKeys: "extRepDouble", "ext_rep_double")
         self.ext_rep_string = try container.decodeProtoArray(String.self, firstOfKeys: "extRepString", "ext_rep_string")
-        self.ext_rep_bytes = try container.decodeProtoArray(stringEncoded: Data.self, firstOfKeys: "extRepBytes", "ext_rep_bytes")
+        self.ext_rep_bytes = try container.decodeProtoArray(Data.self, firstOfKeys: "extRepBytes", "ext_rep_bytes")
         self.ext_rep_nested_enum = try container.decodeProtoArray(AllTypes.NestedEnum.self, firstOfKeys: "extRepNestedEnum", "ext_rep_nested_enum")
         self.ext_rep_nested_message = try container.decodeProtoArray(AllTypes.NestedMessage.self, firstOfKeys: "extRepNestedMessage", "ext_rep_nested_message")
         self.ext_pack_int32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extPackInt32", "ext_pack_int32")
@@ -2641,11 +2641,11 @@ extension _AllTypes : Codable {
         self.ext_pack_sint32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extPackSint32", "ext_pack_sint32")
         self.ext_pack_fixed32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "extPackFixed32", "ext_pack_fixed32")
         self.ext_pack_sfixed32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extPackSfixed32", "ext_pack_sfixed32")
-        self.ext_pack_int64 = try container.decodeProtoArray(stringEncoded: Int64.self, firstOfKeys: "extPackInt64", "ext_pack_int64")
-        self.ext_pack_uint64 = try container.decodeProtoArray(stringEncoded: UInt64.self, firstOfKeys: "extPackUint64", "ext_pack_uint64")
-        self.ext_pack_sint64 = try container.decodeProtoArray(stringEncoded: Int64.self, firstOfKeys: "extPackSint64", "ext_pack_sint64")
-        self.ext_pack_fixed64 = try container.decodeProtoArray(stringEncoded: UInt64.self, firstOfKeys: "extPackFixed64", "ext_pack_fixed64")
-        self.ext_pack_sfixed64 = try container.decodeProtoArray(stringEncoded: Int64.self, firstOfKeys: "extPackSfixed64", "ext_pack_sfixed64")
+        self.ext_pack_int64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extPackInt64", "ext_pack_int64")
+        self.ext_pack_uint64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "extPackUint64", "ext_pack_uint64")
+        self.ext_pack_sint64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extPackSint64", "ext_pack_sint64")
+        self.ext_pack_fixed64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "extPackFixed64", "ext_pack_fixed64")
+        self.ext_pack_sfixed64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extPackSfixed64", "ext_pack_sfixed64")
         self.ext_pack_bool = try container.decodeProtoArray(Bool.self, firstOfKeys: "extPackBool", "ext_pack_bool")
         self.ext_pack_float = try container.decodeProtoArray(Float.self, firstOfKeys: "extPackFloat", "ext_pack_float")
         self.ext_pack_double = try container.decodeProtoArray(Double.self, firstOfKeys: "extPackDouble", "ext_pack_double")
@@ -2741,19 +2741,19 @@ extension _AllTypes : Codable {
             try container.encodeProtoArray(self.rep_sfixed32, forKey: preferCamelCase ? "repSfixed32" : "rep_sfixed32")
         }
         if includeDefaults || !self.rep_int64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.rep_int64, forKey: preferCamelCase ? "repInt64" : "rep_int64")
+            try container.encodeProtoArray(self.rep_int64, forKey: preferCamelCase ? "repInt64" : "rep_int64")
         }
         if includeDefaults || !self.rep_uint64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.rep_uint64, forKey: preferCamelCase ? "repUint64" : "rep_uint64")
+            try container.encodeProtoArray(self.rep_uint64, forKey: preferCamelCase ? "repUint64" : "rep_uint64")
         }
         if includeDefaults || !self.rep_sint64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.rep_sint64, forKey: preferCamelCase ? "repSint64" : "rep_sint64")
+            try container.encodeProtoArray(self.rep_sint64, forKey: preferCamelCase ? "repSint64" : "rep_sint64")
         }
         if includeDefaults || !self.rep_fixed64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.rep_fixed64, forKey: preferCamelCase ? "repFixed64" : "rep_fixed64")
+            try container.encodeProtoArray(self.rep_fixed64, forKey: preferCamelCase ? "repFixed64" : "rep_fixed64")
         }
         if includeDefaults || !self.rep_sfixed64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.rep_sfixed64, forKey: preferCamelCase ? "repSfixed64" : "rep_sfixed64")
+            try container.encodeProtoArray(self.rep_sfixed64, forKey: preferCamelCase ? "repSfixed64" : "rep_sfixed64")
         }
         if includeDefaults || !self.rep_bool.isEmpty {
             try container.encodeProtoArray(self.rep_bool, forKey: preferCamelCase ? "repBool" : "rep_bool")
@@ -2768,7 +2768,7 @@ extension _AllTypes : Codable {
             try container.encodeProtoArray(self.rep_string, forKey: preferCamelCase ? "repString" : "rep_string")
         }
         if includeDefaults || !self.rep_bytes.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.rep_bytes, forKey: preferCamelCase ? "repBytes" : "rep_bytes")
+            try container.encodeProtoArray(self.rep_bytes, forKey: preferCamelCase ? "repBytes" : "rep_bytes")
         }
         if includeDefaults || !self.rep_nested_enum.isEmpty {
             try container.encodeProtoArray(self.rep_nested_enum, forKey: preferCamelCase ? "repNestedEnum" : "rep_nested_enum")
@@ -2792,19 +2792,19 @@ extension _AllTypes : Codable {
             try container.encodeProtoArray(self.pack_sfixed32, forKey: preferCamelCase ? "packSfixed32" : "pack_sfixed32")
         }
         if includeDefaults || !self.pack_int64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.pack_int64, forKey: preferCamelCase ? "packInt64" : "pack_int64")
+            try container.encodeProtoArray(self.pack_int64, forKey: preferCamelCase ? "packInt64" : "pack_int64")
         }
         if includeDefaults || !self.pack_uint64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.pack_uint64, forKey: preferCamelCase ? "packUint64" : "pack_uint64")
+            try container.encodeProtoArray(self.pack_uint64, forKey: preferCamelCase ? "packUint64" : "pack_uint64")
         }
         if includeDefaults || !self.pack_sint64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.pack_sint64, forKey: preferCamelCase ? "packSint64" : "pack_sint64")
+            try container.encodeProtoArray(self.pack_sint64, forKey: preferCamelCase ? "packSint64" : "pack_sint64")
         }
         if includeDefaults || !self.pack_fixed64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.pack_fixed64, forKey: preferCamelCase ? "packFixed64" : "pack_fixed64")
+            try container.encodeProtoArray(self.pack_fixed64, forKey: preferCamelCase ? "packFixed64" : "pack_fixed64")
         }
         if includeDefaults || !self.pack_sfixed64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.pack_sfixed64, forKey: preferCamelCase ? "packSfixed64" : "pack_sfixed64")
+            try container.encodeProtoArray(self.pack_sfixed64, forKey: preferCamelCase ? "packSfixed64" : "pack_sfixed64")
         }
         if includeDefaults || !self.pack_bool.isEmpty {
             try container.encodeProtoArray(self.pack_bool, forKey: preferCamelCase ? "packBool" : "pack_bool")
@@ -2867,16 +2867,16 @@ extension _AllTypes : Codable {
             try container.encode(self.default_nested_enum, forKey: preferCamelCase ? "defaultNestedEnum" : "default_nested_enum")
         }
         if includeDefaults || !self.map_int32_int32.isEmpty {
-            try container.encode(ProtoMap(wrappedValue: self.map_int32_int32), forKey: preferCamelCase ? "mapInt32Int32" : "map_int32_int32")
+            try container.encodeProtoMap(self.map_int32_int32, forKey: preferCamelCase ? "mapInt32Int32" : "map_int32_int32")
         }
         if includeDefaults || !self.map_string_string.isEmpty {
-            try container.encode(ProtoMap(wrappedValue: self.map_string_string), forKey: preferCamelCase ? "mapStringString" : "map_string_string")
+            try container.encodeProtoMap(self.map_string_string, forKey: preferCamelCase ? "mapStringString" : "map_string_string")
         }
         if includeDefaults || !self.map_string_message.isEmpty {
-            try container.encode(ProtoMap(wrappedValue: self.map_string_message), forKey: preferCamelCase ? "mapStringMessage" : "map_string_message")
+            try container.encodeProtoMap(self.map_string_message, forKey: preferCamelCase ? "mapStringMessage" : "map_string_message")
         }
         if includeDefaults || !self.map_string_enum.isEmpty {
-            try container.encode(ProtoMapEnumValues(wrappedValue: self.map_string_enum), forKey: preferCamelCase ? "mapStringEnum" : "map_string_enum")
+            try container.encodeProtoMap(self.map_string_enum, forKey: preferCamelCase ? "mapStringEnum" : "map_string_enum")
         }
         if includeDefaults || self.ext_opt_int32 != nil {
             try container.encode(self.ext_opt_int32, forKey: preferCamelCase ? "extOptInt32" : "ext_opt_int32")
@@ -2945,19 +2945,19 @@ extension _AllTypes : Codable {
             try container.encodeProtoArray(self.ext_rep_sfixed32, forKey: preferCamelCase ? "extRepSfixed32" : "ext_rep_sfixed32")
         }
         if includeDefaults || !self.ext_rep_int64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.ext_rep_int64, forKey: preferCamelCase ? "extRepInt64" : "ext_rep_int64")
+            try container.encodeProtoArray(self.ext_rep_int64, forKey: preferCamelCase ? "extRepInt64" : "ext_rep_int64")
         }
         if includeDefaults || !self.ext_rep_uint64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.ext_rep_uint64, forKey: preferCamelCase ? "extRepUint64" : "ext_rep_uint64")
+            try container.encodeProtoArray(self.ext_rep_uint64, forKey: preferCamelCase ? "extRepUint64" : "ext_rep_uint64")
         }
         if includeDefaults || !self.ext_rep_sint64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.ext_rep_sint64, forKey: preferCamelCase ? "extRepSint64" : "ext_rep_sint64")
+            try container.encodeProtoArray(self.ext_rep_sint64, forKey: preferCamelCase ? "extRepSint64" : "ext_rep_sint64")
         }
         if includeDefaults || !self.ext_rep_fixed64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.ext_rep_fixed64, forKey: preferCamelCase ? "extRepFixed64" : "ext_rep_fixed64")
+            try container.encodeProtoArray(self.ext_rep_fixed64, forKey: preferCamelCase ? "extRepFixed64" : "ext_rep_fixed64")
         }
         if includeDefaults || !self.ext_rep_sfixed64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.ext_rep_sfixed64, forKey: preferCamelCase ? "extRepSfixed64" : "ext_rep_sfixed64")
+            try container.encodeProtoArray(self.ext_rep_sfixed64, forKey: preferCamelCase ? "extRepSfixed64" : "ext_rep_sfixed64")
         }
         if includeDefaults || !self.ext_rep_bool.isEmpty {
             try container.encodeProtoArray(self.ext_rep_bool, forKey: preferCamelCase ? "extRepBool" : "ext_rep_bool")
@@ -2972,7 +2972,7 @@ extension _AllTypes : Codable {
             try container.encodeProtoArray(self.ext_rep_string, forKey: preferCamelCase ? "extRepString" : "ext_rep_string")
         }
         if includeDefaults || !self.ext_rep_bytes.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.ext_rep_bytes, forKey: preferCamelCase ? "extRepBytes" : "ext_rep_bytes")
+            try container.encodeProtoArray(self.ext_rep_bytes, forKey: preferCamelCase ? "extRepBytes" : "ext_rep_bytes")
         }
         if includeDefaults || !self.ext_rep_nested_enum.isEmpty {
             try container.encodeProtoArray(self.ext_rep_nested_enum, forKey: preferCamelCase ? "extRepNestedEnum" : "ext_rep_nested_enum")
@@ -2996,19 +2996,19 @@ extension _AllTypes : Codable {
             try container.encodeProtoArray(self.ext_pack_sfixed32, forKey: preferCamelCase ? "extPackSfixed32" : "ext_pack_sfixed32")
         }
         if includeDefaults || !self.ext_pack_int64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.ext_pack_int64, forKey: preferCamelCase ? "extPackInt64" : "ext_pack_int64")
+            try container.encodeProtoArray(self.ext_pack_int64, forKey: preferCamelCase ? "extPackInt64" : "ext_pack_int64")
         }
         if includeDefaults || !self.ext_pack_uint64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.ext_pack_uint64, forKey: preferCamelCase ? "extPackUint64" : "ext_pack_uint64")
+            try container.encodeProtoArray(self.ext_pack_uint64, forKey: preferCamelCase ? "extPackUint64" : "ext_pack_uint64")
         }
         if includeDefaults || !self.ext_pack_sint64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.ext_pack_sint64, forKey: preferCamelCase ? "extPackSint64" : "ext_pack_sint64")
+            try container.encodeProtoArray(self.ext_pack_sint64, forKey: preferCamelCase ? "extPackSint64" : "ext_pack_sint64")
         }
         if includeDefaults || !self.ext_pack_fixed64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.ext_pack_fixed64, forKey: preferCamelCase ? "extPackFixed64" : "ext_pack_fixed64")
+            try container.encodeProtoArray(self.ext_pack_fixed64, forKey: preferCamelCase ? "extPackFixed64" : "ext_pack_fixed64")
         }
         if includeDefaults || !self.ext_pack_sfixed64.isEmpty {
-            try container.encodeProtoArray(stringEncoded: self.ext_pack_sfixed64, forKey: preferCamelCase ? "extPackSfixed64" : "ext_pack_sfixed64")
+            try container.encodeProtoArray(self.ext_pack_sfixed64, forKey: preferCamelCase ? "extPackSfixed64" : "ext_pack_sfixed64")
         }
         if includeDefaults || !self.ext_pack_bool.isEmpty {
             try container.encodeProtoArray(self.ext_pack_bool, forKey: preferCamelCase ? "extPackBool" : "ext_pack_bool")

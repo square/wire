@@ -86,25 +86,6 @@ extension Dictionary : EmptyInitializable {
 extension Data : EmptyInitializable {
 }
 
-extension ProtoMap : EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: [:])
-    }
-}
-
-extension ProtoMapEnumValues : EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: [:])
-    }
-}
-
-
-extension ProtoMapStringEncodedValues : EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: [:])
-    }
-}
-
 extension Int64 : EmptyInitializable {
     public init() {
         self = .zero
@@ -122,8 +103,15 @@ extension StringEncoded : EmptyInitializable where Value : EmptyInitializable {
         self.init(wrappedValue: Value())
     }
 }
-extension StringEncodedValues : EmptyInitializable {
+
+extension ProtoArray : EmptyInitializable {
     public init() {
         self.init(wrappedValue: [])
+    }
+}
+
+extension ProtoMap : EmptyInitializable {
+    public init() {
+        self.init(wrappedValue: [:])
     }
 }

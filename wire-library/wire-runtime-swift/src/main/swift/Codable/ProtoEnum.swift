@@ -19,17 +19,19 @@ import Foundation
 /// Common protocol that all Wire generated enums conform to
 /// - Note: All ProtoEnums will convert to/from their field and string equivalent when serializing via Codable.
 /// This matches the Proto3 JSON spec: https://developers.google.com/protocol-buffers/docs/proto3#json
-public protocol ProtoEnum : LosslessStringConvertible, CaseIterable, RawRepresentable, Codable where RawValue == UInt32 {
+public protocol ProtoEnum : LosslessStringConvertible, Codable {
 }
 
-extension ProtoEnum {
+extension ProtoEnum where Self : CaseIterable {
     public init?(_ description: String) {
         guard let result = Self.allCases.first(where: { $0.description == description }) else {
             return nil
         }
         self = result
     }
+}
 
+extension ProtoEnum where Self : RawRepresentable<UInt32> {
     public init(from decoder: Decoder) throws {
         // We support decoding from either the string value or the field number.
         let container = try decoder.singleValueContainer()
@@ -88,61 +90,5 @@ struct BoxedEnum<T: ProtoEnum> : Decodable {
             let value = try container.decode(T.self)
             self.init(value: value)
         }
-    }
-}
-
-public extension KeyedDecodingContainer {
-    func decodeIfPresent<T: ProtoEnum>(
-        _: T.Type,
-        forKey key: Key
-    ) throws -> T? {
-        guard contains(key) else {
-            return nil
-        }
-
-        let box = try decode(BoxedEnum<T>.self, forKey: key)
-        return box.value
-    }
-
-    func decode<T: ProtoEnum>(
-        _: Array<T>.Type,
-        forKey key: Key
-    ) throws -> [T] {
-        var container = try nestedUnkeyedContainer(forKey: key)
-
-        var results: [T] = []
-        if let count = container.count {
-            results.reserveCapacity(count)
-        }
-
-        while !container.isAtEnd {
-            let box = try container.decode(BoxedEnum<T>.self)
-            if let value = box.value {
-                results.append(value)
-            }
-        }
-
-        return results
-    }
-
-    func decode<T: ProtoEnum>(
-        _: Set<T>.Type,
-        forKey key: Key
-    ) throws -> Set<T> {
-        var container = try nestedUnkeyedContainer(forKey: key)
-
-        var results: Set<T> = []
-        if let count = container.count {
-            results.reserveCapacity(count)
-        }
-
-        while !container.isAtEnd {
-            let box = try container.decode(BoxedEnum<T>.self)
-            if let value = box.value {
-                results.insert(value)
-            }
-        }
-
-        return results
     }
 }

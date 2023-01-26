@@ -19,7 +19,7 @@ import XCTest
 @testable import Wire
 
 final class ProtoEnumCodableTests: XCTestCase {
-    enum EnumType : UInt32, ProtoEnum {
+    enum EnumType : UInt32, CaseIterable, ProtoEnum {
         case DO_NOT_USE = 0
         case ONE = 1
         case TWO = 2
@@ -403,7 +403,7 @@ extension ProtoEnumCodableTests {
         var standard: [String: EnumType]
 
         @DefaultEmpty
-        @ProtoMapEnumValues
+        @ProtoMap
         var protoMap: [String: EnumType]
     }
 

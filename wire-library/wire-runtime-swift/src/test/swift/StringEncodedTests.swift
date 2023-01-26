@@ -29,9 +29,9 @@ extension StringEncodedTests {
         var a: Int64
         @StringEncoded
         var b: UInt64
-        @StringEncodedValues
+        @ProtoArray
         var c: [Int64]
-        @StringEncodedValues
+        @ProtoArray
         var d: [UInt64]
     }
 
@@ -150,7 +150,7 @@ extension StringEncodedTests {
         @StringEncoded
         var number: Int64
         @DefaultEmpty
-        @StringEncodedValues
+        @ProtoArray
         var array: [Int64]
     }
 
@@ -262,11 +262,11 @@ extension StringEncodedTests {
         var keys: [Int64: String]
 
         @DefaultEmpty
-        @ProtoMapStringEncodedValues
+        @ProtoMap
         var values: [String: Int64]
 
         @DefaultEmpty
-        @ProtoMapStringEncodedValues
+        @ProtoMap
         var both: [Int64: Int64]
     }
 
