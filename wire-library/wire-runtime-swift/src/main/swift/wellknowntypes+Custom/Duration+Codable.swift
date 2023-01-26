@@ -116,7 +116,6 @@ extension Wire.Duration : Codable {
         }
 
         if rawString.starts(with: "-") {
-            // 100000000
             if nanos != 0 {
                 seconds += 1
                 nanos = 1_000_000_000 - nanos
