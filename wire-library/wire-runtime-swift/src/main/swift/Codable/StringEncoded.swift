@@ -18,26 +18,20 @@ import Foundation
 
 /// Converts values to/from their string equivalent when serializing with Codable.
 @propertyWrapper
-public struct StringEncoded<Value : StringCodable & Codable> {
-    public var wrappedValue: Value
+struct StringEncoded<Value> {
+    var wrappedValue: Value
 
-    public init(wrappedValue: Value) {
+    init(wrappedValue: Value) {
         self.wrappedValue = wrappedValue
     }
 }
 
-extension StringEncoded : Decodable {
-    public init(from decoder: Decoder) throws {
+extension StringEncoded : Decodable where Value : StringDecodable & Decodable {
+    init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
-        guard !container.decodeNil() else {
-            let value = try Self.create(optionalEncodedValue: nil)
-            self.init(wrappedValue: value)
-            return
-        }
-
         if let stringValue = try? container.decode(String.self) {
-            let value = try Self.create(optionalEncodedValue: stringValue)
+            let value = try Value(encodedValue: stringValue)
             self.init(wrappedValue: value)
             return
         }
@@ -45,42 +39,13 @@ extension StringEncoded : Decodable {
         let value = try container.decode(Value.self)
         self.init(wrappedValue: value)
     }
-
-    private static func create(
-        optionalEncodedValue: String?
-    ) throws -> Value {
-        guard let encodedValue = optionalEncodedValue else {
-            return try valueForNil()
-        }
-        return try Value(encodedValue: encodedValue)
-    }
-
-    private static func valueForNil() throws -> Value {
-        if let optionalClass = Value.self as? OptionalStringDecodable.Type {
-            let value = try optionalClass.valueForNil()
-            return value as! Value
-        }
-        throw ProtoDecoder.Error.unparsableString(type: Value.self, value: nil)
-    }
 }
 
-extension StringEncoded : Encodable {
-    public func encode(to encoder: Encoder) throws {
+extension StringEncoded : Encodable where Value : StringEncodable & Encodable {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
 
-        if shouldEncodeNil() {
-            try container.encodeNil()
-        } else {
-            try container.encode(wrappedValue.stringEncodedValue())
-        }
-    }
-
-    private func shouldEncodeNil() -> Bool {
-        if let instance = wrappedValue as? OptionalStringEncodable {
-            return instance.shouldEncodeNil()
-        } else {
-            return false
-        }
+        try container.encode(wrappedValue.stringEncodedValue())
     }
 }
 
@@ -94,16 +59,3 @@ extension StringEncoded : Hashable where Value : Hashable {
 extension StringEncoded : Sendable where Value : Sendable {
 }
 #endif
-
-public extension KeyedDecodingContainer {
-    func decode<T: OptionalStringCodable>(
-        _: StringEncoded<T>.Type,
-        forKey key: Key
-    ) throws -> StringEncoded<T> {
-        if let value = try decodeIfPresent(StringEncoded<T>.self, forKey: key) {
-            return value
-        } else {
-            return try StringEncoded(wrappedValue: T.valueForNil())
-        }
-    }
-}

@@ -189,7 +189,7 @@ extension FooBar.More : Proto2Codable {
 extension FooBar.More : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.serial = try container.decodeIfPresent([Int32].self, forKey: "serial") ?? []
+        self.serial = try container.decodeProtoArray(Int32.self, forKey: "serial")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -197,7 +197,7 @@ extension FooBar.More : Codable {
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || !self.serial.isEmpty {
-            try container.encode(self.serial, forKey: "serial")
+            try container.encodeProtoArray(self.serial, forKey: "serial")
         }
     }
 }
@@ -294,13 +294,13 @@ extension FooBar : Codable {
         self.foo = try container.decodeIfPresent(Int32.self, forKey: "foo")
         self.bar = try container.decodeIfPresent(String.self, forKey: "bar")
         self.baz = try container.decodeIfPresent(FooBar.Nested.self, forKey: "baz")
-        self.qux = try container.decodeIfPresent(StringEncoded<UInt64>.self, forKey: "qux")?.wrappedValue
-        self.fred = try container.decodeIfPresent([Float].self, forKey: "fred") ?? []
+        self.qux = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "qux")
+        self.fred = try container.decodeProtoArray(Float.self, forKey: "fred")
         self.daisy = try container.decodeIfPresent(Double.self, forKey: "daisy")
-        self.nested = try container.decodeIfPresent([FooBar].self, forKey: "nested") ?? []
+        self.nested = try container.decodeProtoArray(FooBar.self, forKey: "nested")
         self.ext = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "ext")
-        self.rep = try container.decodeIfPresent([FooBar.FooBarBazEnum].self, forKey: "rep") ?? []
-        self.more_string = try container.decodeFirstIfPresent(String.self, forKeys: "moreString", "more_string")
+        self.rep = try container.decodeProtoArray(FooBar.FooBarBazEnum.self, forKey: "rep")
+        self.more_string = try container.decodeIfPresent(String.self, firstOfKeys: "moreString", "more_string")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -318,22 +318,22 @@ extension FooBar : Codable {
             try container.encode(self.baz, forKey: "baz")
         }
         if includeDefaults || self.qux != nil {
-            try container.encode(StringEncoded(wrappedValue: self.qux), forKey: "qux")
+            try container.encode(stringEncoded: self.qux, forKey: "qux")
         }
         if includeDefaults || !self.fred.isEmpty {
-            try container.encode(self.fred, forKey: "fred")
+            try container.encodeProtoArray(self.fred, forKey: "fred")
         }
         if includeDefaults || self.daisy != nil {
             try container.encode(self.daisy, forKey: "daisy")
         }
         if includeDefaults || !self.nested.isEmpty {
-            try container.encode(self.nested, forKey: "nested")
+            try container.encodeProtoArray(self.nested, forKey: "nested")
         }
         if includeDefaults || self.ext != nil {
             try container.encode(self.ext, forKey: "ext")
         }
         if includeDefaults || !self.rep.isEmpty {
-            try container.encode(self.rep, forKey: "rep")
+            try container.encodeProtoArray(self.rep, forKey: "rep")
         }
         if includeDefaults || self.more_string != nil {
             try container.encode(self.more_string, forKey: preferCamelCase ? "moreString" : "more_string")

@@ -80,7 +80,7 @@ extension OptionalEnumUser : Proto2Codable {
 extension OptionalEnumUser : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.optional_enum = try container.decodeFirstIfPresent(OptionalEnumUser.OptionalEnum.self, forKeys: "optionalEnum", "optional_enum")
+        self.optional_enum = try container.decodeIfPresent(OptionalEnumUser.OptionalEnum.self, firstOfKeys: "optionalEnum", "optional_enum")
     }
 
     public func encode(to encoder: Encoder) throws {

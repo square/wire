@@ -67,8 +67,8 @@ extension EmbeddedMessage : Proto2Codable {
 extension EmbeddedMessage : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.inner_repeated_number = try container.decodeFirstIfPresent([Int32].self, forKeys: "innerRepeatedNumber", "inner_repeated_number") ?? []
-        self.inner_number_after = try container.decodeFirstIfPresent(Int32.self, forKeys: "innerNumberAfter", "inner_number_after")
+        self.inner_repeated_number = try container.decodeProtoArray(Int32.self, firstOfKeys: "innerRepeatedNumber", "inner_repeated_number")
+        self.inner_number_after = try container.decodeIfPresent(Int32.self, firstOfKeys: "innerNumberAfter", "inner_number_after")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -77,7 +77,7 @@ extension EmbeddedMessage : Codable {
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || !self.inner_repeated_number.isEmpty {
-            try container.encode(self.inner_repeated_number, forKey: preferCamelCase ? "innerRepeatedNumber" : "inner_repeated_number")
+            try container.encodeProtoArray(self.inner_repeated_number, forKey: preferCamelCase ? "innerRepeatedNumber" : "inner_repeated_number")
         }
         if includeDefaults || self.inner_number_after != nil {
             try container.encode(self.inner_number_after, forKey: preferCamelCase ? "innerNumberAfter" : "inner_number_after")

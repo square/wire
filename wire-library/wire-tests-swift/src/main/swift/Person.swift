@@ -222,8 +222,8 @@ extension Person : Codable {
         self.name = try container.decode(String.self, forKey: "name")
         self.id = try container.decode(Int32.self, forKey: "id")
         self.email = try container.decodeIfPresent(String.self, forKey: "email")
-        self.phone = try container.decodeIfPresent([Person.PhoneNumber].self, forKey: "phone") ?? []
-        self.aliases = try container.decodeIfPresent([String].self, forKey: "aliases") ?? []
+        self.phone = try container.decodeProtoArray(Person.PhoneNumber.self, forKey: "phone")
+        self.aliases = try container.decodeProtoArray(String.self, forKey: "aliases")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -236,10 +236,10 @@ extension Person : Codable {
             try container.encode(self.email, forKey: "email")
         }
         if includeDefaults || !self.phone.isEmpty {
-            try container.encode(self.phone, forKey: "phone")
+            try container.encodeProtoArray(self.phone, forKey: "phone")
         }
         if includeDefaults || !self.aliases.isEmpty {
-            try container.encode(self.aliases, forKey: "aliases")
+            try container.encodeProtoArray(self.aliases, forKey: "aliases")
         }
     }
 }
