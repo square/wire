@@ -334,17 +334,40 @@ extension CodableTests {
         try assertEncode(proto: proto, expected: json)
     }
 
+    func testNegativeSmallDurationRoundtrip() throws {
+        // Durations less than one second are represented with a 0 `seconds` field and a positive or negative `nanos` field
+
+        let json = """
+        {"duration":"-0.900s"}
+        """
+
+        let proto = DurationAndTimestamp(
+            duration: Wire.Duration(seconds: 0, nanos: -900_000_000)
+        )
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
     func testNegativeDurationRoundtrip() throws {
+        // For Durations of one second or more, a non-zero value for the `nanos` field must be of the same sign as the `seconds` field
+
         let json = """
         {"duration":"-1.900s"}
         """
 
         let proto = DurationAndTimestamp(
-            duration: Wire.Duration(seconds: -2, nanos: 100000000)
+            duration: Wire.Duration(seconds: -1, nanos: -900_000_000)
         )
 
         try assertDecode(json: json, expected: proto)
         try assertEncode(proto: proto, expected: json)
+    }
+
+    @available(macOS 13, iOS 16, watchOS 9, tvOS 16, *)
+    func testDurationConversion() {
+        XCTAssertEqual(Wire.Duration(seconds: 0, nanos: -900).toSwiftDuration(), .nanoseconds(-900))
+        XCTAssertEqual(Wire.Duration(seconds: -1, nanos: -900).toSwiftDuration(), .seconds(-1) + .nanoseconds(-900))
     }
 
     func testLargeDurationRoundtrip() throws {

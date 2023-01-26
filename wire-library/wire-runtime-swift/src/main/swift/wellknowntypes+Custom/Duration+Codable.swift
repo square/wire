@@ -28,12 +28,8 @@ extension Swift.Duration {
 
 @available(macOS 13, iOS 16, watchOS 9, tvOS 16, *)
 extension Wire.Duration {
-    public var attos: Int64 {
-        Int64(nanos) * 1_000_000_000
-    }
-
     public func toSwiftDuration() -> Swift.Duration {
-        return Swift.Duration(secondsComponent: seconds, attosecondsComponent: attos)
+        return .seconds(seconds) + .nanoseconds(nanos)
     }
 
     public init(duration: Swift.Duration) {
@@ -52,18 +48,9 @@ extension Wire.Duration : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
 
-        var prefix = ""
-        var seconds = self.seconds
-        var nanos = self.nanos
-
-        if seconds < 0 {
-            prefix = "-"
-            seconds = -seconds
-            if nanos != 0 {
-                seconds -= 1
-                nanos = 1_000_000_000 - nanos
-            }
-        }
+        let prefix = seconds < 0 || nanos < 0 ? "-" : ""
+        let seconds = abs(seconds)
+        let nanos = abs(nanos)
 
         let encoded: String = {
             if nanos == 0 {
@@ -111,19 +98,15 @@ extension Wire.Duration : Codable {
             nanos = nil
         }
 
-        guard var seconds = seconds, var nanos = nanos else {
+        guard let seconds = seconds, let nanos = nanos else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid duration \(string)s")
         }
 
         if rawString.starts(with: "-") {
-            if nanos != 0 {
-                seconds += 1
-                nanos = 1_000_000_000 - nanos
-            }
-            seconds = -seconds
+            self.init(seconds: -seconds, nanos: -nanos)
+        } else {
+            self.init(seconds: seconds, nanos: nanos)
         }
-
-        self.init(seconds: seconds, nanos: nanos)
     }
 }
 
