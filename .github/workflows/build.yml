@@ -136,19 +136,17 @@ jobs:
           xcode-version: latest-stable
 
       - name: Test Swift Runtime
-        # This builds the wire-swift-runtime, verifies that generated protos match what's
-        # currently checked into the repo both for the runtime itself and for its tests, and runs
-        # the tests.
+        # This builds the wire-swift-runtime, verifies that generated protos match what's currently
+        # checked into the repo both for the runtime itself and for its tests, and runs the tests.
         run: |
           ./gradlew :wire-runtime-swift:build --stacktrace
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nGenerated files changed. Did you run ./gradlew generateSwiftProtos?"; exit 1; fi
 
       - name: Generate Swift from golden proto files
-        # This compiles the golden proto files into Swift files and
-        # ensures that those outputs match what's currently checked into the repo.
-        # These generated files are compiled during the wire-tests-swift build but should still be
-        # reviewed manually.
-        # Finally, run the associated unit tests.
+        # This compiles the golden proto files into Swift files and ensures that those outputs match
+        # what's currently checked into the repo. These generated files are compiled during the
+        # wire-tests-swift build but should still be reviewed manually. Finally, run the associated
+        # unit tests.
         run: |
           ./gradlew generateSwiftTests --stacktrace
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nGenerated files changed. Did you run ./gradlew generateSwiftProtos and generateSwiftTests?"; exit 1; fi
