@@ -52,15 +52,28 @@ extension Wire.Duration : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
 
+        var prefix = ""
+        var seconds = self.seconds
+        var nanos = self.nanos
+
+        if seconds < 0 {
+            prefix = "-"
+            seconds = -seconds
+            if nanos != 0 {
+                seconds -= 1
+                nanos = 1_000_000_000 - nanos
+            }
+        }
+
         let encoded: String = {
             if nanos == 0 {
-                return String(format: "%ds", seconds)
+                return String(format: "%@%llds", prefix, seconds)
             } else if nanos % 1_000_000 == 0 {
-                return String(format: "%d.%03ds", seconds, nanos / 1_000_000)
+                return String(format: "%@%lld.%03ds", prefix, seconds, nanos / 1_000_000)
             } else if nanos % 1_000 == 0 {
-                return String(format: "%d.%06ds", seconds, nanos / 1_000)
+                return String(format: "%@%lld.%06ds", prefix, seconds, nanos / 1_000)
             } else {
-                return String(format: "%d.%09ds", seconds, nanos)
+                return String(format: "%@%lld.%09ds", prefix, seconds, nanos)
             }
         }()
 
@@ -69,9 +82,15 @@ extension Wire.Duration : Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        var string = try container.decode(String.self)
+        let rawString = try container.decode(String.self)
+        let isNegative = rawString.starts(with: "-")
+
+        var string = rawString
         guard let last = string.popLast(), last == "s" else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid duration format \(string)")
+        }
+        if isNegative {
+            string.removeFirst()
         }
 
         let seconds: Int64?
@@ -85,15 +104,24 @@ extension Wire.Duration : Codable {
 
         case 2:
             seconds = Int64(components[0])
-            nanos = Int32(components[1].padding(toLength: 9, withPad: "0", startingAt: 0)).map { $0 / 1_000_000_000 }
+            nanos = Int32(components[1].padding(toLength: 9, withPad: "0", startingAt: 0))
 
         default:
             seconds = nil
             nanos = nil
         }
 
-        guard let seconds = seconds, let nanos = nanos else {
+        guard var seconds = seconds, var nanos = nanos else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid duration \(string)s")
+        }
+
+        if rawString.starts(with: "-") {
+            // 100000000
+            if nanos != 0 {
+                seconds += 1
+                nanos = 1_000_000_000 - nanos
+            }
+            seconds = -seconds
         }
 
         self.init(seconds: seconds, nanos: nanos)

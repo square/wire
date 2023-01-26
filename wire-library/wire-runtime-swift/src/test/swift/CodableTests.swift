@@ -313,8 +313,8 @@ extension CodableTests {
 
 extension CodableTests {
     struct DurationAndTimestamp: Equatable, Codable {
-        var duration: Wire.Duration
-        var timestamp: Wire.Timestamp
+        var duration: Wire.Duration?
+        var timestamp: Wire.Timestamp?
     }
 
     func testDurationRoundtrip() throws {
@@ -330,6 +330,53 @@ extension CodableTests {
             timestamp: Timestamp(seconds: 1674604953, nanos: 0)
         )
 
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testNegativeDurationRoundtrip() throws {
+        let json = """
+        {"duration":"-1.900s"}
+        """
+
+        let proto = DurationAndTimestamp(
+            duration: Wire.Duration(seconds: -2, nanos: 100000000)
+        )
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testLargeDurationRoundtrip() throws {
+        let json = """
+        {
+          "duration":"18014398509481984s",
+          "timestamp":"4001-01-01T00:00:00Z"
+        }
+        """
+        let proto = DurationAndTimestamp(
+            duration: Duration(seconds: 1 << 54, nanos: 0),
+            timestamp: Timestamp(date: .distantFuture)
+        )
+
+        // In theory, we should use a much further distant future; however, there woudl be rounding errors at play
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testSmallDurationRoundtrip() throws {
+        let json = """
+        {
+          "duration":"1.000000010s",
+          "timestamp":"0001-01-01T00:00:00Z"
+        }
+        """
+        let proto = DurationAndTimestamp(
+            duration: Duration(seconds: 1, nanos: 10),
+            timestamp: Timestamp(date: .distantPast)
+        )
+
+        // In theory, we should use a much further distant future; however, there woudl be rounding errors at play
         try assertDecode(json: json, expected: proto)
         try assertEncode(proto: proto, expected: json)
     }
