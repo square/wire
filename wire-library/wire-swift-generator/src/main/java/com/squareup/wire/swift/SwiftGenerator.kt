@@ -702,16 +702,12 @@ class SwiftGenerator private constructor(
                     Pair("decodeFirst", "forKeys")
                   } ?: Pair("decode", "forKey")
 
-                  val decodePrefix = if (field.typeName.needsStringEncodedValues()) {
-                    "stringEncoded: "
-                  } else if (field.typeName.isStringEncoded) {
-                    "stringEncoded: "
-                  } else {
-                    ""
-                  }
-
                   if (field.isRepeated) {
                     decode += "ProtoArray"
+                  }
+
+                  if (field.typeName.isStringEncoded || field.typeName.needsStringEncodedValues()) {
+                    decode += "StringEncoded"
                   }
 
                   if (fallback != null) {
@@ -720,7 +716,7 @@ class SwiftGenerator private constructor(
                   }
 
                   addStatement(
-                    "self.%1N = try container.$decode($decodePrefix%2T.self, $forKeys: $keys)$suffix",
+                    "self.%1N = try container.$decode(%2T.self, $forKeys: $keys)$suffix",
                     field.name,
                     typeName
                   )
