@@ -236,10 +236,10 @@ extension Person : Codable {
             try container.encode(self.email, forKey: "email")
         }
         if includeDefaults || !self.phone.isEmpty {
-            try container.encode(self.phone, forKey: "phone")
+            try container.encodeProtoArray(self.phone, forKey: "phone")
         }
         if includeDefaults || !self.aliases.isEmpty {
-            try container.encode(self.aliases, forKey: "aliases")
+            try container.encodeProtoArray(self.aliases, forKey: "aliases")
         }
     }
 }

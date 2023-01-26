@@ -15,7 +15,7 @@
  */
 
 import Foundation
-import Wire
+@testable import Wire
 
 /// Allow creation of an instance with an empty `init()`
 public protocol EmptyInitializable {
@@ -62,7 +62,6 @@ extension DefaultEmpty : Sendable where T : Sendable {
 }
 #endif
 
-
 public extension KeyedDecodingContainer {
     func decode<T: EmptyInitializable & Decodable>(
         _: DefaultEmpty<T>.Type,
@@ -82,9 +81,6 @@ extension Array : EmptyInitializable {
 }
 
 extension Dictionary : EmptyInitializable {
-}
-
-extension Set : EmptyInitializable {
 }
 
 extension Data : EmptyInitializable {
@@ -109,14 +105,25 @@ extension ProtoMapStringEncodedValues : EmptyInitializable {
     }
 }
 
+extension Int64 : EmptyInitializable {
+    public init() {
+        self = .zero
+    }
+}
 
-extension StringEncoded : EmptyInitializable where Value: EmptyInitializable {
+extension UInt64 : EmptyInitializable {
+    public init() {
+        self = .zero
+    }
+}
+
+extension StringEncoded : EmptyInitializable where Value : EmptyInitializable {
     public init() {
         self.init(wrappedValue: Value())
     }
 }
-extension StringEncodedValues : EmptyInitializable where ValuesHolder : EmptyInitializable {
+extension StringEncodedValues : EmptyInitializable {
     public init() {
-        self.init(wrappedValue: .init())
+        self.init(wrappedValue: [])
     }
 }

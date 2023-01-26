@@ -33,52 +33,22 @@ extension StringEncodedTests {
         var c: [Int64]
         @StringEncodedValues
         var d: [UInt64]
-        @StringEncoded
-        var e: Int64?
-        @StringEncoded
-        var f: Int64?
-        @StringEncoded
-        var g: UInt64?
-        @StringEncoded
-        var h: UInt64?
-        @DefaultEmpty
-        @StringEncodedValues
-        var i: [Int64]
-        @DefaultEmpty
-        @StringEncodedValues
-        var j: Set<UInt64>
-        @StringEncodedValues
-        var k: Set<Int64>
-        @StringEncodedValues
-        var l: [Int64?]
     }
 
     func testSupportedTypes() throws {
         let expectedStruct = SupportedTypes(
             a: -12,
             b: 13,
-            c: [-14],
-            d: [15],
-            e: -16,
-            f: nil,
-            g: 17,
-            h: nil,
-            i: [],
-            j: [],
-            k: [1],
-            l: [1, nil, 2]
+            c: [-14, -2],
+            d: [15, 2]
         )
 
         let inputJson = """
         {\
         "a":"-12",\
         "b":"13",\
-        "c":["-14"],\
-        "d":["15"],\
-        "e":"-16",\
-        "g":"17",\
-        "k":["1"],\
-        "l":["1",null,"2"]\
+        "c":["-14","-2"],\
+        "d":["15","2"]\
         }
         """
 
@@ -86,16 +56,8 @@ extension StringEncodedTests {
         {\
         "a":"-12",\
         "b":"13",\
-        "c":["-14"],\
-        "d":["15"],\
-        "e":"-16",\
-        "f":null,\
-        "g":"17",\
-        "h":null,\
-        "i":[],\
-        "j":[],\
-        "k":["1"],\
-        "l":["1",null,"2"]\
+        "c":["-14","-2"],\
+        "d":["15","2"]\
         }
         """
 
@@ -184,8 +146,9 @@ extension StringEncodedTests {
 
 extension StringEncodedTests {
     struct SimpleStruct : Codable, Equatable {
+        @DefaultEmpty
         @StringEncoded
-        var number: Int64?
+        var number: Int64
         @DefaultEmpty
         @StringEncodedValues
         var array: [Int64]
@@ -193,7 +156,7 @@ extension StringEncodedTests {
 
     func testEmptyInflates() throws {
         let json = "{}"
-        let expectedStruct = SimpleStruct(number: nil, array: [])
+        let expectedStruct = SimpleStruct(number: 0, array: [])
 
         let jsonData = json.data(using: .utf8)!
 
@@ -205,7 +168,7 @@ extension StringEncodedTests {
         let json = """
         {"number":null}
         """
-        let expectedStruct = SimpleStruct(number: nil, array: [])
+        let expectedStruct = SimpleStruct(number: 0, array: [])
 
         let jsonData = json.data(using: .utf8)!
 
@@ -263,8 +226,8 @@ extension StringEncodedTests {
             try JSONDecoder().decode(SimpleStruct.self, from: jsonData)
         ) { error in
             switch error {
-            case ProtoDecoder.Error.unparsableString(_, let value):
-                XCTAssertNil(value)
+            case DecodingError.valueNotFound(let value, _):
+                XCTAssert(value == Int64.self)
 
             default:
                 XCTFail("Invalid error: \(error)")

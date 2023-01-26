@@ -197,7 +197,7 @@ extension FooBar.More : Codable {
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || !self.serial.isEmpty {
-            try container.encode(self.serial, forKey: "serial")
+            try container.encodeProtoArray(self.serial, forKey: "serial")
         }
     }
 }
@@ -318,22 +318,22 @@ extension FooBar : Codable {
             try container.encode(self.baz, forKey: "baz")
         }
         if includeDefaults || self.qux != nil {
-            try container.encode(StringEncoded(wrappedValue: self.qux), forKey: "qux")
+            try container.encode(stringEncoded: self.qux, forKey: "qux")
         }
         if includeDefaults || !self.fred.isEmpty {
-            try container.encode(self.fred, forKey: "fred")
+            try container.encodeProtoArray(self.fred, forKey: "fred")
         }
         if includeDefaults || self.daisy != nil {
             try container.encode(self.daisy, forKey: "daisy")
         }
         if includeDefaults || !self.nested.isEmpty {
-            try container.encode(self.nested, forKey: "nested")
+            try container.encodeProtoArray(self.nested, forKey: "nested")
         }
         if includeDefaults || self.ext != nil {
             try container.encode(self.ext, forKey: "ext")
         }
         if includeDefaults || !self.rep.isEmpty {
-            try container.encode(self.rep, forKey: "rep")
+            try container.encodeProtoArray(self.rep, forKey: "rep")
         }
         if includeDefaults || self.more_string != nil {
             try container.encode(self.more_string, forKey: preferCamelCase ? "moreString" : "more_string")
