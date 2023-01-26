@@ -91,26 +91,11 @@ extension KeyedDecodingContainer {
         try decode(StringEncodedValues<Array<T>>.self, forKey: key).wrappedValue
     }
 
-    public func decodeStringEncodedValuesIfPresent<T : StringCodable & Codable>(
-        _ type: T.Type,
-        forKey key: Key
-    ) throws -> [T] {
-        try decodeIfPresent(StringEncodedValues<Array<T>>.self, forKey: key)?.wrappedValue ?? []
-    }
-
     public func decodeFirstStringEncodedValues<T : StringCodable & Codable>(
         _ type: T.Type,
         forKeys firstKey: Key,
         _ secondKey: Key
     ) throws -> [T] {
         try decodeFirst(StringEncodedValues<Array<T>>.self, forKeys: firstKey, secondKey).wrappedValue
-    }
-
-    public func decodeFirstStringEncodedValuesIfPresent<T : StringCodable & Codable>(
-        _ type: T.Type,
-        forKeys firstKey: Key,
-        _ secondKey: Key
-    ) throws -> [T] {
-        try decodeFirstIfPresent(StringEncodedValues<Array<T>>.self, forKeys: firstKey, secondKey)?.wrappedValue ?? []
     }
 }

@@ -712,7 +712,7 @@ class SwiftGenerator private constructor(
                     decode += "StringEncodedValues"
                   }
 
-                  if (fallback != null) {
+                  if (fallback != null && !field.typeName.needsStringEncodedValues()) {
                     decode += "IfPresent"
                     suffix += fallback
                   }
