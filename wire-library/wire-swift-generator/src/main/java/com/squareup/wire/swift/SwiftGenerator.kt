@@ -675,13 +675,27 @@ class SwiftGenerator private constructor(
                     }
                   }
 
-                  val fallback: String? = if (field.isMap) {
-                    " ?? [:]"
-                  } else if (field.typeName.optional) {
-                    ""
-                  } else {
-                    null
+                  var decode = "decode"
+                  if (field.isRepeated) {
+                    decode += "ProtoArray"
+                  } else if (field.isMap || field.typeName.optional) {
+                    decode += "IfPresent"
                   }
+
+                  val typeArg = if (field.typeName.isStringEncoded || field.typeName.needsStringEncodedValues()) {
+                    "stringEncoded: "
+                  } else {
+                    ""
+                  }
+
+                  val forKeys = field.codableName?.let {
+                    "firstOfKeys"
+                  } ?: "forKey"
+
+                  val keys = listOf(field.codableName, field.name)
+                    .filterNotNull()
+                    .map { CodeBlock.of("%S", it) }
+                    .joinToCode()
 
                   var suffix = if (typeName != field.typeName.makeNonOptional() && !field.isRepeated) {
                     if (field.isMap || field.typeName.optional) {
@@ -693,30 +707,12 @@ class SwiftGenerator private constructor(
                     ""
                   }
 
-                  val keys = listOf(field.codableName, field.name)
-                    .filterNotNull()
-                    .map { CodeBlock.of("%S", it) }
-                    .joinToCode()
-
-                  var (decode, forKeys) = field.codableName?.let {
-                    Pair("decodeFirst", "forKeys")
-                  } ?: Pair("decode", "forKey")
-
-                  if (field.isRepeated) {
-                    decode += "ProtoArray"
-                  }
-
-                  if (field.typeName.isStringEncoded || field.typeName.needsStringEncodedValues()) {
-                    decode += "StringEncoded"
-                  }
-
-                  if (fallback != null) {
-                    decode += "IfPresent"
-                    suffix += fallback
+                  if (field.isMap) {
+                    suffix += " ?? [:]"
                   }
 
                   addStatement(
-                    "self.%1N = try container.$decode(%2T.self, $forKeys: $keys)$suffix",
+                    "self.%1N = try container.$decode($typeArg%2T.self, $forKeys: $keys)$suffix",
                     field.name,
                     typeName
                   )

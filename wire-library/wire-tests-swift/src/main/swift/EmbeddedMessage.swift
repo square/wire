@@ -67,8 +67,8 @@ extension EmbeddedMessage : Proto2Codable {
 extension EmbeddedMessage : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.inner_repeated_number = try container.decodeFirstProtoArray(Int32.self, forKeys: "innerRepeatedNumber", "inner_repeated_number")
-        self.inner_number_after = try container.decodeFirstIfPresent(Int32.self, forKeys: "innerNumberAfter", "inner_number_after")
+        self.inner_repeated_number = try container.decodeProtoArray(Int32.self, firstOfKeys: "innerRepeatedNumber", "inner_repeated_number")
+        self.inner_number_after = try container.decodeIfPresent(Int32.self, firstOfKeys: "innerNumberAfter", "inner_number_after")
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -294,13 +294,13 @@ extension FooBar : Codable {
         self.foo = try container.decodeIfPresent(Int32.self, forKey: "foo")
         self.bar = try container.decodeIfPresent(String.self, forKey: "bar")
         self.baz = try container.decodeIfPresent(FooBar.Nested.self, forKey: "baz")
-        self.qux = try container.decodeStringEncodedIfPresent(UInt64.self, forKey: "qux")
+        self.qux = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "qux")
         self.fred = try container.decodeProtoArray(Float.self, forKey: "fred")
         self.daisy = try container.decodeIfPresent(Double.self, forKey: "daisy")
         self.nested = try container.decodeProtoArray(FooBar.self, forKey: "nested")
         self.ext = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "ext")
         self.rep = try container.decodeProtoArray(FooBar.FooBarBazEnum.self, forKey: "rep")
-        self.more_string = try container.decodeFirstIfPresent(String.self, forKeys: "moreString", "more_string")
+        self.more_string = try container.decodeIfPresent(String.self, firstOfKeys: "moreString", "more_string")
     }
 
     public func encode(to encoder: Encoder) throws {
