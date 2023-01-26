@@ -664,7 +664,7 @@ class SwiftGenerator private constructor(
                     decode += "IfPresent"
                   }
 
-                  val typeArg = if (field.typeName.isStringEncoded || field.typeName.needsStringEncodedValues()) {
+                  val typeArg = if (field.typeName.isStringEncoded) {
                     "stringEncoded: "
                   } else {
                     ""
@@ -749,7 +749,7 @@ class SwiftGenerator private constructor(
                       encode += "ProtoMap"
                     }
 
-                    val typeArg = if (field.typeName.isStringEncoded || field.typeName.needsStringEncodedValues()) {
+                    val typeArg = if (field.typeName.isStringEncoded) {
                       "stringEncoded: "
                     } else {
                       ""
@@ -1078,17 +1078,6 @@ class SwiftGenerator private constructor(
       ProtoType.FIXED32, ProtoType.FIXED64 -> "fixed"
       else -> null
     }
-
-  private fun TypeName.needsStringEncodedValues(): Boolean {
-    val self = makeNonOptional()
-    if (self is ParameterizedTypeName) {
-      return when (self.rawType) {
-        ARRAY -> self.typeArguments[0].isStringEncoded
-        else -> false
-      }
-    }
-    return false
-  }
 
   private fun generateEnum(
     type: EnumType,

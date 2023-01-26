@@ -41,38 +41,26 @@ extension ProtoMap : Encodable where Value : Encodable {
 
 extension ProtoMap : Decodable where Value : Decodable {
     init(from decoder: Decoder) throws {
-        wrappedValue = [:]
-
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+
+        var results: [Key: Value] = [:]
+        results.reserveCapacity(container.allKeys.count)
+
         for codingKey in container.allKeys {
             guard let key = Key(codingKey.stringValue) else {
                 throw ProtoDecoder.Error.unparsableString(type: Key.self, value: codingKey.stringValue)
             }
 
             if let valueType = Value.self as? StringDecodable.Type {
-                wrappedValue[key] = try decodeStringEncoded(valueType, from: container, forKey: codingKey)
+                results[key] = try container.decode(stringEncoded: valueType, forKey: codingKey) as? Value
             } else if let valueType = Value.self as? ProtoEnum.Type {
-                wrappedValue[key] = try decodeEnum(valueType, from: container, forKey: codingKey)
+                results[key] = try container.decode(safeEnum: valueType, forKey: codingKey) as? Value
             } else {
-                wrappedValue[key] = try container.decode(Value.self, forKey: codingKey)
+                results[key] = try container.decode(Value.self, forKey: codingKey)
             }
         }
-    }
 
-    private func decodeStringEncoded<V: StringDecodable, Key: CodingKey>(
-        _ valueType: V.Type,
-        from container: KeyedDecodingContainer<Key>,
-        forKey codingKey: Key
-    ) throws -> Value? {
-        return try container.decode(stringEncoded: valueType, forKey: codingKey) as? Value
-    }
-
-    private func decodeEnum<V: ProtoEnum, Key: CodingKey>(
-        _ valueType: V.Type,
-        from container: KeyedDecodingContainer<Key>,
-        forKey codingKey: Key
-    ) throws -> Value? {
-        return try container.decode(BoxedEnum<V>.self, forKey: codingKey).value as? Value
+        self.init(wrappedValue: results)
     }
 }
 
