@@ -70,8 +70,6 @@ class SwiftGenerator private constructor(
   private val protoMapStringEncodedValues = DeclaredTypeName.typeName("Wire.ProtoMapStringEncodedValues")
   private val redactable = DeclaredTypeName.typeName("Wire.Redactable")
   private val redactedKey = DeclaredTypeName.typeName("Wire.RedactedKey")
-  private val stringEncoded = DeclaredTypeName.typeName("Wire.StringEncoded")
-  private val stringEncodedValues = DeclaredTypeName.typeName("Wire.StringEncodedValues")
 
   private val stringLiteralCodingKeys = DeclaredTypeName.typeName("Wire.StringLiteralCodingKeys")
 
@@ -774,23 +772,26 @@ class SwiftGenerator private constructor(
 
                 type.fields.forEach { field ->
                   fun addEncode() {
-                    val wrapper = if (field.typeName.isStringEncoded) {
-                      stringEncoded
-                    } else if (field.typeName.needsStringEncodedValues()) {
-                      stringEncodedValues
-                    } else if (field.isMap) {
-                      if (field.valueType.isEnum) {
+                    var encode = "encode"
+                    if (field.isRepeated) {
+                      encode += "ProtoArray"
+                    }
+
+                    val typeArg = if (field.typeName.isStringEncoded || field.typeName.needsStringEncodedValues()) {
+                      "stringEncoded: "
+                    } else {
+                      ""
+                    }
+
+                    if (field.isMap) {
+                      val wrapper = if (field.valueType.isEnum) {
                         protoMapEnumValues
                       } else if (field.valueType.typeName.isStringEncoded) {
                         protoMapStringEncodedValues
                       } else {
                         protoMap
                       }
-                    } else {
-                      null
-                    }
 
-                    if (wrapper != null) {
                       val (keys, args) = field.codableName?.let { codableName ->
                         Pair(
                           "preferCamelCase ? %3S : %1S",
@@ -811,7 +812,7 @@ class SwiftGenerator private constructor(
                       } ?: Pair("%1S", arrayOf(field.name))
 
                       addStatement(
-                        "try container.encode(self.%1N, forKey: $keys)",
+                        "try container.$encode(${typeArg}self.%1N, forKey: $keys)",
                         *args
                       )
                     }

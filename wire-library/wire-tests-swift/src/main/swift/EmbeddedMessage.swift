@@ -77,7 +77,7 @@ extension EmbeddedMessage : Codable {
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || !self.inner_repeated_number.isEmpty {
-            try container.encode(self.inner_repeated_number, forKey: preferCamelCase ? "innerRepeatedNumber" : "inner_repeated_number")
+            try container.encodeProtoArray(self.inner_repeated_number, forKey: preferCamelCase ? "innerRepeatedNumber" : "inner_repeated_number")
         }
         if includeDefaults || self.inner_number_after != nil {
             try container.encode(self.inner_number_after, forKey: preferCamelCase ? "innerNumberAfter" : "inner_number_after")

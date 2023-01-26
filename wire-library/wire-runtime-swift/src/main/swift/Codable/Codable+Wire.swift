@@ -79,6 +79,28 @@ extension KeyedDecodingContainer {
     }
 }
 
+// MARK: - encode(stringEncoded:,forKey:)
+
+extension KeyedEncodingContainer {
+    public mutating func encode<T : StringEncodable & Encodable>(
+        stringEncoded value: T,
+        forKey key: KeyedEncodingContainer<K>.Key
+    ) throws {
+        try encode(StringEncoded(wrappedValue: value), forKey: key)
+    }
+
+    public mutating func encode<T : StringEncodable & Encodable>(
+        stringEncoded value: T?,
+        forKey key: KeyedEncodingContainer<K>.Key
+    ) throws {
+        guard let value = value else {
+            try encodeNil(forKey: key)
+            return
+        }
+        try encode(stringEncoded: value, forKey: key)
+    }
+}
+
 // MARK: - decodeProtoArray()
 
 extension KeyedDecodingContainer {
@@ -101,7 +123,7 @@ extension KeyedDecodingContainer {
         stringEncoded type: T.Type,
         forKey key: Key
     ) throws -> [T] {
-        try decodeIfPresent(StringEncodedValues<Array<T>>.self, forKey: key)?.wrappedValue ?? []
+        try decodeIfPresent(StringEncodedValues<T>.self, forKey: key)?.wrappedValue ?? []
     }
 
     public func decodeProtoArray<T : StringDecodable & Decodable>(
@@ -109,6 +131,24 @@ extension KeyedDecodingContainer {
         firstOfKeys firstKey: Key,
         _ secondKey: Key
     ) throws -> [T] {
-        try decodeIfPresent(StringEncodedValues<Array<T>>.self, firstOfKeys: firstKey, secondKey)?.wrappedValue ?? []
+        try decodeIfPresent(StringEncodedValues<T>.self, firstOfKeys: firstKey, secondKey)?.wrappedValue ?? []
+    }
+}
+
+// MARK: - encodeProtoArray()
+
+extension KeyedEncodingContainer {
+    public mutating func encodeProtoArray<T : Encodable>(
+        _ value: [T],
+        forKey key: KeyedEncodingContainer<K>.Key
+    ) throws {
+        try encode(value, forKey: key)
+    }
+
+    public mutating func encodeProtoArray<T : StringEncodable & Encodable>(
+        stringEncoded value: [T],
+        forKey key: KeyedEncodingContainer<K>.Key
+    ) throws {
+        try encode(StringEncodedValues(wrappedValue: value), forKey: key)
     }
 }

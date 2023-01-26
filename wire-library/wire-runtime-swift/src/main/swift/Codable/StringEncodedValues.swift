@@ -16,27 +16,18 @@
 
 import Foundation
 
-public protocol SequenceInitializableCollection: Collection {
-    init<S: Sequence>(_ contentsOf: S) where S.Element == Element
-}
-
-extension Array : SequenceInitializableCollection {}
-extension Set : SequenceInitializableCollection {}
-
 /// Converts an array of values to/from their string equivalent when serializing with Codable.
 @propertyWrapper
-public struct StringEncodedValues<ValuesHolder : SequenceInitializableCollection> {
-    public typealias Value = ValuesHolder.Element
+struct StringEncodedValues<Value> {
+    var wrappedValue: [Value]
 
-    public var wrappedValue: ValuesHolder
-
-    public init(wrappedValue: ValuesHolder) {
+    init(wrappedValue: [Value]) {
         self.wrappedValue = wrappedValue
     }
 }
 
-extension StringEncodedValues : Decodable where ValuesHolder.Element : StringDecodable & Decodable {
-    public init(from decoder: Decoder) throws {
+extension StringEncodedValues : Decodable where Value : StringDecodable & Decodable {
+    init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
 
         var results: [Value] = []
@@ -49,12 +40,12 @@ extension StringEncodedValues : Decodable where ValuesHolder.Element : StringDec
             results.append(value)
         }
 
-        self.init(wrappedValue: ValuesHolder(results))
+        self.init(wrappedValue: results)
     }
 }
 
-extension StringEncodedValues : Encodable where ValuesHolder.Element : StringEncodable & Encodable {
-    public func encode(to encoder: Encoder) throws {
+extension StringEncodedValues : Encodable where Value : StringEncodable & Encodable {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
 
         for value in wrappedValue {
@@ -64,13 +55,13 @@ extension StringEncodedValues : Encodable where ValuesHolder.Element : StringEnc
     }
 }
 
-extension StringEncodedValues : Equatable where ValuesHolder : Equatable {
+extension StringEncodedValues : Equatable where Value : Equatable {
 }
 
-extension StringEncodedValues : Hashable where ValuesHolder : Hashable {
+extension StringEncodedValues : Hashable where Value : Hashable {
 }
 
 #if swift(>=5.5)
-extension StringEncodedValues : Sendable where ValuesHolder : Sendable {
+extension StringEncodedValues : Sendable where Value : Sendable {
 }
 #endif

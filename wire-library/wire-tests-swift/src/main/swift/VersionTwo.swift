@@ -140,10 +140,10 @@ extension VersionTwo : Codable {
             try container.encode(self.v2_f32, forKey: preferCamelCase ? "v2F32" : "v2_f32")
         }
         if includeDefaults || self.v2_f64 != nil {
-            try container.encode(StringEncoded(wrappedValue: self.v2_f64), forKey: preferCamelCase ? "v2F64" : "v2_f64")
+            try container.encode(stringEncoded: self.v2_f64, forKey: preferCamelCase ? "v2F64" : "v2_f64")
         }
         if includeDefaults || !self.v2_rs.isEmpty {
-            try container.encode(self.v2_rs, forKey: preferCamelCase ? "v2Rs" : "v2_rs")
+            try container.encodeProtoArray(self.v2_rs, forKey: preferCamelCase ? "v2Rs" : "v2_rs")
         }
         if includeDefaults || self.obj != nil {
             try container.encode(self.obj, forKey: "obj")
