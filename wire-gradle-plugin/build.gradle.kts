@@ -41,18 +41,18 @@ gradlePlugin {
   }
 }
 
-configure<PluginBundleExtension> {
-  website = "https://github.com/square/wire"
-  vcsUrl = "https://github.com/square/wire"
-  description = "generate code from .proto files"
-
-  (plugins) {
-    "wire" {
-      displayName = "Wire"
-      tags = listOf("wire", "protobuf")
-    }
-  }
-}
+// configure<PluginBundleExtension> {
+//   website = "https://github.com/square/wire"
+//   vcsUrl = "https://github.com/square/wire"
+//   description = "generate code from .proto files"
+//
+//   (plugins) {
+//     "wire" {
+//       displayName = "Wire"
+//       tags = listOf("wire", "protobuf")
+//     }
+//   }
+// }
 
 dependencies {
   implementation(projects.wireCompiler)
