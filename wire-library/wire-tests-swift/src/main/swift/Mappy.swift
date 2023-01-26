@@ -61,7 +61,7 @@ extension Mappy : Proto2Codable {
 extension Mappy : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.things = try container.decodeIfPresent(ProtoMap<String, Thing>.self, forKey: "things")?.wrappedValue ?? [:]
+        self.things = try container.decodeProtoMap([String : Thing].self, forKey: "things")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -69,7 +69,7 @@ extension Mappy : Codable {
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || !self.things.isEmpty {
-            try container.encode(ProtoMap(wrappedValue: self.things), forKey: "things")
+            try container.encodeProtoMap(self.things, forKey: "things")
         }
     }
 }

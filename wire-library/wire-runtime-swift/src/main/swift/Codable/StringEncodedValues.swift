@@ -26,7 +26,7 @@ struct StringEncodedValues<Value> {
     }
 }
 
-extension StringEncodedValues : Decodable where Value : StringDecodable & Decodable {
+extension StringEncodedValues : Decodable where Value : StringDecodable {
     init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
 
@@ -44,7 +44,7 @@ extension StringEncodedValues : Decodable where Value : StringDecodable & Decoda
     }
 }
 
-extension StringEncodedValues : Encodable where Value : StringEncodable & Encodable {
+extension StringEncodedValues : Encodable where Value : StringEncodable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
 

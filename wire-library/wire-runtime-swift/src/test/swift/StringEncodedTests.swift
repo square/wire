@@ -262,11 +262,11 @@ extension StringEncodedTests {
         var keys: [Int64: String]
 
         @DefaultEmpty
-        @ProtoMapStringEncodedValues
+        @ProtoMap
         var values: [String: Int64]
 
         @DefaultEmpty
-        @ProtoMapStringEncodedValues
+        @ProtoMap
         var both: [Int64: Int64]
     }
 

@@ -2598,10 +2598,10 @@ extension _AllTypes : Codable {
         self.default_string = try container.decodeIfPresent(String.self, firstOfKeys: "defaultString", "default_string")
         self.default_bytes = try container.decodeIfPresent(stringEncoded: Data.self, firstOfKeys: "defaultBytes", "default_bytes")
         self.default_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, firstOfKeys: "defaultNestedEnum", "default_nested_enum")
-        self.map_int32_int32 = try container.decodeIfPresent(ProtoMap<Int32, Int32>.self, firstOfKeys: "mapInt32Int32", "map_int32_int32")?.wrappedValue ?? [:]
-        self.map_string_string = try container.decodeIfPresent(ProtoMap<String, String>.self, firstOfKeys: "mapStringString", "map_string_string")?.wrappedValue ?? [:]
-        self.map_string_message = try container.decodeIfPresent(ProtoMap<String, AllTypes.NestedMessage>.self, firstOfKeys: "mapStringMessage", "map_string_message")?.wrappedValue ?? [:]
-        self.map_string_enum = try container.decodeIfPresent(ProtoMapEnumValues<String, AllTypes.NestedEnum>.self, firstOfKeys: "mapStringEnum", "map_string_enum")?.wrappedValue ?? [:]
+        self.map_int32_int32 = try container.decodeProtoMap([Int32 : Int32].self, firstOfKeys: "mapInt32Int32", "map_int32_int32")
+        self.map_string_string = try container.decodeProtoMap([String : String].self, firstOfKeys: "mapStringString", "map_string_string")
+        self.map_string_message = try container.decodeProtoMap([String : AllTypes.NestedMessage].self, firstOfKeys: "mapStringMessage", "map_string_message")
+        self.map_string_enum = try container.decodeProtoMap([String : AllTypes.NestedEnum].self, firstOfKeys: "mapStringEnum", "map_string_enum")
         self.ext_opt_int32 = try container.decodeIfPresent(Int32.self, firstOfKeys: "extOptInt32", "ext_opt_int32")
         self.ext_opt_uint32 = try container.decodeIfPresent(UInt32.self, firstOfKeys: "extOptUint32", "ext_opt_uint32")
         self.ext_opt_sint32 = try container.decodeIfPresent(Int32.self, firstOfKeys: "extOptSint32", "ext_opt_sint32")
@@ -2867,16 +2867,16 @@ extension _AllTypes : Codable {
             try container.encode(self.default_nested_enum, forKey: preferCamelCase ? "defaultNestedEnum" : "default_nested_enum")
         }
         if includeDefaults || !self.map_int32_int32.isEmpty {
-            try container.encode(ProtoMap(wrappedValue: self.map_int32_int32), forKey: preferCamelCase ? "mapInt32Int32" : "map_int32_int32")
+            try container.encodeProtoMap(self.map_int32_int32, forKey: preferCamelCase ? "mapInt32Int32" : "map_int32_int32")
         }
         if includeDefaults || !self.map_string_string.isEmpty {
-            try container.encode(ProtoMap(wrappedValue: self.map_string_string), forKey: preferCamelCase ? "mapStringString" : "map_string_string")
+            try container.encodeProtoMap(self.map_string_string, forKey: preferCamelCase ? "mapStringString" : "map_string_string")
         }
         if includeDefaults || !self.map_string_message.isEmpty {
-            try container.encode(ProtoMap(wrappedValue: self.map_string_message), forKey: preferCamelCase ? "mapStringMessage" : "map_string_message")
+            try container.encodeProtoMap(self.map_string_message, forKey: preferCamelCase ? "mapStringMessage" : "map_string_message")
         }
         if includeDefaults || !self.map_string_enum.isEmpty {
-            try container.encode(ProtoMapEnumValues(wrappedValue: self.map_string_enum), forKey: preferCamelCase ? "mapStringEnum" : "map_string_enum")
+            try container.encodeProtoMap(self.map_string_enum, forKey: preferCamelCase ? "mapStringEnum" : "map_string_enum")
         }
         if includeDefaults || self.ext_opt_int32 != nil {
             try container.encode(self.ext_opt_int32, forKey: preferCamelCase ? "extOptInt32" : "ext_opt_int32")

@@ -19,17 +19,19 @@ import Foundation
 /// Common protocol that all Wire generated enums conform to
 /// - Note: All ProtoEnums will convert to/from their field and string equivalent when serializing via Codable.
 /// This matches the Proto3 JSON spec: https://developers.google.com/protocol-buffers/docs/proto3#json
-public protocol ProtoEnum : LosslessStringConvertible, CaseIterable, RawRepresentable, Codable where RawValue == UInt32 {
+public protocol ProtoEnum : LosslessStringConvertible, Codable {
 }
 
-extension ProtoEnum {
+extension ProtoEnum where Self : CaseIterable {
     public init?(_ description: String) {
         guard let result = Self.allCases.first(where: { $0.description == description }) else {
             return nil
         }
         self = result
     }
+}
 
+extension ProtoEnum where Self : RawRepresentable<UInt32> {
     public init(from decoder: Decoder) throws {
         // We support decoding from either the string value or the field number.
         let container = try decoder.singleValueContainer()

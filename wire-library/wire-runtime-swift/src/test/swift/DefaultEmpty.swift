@@ -92,19 +92,6 @@ extension ProtoMap : EmptyInitializable {
     }
 }
 
-extension ProtoMapEnumValues : EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: [:])
-    }
-}
-
-
-extension ProtoMapStringEncodedValues : EmptyInitializable {
-    public init() {
-        self.init(wrappedValue: [:])
-    }
-}
-
 extension Int64 : EmptyInitializable {
     public init() {
         self = .zero

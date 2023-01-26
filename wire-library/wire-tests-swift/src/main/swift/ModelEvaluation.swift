@@ -94,7 +94,7 @@ extension ModelEvaluation : Codable {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.name = try container.decodeIfPresent(String.self, forKey: "name")
         self.score = try container.decodeIfPresent(Double.self, forKey: "score")
-        self.models = try container.decodeIfPresent(ProtoMap<String, ModelEvaluation>.self, forKey: "models")?.wrappedValue ?? [:]
+        self.models = try container.decodeProtoMap([String : ModelEvaluation].self, forKey: "models")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -108,7 +108,7 @@ extension ModelEvaluation : Codable {
             try container.encode(self.score, forKey: "score")
         }
         if includeDefaults || !self.models.isEmpty {
-            try container.encode(ProtoMap(wrappedValue: self.models), forKey: "models")
+            try container.encodeProtoMap(self.models, forKey: "models")
         }
     }
 }

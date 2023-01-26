@@ -48,21 +48,21 @@ extension KeyedDecodingContainer {
 // MARK: - decode(stringEncoded:,forKey:)
 
 extension KeyedDecodingContainer {
-    public func decode<T: StringDecodable & Decodable>(
+    public func decode<T: StringDecodable>(
         stringEncoded type: T.Type,
         forKey key: Key
     ) throws -> T {
         try decode(StringEncoded<T>.self, forKey: key).wrappedValue
     }
 
-    public func decodeIfPresent<T: StringDecodable & Decodable>(
+    public func decodeIfPresent<T: StringDecodable>(
         stringEncoded type: T.Type,
         forKey key: Key
     ) throws -> T? {
         try decodeIfPresent(StringEncoded<T>.self, forKey: key)?.wrappedValue
     }
 
-    public func decode<T : StringDecodable & Decodable>(
+    public func decode<T : StringDecodable>(
         stringEncoded type: T.Type,
         firstOfKeys firstKey: Key,
         _ secondKey: Key
@@ -70,7 +70,7 @@ extension KeyedDecodingContainer {
         try decode(StringEncoded<T>.self, firstOfKeys: firstKey, secondKey).wrappedValue
     }
 
-    public func decodeIfPresent<T : StringDecodable & Decodable>(
+    public func decodeIfPresent<T : StringDecodable>(
         stringEncoded type: T.Type,
         firstOfKeys firstKey: Key,
         _ secondKey: Key
@@ -82,14 +82,14 @@ extension KeyedDecodingContainer {
 // MARK: - encode(stringEncoded:,forKey:)
 
 extension KeyedEncodingContainer {
-    public mutating func encode<T : StringEncodable & Encodable>(
+    public mutating func encode<T : StringEncodable>(
         stringEncoded value: T,
         forKey key: KeyedEncodingContainer<K>.Key
     ) throws {
         try encode(StringEncoded(wrappedValue: value), forKey: key)
     }
 
-    public mutating func encode<T : StringEncodable & Encodable>(
+    public mutating func encode<T : StringEncodable>(
         stringEncoded value: T?,
         forKey key: KeyedEncodingContainer<K>.Key
     ) throws {
@@ -119,14 +119,14 @@ extension KeyedDecodingContainer {
         try decodeIfPresent(Array<T>.self, firstOfKeys: firstKey, secondKey) ?? []
     }
 
-    public func decodeProtoArray<T : StringDecodable & Decodable>(
+    public func decodeProtoArray<T : StringDecodable>(
         stringEncoded type: T.Type,
         forKey key: Key
     ) throws -> [T] {
         try decodeIfPresent(StringEncodedValues<T>.self, forKey: key)?.wrappedValue ?? []
     }
 
-    public func decodeProtoArray<T : StringDecodable & Decodable>(
+    public func decodeProtoArray<T : StringDecodable>(
         stringEncoded type: T.Type,
         firstOfKeys firstKey: Key,
         _ secondKey: Key
@@ -145,10 +145,40 @@ extension KeyedEncodingContainer {
         try encode(value, forKey: key)
     }
 
-    public mutating func encodeProtoArray<T : StringEncodable & Encodable>(
+    public mutating func encodeProtoArray<T : StringEncodable>(
         stringEncoded value: [T],
         forKey key: KeyedEncodingContainer<K>.Key
     ) throws {
         try encode(StringEncodedValues(wrappedValue: value), forKey: key)
+    }
+}
+
+// MARK: - decodeProtoMap()
+
+extension KeyedDecodingContainer {
+    public func decodeProtoMap<MapKey : Hashable & LosslessStringConvertible, MapValue : Decodable>(
+        _ type: [MapKey : MapValue].Type,
+        forKey key: Key
+    ) throws -> [MapKey : MapValue] {
+        try decodeIfPresent(ProtoMap<MapKey, MapValue>.self, forKey: key)?.wrappedValue ?? [:]
+    }
+
+    public func decodeProtoMap<MapKey : Hashable & LosslessStringConvertible, MapValue : Decodable>(
+        _ type: [MapKey : MapValue].Type,
+        firstOfKeys firstKey: Key,
+        _ secondKey: Key
+    ) throws -> [MapKey : MapValue] {
+        try decodeIfPresent(ProtoMap<MapKey, MapValue>.self, firstOfKeys: firstKey, secondKey)?.wrappedValue ?? [:]
+    }
+}
+
+// MARK: - encodeProtoMap()
+
+extension KeyedEncodingContainer {
+    public mutating func encodeProtoMap<MapKey : Hashable & LosslessStringConvertible, MapValue : Encodable>(
+        _ value: [MapKey : MapValue],
+        forKey key: KeyedEncodingContainer<K>.Key
+    ) throws {
+        try encode(ProtoMap(wrappedValue: value), forKey: key)
     }
 }
