@@ -35,7 +35,7 @@ extension KeyedDecodingContainer {
                 firstKey,
                 DecodingError.Context(
                     codingPath: codingPath,
-                    debugDescription: "decodeFirst() could find a valid key"
+                    debugDescription: "decodeFirst() could not find a valid key"
                 )
             )
         }
