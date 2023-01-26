@@ -15,7 +15,7 @@
  */
 
 @propertyWrapper
-@available(*, deprecated, message: "Replace with StringEncoded and StringEncodedValues. Will be removed as soon as April 2023")
+@available(*, deprecated, message: "Replace with decode(stringEncoded:) and decodeProtoMap(). Will be removed as soon as April 2023")
 public struct JSONString<T : Hashable> : Hashable, Codable {
     public var wrappedValue: T
 
