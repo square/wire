@@ -19,7 +19,6 @@ include(":wire-test-utils")
 include(":wire-tests")
 
 if (startParameter.projectProperties.get("swift") != "false") {
-  println("CHIRHO @${startParameter.projectProperties.get("swift")}@")
   include(":wire-runtime-swift")
   include(":wire-tests-swift")
   include(":wire-tests-proto3-swift")
