@@ -96,6 +96,9 @@ class SwiftGenerator private constructor(
   private val Type.typeName
     get() = type.typeName
 
+  private val MessageType.needsCustomCodable: Boolean
+    get() = type.enclosingTypeOrPackage == "google.protobuf" && NEEDS_CUSTOM_CODABLE.contains(type.simpleName)
+
   private val TypeName.isStringEncoded
     get() = when (this.makeNonOptional()) {
       INT64, UINT64 -> true
@@ -396,9 +399,11 @@ class SwiftGenerator private constructor(
         .build()
       fileMembers += FileMemberSpec.builder(protoCodableExtension).build()
 
-      fileMembers += FileMemberSpec.builder(messageCodableExtension(type, structType))
-        .addGuard("!$FLAG_REMOVE_CODABLE")
-        .build()
+      if (!type.needsCustomCodable) {
+        fileMembers += FileMemberSpec.builder(messageCodableExtension(type, structType))
+          .addGuard("!$FLAG_REMOVE_CODABLE")
+          .build()
+      }
     }
 
     if (redactionExtension != null) {
@@ -1266,6 +1271,8 @@ class SwiftGenerator private constructor(
     private const val FLAG_REMOVE_EQUATABLE = "WIRE_REMOVE_EQUATABLE"
     private const val FLAG_REMOVE_HASHABLE = "WIRE_REMOVE_HASHABLE"
     private const val FLAG_REMOVE_REDACTABLE = "WIRE_REMOVE_REDACTABLE"
+
+    private val NEEDS_CUSTOM_CODABLE = setOf("Duration", "Timestamp")
 
     @JvmStatic @JvmName("get")
     operator fun invoke(

@@ -127,20 +127,3 @@ extension Timestamp : Proto3Codable {
         try writer.writeUnknownFields(unknownFields)
     }
 }
-
-#if !WIRE_REMOVE_CODABLE
-extension Timestamp : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.seconds = try container.decode(StringEncoded<Int64>.self, forKey: "seconds").wrappedValue
-        self.nanos = try container.decode(Int32.self, forKey: "nanos")
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
-
-        try container.encode(StringEncoded(wrappedValue: self.seconds), forKey: "seconds")
-        try container.encode(self.nanos, forKey: "nanos")
-    }
-}
-#endif

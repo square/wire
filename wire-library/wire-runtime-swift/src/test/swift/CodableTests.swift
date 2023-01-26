@@ -309,6 +309,117 @@ extension CodableTests {
 }
 
 
+// MARK: - Duration and Timestamp
+
+extension CodableTests {
+    struct DurationAndTimestamp: Equatable, Codable {
+        var duration: Wire.Duration?
+        var timestamp: Wire.Timestamp?
+    }
+
+    func testDurationRoundtrip() throws {
+        let json = """
+        {
+          "duration":"10s",
+          "timestamp":"2023-01-25T00:02:33Z"
+        }
+        """
+
+        let proto = DurationAndTimestamp(
+            duration: Duration(seconds: 10, nanos: 0),
+            timestamp: Timestamp(seconds: 1674604953, nanos: 0)
+        )
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testNegativeSmallDurationRoundtrip() throws {
+        // Durations less than one second are represented with a 0 `seconds` field and a positive or negative `nanos` field
+
+        let json = """
+        {"duration":"-0.900s"}
+        """
+
+        let proto = DurationAndTimestamp(
+            duration: Wire.Duration(seconds: 0, nanos: -900_000_000)
+        )
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testNegativeDurationRoundtrip() throws {
+        // For Durations of one second or more, a non-zero value for the `nanos` field must be of the same sign as the `seconds` field
+
+        let json = """
+        {"duration":"-1.900s"}
+        """
+
+        let proto = DurationAndTimestamp(
+            duration: Wire.Duration(seconds: -1, nanos: -900_000_000)
+        )
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testDurationConversion() {
+        guard #available(macOS 13, iOS 16, watchOS 9, tvOS 16, *) else {
+            return
+        }
+
+        XCTAssertEqual(Wire.Duration(seconds: 0, nanos: -900).toSwiftDuration(), .nanoseconds(-900))
+        XCTAssertEqual(Wire.Duration(seconds: -1, nanos: -900).toSwiftDuration(), .seconds(-1) + .nanoseconds(-900))
+    }
+
+    func testLargeDurationRoundtrip() throws {
+        let json = """
+        {
+          "duration":"18014398509481984s",
+          "timestamp":"4001-01-01T00:00:00Z"
+        }
+        """
+        let proto = DurationAndTimestamp(
+            duration: Duration(seconds: 1 << 54, nanos: 0),
+            timestamp: Timestamp(date: .distantFuture)
+        )
+
+        // Swift's Date has less precision than Timestamp, so ideally we'd support something further in the future than Date.distantFuture
+        // but our current implementation makes use of Date, and so we eventually would start encountering rounding errors.
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testSmallDurationRoundtrip() throws {
+        let json = """
+        {
+          "duration":"0.100s",
+          "timestamp":"0001-01-01T00:00:00Z"
+        }
+        """
+        let proto = DurationAndTimestamp(
+            duration: Duration(seconds: 0, nanos: 100_000_000),
+            timestamp: Timestamp(date: .distantPast)
+        )
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testVerySmallDurationRoundtrip() throws {
+        let json = """
+        {"duration":"1.000000010s"}
+        """
+        let proto = DurationAndTimestamp(
+            duration: Duration(seconds: 1, nanos: 10)
+        )
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+}
+
 // MARK: - Private Methods
 
 extension CodableTests {
