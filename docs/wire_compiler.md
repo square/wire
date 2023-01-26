@@ -535,9 +535,9 @@ wire {
 }
 ```
 
- [SchemaHandler.Factory]: https://github.com/square/wire/blob/fd0a00ff5b6033ed9d8c2d392ff06338467a026f/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L192-L194
- [SchemaHandlerRecipes]: https://github.com/square/wire/blob/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-schema-tests/src/test/java/com/squareup/wire/recipes
- [SchemaHandler]: https://github.com/square/wire/blob/fd0a00ff5b6033ed9d8c2d392ff06338467a026f/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L24
+ [SchemaHandler.Factory]: https://github.com/square/wire/blob/fd0a00ff5b6033ed9d8c2d392ff06338467a026f/wire-library/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L192-L194
+ [SchemaHandlerRecipes]: https://github.com/square/wire/blob/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
+ [SchemaHandler]: https://github.com/square/wire/blob/fd0a00ff5b6033ed9d8c2d392ff06338467a026f/wire-library/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L24
  [gradle]: https://gradle.org/
  [kotlinpoet]: https://github.com/square/kotlinpoet
  [maven_coordinates]: https://maven.apache.org/pom.html#Maven_Coordinates

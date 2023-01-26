@@ -1,3 +1,4 @@
+import com.gradle.publish.PluginBundleExtension
 import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
@@ -40,18 +41,18 @@ gradlePlugin {
   }
 }
 
-  // pluginBundle {
-  //   website = "https://github.com/square/wire"
-  //   vcsUrl = "https://github.com/square/wire"
-  //   description = "generate code from .proto files"
-  //
-  //   (plugins) {
-  //     "wire" {
-  //       displayName = "Wire"
-  //       tags = listOf("wire", "protobuf")
-  //     }
-  //   }
-  // }
+configure<PluginBundleExtension> {
+  website = "https://github.com/square/wire"
+  vcsUrl = "https://github.com/square/wire"
+  description = "generate code from .proto files"
+
+  (plugins) {
+    "wire" {
+      displayName = "Wire"
+      tags = listOf("wire", "protobuf")
+    }
+  }
+}
 
 dependencies {
   implementation(projects.wireCompiler)
