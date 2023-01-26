@@ -364,8 +364,11 @@ extension CodableTests {
         try assertEncode(proto: proto, expected: json)
     }
 
-    @available(macOS 13, iOS 16, watchOS 9, tvOS 16, *)
     func testDurationConversion() {
+        guard #available(macOS 13, iOS 16, watchOS 9, tvOS 16, *) else {
+            return
+        }
+
         XCTAssertEqual(Wire.Duration(seconds: 0, nanos: -900).toSwiftDuration(), .nanoseconds(-900))
         XCTAssertEqual(Wire.Duration(seconds: -1, nanos: -900).toSwiftDuration(), .seconds(-1) + .nanoseconds(-900))
     }
