@@ -51,8 +51,3 @@ message Person {
 
   repeated string aliases = 5;
 }
-
-
-message RequiredPerson {
-  required Person person = 1;
-}
