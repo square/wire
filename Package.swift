@@ -22,22 +22,22 @@ let package = Package(
             path: "wire-runtime-swift/src/main/swift"
         ),
         // The tests depend on valid protos via gradle
-        // ./gradlew -p wire-library :wire-runtime-swift:generateTestProtos
-        // ./gradlew -p wire-library :wire-runtime-swift:generateSampleProtos
+        // ./gradlew :wire-runtime-swift:generateTestProtos
+        // ./gradlew :wire-runtime-swift:generateSampleProtos
         .testTarget(
             name: "WireRuntimeTests",
             dependencies: ["Wire"],
-            path: "wire-library/wire-runtime-swift/src/test/swift"
+            path: "wire-runtime-swift/src/test/swift"
         ),
         .target(
             name: "WireTests",
             dependencies: ["Wire"],
-            path: "wire-library/wire-tests-swift/src/main/swift"
+            path: "wire-tests-swift/src/main/swift"
         ),
         .testTarget(
             name: "WireCompilerTests",
             dependencies: ["WireTests"],
-            path: "wire-library/wire-tests-swift/src/test/swift"
+            path: "wire-tests-swift/src/test/swift"
         ),
     ],
     swiftLanguageVersions: [.v5]

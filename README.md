@@ -532,7 +532,10 @@ Wire Swift
 Since version 3.3.0, Wire can generate Swift code. See 
 [Wire Compiler & Gradle Plugin][compiler_docs] to learn how to configure your build.
 
-Kotlin is a pragmatic and expressive programming language with rich support for value types.
+Swift support is considered a "beta" and may still feature breaking changes.
+That being said, Block is shipping it in production apps and SDKs. 
+
+Swift is a pragmatic and expressive programming language with rich support for value types.
 Here's how we used Swift to model Protocol Buffers messages:
 
  * Messages are structs that conform to `Equatable`, `Codable` and `Sendable`. All Messages have value semantics.

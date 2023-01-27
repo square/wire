@@ -71,7 +71,7 @@ val generateSwiftProtos by tasks.creating(JavaExec::class) {
 
 val generateSampleProtos by tasks.creating(JavaExec::class) {
   val swiftOut = "src/test/swift/sample"
-  val protoPath = "../../samples/simple-sample/src/main/proto"
+  val protoPath = "../samples/simple-sample/src/main/proto"
 
   doFirst {
     val outFile = file(swiftOut)
