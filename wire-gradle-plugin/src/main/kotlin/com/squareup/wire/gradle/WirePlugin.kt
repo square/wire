@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.gradle
 
+import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.Source
@@ -273,8 +274,7 @@ class WirePlugin : Plugin<Project> {
     return if (isInternalBuild) {
       project.dependencies.project(mapOf("path" to ":wire-runtime"))
     } else{
-      // TODO(Benoit) Fix with generated version
-      project.dependencies.create("com.squareup.wire:wire-runtime:4.4.3")
+      project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION")
     }
   }
 

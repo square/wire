@@ -3,17 +3,11 @@ import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
+// This module is included in two projects:
+// - In the root project where it's released as one of our artifacts
+// - In build-logic project where we can use it for the test-schema and samples.
 //
-// // This module is included in two projects:
-// // - In the root project where it's released as one of our artifacts
-// // - In build-logic project where we can use it for the test-schema and samples.
-// //
-// // We only want to publish when it's being built in the root project.
-// if (rootProject.name == 'wire') {
-//   apply plugin: 'com.vanniktech.maven.publish'
-//   apply plugin: 'org.jetbrains.dokka'
-// }
-
+// We only want to publish when it's being built in the root project.
 
 plugins {
   kotlin("jvm")

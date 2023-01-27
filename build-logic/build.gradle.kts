@@ -11,9 +11,7 @@ buildscript {
     classpath(libs.pluginz.spotless)
     classpath(libs.pluginz.kotlinSerialization)
     classpath(libs.pluginz.shadow)
-    // TODO(Benoit) Use to create version file
-    // buildConfig-plugin = "com.github.gmazzo:gradle-buildconfig-plugin:3.1.0"
-    // classpath libs.buildConfig.plugin
+    classpath(libs.pluginz.buildConfig)
   }
 
   repositories {
