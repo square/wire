@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile;
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 
 buildscript {
   dependencies {
@@ -19,6 +21,12 @@ buildscript {
     gradlePluginPortal()
     google()
   }
+}
+
+rootProject.plugins.withType(NodeJsRootPlugin::class) {
+  // 16+ required for Apple Silicon support
+  // https://youtrack.jetbrains.com/issue/KT-49109#focus=Comments-27-5259190.0-0
+  rootProject.extensions.getByType(NodeJsRootExtension::class).nodeVersion = "16.13.1"
 }
 
 allprojects {

@@ -34,3 +34,4 @@ watched-deps
 deps-watch.toml
 
 kotlin-js-store
+build-logic/kotlin-js-store
