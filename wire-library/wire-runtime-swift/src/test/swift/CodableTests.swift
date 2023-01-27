@@ -199,15 +199,6 @@ extension CodableTests {
         let json = """
         {
           "map_int32_string":{},
-          "opt_bytes":null,
-          "opt_double":null,
-          "opt_enum":null,
-          "opt_float":null,
-          "opt_int32":null,
-          "opt_int64":null,
-          "opt_string":null,
-          "opt_uint32":null,
-          "opt_uint64":null,
           "repeated_int32":[],
           "repeated_string":[]
         }

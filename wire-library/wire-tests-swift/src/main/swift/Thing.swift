@@ -68,9 +68,7 @@ extension Thing : Codable {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || self.name != nil {
-            try container.encode(self.name, forKey: "name")
-        }
+        try container.encodeIfPresent(self.name, forKey: "name")
     }
 }
 #endif

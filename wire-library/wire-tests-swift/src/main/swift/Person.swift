@@ -151,9 +151,7 @@ extension Person.PhoneNumber : Codable {
         if includeDefaults || !self.number.isEmpty {
             try container.encode(self.number, forKey: "number")
         }
-        if includeDefaults || self.type != nil {
-            try container.encode(self.type, forKey: "type")
-        }
+        try container.encodeIfPresent(self.type, forKey: "type")
     }
 }
 #endif
@@ -238,9 +236,7 @@ extension Person : Codable {
         if includeDefaults || self.id != 0 {
             try container.encode(self.id, forKey: "id")
         }
-        if includeDefaults || self.email != nil {
-            try container.encode(self.email, forKey: "email")
-        }
+        try container.encodeIfPresent(self.email, forKey: "email")
         if includeDefaults || !self.phone.isEmpty {
             try container.encodeProtoArray(self.phone, forKey: "phone")
         }

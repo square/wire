@@ -76,12 +76,8 @@ extension OuterMessage : Codable {
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || self.outer_number_before != nil {
-            try container.encode(self.outer_number_before, forKey: preferCamelCase ? "outerNumberBefore" : "outer_number_before")
-        }
-        if includeDefaults || self.embedded_message != nil {
-            try container.encode(self.embedded_message, forKey: preferCamelCase ? "embeddedMessage" : "embedded_message")
-        }
+        try container.encodeIfPresent(self.outer_number_before, forKey: preferCamelCase ? "outerNumberBefore" : "outer_number_before")
+        try container.encodeIfPresent(self.embedded_message, forKey: preferCamelCase ? "embeddedMessage" : "embedded_message")
     }
 }
 #endif

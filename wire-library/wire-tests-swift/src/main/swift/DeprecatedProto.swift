@@ -69,9 +69,7 @@ extension DeprecatedProto : Codable {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || self.foo != nil {
-            try container.encode(self.foo, forKey: "foo")
-        }
+        try container.encodeIfPresent(self.foo, forKey: "foo")
     }
 }
 #endif

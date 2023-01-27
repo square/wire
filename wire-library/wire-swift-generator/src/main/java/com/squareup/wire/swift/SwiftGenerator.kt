@@ -757,7 +757,7 @@ class SwiftGenerator private constructor(
                 if (type.fieldsAndOneOfFields.any { it.codableName != null }) {
                   addStatement("let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase")
                 }
-                if (type.fields.any { it.isOptional || it.isCollection || it.isEnum || it.codableDefaultValue != null }) {
+                if (type.fields.any { it.isCollection || it.isEnum || it.codableDefaultValue != null }) {
                   addStatement("let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include")
                 }
                 addStatement("")
@@ -769,6 +769,8 @@ class SwiftGenerator private constructor(
                       encode += "ProtoArray"
                     } else if (field.isMap) {
                       encode += "ProtoMap"
+                    } else if (field.isOptional) {
+                      encode += "IfPresent"
                     }
 
                     val typeArg = if (field.typeName.isStringEncoded) {
@@ -796,9 +798,7 @@ class SwiftGenerator private constructor(
                     // A proto3 field that is defined with the optional keyword supports field presence.
                     // Fields that have a value set and that support field presence always include the field value
                     // in the JSON-encoded output, even if it is the default value.
-                    beginControlFlow("if", "includeDefaults || self.%N != nil", field.name)
                     addEncode()
-                    endControlFlow("if")
                   } else if (field.isCollection) {
                     beginControlFlow("if", "includeDefaults || !self.%N.isEmpty", field.name)
                     addEncode()

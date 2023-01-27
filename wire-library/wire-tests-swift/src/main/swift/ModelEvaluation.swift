@@ -101,12 +101,8 @@ extension ModelEvaluation : Codable {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || self.name != nil {
-            try container.encode(self.name, forKey: "name")
-        }
-        if includeDefaults || self.score != nil {
-            try container.encode(self.score, forKey: "score")
-        }
+        try container.encodeIfPresent(self.name, forKey: "name")
+        try container.encodeIfPresent(self.score, forKey: "score")
         if includeDefaults || !self.models.isEmpty {
             try container.encodeProtoMap(self.models, forKey: "models")
         }
