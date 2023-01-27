@@ -39,15 +39,9 @@ jobs:
           ./gradlew clean generateTests --stacktrace
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
-      - name: Setup Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest-stable
-
       - name: Test
         run: |
-          ./gradlew -Dkjs=false -Dknative=false build --stacktrace -Pswift=false
-          ./gradlew build --stacktrace
+          ./gradlew -Dkjs=false -Dknative=false -Pswift=false build --stacktrace
 
   multiplatform:
     runs-on: macos-latest
@@ -82,8 +76,7 @@ jobs:
 
       - name: Test
         run: |
-          ./gradlew build -Pswift=false --stacktrace
-          ./gradlew build --stacktrace
+          ./gradlew -Pswift=false build --stacktrace
 
   windows:
     runs-on: windows-latest
@@ -116,8 +109,7 @@ jobs:
 
       - name: Test
         run: |
-          ./gradlew build --stacktrace -Pswift=false
-          ./gradlew build --stacktrace
+          ./gradlew -Pswift=false build --stacktrace
         shell: bash
 
   swift:
