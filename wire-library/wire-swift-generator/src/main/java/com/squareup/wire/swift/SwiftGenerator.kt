@@ -90,8 +90,6 @@ class SwiftGenerator private constructor(
     get() = schema.getType(this) is EnumType
   private val Type.typeName
     get() = type.typeName
-  private val Field.isMessage
-    get() = type?.isMessage == true
 
   private val MessageType.needsCustomCodable: Boolean
     get() = type.enclosingTypeOrPackage == "google.protobuf" && NEEDS_CUSTOM_CODABLE.contains(type.simpleName)
@@ -105,12 +103,34 @@ class SwiftGenerator private constructor(
 
   fun generatedTypeName(type: Type) = type.typeName
 
+  internal val Field.isMessage
+    get() = type!!.isMessage
+  internal val Field.isEnum
+    get() = type!!.isEnum
+  internal val Field.isOptional: Boolean
+    get() = typeName.optional
   internal val Field.isMap: Boolean
     get() = type!!.isMap
   internal val Field.keyType: ProtoType
     get() = type!!.keyType!!
   internal val Field.valueType: ProtoType
     get() = type!!.valueType!!
+
+  private val Field.isCollection: Boolean
+    get() = when (typeName.makeNonOptional()) {
+      DATA, STRING -> true
+      else -> isMap || isRepeated
+    }
+
+  private val Field.codableDefaultValue: String?
+    get() = default?.let {
+      return it
+    } ?: when (typeName.makeNonOptional()) {
+      BOOL -> "false"
+      DOUBLE, FLOAT -> "0"
+      INT32, UINT32, INT64, UINT64 -> "0"
+      else -> null
+    }
 
   private val Field.codableName: String?
     get() = jsonName?.takeIf { it != name } ?: camelCase(name).takeIf { it != name }
@@ -125,7 +145,7 @@ class SwiftGenerator private constructor(
         EncodeMode.REQUIRED -> type!!.typeName
         EncodeMode.OMIT_IDENTITY -> {
           when {
-            isOneOf || type!!.isMessage -> OPTIONAL.parameterizedBy(type!!.typeName)
+            isOneOf || isMessage -> OPTIONAL.parameterizedBy(type!!.typeName)
             else -> type!!.typeName
           }
         }
@@ -484,7 +504,7 @@ class SwiftGenerator private constructor(
             oneOf.fields.forEach { field ->
               when {
                 // ProtoReader.decode() return optional for enums. Handle that specially.
-                field.type!!.isEnum -> {
+                field.isEnum -> {
                   addStatement(
                     "case %1L: %2N = (try $reader.decode(%4T.self)).flatMap { .%3N(\$0) }",
                     field.tag,
@@ -513,7 +533,7 @@ class SwiftGenerator private constructor(
           // Check required and bind members.
           addStatement("")
           type.fields.forEach { field ->
-            val initializer = if (field.typeName.optional || field.isRepeated || field.isMap) {
+            val initializer = if (field.isOptional || field.isRepeated || field.isMap) {
               CodeBlock.of("%N", field.name)
             } else {
               CodeBlock.of("try %1T.checkIfMissing(%2N, %2S)", structType, field.name)
@@ -662,7 +682,7 @@ class SwiftGenerator private constructor(
                     decode += "ProtoArray"
                   } else if (field.isMap) {
                     decode += "ProtoMap"
-                  } else if (field.typeName.optional) {
+                  } else if (field.isOptional) {
                     decode += "IfPresent"
                   }
 
@@ -737,7 +757,7 @@ class SwiftGenerator private constructor(
                 if (type.fieldsAndOneOfFields.any { it.codableName != null }) {
                   addStatement("let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase")
                 }
-                if (type.fields.any { it.typeName.optional || it.isRepeated || it.isMap || !it.isMessage }) {
+                if (type.fields.any { it.isOptional || it.isCollection || it.codableDefaultValue != null }) {
                   addStatement("let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include")
                 }
                 addStatement("")
@@ -770,24 +790,30 @@ class SwiftGenerator private constructor(
                     )
                   }
 
-                  if (field.typeName.optional) {
+                  val defaultValue = field.codableDefaultValue
+
+                  if (field.isOptional) {
                     // A proto3 field that is defined with the optional keyword supports field presence.
                     // Fields that have a value set and that support field presence always include the field value
                     // in the JSON-encoded output, even if it is the default value.
                     beginControlFlow("if", "includeDefaults || self.%N != nil", field.name)
                     addEncode()
                     endControlFlow("if")
-                  } else if (field.isRepeated || field.isMap) {
+                  } else if (field.isCollection) {
                     beginControlFlow("if", "includeDefaults || !self.%N.isEmpty", field.name)
                     addEncode()
                     endControlFlow("if")
-                  } else if (field.isMessage) {
-                    // Message is fundamentally broken right now when it comes to evaluating `isDefaultProtoValue`
-                    addEncode()
-                  } else {
-                    beginControlFlow("if", "includeDefaults || !self.%N.isDefaultProtoValue", field.name)
+                  } else if (field.isEnum) {
+                    beginControlFlow("if", "includeDefaults || self.%N.rawValue != 0", field.name)
                     addEncode()
                     endControlFlow("if")
+                  } else if (defaultValue != null) {
+                    beginControlFlow("if", "includeDefaults || self.%N != $defaultValue", field.name)
+                    addEncode()
+                    endControlFlow("if")
+                  } else {
+                    // Message is fundamentally broken right now when it comes to evaluating "isDefault"
+                    addEncode()
                   }
                 }
 
@@ -821,7 +847,7 @@ class SwiftGenerator private constructor(
     when {
       field.isMap -> defaultValue("[:]")
       field.isRepeated -> defaultValue("[]")
-      field.typeName.optional -> defaultValue("nil")
+      field.isOptional -> defaultValue("nil")
     }
   }
 

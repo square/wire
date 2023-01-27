@@ -2708,52 +2708,52 @@ extension _AllTypes : Codable {
         if includeDefaults || self.opt_nested_message != nil {
             try container.encode(self.opt_nested_message, forKey: preferCamelCase ? "optNestedMessage" : "opt_nested_message")
         }
-        if includeDefaults || !self.req_int32.isDefaultProtoValue {
+        if includeDefaults || self.req_int32 != 0 {
             try container.encode(self.req_int32, forKey: preferCamelCase ? "reqInt32" : "req_int32")
         }
-        if includeDefaults || !self.req_uint32.isDefaultProtoValue {
+        if includeDefaults || self.req_uint32 != 0 {
             try container.encode(self.req_uint32, forKey: preferCamelCase ? "reqUint32" : "req_uint32")
         }
-        if includeDefaults || !self.req_sint32.isDefaultProtoValue {
+        if includeDefaults || self.req_sint32 != 0 {
             try container.encode(self.req_sint32, forKey: preferCamelCase ? "reqSint32" : "req_sint32")
         }
-        if includeDefaults || !self.req_fixed32.isDefaultProtoValue {
+        if includeDefaults || self.req_fixed32 != 0 {
             try container.encode(self.req_fixed32, forKey: preferCamelCase ? "reqFixed32" : "req_fixed32")
         }
-        if includeDefaults || !self.req_sfixed32.isDefaultProtoValue {
+        if includeDefaults || self.req_sfixed32 != 0 {
             try container.encode(self.req_sfixed32, forKey: preferCamelCase ? "reqSfixed32" : "req_sfixed32")
         }
-        if includeDefaults || !self.req_int64.isDefaultProtoValue {
+        if includeDefaults || self.req_int64 != 0 {
             try container.encode(stringEncoded: self.req_int64, forKey: preferCamelCase ? "reqInt64" : "req_int64")
         }
-        if includeDefaults || !self.req_uint64.isDefaultProtoValue {
+        if includeDefaults || self.req_uint64 != 0 {
             try container.encode(stringEncoded: self.req_uint64, forKey: preferCamelCase ? "reqUint64" : "req_uint64")
         }
-        if includeDefaults || !self.req_sint64.isDefaultProtoValue {
+        if includeDefaults || self.req_sint64 != 0 {
             try container.encode(stringEncoded: self.req_sint64, forKey: preferCamelCase ? "reqSint64" : "req_sint64")
         }
-        if includeDefaults || !self.req_fixed64.isDefaultProtoValue {
+        if includeDefaults || self.req_fixed64 != 0 {
             try container.encode(stringEncoded: self.req_fixed64, forKey: preferCamelCase ? "reqFixed64" : "req_fixed64")
         }
-        if includeDefaults || !self.req_sfixed64.isDefaultProtoValue {
+        if includeDefaults || self.req_sfixed64 != 0 {
             try container.encode(stringEncoded: self.req_sfixed64, forKey: preferCamelCase ? "reqSfixed64" : "req_sfixed64")
         }
-        if includeDefaults || !self.req_bool.isDefaultProtoValue {
+        if includeDefaults || self.req_bool != false {
             try container.encode(self.req_bool, forKey: preferCamelCase ? "reqBool" : "req_bool")
         }
-        if includeDefaults || !self.req_float.isDefaultProtoValue {
+        if includeDefaults || self.req_float != 0 {
             try container.encode(self.req_float, forKey: preferCamelCase ? "reqFloat" : "req_float")
         }
-        if includeDefaults || !self.req_double.isDefaultProtoValue {
+        if includeDefaults || self.req_double != 0 {
             try container.encode(self.req_double, forKey: preferCamelCase ? "reqDouble" : "req_double")
         }
-        if includeDefaults || !self.req_string.isDefaultProtoValue {
+        if includeDefaults || !self.req_string.isEmpty {
             try container.encode(self.req_string, forKey: preferCamelCase ? "reqString" : "req_string")
         }
-        if includeDefaults || !self.req_bytes.isDefaultProtoValue {
+        if includeDefaults || !self.req_bytes.isEmpty {
             try container.encode(stringEncoded: self.req_bytes, forKey: preferCamelCase ? "reqBytes" : "req_bytes")
         }
-        if includeDefaults || !self.req_nested_enum.isDefaultProtoValue {
+        if includeDefaults || self.req_nested_enum.rawValue != 0 {
             try container.encode(self.req_nested_enum, forKey: preferCamelCase ? "reqNestedEnum" : "req_nested_enum")
         }
         try container.encode(self.req_nested_message, forKey: preferCamelCase ? "reqNestedMessage" : "req_nested_message")

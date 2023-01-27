@@ -148,7 +148,7 @@ extension Person.PhoneNumber : Codable {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || !self.number.isDefaultProtoValue {
+        if includeDefaults || !self.number.isEmpty {
             try container.encode(self.number, forKey: "number")
         }
         if includeDefaults || self.type != nil {
@@ -232,10 +232,10 @@ extension Person : Codable {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || !self.name.isDefaultProtoValue {
+        if includeDefaults || !self.name.isEmpty {
             try container.encode(self.name, forKey: "name")
         }
-        if includeDefaults || !self.id.isDefaultProtoValue {
+        if includeDefaults || self.id != 0 {
             try container.encode(self.id, forKey: "id")
         }
         if includeDefaults || self.email != nil {
