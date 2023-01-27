@@ -68,9 +68,7 @@ extension NestedVersionOne : Codable {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || self.i != nil {
-            try container.encode(self.i, forKey: "i")
-        }
+        try container.encodeIfPresent(self.i, forKey: "i")
     }
 }
 #endif

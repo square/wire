@@ -31,7 +31,7 @@ extension ProtoEnum where Self : CaseIterable {
     }
 }
 
-extension ProtoEnum where Self : RawRepresentable<UInt32> {
+extension ProtoEnum where Self : RawRepresentable, RawValue == UInt32 {
     public init(from decoder: Decoder) throws {
         // We support decoding from either the string value or the field number.
         let container = try decoder.singleValueContainer()

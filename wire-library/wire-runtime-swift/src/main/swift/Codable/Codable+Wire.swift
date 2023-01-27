@@ -147,6 +147,16 @@ extension KeyedEncodingContainer {
         }
         try encode(stringEncoded: value, forKey: key)
     }
+
+    public mutating func encodeIfPresent<T : StringEncodable>(
+        stringEncoded value: T?,
+        forKey key: KeyedEncodingContainer<K>.Key
+    ) throws {
+        guard let value = value else {
+            return
+        }
+        try encode(stringEncoded: value, forKey: key)
+    }
 }
 
 extension UnkeyedEncodingContainer {

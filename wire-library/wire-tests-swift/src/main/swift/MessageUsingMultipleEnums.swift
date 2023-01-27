@@ -78,12 +78,8 @@ extension MessageUsingMultipleEnums : Codable {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || self.a != nil {
-            try container.encode(self.a, forKey: "a")
-        }
-        if includeDefaults || self.b != nil {
-            try container.encode(self.b, forKey: "b")
-        }
+        try container.encodeIfPresent(self.a, forKey: "a")
+        try container.encodeIfPresent(self.b, forKey: "b")
     }
 }
 #endif
