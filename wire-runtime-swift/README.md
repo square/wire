@@ -26,6 +26,7 @@ To generate all swift protos, there are three different invocations:
 
 ```
 ./gradlew -p wire-library :wire-runtime-swift:generateTestProtos
+./gradlew -p wire-library :wire-runtime-swift:generateSampleProtos
 ./gradlew -p wire-library generateSwiftProto
 ./gradlew generateSwiftTests
 ```

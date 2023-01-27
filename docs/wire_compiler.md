@@ -1,7 +1,7 @@
 Wire Compiler & Gradle Plugin
 =============================
 
-Wire has two key components: a **compiler** that generates Kotlin and Java code at build time, and a
+Wire has two key components: a **compiler** that generates source code at build time, and a
 **runtime library** that supports the generated code when your program executes. The compiler is
 very configurable; this guide explains its features and their use.
 
@@ -84,7 +84,7 @@ code. It uses [KotlinPoet][kotlinpoet] internally to generate compact and legibl
 Wire will generate files in `build/generated/source/wire`. It'll also register this directory as a
 source directory for the project so the generated sources are compiled by the Kotlin compiler.
 
-Replace `kotlin` with `java` to generate Java sources instead.
+Replace `kotlin` with `java` to generate the Java sources instead.
 
 
 Inputs and Outputs
@@ -146,7 +146,7 @@ wire {
 }
 ```
 
-Wire can emit both Java and Kotlin in the same build. Use `includes` to specify which types are
+Wire can emit multiple languages in the same build. Use `includes` to specify which types are
 emitted for a target language; subsequent languages will emit what's left over.
 
 ```groovy
@@ -230,7 +230,7 @@ The source path and proto path are linked together but only types on the source 
 ![Library](images/gradle_library@2x.png)
 
 Dependencies between Gradle Modules
------------------------------
+-----------------------------------
 
 Wire provides support to define dependencies between modules within the same project.
 
@@ -535,11 +535,89 @@ wire {
 }
 ```
 
+Swift Support
+-------------
+
+The easiest way to get started is to use CocoaPods. 
+
+```ruby
+# Add the Wire compiler so that it is downloaded and available.
+# CocoaPods will download the source and build the compiler directly,
+# so you'll need Java installed.
+pod 'WireCompiler'
+
+# Add the Wire runtime to do the serializing/deserializing
+pod 'Wire'
+```
+
+Then run pod install to get the dependencies and build the Wire compiler.
+
+Swift Package Manager is also supported for linking the Wire runtime.
+
+## Build Your Protos
+
+The Wire compiler uses [SwiftPoet][swiftpoet] to generate Swift code.
+The resulting objects automatically conform to `Equatable`, `Codable` and `Sendable`.
+
+Assuming you've used CocoaPods to download the Wire compiler, to compile your protos into Swift files:
+
+```sh
+java -jar ./Pods/WireCompiler/compiler.jar \
+  "--proto_path=<directory containing .proto files>" \
+  "--swift_out=<directory where the generated .swift files go>" \
+  "--experimental-module-manifest=<path to manifest yaml file>"
+```
+
+## Swift Manifest
+
+Swift introduced a new challenge that didn’t exist with Kotlin and Java: modules. 
+Kotlin and Java both use fully-qualified package names, but Swift modules are defined by their compilation unit, and thus namespaces aren’t declared at the type or file level. 
+This meant that we needed to build a new packaging system for Swift that could deal with Swift module namespacing and imports.
+
+We decided that the easiest way for a caller to define modules was to make those definitions handled directly by Wire. 
+A single manifest file defines the modules, their names, their dependencies, and the content roots and prunes mentioned above.
+
+In this example manifest the DarkSide and LightSide modules would depend on and import the CommonProtos module:
+
+```yaml
+CommonProtos:
+  roots:
+    - jedi.Lightsaber
+    - jedi.MindTrick
+    - jedi.TheForce
+    - jedi.Anakin
+
+DarkSideProtos:
+  dependencies:
+    - CommonProtos
+  roots:
+    - darkside.*
+    - jedi.Lightning
+  prunes:
+    - jedi.Mercy
+
+LightSideProtos:
+  dependencies:
+    - CommonProtos
+  roots:
+    - lightside.*
+    # Import the rest of the Jedi powers not already in CommonProtos
+    - jedi.*
+  prunes:
+    # Remove unused lightsaber colors
+    - jedi.LightsaberColor#red
+    # Remove deprecated field. Use green_lightsaber instead.
+    - lightside.Luke#blue_lightsaber
+    # Remove dark-side-only types
+    - jedi.Lightning
+```
+
  [SchemaHandler.Factory]: https://github.com/square/wire/blob/fd0a00ff5b6033ed9d8c2d392ff06338467a026f/wire-library/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L192-L194
  [SchemaHandlerRecipes]: https://github.com/square/wire/blob/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
  [SchemaHandler]: https://github.com/square/wire/blob/fd0a00ff5b6033ed9d8c2d392ff06338467a026f/wire-library/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L24
  [gradle]: https://gradle.org/
  [kotlinpoet]: https://github.com/square/kotlinpoet
+ [swiftpoet]: https://github.com/outfoxx/swiftpoet
  [maven_coordinates]: https://maven.apache.org/pom.html#Maven_Coordinates
  [proguard]: https://www.guardsquare.com/en/products/proguard
  [r8]: https://developer.android.com/studio/build/shrink-code
