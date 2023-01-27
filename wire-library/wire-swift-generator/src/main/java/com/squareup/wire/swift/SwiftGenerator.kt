@@ -769,7 +769,7 @@ class SwiftGenerator private constructor(
                   }
 
                   if (field.typeName.optional) {
-                    beginControlFlow("if", "includeDefaults || self.%N != nil", field.name)
+                    beginControlFlow("if", "includeDefaults || !self.%N.isDefaultProtoValue", field.name)
                     addEncode()
                     endControlFlow("if")
                   } else if (field.isRepeated || field.isMap) {

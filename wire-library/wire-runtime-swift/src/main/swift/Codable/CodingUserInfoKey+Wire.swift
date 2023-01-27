@@ -62,7 +62,6 @@ extension JSONEncoder {
         // Include "default" values
         case include
     }
-
 }
 
 extension CodingUserInfoKey {

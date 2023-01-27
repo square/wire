@@ -149,7 +149,7 @@ extension Person.PhoneNumber : Codable {
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encode(self.number, forKey: "number")
-        if includeDefaults || self.type != nil {
+        if includeDefaults || !self.type.isDefaultProtoValue {
             try container.encode(self.type, forKey: "type")
         }
     }
@@ -232,7 +232,7 @@ extension Person : Codable {
 
         try container.encode(self.name, forKey: "name")
         try container.encode(self.id, forKey: "id")
-        if includeDefaults || self.email != nil {
+        if includeDefaults || !self.email.isDefaultProtoValue {
             try container.encode(self.email, forKey: "email")
         }
         if includeDefaults || !self.phone.isEmpty {

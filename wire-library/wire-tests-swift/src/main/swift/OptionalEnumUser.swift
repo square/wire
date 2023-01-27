@@ -88,7 +88,7 @@ extension OptionalEnumUser : Codable {
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || self.optional_enum != nil {
+        if includeDefaults || !self.optional_enum.isDefaultProtoValue {
             try container.encode(self.optional_enum, forKey: preferCamelCase ? "optionalEnum" : "optional_enum")
         }
     }

@@ -68,7 +68,7 @@ extension ContainsDuration : Codable {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || self.duration != nil {
+        if includeDefaults || !self.duration.isDefaultProtoValue {
             try container.encode(self.duration, forKey: "duration")
         }
     }
