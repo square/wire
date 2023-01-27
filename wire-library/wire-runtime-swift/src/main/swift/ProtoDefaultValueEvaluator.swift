@@ -46,17 +46,5 @@ extension Collection where Self : ProtoDefaultValueEvaluator {
     }
 }
 
-extension Array : ProtoDefaultValueEvaluator where Element : ProtoDefaultValueEvaluator {}
-extension Dictionary : ProtoDefaultValueEvaluator where Key : LosslessStringConvertible, Value : ProtoDefaultValueEvaluator {}
 extension String : ProtoDefaultValueEvaluator {}
 extension Data : ProtoDefaultValueEvaluator {}
-
-extension Optional : ProtoDefaultValueEvaluator where Wrapped : ProtoDefaultValueEvaluator {
-    public var isDefaultProtoValue: Bool {
-        // A proto3 field that is defined with the optional keyword supports field presence.
-        // Fields that have a value set and that support field presence always include the field value in the JSON-encoded output, even if it is the default value.
-        self == nil
-    }
-}
-
-

@@ -86,13 +86,13 @@ extension VersionOne : Codable {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || !self.i.isDefaultProtoValue {
+        if includeDefaults || self.i != nil {
             try container.encode(self.i, forKey: "i")
         }
-        if includeDefaults || !self.obj.isDefaultProtoValue {
+        if includeDefaults || self.obj != nil {
             try container.encode(self.obj, forKey: "obj")
         }
-        if includeDefaults || !self.en.isDefaultProtoValue {
+        if includeDefaults || self.en != nil {
             try container.encode(self.en, forKey: "en")
         }
     }

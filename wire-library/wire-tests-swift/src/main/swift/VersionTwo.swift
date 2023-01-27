@@ -127,28 +127,28 @@ extension VersionTwo : Codable {
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || !self.i.isDefaultProtoValue {
+        if includeDefaults || self.i != nil {
             try container.encode(self.i, forKey: "i")
         }
-        if includeDefaults || !self.v2_i.isDefaultProtoValue {
+        if includeDefaults || self.v2_i != nil {
             try container.encode(self.v2_i, forKey: preferCamelCase ? "v2I" : "v2_i")
         }
-        if includeDefaults || !self.v2_s.isDefaultProtoValue {
+        if includeDefaults || self.v2_s != nil {
             try container.encode(self.v2_s, forKey: preferCamelCase ? "v2S" : "v2_s")
         }
-        if includeDefaults || !self.v2_f32.isDefaultProtoValue {
+        if includeDefaults || self.v2_f32 != nil {
             try container.encode(self.v2_f32, forKey: preferCamelCase ? "v2F32" : "v2_f32")
         }
-        if includeDefaults || !self.v2_f64.isDefaultProtoValue {
+        if includeDefaults || self.v2_f64 != nil {
             try container.encode(stringEncoded: self.v2_f64, forKey: preferCamelCase ? "v2F64" : "v2_f64")
         }
         if includeDefaults || !self.v2_rs.isEmpty {
             try container.encodeProtoArray(self.v2_rs, forKey: preferCamelCase ? "v2Rs" : "v2_rs")
         }
-        if includeDefaults || !self.obj.isDefaultProtoValue {
+        if includeDefaults || self.obj != nil {
             try container.encode(self.obj, forKey: "obj")
         }
-        if includeDefaults || !self.en.isDefaultProtoValue {
+        if includeDefaults || self.en != nil {
             try container.encode(self.en, forKey: "en")
         }
     }

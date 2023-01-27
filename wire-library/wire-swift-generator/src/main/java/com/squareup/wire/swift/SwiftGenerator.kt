@@ -90,6 +90,8 @@ class SwiftGenerator private constructor(
     get() = schema.getType(this) is EnumType
   private val Type.typeName
     get() = type.typeName
+  private val Field.isMessage
+    get() = type?.isMessage == true
 
   private val MessageType.needsCustomCodable: Boolean
     get() = type.enclosingTypeOrPackage == "google.protobuf" && NEEDS_CUSTOM_CODABLE.contains(type.simpleName)
@@ -735,7 +737,7 @@ class SwiftGenerator private constructor(
                 if (type.fieldsAndOneOfFields.any { it.codableName != null }) {
                   addStatement("let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase")
                 }
-                if (type.fields.any { it.typeName.optional || it.isRepeated || it.isMap }) {
+                if (type.fields.any { it.typeName.optional || it.isRepeated || it.isMap || !it.isMessage }) {
                   addStatement("let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include")
                 }
                 addStatement("")
@@ -769,15 +771,23 @@ class SwiftGenerator private constructor(
                   }
 
                   if (field.typeName.optional) {
-                    beginControlFlow("if", "includeDefaults || !self.%N.isDefaultProtoValue", field.name)
+                    // A proto3 field that is defined with the optional keyword supports field presence.
+                    // Fields that have a value set and that support field presence always include the field value
+                    // in the JSON-encoded output, even if it is the default value.
+                    beginControlFlow("if", "includeDefaults || self.%N != nil", field.name)
                     addEncode()
                     endControlFlow("if")
                   } else if (field.isRepeated || field.isMap) {
                     beginControlFlow("if", "includeDefaults || !self.%N.isEmpty", field.name)
                     addEncode()
                     endControlFlow("if")
-                  } else {
+                  } else if (field.isMessage) {
+                    // Message is fundamentally broken right now when it comes to evaluating `isDefaultProtoValue`
                     addEncode()
+                  } else {
+                    beginControlFlow("if", "includeDefaults || !self.%N.isDefaultProtoValue", field.name)
+                    addEncode()
+                    endControlFlow("if")
                   }
                 }
 

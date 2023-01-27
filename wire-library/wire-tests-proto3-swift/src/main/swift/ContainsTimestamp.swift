@@ -68,7 +68,7 @@ extension ContainsTimestamp : Codable {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || !self.timestamp.isDefaultProtoValue {
+        if includeDefaults || self.timestamp != nil {
             try container.encode(self.timestamp, forKey: "timestamp")
         }
     }

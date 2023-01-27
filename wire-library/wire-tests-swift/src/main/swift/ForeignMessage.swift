@@ -68,7 +68,7 @@ extension ForeignMessage : Codable {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || !self.i.isDefaultProtoValue {
+        if includeDefaults || self.i != nil {
             try container.encode(self.i, forKey: "i")
         }
     }

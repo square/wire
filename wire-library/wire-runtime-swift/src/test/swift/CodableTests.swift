@@ -169,7 +169,6 @@ extension CodableTests {
           "repeated_string":["foo","bar","baz"],
           "req_bytes":"ASNF",
           "req_double":6,
-          "req_enum":"UNKNOWN",
           "req_float":5,
           "req_int32":1,
           "req_int64":"2",

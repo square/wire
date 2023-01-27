@@ -135,7 +135,7 @@ extension FooBar.Nested : Codable {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || !self.value.isDefaultProtoValue {
+        if includeDefaults || self.value != nil {
             try container.encode(self.value, forKey: "value")
         }
     }
@@ -308,34 +308,34 @@ extension FooBar : Codable {
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || !self.foo.isDefaultProtoValue {
+        if includeDefaults || self.foo != nil {
             try container.encode(self.foo, forKey: "foo")
         }
-        if includeDefaults || !self.bar.isDefaultProtoValue {
+        if includeDefaults || self.bar != nil {
             try container.encode(self.bar, forKey: "bar")
         }
-        if includeDefaults || !self.baz.isDefaultProtoValue {
+        if includeDefaults || self.baz != nil {
             try container.encode(self.baz, forKey: "baz")
         }
-        if includeDefaults || !self.qux.isDefaultProtoValue {
+        if includeDefaults || self.qux != nil {
             try container.encode(stringEncoded: self.qux, forKey: "qux")
         }
         if includeDefaults || !self.fred.isEmpty {
             try container.encodeProtoArray(self.fred, forKey: "fred")
         }
-        if includeDefaults || !self.daisy.isDefaultProtoValue {
+        if includeDefaults || self.daisy != nil {
             try container.encode(self.daisy, forKey: "daisy")
         }
         if includeDefaults || !self.nested.isEmpty {
             try container.encodeProtoArray(self.nested, forKey: "nested")
         }
-        if includeDefaults || !self.ext.isDefaultProtoValue {
+        if includeDefaults || self.ext != nil {
             try container.encode(self.ext, forKey: "ext")
         }
         if includeDefaults || !self.rep.isEmpty {
             try container.encodeProtoArray(self.rep, forKey: "rep")
         }
-        if includeDefaults || !self.more_string.isDefaultProtoValue {
+        if includeDefaults || self.more_string != nil {
             try container.encode(self.more_string, forKey: preferCamelCase ? "moreString" : "more_string")
         }
     }

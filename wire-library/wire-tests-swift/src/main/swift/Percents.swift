@@ -71,7 +71,7 @@ extension Percents : Codable {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || !self.text.isDefaultProtoValue {
+        if includeDefaults || self.text != nil {
             try container.encode(self.text, forKey: "text")
         }
     }
