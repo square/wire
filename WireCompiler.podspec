@@ -1,4 +1,4 @@
-require_relative 'wire-library/wire-runtime-swift/pod_helpers.rb'
+require_relative 'wire-runtime-swift/pod_helpers.rb'
 
 Pod::Spec.new do |s|
   version = get_version

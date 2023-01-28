@@ -91,7 +91,7 @@ git push origin refs/tags/4.0.0-alpha1
 export POD_VERSION=4.0.0-alpha1
 ```
 
-If publishing a release version (like `4.0.0` rather than `4.0.0-alpha1`) then setting the `POD_VERSION` is optional and it will be pulled automatically from `wire-library/gradle.properties`.
+If publishing a release version (like `4.0.0` rather than `4.0.0-alpha1`) then setting the `POD_VERSION` is optional and it will be pulled automatically from `gradle.properties`.
 
 ### Publishing the Podspecs
 

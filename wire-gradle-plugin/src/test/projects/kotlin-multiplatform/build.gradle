@@ -1,0 +1,32 @@
+plugins {
+  id 'org.jetbrains.kotlin.multiplatform'
+  id 'com.squareup.wire'
+}
+
+repositories {
+  maven {
+    url "file://${projectDir.absolutePath}/../../../../../build/localMaven"
+  }
+  mavenCentral()
+}
+
+kotlin {
+  jvm()
+  def kmpJsEnabled = Boolean.parseBoolean(System.getProperty('kjs', 'true'))
+  if (System.getProperty("kjs", "true").toBoolean()) {
+    js {
+      nodejs()
+    }
+  }
+}
+
+wire {
+  kotlin {
+  }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+  kotlinOptions {
+    jvmTarget = "1.8"
+  }
+}
