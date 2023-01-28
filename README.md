@@ -672,7 +672,7 @@ extension Dinosaur : Codable {
 
 Creating and accessing proto models is easy:
 
-```kotlin
+```swift
 let stegosaurus = Dinosaur(
     name: "Stegosaurus",
     period: .JURASSIC
@@ -683,7 +683,7 @@ print("My favorite dinosaur existed in the \(stegosaurus.period) period.")
 
 Here's how you can modify the object to add extra fields:
 
-```kotlin
+```swift
 var stegosaurus = stegosaurus
 stegosaurus.picture_urls = ["https://www.flickr.com/photos/tags/Stegosaurus/"]
 )
