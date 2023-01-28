@@ -25,9 +25,9 @@ You can also just `open Package.swift`.
 To generate all swift protos, there are three different invocations:
 
 ```
-./gradlew -p :wire-runtime-swift:generateTestProtos
-./gradlew -p :wire-runtime-swift:generateSampleProtos
-./gradlew -p generateSwiftProto
+./gradlew :wire-runtime-swift:generateTestProtos
+./gradlew :wire-runtime-swift:generateSampleProtos
+./gradlew generateSwiftProto
 ./gradlew generateSwiftTests
 ```
 
