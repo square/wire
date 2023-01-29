@@ -134,7 +134,7 @@ class MoshiPersonTest {
 
   companion object {
     private val moshi = Moshi.Builder()
-      .add(WireJsonAdapterFactory())
+      .add(WireJsonAdapterFactory(loader = MoshiPersonTest::class.java.classLoader))
       .build()
   }
 }

@@ -96,7 +96,8 @@ class ProtoAdapterIdentityTest {
   @Test fun runtimeMessageAdaptersHaveNullIdentities() {
     val protoAdapter =
       ProtoAdapter.newMessageAdapter(
-        Person::class.java
+        Person::class.java,
+        ProtoAdapterIdentityTest::class.java.classLoader,
       )
     assertThat(protoAdapter.identity).isNull()
   }

@@ -16,7 +16,12 @@ import java.util.Map;
 import okio.ByteString;
 
 public final class CamelCase extends Message<CamelCase, CamelCase.Builder> {
-  public static final ProtoAdapter<CamelCase> ADAPTER = ProtoAdapter.newMessageAdapter(CamelCase.class, "type.googleapis.com/squareup.proto3.CamelCase", Syntax.PROTO_3);
+  public static final ProtoAdapter<CamelCase> ADAPTER = ProtoAdapter.newMessageAdapter(
+    CamelCase.class,
+    "type.googleapis.com/squareup.proto3.CamelCase",
+    Syntax.PROTO_3,
+    CamelCase.class.getClassLoader()
+  );
 
   private static final long serialVersionUID = 0L;
 
@@ -150,7 +155,12 @@ public final class CamelCase extends Message<CamelCase, CamelCase.Builder> {
   }
 
   public static final class NestedCamelCase extends Message<NestedCamelCase, NestedCamelCase.Builder> {
-    public static final ProtoAdapter<NestedCamelCase> ADAPTER = ProtoAdapter.newMessageAdapter(NestedCamelCase.class, "type.googleapis.com/squareup.proto3.CamelCase.NestedCamelCase", Syntax.PROTO_3);
+    public static final ProtoAdapter<NestedCamelCase> ADAPTER = ProtoAdapter.newMessageAdapter(
+      NestedCamelCase.class,
+      "type.googleapis.com/squareup.proto3.CamelCase.NestedCamelCase",
+      Syntax.PROTO_3,
+      NestedCamelCase.class.getClassLoader()
+    );
 
     private static final long serialVersionUID = 0L;
 

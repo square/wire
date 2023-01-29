@@ -44,6 +44,7 @@ import java.lang.reflect.Type
 class WireJsonAdapterFactory @JvmOverloads constructor(
   private val typeUrlToAdapter: Map<String, ProtoAdapter<*>> = mapOf(),
   private val writeIdentityValues: Boolean = false,
+  private val loader: ClassLoader,
 ) : JsonAdapter.Factory {
   /**
    * Returns a new WireJsonAdapterFactory that can encode the messages for [adapters] if they're
@@ -57,7 +58,7 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
       )
       newMap[key] = adapter
     }
-    return WireJsonAdapterFactory(newMap, writeIdentityValues)
+    return WireJsonAdapterFactory(newMap, writeIdentityValues, loader)
   }
 
   /**
@@ -79,18 +80,24 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
       annotations.isNotEmpty() -> null
       rawType == AnyMessage::class.java -> AnyMessageJsonAdapter(moshi, typeUrlToAdapter)
       Message::class.java.isAssignableFrom(rawType) -> {
-        val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(type as Class<Nothing>, writeIdentityValues)
+        val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(
+          type as Class<Nothing>,
+          writeIdentityValues,
+          loader,
+        )
         val jsonAdapters = MoshiJsonIntegration.jsonAdapters(messageAdapter, moshi)
         val redactedFieldsAdapter = moshi.adapter<List<String>>(
           Types.newParameterizedType(List::class.java, String::class.java)
         )
         MessageJsonAdapter(messageAdapter, jsonAdapters, redactedFieldsAdapter).nullSafe()
       }
+
       WireEnum::class.java.isAssignableFrom(rawType) -> {
         val enumAdapter = RuntimeEnumAdapter.create(type as Class<Nothing>)
         val enumJsonFormatter = EnumJsonFormatter(enumAdapter)
         EnumJsonAdapter(enumJsonFormatter).nullSafe()
       }
+
       else -> null
     }
   }

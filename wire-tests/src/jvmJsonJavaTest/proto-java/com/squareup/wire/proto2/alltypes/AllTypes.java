@@ -21,7 +21,12 @@ import java.util.Map;
 import okio.ByteString;
 
 public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
-  public static final ProtoAdapter<AllTypes> ADAPTER = ProtoAdapter.newMessageAdapter(AllTypes.class, "type.googleapis.com/squareup.proto2.AllTypes", Syntax.PROTO_2);
+  public static final ProtoAdapter<AllTypes> ADAPTER = ProtoAdapter.newMessageAdapter(
+    AllTypes.class,
+    "type.googleapis.com/squareup.proto2.AllTypes",
+    Syntax.PROTO_2,
+    AllTypes.class.getClassLoader()
+  );
 
   private static final long serialVersionUID = 0L;
 
@@ -2946,7 +2951,12 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   }
 
   public static final class NestedMessage extends Message<NestedMessage, NestedMessage.Builder> {
-    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.newMessageAdapter(NestedMessage.class, "type.googleapis.com/squareup.proto2.AllTypes.NestedMessage", Syntax.PROTO_2);
+    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.newMessageAdapter(
+      NestedMessage.class,
+      "type.googleapis.com/squareup.proto2.AllTypes.NestedMessage",
+      Syntax.PROTO_2,
+      NestedMessage.class.getClassLoader()
+    );
 
     private static final long serialVersionUID = 0L;
 

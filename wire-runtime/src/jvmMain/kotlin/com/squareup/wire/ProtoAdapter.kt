@@ -201,26 +201,29 @@ actual abstract class ProtoAdapter<E> actual constructor(
 
     // Obsolete; for Java classes generated before typeUrl and syntax were added.
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
-      type: Class<M>
+      type: Class<M>,
+      loader: ClassLoader,
     ): ProtoAdapter<M> {
-      return createRuntimeMessageAdapter(type, null, Syntax.PROTO_2)
+      return createRuntimeMessageAdapter(type, null, Syntax.PROTO_2, loader)
     }
 
     // Obsolete; for Java classes generated before typeUrl and syntax were added.
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
       type: Class<M>,
-      typeUrl: String
+      typeUrl: String,
+      loader: ClassLoader,
     ): ProtoAdapter<M> {
-      return createRuntimeMessageAdapter(type, typeUrl, Syntax.PROTO_2)
+      return createRuntimeMessageAdapter(type, typeUrl, Syntax.PROTO_2, loader)
     }
 
     /** Creates a new proto adapter for `type`. */
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
       type: Class<M>,
       typeUrl: String,
-      syntax: Syntax
+      syntax: Syntax,
+      loader: ClassLoader,
     ): ProtoAdapter<M> {
-      return createRuntimeMessageAdapter(type, typeUrl, syntax)
+      return createRuntimeMessageAdapter(type, typeUrl, syntax, loader)
     }
 
     /** Creates a new proto adapter for `type`. */
@@ -245,16 +248,25 @@ actual abstract class ProtoAdapter<E> actual constructor(
     }
 
     /**
-     * Returns the adapter for a given `adapterString`. `adapterString` is specified on a proto
+     * Returns the adapter for a given [adapterString]. `adapterString` is specified on a proto
      * message field's [WireField] annotation in the form
      * `com.squareup.wire.protos.person.Person#ADAPTER`.
      */
     @JvmStatic fun get(adapterString: String): ProtoAdapter<*> {
+      return get(adapterString, ProtoAdapter::class.java.classLoader)
+    }
+
+    /**
+     * Returns the adapter for a given [adapterString], using class loader [loader]. `adapterString` is specified on a
+     * proto message field's [WireField] annotation in the form `com.squareup.wire.protos.person.Person#ADAPTER`.
+     */
+    @JvmStatic fun get(adapterString: String, loader: ClassLoader): ProtoAdapter<*> {
       try {
         val hash = adapterString.indexOf('#')
         val className = adapterString.substring(0, hash)
         val fieldName = adapterString.substring(hash + 1)
-        return Class.forName(className).getField(fieldName).get(null) as ProtoAdapter<Any>
+        @Suppress("UNCHECKED_CAST")
+        return Class.forName(className, true, loader).getField(fieldName).get(null) as ProtoAdapter<Any>
       } catch (e: IllegalAccessException) {
         throw IllegalArgumentException("failed to access $adapterString", e)
       } catch (e: NoSuchFieldException) {

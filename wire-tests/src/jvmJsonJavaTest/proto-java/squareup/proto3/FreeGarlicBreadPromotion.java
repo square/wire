@@ -13,7 +13,12 @@ import java.lang.Override;
 import okio.ByteString;
 
 public final class FreeGarlicBreadPromotion extends Message<FreeGarlicBreadPromotion, FreeGarlicBreadPromotion.Builder> {
-  public static final ProtoAdapter<FreeGarlicBreadPromotion> ADAPTER = ProtoAdapter.newMessageAdapter(FreeGarlicBreadPromotion.class, "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion", Syntax.PROTO_3);
+  public static final ProtoAdapter<FreeGarlicBreadPromotion> ADAPTER = ProtoAdapter.newMessageAdapter(
+    FreeGarlicBreadPromotion.class,
+    "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion",
+    Syntax.PROTO_3,
+    FreeGarlicBreadPromotion.class.getClassLoader()
+  );
 
   private static final long serialVersionUID = 0L;
 

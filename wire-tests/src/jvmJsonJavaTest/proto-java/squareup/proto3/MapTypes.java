@@ -16,7 +16,12 @@ import java.util.Map;
 import okio.ByteString;
 
 public final class MapTypes extends Message<MapTypes, MapTypes.Builder> {
-  public static final ProtoAdapter<MapTypes> ADAPTER = ProtoAdapter.newMessageAdapter(MapTypes.class, "type.googleapis.com/squareup.proto3.MapTypes", Syntax.PROTO_3);
+  public static final ProtoAdapter<MapTypes> ADAPTER = ProtoAdapter.newMessageAdapter(
+    MapTypes.class,
+    "type.googleapis.com/squareup.proto3.MapTypes",
+    Syntax.PROTO_3,
+    MapTypes.class.getClassLoader()
+  );
 
   private static final long serialVersionUID = 0L;
 

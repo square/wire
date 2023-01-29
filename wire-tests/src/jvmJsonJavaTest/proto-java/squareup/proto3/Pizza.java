@@ -14,7 +14,12 @@ import java.util.List;
 import okio.ByteString;
 
 public final class Pizza extends Message<Pizza, Pizza.Builder> {
-  public static final ProtoAdapter<Pizza> ADAPTER = ProtoAdapter.newMessageAdapter(Pizza.class, "type.googleapis.com/squareup.proto3.Pizza", Syntax.PROTO_3);
+  public static final ProtoAdapter<Pizza> ADAPTER = ProtoAdapter.newMessageAdapter(
+    Pizza.class,
+    "type.googleapis.com/squareup.proto3.Pizza",
+    Syntax.PROTO_3,
+    Pizza.class.getClassLoader()
+  );
 
   private static final long serialVersionUID = 0L;
 

@@ -30,6 +30,7 @@ fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
   messageType: Class<M>,
   typeUrl: String?,
   syntax: Syntax,
+  loader: ClassLoader,
   writeIdentityValues: Boolean = false,
 ): RuntimeMessageAdapter<M, B> {
   val builderType = getBuilderType(messageType)
@@ -47,7 +48,14 @@ fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
   for (messageField in messageType.declaredFields) {
     val wireField = messageField.getAnnotation(WireField::class.java)
     if (wireField != null) {
-      fields[wireField.tag] = FieldBinding(wireField, messageType, messageField, builderType, writeIdentityValues)
+      fields[wireField.tag] = FieldBinding(
+        wireField,
+        messageType,
+        messageField,
+        builderType,
+        writeIdentityValues,
+        loader,
+      )
     } else if (messageField.type == OneOf::class.java) {
       for (key in getKeys<M, B>(messageField)) {
         fields[key.tag] = OneOfBinding(messageField, builderType, key, writeIdentityValues)
@@ -79,12 +87,14 @@ private fun <M : Message<M, B>, B : Message.Builder<M, B>> getKeys(
 fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
   messageType: Class<M>,
   writeIdentityValues: Boolean,
+  loader: ClassLoader,
 ): RuntimeMessageAdapter<M, B> {
   val defaultAdapter = ProtoAdapter.get(messageType as Class<*>)
   return createRuntimeMessageAdapter(
     messageType = messageType,
     typeUrl = defaultAdapter.typeUrl,
     syntax = defaultAdapter.syntax,
+    loader = loader,
     writeIdentityValues = writeIdentityValues,
   )
 }

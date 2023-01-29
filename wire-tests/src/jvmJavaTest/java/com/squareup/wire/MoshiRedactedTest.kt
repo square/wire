@@ -66,7 +66,7 @@ class MoshiRedactedTest {
 
   companion object {
     private val moshi = Moshi.Builder()
-      .add(WireJsonAdapterFactory())
+      .add(WireJsonAdapterFactory(loader = MoshiRedactedTest::class.java.classLoader))
       .build()
   }
 }

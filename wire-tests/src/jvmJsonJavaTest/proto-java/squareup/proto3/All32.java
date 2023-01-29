@@ -15,7 +15,12 @@ import java.util.Map;
 import okio.ByteString;
 
 public final class All32 extends Message<All32, All32.Builder> {
-  public static final ProtoAdapter<All32> ADAPTER = ProtoAdapter.newMessageAdapter(All32.class, "type.googleapis.com/squareup.proto3.All32", Syntax.PROTO_3);
+  public static final ProtoAdapter<All32> ADAPTER = ProtoAdapter.newMessageAdapter(
+    All32.class,
+    "type.googleapis.com/squareup.proto3.All32",
+    Syntax.PROTO_3,
+    All32.class.getClassLoader()
+  );
 
   private static final long serialVersionUID = 0L;
 
