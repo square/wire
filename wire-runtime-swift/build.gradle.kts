@@ -69,6 +69,24 @@ val generateSwiftProtos by tasks.creating(JavaExec::class) {
   }
 }
 
+val generateSampleProtos by tasks.creating(JavaExec::class) {
+  val swiftOut = "src/test/swift/sample"
+  val protoPath = "../samples/simple-sample/src/main/proto"
+
+  doFirst {
+    val outFile = file(swiftOut)
+    outFile.deleteRecursively()
+    outFile.mkdir()
+  }
+
+  classpath = wire
+  main = "com.squareup.wire.WireCompiler"
+  args = listOf(
+    "--proto_path=$protoPath",
+    "--swift_out=$swiftOut"
+  )
+}
+
 val generateTestProtos by tasks.creating(JavaExec::class) {
   val swiftOut = "src/test/swift/gen"
   val protoPath = "src/test/proto"
@@ -96,6 +114,9 @@ afterEvaluate {
     }
   }
 
+  tasks.named("generateTestProtos").configure {
+    dependsOn(generateSampleProtos)
+  }
   tasks.named("compileTestSwift").configure {
     dependsOn(generateTestProtos)
   }

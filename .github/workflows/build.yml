@@ -149,6 +149,9 @@ jobs:
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nGenerated files changed. Did you run ./gradlew generateSwiftProtos and generateSwiftTests?"; exit 1; fi
           ./gradlew :wire-tests-swift:build --stacktrace
 
+      - name: Test Swift Package Manager
+        run: swift test
+
   publish:
     runs-on: macos-latest
     if: github.repository == 'square/wire' && github.ref == 'refs/heads/master'

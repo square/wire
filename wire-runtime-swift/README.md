@@ -22,13 +22,13 @@ You can also just `open Package.swift`.
 
 ### Codegen
 
-To generate all swift protos, there are three different invocations:
+To generate all swift protos, there are a few different gradle jobs:
 
 ```
-./gradlew -p wire-library :wire-runtime-swift:generateTestProtos
-./gradlew -p wire-library generateSwiftProto
-./gradlew generateSwiftTests
+./gradlew generateSwiftProtos generateSwiftTests
 ```
+
+This implicitly will happen as part of the `Running Tests On the Command Line`
 
 ### Running Tests On the Command Line
 
