@@ -42,11 +42,11 @@ internal fun Schema.partition(modules: Map<String, Module>): PartitionedSchema {
   for (moduleName in moduleGraph.topologicalOrder()) {
     val module = modules.getValue(moduleName)
 
-    val upstreamTypes = mutableMapOf<ProtoType, String>().apply {
+    val upstreamTypes = buildMap {
       val duplicateTypes = mutableMapOf<ProtoType, MutableSet<String>>()
       for (dependencyName in moduleGraph.transitiveNodes(moduleName)) {
         for (type in partitions.getValue(dependencyName).types) {
-          val replaced = put(type, dependencyName)
+          val replaced: String? = put(type, dependencyName)
           if (replaced != null) {
             duplicateTypes.getOrPut(type) { mutableSetOf(replaced) }.add(dependencyName)
           }
@@ -59,7 +59,7 @@ internal fun Schema.partition(modules: Map<String, Module>): PartitionedSchema {
           |  depend on the other or move this type up into a common dependency.
           """.trimMargin()
       }
-    } as Map<ProtoType, String> // TODO use buildMap
+    }
 
     // Replace types which have already been generated with stub types that have no external
     // references. This ensures our types can still link. More critically, it ensures that
