@@ -538,7 +538,7 @@ wire {
 Swift Support
 -------------
 
-The easiest way to get started is to use CocoaPods. 
+The easiest way to get started is to use CocoaPods.
 
 ```ruby
 # Add the Wire compiler so that it is downloaded and available.
@@ -570,11 +570,11 @@ java -jar ./Pods/WireCompiler/compiler.jar \
 
 ## Swift Manifest
 
-Swift introduced a new challenge that didn’t exist with Kotlin and Java: modules. 
-Kotlin and Java both use fully-qualified package names, but Swift modules are defined by their compilation unit, and thus namespaces aren’t declared at the type or file level. 
+Swift introduced a new challenge that didn’t exist with Kotlin and Java: modules.
+Kotlin and Java both use fully-qualified package names, but Swift modules are defined by their compilation unit, and thus namespaces aren’t declared at the type or file level.
 This meant that we needed to build a new packaging system for Swift that could deal with Swift module namespacing and imports.
 
-We decided that the easiest way for a caller to define modules was to make those definitions handled directly by Wire. 
+We decided that the easiest way for a caller to define modules was to make those definitions handled directly by Wire.
 A single manifest file defines the modules, their names, their dependencies, and the content roots and prunes mentioned above.
 
 In this example manifest the DarkSide and LightSide modules would depend on and import the CommonProtos module:
@@ -612,9 +612,10 @@ LightSideProtos:
     - jedi.Lightning
 ```
 
- [SchemaHandler.Factory]: https://github.com/square/wire/blob/fd0a00ff5b6033ed9d8c2d392ff06338467a026f/wire-library/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L192-L194
- [SchemaHandlerRecipes]: https://github.com/square/wire/blob/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
- [SchemaHandler]: https://github.com/square/wire/blob/fd0a00ff5b6033ed9d8c2d392ff06338467a026f/wire-library/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L24
+ [SchemaHandler.Factory]: wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L192
+ [SchemaHandlerRecipes]: wire-schema-tests/src/test/java/com/squareup/wire/recipes
+ [SchemaHandler]: wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt
+
  [gradle]: https://gradle.org/
  [kotlinpoet]: https://github.com/square/kotlinpoet
  [swiftpoet]: https://github.com/outfoxx/swiftpoet
