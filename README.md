@@ -27,7 +27,7 @@ Protocol Buffers
 
 <details>
 <summary>Protocol Buffer Examples</summary>
-Here's a [sample message definition][dinosaur_proto]:
+Here's a [sample message definition][dinosaur_proto]\:
 
 ```proto
 syntax = "proto3";
@@ -49,7 +49,7 @@ message Dinosaur {
 }
 ```
 
-And here's an [enum definition][period_proto]:
+And here's an [enum definition][period_proto]\:
 
 ```proto
 syntax = "proto3";
@@ -322,7 +322,7 @@ Wire Kotlin
 -----------
 
 Since version 3.0.0, Wire can generate Kotlin code. See
-[Wire Compiler & Gradle Plugin][compiler_docs] to learn how to configure your build.
+[Wire Compiler & Gradle Plugin][compiler_docs#swift-support] to learn how to configure your build.
 
 Kotlin is a pragmatic and expressive programming language that makes it easy to model data. Here's
 how we used Kotlin to model Protocol Buffers messages:
