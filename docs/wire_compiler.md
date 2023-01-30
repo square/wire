@@ -612,9 +612,9 @@ LightSideProtos:
     - jedi.Lightning
 ```
 
- [SchemaHandler.Factory]: wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L192
- [SchemaHandlerRecipes]: wire-schema-tests/src/test/java/com/squareup/wire/recipes
- [SchemaHandler]: wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt
+ [SchemaHandler.Factory]: /wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L192
+ [SchemaHandlerRecipes]: /wire-schema-tests/src/test/java/com/squareup/wire/recipes
+ [SchemaHandler]: /wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt
 
  [gradle]: https://gradle.org/
  [kotlinpoet]: https://github.com/square/kotlinpoet
