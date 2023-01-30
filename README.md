@@ -25,7 +25,9 @@ Protocol Buffers
 
  * It's focused. Proto schemas describe your data models. That's it.
 
-Here's a sample message definition:
+<details>
+<summary>Protocol Buffer Examples</summary>
+Here's a [sample message definition][dinosaur_proto]:
 
 ```proto
 syntax = "proto3";
@@ -47,7 +49,7 @@ message Dinosaur {
 }
 ```
 
-And here's an enum definition:
+And here's an [enum definition][period_proto]:
 
 ```proto
 syntax = "proto3";
@@ -104,6 +106,7 @@ Hex  Description
  28  tag: period(5), field encoding: VARINT(0). 5 << 3 | 0
  02  JURASSIC(2)
 ```
+</details>
 
 Why Wire?
 ---------
@@ -132,6 +135,8 @@ That said, there are some interesting design decisions in Wire:
    due to schema evolution: if tomorrow we add a `carnivore` boolean to our message definition,
    today's data won’t have a value for that field.
 
+<details>
+<summary>Generated Java Code</summary>
 Here's the compact generated code for the `Dinosaur` message defined above:
 
 ```java
@@ -311,7 +316,7 @@ This is equivalent to the following:
 ```
 Period period = stegosaurus.period != null ? stegosaurus.period : Dinosaur.DEFAULT_PERIOD;
 ```
-
+</details>
 
 Wire Kotlin
 -----------
@@ -342,6 +347,8 @@ how we used Kotlin to model Protocol Buffers messages:
    * `emptyList()` for `repeated` fields,
    * `emptyMap()` for `map` fields.
 
+<details>
+<summary>Generated Kotlin Code</summary>
 Here's the same `Dinosaur` message in Kotlin:
 
 ```kotlin
@@ -525,15 +532,16 @@ val stegosaurus = stegosaurus.copy(
 
 println("Here are some photos of ${stegosaurus.name}: ${stegosaurus.picture_urls}")
 ```
+</details>
 
 Wire Swift
 -----------
 
-Since version 3.3.0, Wire can generate Swift code. See 
+Since version 3.3.0, Wire can generate Swift code. See
 [Wire Compiler & Gradle Plugin][compiler_docs] to learn how to configure your build.
 
 Swift support is considered a "beta" and may still feature breaking changes.
-That being said, Block is shipping it in production apps and SDKs. 
+That being said, Block is shipping it in production apps and SDKs.
 
 Swift is a pragmatic and expressive programming language with rich support for value types.
 Here's how we used Swift to model Protocol Buffers messages:
@@ -541,9 +549,11 @@ Here's how we used Swift to model Protocol Buffers messages:
  * Messages are structs that conform to `Equatable`, `Codable` and `Sendable`. All Messages have value semantics.
  * Messages have a memberwise initializer to populate fields.
  * Fields are generated as properties.
- * The nullability of each field's type depends on its label: `required`, `repeated` and `map` 
+ * The nullability of each field's type depends on its label: `required`, `repeated` and `map`
    fields get non-nullable types, whereas `optional` fields are of nullable types.
 
+<details>
+<summary>Generated Swift Code</summary>
 Here's the same `Dinosaur` message in Swift:
 
 ```swift
@@ -690,6 +700,7 @@ stegosaurus.picture_urls = ["https://www.flickr.com/photos/tags/Stegosaurus/"]
 
 print("Here are some photos of \(stegosaurus.name): \(stegosaurus.picture_urls)")
 ```
+</details>
 
 Wire gRPC
 -----------
@@ -770,6 +781,8 @@ Further Documentation
 See [Google's excellent documentation][schema_docs] on the structure and syntax of proto schemas.
 
  [google_protos]: https://developers.google.com/protocol-buffers/docs/overview
+ [dinosaur_proto]: /samples/simple-sample/src/main/proto/squareup/dinosaurs/dinosaur.proto
+ [period_proto]: /samples/simple-sample/src/main/proto/squareup/geology/period.proto
  [effective_java]: https://www.amazon.ca/Effective-Java-3rd-Joshua-Bloch/dp/0134685997/
  [schema_docs]: https://developers.google.com/protocol-buffers/docs/proto
  [compiler_docs]: docs/wire_compiler.md
