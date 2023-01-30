@@ -114,6 +114,9 @@ afterEvaluate {
     }
   }
 
+  tasks.named("generateTestProtos").configure {
+    dependsOn(generateSampleProtos)
+  }
   tasks.named("compileTestSwift").configure {
     dependsOn(generateTestProtos)
   }

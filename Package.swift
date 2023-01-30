@@ -23,7 +23,6 @@ let package = Package(
         ),
         // The tests depend on valid protos via gradle
         // ./gradlew :wire-runtime-swift:generateTestProtos
-        // ./gradlew :wire-runtime-swift:generateSampleProtos
         .testTarget(
             name: "WireRuntimeTests",
             dependencies: ["Wire"],
