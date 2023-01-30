@@ -700,7 +700,7 @@ Here's how you can modify the object to add extra fields:
 
 ```swift
 var stegosaurus = stegosaurus
-stegosaurus.picture_urls = ["https://www.flickr.com/photos/tags/Stegosaurus/"]
+    stegosaurus.picture_urls = ["https://www.flickr.com/photos/tags/Stegosaurus/"]
 )
 
 print("Here are some photos of \(stegosaurus.name): \(stegosaurus.picture_urls)")
