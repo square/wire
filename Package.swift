@@ -22,7 +22,7 @@ let package = Package(
             path: "wire-runtime-swift/src/main/swift"
         ),
         // The tests depend on valid protos via gradle
-        // ./gradlew :wire-runtime-swift:generateTestProtos
+        // ./gradlew generateSwiftProtos generateSwiftTests
         .testTarget(
             name: "WireRuntimeTests",
             dependencies: ["Wire"],

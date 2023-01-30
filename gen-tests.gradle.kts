@@ -430,7 +430,8 @@ val generateSwiftTests by tasks.creating {
   description = "Generates Swift classes from the test protos"
   dependsOn(
     generateSwiftProto2Tests,
-    generateSwiftProto3Tests
+    generateSwiftProto3Tests,
+    ":wire-runtime-swift:generateTestProtos"
   )
 }
 
