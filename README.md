@@ -322,7 +322,7 @@ Wire Kotlin
 -----------
 
 Since version 3.0.0, Wire can generate Kotlin code. See
-[Wire Compiler & Gradle Plugin][compiler_docs#swift-support] to learn how to configure your build.
+[Wire Compiler & Gradle Plugin][compiler_docs] to learn how to configure your build.
 
 Kotlin is a pragmatic and expressive programming language that makes it easy to model data. Here's
 how we used Kotlin to model Protocol Buffers messages:
@@ -538,7 +538,7 @@ Wire Swift
 -----------
 
 Since version 3.3.0, Wire can generate Swift code. See
-[Wire Compiler & Gradle Plugin][compiler_docs] to learn how to configure your build.
+[Wire Compiler & Gradle Plugin][compiler_docs_swift] to learn how to configure your build.
 
 Swift support is considered a "beta" and may still feature breaking changes.
 That being said, Block is shipping it in production apps and SDKs.
@@ -789,6 +789,7 @@ See [Google's excellent documentation][schema_docs] on the structure and syntax 
  [wire]: https://square.github.io/wire/
 
  [compiler_docs]: docs/wire_compiler.md
+ [compiler_docs_swift]: docs/wire_compiler.md#swift-support
  [grpc_docs]: docs/wire_grpc.md
 
  [dinosaur_proto]: samples/simple-sample/src/main/proto/squareup/dinosaurs/dinosaur.proto
