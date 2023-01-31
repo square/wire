@@ -757,7 +757,7 @@ class SwiftGenerator private constructor(
                 if (type.fieldsAndOneOfFields.any { it.codableName != null }) {
                   addStatement("let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase")
                 }
-                if (type.fields.any { it.isCollection || it.isEnum || it.codableDefaultValue != null }) {
+                if (type.fields.any { !it.isOptional && (it.isCollection || it.isEnum || it.codableDefaultValue != null) }) {
                   addStatement("let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include")
                 }
                 addStatement("")
