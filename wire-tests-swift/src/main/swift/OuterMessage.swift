@@ -74,7 +74,6 @@ extension OuterMessage : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
-        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encodeIfPresent(self.outer_number_before, forKey: preferCamelCase ? "outerNumberBefore" : "outer_number_before")
         try container.encodeIfPresent(self.embedded_message, forKey: preferCamelCase ? "embeddedMessage" : "embedded_message")
