@@ -86,7 +86,6 @@ extension OptionalEnumUser : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
-        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encodeIfPresent(self.optional_enum, forKey: preferCamelCase ? "optionalEnum" : "optional_enum")
     }

@@ -66,7 +66,6 @@ extension ExternalMessage : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
-        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encodeIfPresent(self.f, forKey: "f")
     }
