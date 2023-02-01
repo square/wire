@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.schema.CustomTarget
 import com.squareup.wire.schema.JavaTarget
 import com.squareup.wire.schema.KotlinTarget
 import com.squareup.wire.schema.Location
@@ -23,6 +24,7 @@ import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WIRE_RUNTIME_JAR
 import com.squareup.wire.schema.WireRun
 import com.squareup.wire.schema.isWireRuntimeProto
+import com.squareup.wire.schema.newSchemaHandler
 import com.squareup.wire.schema.toOkioFileSystem
 import okio.FileNotFoundException
 import okio.FileSystem
@@ -87,6 +89,8 @@ class WireCompiler internal constructor(
   val javaOut: String?,
   val kotlinOut: String?,
   val swiftOut: String?,
+  val customOut: String?,
+  val schemaHandlerFactoryClass: String?,
   val sourceFileNames: List<String>,
   val treeShakingRoots: List<String>,
   val treeShakingRubbish: List<String>,
@@ -125,6 +129,14 @@ class WireCompiler internal constructor(
     } else if (swiftOut != null) {
       targets += SwiftTarget(
         outDirectory = swiftOut
+      )
+    } else if (customOut != null || schemaHandlerFactoryClass != null) {
+      if (customOut == null || schemaHandlerFactoryClass == null) {
+        throw IllegalArgumentException("Both custom_out and schema_handler_factory_class need to be set")
+      }
+      targets += CustomTarget(
+        outDirectory = customOut,
+        schemaHandlerFactory = newSchemaHandler(schemaHandlerFactoryClass)
       )
     }
 
@@ -188,6 +200,8 @@ class WireCompiler internal constructor(
     private const val JAVA_OUT_FLAG = "--java_out="
     private const val KOTLIN_OUT_FLAG = "--kotlin_out="
     private const val SWIFT_OUT_FLAG = "--swift_out="
+    private const val CUSTOM_OUT_FLAG = "--custom_out="
+    private const val SCHEMA_HANDLER_FACTORY_CLASS_FLAG = "--schema_handler_factory_class="
     private const val FILES_FLAG = "--files="
     private const val INCLUDES_FLAG = "--includes="
     private const val EXCLUDES_FLAG = "--excludes="
@@ -239,6 +253,8 @@ class WireCompiler internal constructor(
       var javaOut: String? = null
       var kotlinOut: String? = null
       var swiftOut: String? = null
+      var customOut: String? = null
+      var schemaHandlerFactoryClass: String? = null
       var emitAndroid = false
       var emitAndroidAnnotations = false
       var emitCompact = false
@@ -270,6 +286,14 @@ class WireCompiler internal constructor(
 
           arg.startsWith(SWIFT_OUT_FLAG) -> {
             swiftOut = arg.substring(SWIFT_OUT_FLAG.length)
+          }
+
+          arg.startsWith(CUSTOM_OUT_FLAG) -> {
+            customOut = arg.substring(CUSTOM_OUT_FLAG.length)
+          }
+
+          arg.startsWith(SCHEMA_HANDLER_FACTORY_CLASS_FLAG) -> {
+            schemaHandlerFactoryClass = arg.substring(SCHEMA_HANDLER_FACTORY_CLASS_FLAG.length)
           }
 
           arg.startsWith(FILES_FLAG) -> {
@@ -311,9 +335,9 @@ class WireCompiler internal constructor(
         }
       }
 
-      if (javaOut == null && kotlinOut == null && swiftOut == null) {
+      if (javaOut == null && kotlinOut == null && swiftOut == null && customOut == null) {
         throw WireException(
-          "Nothing to do! Specify $JAVA_OUT_FLAG, $KOTLIN_OUT_FLAG, or $SWIFT_OUT_FLAG"
+          "Nothing to do! Specify $JAVA_OUT_FLAG, $KOTLIN_OUT_FLAG, $SWIFT_OUT_FLAG, or $CUSTOM_OUT_FLAG"
         )
       }
 
@@ -328,6 +352,8 @@ class WireCompiler internal constructor(
         javaOut = javaOut,
         kotlinOut = kotlinOut,
         swiftOut = swiftOut,
+        customOut = customOut,
+        schemaHandlerFactoryClass = schemaHandlerFactoryClass,
         sourceFileNames = sourceFileNames,
         treeShakingRoots = treeShakingRoots,
         treeShakingRubbish = treeShakingRubbish,
