@@ -130,10 +130,13 @@ class WireCompiler internal constructor(
       targets += SwiftTarget(
         outDirectory = swiftOut
       )
-    } else if (customOut != null) {
+    } else if (customOut != null || schemaHandlerFactoryClass != null) {
+      if (customOut == null || schemaHandlerFactoryClass == null) {
+        throw IllegalArgumentException("Both custom_out and schema_handler_factory_class need to be set")
+      }
       targets += CustomTarget(
         outDirectory = customOut,
-        schemaHandlerFactory = newSchemaHandler(schemaHandlerFactoryClass!!)
+        schemaHandlerFactory = newSchemaHandler(schemaHandlerFactoryClass)
       )
     }
 
