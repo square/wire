@@ -1,6 +1,24 @@
 Change Log
 ==========
 
+Version 4.5.0
+-------------
+
+_2023-02-02_
+
+* Add support for `tvOS`.
+* Add ability to supply custom schema handler from command line.
+
+### Swift
+
+* Add support for Proto3 types just as `Struct`, `Any`, `Duration`, and `Timestamp`.
+* Add `Sendable` conformance to all generated types.
+* Wrappers not required anymore for enum encoding.
+* Fix JSON `unknownFields` encoding.
+* Fix base64 and base64url encoding support.
+* Deprecates `@JsonString` and replaces it with two property wrappers.
+* Don't encode default values for JSON.
+
 Version 4.4.3
 -------------
 
