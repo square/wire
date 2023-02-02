@@ -6,13 +6,12 @@ import ru.vyarus.gradle.plugin.animalsniffer.AnimalSnifferExtension
 plugins {
   kotlin("multiplatform")
   id("ru.vyarus.animalsniffer").apply(false)
-  id("org.jetbrains.dokka").apply(false)
+  id("org.jetbrains.dokka")
   id("com.vanniktech.maven.publish.base").apply(false)
 }
 
 if (project.rootProject.name == "wire") {
   apply(plugin = "ru.vyarus.animalsniffer")
-  apply(plugin = "org.jetbrains.dokka")
   apply(plugin = "com.vanniktech.maven.publish.base")
 }
 

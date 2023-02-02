@@ -14,13 +14,12 @@ plugins {
   id("com.github.gmazzo.buildconfig")
   id("java-gradle-plugin")
   id("com.gradle.plugin-publish").version("0.18.0").apply(false)
-  id("org.jetbrains.dokka").apply(false)
+  id("org.jetbrains.dokka")
   id("com.vanniktech.maven.publish.base").apply(false)
 }
 
 if (project.rootProject.name == "wire") {
   apply(plugin = "com.gradle.plugin-publish")
-  apply(plugin = "org.jetbrains.dokka")
   apply(plugin = "com.vanniktech.maven.publish.base")
 }
 

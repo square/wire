@@ -6,7 +6,11 @@ plugins {
   id("java-library")
   kotlin("jvm")
   id("org.jetbrains.dokka")
-  id("com.vanniktech.maven.publish.base")
+  id("com.vanniktech.maven.publish.base").apply(false)
+}
+
+if (project.rootProject.name == "wire") {
+  apply(plugin = "com.vanniktech.maven.publish.base")
 }
 
 val main by sourceSets.getting {
