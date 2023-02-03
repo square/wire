@@ -5,10 +5,15 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import ru.vyarus.gradle.plugin.animalsniffer.AnimalSnifferExtension
 
 plugins {
-  id("ru.vyarus.animalsniffer")
+  id("ru.vyarus.animalsniffer").apply(false)
   kotlin("jvm")
   id("org.jetbrains.dokka")
-  id("com.vanniktech.maven.publish.base")
+  id("com.vanniktech.maven.publish.base").apply(false)
+}
+
+if (project.rootProject.name == "wire") {
+  apply(plugin = "ru.vyarus.animalsniffer")
+  apply(plugin = "com.vanniktech.maven.publish.base")
 }
 
 val main by sourceSets.getting
