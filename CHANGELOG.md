@@ -11,13 +11,24 @@ _2023-02-02_
 
 ### Swift
 
-* Add support for Proto3 types just as `Struct`, `Any`, `Duration`, and `Timestamp`.
 * Add `Sendable` conformance to all generated types.
-* Wrappers not required anymore for enum encoding.
-* Fix JSON `unknownFields` encoding.
-* Fix base64 and base64url encoding support.
-* Deprecates `@JsonString` and replaces it with two property wrappers.
-* Don't encode default values for JSON.
+* Improved support for Proto3 types such as `Struct`, `Any`, `Duration`, and `Timestamp`.
+* `@JsonString` has been deprecated and will be removed in a future release.
+* Codable conformance has been completely rewritten and should be much more compliant to the spec.
+    * This is a somewhat breaking change and heavily dependent upon the types you were using.
+    * Notably: Dictionaries with non-string keys are not forwards compatible with new models.
+    * The corrected encoding are not backwards compatible with old models.
+    * Encoding fixes:
+        * `unknownFields` should never be encoded any more.
+        * Don't encode default values by default (configurable).
+        * Encode field names in camelCase by default (configurable).
+        * Encode Enums as Strings by default (configurable).
+        * Maps will now always encode their keys as Strings.
+    * Decoding fixes:
+        * Data now supports both base64 and base64url binary formats.
+        * Enums can now be decoded from either String or UInt32 values.
+        * Unknown Enum values can optionally be skipped.
+        * Both camelCase and snake_case key names are accepted. camelCase is preferred.
 
 Version 4.4.3
 -------------
