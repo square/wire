@@ -19,6 +19,12 @@ if (project.rootProject.name == "wire") {
   configure<AnimalSnifferExtension> {
     sourceSets = listOf(main)
   }
+
+  configure<MavenPublishBaseExtension> {
+    configure(
+      KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
+    )
+  }
 }
 
 dependencies {
@@ -28,12 +34,6 @@ dependencies {
   testImplementation(libs.assertj)
   testImplementation(libs.junit)
   testImplementation(libs.moshiKotlin)
-}
-
-configure<MavenPublishBaseExtension> {
-  configure(
-    KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
-  )
 }
 
 configure<SpotlessExtension> {

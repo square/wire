@@ -11,6 +11,12 @@ plugins {
 
 if (project.rootProject.name == "wire") {
   apply(plugin = "com.vanniktech.maven.publish.base")
+
+  configure<MavenPublishBaseExtension> {
+    configure(
+      KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
+    )
+  }
 }
 
 val main by sourceSets.getting {
@@ -52,10 +58,4 @@ val generateReflectionProtos by tasks.creating(JavaExec::class) {
 
 val compileKotlin by tasks.getting {
   dependsOn(generateReflectionProtos)
-}
-
-configure<MavenPublishBaseExtension> {
-  configure(
-    KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
-  )
 }
