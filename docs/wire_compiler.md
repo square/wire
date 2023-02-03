@@ -554,7 +554,7 @@ Then run pod install to get the dependencies and build the Wire compiler.
 
 Swift Package Manager is also supported for linking the Wire runtime.
 
-## Build Your Protos
+### Build Your Protos
 
 The Wire compiler uses [SwiftPoet][swiftpoet] to generate Swift code.
 The resulting objects automatically conform to `Equatable`, `Codable` and `Sendable`.
@@ -568,7 +568,7 @@ java -jar ./Pods/WireCompiler/compiler.jar \
   "--experimental-module-manifest=<path to manifest yaml file>"
 ```
 
-## Swift Manifest
+### Swift Manifest
 
 Swift introduced a new challenge that didn’t exist with Kotlin and Java: modules.
 Kotlin and Java both use fully-qualified package names, but Swift modules are defined by their compilation unit, and thus namespaces aren’t declared at the type or file level.
