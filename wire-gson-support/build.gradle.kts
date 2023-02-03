@@ -14,11 +14,11 @@ plugins {
 if (project.rootProject.name == "wire") {
   apply(plugin = "ru.vyarus.animalsniffer")
   apply(plugin = "com.vanniktech.maven.publish.base")
-}
 
-val main by sourceSets.getting
-configure<AnimalSnifferExtension> {
-  sourceSets = listOf(main)
+  val main by sourceSets.getting
+  configure<AnimalSnifferExtension> {
+    sourceSets = listOf(main)
+  }
 }
 
 dependencies {
