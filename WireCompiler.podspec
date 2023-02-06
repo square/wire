@@ -12,6 +12,8 @@ Pod::Spec.new do |s|
   s.source        = { :git => 'https://github.com/square/wire.git', :tag => version }
   s.module_name   = 'WireCompiler'
 
+  s.osx.deployment_target  = '10.15'
+
   s.prepare_command = <<-CMD
     curl https://repo.maven.apache.org/maven2/com/squareup/wire/wire-compiler/#{version}/wire-compiler-#{version}-jar-with-dependencies.jar --output compiler.jar
   CMD
