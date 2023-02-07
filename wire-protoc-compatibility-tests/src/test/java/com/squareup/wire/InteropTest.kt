@@ -176,10 +176,9 @@ class InteropTest {
         .setXYZ("9")
         .build(),
       canonicalJson = """{"helloWorld":"1","aB":"2","CccDdd":"3","EEeeFfGGg":"4","aBC":"5","GHI":"6","KLM":"7","TUV":"8","XYZ":"9"}""",
-      """{"hello_world":"1","a__b":"2","_Ccc_ddd":"3","EEee_ff_gGg":"4","a_b_c":"5","GHI":"6","K_L_M":"7","__T__U__V__":"8","_x_y_z_":"9"}""",
+      wireCanonicalJson = """{"hello_world":"1","a__b":"2","_Ccc_ddd":"3","EEee_ff_gGg":"4","a_b_c":"5","GHI":"6","K_L_M":"7","__T__U__V__":"8","_x_y_z_":"9"}""",
       alternateJsons = listOf(
-        // TODO(bquenaudon): support reading camelCase proto2 messages.
-        // """{"helloWorld":"1","aB":"2","CccDdd":"3","eEeeFfGGg":"4"}""",
+        """{"helloWorld":"1","aB":"2","CccDdd":"3","EEeeFfGGg":"4","aBC":"5","GHI":"6","KLM":"7","TUV":"8","XYZ":"9"}""",
       )
     )
 

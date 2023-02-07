@@ -45,17 +45,32 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
    * name.
    *
    * For reserved keywords in Kotlin or Java, a field like `public` are written as so although the
-   * generated field name is `public_`. We wanna read in either form. As well, in proto3 fields
+   * generated field name is `public_`. We want to read in either form. As well, in proto3 fields
    * declared in snake_case like `customer_id` are written in camelCase like `customerId`, but can
    * be read in either form. We can use exclusive logic between the two cases because there's no
    * keyword defined in snake_case. The alternate name will be absent if the field name isn't a
    * keyword or if the snake and camel cases are the same, such as in single-word identifiers.
+   * Lastly, in order to deserialize camelCased field from proto2, we add a camelCase alternative
+   * if the `jsonName` doesn't already match it.
    */
-  val jsonAlternateNames: List<String?> = fieldBindingsArray.map {
-    when {
-      it.jsonName != it.declaredName -> it.declaredName
-      it.jsonName != it.name -> it.name
-      else -> null
+  val jsonAlternateNames: List<String?> = run {
+    val jsonNames = fieldBindingsArray.map { it.jsonName }
+    return@run fieldBindingsArray.map {
+      when {
+        it.jsonName != it.declaredName -> it.declaredName
+        it.jsonName != it.name -> it.name
+        else -> {
+          val camelCaseDeclaredName = camelCase(it.declaredName)
+          if (it.jsonName != camelCaseDeclaredName &&
+            // We do not want to shadow an existing `jsonName`.
+            !jsonNames.contains(camelCaseDeclaredName)
+          ) {
+            camelCaseDeclaredName
+          } else {
+            null
+          }
+        }
+      }
     }
   }
 
