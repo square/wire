@@ -21,6 +21,7 @@ import com.squareup.moshi.Types
 import com.squareup.wire.internal.EnumJsonFormatter
 import com.squareup.wire.internal.createRuntimeMessageAdapter
 import java.lang.reflect.Type
+import java.util.Optional
 
 /**
  * A [JsonAdapter.Factory] that allows Wire messages to be serialized and deserialized using the
@@ -44,7 +45,7 @@ import java.lang.reflect.Type
 class WireJsonAdapterFactory @JvmOverloads constructor(
   private val typeUrlToAdapter: Map<String, ProtoAdapter<*>> = mapOf(),
   private val writeIdentityValues: Boolean = false,
-  private val loader: ClassLoader,
+  private val loader: Optional<ClassLoader> = Optional.empty()
 ) : JsonAdapter.Factory {
   /**
    * Returns a new WireJsonAdapterFactory that can encode the messages for [adapters] if they're
@@ -75,6 +76,7 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
     moshi: Moshi
   ): JsonAdapter<*>? {
     val rawType = Types.getRawType(type)
+    val loader = if (loader.isPresent) loader.get() else rawType.classLoader
 
     return when {
       annotations.isNotEmpty() -> null

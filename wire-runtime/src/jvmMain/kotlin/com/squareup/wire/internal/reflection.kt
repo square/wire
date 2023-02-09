@@ -30,7 +30,7 @@ fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
   messageType: Class<M>,
   typeUrl: String?,
   syntax: Syntax,
-  loader: ClassLoader,
+  loader: ClassLoader? = messageType.classLoader,
   writeIdentityValues: Boolean = false,
 ): RuntimeMessageAdapter<M, B> {
   val builderType = getBuilderType(messageType)
@@ -87,7 +87,7 @@ private fun <M : Message<M, B>, B : Message.Builder<M, B>> getKeys(
 fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
   messageType: Class<M>,
   writeIdentityValues: Boolean,
-  loader: ClassLoader,
+  loader: ClassLoader? = messageType.classLoader,
 ): RuntimeMessageAdapter<M, B> {
   val defaultAdapter = ProtoAdapter.get(messageType as Class<*>)
   return createRuntimeMessageAdapter(

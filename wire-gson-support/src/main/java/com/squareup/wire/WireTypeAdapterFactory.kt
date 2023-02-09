@@ -21,6 +21,7 @@ import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 import com.squareup.wire.internal.EnumJsonFormatter
 import com.squareup.wire.internal.createRuntimeMessageAdapter
+import java.util.Optional
 
 /**
  * A [TypeAdapterFactory] that allows Wire messages to be serialized and deserialized
@@ -48,6 +49,7 @@ import com.squareup.wire.internal.createRuntimeMessageAdapter
 class WireTypeAdapterFactory @JvmOverloads constructor(
   private val typeUrlToAdapter: Map<String, ProtoAdapter<*>> = mapOf(),
   private val writeIdentityValues: Boolean = false,
+  private val loader: Optional<ClassLoader> = Optional.empty()
 ) : TypeAdapterFactory {
   /**
    * Returns a new WireJsonAdapterFactory that can encode the messages for [adapters] if they're
@@ -61,7 +63,7 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
       )
       newMap[key] = adapter
     }
-    return WireTypeAdapterFactory(newMap, writeIdentityValues)
+    return WireTypeAdapterFactory(newMap, writeIdentityValues, loader)
   }
 
   /**
@@ -74,7 +76,7 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
 
   override fun <T> create(gson: Gson, type: TypeToken<T>): TypeAdapter<T>? {
     val rawType = type.rawType
-    val loader = rawType.classLoader
+    val loader = if (loader.isPresent) loader.get() else rawType.classLoader
 
     return when {
       rawType == AnyMessage::class.java -> AnyMessageTypeAdapter(gson, typeUrlToAdapter) as TypeAdapter<T>
@@ -87,11 +89,13 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
         val jsonAdapters = GsonJsonIntegration.jsonAdapters(messageAdapter, gson)
         MessageTypeAdapter(messageAdapter, jsonAdapters).nullSafe() as TypeAdapter<T>
       }
+
       WireEnum::class.java.isAssignableFrom(rawType) -> {
         val enumAdapter = RuntimeEnumAdapter.create(rawType as Class<Nothing>)
         val enumJsonFormatter = EnumJsonFormatter(enumAdapter)
         EnumTypeAdapter(enumJsonFormatter).nullSafe() as TypeAdapter<T>
       }
+
       else -> null
     }
   }
