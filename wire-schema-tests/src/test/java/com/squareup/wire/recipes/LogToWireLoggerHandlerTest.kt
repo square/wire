@@ -66,7 +66,7 @@ class LogToWireLoggerHandlerTest {
       logger = logger,
       sourcePathPaths = setOf("test/message.proto", "test/service.proto"),
     )
-    LogToWireLoggerHandler().handle(schema, context)
+    LogToWireLoggerHandler("out".toPath()).handle(schema, context)
 
     assertThat(logger.artifactHandled.removeFirst()).isEqualTo(Triple("out".toPath(), "test", "Request"))
     assertThat(logger.artifactHandled.removeFirst()).isEqualTo(Triple("out".toPath(), "test", "Response"))

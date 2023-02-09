@@ -24,10 +24,10 @@ import okio.Path
 import okio.Path.Companion.toPath
 
 /** Sample schema handler which logs handled types and services. */
-class LogToWireLoggerHandler : SchemaHandler() {
+class LogToWireLoggerHandler(private val outDirectory: Path) : SchemaHandler() {
   override fun handle(type: Type, context: Context): Path? {
     context.logger.artifactHandled(
-      "".toPath(), type.type.enclosingTypeOrPackage ?: "", type.type.simpleName
+      outDirectory, type.type.enclosingTypeOrPackage ?: "", type.type.simpleName
     )
 
     return null
@@ -35,7 +35,7 @@ class LogToWireLoggerHandler : SchemaHandler() {
 
   override fun handle(service: Service, context: Context): List<Path> {
     context.logger.artifactHandled(
-      "".toPath(), service.type.enclosingTypeOrPackage ?: "", service.type.simpleName
+      outDirectory, service.type.enclosingTypeOrPackage ?: "", service.type.simpleName
     )
 
     return listOf()
