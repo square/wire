@@ -76,7 +76,6 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
 
   override fun <T> create(gson: Gson, type: TypeToken<T>): TypeAdapter<T>? {
     val rawType = type.rawType
-    val loader = if (loader.isPresent) loader.get() else rawType.classLoader
 
     return when {
       rawType == AnyMessage::class.java -> AnyMessageTypeAdapter(gson, typeUrlToAdapter) as TypeAdapter<T>
@@ -84,7 +83,7 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
         val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(
           rawType as Class<Nothing>,
           writeIdentityValues,
-          loader,
+          loader.orElseGet { rawType.classLoader },
         )
         val jsonAdapters = GsonJsonIntegration.jsonAdapters(messageAdapter, gson)
         MessageTypeAdapter(messageAdapter, jsonAdapters).nullSafe() as TypeAdapter<T>

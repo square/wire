@@ -76,7 +76,6 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
     moshi: Moshi
   ): JsonAdapter<*>? {
     val rawType = Types.getRawType(type)
-    val loader = if (loader.isPresent) loader.get() else rawType.classLoader
 
     return when {
       annotations.isNotEmpty() -> null
@@ -85,7 +84,7 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
         val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(
           type as Class<Nothing>,
           writeIdentityValues,
-          loader,
+          loader.orElseGet { rawType.classLoader },
         )
         val jsonAdapters = MoshiJsonIntegration.jsonAdapters(messageAdapter, moshi)
         val redactedFieldsAdapter = moshi.adapter<List<String>>(
