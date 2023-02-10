@@ -245,7 +245,7 @@ class SwiftGenerator private constructor(
             FunctionSpec.builder("copyStorage")
               .addModifiers(PRIVATE, MUTATING)
               .beginControlFlow("if", "!isKnownUniquelyReferenced(&_%N)", storageName)
-              .addStatement("self.%1N = %1N", storageName)
+              .addStatement("_%1N = %2T(wrappedValue: %1N)", storageName, heap)
               .endControlFlow("if")
               .build()
           )
