@@ -1412,7 +1412,7 @@ public struct AllTypes {
 
     private mutating func copyStorage() {
         if !isKnownUniquelyReferenced(&_storage) {
-            self.storage = storage
+            _storage = Heap(wrappedValue: storage)
         }
     }
 
