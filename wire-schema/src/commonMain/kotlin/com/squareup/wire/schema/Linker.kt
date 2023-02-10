@@ -84,11 +84,15 @@ class Linker {
    */
   fun link(sourceProtoFiles: Iterable<ProtoFile>): Schema {
     val sourceFiles = mutableListOf<FileLinker>()
-    sourceFiles += getFileLinker("google/protobuf/descriptor.proto")
     for (sourceFile in sourceProtoFiles) {
       val fileLinker = FileLinker(sourceFile, withContext(sourceFile))
       fileLinkers[sourceFile.location.path] = fileLinker
       sourceFiles += fileLinker
+    }
+
+    // Ensure linking the descriptor.proto, if not provided.
+    if (fileLinkers["google/protobuf/descriptor.proto"] == null) {
+      sourceFiles += getFileLinker("google/protobuf/descriptor.proto")
     }
 
     // When loading exhaustively, every import (and transitive import!) is a source file.
