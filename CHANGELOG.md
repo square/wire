@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Version 4.5.1
+-------------
+
+_2023-02-11_
+
+* Fix swift Copy-on-Write behavior.
+* Support deserialization of camelCased fields in proto2.
+
 Version 4.5.0
 -------------
 
