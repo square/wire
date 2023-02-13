@@ -319,4 +319,18 @@ extension StringEncodedTests {
         let actualStruct = try decoder.decode(DictionaryStruct.self, from: jsonData)
         XCTAssertEqual(expectedStruct, actualStruct)
     }
+
+    func testBase64URLEncoding() throws {
+        let base64 = "CiHSZFeg4VTJRJO5B9vXbTmlOqQSjwe9CAZG6jSj2RxDt/AVAQAAABgWIg1NTFZCQkU0TVo3WVE0"
+        let expectedBase64URL = "CiHSZFeg4VTJRJO5B9vXbTmlOqQSjwe9CAZG6jSj2RxDt_AVAQAAABgWIg1NTFZCQkU0TVo3WVE0"
+
+        XCTAssertEqual(expectedBase64URL, base64.base64URL())
+    }
+
+    func testBase64URLDecoding() throws {
+        let base64URL = "CiHSZFeg4VTJRJO5B9vXbTmlOqQSjwe9CAZG6jSj2RxDt_AVAQAAABgWIg1NTFZCQkU0TVo3WVE0"
+        let expectedBase64 = "CiHSZFeg4VTJRJO5B9vXbTmlOqQSjwe9CAZG6jSj2RxDt/AVAQAAABgWIg1NTFZCQkU0TVo3WVE0"
+
+        XCTAssertEqual(expectedBase64, base64URL.base64())
+    }
 }

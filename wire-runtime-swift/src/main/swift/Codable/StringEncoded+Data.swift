@@ -47,10 +47,7 @@ extension Data {
     /// - SeeAlso: [RFC4648](https://www.rfc-editor.org/rfc/rfc4648#section-5)
     public func base64URLEncodedString(options: Data.Base64EncodingOptions = []) -> String {
         let base64 = base64EncodedString(options: options)
-        return base64
-            .replacingOccurrences(of: "/", with: "_")
-            .replacingOccurrences(of: "+", with: "-")
-            .replacingOccurrences(of: "=", with: "")
+        return base64.base64URL()
     }
 
     /// Initialize Data from Base-64 URL-Safe encoded data.
@@ -71,16 +68,31 @@ extension Data {
         base64URLEncoded base64URLString: String,
         options: Data.Base64DecodingOptions = []
     ) {
-        // https://en.wikipedia.org/wiki/Base64#Output_padding
-        let count = base64URLString.count
-        let remainder = 4 - (count % 4)
-        let desiredLength = count + remainder
+        self.init(base64Encoded: base64URLString.base64(), options: options)
+    }
+}
 
-        let base64String = base64URLString
-            .replacingOccurrences(of: "-", with: "+")
+extension String {
+    /// Converts a Base-64 encoded string to a Base-64 URL encoded string.
+    /// - SeeAlso: [RFC4648](https://www.rfc-editor.org/rfc/rfc4648#section-5)
+    func base64URL() -> String {
+        return replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "=", with: "")
+    }
+
+    /// Converts a Base-64 URL encoded string to a Base-64 encoded string.
+    /// - SeeAlso: [RFC4648](https://www.rfc-editor.org/rfc/rfc4648#section-5)
+    func base64() -> String {
+        // https://en.wikipedia.org/wiki/Base64#Output_padding
+        let remainder = count % 4
+        var desiredLength = count
+        if remainder > 0 {
+            desiredLength += 4 - remainder
+        }
+
+        return replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
             .padding(toLength: desiredLength, withPad: "=", startingAt: 0)
-
-        self.init(base64Encoded: base64String, options: options)
     }
 }
