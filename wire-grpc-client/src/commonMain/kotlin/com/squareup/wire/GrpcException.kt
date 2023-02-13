@@ -20,5 +20,6 @@ import okio.IOException
 
 class GrpcException(
   val grpcStatus: GrpcStatus,
-  val grpcMessage: String?
+  val grpcMessage: String?,
+  val grpcStatusDetails: ByteArray? = null,
 ) : IOException("grpc-status=${grpcStatus.code}, grpc-status-name=${grpcStatus.name}, grpc-message=$grpcMessage")

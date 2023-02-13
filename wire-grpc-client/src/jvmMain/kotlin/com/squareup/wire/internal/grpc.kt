@@ -34,6 +34,7 @@ import okhttp3.RequestBody
 import okio.BufferedSink
 import okio.IOException
 import java.io.Closeable
+import java.util.Base64
 
 internal val APPLICATION_GRPC_MEDIA_TYPE: MediaType = "application/grpc".toMediaType()
 
@@ -199,6 +200,7 @@ internal fun GrpcResponse.grpcResponseToException(suppressed: IOException? = nul
 
   val grpcStatus = trailers["grpc-status"] ?: header("grpc-status")
   val grpcMessage = trailers["grpc-message"] ?: header("grpc-message")
+  var grpcStatusDetailsBin: ByteArray? = null
 
   if (transportException != null) {
     return IOException(
@@ -215,7 +217,19 @@ internal fun GrpcResponse.grpcResponseToException(suppressed: IOException? = nul
           " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)"
       )
 
-    return GrpcException(GrpcStatus.get(grpcStatusInt), grpcMessage)
+    (trailers["grpc-status-details-bin"] ?: header("grpc-status-details-bin"))?.let {
+      try {
+        grpcStatusDetailsBin = Base64.getDecoder().decode(it)
+      } catch (e: IllegalArgumentException) {
+        throw IOException(
+          "gRPC transport failure, invalid grpc-status-details-bin" +
+            " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)",
+          e
+        )
+      }
+    }
+
+    return GrpcException(GrpcStatus.get(grpcStatusInt), grpcMessage, grpcStatusDetailsBin)
   }
 
   return null // Success.
