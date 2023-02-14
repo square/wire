@@ -23,6 +23,7 @@ import com.squareup.wire.MockRouteGuideService.Action.ReceiveComplete
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveError
 import com.squareup.wire.MockRouteGuideService.Action.SendCompleted
 import com.squareup.wire.MockRouteGuideService.Action.SendMessage
+import io.grpc.Metadata
 import io.grpc.Status
 import io.grpc.StatusException
 import kotlinx.coroutines.CancellationException
@@ -38,7 +39,6 @@ import okhttp3.Interceptor
 import okhttp3.Interceptor.Chain
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.Protocol
 import okhttp3.Protocol.HTTP_2
 import okhttp3.Request
 import okhttp3.Response
@@ -1564,6 +1564,32 @@ class GrpcClientTest {
         assertThat(expected).isInstanceOf(IOException::class.java)
         assertThat(grpcCall.isCanceled()).isTrue()
       }
+    }
+  }
+
+  @Test
+  fun requestFailureWithDetailsMessage() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature("tree 5,6")
+    val metadata = Metadata().apply {
+      put(
+        Metadata.Key.of("grpc-status-details-bin", Metadata.BINARY_BYTE_MARSHALLER),
+        RouteNote(message = "marco").encode()
+      )
+    }
+    mockService.enqueueSendError(Status.INTERNAL.withDescription("boom").asRuntimeException(metadata))
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    try {
+      grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+      fail()
+    } catch (expected: GrpcException) {
+      assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
+      assertThat(expected).hasMessage("grpc-status=13, grpc-status-name=INTERNAL, grpc-message=boom")
+      assertThat(RouteNote.ADAPTER.decode(expected.grpcStatusDetails!!).message).isEqualTo("marco")
     }
   }
 
