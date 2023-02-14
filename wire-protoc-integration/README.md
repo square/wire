@@ -7,7 +7,7 @@ request and response API.
 # Protoc integration and execution
 To execute `protoc-gen-wire-kotlin`, you will need to install `protoc`.
 For more information on using the `protoc` tool, check out the
-`protobuf.dev`(https://protobuf.dev/getting-started/javatutorial/#compiling-protocol-buffers)
+[`protobuf.dev`](https://protobuf.dev/getting-started/javatutorial/#compiling-protocol-buffers)
 website.
 
 To use the `protoc-gen-wire-kotlin` plugin, the following command
