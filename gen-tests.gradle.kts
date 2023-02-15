@@ -138,7 +138,8 @@ val generateGsonAdapterKotlinTests by tasks.creating(JavaExec::class) {
           "dinosaur_kotlin.proto",
           "period_kotlin.proto",
           "person_kotlin.proto",
-          "getters_kotlin.proto"
+          "getters_kotlin.proto",
+          "pizza.proto"
   )
 }
 
@@ -517,7 +518,8 @@ val generateMoshiAdapterKotlinTests by tasks.creating(JavaExec::class) {
           "person_kotlin.proto",
           "dinosaur_kotlin.proto",
           "period_kotlin.proto",
-          "getters_kotlin.proto"
+          "getters_kotlin.proto",
+          "pizza.proto"
   )
 }
 
