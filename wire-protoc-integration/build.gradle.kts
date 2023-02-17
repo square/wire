@@ -17,7 +17,8 @@ tasks {
   // binary: https://www.baeldung.com/kotlin/gradle-executable-jar
   val javaGeneratorBinary = register<Jar>("javaGeneratorBinary") {
     archiveBaseName.set("protoc-java")
-    dependsOn.addAll(listOf("compileJava", "compileKotlin", "processResources")) // We need this for Gradle optimization to work
+    // We help Gradle optimization to work.
+    dependsOn.addAll(listOf("compileJava", "compileKotlin", "processResources"))
     archiveVersion.set("")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest { attributes(mapOf("Main-Class" to "com.squareup.wire.protocwire.cmd.JavaGenerator")) } // Provided we set it up in the application plugin configuration
