@@ -20,19 +20,21 @@ import com.google.protobuf.compiler.PluginProtos
 
 /**
  * CodeGenerator interface used by `Plugin.run()` to generate code.
- * This would be implemented for each Target type (one-to-one relationship). 
- * Since Wire has an  internal ProtoFile representation, each Target can 
+ * This would be implemented for each Target type (one-to-one relationship).
+ * Since Wire has an  internal ProtoFile representation, each Target can
  * rely on the same underlying file descriptor to ProtoFile translation.
  */
 interface CodeGenerator {
     /**
-     * Generates code for the given proto file, generating one or more files to
-     * the given response. Called by `Plugin`to pass a parsed proto file through
-     * as a request and writes to disk the files in the response upon method return.
-     * 
-     * @params request the code generator request that contains the file descriptor set for the protoc input.
-     * @params descriptorSource the descriptor source for the protoc input.
-     * @params response the response of the generator which contains the serialized file to generate.
+     * Generates code for the given `.proto` file. Generating one or more files for
+     * a single response is supported.
+     * The [generate] method is called by [Plugin] to pass a proto file descriptor
+     * through as a request and writes to disk the files in the response upon
+     * method return.
+     *
+     * @param request the code generator request that contains the file descriptor set for the protoc input.
+     * @param descriptorSource the descriptor source for the protoc input.
+     * @param response the response of the generator which contains the serialized file to generate.
      */
     fun generate(
         request: PluginProtos.CodeGeneratorRequest,
