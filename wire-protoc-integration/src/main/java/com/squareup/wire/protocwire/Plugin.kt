@@ -28,30 +28,32 @@ import java.io.OutputStream
 
 /**
  * Front-end for protoc code generator plugins written in Kotlin (translated from Java).
- *
+ * Original code from: https://codereview.appspot.com/912042.
  *
  * To implement a protoc plugin in Kotlin, simply write an implementation of
  * [CodeGenerator], then create a main() method like:
  *
- * <pre>`
+ * ```
  * @JvmStatic
  * fun main(args: Array<String>) {
  *   Plugin.run(Generator())
  * }
-`</pre> *
+ * ```
  * To get protoc to use the plugin, you'll have to create a launcher script:
- * <pre>`
+ * ```
  * #!/bin/sh
  * cd `dirname $0`
  * exec java -jar myplugin.jar
-`</pre> *
+ *```
+ *
  * On Windows, if it lives in the same folder as the plugin's JAR, it will
  * probably look like:
  * <pre>`
  * @echo off
  * java -jar "%~dp0\myplugin.jar"
  * exit %errorlevel%
-`</pre> *
+ *```
+ *
  * You'll then have to do one of the following:
  *
  *  * Place the plugin binary somewhere in the `PATH` and give it the
@@ -80,8 +82,6 @@ object Plugin {
     /**
      * Runs the given code generator, reading the request from [System.in]
      * and writing the response to [System.out].
-     *
-     * @see .run
      */
     @JvmOverloads
     fun run(generator: CodeGenerator, environment: Environment = DefaultEnvironment()) {

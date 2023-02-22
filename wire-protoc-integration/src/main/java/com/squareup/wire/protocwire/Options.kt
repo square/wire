@@ -21,14 +21,14 @@ import com.google.protobuf.DynamicMessage
 import com.google.protobuf.GeneratedMessageV3
 import com.squareup.wire.schema.internal.parser.OptionElement
 
-internal fun <T : GeneratedMessageV3.ExtendableMessage<T>> parseOptions(options: T, descs: Plugin.DescriptorSource): List<OptionElement> {
+internal fun <T : GeneratedMessageV3.ExtendableMessage<T>> parseOptions(options: T, descriptorSource: Plugin.DescriptorSource): List<OptionElement> {
   val optDesc = options.descriptorForType
-  val overrideDesc = descs.findMessageTypeByName(optDesc.fullName)
+  val overrideDesc = descriptorSource.findMessageTypeByName(optDesc.fullName)
   if (overrideDesc != null) {
-    val optsDm = DynamicMessage.newBuilder(overrideDesc)
+    val dynamicMessage = DynamicMessage.newBuilder(overrideDesc)
       .mergeFrom(options)
       .build()
-    return createOptionElements(optsDm)
+    return createOptionElements(dynamicMessage)
   }
   return createOptionElements(options)
 }
@@ -36,10 +36,10 @@ internal fun <T : GeneratedMessageV3.ExtendableMessage<T>> parseOptions(options:
 private fun createOptionElements(options: AbstractMessage): List<OptionElement> {
   val elements = mutableListOf<OptionElement>()
   for (entry in options.allFields.entries) {
-    val fld = entry.key
-    val name = if (fld.isExtension) fld.fullName else fld.name
+    val field = entry.key
+    val name = if (field.isExtension) field.fullName else field.name
     val (value, kind) = valueOf(entry.value)
-    elements.add(OptionElement(name, kind, value, fld.isExtension))
+    elements.add(OptionElement(name, kind, value, field.isExtension))
   }
   return elements
 }
@@ -77,14 +77,14 @@ private fun simpleValue(optionValueAndKind: OptionValueAndKind): Any {
 }
 
 private fun valueOfList(list: List<*>): List<Any> {
-  val ret = mutableListOf<Any>()
+  val result = mutableListOf<Any>()
   for (element in list) {
     if (element == null) {
       throw NullPointerException("list value should not contain null")
     }
-    ret.add(simpleValue(valueOf(element)))
+    result.add(simpleValue(valueOf(element)))
   }
-  return ret
+  return result
 }
 
 internal fun valueOfMessage(abstractMessage: AbstractMessage): Map<String, Any> {

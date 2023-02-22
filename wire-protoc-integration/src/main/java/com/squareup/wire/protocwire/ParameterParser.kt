@@ -26,15 +26,16 @@ internal class ParameterParser {
      * will be assumed to be key value pairs separated by `=` and
      * different pairs are delimited by `,`.
      */
+    @JvmStatic
     internal fun parse(parameter: String): Map<String, String> {
       val parsedParameters = mutableMapOf<String, String>()
       val split = parameter.split(',')
       split.forEach { str -> str.trim() }
-      for (elm in split) {
-        if (!elm.contains('=')) {
+      for (element in split) {
+        if (!element.contains('=')) {
           continue
         }
-        val pair = elm.split('=')
+        val pair = element.split('=')
         if (pair.size != 2) {
           continue
         }

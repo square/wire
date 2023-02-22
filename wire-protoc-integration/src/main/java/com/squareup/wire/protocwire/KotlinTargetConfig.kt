@@ -43,6 +43,7 @@ internal class KotlinTargetConfig {
      * @param parameters the map of string to string from the protoc options.
      * @return the translated KotlinTarget.
      */
+    @JvmStatic
     internal fun parse(parameters: Map<String, String>): KotlinTarget {
       val output = KotlinOutput()
       // The internal values are initialized with defaults.

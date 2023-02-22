@@ -17,7 +17,6 @@ package com.squareup.wire.protocwire
 
 import com.google.protobuf.DescriptorProtos
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.internal.parser.OptionElement
 
 internal data class LocationAndComments(val comment: String, val loc: Location)
 
@@ -42,8 +41,8 @@ internal class SourceInfo(
     return helper.getLocation(path)
   }
 
-  fun infoContaining(loc: Location): LocationAndComments {
-    return helper.findLocationContaining(path, loc)
+  fun infoContaining(location: Location): LocationAndComments {
+    return helper.findLocationContaining(path, location)
   }
 }
 
@@ -92,20 +91,20 @@ internal class SourceCodeHelper(
   }
 
   private fun toLocationAndComments(location: DescriptorProtos.SourceCodeInfo.Location?): LocationAndComments {
-    val loc = if (location == null) baseLoc else baseLoc.at(location.getSpan(0) + 1, location.getSpan(1) + 1)
+    val resultLocation = if (location == null) baseLoc else baseLoc.at(location.getSpan(0) + 1, location.getSpan(1) + 1)
     var comment = location?.leadingComments
     if (comment.isNullOrBlank()) {
       comment = location?.trailingComments
     }
-    return LocationAndComments(comment ?: "", loc)
+    return LocationAndComments(comment ?: "", resultLocation)
   }
 
   private fun makeLocationMap(locationList: List<DescriptorProtos.SourceCodeInfo.Location>): Map<List<Int>, List<DescriptorProtos.SourceCodeInfo.Location>> {
     val locationMap = mutableMapOf<List<Int>, MutableList<DescriptorProtos.SourceCodeInfo.Location>>()
     for (location in locationList) {
       val path = mutableListOf<Int>()
-      for (pathElem in location.pathList) {
-        path.add(pathElem)
+      for (pathElement in location.pathList) {
+        path.add(pathElement)
       }
       val locList = locationMap.getOrPut(path) { mutableListOf() }
       locList.add(location)
@@ -124,9 +123,9 @@ internal class SourceCodeHelper(
 internal fun <T> List<T>.withSourceInfo(parentSourceInfo: SourceInfo, childTag: Int): List<Pair<SourceInfo, T>> {
   val baseSource = parentSourceInfo.push(childTag)
   val result = mutableListOf<Pair<SourceInfo, T>>()
-  for ((index, elem) in withIndex()) {
+  for ((index, element) in withIndex()) {
     val newSource = baseSource.push(index)
-    result.add(newSource to elem)
+    result.add(newSource to element)
   }
   return result
 }

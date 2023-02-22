@@ -127,7 +127,7 @@ class WireGenerator(
 
 private fun parseFileDescriptor(
   fileDescriptor: FileDescriptorProto,
-  descs: Plugin.DescriptorSource
+  descriptorSource: Plugin.DescriptorSource
 ): ProtoFileElement {
   val packagePrefix = if (fileDescriptor.hasPackage()) ".${fileDescriptor.`package`}" else ""
 
@@ -143,7 +143,7 @@ private fun parseFileDescriptor(
   }
   val syntax = if (fileDescriptor.hasSyntax()) Syntax[fileDescriptor.syntax] else Syntax.PROTO_2
   val types = mutableListOf<TypeElement>()
-  val baseSourceInfo = SourceInfo(fileDescriptor, descs)
+  val baseSourceInfo = SourceInfo(fileDescriptor, descriptorSource)
   // Parse messages.
   for ((sourceInfo, messageType) in fileDescriptor.messageTypeList.withSourceInfo(
     baseSourceInfo,
@@ -166,7 +166,7 @@ private fun parseFileDescriptor(
   )) {
     services.add(parseService(sourceInfo, service))
   }
-  val extElementList = parseFields(
+  val extensionElementList = parseFields(
     baseSourceInfo,
     FileDescriptorProto.EXTENSION_FIELD_NUMBER,
     fileDescriptor.extensionList,
@@ -174,9 +174,9 @@ private fun parseFileDescriptor(
     baseSourceInfo.descriptorSource,
     syntax
   )
-  val zippedExts = fileDescriptor.extensionList
-    .zip(extElementList) { descriptorProto, fieldElement -> descriptorProto to fieldElement }
-  val extendsList = indexFieldsByExtendee(baseSourceInfo, FileDescriptorProto.EXTENSION_FIELD_NUMBER, zippedExts)
+  val zippedExtensions = fileDescriptor.extensionList
+    .zip(extensionElementList) { descriptorProto, fieldElement -> descriptorProto to fieldElement }
+  val extendsList = indexFieldsByExtendee(baseSourceInfo, FileDescriptorProto.EXTENSION_FIELD_NUMBER, zippedExtensions)
 
   return ProtoFileElement(
     location = Location.get(fileDescriptor.name),
@@ -186,7 +186,7 @@ private fun parseFileDescriptor(
     types = types,
     services = services,
     extendDeclarations = extendsList,
-    options = parseOptions(fileDescriptor.options, descs),
+    options = parseOptions(fileDescriptor.options, descriptorSource),
     syntax = syntax,
   )
 }
@@ -216,7 +216,7 @@ private fun parseService(
 private fun parseMethod(
   baseSourceInfo: SourceInfo,
   method: MethodDescriptorProto,
-  descs: Plugin.DescriptorSource
+  descriptorSource: Plugin.DescriptorSource
 ): RpcElement {
   val rpcInfo = baseSourceInfo.info()
   return RpcElement(
@@ -227,17 +227,17 @@ private fun parseMethod(
     responseType = method.outputType,
     requestStreaming = method.clientStreaming,
     responseStreaming = method.serverStreaming,
-    options = parseOptions(method.options, descs)
+    options = parseOptions(method.options, descriptorSource)
   )
 }
 
 private fun parseEnum(
   baseSourceInfo: SourceInfo,
-  enum: EnumDescriptorProto,
+  enumDescriptorProto: EnumDescriptorProto,
 ): EnumElement {
   val info = baseSourceInfo.info()
   val constants = mutableListOf<EnumConstantElement>()
-  for ((sourceInfo, enumValueDescriptorProto) in enum.valueList.withSourceInfo(
+  for ((sourceInfo, enumValueDescriptorProto) in enumDescriptorProto.valueList.withSourceInfo(
     baseSourceInfo,
     EnumDescriptorProto.VALUE_FIELD_NUMBER
   )) {
@@ -254,9 +254,9 @@ private fun parseEnum(
   }
   return EnumElement(
     location = info.loc,
-    name = enum.name,
+    name = enumDescriptorProto.name,
     documentation = info.comment,
-    options = parseOptions(enum.options, baseSourceInfo.descriptorSource),
+    options = parseOptions(enumDescriptorProto.options, baseSourceInfo.descriptorSource),
     constants = constants,
     reserveds = emptyList()
   )
@@ -368,7 +368,7 @@ private fun parseMessage(
 
 private fun parseOneOfs(
   baseSourceInfo: SourceInfo,
-  oneOfDeclList: List<DescriptorProtos.OneofDescriptorProto>,
+  oneofDescriptorProtoList: List<DescriptorProtos.OneofDescriptorProto>,
   oneOfMap: Map<Int, List<FieldElement>>,
 ): List<OneOfElement> {
   val info = baseSourceInfo.info()
@@ -382,11 +382,11 @@ private fun parseOneOfs(
     }
     result.add(
       OneOfElement(
-        name = oneOfDeclList[oneOfIndex].name,
+        name = oneofDescriptorProtoList[oneOfIndex].name,
         documentation = info.comment,
         fields = fieldList,
         groups = emptyList(),
-        options = parseOptions(oneOfDeclList[oneOfIndex].options, baseSourceInfo.descriptorSource)
+        options = parseOptions(oneofDescriptorProtoList[oneOfIndex].options, baseSourceInfo.descriptorSource)
       )
     )
   }
@@ -442,7 +442,7 @@ private fun parseFields(
   tag: Int,
   fieldList: List<FieldDescriptorProto>,
   mapTypes: Map<String, String>,
-  descs: Plugin.DescriptorSource,
+  descriptorSource: Plugin.DescriptorSource,
   syntax: Syntax,
 ): List<FieldElement> {
   val result = mutableListOf<FieldElement>()
@@ -468,15 +468,15 @@ private fun parseFields(
         jsonName = field.jsonName,
         tag = field.number,
         documentation = info.comment,
-        options = parseOptions(field.options, descs)
+        options = parseOptions(field.options, descriptorSource)
       )
     )
   }
   return result
 }
 
-private fun parseType(field: FieldDescriptorProto): String {
-  return when (field.type) {
+private fun parseType(fieldDescriptorProto: FieldDescriptorProto): String {
+  return when (fieldDescriptorProto.type) {
     FieldDescriptorProto.Type.TYPE_DOUBLE -> "double"
     FieldDescriptorProto.Type.TYPE_FLOAT -> "float"
     FieldDescriptorProto.Type.TYPE_INT64 -> "int64"
@@ -495,21 +495,21 @@ private fun parseType(field: FieldDescriptorProto): String {
     // Collapsing enums and messages are the same.
     FieldDescriptorProto.Type.TYPE_ENUM,
     FieldDescriptorProto.Type.TYPE_MESSAGE -> {
-      field.typeName
+      fieldDescriptorProto.typeName
     }
     FieldDescriptorProto.Type.TYPE_GROUP -> ""
-    else -> throw RuntimeException("else case found for ${field.type}")
+    else -> throw RuntimeException("else case found for ${fieldDescriptorProto.type}")
   }
 }
 
-private fun parseLabel(field: FieldDescriptorProto, syntax: Syntax): Field.Label? {
-  return when (field.label) {
+private fun parseLabel(fieldDescriptorProto: FieldDescriptorProto, syntax: Syntax): Field.Label? {
+  return when (fieldDescriptorProto.label) {
     FieldDescriptorProto.Label.LABEL_REPEATED -> Field.Label.REPEATED
     FieldDescriptorProto.Label.LABEL_REQUIRED -> Field.Label.REQUIRED
     FieldDescriptorProto.Label.LABEL_OPTIONAL ->
       when {
-        field.hasOneofIndex() && !field.proto3Optional -> Field.Label.ONE_OF
-        syntax == Syntax.PROTO_3 && !field.hasExtendee() && !field.proto3Optional -> null
+        fieldDescriptorProto.hasOneofIndex() && !fieldDescriptorProto.proto3Optional -> Field.Label.ONE_OF
+        syntax == Syntax.PROTO_3 && !fieldDescriptorProto.hasExtendee() && !fieldDescriptorProto.proto3Optional -> null
         else -> Field.Label.OPTIONAL
       }
     else -> null
