@@ -21,6 +21,14 @@ import okio.Path
 import okio.Sink
 import okio.Timeout
 
+/**
+ * The primary responsibility of the protoc plugin is to do some memory
+ * manipulation and deferring to protoc to manage the creation of the generated
+ * files through the [Plugin.Response].
+ *
+ * The [ProtocFileSystem] helps with replacing Wire's file writing behavior with
+ * one that defers to protoc to handle generated files.
+ */
 internal class ProtocFileSystem(private val response: Plugin.Response): ForwardingFileSystem(SYSTEM) {
   /**
    * Returns a single sink per file from protoc.
