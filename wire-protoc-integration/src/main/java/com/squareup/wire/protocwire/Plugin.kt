@@ -110,7 +110,7 @@ object Plugin {
         try {
             // go ahead and write response preamble
             PluginProtos.CodeGeneratorResponse
-                .newBuilder()g
+                .newBuilder()
                 .setSupportedFeatures(
                     toFeatureBitmask(PluginProtos.CodeGeneratorResponse.Feature.FEATURE_PROTO3_OPTIONAL)
                 )
