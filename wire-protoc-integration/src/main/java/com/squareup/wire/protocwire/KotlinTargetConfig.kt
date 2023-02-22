@@ -37,6 +37,9 @@ private const val BUILDERS_ONLY = "buildersOnly"
 internal class KotlinTargetConfig {
   companion object {
     /**
+     * See [ParameterParser] for more details
+     * on how the parameters are parsed.
+     *
      * @param parameters the map of string to string from the protoc options.
      * @return the translated KotlinTarget.
      */
