@@ -65,13 +65,13 @@ import java.io.OutputStream
  *  * Place the plugin binary anywhere, with any name, and pass the
  * `--plugin` parameter to protoc to direct it to your plugin like
  * so:
- * <pre>
+ * ```
  * protoc --plugin=protoc-gen-NAME=path/to/myscript --NAME_out=OUT_DIR
-</pre> *
+ * ```
  * On Windows, make sure to include the `.bat` suffix:
- * <pre>
+ * ```
  * protoc --plugin=protoc-gen-NAME=path/to/myscript.bat --NAME_out=OUT_DIR
-</pre> *
+ * ```
  *
  *
  * @author t.broyer@ltgt.net Thomas Broyer
@@ -96,8 +96,8 @@ object Plugin {
         var files = asDescriptors(request.protoFileList)
         val reg = createExtensionRegistry(files.values)
 
-        // now we must *re-parse* the request, but this time we can properly parse any
-        // custom options therein
+        // Now we must *re-parse* the request, but this time we can properly parse any
+        // custom options therein.
         request = try {
             PluginProtos.CodeGeneratorRequest.parseFrom(rawRequest, reg)
         } catch (e: IOException) {
@@ -108,7 +108,7 @@ object Plugin {
             environment.outputStream()
         )
         try {
-            // go ahead and write response preamble
+            // Go ahead and write response preamble.
             PluginProtos.CodeGeneratorResponse
                 .newBuilder()
                 .setSupportedFeatures(
