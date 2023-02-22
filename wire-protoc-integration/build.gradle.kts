@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   application
 
+  id("org.jetbrains.dokka")
   java
   kotlin("jvm")
 }

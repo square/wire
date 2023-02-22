@@ -48,7 +48,7 @@ import java.io.OutputStream
  *
  * On Windows, if it lives in the same folder as the plugin's JAR, it will
  * probably look like:
- * <pre>`
+ * ```
  * @echo off
  * java -jar "%~dp0\myplugin.jar"
  * exit %errorlevel%
