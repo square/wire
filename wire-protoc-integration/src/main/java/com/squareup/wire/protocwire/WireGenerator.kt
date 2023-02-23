@@ -53,7 +53,7 @@ import java.time.format.DateTimeFormatter
 import okio.Path
 import okio.Path.Companion.toPath
 
-class WireGenerator(
+internal class WireGenerator(
   private val schemaHandler: SchemaHandler
 ) : CodeGenerator {
 
