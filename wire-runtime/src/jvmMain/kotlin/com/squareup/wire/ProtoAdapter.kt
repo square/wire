@@ -201,7 +201,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
 
     // Obsolete; for Java classes generated before typeUrl and syntax were added.
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
-      type: Class<M>,
+      type: Class<M>
     ): ProtoAdapter<M> {
       return createRuntimeMessageAdapter(type, null, Syntax.PROTO_2)
     }
@@ -209,7 +209,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     // Obsolete; for Java classes generated before typeUrl and syntax were added.
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
       type: Class<M>,
-      typeUrl: String,
+      typeUrl: String
     ): ProtoAdapter<M> {
       return createRuntimeMessageAdapter(type, typeUrl, Syntax.PROTO_2)
     }
@@ -218,7 +218,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
       type: Class<M>,
       typeUrl: String,
-      syntax: Syntax,
+      syntax: Syntax
     ): ProtoAdapter<M> {
       return createRuntimeMessageAdapter(type, typeUrl, syntax)
     }
@@ -255,7 +255,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     }
 
     /**
-     * Returns the adapter for a given [adapterString]. `adapterString` is specified on a proto
+     * Returns the adapter for a given `adapterString`. `adapterString` is specified on a proto
      * message field's [WireField] annotation in the form
      * `com.squareup.wire.protos.person.Person#ADAPTER`.
      */
@@ -264,7 +264,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     }
 
     /**
-     * Returns the adapter for a given [adapterString], using class loader []. `adapterString` is specified on a
+     * Returns the adapter for a given `adapterString`, using [classLoader]. `adapterString` is specified on a
      * proto message field's [WireField] annotation in the form `com.squareup.wire.protos.person.Person#ADAPTER`.
      */
     @JvmStatic fun get(adapterString: String, classLoader: ClassLoader?): ProtoAdapter<*> {

@@ -90,13 +90,11 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
         )
         MessageJsonAdapter(messageAdapter, jsonAdapters, redactedFieldsAdapter).nullSafe()
       }
-
       WireEnum::class.java.isAssignableFrom(rawType) -> {
         val enumAdapter = RuntimeEnumAdapter.create(type as Class<Nothing>)
         val enumJsonFormatter = EnumJsonFormatter(enumAdapter)
         EnumJsonAdapter(enumJsonFormatter).nullSafe()
       }
-
       else -> null
     }
   }

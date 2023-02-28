@@ -1150,9 +1150,8 @@ class WireJsonTest {
 
       private val moshi = Moshi.Builder()
         .add(
-          WireJsonAdapterFactory(
-            writeIdentityValues = writeIdentityValues,
-          ).plus(listOf(BuyOneGetOnePromotion.ADAPTER))
+          WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues)
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER))
         )
         .build()
 
@@ -1172,9 +1171,8 @@ class WireJsonTest {
 
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
-          WireTypeAdapterFactory(
-            writeIdentityValues = writeIdentityValues,
-          ).plus(listOf(BuyOneGetOnePromotion.ADAPTER))
+          WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues)
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER))
         )
         .disableHtmlEscaping()
         .create()
@@ -1195,9 +1193,8 @@ class WireJsonTest {
 
       private val moshi = Moshi.Builder()
         .add(
-          WireJsonAdapterFactory(
-            writeIdentityValues = writeIdentityValues,
-          ).plus(listOf(BuyOneGetOnePromotion.ADAPTER))
+          WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues)
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER))
         )
         .build()
 
@@ -1217,9 +1214,8 @@ class WireJsonTest {
 
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
-          WireTypeAdapterFactory(
-            writeIdentityValues = writeIdentityValues,
-          ).plus(listOf(BuyOneGetOnePromotion.ADAPTER))
+          WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues)
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER))
         )
         .disableHtmlEscaping()
         .create()
