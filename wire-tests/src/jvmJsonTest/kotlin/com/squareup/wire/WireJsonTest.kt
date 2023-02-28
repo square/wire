@@ -1152,7 +1152,6 @@ class WireJsonTest {
         .add(
           WireJsonAdapterFactory(
             writeIdentityValues = writeIdentityValues,
-            loader = WireJsonTest::class.java.classLoader,
           ).plus(listOf(BuyOneGetOnePromotion.ADAPTER))
         )
         .build()
@@ -1175,7 +1174,6 @@ class WireJsonTest {
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(
             writeIdentityValues = writeIdentityValues,
-            loader = WireJsonTest::class.java.classLoader,
           ).plus(listOf(BuyOneGetOnePromotion.ADAPTER))
         )
         .disableHtmlEscaping()
@@ -1199,7 +1197,6 @@ class WireJsonTest {
         .add(
           WireJsonAdapterFactory(
             writeIdentityValues = writeIdentityValues,
-            loader = WireJsonTest::class.java.classLoader,
           ).plus(listOf(BuyOneGetOnePromotion.ADAPTER))
         )
         .build()
@@ -1222,7 +1219,6 @@ class WireJsonTest {
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(
             writeIdentityValues = writeIdentityValues,
-            loader = WireJsonTest::class.java.classLoader,
           ).plus(listOf(BuyOneGetOnePromotion.ADAPTER))
         )
         .disableHtmlEscaping()

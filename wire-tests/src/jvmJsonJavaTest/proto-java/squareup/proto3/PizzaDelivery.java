@@ -18,12 +18,7 @@ import java.util.Map;
 import okio.ByteString;
 
 public final class PizzaDelivery extends Message<PizzaDelivery, PizzaDelivery.Builder> {
-  public static final ProtoAdapter<PizzaDelivery> ADAPTER = ProtoAdapter.newMessageAdapter(
-    PizzaDelivery.class,
-    "type.googleapis.com/squareup.proto3.PizzaDelivery",
-    Syntax.PROTO_3,
-    PizzaDelivery.class.getClassLoader()
-  );
+  public static final ProtoAdapter<PizzaDelivery> ADAPTER = ProtoAdapter.newMessageAdapter(PizzaDelivery.class, "type.googleapis.com/squareup.proto3.PizzaDelivery", Syntax.PROTO_3);
 
   private static final long serialVersionUID = 0L;
 

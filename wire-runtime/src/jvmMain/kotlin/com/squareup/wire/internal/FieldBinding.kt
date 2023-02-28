@@ -32,7 +32,7 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   private val messageField: Field,
   builderType: Class<B>,
   override val writeIdentityValues: Boolean,
-  private val loader: ClassLoader? = messageType.classLoader,
+  private val classLoader: ClassLoader? = messageType.classLoader,
 ) : FieldOrOneOfBinding<M, B>() {
   override val label: WireField.Label = wireField.label
   override val name: String = messageField.name
@@ -48,9 +48,9 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   private val instanceGetter = getInstanceGetter(messageType)
 
   override val keyAdapter: ProtoAdapter<*>
-    get() = ProtoAdapter.get(keyAdapterString, loader)
+    get() = ProtoAdapter.get(keyAdapterString, classLoader)
   override val singleAdapter: ProtoAdapter<*>
-    get() = ProtoAdapter.get(adapterString, loader)
+    get() = ProtoAdapter.get(adapterString, classLoader)
 
   override val isMap: Boolean
     get() = keyAdapterString.isNotEmpty()

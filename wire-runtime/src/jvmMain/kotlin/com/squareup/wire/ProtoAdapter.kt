@@ -214,7 +214,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
       return createRuntimeMessageAdapter(type, typeUrl, Syntax.PROTO_2)
     }
 
-    /** Creates a new proto adapter for `type`. */
+    // Obsolete; for Java classes generated before `classLoader` was added.
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
       type: Class<M>,
       typeUrl: String,
@@ -228,9 +228,9 @@ actual abstract class ProtoAdapter<E> actual constructor(
       type: Class<M>,
       typeUrl: String,
       syntax: Syntax,
-      loader: ClassLoader?
+      classLoader: ClassLoader?
     ): ProtoAdapter<M> {
-      return createRuntimeMessageAdapter(type, typeUrl, syntax, loader)
+      return createRuntimeMessageAdapter(type, typeUrl, syntax, classLoader)
     }
 
     /** Creates a new proto adapter for `type`. */
@@ -264,16 +264,16 @@ actual abstract class ProtoAdapter<E> actual constructor(
     }
 
     /**
-     * Returns the adapter for a given [adapterString], using class loader [loader]. `adapterString` is specified on a
+     * Returns the adapter for a given [adapterString], using class loader []. `adapterString` is specified on a
      * proto message field's [WireField] annotation in the form `com.squareup.wire.protos.person.Person#ADAPTER`.
      */
-    @JvmStatic fun get(adapterString: String, loader: ClassLoader?): ProtoAdapter<*> {
+    @JvmStatic fun get(adapterString: String, classLoader: ClassLoader?): ProtoAdapter<*> {
       try {
         val hash = adapterString.indexOf('#')
         val className = adapterString.substring(0, hash)
         val fieldName = adapterString.substring(hash + 1)
         @Suppress("UNCHECKED_CAST")
-        return Class.forName(className, true, loader).getField(fieldName).get(null) as ProtoAdapter<Any>
+        return Class.forName(className, true, classLoader).getField(fieldName).get(null) as ProtoAdapter<Any>
       } catch (e: IllegalAccessException) {
         throw IllegalArgumentException("failed to access $adapterString", e)
       } catch (e: NoSuchFieldException) {

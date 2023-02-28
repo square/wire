@@ -21,7 +21,6 @@ import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 import com.squareup.wire.internal.EnumJsonFormatter
 import com.squareup.wire.internal.createRuntimeMessageAdapter
-import java.util.Optional
 
 /**
  * A [TypeAdapterFactory] that allows Wire messages to be serialized and deserialized
@@ -49,7 +48,6 @@ import java.util.Optional
 class WireTypeAdapterFactory @JvmOverloads constructor(
   private val typeUrlToAdapter: Map<String, ProtoAdapter<*>> = mapOf(),
   private val writeIdentityValues: Boolean = false,
-  private val loader: Optional<ClassLoader> = Optional.empty()
 ) : TypeAdapterFactory {
   /**
    * Returns a new WireJsonAdapterFactory that can encode the messages for [adapters] if they're
@@ -63,7 +61,7 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
       )
       newMap[key] = adapter
     }
-    return WireTypeAdapterFactory(newMap, writeIdentityValues, loader)
+    return WireTypeAdapterFactory(newMap, writeIdentityValues)
   }
 
   /**
@@ -83,7 +81,7 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
         val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(
           rawType as Class<Nothing>,
           writeIdentityValues,
-          loader.orElseGet { rawType.classLoader },
+          rawType.classLoader,
         )
         val jsonAdapters = GsonJsonIntegration.jsonAdapters(messageAdapter, gson)
         MessageTypeAdapter(messageAdapter, jsonAdapters).nullSafe() as TypeAdapter<T>

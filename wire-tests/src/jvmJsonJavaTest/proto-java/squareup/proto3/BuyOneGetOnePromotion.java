@@ -13,12 +13,7 @@ import java.lang.String;
 import okio.ByteString;
 
 public final class BuyOneGetOnePromotion extends Message<BuyOneGetOnePromotion, BuyOneGetOnePromotion.Builder> {
-  public static final ProtoAdapter<BuyOneGetOnePromotion> ADAPTER = ProtoAdapter.newMessageAdapter(
-    BuyOneGetOnePromotion.class,
-    "type.googleapis.com/squareup.proto3.BuyOneGetOnePromotion",
-    Syntax.PROTO_3,
-    BuyOneGetOnePromotion.class.getClassLoader()
-  );
+  public static final ProtoAdapter<BuyOneGetOnePromotion> ADAPTER = ProtoAdapter.newMessageAdapter(BuyOneGetOnePromotion.class, "type.googleapis.com/squareup.proto3.BuyOneGetOnePromotion", Syntax.PROTO_3);
 
   private static final long serialVersionUID = 0L;
 
