@@ -214,13 +214,23 @@ actual abstract class ProtoAdapter<E> actual constructor(
       return createRuntimeMessageAdapter(type, typeUrl, Syntax.PROTO_2)
     }
 
-    /** Creates a new proto adapter for `type`. */
+    // Obsolete; for Java classes generated before `classLoader` was added.
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
       type: Class<M>,
       typeUrl: String,
       syntax: Syntax
     ): ProtoAdapter<M> {
       return createRuntimeMessageAdapter(type, typeUrl, syntax)
+    }
+
+    /** Creates a new proto adapter for `type`. */
+    @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
+      type: Class<M>,
+      typeUrl: String,
+      syntax: Syntax,
+      classLoader: ClassLoader?
+    ): ProtoAdapter<M> {
+      return createRuntimeMessageAdapter(type, typeUrl, syntax, classLoader)
     }
 
     /** Creates a new proto adapter for `type`. */
@@ -250,11 +260,20 @@ actual abstract class ProtoAdapter<E> actual constructor(
      * `com.squareup.wire.protos.person.Person#ADAPTER`.
      */
     @JvmStatic fun get(adapterString: String): ProtoAdapter<*> {
+      return get(adapterString, ProtoAdapter::class.java.classLoader)
+    }
+
+    /**
+     * Returns the adapter for a given `adapterString`, using [classLoader]. `adapterString` is specified on a
+     * proto message field's [WireField] annotation in the form `com.squareup.wire.protos.person.Person#ADAPTER`.
+     */
+    @JvmStatic fun get(adapterString: String, classLoader: ClassLoader?): ProtoAdapter<*> {
       try {
         val hash = adapterString.indexOf('#')
         val className = adapterString.substring(0, hash)
         val fieldName = adapterString.substring(hash + 1)
-        return Class.forName(className).getField(fieldName).get(null) as ProtoAdapter<Any>
+        @Suppress("UNCHECKED_CAST")
+        return Class.forName(className, true, classLoader).getField(fieldName).get(null) as ProtoAdapter<Any>
       } catch (e: IllegalAccessException) {
         throw IllegalArgumentException("failed to access $adapterString", e)
       } catch (e: NoSuchFieldException) {

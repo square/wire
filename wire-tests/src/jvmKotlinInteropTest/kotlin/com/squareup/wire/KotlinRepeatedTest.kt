@@ -28,7 +28,8 @@ class KotlinRepeatedTest {
   private val adapter = createRuntimeMessageAdapter(
     Repeated::class.java,
     "square.github.io/wire/unknown",
-    Syntax.PROTO_2
+    Syntax.PROTO_2,
+    KotlinRepeatedTest::class.java.classLoader,
   )
 
   @Test fun serialize() {
