@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 4.5.2
+-------------
+
+_2023-03-06_
+
+* Fix: Use `rawType`'s classloader when accessing `ProtoAdapter`s.
+* gRPC: Decode `grpc-status-details-bin` and add it to `GrpcException`.
+* Swift: Fix base64url decoding when string length is a multiple of 4.
+* JSON: Support deserialization of proto3 default param when absent.
+
 Version 4.5.1
 -------------
 
