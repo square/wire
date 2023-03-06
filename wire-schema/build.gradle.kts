@@ -17,7 +17,7 @@ kotlin {
     withJava()
   }
   if (System.getProperty("kjs", "true").toBoolean()) {
-    js {
+    js(IR) {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
         tasks.getByName(compileKotlinTaskName) {
           kotlinOptions {

@@ -39,9 +39,13 @@ jobs:
           ./gradlew clean generateTests --stacktrace
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
+      - name: Test Native
+        run: |
+          ./gradlew -Dkjs=false -Dknative=true -Pswift=false samples:native:build --stacktrace
+
       - name: Test
         run: |
-          ./gradlew -Dkjs=false -Dknative=false -Pswift=false build --stacktrace
+          ./gradlew -Dkjs=false -Dknative=false -Pswift=false build --stacktrace -x samples:native:build
 
   multiplatform:
     runs-on: macos-latest

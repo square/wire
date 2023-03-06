@@ -28,12 +28,12 @@ plugins {
 protobuf {
   plugins {
     id("grpc") {
-      artifact = deps.grpc.genJava
+      artifact = libs.grpc.genJava.get().toString()
     }
   }
 
   protoc {
-    artifact = deps.protobuf.protoc
+    artifact = libs.protobuf.protoc.get().toString()
   }
 
   generateProtoTasks {

@@ -26,7 +26,7 @@ buildscript {
 rootProject.plugins.withType(NodeJsRootPlugin::class) {
   // 16+ required for Apple Silicon support
   // https://youtrack.jetbrains.com/issue/KT-49109#focus=Comments-27-5259190.0-0
-  rootProject.extensions.getByType(NodeJsRootExtension::class).nodeVersion = "16.13.1"
+  rootProject.extensions.getByType(NodeJsRootExtension::class).nodeVersion = "16.15.1"
 }
 
 allprojects {

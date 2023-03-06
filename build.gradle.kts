@@ -123,13 +123,29 @@ subprojects {
         project.name.contains("golden") ||
         project.name.contains("protoc") ||
         project.displayName.contains("sample")
-    )) {
+      )
+  ) {
     apply(plugin = "checkstyle")
 
     afterEvaluate {
       configure<CheckstyleExtension> {
         toolVersion = "7.7"
         sourceSets = listOf(project.extensions.getByType<SourceSetContainer>()["main"])
+      }
+    }
+  }
+
+  // Workaround for https://youtrack.jetbrains.com/issue/KT-51970
+  afterEvaluate {
+    afterEvaluate {
+      tasks.configureEach {
+        if (
+          name.startsWith("compile")
+          && name.endsWith("KotlinMetadata")
+        ) {
+          println("disabling ${this@subprojects}:$name")
+          enabled = false
+        }
       }
     }
   }

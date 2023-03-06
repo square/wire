@@ -4,6 +4,11 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.VERSION
 import com.squareup.wire.testing.withPlatformSlashes
+import java.io.File
+import java.io.IOException
+import java.util.zip.ZipFile
+import kotlin.text.RegexOption.DOT_MATCHES_ALL
+import kotlin.text.RegexOption.MULTILINE
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
@@ -14,11 +19,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import java.io.File
-import java.io.IOException
-import java.util.zip.ZipFile
-import kotlin.text.RegexOption.DOT_MATCHES_ALL
-import kotlin.text.RegexOption.MULTILINE
 
 class WirePluginTest {
 
@@ -63,7 +63,7 @@ class WirePluginTest {
     val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
 
     assertThat(result.task(":generateProtos")).isNull()
-    assertThat(result.output).contains("Missing either the Java, Kotlin, or Android plugin")
+    assertThat(result.output).contains("Wire Gradle plugin applied in project ':' but unable to find either the Java, Kotlin, or Android plugin")
   }
 
   @Test
