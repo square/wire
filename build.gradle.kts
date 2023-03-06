@@ -123,7 +123,8 @@ subprojects {
         project.name.contains("golden") ||
         project.name.contains("protoc") ||
         project.displayName.contains("sample")
-    )) {
+      )
+  ) {
     apply(plugin = "checkstyle")
 
     afterEvaluate {

@@ -20,7 +20,7 @@ kotlin {
     withJava()
   }
   if (System.getProperty("kjs", "true").toBoolean()) {
-    js {
+    js(IR) {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
         tasks.getByName(compileKotlinTaskName) {
           kotlinOptions {
@@ -42,6 +42,7 @@ kotlin {
     linuxX64()
     macosX64()
     macosArm64()
+    mingwX64()
     tvosX64()
     tvosArm64()
     tvosSimulatorArm64()
@@ -69,10 +70,11 @@ kotlin {
       val linuxX64Main by getting
       val macosX64Main by getting
       val macosArm64Main by getting
+      val mingwX64Main by getting
       val tvosX64Main by getting
       val tvosArm64Main by getting
       val tvosSimulatorArm64Main by getting
-      for (it in listOf(iosX64Main, iosArm64Main, iosSimulatorArm64Main, linuxX64Main, macosX64Main, macosArm64Main, tvosX64Main, tvosArm64Main, tvosSimulatorArm64Main)) {
+      for (it in listOf(iosX64Main, iosArm64Main, iosSimulatorArm64Main, linuxX64Main, macosX64Main, macosArm64Main, mingwX64Main, tvosX64Main, tvosArm64Main, tvosSimulatorArm64Main)) {
         it.dependsOn(nativeMain)
       }
     }

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:OptIn(ExperimentalStdlibApi::class)
+
 package com.squareup.wire.gradle
 
 import com.squareup.wire.VERSION
@@ -21,8 +23,10 @@ import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.Source
 import com.squareup.wire.gradle.kotlin.sourceRoots
 import java.io.File
+import java.io.Serializable
 import java.lang.reflect.Array as JavaArray
 import java.util.concurrent.atomic.AtomicBoolean
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
@@ -32,8 +36,10 @@ import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
+import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class WirePlugin : Plugin<Project> {
@@ -50,16 +56,14 @@ class WirePlugin : Plugin<Project> {
     this.extension = project.extensions.create("wire", WireExtension::class.java, project)
     this.project = project
 
-    project.configurations.create("protoSource")
-      .also {
-        it.isCanBeConsumed = false
-        it.isTransitive = false
-      }
-    project.configurations.create("protoPath")
-      .also {
-        it.isCanBeConsumed = false
-        it.isTransitive = false
-      }
+    project.configurations.create("protoSource").also {
+      it.isCanBeConsumed = false
+      it.isTransitive = false
+    }
+    project.configurations.create("protoPath").also {
+      it.isCanBeConsumed = false
+      it.isTransitive = false
+    }
 
     val androidPluginHandler = { _: Plugin<*> ->
       android.set(true)
@@ -92,7 +96,7 @@ class WirePlugin : Plugin<Project> {
     if (android.get() && !afterAndroid) return
 
     check(android.get() || java.get() || kotlin.get()) {
-      "Missing either the Java, Kotlin, or Android plugin"
+      "Wire Gradle plugin applied in " + "project '${project.path}' but unable to find either the Java, Kotlin, or Android plugin"
     }
 
     project.tasks.register(ROOT_TASK) {
@@ -103,8 +107,11 @@ class WirePlugin : Plugin<Project> {
     if (extension.protoLibrary) {
       val libraryProtoSources = File(project.libraryProtoOutputPath())
       val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
-      sourceSets.getByName("main") { main: SourceSet ->
-        main.resources.srcDir(libraryProtoSources)
+      // Note that there are no source sets for some platforms such as native.
+      if (sourceSets.isNotEmpty()) {
+        sourceSets.getByName("main") { main: SourceSet ->
+          main.resources.srcDir(libraryProtoSources)
+        }
       }
       extension.proto { protoOutput ->
         protoOutput.out = libraryProtoSources.path
@@ -113,14 +120,12 @@ class WirePlugin : Plugin<Project> {
 
     val outputs = extension.outputs
     check(outputs.isNotEmpty()) {
-      "At least one target must be provided for project '${project.path}\n" +
-        "See our documentation for details: https://square.github.io/wire/wire_compiler/#customizing-output"
+      "At least one target must be provided for project '${project.path}\n" + "See our documentation for details: https://square.github.io/wire/wire_compiler/#customizing-output"
     }
     val hasJavaOutput = outputs.any { it is JavaOutput }
     val hasKotlinOutput = outputs.any { it is KotlinOutput }
     check(!hasKotlinOutput || kotlin.get()) {
-      "Wire Gradle plugin applied in " +
-        "project '${project.path}' but no supported Kotlin plugin was found"
+      "Wire Gradle plugin applied in " + "project '${project.path}' but no supported Kotlin plugin was found"
     }
 
     addWireRuntimeDependency(hasJavaOutput, hasKotlinOutput)
@@ -143,8 +148,8 @@ class WirePlugin : Plugin<Project> {
 
       val inputFiles = project.layout.files(protoSourceInput.inputFiles, protoPathInput.inputFiles)
 
-      val projectDependencies = (protoSourceInput.dependencies + protoPathInput.dependencies)
-        .filterIsInstance<ProjectDependency>()
+      val projectDependencies =
+        (protoSourceInput.dependencies + protoPathInput.dependencies).filterIsInstance<ProjectDependency>()
 
       val targets = outputs.map { output ->
         output.toTarget(
@@ -155,8 +160,10 @@ class WirePlugin : Plugin<Project> {
           }
         )
       }
-      val generatedSourcesDirectories =
-        targets.map { target -> project.file(target.outDirectory) }.toSet()
+      val generatedSourcesDirectories: Set<File> =
+        targets
+          .map { target -> project.file(target.outDirectory) }
+          .toSet()
 
       // Both the JavaCompile and KotlinCompile tasks might already have been configured by now.
       // Even though we add the Wire output directories into the corresponding sourceSets, the
@@ -171,9 +178,9 @@ class WirePlugin : Plugin<Project> {
       }
       if (hasJavaOutput || hasKotlinOutput) {
         project.tasks
-          .withType(KotlinCompile::class.java)
+          .withType(AbstractKotlinCompile::class.java)
           .matching {
-            it.name == "compileKotlin" || it.name == "compile${source.name.capitalize()}Kotlin"
+            it.name.startsWith("compileKotlin") || it.name == "compile${source.name.capitalize()}Kotlin"
           }.configureEach {
             // Note that [KotlinCompile.source] will process files but will ignore strings.
             SOURCE_FUNCTION.invoke(it, arrayOf(generatedSourcesDirectories))
@@ -201,7 +208,13 @@ class WirePlugin : Plugin<Project> {
           protoSourceInput.debug(task.logger)
           protoPathInput.debug(task.logger)
         }
-        task.outputDirectories.setFrom(targets.map { it.outDirectory })
+        val outputDirectories: List<String> = buildList {
+          addAll(targets.map { it.outDirectory })
+          if (extension.protoLibrary) {
+            add(project.libraryProtoOutputPath())
+          }
+        }
+        task.outputDirectories.setFrom(outputDirectories)
         task.sourceInput.set(protoSourceInput.toLocations(project))
         task.protoInput.set(protoPathInput.toLocations(project))
         task.roots.set(extension.roots.toList())
@@ -224,16 +237,18 @@ class WirePlugin : Plugin<Project> {
         }
       }
 
+      val taskOutputDirectories = task.map { it.outputDirectories }
+      // Note that we have to pass a Provider for Gradle to add the Wire task into the tasks
+      // dependency graph. It fails silently otherwise.
+      source.kotlinSourceDirectorySet?.srcDir(taskOutputDirectories)
+      source.javaSourceDirectorySet?.srcDir(taskOutputDirectories)
+      source.registerGeneratedDirectory?.invoke(taskOutputDirectories)
+
       project.tasks.named(ROOT_TASK).configure {
         it.dependsOn(task)
       }
-      if (extension.protoLibrary) {
-        project.tasks.named("processResources").configure {
-          it.dependsOn(task)
-        }
-      }
 
-      source.registerTaskDependency(task)
+      source.registerTaskDependency?.invoke(task)
     }
   }
 
@@ -243,28 +258,42 @@ class WirePlugin : Plugin<Project> {
   }
 
   private fun Project.addWireRuntimeDependency(
-    hasJavaOutput: Boolean,
-    hasKotlinOutput: Boolean
+    hasJavaOutput: Boolean, hasKotlinOutput: Boolean
   ) {
+    if (!hasJavaOutput && !hasKotlinOutput) return
+
     // Indicates when the plugin is applied inside the Wire repo to Wire's own modules.
     val isInternalBuild = project.properties["com.squareup.wire.internal"].toString() == "true"
     val isMultiplatform = project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")
-    // Only add the dependency for Java and Kotlin.
-    if (hasJavaOutput || hasKotlinOutput) {
-      if (isMultiplatform) {
+    val isJsOnly =
+      if (isMultiplatform) false else project.plugins.hasPlugin("org.jetbrains.kotlin.js")
+    val runtimeDependency = wireRuntimeDependency(isInternalBuild)
+
+    when {
+      isMultiplatform -> {
         val sourceSets =
           project.extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets
         val sourceSet = (sourceSets.getByName("commonMain") as DefaultKotlinSourceSet)
-        project.configurations.getByName(sourceSet.apiConfigurationName).dependencies
-          .add(wireRuntimeDependency(isInternalBuild))
-      } else {
+        project.configurations.getByName(sourceSet.apiConfigurationName).dependencies.add(
+          runtimeDependency
+        )
+      }
+
+      isJsOnly -> {
+        val sourceSets =
+          project.extensions.getByType(KotlinJsProjectExtension::class.java).sourceSets
+        val sourceSet = (sourceSets.getByName("main") as DefaultKotlinSourceSet)
+        project.configurations.getByName(sourceSet.apiConfigurationName).dependencies.add(
+          runtimeDependency
+        )
+      }
+
+      else -> {
         try {
-          project.configurations.getByName("api").dependencies
-            .add(wireRuntimeDependency(isInternalBuild))
+          project.configurations.getByName("api").dependencies.add(runtimeDependency)
         } catch (_: UnknownConfigurationException) {
           // No `api` configuration on Java applications.
-          project.configurations.getByName("implementation").dependencies
-            .add(wireRuntimeDependency(isInternalBuild))
+          project.configurations.getByName("implementation").dependencies.add(runtimeDependency)
         }
       }
     }
@@ -273,22 +302,19 @@ class WirePlugin : Plugin<Project> {
   private fun wireRuntimeDependency(isInternalBuild: Boolean): Dependency {
     return if (isInternalBuild) {
       project.dependencies.project(mapOf("path" to ":wire-runtime"))
-    } else{
+    } else {
       project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION")
     }
   }
 
   private fun defaultSourceFolders(source: Source): Set<String> {
     val parser = FileOrUriNotationConverter.parser()
-    return source.sourceSets
-      .map { "src/$it/proto" }
-      .filter { path ->
-        val converted = parser.parseNotation(path) as File
-        val file =
-          if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
-        return@filter file.exists()
-      }
-      .toSet()
+    return source.sourceSets.map { "src/$it/proto" }.filter { path ->
+      val converted = parser.parseNotation(path) as File
+      val file =
+        if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
+      return@filter file.exists()
+    }.toSet()
   }
 
   internal companion object {
@@ -299,7 +325,9 @@ class WirePlugin : Plugin<Project> {
     // both.
     // 1.6.x: `fun source(vararg sources: Any): SourceTask`
     // 1.7.x: `fun source(vararg sources: Any)`
-    private val SOURCE_FUNCTION = KotlinCompile::class.java
-      .getMethod("source", JavaArray.newInstance(Any::class.java, 0).javaClass)
+    private val SOURCE_FUNCTION = KotlinCompile::class.java.getMethod(
+      "source",
+      JavaArray.newInstance(Any::class.java, 0).javaClass
+    )
   }
 }

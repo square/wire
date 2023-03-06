@@ -32,3 +32,11 @@ dependencyResolutionManagement {
 }
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+pluginManagement {
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+    google()
+  }
+}
