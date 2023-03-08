@@ -18,30 +18,39 @@ package com.squareup.wire.protocwire
 internal class ParameterParser {
   companion object {
     /**
-     * Parses protoc parameters.
-     * Protoc parameters are the `opt` passed as a single string.
+     * Parses a set of comma-delimited name/value pairs.
      *
-     * Wire targets have configuration which relies on multiple values.
-     * In order to preserve that behavior, the opts which are passed through
-     * will be assumed to be key value pairs separated by `=` and
-     * different pairs are delimited by `,`.
+     * Several code generators treat the parameter argument as holding a list of
+     * options separated by commas: e.g., `"foo=bar,baz,qux=corge"` parses
+     * to the pairs: `("foo", "bar"), ("baz", ""), ("qux", "corge")`.
+     *
+     *
+     * When a key is present several times, only the last value is retained.
      */
     @JvmStatic
-    internal fun parse(parameter: String): Map<String, String> {
-      val parsedParameters = mutableMapOf<String, String>()
-      val split = parameter.split(',')
-      split.forEach { str -> str.trim() }
-      for (element in split) {
-        if (!element.contains('=')) {
-          continue
-        }
-        val pair = element.split('=')
-        if (pair.size != 2) {
-          continue
-        }
-        parsedParameters[pair.first()] = pair[1]
+    internal fun parse(text: String): Map<String, String> {
+      if (text.isEmpty()) {
+        return emptyMap()
       }
-      return parsedParameters
+      val result: MutableMap<String, String> = HashMap()
+      val parts = text.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+      for (part in parts) {
+        if (part.isEmpty()) {
+          continue
+        }
+        val equalsPos = part.indexOf('=')
+        var key: String
+        var value: String
+        if (equalsPos < 0) {
+          key = part
+          value = ""
+        } else {
+          key = part.substring(0, equalsPos)
+          value = part.substring(equalsPos + 1)
+        }
+        result[key] = value
+      }
+      return result
     }
   }
 }
