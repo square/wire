@@ -28,6 +28,14 @@ final class ProtoEncoderTests: XCTestCase {
         XCTAssertEqual(data, Data())
     }
 
+    func testEncodeEmptyProtoMessageWithIdentityValues() throws {
+        let object = EmptyOmitted(numeric_value: 0)
+        let encoder = ProtoEncoder()
+        let data = try encoder.encode(object)
+
+        XCTAssertEqual(data, Data())
+    }
+
     func testEncodeEmptyJSONMessage() throws {
         let object = EmptyMessage()
         let encoder = JSONEncoder()

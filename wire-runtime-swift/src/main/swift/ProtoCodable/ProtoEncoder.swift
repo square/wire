@@ -80,7 +80,11 @@ public final class ProtoEncoder {
         // Use the size of the struct as an initial estimate for the space needed.
         let structSize = MemoryLayout.size(ofValue: value)
 
-        let writer = ProtoWriter(data: .init(capacity: structSize))
+        let writer = ProtoWriter(
+            data: .init(capacity: structSize),
+            outputFormatting: [],
+            rootMessageProtoSyntax: T.self.protoSyntax ?? .proto2
+        )
         writer.outputFormatting = outputFormatting
         try value.encode(to: writer)
 
