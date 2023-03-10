@@ -41,6 +41,11 @@ public final class ProtoWriter {
     private(set) var buffer: WriteBuffer
 
     /**
+     The syntax used by the root message, which can be different than child messages, which will individually set `isProto3`.
+     */
+    private let rootIsProto3: Bool
+
+    /**
      A stack of frames where each frame represents a level of message nesting.
      */
     private var messageStack: UnsafeMutablePointer<MessageFrame>
@@ -59,10 +64,15 @@ public final class ProtoWriter {
 
     init(
         data: WriteBuffer = .init(),
-        outputFormatting: ProtoEncoder.OutputFormatting = []
+        outputFormatting: ProtoEncoder.OutputFormatting = [],
+        rootMessageProtoSyntax: ProtoSyntax = .proto2
     ) {
         self.buffer = data
         self.outputFormatting = outputFormatting
+        self.rootIsProto3 = (rootMessageProtoSyntax == .proto3)
+
+        // set the initial value so that primitive types are handled correctly outside of a `messageStack` message
+        self.isProto3 = rootIsProto3
 
         self.messageStack = .allocate(capacity: messageStackCapacity)
     }
@@ -715,8 +725,11 @@ public final class ProtoWriter {
             messageStackIndex -= 1
 
             // We popped the stack, so update the quick-access ivar.
+            // If this is the last item in the stack, use the root value
             if messageStackIndex >= 0 {
                 isProto3 = messageStack[messageStackIndex].isProto3
+            } else {
+                isProto3 = rootIsProto3
             }
         }
     }

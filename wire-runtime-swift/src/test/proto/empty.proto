@@ -18,3 +18,7 @@ syntax = "proto3";
 
 message EmptyMessage {
 }
+
+message EmptyOmitted {
+    int32 numeric_value = 1;
+}
