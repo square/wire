@@ -132,6 +132,22 @@ class SwiftGenerator private constructor(
       else -> null
     }
 
+  // see https://protobuf.dev/programming-guides/proto3/#default
+  private val Field.proto3InitialValue: String
+    get() = when {
+      isMap -> "[:]"
+      isRepeated -> "[]"
+      isOptional -> "nil"
+      else -> when (typeName.makeNonOptional()) {
+        BOOL -> "false"
+        DOUBLE, FLOAT -> "0"
+        INT32, UINT32, INT64, UINT64 -> "0"
+        STRING -> """""""" // evaluates to the empty string
+        DATA -> ".init()"
+        else -> "nil"
+      }
+    }
+
   private val Field.codableName: String?
     get() = jsonName?.takeIf { it != name } ?: camelCase(name).takeIf { it != name }
 
@@ -192,6 +208,27 @@ class SwiftGenerator private constructor(
 
   private val MessageType.isHeapAllocated get() = fields.size + oneOfs.size >= 16
 
+  /**
+   * Checks that every enum in a proto3 message contains a value with tag 0.
+   *
+   * @throws NoSuchElementException if the case doesn't exist
+   */
+  @Throws(NoSuchElementException::class)
+  private fun validateProto3DefaultsExist(type: MessageType) {
+    if (type.syntax == PROTO_2) { return }
+
+    // validate each enum field
+    type
+      .fields
+      .mapNotNull { schema.getType(it.type!!) as? EnumType }
+      .forEach { enum ->
+         // ensure that a 0 case exists
+         if (enum.constants.filter { it.tag == 0 }.isEmpty()) {
+           throw NoSuchElementException("Missing a zero value for ${enum.name}")
+         }
+      }
+  }
+
   @OptIn(ExperimentalStdlibApi::class) // TODO move to build flag
   private fun generateMessage(
     type: MessageType,
@@ -207,6 +244,8 @@ class SwiftGenerator private constructor(
     val storageName = if ("storage" in propertyNames) "_storage" else "storage"
 
     val typeSpecs = mutableListOf<TypeSpec>()
+
+    validateProto3DefaultsExist(type)
 
     typeSpecs += TypeSpec.structBuilder(structType)
       .addModifiers(PUBLIC)
@@ -449,18 +488,30 @@ class SwiftGenerator private constructor(
         .addParameter("from", reader, protoReader)
         .throws(true)
         .apply {
-          // Declare locals into which everything is writen before promoting to members.
+          // Declare locals into which everything is written before promoting to members.
           type.fields.forEach { field ->
-            val localType = if (field.isRepeated || field.isMap) {
-              field.typeName
-            } else {
-              field.typeName.makeOptional()
+            val localType = when (type.syntax) {
+              PROTO_2 -> if (field.isRepeated || field.isMap) {
+                  field.typeName
+                } else {
+                  field.typeName.makeOptional()
+                }
+              PROTO_3 -> if (field.isOptional || (field.isEnum && !field.isRepeated)) {
+                  field.typeName.makeOptional()
+                } else {
+                  field.typeName
+                }
             }
-            val initializer = when {
-              field.isMap -> "[:]"
-              field.isRepeated -> "[]"
-              else -> "nil"
+
+            val initializer = when (type.syntax) {
+              PROTO_2 -> when {
+                  field.isMap -> "[:]"
+                  field.isRepeated -> "[]"
+                  else -> "nil"
+                }
+              PROTO_3 -> field.proto3InitialValue
             }
+
             addStatement("var %N: %T = %L", field.name, localType, initializer)
           }
           type.oneOfs.forEach { oneOf ->
@@ -533,10 +584,17 @@ class SwiftGenerator private constructor(
           // Check required and bind members.
           addStatement("")
           type.fields.forEach { field ->
-            val initializer = if (field.isOptional || field.isRepeated || field.isMap) {
-              CodeBlock.of("%N", field.name)
-            } else {
-              CodeBlock.of("try %1T.checkIfMissing(%2N, %2S)", structType, field.name)
+            val initializer = when(type.syntax) {
+              PROTO_2 -> if (field.isOptional || field.isRepeated || field.isMap) {
+                CodeBlock.of("%N", field.name)
+              } else {
+                CodeBlock.of("try %1T.checkIfMissing(%2N, %2S)", structType, field.name)
+              }
+              PROTO_3 -> if (field.isEnum && !field.isRepeated) {
+                CodeBlock.of("try %1T.defaultIfMissing(%2N)", field.typeName.makeNonOptional(), field.name)
+              } else {
+                CodeBlock.of("%N", field.name)
+              }
             }
             addStatement("self.%N = %L", field.name, initializer)
           }

@@ -145,6 +145,21 @@ public final class ProtoWriter {
         try value.encode(to: self)
     }
 
+    /** Encode a required `bool` field */
+    public func encode(tag: UInt32, value: Bool) throws {
+        if value == false && isProto3 { return }
+        try encode(tag: tag, value: value as Bool?)
+    }
+
+    /** Encode an optional `bool` field */
+    public func encode(tag: UInt32, value: Bool?) throws {
+        guard let value = value else { return }
+
+        let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .varint)
+        writeVarint(key)
+        try value.encode(to: self)
+    }
+
     /** Encode a required `int32`, `sfixed32`, or `sint32` field */
     public func encode(tag: UInt32, value: Int32, encoding: ProtoIntEncoding = .variable) throws {
         // Don't encode default values if using proto3 syntax.

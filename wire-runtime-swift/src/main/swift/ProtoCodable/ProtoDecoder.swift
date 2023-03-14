@@ -51,6 +51,7 @@ public final class ProtoDecoder {
         case mapEntryWithoutKey(value: Any?)
         case mapEntryWithoutValue(key: Any)
         case messageWithoutLength
+        case missingEnumDefaultValue(type: Any.Type)
         case missingRequiredField(typeName: String, fieldName: String)
         case recursionLimitExceeded
         case unexpectedEndOfData
@@ -80,6 +81,8 @@ public final class ProtoDecoder {
                 return "Map entry with \(key) did not include a value."
             case .messageWithoutLength:
                 return "Attempting to decode a message without first decoding the length of that message."
+            case let .missingEnumDefaultValue(type):
+                return "Could not assign a default value of 0 for enum type \(String(describing: type))"
             case let .missingRequiredField(typeName, fieldName):
                 return "Required field \(fieldName) for type \(typeName) is not included in the message data."
             case let .boxedValueMissingField(type):

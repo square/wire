@@ -105,3 +105,18 @@ extension ProtoDecodable {
     }
 
 }
+
+extension ProtoEnum where Self : RawRepresentable, RawValue == UInt32 {
+
+    /**
+     A convenience function used with enum fields that throws an error if the field is null
+     and its default value can't be used instead.
+     */
+    public static func defaultIfMissing(_ value: Self?) throws -> Self {
+        guard let value = value ?? Self(rawValue: 0) else {
+            throw ProtoDecoder.Error.missingEnumDefaultValue(type: Self.self)
+        }
+        return value
+    }
+
+}

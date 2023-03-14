@@ -20,5 +20,21 @@ message EmptyMessage {
 }
 
 message EmptyOmitted {
+    enum EmptyEnum {
+      UNKNOWN = 0;
+      OTHER = 1;
+    }
+
+    message EmptyNested {
+        int32 nested = 1;
+    }
+
     int32 numeric_value = 1;
+    string string_value = 2;
+    bytes bytes_value = 3;
+    bool bool_value = 4;
+    EmptyEnum enum_value = 5;
+    EmptyNested message_value = 6;
+    repeated string repeated_value = 7;
+    map<int32, string> map_value = 8;
 }

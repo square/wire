@@ -29,7 +29,7 @@ final class ProtoEncoderTests: XCTestCase {
     }
 
     func testEncodeEmptyProtoMessageWithIdentityValues() throws {
-        let object = EmptyOmitted(numeric_value: 0)
+        let object = EmptyOmitted(numeric_value: 0, string_value: "", bytes_value: .init(), bool_value: false, enum_value: .UNKNOWN)
         let encoder = ProtoEncoder()
         let data = try encoder.encode(object)
 
