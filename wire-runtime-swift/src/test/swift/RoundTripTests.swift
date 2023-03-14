@@ -61,4 +61,20 @@ final class RoundTripTests: XCTestCase {
         XCTAssertEqual(decodedEmpty, empty)
     }
 
+    func testSizeDelimited() throws {
+        let values = [
+            Person3(name: "John Doe", id: 123),
+            Person3(name: "Jane Doe", id: 456) {
+                $0.email = "jdoe@example.com"
+            }
+        ]
+
+        let encoder = ProtoEncoder()
+        let data = try encoder.encodeSizeDelimited(values)
+
+        let decoder = ProtoDecoder()
+        let decodedValues = try decoder.decodeSizeDelimited(Person3.self, from: data)
+
+        XCTAssertEqual(decodedValues, values)
+    }
 }

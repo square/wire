@@ -59,4 +59,11 @@ final class WriteBufferTests: XCTestCase {
         XCTAssertEqual(Foundation.Data(buffer, copyBytes: true), Foundation.Data(hexEncoded: "0011"))
     }
 
+    func testAppendEmptyFirst() {
+        let buffer = WriteBuffer()
+        buffer.append(Foundation.Data())
+
+        XCTAssertEqual(Foundation.Data(buffer, copyBytes: true), Foundation.Data())
+    }
+
 }
