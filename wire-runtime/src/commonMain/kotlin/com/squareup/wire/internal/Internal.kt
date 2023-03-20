@@ -209,7 +209,7 @@ fun sanitize(values: List<String>): String {
 }
 
 fun boxedOneOfClassName(oneOfName: String): String {
-  return oneOfName.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+  return oneOfName.replaceFirstChar(Char::titlecase)
 }
 
 /**

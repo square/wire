@@ -30,8 +30,8 @@ fun <T> redactElements(list: MutableList<T>, adapter: ProtoAdapter<T>) {
 }
 
 fun <T> redactElements(map: MutableMap<*, T>, adapter: ProtoAdapter<T>) {
-  for ((key, value) in map as MutableMap<Any, T>) {
-    map[key] = adapter.redact(value)
+  for (entry in map.entries) {
+    entry.setValue(adapter.redact(entry.value))
   }
 }
 
