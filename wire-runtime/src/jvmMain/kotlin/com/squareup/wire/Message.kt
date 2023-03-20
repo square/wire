@@ -87,29 +87,18 @@ protected actual constructor(
    * Superclass for protocol buffer message builders.
    */
   actual abstract class Builder<M : Message<M, B>, B : Builder<M, B>> protected constructor() {
-    /**
-     * Caches unknown fields as a [ByteString] when [buildUnknownFields] is called.
-     * When the caller adds an additional unknown field after that, it will be written to the new
-     * [unknownFieldsBuffer] to ensure that all unknown fields are retained between calls to
-     * [buildUnknownFields].
-     */
-    @Transient internal var unknownFieldsByteString = ByteString.EMPTY
-    /**
-     * [Buffer] of the message's unknown fields that is lazily instantiated between calls to
-     * [buildUnknownFields]. It's automatically cleared in [buildUnknownFields], and can also be
-     * manually cleared by calling [clearUnknownFields].
-     */
-    @Transient internal var unknownFieldsBuffer: Buffer? = null
-    @Transient internal var unknownFieldsWriter: ProtoWriter? = null
+    @Transient internal actual var unknownFieldsByteString = ByteString.EMPTY
+    @Transient internal actual var unknownFieldsBuffer: Buffer? = null
+    @Transient internal actual var unknownFieldsWriter: ProtoWriter? = null
 
-    fun addUnknownFields(unknownFields: ByteString): Builder<M, B> = apply {
+    actual fun addUnknownFields(unknownFields: ByteString): Builder<M, B> = apply {
       if (unknownFields.size > 0) {
         prepareForNewUnknownFields()
         unknownFieldsWriter!!.writeBytes(unknownFields)
       }
     }
 
-    fun addUnknownField(
+    actual fun addUnknownField(
       tag: Int,
       fieldEncoding: FieldEncoding,
       value: Any?
@@ -119,7 +108,7 @@ protected actual constructor(
       protoAdapter.encodeWithTag(unknownFieldsWriter!!, tag, value)
     }
 
-    fun clearUnknownFields(): Builder<M, B> = apply {
+    actual fun clearUnknownFields(): Builder<M, B> = apply {
       unknownFieldsByteString = ByteString.EMPTY
       if (unknownFieldsBuffer != null) {
         unknownFieldsBuffer!!.clear()
@@ -128,11 +117,7 @@ protected actual constructor(
       unknownFieldsWriter = null
     }
 
-    /**
-     * Returns a byte string with this message's unknown fields. Returns an empty byte string if
-     * this message has no unknown fields.
-     */
-    fun buildUnknownFields(): ByteString {
+    actual fun buildUnknownFields(): ByteString {
       if (unknownFieldsBuffer != null) {
         // Reads and caches the unknown fields from the buffer.
         unknownFieldsByteString = unknownFieldsBuffer!!.readByteString()
@@ -142,8 +127,7 @@ protected actual constructor(
       return unknownFieldsByteString
     }
 
-    /** Returns an immutable [Message] based on the fields that set in this builder. */
-    abstract fun build(): M
+    actual abstract fun build(): M
 
     private fun prepareForNewUnknownFields() {
       if (unknownFieldsBuffer == null) {

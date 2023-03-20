@@ -16,10 +16,6 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.gradle.WireExtension.ProtoRootSet
-import java.io.EOFException
-import java.io.File
-import java.io.RandomAccessFile
-import java.net.URI
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
@@ -30,6 +26,10 @@ import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
+import java.io.EOFException
+import java.io.File
+import java.io.RandomAccessFile
+import java.net.URI
 
 /**
  * Builds Wire's inputs (expressed as [InputLocation] lists) from Gradle's objects (expressed as

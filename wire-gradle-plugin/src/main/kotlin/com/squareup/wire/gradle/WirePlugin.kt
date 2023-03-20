@@ -22,11 +22,7 @@ import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.Source
 import com.squareup.wire.gradle.kotlin.sourceRoots
-import java.io.File
-import java.io.Serializable
-import java.lang.reflect.Array as JavaArray
-import java.util.concurrent.atomic.AtomicBoolean
-import org.gradle.api.GradleException
+import com.squareup.wire.schema.KotlinTarget
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
@@ -41,6 +37,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
+import java.lang.reflect.Array as JavaArray
 
 class WirePlugin : Plugin<Project> {
   private val android = AtomicBoolean(false)
@@ -81,6 +80,7 @@ class WirePlugin : Plugin<Project> {
     project.plugins.withId("org.jetbrains.kotlin.multiplatform", kotlinPluginHandler)
     project.plugins.withId("org.jetbrains.kotlin.android", kotlinPluginHandler)
     project.plugins.withId("org.jetbrains.kotlin.jvm", kotlinPluginHandler)
+    project.plugins.withId("org.jetbrains.kotlin.js", kotlinPluginHandler)
     project.plugins.withId("kotlin2js", kotlinPluginHandler)
 
     val javaPluginHandler = { _: Plugin<*> -> java.set(true) }
@@ -152,13 +152,19 @@ class WirePlugin : Plugin<Project> {
         (protoSourceInput.dependencies + protoPathInput.dependencies).filterIsInstance<ProjectDependency>()
 
       val targets = outputs.map { output ->
-        output.toTarget(
+        var target = output.toTarget(
           if (output.out == null) {
             project.relativePath(source.outputDir(project))
           } else {
             output.out!!
           }
         )
+        if (target is KotlinTarget) {
+          val isMultiplatformOrJs = project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform") ||
+            project.plugins.hasPlugin("org.jetbrains.kotlin.js")
+          target = target.copy(jvmOnly = !isMultiplatformOrJs)
+        }
+        return@map target
       }
       val generatedSourcesDirectories: Set<File> =
         targets
@@ -180,7 +186,7 @@ class WirePlugin : Plugin<Project> {
         project.tasks
           .withType(AbstractKotlinCompile::class.java)
           .matching {
-            it.name.startsWith("compileKotlin") || it.name == "compile${source.name.capitalize()}Kotlin"
+            it.name.equals("compileKotlin") || it.name == "compile${source.name.capitalize()}Kotlin"
           }.configureEach {
             // Note that [KotlinCompile.source] will process files but will ignore strings.
             SOURCE_FUNCTION.invoke(it, arrayOf(generatedSourcesDirectories))
@@ -258,7 +264,8 @@ class WirePlugin : Plugin<Project> {
   }
 
   private fun Project.addWireRuntimeDependency(
-    hasJavaOutput: Boolean, hasKotlinOutput: Boolean
+    hasJavaOutput: Boolean,
+    hasKotlinOutput: Boolean,
   ) {
     if (!hasJavaOutput && !hasKotlinOutput) return
 
