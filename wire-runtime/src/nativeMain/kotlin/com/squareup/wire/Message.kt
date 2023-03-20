@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import okio.Buffer
 import okio.BufferedSink
 import okio.ByteString
 
@@ -57,5 +58,57 @@ protected actual constructor(
   /**
    * Superclass for protocol buffer message builders.
    */
-  actual abstract class Builder<M : Message<M, B>, B : Builder<M, B>>
+  actual abstract class Builder<M : Message<M, B>, B : Builder<M, B>> protected constructor() {
+    internal actual var unknownFieldsByteString = ByteString.EMPTY
+    internal actual var unknownFieldsBuffer: Buffer? = null
+    internal actual var unknownFieldsWriter: ProtoWriter? = null
+
+    actual fun addUnknownFields(unknownFields: ByteString): Builder<M, B> = apply {
+      if (unknownFields.size > 0) {
+        prepareForNewUnknownFields()
+        unknownFieldsWriter!!.writeBytes(unknownFields)
+      }
+    }
+
+    actual fun addUnknownField(
+      tag: Int,
+      fieldEncoding: FieldEncoding,
+      value: Any?
+    ): Builder<M, B> = apply {
+      prepareForNewUnknownFields()
+      val protoAdapter = fieldEncoding.rawProtoAdapter() as ProtoAdapter<Any>
+      protoAdapter.encodeWithTag(unknownFieldsWriter!!, tag, value)
+    }
+
+    actual fun clearUnknownFields(): Builder<M, B> = apply {
+      unknownFieldsByteString = ByteString.EMPTY
+      if (unknownFieldsBuffer != null) {
+        unknownFieldsBuffer!!.clear()
+        unknownFieldsBuffer = null
+      }
+      unknownFieldsWriter = null
+    }
+
+    actual fun buildUnknownFields(): ByteString {
+      if (unknownFieldsBuffer != null) {
+        // Reads and caches the unknown fields from the buffer.
+        unknownFieldsByteString = unknownFieldsBuffer!!.readByteString()
+        unknownFieldsBuffer = null
+        unknownFieldsWriter = null
+      }
+      return unknownFieldsByteString
+    }
+
+    actual abstract fun build(): M
+
+    private fun prepareForNewUnknownFields() {
+      if (unknownFieldsBuffer == null) {
+        unknownFieldsBuffer = Buffer()
+        unknownFieldsWriter = ProtoWriter(unknownFieldsBuffer!!)
+        // Writes the cached unknown fields to the buffer.
+        unknownFieldsWriter!!.writeBytes(unknownFieldsByteString)
+        unknownFieldsByteString = ByteString.EMPTY
+      }
+    }
+  }
 }

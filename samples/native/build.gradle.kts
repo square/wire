@@ -35,6 +35,7 @@ wire {
   protoLibrary = true
 
   kotlin {
+    buildersOnly = true
   }
 }
 

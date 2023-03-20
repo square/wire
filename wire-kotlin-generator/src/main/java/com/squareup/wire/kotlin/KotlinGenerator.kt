@@ -106,11 +106,11 @@ import com.squareup.wire.schema.internal.javaPackage
 import com.squareup.wire.schema.internal.legacyQualifiedFieldName
 import com.squareup.wire.schema.internal.optionValueToInt
 import com.squareup.wire.schema.internal.optionValueToLong
-import java.util.Locale
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.ByteString
 import okio.ByteString.Companion.encode
+import java.util.Locale
 
 class KotlinGenerator private constructor(
   val schema: Schema,
@@ -128,6 +128,7 @@ class KotlinGenerator private constructor(
   private val nameSuffix: String?,
   private val buildersOnly: Boolean,
   private val singleMethodServices: Boolean,
+  private val jvmOnly: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -864,7 +865,7 @@ class KotlinGenerator private constructor(
             .mutable(true)
             .initializer(fieldOrOneOf.identityValue)
 
-          if (javaInterOp) {
+          if (javaInterOp && jvmOnly) {
             propertyBuilder.addAnnotation(JvmField::class)
           }
 
@@ -878,7 +879,7 @@ class KotlinGenerator private constructor(
             .mutable(true)
             .initializer(CodeBlock.of("null"))
 
-          if (javaInterOp) {
+          if (javaInterOp && jvmOnly) {
             propertyBuilder.addAnnotation(JvmField::class)
           }
 
@@ -1099,7 +1100,7 @@ class KotlinGenerator private constructor(
           addAnnotation(annotation)
         }
         addAnnotation(wireFieldAnnotation(message, field))
-        if (javaInterOp) {
+        if (javaInterOp && jvmOnly) {
           addAnnotation(JvmField::class)
         }
         if (field.documentation.isNotBlank()) {
@@ -1126,7 +1127,7 @@ class KotlinGenerator private constructor(
     val propertySpec = PropertySpec.builder(fieldName, fieldClass)
       .initializer(CodeBlock.of("%N", fieldName))
       .apply {
-        if (javaInterOp) {
+        if (javaInterOp && jvmOnly) {
           addAnnotation(JvmField::class)
         }
         if (oneOf.documentation.isNotBlank()) {
@@ -1290,7 +1291,7 @@ class KotlinGenerator private constructor(
             if (field.type!!.isScalar && field.type != ProtoType.BYTES) {
               addModifiers(CONST)
             } else {
-              jvmField()
+              if (jvmOnly) jvmField()
             }
           }
           .initializer(fieldValue)
@@ -1450,7 +1451,9 @@ class KotlinGenerator private constructor(
 
     companionObjBuilder.addProperty(
       PropertySpec.builder(adapterName, adapterType)
-        .jvmField()
+        .apply {
+          if (jvmOnly) jvmField()
+        }
         .initializer("%L", adapterObject.build())
         .build()
     )
@@ -1975,7 +1978,7 @@ class KotlinGenerator private constructor(
     val parentClassName = typeToKotlinName.getValue(message.type)
     val valueName = "value"
     val fromValue = FunSpec.builder("fromValue")
-      .jvmStatic()
+      .apply { if (jvmOnly) jvmStatic() }
       .addParameter(valueName, Int::class)
       .returns(parentClassName.copy(nullable = true))
       .apply {
@@ -2031,7 +2034,9 @@ class KotlinGenerator private constructor(
       .build()
 
     return PropertySpec.builder(adapterName, adapterType)
-      .jvmField()
+      .apply {
+        if (jvmOnly) jvmField()
+      }
       .initializer("%L", adapterObject)
       .build()
   }
@@ -2054,7 +2059,9 @@ class KotlinGenerator private constructor(
 
     companionObjBuilder.addProperty(
       PropertySpec.builder(creatorName, creatorTypeName)
-        .jvmField()
+        .apply {
+          if (jvmOnly) jvmField()
+        }
         .initializer("%T.newCreator(ADAPTER)", ANDROID_MESSAGE)
         .build()
     )
@@ -2364,7 +2371,9 @@ class KotlinGenerator private constructor(
         keysFieldName,
         Set::class.asClassName().parameterizedBy(boxClassName.parameterizedBy(STAR))
       )
-      .addAnnotation(JvmStatic::class)
+      .apply {
+        if (jvmOnly) addAnnotation(JvmStatic::class)
+      }
       .initializer(
         CodeBlock.of(
           """setOf(${keyFieldNames.map { "%L" }.joinToString(", ")})""",
@@ -2530,6 +2539,7 @@ class KotlinGenerator private constructor(
       nameSuffix: String? = null,
       buildersOnly: Boolean = false,
       singleMethodServices: Boolean = false,
+      jvmOnly: Boolean = true,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -2552,9 +2562,11 @@ class KotlinGenerator private constructor(
           typeToKotlinName[service.type] = className
         }
 
-        putAllExtensions(schema, protoFile,
-            protoFile.types, protoFile.extendList,
-            memberToKotlinName)
+        putAllExtensions(
+          schema, protoFile,
+          protoFile.types, protoFile.extendList,
+          memberToKotlinName
+        )
       }
 
       typeToKotlinName.putAll(BUILT_IN_TYPES)
@@ -2575,11 +2587,17 @@ class KotlinGenerator private constructor(
         nameSuffix = nameSuffix,
         buildersOnly = buildersOnly,
         singleMethodServices = singleMethodServices,
+        jvmOnly = jvmOnly,
       )
     }
 
-    private fun putAllExtensions(schema: Schema, protoFile: ProtoFile, types: List<Type>,
-        extendList: List<Extend>, memberToKotlinName: MutableMap<ProtoMember, TypeName>) {
+    private fun putAllExtensions(
+      schema: Schema,
+      protoFile: ProtoFile,
+      types: List<Type>,
+      extendList: List<Extend>,
+      memberToKotlinName: MutableMap<ProtoMember, TypeName>
+    ) {
       for (extend in extendList) {
         if (extend.annotationTargets.isEmpty()) continue
         for (field in extend.fields) {
@@ -2589,9 +2607,11 @@ class KotlinGenerator private constructor(
         }
       }
       for (type in types) {
-        putAllExtensions(schema, protoFile,
-            type.nestedTypes, type.nestedExtendList,
-            memberToKotlinName)
+        putAllExtensions(
+          schema, protoFile,
+          type.nestedTypes, type.nestedExtendList,
+          memberToKotlinName
+        )
       }
     }
 

@@ -107,7 +107,7 @@ data class JavaTarget(
   val emitAppliedOptions: Boolean = true,
 
   /** If true, the constructor of all generated types will be non-public. */
-  val buildersOnly : Boolean = false,
+  val buildersOnly: Boolean = false,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
     return object : SchemaHandler() {
@@ -247,7 +247,13 @@ data class KotlinTarget(
    * If true, the constructor of all generated types will be non-public, and they will be
    * instantiable via their builders, regardless of the value of [javaInterop].
    */
-  val buildersOnly : Boolean = false,
+  val buildersOnly: Boolean = false,
+
+  /**
+   * If false, none of the JVM specific annotations, under `kotlin.jvm.*` will be set on the
+   * generated code. This is useful if you are generating code for Kotlin Multiplatform.
+   */
+  val jvmOnly: Boolean = true,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
     return object : SchemaHandler() {
@@ -270,6 +276,7 @@ data class KotlinTarget(
           nameSuffix = nameSuffix,
           buildersOnly = buildersOnly,
           singleMethodServices = singleMethodServices,
+          jvmOnly = jvmOnly,
         )
         context.fileSystem.createDirectories(context.outDirectory)
         super.handle(schema, context)
