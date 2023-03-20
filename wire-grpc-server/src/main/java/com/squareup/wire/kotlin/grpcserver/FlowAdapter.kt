@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.kotlin.grpcserver
 
-import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -25,7 +24,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlin.coroutines.CoroutineContext
 
 /**
  * This is an adapter class to convert Wire generated Channel based routines to
@@ -33,42 +32,44 @@ import kotlinx.coroutines.runBlocking
  */
 object FlowAdapter {
 
-  fun <I: Any, O: Any>serverStream(
+  fun <I : Any, O : Any> serverStream(
     context: CoroutineContext,
     request: I,
-    f: suspend (I, SendChannel<O>) -> Unit)
-  : Flow<O> {
+    f: suspend (I, SendChannel<O>) -> Unit
+  ): Flow<O> {
     val sendChannel = Channel<O>()
 
     CoroutineScope(context).launch { f(request, sendChannel) }
     return sendChannel.consumeAsFlow()
   }
 
-  suspend fun <I: Any, O: Any>clientStream(
+  suspend fun <I : Any, O : Any> clientStream(
     context: CoroutineContext,
     request: Flow<I>,
-    f: suspend (ReceiveChannel<I>) -> O)
-  : O {
+    f: suspend (ReceiveChannel<I>) -> O
+  ): O {
     val receiveChannel = Channel<I>()
 
-    CoroutineScope(context).launch { request
-      .onCompletion { receiveChannel.close() }
-      .collect { receiveChannel.send(it) }
+    CoroutineScope(context).launch {
+      request
+        .onCompletion { receiveChannel.close() }
+        .collect { receiveChannel.send(it) }
     }
     return f(receiveChannel)
   }
 
-  fun <I: Any, O: Any>bidiStream(
+  fun <I : Any, O : Any> bidiStream(
     context: CoroutineContext,
     request: Flow<I>,
-    f: suspend (ReceiveChannel<I>, SendChannel<O>) -> Unit)
-  : Flow<O> {
+    f: suspend (ReceiveChannel<I>, SendChannel<O>) -> Unit
+  ): Flow<O> {
     val sendChannel = Channel<O>()
     val receiveChannel = Channel<I>()
 
-    CoroutineScope(context).launch { request
-      .onCompletion { receiveChannel.close() }
-      .collect { receiveChannel.send(it) }
+    CoroutineScope(context).launch {
+      request
+        .onCompletion { receiveChannel.close() }
+        .collect { receiveChannel.send(it) }
     }
     CoroutineScope(context).launch { f(receiveChannel, sendChannel) }
 

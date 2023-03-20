@@ -9,6 +9,6 @@ import io.grpc.MethodDescriptor
  * generating other marshallers (like JSON encoding) from an instance of
  * this class.
  */
-interface WireMethodMarshaller<T>: MethodDescriptor.Marshaller<T> {
+interface WireMethodMarshaller<T> : MethodDescriptor.Marshaller<T> {
   fun marshalledClass(): Class<T>
 }

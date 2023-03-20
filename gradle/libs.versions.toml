@@ -13,12 +13,12 @@ jimfs = "1.0"
 jmh = "1.34"
 jsr305 = "3.0.2"
 junit = "4.13.2"
-kotlin = "1.6.10"
+kotlin = "1.8.20-RC"
 kotlinpoet = "1.12.0"
 ktlint = "0.42.1"
 moshi = "1.13.0"
 okhttp = "4.9.3"
-okio = "3.0.0"
+okio = "3.3.0"
 protobuf = "3.19.4"
 protobufGradlePlugin = "0.8.18"
 
@@ -35,6 +35,7 @@ assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 contour = { module = "app.cash.contour:contour", version = "1.1.0" }
 dokka-core = { module = "org.jetbrains.dokka:dokka-core", version.ref = "dokka" }
 dokka-gradlePlugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+grpc-genJava = { module = "io.grpc:protoc-gen-grpc-java", version.ref = "grpc" }
 grpc-netty = { module = "io.grpc:grpc-netty", version.ref = "grpc" }
 grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
 grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }

@@ -22,7 +22,7 @@ sourceSets {
 
 protobuf {
   protoc {
-    artifact = deps.protobuf.protoc
+    artifact = libs.protobuf.protoc.get().toString()
   }
 }
 

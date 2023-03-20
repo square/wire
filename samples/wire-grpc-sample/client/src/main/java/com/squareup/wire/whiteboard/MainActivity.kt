@@ -18,13 +18,12 @@ package com.squareup.wire.whiteboard
 import android.app.AlertDialog
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import com.squareup.wire.whiteboard.ui.MainContentView
-import com.squareup.wire.whiteboard.ui.WhiteboardView
 import com.squareup.wire.whiteboard.WhiteboardCommand.AddPoint
 import com.squareup.wire.whiteboard.WhiteboardCommand.ClearBoard
 import com.squareup.wire.whiteboard.WhiteboardUpdate.InitialiseBoard
 import com.squareup.wire.whiteboard.WhiteboardUpdate.UpdatePoints
-import java.io.IOException
+import com.squareup.wire.whiteboard.ui.MainContentView
+import com.squareup.wire.whiteboard.ui.WhiteboardView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -32,6 +31,7 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 
 class MainActivity : ComponentActivity(), OnBoardEventListener {
   private lateinit var sendCommandChannel: SendChannel<WhiteboardCommand>

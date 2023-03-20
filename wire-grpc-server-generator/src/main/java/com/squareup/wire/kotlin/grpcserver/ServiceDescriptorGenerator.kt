@@ -15,14 +15,16 @@
  */
 package com.squareup.wire.kotlin.grpcserver
 
-import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.MemberName
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
-import com.squareup.wire.schema.internal.SchemaEncoder
-import com.google.protobuf.DescriptorProtos
-import com.google.protobuf.Descriptors
 
 object ServiceDescriptorGenerator {
   internal fun addServiceDescriptor(
