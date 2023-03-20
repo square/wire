@@ -246,8 +246,8 @@ class SyntaxReader(
   private fun readComment(): String {
     check(pos != data.size && data[pos] == '/')
     pos++
-    when (if (pos < data.size) data[pos++].toInt() else -1) {
-      '*'.toInt() -> {
+    when (if (pos < data.size) data[pos++].code else -1) {
+      '*'.code -> {
         val result = StringBuilder()
         var startOfLine = true
         while (pos + 1 < data.size) {
@@ -285,7 +285,7 @@ class SyntaxReader(
         throw unexpected("unterminated comment")
       }
 
-      '/'.toInt() -> {
+      '/'.code -> {
         if (pos < data.size && data[pos] == ' ') {
           pos++ // Skip a single leading space, if present.
         }

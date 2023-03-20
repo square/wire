@@ -87,7 +87,6 @@ sealed class Type {
         is EnumType -> type.toElement()
         is MessageType -> type.toElement()
         is EnclosingType -> type.toElement()
-        else -> throw IllegalArgumentException("unexpected type: $type")
       }
     }
 
