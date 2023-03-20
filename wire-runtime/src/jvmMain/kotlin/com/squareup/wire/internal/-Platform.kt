@@ -42,12 +42,12 @@ actual fun camelCase(string: String, upperCamel: Boolean): String {
 
       index += Character.charCount(codePoint)
 
-      if (codePoint == '_'.toInt()) {
+      if (codePoint == '_'.code) {
         uppercase = true
         continue
       }
       if (uppercase) {
-        if (codePoint in 'a'.toInt()..'z'.toInt()) codePoint += 'A' - 'a'
+        if (codePoint in 'a'.code..'z'.code) codePoint += 'A' - 'a'
       }
       appendCodePoint(codePoint)
       uppercase = false

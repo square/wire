@@ -269,7 +269,7 @@ class KotlinGenerator private constructor(
     val implementationName = generatedServiceName(service, onlyRpc, isImplementation = true)
     val builder = if (!isImplementation) {
       TypeSpec.interfaceBuilder(interfaceName)
-        .addSuperinterface(com.squareup.wire.Service::class.java)
+        .addSuperinterface(com.squareup.wire.Service::class)
     } else {
       TypeSpec.classBuilder(implementationName)
         .primaryConstructor(
@@ -1281,7 +1281,7 @@ class KotlinGenerator private constructor(
     for (field in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs().filterIsInstance<Field>()) {
       val default = field.default ?: continue
 
-      val fieldName = "DEFAULT_" + nameAllocator[field].toUpperCase(Locale.US)
+      val fieldName = "DEFAULT_" + nameAllocator[field].uppercase(Locale.US)
       val fieldType = field.typeNameForMessageField.copy(nullable = false)
       val fieldValue = defaultFieldInitializer(field.type!!, default)
       companionBuilder.addProperty(
@@ -1803,7 +1803,7 @@ class KotlinGenerator private constructor(
       isScalar -> {
         CodeBlock.of(
           "%T$adapterFieldDelimiterName%L",
-          ProtoAdapter::class, simpleName.toUpperCase(Locale.US)
+          ProtoAdapter::class, simpleName.uppercase(Locale.US)
         )
       }
       this == ProtoType.DURATION -> {
@@ -2364,7 +2364,7 @@ class KotlinGenerator private constructor(
         keysFieldName,
         Set::class.asClassName().parameterizedBy(boxClassName.parameterizedBy(STAR))
       )
-      .addAnnotation(JvmStatic::class.java)
+      .addAnnotation(JvmStatic::class)
       .initializer(
         CodeBlock.of(
           """setOf(${keyFieldNames.map { "%L" }.joinToString(", ")})""",

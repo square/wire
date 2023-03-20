@@ -1,3 +1,5 @@
+rootProject.name = "wire"
+
 include(":wire-bom")
 include(":wire-compiler")
 include(":wire-gradle-plugin")

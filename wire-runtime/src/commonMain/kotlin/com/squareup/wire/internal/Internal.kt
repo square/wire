@@ -209,17 +209,17 @@ fun sanitize(values: List<String>): String {
 }
 
 fun boxedOneOfClassName(oneOfName: String): String {
-  return oneOfName.capitalize()
+  return oneOfName.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 }
 
 /**
  * Maps [oneOfName] and [fieldName] to the companion object key representing a boxed oneof field.
  */
 fun boxedOneOfKeyFieldName(oneOfName: String, fieldName: String): String {
-  return (oneOfName + "_" + fieldName).toUpperCase()
+  return (oneOfName + "_" + fieldName).uppercase()
 }
 
 /** Maps [oneOfName] to the companion object field of type `Set` containing the eligible keys.  */
 fun boxedOneOfKeysFieldName(oneOfName: String): String {
-  return "${oneOfName}_keys".toUpperCase()
+  return "${oneOfName}_keys".uppercase()
 }

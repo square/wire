@@ -127,7 +127,7 @@ class ReverseProtoWriter {
     // function, malformed UTF-16 surrogates are encoded as '?' in UTF-8.
     var i = value.length - 1
     while (i >= 0) {
-      val c = value[i--].toInt()
+      val c = value[i--].code
 
       when {
         c < 0x80 -> {
@@ -142,7 +142,7 @@ class ReverseProtoWriter {
           // performance improvement over independent calls to writeByte().
           val runLimit = maxOf(-1, i - localArrayLimit)
           while (i > runLimit) {
-            val d = value[i].toInt()
+            val d = value[i].code
             if (d >= 0x80) break
             i--
             localArray[--localArrayLimit] = d.toByte() // 0xxxxxxx
@@ -174,10 +174,10 @@ class ReverseProtoWriter {
           // c is a surrogate. Make sure it is a low surrogate & that its predecessor is a high
           // surrogate. If not, the UTF-16 is invalid, in which case we emit a replacement
           // character.
-          val high = (if (i >= 0) value[i].toInt() else Int.MAX_VALUE)
+          val high = (if (i >= 0) value[i].code else Int.MAX_VALUE)
           if (high > 0xdbff || c !in 0xdc00..0xdfff) {
             require(1)
-            array[--arrayLimit] = '?'.toByte()
+            array[--arrayLimit] = '?'.code.toByte()
           } else {
             i--
             // UTF-16 high surrogate: 110110xxxxxxxxxx (10 bits)

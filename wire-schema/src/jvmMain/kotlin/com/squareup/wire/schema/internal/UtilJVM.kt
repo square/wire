@@ -23,7 +23,7 @@ import java.util.Queue
 internal actual inline fun Char.isDigit() = Character.isDigit(this)
 
 @Suppress("NOTHING_TO_INLINE") // Aliasing to platform method.
-internal actual inline fun String.toEnglishLowerCase() = toLowerCase(Locale.US)
+internal actual inline fun String.toEnglishLowerCase() = lowercase(Locale.US)
 
 actual typealias MutableQueue<T> = Queue<T>
 

@@ -23,15 +23,15 @@ import com.squareup.wire.WireEnum
 
 // Methods for generated code use only. Not subject to public API rules.
 
-fun <T> redactElements(list: java.util.List<T>, adapter: ProtoAdapter<T>) {
+fun <T> redactElements(list: MutableList<T>, adapter: ProtoAdapter<T>) {
   for (i in 0 until list.size) {
     list[i] = adapter.redact(list[i])
   }
 }
 
-fun <T> redactElements(map: java.util.Map<*, T>, adapter: ProtoAdapter<T>) {
-  for (entry in map.entrySet()) {
-    entry.setValue(adapter.redact(entry.value))
+fun <T> redactElements(map: MutableMap<*, T>, adapter: ProtoAdapter<T>) {
+  for ((key, value) in map as MutableMap<Any, T>) {
+    map[key] = adapter.redact(value)
   }
 }
 
