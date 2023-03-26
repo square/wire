@@ -9,6 +9,7 @@ _2023-03-23_
 * Swift: fix proto3 messages not always omitting fields with default values.
 * Multiplatform: Builders and their methods are now generated if the configuration requires it.
 * Multiplatform: No more duplicate generations, or wrong tasks naming. Task dependencies are fixed.
+* Multiplatform: Added `mingwX64` target.
 * Kotlin: bump to `1.8.20RC`.
 
 Version 4.5.2
