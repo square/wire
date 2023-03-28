@@ -104,8 +104,8 @@ extension Timestamp : ProtoMessage {
 
 extension Timestamp : Proto3Codable {
     public init(from reader: ProtoReader) throws {
-        var seconds: Int64? = nil
-        var nanos: Int32? = nil
+        var seconds: Int64 = 0
+        var nanos: Int32 = 0
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
@@ -117,8 +117,8 @@ extension Timestamp : Proto3Codable {
         }
         self.unknownFields = try reader.endMessage(token: token)
 
-        self.seconds = try Timestamp.checkIfMissing(seconds, "seconds")
-        self.nanos = try Timestamp.checkIfMissing(nanos, "nanos")
+        self.seconds = seconds
+        self.nanos = nanos
     }
 
     public func encode(to writer: ProtoWriter) throws {

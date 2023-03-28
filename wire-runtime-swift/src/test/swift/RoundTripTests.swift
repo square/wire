@@ -38,4 +38,26 @@ final class RoundTripTests: XCTestCase {
         XCTAssertEqual(decodedPerson, person)
     }
 
+    // ensure that fields set to their identity value survive a roundtrip when omitted over the wire
+    func testProto3IdentityValues() throws {
+        let empty = EmptyOmitted(
+            numeric_value: 0,
+            string_value: "",
+            bytes_value: Data(),
+            bool_value: false,
+            enum_value: .UNKNOWN,
+            message_value: nil,
+            repeated_value: [],
+            map_value: [:]
+        )
+
+        let encoder = ProtoEncoder()
+        let data = try encoder.encode(empty)
+
+        let decoder = ProtoDecoder()
+        let decodedEmpty = try decoder.decode(EmptyOmitted.self, from: data)
+
+        XCTAssertEqual(decodedEmpty, empty)
+    }
+
 }
