@@ -322,7 +322,7 @@ final class ProtoReaderTests: XCTestCase {
             01 // Value 1
         """)!
         try test(data: data, enumStrategy: .returnNil) { reader in
-            let message = OneOfs(standalone_enum: OneOfs.NestedEnum.A, choice: OneOfs.Choice.similar_enum_option(OneOfs.NestedEnum.A))
+            let message = OneOfs(standalone_enum: OneOfs.NestedEnum.A, choice: OneOfs.choice.similar_enum_option(OneOfs.NestedEnum.A))
             XCTAssertEqual(try reader.decode(OneOfs.self), message)
         }
     }

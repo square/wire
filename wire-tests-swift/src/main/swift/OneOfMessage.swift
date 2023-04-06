@@ -11,14 +11,14 @@ public struct OneOfMessage {
     /**
      * Must have a foo or a bar or a baz.
      */
-    public var choice: Choice?
+    public var choice: choice?
     public var unknownFields: Data = .init()
 
-    public init(choice: Choice? = nil) {
+    public init(choice: choice? = nil) {
         self.choice = choice
     }
 
-    public enum Choice {
+    public enum choice {
 
         /**
          * What foo.
@@ -46,17 +46,17 @@ public struct OneOfMessage {
 }
 
 #if !WIRE_REMOVE_EQUATABLE
-extension OneOfMessage.Choice : Equatable {
+extension OneOfMessage.choice : Equatable {
 }
 #endif
 
 #if !WIRE_REMOVE_HASHABLE
-extension OneOfMessage.Choice : Hashable {
+extension OneOfMessage.choice : Hashable {
 }
 #endif
 
 #if swift(>=5.5)
-extension OneOfMessage.Choice : Sendable {
+extension OneOfMessage.choice : Sendable {
 }
 #endif
 
@@ -83,7 +83,7 @@ extension OneOfMessage : ProtoMessage {
 
 extension OneOfMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        var choice: OneOfMessage.Choice? = nil
+        var choice: OneOfMessage.choice? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {

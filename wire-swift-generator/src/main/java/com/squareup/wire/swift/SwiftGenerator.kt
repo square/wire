@@ -235,7 +235,7 @@ class SwiftGenerator private constructor(
     fileMembers: MutableList<FileMemberSpec>
   ): List<TypeSpec> {
     val structType = type.typeName
-    val oneOfEnumNames = type.oneOfs.associateWith { structType.nestedType(it.name.capitalize(US)) }
+    val oneOfEnumNames = type.oneOfs.associateWith { structType.nestedType(it.name) }
 
     // TODO use a NameAllocator
     val propertyNames = type.fields.map { it.name } + type.oneOfs.map { it.name }

@@ -5,14 +5,14 @@ import Wire
 
 public struct RedactedOneOf {
 
-    public var a: A?
+    public var a: a?
     public var unknownFields: Data = .init()
 
-    public init(a: A? = nil) {
+    public init(a: a? = nil) {
         self.a = a
     }
 
-    public enum A {
+    public enum a {
 
         case b(Int32)
         case c(String)
@@ -29,22 +29,22 @@ public struct RedactedOneOf {
 }
 
 #if !WIRE_REMOVE_EQUATABLE
-extension RedactedOneOf.A : Equatable {
+extension RedactedOneOf.a : Equatable {
 }
 #endif
 
 #if !WIRE_REMOVE_HASHABLE
-extension RedactedOneOf.A : Hashable {
+extension RedactedOneOf.a : Hashable {
 }
 #endif
 
 #if swift(>=5.5)
-extension RedactedOneOf.A : Sendable {
+extension RedactedOneOf.a : Sendable {
 }
 #endif
 
 #if !WIRE_REMOVE_REDACTABLE
-extension RedactedOneOf.A : Redactable {
+extension RedactedOneOf.a : Redactable {
     public enum RedactedKeys : String, RedactedKey {
 
         case c
@@ -76,7 +76,7 @@ extension RedactedOneOf : ProtoMessage {
 
 extension RedactedOneOf : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        var a: RedactedOneOf.A? = nil
+        var a: RedactedOneOf.a? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {

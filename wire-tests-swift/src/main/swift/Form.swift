@@ -5,16 +5,16 @@ import Wire
 
 public struct Form {
 
-    public var choice: Choice?
-    public var decision: Decision?
+    public var choice: choice?
+    public var decision: decision?
     public var unknownFields: Data = .init()
 
-    public init(choice: Choice? = nil, decision: Decision? = nil) {
+    public init(choice: choice? = nil, decision: decision? = nil) {
         self.choice = choice
         self.decision = decision
     }
 
-    public enum Choice {
+    public enum choice {
 
         case button_element(ButtonElement)
         case local_image_element(LocalImageElement)
@@ -49,7 +49,7 @@ public struct Form {
 
     }
 
-    public enum Decision {
+    public enum decision {
 
         case a(String)
         case b(String)
@@ -188,37 +188,37 @@ public struct Form {
 }
 
 #if !WIRE_REMOVE_EQUATABLE
-extension Form.Choice : Equatable {
+extension Form.choice : Equatable {
 }
 #endif
 
 #if !WIRE_REMOVE_HASHABLE
-extension Form.Choice : Hashable {
+extension Form.choice : Hashable {
 }
 #endif
 
 #if swift(>=5.5)
-extension Form.Choice : Sendable {
+extension Form.choice : Sendable {
 }
 #endif
 
 #if !WIRE_REMOVE_EQUATABLE
-extension Form.Decision : Equatable {
+extension Form.decision : Equatable {
 }
 #endif
 
 #if !WIRE_REMOVE_HASHABLE
-extension Form.Decision : Hashable {
+extension Form.decision : Hashable {
 }
 #endif
 
 #if swift(>=5.5)
-extension Form.Decision : Sendable {
+extension Form.decision : Sendable {
 }
 #endif
 
 #if !WIRE_REMOVE_REDACTABLE
-extension Form.Decision : Redactable {
+extension Form.decision : Redactable {
     public enum RedactedKeys : String, RedactedKey {
 
         case e
@@ -803,8 +803,8 @@ extension Form : ProtoMessage {
 
 extension Form : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        var choice: Form.Choice? = nil
-        var decision: Form.Decision? = nil
+        var choice: Form.choice? = nil
+        var decision: Form.decision? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
