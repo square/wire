@@ -2185,19 +2185,19 @@ public class AllTypes(
         val rep_bytes = mutableListOf<ByteString>()
         val rep_nested_enum = mutableListOf<NestedEnum>()
         val rep_nested_message = mutableListOf<NestedMessage>()
-        val pack_int32 = mutableListOf<Int>()
-        val pack_uint32 = mutableListOf<Int>()
-        val pack_sint32 = mutableListOf<Int>()
-        val pack_fixed32 = mutableListOf<Int>()
-        val pack_sfixed32 = mutableListOf<Int>()
-        val pack_int64 = mutableListOf<Long>()
-        val pack_uint64 = mutableListOf<Long>()
-        val pack_sint64 = mutableListOf<Long>()
-        val pack_fixed64 = mutableListOf<Long>()
-        val pack_sfixed64 = mutableListOf<Long>()
-        val pack_bool = mutableListOf<Boolean>()
-        val pack_float = mutableListOf<Float>()
-        val pack_double = mutableListOf<Double>()
+        var pack_int32: MutableList<Int>? = null
+        var pack_uint32: MutableList<Int>? = null
+        var pack_sint32: MutableList<Int>? = null
+        var pack_fixed32: MutableList<Int>? = null
+        var pack_sfixed32: MutableList<Int>? = null
+        var pack_int64: MutableList<Long>? = null
+        var pack_uint64: MutableList<Long>? = null
+        var pack_sint64: MutableList<Long>? = null
+        var pack_fixed64: MutableList<Long>? = null
+        var pack_sfixed64: MutableList<Long>? = null
+        var pack_bool: MutableList<Boolean>? = null
+        var pack_float: MutableList<Float>? = null
+        var pack_double: MutableList<Double>? = null
         val pack_nested_enum = mutableListOf<NestedEnum>()
         var default_int32: Int? = null
         var default_uint32: Int? = null
@@ -2253,19 +2253,19 @@ public class AllTypes(
         val ext_rep_bytes = mutableListOf<ByteString>()
         val ext_rep_nested_enum = mutableListOf<NestedEnum>()
         val ext_rep_nested_message = mutableListOf<NestedMessage>()
-        val ext_pack_int32 = mutableListOf<Int>()
-        val ext_pack_uint32 = mutableListOf<Int>()
-        val ext_pack_sint32 = mutableListOf<Int>()
-        val ext_pack_fixed32 = mutableListOf<Int>()
-        val ext_pack_sfixed32 = mutableListOf<Int>()
-        val ext_pack_int64 = mutableListOf<Long>()
-        val ext_pack_uint64 = mutableListOf<Long>()
-        val ext_pack_sint64 = mutableListOf<Long>()
-        val ext_pack_fixed64 = mutableListOf<Long>()
-        val ext_pack_sfixed64 = mutableListOf<Long>()
-        val ext_pack_bool = mutableListOf<Boolean>()
-        val ext_pack_float = mutableListOf<Float>()
-        val ext_pack_double = mutableListOf<Double>()
+        var ext_pack_int32: MutableList<Int>? = null
+        var ext_pack_uint32: MutableList<Int>? = null
+        var ext_pack_sint32: MutableList<Int>? = null
+        var ext_pack_fixed32: MutableList<Int>? = null
+        var ext_pack_sfixed32: MutableList<Int>? = null
+        var ext_pack_int64: MutableList<Long>? = null
+        var ext_pack_uint64: MutableList<Long>? = null
+        var ext_pack_sint64: MutableList<Long>? = null
+        var ext_pack_fixed64: MutableList<Long>? = null
+        var ext_pack_sfixed64: MutableList<Long>? = null
+        var ext_pack_bool: MutableList<Boolean>? = null
+        var ext_pack_float: MutableList<Float>? = null
+        var ext_pack_double: MutableList<Double>? = null
         val ext_pack_nested_enum = mutableListOf<NestedEnum>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -2332,19 +2332,149 @@ public class AllTypes(
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
             217 -> rep_nested_message.add(NestedMessage.ADAPTER.decode(reader))
-            301 -> pack_int32.add(ProtoAdapter.INT32.decode(reader))
-            302 -> pack_uint32.add(ProtoAdapter.UINT32.decode(reader))
-            303 -> pack_sint32.add(ProtoAdapter.SINT32.decode(reader))
-            304 -> pack_fixed32.add(ProtoAdapter.FIXED32.decode(reader))
-            305 -> pack_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader))
-            306 -> pack_int64.add(ProtoAdapter.INT64.decode(reader))
-            307 -> pack_uint64.add(ProtoAdapter.UINT64.decode(reader))
-            308 -> pack_sint64.add(ProtoAdapter.SINT64.decode(reader))
-            309 -> pack_fixed64.add(ProtoAdapter.FIXED64.decode(reader))
-            310 -> pack_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader))
-            311 -> pack_bool.add(ProtoAdapter.BOOL.decode(reader))
-            312 -> pack_float.add(ProtoAdapter.FLOAT.decode(reader))
-            313 -> pack_double.add(ProtoAdapter.DOUBLE.decode(reader))
+            301 -> {
+                          if (pack_int32 == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            pack_int32 = ArrayList(initialCapacity)
+                          }
+                          pack_int32!!.add(ProtoAdapter.INT32.decode(reader))
+                          }
+            302 -> {
+                          if (pack_uint32 == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            pack_uint32 = ArrayList(initialCapacity)
+                          }
+                          pack_uint32!!.add(ProtoAdapter.UINT32.decode(reader))
+                          }
+            303 -> {
+                          if (pack_sint32 == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            pack_sint32 = ArrayList(initialCapacity)
+                          }
+                          pack_sint32!!.add(ProtoAdapter.SINT32.decode(reader))
+                          }
+            304 -> {
+                          if (pack_fixed32 == null) {
+                            val minimumByteSize = 4
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            pack_fixed32 = ArrayList(initialCapacity)
+                          }
+                          pack_fixed32!!.add(ProtoAdapter.FIXED32.decode(reader))
+                          }
+            305 -> {
+                          if (pack_sfixed32 == null) {
+                            val minimumByteSize = 4
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            pack_sfixed32 = ArrayList(initialCapacity)
+                          }
+                          pack_sfixed32!!.add(ProtoAdapter.SFIXED32.decode(reader))
+                          }
+            306 -> {
+                          if (pack_int64 == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            pack_int64 = ArrayList(initialCapacity)
+                          }
+                          pack_int64!!.add(ProtoAdapter.INT64.decode(reader))
+                          }
+            307 -> {
+                          if (pack_uint64 == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            pack_uint64 = ArrayList(initialCapacity)
+                          }
+                          pack_uint64!!.add(ProtoAdapter.UINT64.decode(reader))
+                          }
+            308 -> {
+                          if (pack_sint64 == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            pack_sint64 = ArrayList(initialCapacity)
+                          }
+                          pack_sint64!!.add(ProtoAdapter.SINT64.decode(reader))
+                          }
+            309 -> {
+                          if (pack_fixed64 == null) {
+                            val minimumByteSize = 8
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            pack_fixed64 = ArrayList(initialCapacity)
+                          }
+                          pack_fixed64!!.add(ProtoAdapter.FIXED64.decode(reader))
+                          }
+            310 -> {
+                          if (pack_sfixed64 == null) {
+                            val minimumByteSize = 8
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            pack_sfixed64 = ArrayList(initialCapacity)
+                          }
+                          pack_sfixed64!!.add(ProtoAdapter.SFIXED64.decode(reader))
+                          }
+            311 -> {
+                          if (pack_bool == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            pack_bool = ArrayList(initialCapacity)
+                          }
+                          pack_bool!!.add(ProtoAdapter.BOOL.decode(reader))
+                          }
+            312 -> {
+                          if (pack_float == null) {
+                            val minimumByteSize = 4
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            pack_float = ArrayList(initialCapacity)
+                          }
+                          pack_float!!.add(ProtoAdapter.FLOAT.decode(reader))
+                          }
+            313 -> {
+                          if (pack_double == null) {
+                            val minimumByteSize = 8
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            pack_double = ArrayList(initialCapacity)
+                          }
+                          pack_double!!.add(ProtoAdapter.DOUBLE.decode(reader))
+                          }
             316 -> try {
               pack_nested_enum.add(NestedEnum.ADAPTER.decode(reader))
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
@@ -2416,19 +2546,149 @@ public class AllTypes(
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
             1117 -> ext_rep_nested_message.add(NestedMessage.ADAPTER.decode(reader))
-            1201 -> ext_pack_int32.add(ProtoAdapter.INT32.decode(reader))
-            1202 -> ext_pack_uint32.add(ProtoAdapter.UINT32.decode(reader))
-            1203 -> ext_pack_sint32.add(ProtoAdapter.SINT32.decode(reader))
-            1204 -> ext_pack_fixed32.add(ProtoAdapter.FIXED32.decode(reader))
-            1205 -> ext_pack_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader))
-            1206 -> ext_pack_int64.add(ProtoAdapter.INT64.decode(reader))
-            1207 -> ext_pack_uint64.add(ProtoAdapter.UINT64.decode(reader))
-            1208 -> ext_pack_sint64.add(ProtoAdapter.SINT64.decode(reader))
-            1209 -> ext_pack_fixed64.add(ProtoAdapter.FIXED64.decode(reader))
-            1210 -> ext_pack_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader))
-            1211 -> ext_pack_bool.add(ProtoAdapter.BOOL.decode(reader))
-            1212 -> ext_pack_float.add(ProtoAdapter.FLOAT.decode(reader))
-            1213 -> ext_pack_double.add(ProtoAdapter.DOUBLE.decode(reader))
+            1201 -> {
+                          if (ext_pack_int32 == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            ext_pack_int32 = ArrayList(initialCapacity)
+                          }
+                          ext_pack_int32!!.add(ProtoAdapter.INT32.decode(reader))
+                          }
+            1202 -> {
+                          if (ext_pack_uint32 == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            ext_pack_uint32 = ArrayList(initialCapacity)
+                          }
+                          ext_pack_uint32!!.add(ProtoAdapter.UINT32.decode(reader))
+                          }
+            1203 -> {
+                          if (ext_pack_sint32 == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            ext_pack_sint32 = ArrayList(initialCapacity)
+                          }
+                          ext_pack_sint32!!.add(ProtoAdapter.SINT32.decode(reader))
+                          }
+            1204 -> {
+                          if (ext_pack_fixed32 == null) {
+                            val minimumByteSize = 4
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            ext_pack_fixed32 = ArrayList(initialCapacity)
+                          }
+                          ext_pack_fixed32!!.add(ProtoAdapter.FIXED32.decode(reader))
+                          }
+            1205 -> {
+                          if (ext_pack_sfixed32 == null) {
+                            val minimumByteSize = 4
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            ext_pack_sfixed32 = ArrayList(initialCapacity)
+                          }
+                          ext_pack_sfixed32!!.add(ProtoAdapter.SFIXED32.decode(reader))
+                          }
+            1206 -> {
+                          if (ext_pack_int64 == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            ext_pack_int64 = ArrayList(initialCapacity)
+                          }
+                          ext_pack_int64!!.add(ProtoAdapter.INT64.decode(reader))
+                          }
+            1207 -> {
+                          if (ext_pack_uint64 == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            ext_pack_uint64 = ArrayList(initialCapacity)
+                          }
+                          ext_pack_uint64!!.add(ProtoAdapter.UINT64.decode(reader))
+                          }
+            1208 -> {
+                          if (ext_pack_sint64 == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            ext_pack_sint64 = ArrayList(initialCapacity)
+                          }
+                          ext_pack_sint64!!.add(ProtoAdapter.SINT64.decode(reader))
+                          }
+            1209 -> {
+                          if (ext_pack_fixed64 == null) {
+                            val minimumByteSize = 8
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            ext_pack_fixed64 = ArrayList(initialCapacity)
+                          }
+                          ext_pack_fixed64!!.add(ProtoAdapter.FIXED64.decode(reader))
+                          }
+            1210 -> {
+                          if (ext_pack_sfixed64 == null) {
+                            val minimumByteSize = 8
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            ext_pack_sfixed64 = ArrayList(initialCapacity)
+                          }
+                          ext_pack_sfixed64!!.add(ProtoAdapter.SFIXED64.decode(reader))
+                          }
+            1211 -> {
+                          if (ext_pack_bool == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            ext_pack_bool = ArrayList(initialCapacity)
+                          }
+                          ext_pack_bool!!.add(ProtoAdapter.BOOL.decode(reader))
+                          }
+            1212 -> {
+                          if (ext_pack_float == null) {
+                            val minimumByteSize = 4
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            ext_pack_float = ArrayList(initialCapacity)
+                          }
+                          ext_pack_float!!.add(ProtoAdapter.FLOAT.decode(reader))
+                          }
+            1213 -> {
+                          if (ext_pack_double == null) {
+                            val minimumByteSize = 8
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            ext_pack_double = ArrayList(initialCapacity)
+                          }
+                          ext_pack_double!!.add(ProtoAdapter.DOUBLE.decode(reader))
+                          }
             1216 -> try {
               ext_pack_nested_enum.add(NestedEnum.ADAPTER.decode(reader))
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
@@ -2491,19 +2751,19 @@ public class AllTypes(
           rep_bytes = rep_bytes,
           rep_nested_enum = rep_nested_enum,
           rep_nested_message = rep_nested_message,
-          pack_int32 = pack_int32,
-          pack_uint32 = pack_uint32,
-          pack_sint32 = pack_sint32,
-          pack_fixed32 = pack_fixed32,
-          pack_sfixed32 = pack_sfixed32,
-          pack_int64 = pack_int64,
-          pack_uint64 = pack_uint64,
-          pack_sint64 = pack_sint64,
-          pack_fixed64 = pack_fixed64,
-          pack_sfixed64 = pack_sfixed64,
-          pack_bool = pack_bool,
-          pack_float = pack_float,
-          pack_double = pack_double,
+          pack_int32 = pack_int32 ?: listOf(),
+          pack_uint32 = pack_uint32 ?: listOf(),
+          pack_sint32 = pack_sint32 ?: listOf(),
+          pack_fixed32 = pack_fixed32 ?: listOf(),
+          pack_sfixed32 = pack_sfixed32 ?: listOf(),
+          pack_int64 = pack_int64 ?: listOf(),
+          pack_uint64 = pack_uint64 ?: listOf(),
+          pack_sint64 = pack_sint64 ?: listOf(),
+          pack_fixed64 = pack_fixed64 ?: listOf(),
+          pack_sfixed64 = pack_sfixed64 ?: listOf(),
+          pack_bool = pack_bool ?: listOf(),
+          pack_float = pack_float ?: listOf(),
+          pack_double = pack_double ?: listOf(),
           pack_nested_enum = pack_nested_enum,
           default_int32 = default_int32,
           default_uint32 = default_uint32,
@@ -2559,19 +2819,19 @@ public class AllTypes(
           ext_rep_bytes = ext_rep_bytes,
           ext_rep_nested_enum = ext_rep_nested_enum,
           ext_rep_nested_message = ext_rep_nested_message,
-          ext_pack_int32 = ext_pack_int32,
-          ext_pack_uint32 = ext_pack_uint32,
-          ext_pack_sint32 = ext_pack_sint32,
-          ext_pack_fixed32 = ext_pack_fixed32,
-          ext_pack_sfixed32 = ext_pack_sfixed32,
-          ext_pack_int64 = ext_pack_int64,
-          ext_pack_uint64 = ext_pack_uint64,
-          ext_pack_sint64 = ext_pack_sint64,
-          ext_pack_fixed64 = ext_pack_fixed64,
-          ext_pack_sfixed64 = ext_pack_sfixed64,
-          ext_pack_bool = ext_pack_bool,
-          ext_pack_float = ext_pack_float,
-          ext_pack_double = ext_pack_double,
+          ext_pack_int32 = ext_pack_int32 ?: listOf(),
+          ext_pack_uint32 = ext_pack_uint32 ?: listOf(),
+          ext_pack_sint32 = ext_pack_sint32 ?: listOf(),
+          ext_pack_fixed32 = ext_pack_fixed32 ?: listOf(),
+          ext_pack_sfixed32 = ext_pack_sfixed32 ?: listOf(),
+          ext_pack_int64 = ext_pack_int64 ?: listOf(),
+          ext_pack_uint64 = ext_pack_uint64 ?: listOf(),
+          ext_pack_sint64 = ext_pack_sint64 ?: listOf(),
+          ext_pack_fixed64 = ext_pack_fixed64 ?: listOf(),
+          ext_pack_sfixed64 = ext_pack_sfixed64 ?: listOf(),
+          ext_pack_bool = ext_pack_bool ?: listOf(),
+          ext_pack_float = ext_pack_float ?: listOf(),
+          ext_pack_double = ext_pack_double ?: listOf(),
           ext_pack_nested_enum = ext_pack_nested_enum,
           unknownFields = unknownFields
         )

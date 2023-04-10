@@ -113,17 +113,27 @@ public class EmbeddedMessage(
       }
 
       public override fun decode(reader: ProtoReader): EmbeddedMessage {
-        val inner_repeated_number = mutableListOf<Int>()
+        var inner_repeated_number: MutableList<Int>? = null
         var inner_number_after: Int? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> inner_repeated_number.add(ProtoAdapter.INT32.decode(reader))
+            1 -> {
+                          if (inner_repeated_number == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            inner_repeated_number = ArrayList(initialCapacity)
+                          }
+                          inner_repeated_number!!.add(ProtoAdapter.INT32.decode(reader))
+                          }
             2 -> inner_number_after = ProtoAdapter.INT32.decode(reader)
             else -> reader.readUnknownField(tag)
           }
         }
         return EmbeddedMessage(
-          inner_repeated_number = inner_repeated_number,
+          inner_repeated_number = inner_repeated_number ?: listOf(),
           inner_number_after = inner_number_after,
           unknownFields = unknownFields
         )

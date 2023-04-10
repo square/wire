@@ -447,6 +447,21 @@ class ProtoReader(private val source: BufferedSource) {
     (protoAdapter as ProtoAdapter<Any>).encodeWithTag(unknownFieldsWriter, tag, value)
   }
 
+  /**
+   * Returns the min length of the next field in bytes. Some encodings have a fixed length, while others
+   * have a variable length. LENGTH_DELIMITED fields have a known variable length, while VARINT fields
+   * could be as small as a single byte.
+   */
+  fun nextFieldLengthInBytes(): Long {
+    return when (nextFieldEncoding) {
+      FieldEncoding.LENGTH_DELIMITED -> limit - pos
+      FieldEncoding.FIXED32 -> 4
+      FieldEncoding.FIXED64 -> 8
+      FieldEncoding.VARINT -> 1
+      null -> throw IllegalStateException("nextFieldEncoding is not set")
+    }
+  }
+
   companion object {
     /** The standard number of levels of message nesting to allow. */
     private const val RECURSION_LIMIT = 65

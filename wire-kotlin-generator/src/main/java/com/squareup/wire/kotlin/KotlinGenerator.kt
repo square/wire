@@ -1619,7 +1619,11 @@ class KotlinGenerator private constructor(
                 CodeBlock.of("")
               }
 
-            addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
+            if (fieldOrOneOf.isPacked && fieldOrOneOf.isScalar) {
+              addStatement("%1L = %1L ?: listOf(),", fieldName)
+            } else {
+              addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
+            }
           }
           is OneOf -> {
             val fieldName = nameAllocator[fieldOrOneOf]
@@ -1696,12 +1700,39 @@ class KotlinGenerator private constructor(
     val decode = CodeBlock.of("%L.decode(reader)", adapterName)
     return CodeBlock.of(
       when {
+        field.isPacked && field.isScalar ->
+          """{
+          if (%1L == null) {
+            val minimumByteSize = ${field.getMinimumByteSize()}
+            val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+              .coerceAtMost(Int.MAX_VALUE.toLong())
+              .toInt()
+            %1L = ArrayList(initialCapacity)
+          }
+          %1L!!.add(%2L)
+          }
+          """.trimIndent()
         field.isRepeated -> "%L.add(%L)"
         field.isMap -> "%L.putAll(%L)"
         else -> "%L·= %L"
       },
       fieldName, decode
     )
+  }
+
+  private fun Field.getMinimumByteSize(): Int {
+    require(isScalar && isPacked) { "Field $name is not a scalar" }
+    return when (type) {
+      ProtoType.FLOAT,
+      ProtoType.FIXED32,
+      ProtoType.SFIXED32 -> 4
+      ProtoType.DOUBLE,
+      ProtoType.FIXED64,
+      ProtoType.SFIXED64 -> 8
+      // If we aren't 100% confident in the size of the field, we assume the worst case scenario of 1 byte which gives
+      // us the maximum possible number of elements in the list.
+      else -> 1
+    }
   }
 
   private fun redactFun(message: MessageType): FunSpec {
@@ -2148,6 +2179,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun Field.getDeclaration(allocatedName: String) = when {
+    isPacked && isScalar -> CodeBlock.of("var $allocatedName: MutableList<%T>? = null", type!!.typeName)
     isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", type!!.typeName)
     isMap -> CodeBlock.of(
       "val $allocatedName = mutableMapOf<%T, %T>()",

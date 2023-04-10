@@ -206,13 +206,23 @@ public class CamelCase(
 
       public override fun decode(reader: ProtoReader): CamelCase {
         var nested__message: NestedCamelCase? = null
-        val _Rep_int32 = mutableListOf<Int>()
+        var _Rep_int32: MutableList<Int>? = null
         var IDitIt_my_wAy: String = ""
         val map_int32_Int32 = mutableMapOf<Int, Int>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> nested__message = NestedCamelCase.ADAPTER.decode(reader)
-            2 -> _Rep_int32.add(ProtoAdapter.INT32.decode(reader))
+            2 -> {
+                          if (_Rep_int32 == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            _Rep_int32 = ArrayList(initialCapacity)
+                          }
+                          _Rep_int32!!.add(ProtoAdapter.INT32.decode(reader))
+                          }
             3 -> IDitIt_my_wAy = ProtoAdapter.STRING.decode(reader)
             4 -> map_int32_Int32.putAll(map_int32_Int32Adapter.decode(reader))
             else -> reader.readUnknownField(tag)
@@ -220,7 +230,7 @@ public class CamelCase(
         }
         return CamelCase(
           nested__message = nested__message,
-          _Rep_int32 = _Rep_int32,
+          _Rep_int32 = _Rep_int32 ?: listOf(),
           IDitIt_my_wAy = IDitIt_my_wAy,
           map_int32_Int32 = map_int32_Int32,
           unknownFields = unknownFields

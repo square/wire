@@ -2067,6 +2067,21 @@ class KotlinGeneratorTest {
     )
   }
 
+  @Test fun packedFieldsUsePresizedLists() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |message Embedding {
+        |	repeated float values = 1 [packed = true];
+        |}""".trimMargin()
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Embedding")
+    assertContains(code, "val values: MutableList<Float>? = null")
+    assertContains(code, "values = ArrayList((reader.nextFieldLengthInBytes() / 4).coerceAtMost(Int.MAX_VALUE.toLong().toInt()))")
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {

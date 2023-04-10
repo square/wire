@@ -215,7 +215,7 @@ public class Person(
         var id: Int? = null
         var email: String? = null
         val phone = mutableListOf<PhoneNumber>()
-        val favorite_numbers = mutableListOf<Int>()
+        var favorite_numbers: MutableList<Int>? = null
         val area_numbers = mutableMapOf<Int, String>()
         var is_canadian: Boolean? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -224,7 +224,17 @@ public class Person(
             2 -> id = ProtoAdapter.INT32.decode(reader)
             3 -> email = ProtoAdapter.STRING.decode(reader)
             4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
-            5 -> favorite_numbers.add(ProtoAdapter.INT32.decode(reader))
+            5 -> {
+                          if (favorite_numbers == null) {
+                            val minimumByteSize = 1
+                            val initialCapacity = (reader.nextFieldLengthInBytes() /
+                    minimumByteSize)
+                              .coerceAtMost(Int.MAX_VALUE.toLong())
+                              .toInt()
+                            favorite_numbers = ArrayList(initialCapacity)
+                          }
+                          favorite_numbers!!.add(ProtoAdapter.INT32.decode(reader))
+                          }
             6 -> area_numbers.putAll(area_numbersAdapter.decode(reader))
             7 -> is_canadian = ProtoAdapter.BOOL.decode(reader)
             else -> reader.readUnknownField(tag)
@@ -235,7 +245,7 @@ public class Person(
           id = id ?: throw missingRequiredFields(id, "id"),
           email = email,
           phone = phone,
-          favorite_numbers = favorite_numbers,
+          favorite_numbers = favorite_numbers ?: listOf(),
           area_numbers = area_numbers,
           is_canadian = is_canadian,
           unknownFields = unknownFields
