@@ -143,16 +143,15 @@ public class EmbeddedMessage(
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> {
-                          if (inner_repeated_number == null) {
-                            val minimumByteSize = 1
-                            val initialCapacity = (reader.nextFieldLengthInBytes() /
-                    minimumByteSize)
-                              .coerceAtMost(Int.MAX_VALUE.toLong())
-                              .toInt()
-                            inner_repeated_number = ArrayList(initialCapacity)
-                          }
-                          inner_repeated_number!!.add(ProtoAdapter.INT32.decode(reader))
-                          }
+              if (inner_repeated_number == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                inner_repeated_number = ArrayList(initialCapacity)
+              }
+              inner_repeated_number!!.add(com.squareup.wire.ProtoAdapter.INT32.decode(reader))
+            }
             2 -> inner_number_after = ProtoAdapter.INT32.decode(reader)
             else -> reader.readUnknownField(tag)
           }

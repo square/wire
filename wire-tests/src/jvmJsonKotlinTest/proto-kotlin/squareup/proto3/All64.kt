@@ -756,60 +756,55 @@ public class All64(
             204 -> rep_fixed64.add(ProtoAdapter.FIXED64.decode(reader))
             205 -> rep_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader))
             301 -> {
-                          if (pack_int64 == null) {
-                            val minimumByteSize = 1
-                            val initialCapacity = (reader.nextFieldLengthInBytes() /
-                    minimumByteSize)
-                              .coerceAtMost(Int.MAX_VALUE.toLong())
-                              .toInt()
-                            pack_int64 = ArrayList(initialCapacity)
-                          }
-                          pack_int64!!.add(ProtoAdapter.INT64.decode(reader))
-                          }
+              if (pack_int64 == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_int64 = ArrayList(initialCapacity)
+              }
+              pack_int64!!.add(com.squareup.wire.ProtoAdapter.INT64.decode(reader))
+            }
             302 -> {
-                          if (pack_uint64 == null) {
-                            val minimumByteSize = 1
-                            val initialCapacity = (reader.nextFieldLengthInBytes() /
-                    minimumByteSize)
-                              .coerceAtMost(Int.MAX_VALUE.toLong())
-                              .toInt()
-                            pack_uint64 = ArrayList(initialCapacity)
-                          }
-                          pack_uint64!!.add(ProtoAdapter.UINT64.decode(reader))
-                          }
+              if (pack_uint64 == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_uint64 = ArrayList(initialCapacity)
+              }
+              pack_uint64!!.add(com.squareup.wire.ProtoAdapter.UINT64.decode(reader))
+            }
             303 -> {
-                          if (pack_sint64 == null) {
-                            val minimumByteSize = 1
-                            val initialCapacity = (reader.nextFieldLengthInBytes() /
-                    minimumByteSize)
-                              .coerceAtMost(Int.MAX_VALUE.toLong())
-                              .toInt()
-                            pack_sint64 = ArrayList(initialCapacity)
-                          }
-                          pack_sint64!!.add(ProtoAdapter.SINT64.decode(reader))
-                          }
+              if (pack_sint64 == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_sint64 = ArrayList(initialCapacity)
+              }
+              pack_sint64!!.add(com.squareup.wire.ProtoAdapter.SINT64.decode(reader))
+            }
             304 -> {
-                          if (pack_fixed64 == null) {
-                            val minimumByteSize = 8
-                            val initialCapacity = (reader.nextFieldLengthInBytes() /
-                    minimumByteSize)
-                              .coerceAtMost(Int.MAX_VALUE.toLong())
-                              .toInt()
-                            pack_fixed64 = ArrayList(initialCapacity)
-                          }
-                          pack_fixed64!!.add(ProtoAdapter.FIXED64.decode(reader))
-                          }
+              if (pack_fixed64 == null) {
+                val minimumByteSize = 8
+                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_fixed64 = ArrayList(initialCapacity)
+              }
+              pack_fixed64!!.add(com.squareup.wire.ProtoAdapter.FIXED64.decode(reader))
+            }
             305 -> {
-                          if (pack_sfixed64 == null) {
-                            val minimumByteSize = 8
-                            val initialCapacity = (reader.nextFieldLengthInBytes() /
-                    minimumByteSize)
-                              .coerceAtMost(Int.MAX_VALUE.toLong())
-                              .toInt()
-                            pack_sfixed64 = ArrayList(initialCapacity)
-                          }
-                          pack_sfixed64!!.add(ProtoAdapter.SFIXED64.decode(reader))
-                          }
+              if (pack_sfixed64 == null) {
+                val minimumByteSize = 8
+                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_sfixed64 = ArrayList(initialCapacity)
+              }
+              pack_sfixed64!!.add(com.squareup.wire.ProtoAdapter.SFIXED64.decode(reader))
+            }
             401 -> oneof_int64 = ProtoAdapter.INT64.decode(reader)
             402 -> oneof_sfixed64 = ProtoAdapter.SFIXED64.decode(reader)
             501 -> map_int64_int64.putAll(map_int64_int64Adapter.decode(reader))

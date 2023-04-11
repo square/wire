@@ -225,16 +225,15 @@ public class Person(
             3 -> email = ProtoAdapter.STRING.decode(reader)
             4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
             5 -> {
-                          if (favorite_numbers == null) {
-                            val minimumByteSize = 1
-                            val initialCapacity = (reader.nextFieldLengthInBytes() /
-                    minimumByteSize)
-                              .coerceAtMost(Int.MAX_VALUE.toLong())
-                              .toInt()
-                            favorite_numbers = ArrayList(initialCapacity)
-                          }
-                          favorite_numbers!!.add(ProtoAdapter.INT32.decode(reader))
-                          }
+              if (favorite_numbers == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                favorite_numbers = ArrayList(initialCapacity)
+              }
+              favorite_numbers!!.add(com.squareup.wire.ProtoAdapter.INT32.decode(reader))
+            }
             6 -> area_numbers.putAll(area_numbersAdapter.decode(reader))
             7 -> is_canadian = ProtoAdapter.BOOL.decode(reader)
             else -> reader.readUnknownField(tag)

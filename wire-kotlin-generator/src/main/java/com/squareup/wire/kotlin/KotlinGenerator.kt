@@ -1651,17 +1651,25 @@ class KotlinGenerator private constructor(
           val fieldName = nameAllocator[field]
           val adapterName = field.getAdapterName()
 
-          if (field.type!!.isEnum) {
-            beginControlFlow("%L -> try", field.tag)
-            addStatement("%L", decodeAndAssign(field, fieldName, adapterName))
-            nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
-            addStatement(
-              "reader.addUnknownField(%L, %T.VARINT, e.value.toLong())", tag,
-              FieldEncoding::class
-            )
-            endControlFlow()
-          } else {
-            addStatement("%L -> %L", field.tag, decodeAndAssign(field, fieldName, adapterName))
+          when {
+            field.type!!.isEnum -> {
+              beginControlFlow("%L -> try", field.tag)
+              addStatement("%L", decodeAndAssign(field, fieldName, adapterName))
+              nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
+              addStatement(
+                "reader.addUnknownField(%L, %T.VARINT, e.value.toLong())", tag,
+                FieldEncoding::class
+              )
+              endControlFlow()
+            }
+            field.isPacked && field.isScalar -> {
+              beginControlFlow("%L ->", field.tag)
+              add(decodeAndAssign(field, fieldName, adapterName))
+              endControlFlow()
+            }
+            else -> {
+              addStatement("%L -> %L", field.tag, decodeAndAssign(field, fieldName, adapterName))
+            }
           }
         }
         if (boxOneOfs.isEmpty()) {
@@ -1701,17 +1709,16 @@ class KotlinGenerator private constructor(
     return CodeBlock.of(
       when {
         field.isPacked && field.isScalar ->
-          """{
-          if (%1L == null) {
-            val minimumByteSize = ${field.getMinimumByteSize()}
-            val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
-              .coerceAtMost(Int.MAX_VALUE.toLong())
-              .toInt()
-            %1L = ArrayList(initialCapacity)
-          }
-          %1L!!.add(%2L)
-          }
-          """.trimIndent()
+          buildCodeBlock {
+            beginControlFlow("if (%L == null)", fieldName)
+            addStatement("val minimumByteSize = ${field.getMinimumByteSize()}")
+            addStatement("val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)")
+            addStatement("⇥.coerceAtMost(Int.MAX_VALUE.toLong())")
+            addStatement(".toInt()")
+            addStatement("⇤%L = ArrayList(initialCapacity)", fieldName)
+            endControlFlow()
+            addStatement("%1L!!.add(%2L)", field, decode)
+          }.toString()
         field.isRepeated -> "%L.add(%L)"
         field.isMap -> "%L.putAll(%L)"
         else -> "%L·= %L"

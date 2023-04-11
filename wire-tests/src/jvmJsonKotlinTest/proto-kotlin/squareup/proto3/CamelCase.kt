@@ -213,16 +213,15 @@ public class CamelCase(
           when (tag) {
             1 -> nested__message = NestedCamelCase.ADAPTER.decode(reader)
             2 -> {
-                          if (_Rep_int32 == null) {
-                            val minimumByteSize = 1
-                            val initialCapacity = (reader.nextFieldLengthInBytes() /
-                    minimumByteSize)
-                              .coerceAtMost(Int.MAX_VALUE.toLong())
-                              .toInt()
-                            _Rep_int32 = ArrayList(initialCapacity)
-                          }
-                          _Rep_int32!!.add(ProtoAdapter.INT32.decode(reader))
-                          }
+              if (_Rep_int32 == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                _Rep_int32 = ArrayList(initialCapacity)
+              }
+              _Rep_int32!!.add(com.squareup.wire.ProtoAdapter.INT32.decode(reader))
+            }
             3 -> IDitIt_my_wAy = ProtoAdapter.STRING.decode(reader)
             4 -> map_int32_Int32.putAll(map_int32_Int32Adapter.decode(reader))
             else -> reader.readUnknownField(tag)
