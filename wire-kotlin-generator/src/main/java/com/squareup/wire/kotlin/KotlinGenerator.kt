@@ -1712,7 +1712,7 @@ class KotlinGenerator private constructor(
           buildCodeBlock {
             beginControlFlow("if (%L == null)", fieldName)
             addStatement("val minimumByteSize = ${field.getMinimumByteSize()}")
-            addStatement("val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)")
+            addStatement("val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)")
             addStatement("⇥.coerceAtMost(Int.MAX_VALUE.toLong())")
             addStatement(".toInt()")
             addStatement("⇤%L = ArrayList(initialCapacity)", fieldName)
@@ -2186,7 +2186,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun Field.getDeclaration(allocatedName: String) = when {
-    isPacked && isScalar -> CodeBlock.of("var $allocatedName: MutableList<%T>? = null", type!!.typeName)
+    isPacked && isScalar -> CodeBlock.of("var %N: MutableList<%T>? = null", allocatedName, type!!.typeName)
     isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", type!!.typeName)
     isMap -> CodeBlock.of(
       "val $allocatedName = mutableMapOf<%T, %T>()",

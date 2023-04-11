@@ -145,7 +145,7 @@ public class EmbeddedMessage(
             1 -> {
               if (inner_repeated_number == null) {
                 val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 inner_repeated_number = ArrayList(initialCapacity)

@@ -452,7 +452,7 @@ class ProtoReader(private val source: BufferedSource) {
    * have a variable length. LENGTH_DELIMITED fields have a known variable length, while VARINT fields
    * could be as small as a single byte.
    */
-  fun nextFieldLengthInBytes(): Long {
+  fun nextFieldMinLengthInBytes(): Long {
     return when (nextFieldEncoding) {
       FieldEncoding.LENGTH_DELIMITED -> limit - pos
       FieldEncoding.FIXED32 -> 4

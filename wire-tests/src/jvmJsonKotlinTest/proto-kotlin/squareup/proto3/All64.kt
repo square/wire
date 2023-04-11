@@ -758,7 +758,7 @@ public class All64(
             301 -> {
               if (pack_int64 == null) {
                 val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_int64 = ArrayList(initialCapacity)
@@ -768,7 +768,7 @@ public class All64(
             302 -> {
               if (pack_uint64 == null) {
                 val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_uint64 = ArrayList(initialCapacity)
@@ -778,7 +778,7 @@ public class All64(
             303 -> {
               if (pack_sint64 == null) {
                 val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_sint64 = ArrayList(initialCapacity)
@@ -788,7 +788,7 @@ public class All64(
             304 -> {
               if (pack_fixed64 == null) {
                 val minimumByteSize = 8
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_fixed64 = ArrayList(initialCapacity)
@@ -798,7 +798,7 @@ public class All64(
             305 -> {
               if (pack_sfixed64 == null) {
                 val minimumByteSize = 8
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_sfixed64 = ArrayList(initialCapacity)

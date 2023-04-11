@@ -1939,7 +1939,7 @@ public class AllTypes(
             301 -> {
               if (pack_int32 == null) {
                 val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_int32 = ArrayList(initialCapacity)
@@ -1949,7 +1949,7 @@ public class AllTypes(
             302 -> {
               if (pack_uint32 == null) {
                 val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_uint32 = ArrayList(initialCapacity)
@@ -1959,7 +1959,7 @@ public class AllTypes(
             303 -> {
               if (pack_sint32 == null) {
                 val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_sint32 = ArrayList(initialCapacity)
@@ -1969,7 +1969,7 @@ public class AllTypes(
             304 -> {
               if (pack_fixed32 == null) {
                 val minimumByteSize = 4
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_fixed32 = ArrayList(initialCapacity)
@@ -1979,7 +1979,7 @@ public class AllTypes(
             305 -> {
               if (pack_sfixed32 == null) {
                 val minimumByteSize = 4
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_sfixed32 = ArrayList(initialCapacity)
@@ -1989,7 +1989,7 @@ public class AllTypes(
             306 -> {
               if (pack_int64 == null) {
                 val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_int64 = ArrayList(initialCapacity)
@@ -1999,7 +1999,7 @@ public class AllTypes(
             307 -> {
               if (pack_uint64 == null) {
                 val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_uint64 = ArrayList(initialCapacity)
@@ -2009,7 +2009,7 @@ public class AllTypes(
             308 -> {
               if (pack_sint64 == null) {
                 val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_sint64 = ArrayList(initialCapacity)
@@ -2019,7 +2019,7 @@ public class AllTypes(
             309 -> {
               if (pack_fixed64 == null) {
                 val minimumByteSize = 8
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_fixed64 = ArrayList(initialCapacity)
@@ -2029,7 +2029,7 @@ public class AllTypes(
             310 -> {
               if (pack_sfixed64 == null) {
                 val minimumByteSize = 8
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_sfixed64 = ArrayList(initialCapacity)
@@ -2039,7 +2039,7 @@ public class AllTypes(
             311 -> {
               if (pack_bool == null) {
                 val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_bool = ArrayList(initialCapacity)
@@ -2049,7 +2049,7 @@ public class AllTypes(
             312 -> {
               if (pack_float == null) {
                 val minimumByteSize = 4
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_float = ArrayList(initialCapacity)
@@ -2059,7 +2059,7 @@ public class AllTypes(
             313 -> {
               if (pack_double == null) {
                 val minimumByteSize = 8
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 pack_double = ArrayList(initialCapacity)

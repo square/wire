@@ -227,7 +227,7 @@ public class Person(
             5 -> {
               if (favorite_numbers == null) {
                 val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 favorite_numbers = ArrayList(initialCapacity)

@@ -215,7 +215,7 @@ public class CamelCase(
             2 -> {
               if (_Rep_int32 == null) {
                 val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldLengthInBytes() / minimumByteSize)
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
                 _Rep_int32 = ArrayList(initialCapacity)
