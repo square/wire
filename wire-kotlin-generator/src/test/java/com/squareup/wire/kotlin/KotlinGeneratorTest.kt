@@ -2078,8 +2078,9 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Embedding")
-    assertContains(code, "val values: MutableList<Float>? = null")
-    assertContains(code, "values = ArrayList((reader.nextFieldLengthInBytes() / 4).coerceAtMost(Int.MAX_VALUE.toLong().toInt()))")
+    assertContains(code, "var values: MutableList<Float>? = null")
+    assertContains(code, "val minimumByteSize = 4")
+    assertContains(code, "values = ArrayList(initialCapacity)")
   }
 
   companion object {
