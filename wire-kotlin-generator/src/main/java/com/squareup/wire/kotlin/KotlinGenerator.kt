@@ -1619,7 +1619,11 @@ class KotlinGenerator private constructor(
                 CodeBlock.of("")
               }
 
-            addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
+            if (fieldOrOneOf.isPacked && fieldOrOneOf.isScalar) {
+              addStatement("%1L = %1L ?: listOf(),", fieldName)
+            } else {
+              addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
+            }
           }
           is OneOf -> {
             val fieldName = nameAllocator[fieldOrOneOf]
@@ -1647,17 +1651,25 @@ class KotlinGenerator private constructor(
           val fieldName = nameAllocator[field]
           val adapterName = field.getAdapterName()
 
-          if (field.type!!.isEnum) {
-            beginControlFlow("%L -> try", field.tag)
-            addStatement("%L", decodeAndAssign(field, fieldName, adapterName))
-            nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
-            addStatement(
-              "reader.addUnknownField(%L, %T.VARINT, e.value.toLong())", tag,
-              FieldEncoding::class
-            )
-            endControlFlow()
-          } else {
-            addStatement("%L -> %L", field.tag, decodeAndAssign(field, fieldName, adapterName))
+          when {
+            field.type!!.isEnum -> {
+              beginControlFlow("%L -> try", field.tag)
+              addStatement("%L", decodeAndAssign(field, fieldName, adapterName))
+              nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
+              addStatement(
+                "reader.addUnknownField(%L, %T.VARINT, e.value.toLong())", tag,
+                FieldEncoding::class
+              )
+              endControlFlow()
+            }
+            field.isPacked && field.isScalar -> {
+              beginControlFlow("%L ->", field.tag)
+              add(decodeAndAssign(field, fieldName, adapterName))
+              endControlFlow()
+            }
+            else -> {
+              addStatement("%L -> %L", field.tag, decodeAndAssign(field, fieldName, adapterName))
+            }
           }
         }
         if (boxOneOfs.isEmpty()) {
@@ -1696,12 +1708,38 @@ class KotlinGenerator private constructor(
     val decode = CodeBlock.of("%L.decode(reader)", adapterName)
     return CodeBlock.of(
       when {
+        field.isPacked && field.isScalar ->
+          buildCodeBlock {
+            beginControlFlow("if (%L == null)", fieldName)
+            addStatement("val minimumByteSize = ${field.getMinimumByteSize()}")
+            addStatement("val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)")
+            addStatement("⇥.coerceAtMost(Int.MAX_VALUE.toLong())")
+            addStatement(".toInt()")
+            addStatement("⇤%L = ArrayList(initialCapacity)", fieldName)
+            endControlFlow()
+            addStatement("%1L!!.add(%2L)", field, decode)
+          }.toString()
         field.isRepeated -> "%L.add(%L)"
         field.isMap -> "%L.putAll(%L)"
         else -> "%L·= %L"
       },
       fieldName, decode
     )
+  }
+
+  private fun Field.getMinimumByteSize(): Int {
+    require(isScalar && isPacked) { "Field $name is not a scalar" }
+    return when (type) {
+      ProtoType.FLOAT,
+      ProtoType.FIXED32,
+      ProtoType.SFIXED32 -> 4
+      ProtoType.DOUBLE,
+      ProtoType.FIXED64,
+      ProtoType.SFIXED64 -> 8
+      // If we aren't 100% confident in the size of the field, we assume the worst case scenario of 1 byte which gives
+      // us the maximum possible number of elements in the list.
+      else -> 1
+    }
   }
 
   private fun redactFun(message: MessageType): FunSpec {
@@ -2148,6 +2186,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun Field.getDeclaration(allocatedName: String) = when {
+    isPacked && isScalar -> CodeBlock.of("var %N: MutableList<%T>? = null", allocatedName, type!!.typeName)
     isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", type!!.typeName)
     isMap -> CodeBlock.of(
       "val $allocatedName = mutableMapOf<%T, %T>()",

@@ -727,11 +727,11 @@ public class All32(
         val rep_sint32 = mutableListOf<Int>()
         val rep_fixed32 = mutableListOf<Int>()
         val rep_sfixed32 = mutableListOf<Int>()
-        val pack_int32 = mutableListOf<Int>()
-        val pack_uint32 = mutableListOf<Int>()
-        val pack_sint32 = mutableListOf<Int>()
-        val pack_fixed32 = mutableListOf<Int>()
-        val pack_sfixed32 = mutableListOf<Int>()
+        var pack_int32: MutableList<Int>? = null
+        var pack_uint32: MutableList<Int>? = null
+        var pack_sint32: MutableList<Int>? = null
+        var pack_fixed32: MutableList<Int>? = null
+        var pack_sfixed32: MutableList<Int>? = null
         var oneof_int32: Int? = null
         var oneof_sfixed32: Int? = null
         val map_int32_int32 = mutableMapOf<Int, Int>()
@@ -751,11 +751,56 @@ public class All32(
             203 -> rep_sint32.add(ProtoAdapter.SINT32.decode(reader))
             204 -> rep_fixed32.add(ProtoAdapter.FIXED32.decode(reader))
             205 -> rep_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader))
-            301 -> pack_int32.add(ProtoAdapter.INT32.decode(reader))
-            302 -> pack_uint32.add(ProtoAdapter.UINT32.decode(reader))
-            303 -> pack_sint32.add(ProtoAdapter.SINT32.decode(reader))
-            304 -> pack_fixed32.add(ProtoAdapter.FIXED32.decode(reader))
-            305 -> pack_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader))
+            301 -> {
+              if (pack_int32 == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_int32 = ArrayList(initialCapacity)
+              }
+              pack_int32!!.add(com.squareup.wire.ProtoAdapter.INT32.decode(reader))
+            }
+            302 -> {
+              if (pack_uint32 == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_uint32 = ArrayList(initialCapacity)
+              }
+              pack_uint32!!.add(com.squareup.wire.ProtoAdapter.UINT32.decode(reader))
+            }
+            303 -> {
+              if (pack_sint32 == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_sint32 = ArrayList(initialCapacity)
+              }
+              pack_sint32!!.add(com.squareup.wire.ProtoAdapter.SINT32.decode(reader))
+            }
+            304 -> {
+              if (pack_fixed32 == null) {
+                val minimumByteSize = 4
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_fixed32 = ArrayList(initialCapacity)
+              }
+              pack_fixed32!!.add(com.squareup.wire.ProtoAdapter.FIXED32.decode(reader))
+            }
+            305 -> {
+              if (pack_sfixed32 == null) {
+                val minimumByteSize = 4
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_sfixed32 = ArrayList(initialCapacity)
+              }
+              pack_sfixed32!!.add(com.squareup.wire.ProtoAdapter.SFIXED32.decode(reader))
+            }
             401 -> oneof_int32 = ProtoAdapter.INT32.decode(reader)
             402 -> oneof_sfixed32 = ProtoAdapter.SFIXED32.decode(reader)
             501 -> map_int32_int32.putAll(map_int32_int32Adapter.decode(reader))
@@ -777,11 +822,11 @@ public class All32(
           rep_sint32 = rep_sint32,
           rep_fixed32 = rep_fixed32,
           rep_sfixed32 = rep_sfixed32,
-          pack_int32 = pack_int32,
-          pack_uint32 = pack_uint32,
-          pack_sint32 = pack_sint32,
-          pack_fixed32 = pack_fixed32,
-          pack_sfixed32 = pack_sfixed32,
+          pack_int32 = pack_int32 ?: listOf(),
+          pack_uint32 = pack_uint32 ?: listOf(),
+          pack_sint32 = pack_sint32 ?: listOf(),
+          pack_fixed32 = pack_fixed32 ?: listOf(),
+          pack_sfixed32 = pack_sfixed32 ?: listOf(),
           oneof_int32 = oneof_int32,
           oneof_sfixed32 = oneof_sfixed32,
           map_int32_int32 = map_int32_int32,

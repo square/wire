@@ -731,11 +731,11 @@ public class All64(
         val rep_sint64 = mutableListOf<Long>()
         val rep_fixed64 = mutableListOf<Long>()
         val rep_sfixed64 = mutableListOf<Long>()
-        val pack_int64 = mutableListOf<Long>()
-        val pack_uint64 = mutableListOf<Long>()
-        val pack_sint64 = mutableListOf<Long>()
-        val pack_fixed64 = mutableListOf<Long>()
-        val pack_sfixed64 = mutableListOf<Long>()
+        var pack_int64: MutableList<Long>? = null
+        var pack_uint64: MutableList<Long>? = null
+        var pack_sint64: MutableList<Long>? = null
+        var pack_fixed64: MutableList<Long>? = null
+        var pack_sfixed64: MutableList<Long>? = null
         var oneof_int64: Long? = null
         var oneof_sfixed64: Long? = null
         val map_int64_int64 = mutableMapOf<Long, Long>()
@@ -755,11 +755,56 @@ public class All64(
             203 -> rep_sint64.add(ProtoAdapter.SINT64.decode(reader))
             204 -> rep_fixed64.add(ProtoAdapter.FIXED64.decode(reader))
             205 -> rep_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader))
-            301 -> pack_int64.add(ProtoAdapter.INT64.decode(reader))
-            302 -> pack_uint64.add(ProtoAdapter.UINT64.decode(reader))
-            303 -> pack_sint64.add(ProtoAdapter.SINT64.decode(reader))
-            304 -> pack_fixed64.add(ProtoAdapter.FIXED64.decode(reader))
-            305 -> pack_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader))
+            301 -> {
+              if (pack_int64 == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_int64 = ArrayList(initialCapacity)
+              }
+              pack_int64!!.add(com.squareup.wire.ProtoAdapter.INT64.decode(reader))
+            }
+            302 -> {
+              if (pack_uint64 == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_uint64 = ArrayList(initialCapacity)
+              }
+              pack_uint64!!.add(com.squareup.wire.ProtoAdapter.UINT64.decode(reader))
+            }
+            303 -> {
+              if (pack_sint64 == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_sint64 = ArrayList(initialCapacity)
+              }
+              pack_sint64!!.add(com.squareup.wire.ProtoAdapter.SINT64.decode(reader))
+            }
+            304 -> {
+              if (pack_fixed64 == null) {
+                val minimumByteSize = 8
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_fixed64 = ArrayList(initialCapacity)
+              }
+              pack_fixed64!!.add(com.squareup.wire.ProtoAdapter.FIXED64.decode(reader))
+            }
+            305 -> {
+              if (pack_sfixed64 == null) {
+                val minimumByteSize = 8
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                pack_sfixed64 = ArrayList(initialCapacity)
+              }
+              pack_sfixed64!!.add(com.squareup.wire.ProtoAdapter.SFIXED64.decode(reader))
+            }
             401 -> oneof_int64 = ProtoAdapter.INT64.decode(reader)
             402 -> oneof_sfixed64 = ProtoAdapter.SFIXED64.decode(reader)
             501 -> map_int64_int64.putAll(map_int64_int64Adapter.decode(reader))
@@ -781,11 +826,11 @@ public class All64(
           rep_sint64 = rep_sint64,
           rep_fixed64 = rep_fixed64,
           rep_sfixed64 = rep_sfixed64,
-          pack_int64 = pack_int64,
-          pack_uint64 = pack_uint64,
-          pack_sint64 = pack_sint64,
-          pack_fixed64 = pack_fixed64,
-          pack_sfixed64 = pack_sfixed64,
+          pack_int64 = pack_int64 ?: listOf(),
+          pack_uint64 = pack_uint64 ?: listOf(),
+          pack_sint64 = pack_sint64 ?: listOf(),
+          pack_fixed64 = pack_fixed64 ?: listOf(),
+          pack_sfixed64 = pack_sfixed64 ?: listOf(),
           oneof_int64 = oneof_int64,
           oneof_sfixed64 = oneof_sfixed64,
           map_int64_int64 = map_int64_int64,
