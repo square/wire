@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 4.5.5
+-------------
+
+_2023-04-12_
+
+* Perf: Optimize packed scalar list sizes in initial allocation.
+
 Version 4.5.4
 -------------
 
