@@ -1513,6 +1513,24 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("import wire_package.Person"))
   }
 
+  @Test fun jeffTest() {
+    val schema = buildSchema {
+      add(
+        "proto_package/person.proto".toPath(),
+        """
+        |package proto_package;
+        |import "wire/extensions.proto";
+        |
+        |message Person {
+        |	repeated float name = 1 [packed = true, wire.use_primitive_array = true];
+        |}
+        |""".trimMargin()
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
+    assertContains(code, "foobarbazz")
+  }
+
   @Test fun documentationEscapesBrackets() {
     val schema = buildSchema {
       add(

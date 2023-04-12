@@ -123,6 +123,9 @@ data class OptionElement(
     internal val PACKED_OPTION_ELEMENT =
       OptionElement("packed", BOOLEAN, value = "true", isParenthesized = false)
 
+    internal val USE_PRIMITIVE_ARRAY_OPTION_ELEMENT =
+      OptionElement("wire.use_primitive_array", BOOLEAN, value = "true", isParenthesized = false)
+
     @JvmOverloads
     fun create(
       name: String,

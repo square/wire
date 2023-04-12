@@ -54,6 +54,7 @@ import com.squareup.kotlinpoet.jvm.jvmField
 import com.squareup.kotlinpoet.jvm.jvmStatic
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
+import com.squareup.wire.FloatArrayList
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
@@ -1075,6 +1076,9 @@ class KotlinGenerator private constructor(
           fieldName
         )
       }
+      field.isPacked && field.isScalar && field.usePrimitiveArray -> {
+        CodeBlock.of("FloatArrayList(0)")
+      }
       field.isRepeated || field.isMap -> {
         CodeBlock.of(
           "%M(%S, %N)",
@@ -1620,7 +1624,11 @@ class KotlinGenerator private constructor(
               }
 
             if (fieldOrOneOf.isPacked && fieldOrOneOf.isScalar) {
-              addStatement("%1L = %1L ?: listOf(),", fieldName)
+              if (fieldOrOneOf.usePrimitiveArray) {
+                addStatement("%1L = %1L ?: arrayOf(),", fieldName)
+              } else {
+                addStatement("%1L = %1L ?: listOf(),", fieldName)
+              }
             } else {
               addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
             }
@@ -1708,7 +1716,7 @@ class KotlinGenerator private constructor(
     val decode = CodeBlock.of("%L.decode(reader)", adapterName)
     return CodeBlock.of(
       when {
-        field.isPacked && field.isScalar ->
+        field.isPacked && field.isScalar -> {
           buildCodeBlock {
             beginControlFlow("if (%L == null)", fieldName)
             addStatement("val minimumByteSize = ${field.getMinimumByteSize()}")
@@ -1719,6 +1727,7 @@ class KotlinGenerator private constructor(
             endControlFlow()
             addStatement("%1L!!.add(%2L)", field, decode)
           }.toString()
+        }
         field.isRepeated -> "%L.add(%L)"
         field.isMap -> "%L.putAll(%L)"
         else -> "%L·= %L"
@@ -2186,6 +2195,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun Field.getDeclaration(allocatedName: String) = when {
+    isPacked && isScalar && usePrimitiveArray -> CodeBlock.of("var %N: %T? = null", allocatedName, FloatArrayList::class)
     isPacked && isScalar -> CodeBlock.of("var %N: MutableList<%T>? = null", allocatedName, type!!.typeName)
     isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", type!!.typeName)
     isMap -> CodeBlock.of(
@@ -2235,8 +2245,13 @@ class KotlinGenerator private constructor(
       return when (encodeMode!!) {
         EncodeMode.MAP ->
           Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
-        EncodeMode.REPEATED,
-        EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(type.typeName)
+        EncodeMode.PACKED -> {
+          when {
+            usePrimitiveArray -> FloatArrayList::class.asTypeName()
+            else -> List::class.asTypeName().parameterizedBy(type.typeName)
+          }
+        }
+        EncodeMode.REPEATED -> List::class.asClassName().parameterizedBy(type.typeName)
         EncodeMode.NULL_IF_ABSENT -> type.typeName.copy(nullable = true)
         EncodeMode.REQUIRED -> type.typeName
         EncodeMode.OMIT_IDENTITY -> {

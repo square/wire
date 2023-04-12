@@ -35,6 +35,8 @@ extend google.protobuf.FieldOptions {
    * any subsequent version.
    */
   optional string until = 1077;
+
+  optional string use_primitive_array = 1078;
 }
 
 extend google.protobuf.EnumValueOptions {
