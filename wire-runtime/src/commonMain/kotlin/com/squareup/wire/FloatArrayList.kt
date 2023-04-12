@@ -25,16 +25,19 @@ class FloatArrayList(initialCapacity: Int) {
     return data
   }
 
+  fun add(float: Float) {
+    ensureCapacity(size + 1)
+    data[size++] = float
+  }
+
+  fun isNotEmpty() : Boolean = size > 0
+
   private fun ensureCapacity(minCapacity: Int) {
     if (minCapacity > data.size) {
       data = data.copyOf(maxOf(data.size * 3 / 2 + 1, minCapacity))
     }
   }
 
-  fun add(float: Float) {
-    ensureCapacity(size + 1)
-    data[size++] = float
-  }
 
   override fun toString(): String =
     (0 until size).joinToString(", ", "[", "]") { data[it].toString() }

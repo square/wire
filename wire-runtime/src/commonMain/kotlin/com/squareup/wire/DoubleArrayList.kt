@@ -25,15 +25,17 @@ class DoubleArrayList(initialCapacity: Int) {
     return data
   }
 
+  fun add(double: Double) {
+    ensureCapacity(size + 1)
+    data[size++] = double
+  }
+
+  fun isNotEmpty() : Boolean = size > 0
+
   private fun ensureCapacity(minCapacity: Int) {
     if (minCapacity > data.size) {
       data = data.copyOf(maxOf(data.size * 3 / 2 + 1, minCapacity))
     }
-  }
-
-  fun add(double: Double) {
-    ensureCapacity(size + 1)
-    data[size++] = double
   }
 
   override fun toString(): String =

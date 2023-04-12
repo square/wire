@@ -1625,7 +1625,7 @@ class KotlinGenerator private constructor(
 
             if (fieldOrOneOf.isPacked && fieldOrOneOf.isScalar) {
               if (fieldOrOneOf.usePrimitiveArray) {
-                addStatement("%1L = %1L ?: arrayOf(),", fieldName)
+                addStatement("%1L = %1L ?: FloatArrayList(0),", fieldName)
               } else {
                 addStatement("%1L = %1L ?: listOf(),", fieldName)
               }
@@ -1717,13 +1717,14 @@ class KotlinGenerator private constructor(
     return CodeBlock.of(
       when {
         field.isPacked && field.isScalar -> {
+          val type = if (field.usePrimitiveArray) "FloatArrayList" else "ArrayList"
           buildCodeBlock {
             beginControlFlow("if (%L == null)", fieldName)
             addStatement("val minimumByteSize = ${field.getMinimumByteSize()}")
             addStatement("val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)")
             addStatement("⇥.coerceAtMost(Int.MAX_VALUE.toLong())")
             addStatement(".toInt()")
-            addStatement("⇤%L = ArrayList(initialCapacity)", fieldName)
+            addStatement("⇤%L = %L(initialCapacity)", fieldName, type)
             endControlFlow()
             addStatement("%1L!!.add(%2L)", field, decode)
           }.toString()
@@ -1805,6 +1806,7 @@ class KotlinGenerator private constructor(
   private fun Field.redact(fieldName: String): CodeBlock? {
     if (isRedacted) {
       return when {
+        usePrimitiveArray -> CodeBlock.of("FloatArrayList(0)")
         isRepeated -> CodeBlock.of("emptyList()")
         isMap -> CodeBlock.of("emptyMap()")
         encodeMode!! == EncodeMode.NULL_IF_ABSENT -> CodeBlock.of("null")
@@ -2269,8 +2271,14 @@ class KotlinGenerator private constructor(
     get() {
       return when (encodeMode!!) {
         EncodeMode.MAP -> CodeBlock.of("emptyMap()")
-        EncodeMode.REPEATED,
-        EncodeMode.PACKED -> CodeBlock.of("emptyList()")
+        EncodeMode.REPEATED -> CodeBlock.of("emptyList()")
+        EncodeMode.PACKED -> {
+          if (usePrimitiveArray) {
+            CodeBlock.of("FloatArrayList()")
+          } else {
+            CodeBlock.of("emptyList()")
+          }
+        }
         EncodeMode.NULL_IF_ABSENT -> CodeBlock.of("null")
         EncodeMode.OMIT_IDENTITY -> {
           val protoType = type!!

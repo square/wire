@@ -25,15 +25,17 @@ class IntArrayList(initialCapacity: Int) {
     return data
   }
 
+  fun add(int: Int) {
+    ensureCapacity(size + 1)
+    data[size++] = int
+  }
+
+  fun isNotEmpty() : Boolean = size > 0
+
   private fun ensureCapacity(minCapacity: Int) {
     if (minCapacity > data.size) {
       data = data.copyOf(maxOf(data.size * 3 / 2 + 1, minCapacity))
     }
-  }
-
-  fun add(int: Int) {
-    ensureCapacity(size + 1)
-    data[size++] = int
   }
 
   override fun toString(): String =

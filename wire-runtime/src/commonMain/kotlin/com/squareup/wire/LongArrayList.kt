@@ -25,15 +25,17 @@ class LongArrayList(initialCapacity: Int) {
     return data
   }
 
+  fun add(long: Long) {
+    ensureCapacity(size + 1)
+    data[size++] = long
+  }
+
+  fun isNotEmpty() : Boolean = size > 0
+
   private fun ensureCapacity(minCapacity: Int) {
     if (minCapacity > data.size) {
       data = data.copyOf(maxOf(data.size * 3 / 2 + 1, minCapacity))
     }
-  }
-
-  fun add(long: Long) {
-    ensureCapacity(size + 1)
-    data[size++] = long
   }
 
   override fun toString(): String =

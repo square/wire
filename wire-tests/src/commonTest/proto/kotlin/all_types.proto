@@ -15,6 +15,8 @@
  */
 package squareup.protos.kotlin.alltypes;
 
+import "wire/extensions.proto";
+
 option java_package = "com.squareup.wire.protos.kotlin.alltypes";
 option java_outer_classname = "AlltypesProtos";
 
@@ -121,6 +123,11 @@ message AllTypes {
   map<string, string> map_string_string = 502;
   map<string, NestedMessage> map_string_message = 503;
   map<string, NestedEnum> map_string_enum = 504;
+
+  repeated fixed32 primitive_fixed32s = 601 [packed = true, wire.use_primitive_array = true];
+  repeated fixed64 primitive_fixed64s = 602 [packed = true, wire.use_primitive_array = true];
+  repeated float primitive_floats = 603 [packed = true, wire.use_primitive_array = true];
+  repeated double primitive_doubles = 604 [packed = true, wire.use_primitive_array = true];
 }
 
 extend AllTypes {
