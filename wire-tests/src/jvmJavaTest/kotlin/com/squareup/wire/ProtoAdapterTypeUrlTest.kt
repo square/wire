@@ -36,7 +36,9 @@ class ProtoAdapterTypeUrlTest {
           (
             protoAdapter.type.isPrimitive ||
               protoAdapter.type == String::class ||
-              protoAdapter.type == ByteString::class
+              protoAdapter.type == ByteString::class ||
+              protoAdapter.type == FloatArray::class ||
+              protoAdapter.type == LongArray::class
             ) -> {
           // Scalar types don't have a type URL.
           assertThat(protoAdapter.typeUrl).isNull()

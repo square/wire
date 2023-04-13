@@ -166,6 +166,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     actual val FIXED32: ProtoAdapter<Int> = commonFixed32()
     actual val SFIXED32: ProtoAdapter<Int> = commonSfixed32()
     actual val INT64: ProtoAdapter<Long> = commonInt64()
+    actual val INT64_PRIMITIVE_ARRAY: ProtoAdapter<LongArray> = LongArrayProtoAdapter(INT64)
     /**
      * Like INT64, but negative longs are interpreted as large positive values, and encoded that way
      * in JSON.
@@ -175,6 +176,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     actual val FIXED64: ProtoAdapter<Long> = commonFixed64()
     actual val SFIXED64: ProtoAdapter<Long> = commonSfixed64()
     actual val FLOAT: ProtoAdapter<Float> = commonFloat()
+    actual val FLOAT_PRIMITIVE_ARRAY: ProtoAdapter<FloatArray> = FloatArrayProtoAdapter(FLOAT)
     actual val DOUBLE: ProtoAdapter<Double> = commonDouble()
     actual val BYTES: ProtoAdapter<ByteString> = commonBytes()
     actual val STRING: ProtoAdapter<String> = commonString()

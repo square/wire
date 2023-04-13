@@ -36,6 +36,12 @@ class ProtoAdapterIdentityTest {
           // StructNull's <Nothing> in Kotlin is <Void> in Java.
           assertThat(protoAdapter.identity).isNull()
         }
+        protoAdapter.type == FloatArray::class -> {
+          assertThat(protoAdapter.identity).isEqualTo(floatArrayOf())
+        }
+        protoAdapter.type == LongArray::class -> {
+          assertThat(protoAdapter.identity).isEqualTo(longArrayOf())
+        }
         protoAdapter.type.isPrimitive && protoAdapter.syntax === Syntax.PROTO_2 -> {
           // All other primitive types are numbers and must have 0 as their identity value.
           assertThat((protoAdapter.identity as Number).toDouble()).isEqualTo(0.0)

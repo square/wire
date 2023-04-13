@@ -660,7 +660,11 @@ class KotlinGenerator private constructor(
         when (fieldOrOneOf) {
           is Field -> {
             val fieldName = localNameAllocator[fieldOrOneOf]
-            addStatement("if (%1L != %2N.%1L) return·false", fieldName, otherName)
+            if (fieldOrOneOf.usePrimitiveArray) {
+              addStatement("if (!%1L.contentEquals(%2N.%1L)) return·false", fieldName, otherName)
+            } else {
+              addStatement("if (%1L != %2N.%1L) return·false", fieldName, otherName)
+            }
           }
           is OneOf -> {
             val fieldName = localNameAllocator[fieldOrOneOf]
@@ -714,7 +718,9 @@ class KotlinGenerator private constructor(
           is Field -> {
             val fieldName = localNameAllocator[fieldOrOneOf]
             add("%1N = %1N * 37 + ", resultName)
-            if (fieldOrOneOf.isRepeated || fieldOrOneOf.isRequired || fieldOrOneOf.isMap || !fieldOrOneOf.acceptsNull) {
+            if (fieldOrOneOf.usePrimitiveArray) {
+              addStatement("%L.contentHashCode()", fieldName)
+            } else if (fieldOrOneOf.isRepeated || fieldOrOneOf.isRequired || fieldOrOneOf.isMap || !fieldOrOneOf.acceptsNull) {
               addStatement("%L.hashCode()", fieldName)
             } else {
               addStatement("(%L?.hashCode() ?: 0)", fieldName)
@@ -1077,7 +1083,7 @@ class KotlinGenerator private constructor(
         )
       }
       field.isPacked && field.isScalar && field.usePrimitiveArray -> {
-        CodeBlock.of("FloatArrayList(0)")
+        CodeBlock.of(fieldName)
       }
       field.isRepeated || field.isMap -> {
         CodeBlock.of(
@@ -1521,11 +1527,15 @@ class KotlinGenerator private constructor(
   }
 
   private fun adapterFor(field: Field) = buildCodeBlock {
-    add("%L", field.getAdapterName())
-    if (field.isPacked) {
-      add(".asPacked()")
-    } else if (field.isRepeated) {
-      add(".asRepeated()")
+    if (field.usePrimitiveArray) {
+      add("%T.FLOAT_PRIMITIVE_ARRAY", ProtoAdapter::class)
+    } else {
+      add("%L", field.getAdapterName())
+      if (field.isPacked) {
+        add(".asPacked()")
+      } else if (field.isRepeated) {
+        add(".asRepeated()")
+      }
     }
   }
 
@@ -1625,7 +1635,7 @@ class KotlinGenerator private constructor(
 
             if (fieldOrOneOf.isPacked && fieldOrOneOf.isScalar) {
               if (fieldOrOneOf.usePrimitiveArray) {
-                addStatement("%1L = %1L ?: FloatArrayList(0),", fieldName)
+                addStatement("%1L = %1L?.getTruncatedArray() ?: FloatArray(0),", fieldName)
               } else {
                 addStatement("%1L = %1L ?: listOf(),", fieldName)
               }
@@ -1806,7 +1816,7 @@ class KotlinGenerator private constructor(
   private fun Field.redact(fieldName: String): CodeBlock? {
     if (isRedacted) {
       return when {
-        usePrimitiveArray -> CodeBlock.of("FloatArrayList(0)")
+        usePrimitiveArray -> CodeBlock.of("FloatArray(0)")
         isRepeated -> CodeBlock.of("emptyList()")
         isMap -> CodeBlock.of("emptyMap()")
         encodeMode!! == EncodeMode.NULL_IF_ABSENT -> CodeBlock.of("null")
@@ -1836,6 +1846,9 @@ class KotlinGenerator private constructor(
   }
 
   private fun Field.getAdapterName(nameDelimiter: Char = '.'): CodeBlock {
+    if (usePrimitiveArray) {
+      return CodeBlock.of("%T.FLOAT", ProtoAdapter::class)
+    }
     return if (type!!.isMap) {
       CodeBlock.of("%N", "${name}Adapter")
     } else {
@@ -2249,7 +2262,7 @@ class KotlinGenerator private constructor(
           Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
         EncodeMode.PACKED -> {
           when {
-            usePrimitiveArray -> FloatArrayList::class.asTypeName()
+            usePrimitiveArray -> FloatArray::class.asTypeName()
             else -> List::class.asTypeName().parameterizedBy(type.typeName)
           }
         }
@@ -2274,7 +2287,7 @@ class KotlinGenerator private constructor(
         EncodeMode.REPEATED -> CodeBlock.of("emptyList()")
         EncodeMode.PACKED -> {
           if (usePrimitiveArray) {
-            CodeBlock.of("FloatArrayList()")
+            CodeBlock.of("FloatArray(0)")
           } else {
             CodeBlock.of("emptyList()")
           }

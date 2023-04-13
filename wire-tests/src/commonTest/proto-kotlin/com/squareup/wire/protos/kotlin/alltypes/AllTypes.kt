@@ -25,6 +25,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Double
 import kotlin.Float
+import kotlin.FloatArray
 import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
@@ -341,10 +342,30 @@ public class AllTypes(
   map_string_string: Map<String, String> = emptyMap(),
   map_string_message: Map<String, NestedMessage> = emptyMap(),
   map_string_enum: Map<String, NestedEnum> = emptyMap(),
-  primitive_fixed32s: FloatArrayList = FloatArrayList(),
-  primitive_fixed64s: FloatArrayList = FloatArrayList(),
-  primitive_floats: FloatArrayList = FloatArrayList(),
-  primitive_doubles: FloatArrayList = FloatArrayList(),
+  @field:WireField(
+    tag = 601,
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+    label = WireField.Label.PACKED,
+  )
+  public val primitive_fixed32s: FloatArray = FloatArray(0),
+  @field:WireField(
+    tag = 602,
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+    label = WireField.Label.PACKED,
+  )
+  public val primitive_fixed64s: FloatArray = FloatArray(0),
+  @field:WireField(
+    tag = 603,
+    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+    label = WireField.Label.PACKED,
+  )
+  public val primitive_floats: FloatArray = FloatArray(0),
+  @field:WireField(
+    tag = 604,
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    label = WireField.Label.PACKED,
+  )
+  public val primitive_doubles: FloatArray = FloatArray(0),
   /**
    * Extension source: all_types.proto
    */
@@ -764,34 +785,6 @@ public class AllTypes(
   public val map_string_enum: Map<String, NestedEnum> = immutableCopyOf("map_string_enum",
       map_string_enum)
 
-  @field:WireField(
-    tag = 601,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-    label = WireField.Label.PACKED,
-  )
-  public val primitive_fixed32s: FloatArrayList = FloatArrayList(0)
-
-  @field:WireField(
-    tag = 602,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-    label = WireField.Label.PACKED,
-  )
-  public val primitive_fixed64s: FloatArrayList = FloatArrayList(0)
-
-  @field:WireField(
-    tag = 603,
-    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-    label = WireField.Label.PACKED,
-  )
-  public val primitive_floats: FloatArrayList = FloatArrayList(0)
-
-  @field:WireField(
-    tag = 604,
-    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-    label = WireField.Label.PACKED,
-  )
-  public val primitive_doubles: FloatArrayList = FloatArrayList(0)
-
   /**
    * Extension source: all_types.proto
    */
@@ -1201,10 +1194,10 @@ public class AllTypes(
     if (map_string_string != other.map_string_string) return false
     if (map_string_message != other.map_string_message) return false
     if (map_string_enum != other.map_string_enum) return false
-    if (primitive_fixed32s != other.primitive_fixed32s) return false
-    if (primitive_fixed64s != other.primitive_fixed64s) return false
-    if (primitive_floats != other.primitive_floats) return false
-    if (primitive_doubles != other.primitive_doubles) return false
+    if (!primitive_fixed32s.contentEquals(other.primitive_fixed32s)) return false
+    if (!primitive_fixed64s.contentEquals(other.primitive_fixed64s)) return false
+    if (!primitive_floats.contentEquals(other.primitive_floats)) return false
+    if (!primitive_doubles.contentEquals(other.primitive_doubles)) return false
     if (ext_opt_int32 != other.ext_opt_int32) return false
     if (ext_opt_uint32 != other.ext_opt_uint32) return false
     if (ext_opt_sint32 != other.ext_opt_sint32) return false
@@ -1345,10 +1338,10 @@ public class AllTypes(
       result = result * 37 + map_string_string.hashCode()
       result = result * 37 + map_string_message.hashCode()
       result = result * 37 + map_string_enum.hashCode()
-      result = result * 37 + primitive_fixed32s.hashCode()
-      result = result * 37 + primitive_fixed64s.hashCode()
-      result = result * 37 + primitive_floats.hashCode()
-      result = result * 37 + primitive_doubles.hashCode()
+      result = result * 37 + primitive_fixed32s.contentHashCode()
+      result = result * 37 + primitive_fixed64s.contentHashCode()
+      result = result * 37 + primitive_floats.contentHashCode()
+      result = result * 37 + primitive_doubles.contentHashCode()
       result = result * 37 + (ext_opt_int32?.hashCode() ?: 0)
       result = result * 37 + (ext_opt_uint32?.hashCode() ?: 0)
       result = result * 37 + (ext_opt_sint32?.hashCode() ?: 0)
@@ -1633,10 +1626,10 @@ public class AllTypes(
     map_string_string: Map<String, String> = this.map_string_string,
     map_string_message: Map<String, NestedMessage> = this.map_string_message,
     map_string_enum: Map<String, NestedEnum> = this.map_string_enum,
-    primitive_fixed32s: FloatArrayList = this.primitive_fixed32s,
-    primitive_fixed64s: FloatArrayList = this.primitive_fixed64s,
-    primitive_floats: FloatArrayList = this.primitive_floats,
-    primitive_doubles: FloatArrayList = this.primitive_doubles,
+    primitive_fixed32s: FloatArray = this.primitive_fixed32s,
+    primitive_fixed64s: FloatArray = this.primitive_fixed64s,
+    primitive_floats: FloatArray = this.primitive_floats,
+    primitive_doubles: FloatArray = this.primitive_doubles,
     ext_opt_int32: Int? = this.ext_opt_int32,
     ext_opt_uint32: Int? = this.ext_opt_uint32,
     ext_opt_sint32: Int? = this.ext_opt_sint32,
@@ -1856,10 +1849,10 @@ public class AllTypes(
         size += map_string_stringAdapter.encodedSizeWithTag(502, value.map_string_string)
         size += map_string_messageAdapter.encodedSizeWithTag(503, value.map_string_message)
         size += map_string_enumAdapter.encodedSizeWithTag(504, value.map_string_enum)
-        size += ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(601, value.primitive_fixed32s)
-        size += ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(602, value.primitive_fixed64s)
-        size += ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(603, value.primitive_floats)
-        size += ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(604, value.primitive_doubles)
+        size += ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodedSizeWithTag(601, value.primitive_fixed32s)
+        size += ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodedSizeWithTag(602, value.primitive_fixed64s)
+        size += ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodedSizeWithTag(603, value.primitive_floats)
+        size += ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodedSizeWithTag(604, value.primitive_doubles)
         size += ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32)
         size += ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32)
         size += ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32)
@@ -1998,10 +1991,10 @@ public class AllTypes(
         map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
         map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
         map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
-        ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 601, value.primitive_fixed32s)
-        ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 602, value.primitive_fixed64s)
-        ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 603, value.primitive_floats)
-        ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 604, value.primitive_doubles)
+        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 601, value.primitive_fixed32s)
+        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 602, value.primitive_fixed64s)
+        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 603, value.primitive_floats)
+        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 604, value.primitive_doubles)
         ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32)
         ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32)
         ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32)
@@ -2103,10 +2096,10 @@ public class AllTypes(
         ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32)
         ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32)
         ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32)
-        ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 604, value.primitive_doubles)
-        ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 603, value.primitive_floats)
-        ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 602, value.primitive_fixed64s)
-        ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 601, value.primitive_fixed32s)
+        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 604, value.primitive_doubles)
+        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 603, value.primitive_floats)
+        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 602, value.primitive_fixed64s)
+        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 601, value.primitive_fixed32s)
         map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
         map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
         map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
@@ -2564,7 +2557,7 @@ public class AllTypes(
                   .toInt()
                 primitive_fixed32s = FloatArrayList(initialCapacity)
               }
-              primitive_fixed32s!!.add(com.squareup.wire.ProtoAdapter.FIXED32.decode(reader))
+              primitive_fixed32s!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
             }
             602 -> {
               if (primitive_fixed64s == null) {
@@ -2574,7 +2567,7 @@ public class AllTypes(
                   .toInt()
                 primitive_fixed64s = FloatArrayList(initialCapacity)
               }
-              primitive_fixed64s!!.add(com.squareup.wire.ProtoAdapter.FIXED64.decode(reader))
+              primitive_fixed64s!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
             }
             603 -> {
               if (primitive_floats == null) {
@@ -2594,7 +2587,7 @@ public class AllTypes(
                   .toInt()
                 primitive_doubles = FloatArrayList(initialCapacity)
               }
-              primitive_doubles!!.add(com.squareup.wire.ProtoAdapter.DOUBLE.decode(reader))
+              primitive_doubles!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
             }
             1001 -> ext_opt_int32 = ProtoAdapter.INT32.decode(reader)
             1002 -> ext_opt_uint32 = ProtoAdapter.UINT32.decode(reader)
@@ -2864,10 +2857,10 @@ public class AllTypes(
           map_string_string = map_string_string,
           map_string_message = map_string_message,
           map_string_enum = map_string_enum,
-          primitive_fixed32s = primitive_fixed32s ?: FloatArrayList(0),
-          primitive_fixed64s = primitive_fixed64s ?: FloatArrayList(0),
-          primitive_floats = primitive_floats ?: FloatArrayList(0),
-          primitive_doubles = primitive_doubles ?: FloatArrayList(0),
+          primitive_fixed32s = primitive_fixed32s?.getTruncatedArray() ?: FloatArray(0),
+          primitive_fixed64s = primitive_fixed64s?.getTruncatedArray() ?: FloatArray(0),
+          primitive_floats = primitive_floats?.getTruncatedArray() ?: FloatArray(0),
+          primitive_doubles = primitive_doubles?.getTruncatedArray() ?: FloatArray(0),
           ext_opt_int32 = ext_opt_int32,
           ext_opt_uint32 = ext_opt_uint32,
           ext_opt_sint32 = ext_opt_sint32,
