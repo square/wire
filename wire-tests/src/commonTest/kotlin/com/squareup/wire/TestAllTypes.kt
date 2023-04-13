@@ -263,8 +263,8 @@ class TestAllTypes {
 
   @Test fun testWrite() {
     val output = adapter.encode(allTypes)
-    assertEquals(TestAllTypesData.expectedOutput.size, output.size)
     assertEquals(TestAllTypesData.expectedOutput, ByteString.of(*output))
+    assertEquals(TestAllTypesData.expectedOutput.size, output.size)
   }
 
   @Test fun testWriteSource() {

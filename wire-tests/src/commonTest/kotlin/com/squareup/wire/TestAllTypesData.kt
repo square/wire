@@ -36,8 +36,9 @@ object TestAllTypesData {
       "e{a=999}], pack_int32=[111, 111], pack_uint32=[112, 112], pack_sint32=[113, 113], pack_fix" +
       "ed32=[114, 114], pack_sfixed32=[115, 115], pack_int64=[116, 116], pack_uint64=[117, 117], " +
       "pack_sint64=[118, 118], pack_fixed64=[119, 119], pack_sfixed64=[120, 120], pack_bool=[true" +
-      ", true], pack_float=[122.0, 122.0], pack_double=[123.0, 123.0], pack_nested_enum=[A, A], e" +
-      "xt_opt_bool=true, ext_rep_bool=[true, true], ext_pack_bool=[true, true]}"
+      ", true], pack_float=[122.0, 122.0], pack_double=[123.0, 123.0], pack_nested_enum=[A, A], p" +
+      "rimitive_floats=[122.0, 122.0], ext_opt_bool=true, ext_rep_bool=[true, true], ext_pack_boo" +
+      "l=[true, true]}"
     )
   val expectedOutput = (
     "" +
@@ -260,6 +261,10 @@ object TestAllTypesData {
       "02" + // length = 2
       "01" + // value = 1
       "01" + // value = 1
+      "da25" + // tag 603, type = 2
+      "08" + // length = 8
+      "0000f442" + // value = 122.0F
+      "0000f442" + // value = 122.0F
 
       // extensions
 
@@ -485,9 +490,9 @@ object TestAllTypesData {
       "01" + // value = 1 (true)
       "b813" + // tag = 311, type = 0
       "01" + // value = 1 (true)
-      "c513" + // tag = 312, type = 0
+      "c513" + // tag = 312, type = 5
       "0000f442" + // value = 122.0F
-      "c513" + // tag = 312, type = 0
+      "c513" + // tag = 312, type = 5
       "0000f442" + // value = 122.0F
       "c913" + // tag = 313, type = 0
       "0000000000c05e40" + // value = 123.0
@@ -497,6 +502,10 @@ object TestAllTypesData {
       "01" + // value = 1
       "e013" + // tag = 316, type = 0
       "01" + // value = 1
+      "dd25" + // tag 603, type = 5
+      "0000f442" + // value = 122.0F
+      "dd25" + // tag 603, type = 5
+      "0000f442" + // value = 122.0F
 
       // extension
 
