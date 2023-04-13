@@ -97,7 +97,8 @@ class TestAllTypes {
       pack_nested_enum = list(AllTypes.NestedEnum.A, numRepeated),
       ext_opt_bool = true,
       ext_rep_bool = list(true, numRepeated),
-      ext_pack_bool = list(true, numRepeated)
+      ext_pack_bool = list(true, numRepeated),
+      primitive_floats = list(122.0f, numRepeated).toFloatArray(),
     )
   }
 

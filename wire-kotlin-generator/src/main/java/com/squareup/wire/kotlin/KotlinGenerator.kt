@@ -947,7 +947,7 @@ class KotlinGenerator private constructor(
           .build()
       )
     }
-    if (field.isRepeated) {
+    if (field.isRepeated && !field.usePrimitiveArray) {
       val checkElementsNotNull = MemberName("com.squareup.wire.internal", "checkElementsNotNull")
       funBuilder.addStatement("%M(%L)", checkElementsNotNull, fieldName)
     }
@@ -2241,8 +2241,14 @@ class KotlinGenerator private constructor(
     val type = type!!
     val baseClass = type.typeName
     return when (encodeMode!!) {
-      EncodeMode.REPEATED,
-      EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(baseClass)
+      EncodeMode.REPEATED -> List::class.asClassName().parameterizedBy(baseClass)
+      EncodeMode.PACKED -> {
+        if (usePrimitiveArray) {
+          FloatArray::class.asTypeName()
+        } else {
+          List::class.asTypeName().parameterizedBy(baseClass)
+        }
+      }
       EncodeMode.MAP -> baseClass.copy(nullable = false)
       EncodeMode.NULL_IF_ABSENT -> baseClass.copy(nullable = true)
       else -> {

@@ -2231,16 +2231,16 @@ public class AllTypes(
     public var map_string_enum: Map<String, NestedEnum> = emptyMap()
 
     @JvmField
-    public var primitive_fixed32s: List<Int> = FloatArray(0)
+    public var primitive_fixed32s: FloatArray = FloatArray(0)
 
     @JvmField
-    public var primitive_fixed64s: List<Long> = FloatArray(0)
+    public var primitive_fixed64s: FloatArray = FloatArray(0)
 
     @JvmField
-    public var primitive_floats: List<Float> = FloatArray(0)
+    public var primitive_floats: FloatArray = FloatArray(0)
 
     @JvmField
-    public var primitive_doubles: List<Double> = FloatArray(0)
+    public var primitive_doubles: FloatArray = FloatArray(0)
 
     @JvmField
     public var ext_opt_int32: Int? = null
@@ -2842,26 +2842,22 @@ public class AllTypes(
       return this
     }
 
-    public fun primitive_fixed32s(primitive_fixed32s: List<Int>): Builder {
-      checkElementsNotNull(primitive_fixed32s)
+    public fun primitive_fixed32s(primitive_fixed32s: FloatArray): Builder {
       this.primitive_fixed32s = primitive_fixed32s
       return this
     }
 
-    public fun primitive_fixed64s(primitive_fixed64s: List<Long>): Builder {
-      checkElementsNotNull(primitive_fixed64s)
+    public fun primitive_fixed64s(primitive_fixed64s: FloatArray): Builder {
       this.primitive_fixed64s = primitive_fixed64s
       return this
     }
 
-    public fun primitive_floats(primitive_floats: List<Float>): Builder {
-      checkElementsNotNull(primitive_floats)
+    public fun primitive_floats(primitive_floats: FloatArray): Builder {
       this.primitive_floats = primitive_floats
       return this
     }
 
-    public fun primitive_doubles(primitive_doubles: List<Double>): Builder {
-      checkElementsNotNull(primitive_doubles)
+    public fun primitive_doubles(primitive_doubles: FloatArray): Builder {
       this.primitive_doubles = primitive_doubles
       return this
     }
