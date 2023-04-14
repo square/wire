@@ -772,40 +772,112 @@ public struct AllTypes {
             storage.map_string_enum = newValue
         }
     }
-    public var primitive_fixed32s: [UInt32] {
+    public var array_int32: [Int32] {
         get {
-            storage.primitive_fixed32s
+            storage.array_int32
         }
         set {
             copyStorage()
-            storage.primitive_fixed32s = newValue
+            storage.array_int32 = newValue
         }
     }
-    public var primitive_fixed64s: [UInt64] {
+    public var array_uint32: [UInt32] {
         get {
-            storage.primitive_fixed64s
+            storage.array_uint32
         }
         set {
             copyStorage()
-            storage.primitive_fixed64s = newValue
+            storage.array_uint32 = newValue
         }
     }
-    public var primitive_floats: [Float] {
+    public var array_sint32: [Int32] {
         get {
-            storage.primitive_floats
+            storage.array_sint32
         }
         set {
             copyStorage()
-            storage.primitive_floats = newValue
+            storage.array_sint32 = newValue
         }
     }
-    public var primitive_doubles: [Double] {
+    public var array_fixed32: [UInt32] {
         get {
-            storage.primitive_doubles
+            storage.array_fixed32
         }
         set {
             copyStorage()
-            storage.primitive_doubles = newValue
+            storage.array_fixed32 = newValue
+        }
+    }
+    public var array_sfixed32: [Int32] {
+        get {
+            storage.array_sfixed32
+        }
+        set {
+            copyStorage()
+            storage.array_sfixed32 = newValue
+        }
+    }
+    public var array_int64: [Int64] {
+        get {
+            storage.array_int64
+        }
+        set {
+            copyStorage()
+            storage.array_int64 = newValue
+        }
+    }
+    public var array_uint64: [UInt64] {
+        get {
+            storage.array_uint64
+        }
+        set {
+            copyStorage()
+            storage.array_uint64 = newValue
+        }
+    }
+    public var array_sint64: [Int64] {
+        get {
+            storage.array_sint64
+        }
+        set {
+            copyStorage()
+            storage.array_sint64 = newValue
+        }
+    }
+    public var array_fixed64: [UInt64] {
+        get {
+            storage.array_fixed64
+        }
+        set {
+            copyStorage()
+            storage.array_fixed64 = newValue
+        }
+    }
+    public var array_sfixed64: [Int64] {
+        get {
+            storage.array_sfixed64
+        }
+        set {
+            copyStorage()
+            storage.array_sfixed64 = newValue
+        }
+    }
+    public var array_float: [Float] {
+        get {
+            storage.array_float
+        }
+        set {
+            copyStorage()
+            storage.array_float = newValue
+        }
+    }
+    public var array_double: [Double] {
+        get {
+            storage.array_double
+        }
+        set {
+            copyStorage()
+            storage.array_double = newValue
         }
     }
     public var ext_opt_int32: Int32? {
@@ -1336,10 +1408,18 @@ public struct AllTypes {
         map_string_string: [String : String] = [:],
         map_string_message: [String : NestedMessage] = [:],
         map_string_enum: [String : NestedEnum] = [:],
-        primitive_fixed32s: [UInt32] = [],
-        primitive_fixed64s: [UInt64] = [],
-        primitive_floats: [Float] = [],
-        primitive_doubles: [Double] = [],
+        array_int32: [Int32] = [],
+        array_uint32: [UInt32] = [],
+        array_sint32: [Int32] = [],
+        array_fixed32: [UInt32] = [],
+        array_sfixed32: [Int32] = [],
+        array_int64: [Int64] = [],
+        array_uint64: [UInt64] = [],
+        array_sint64: [Int64] = [],
+        array_fixed64: [UInt64] = [],
+        array_sfixed64: [Int64] = [],
+        array_float: [Float] = [],
+        array_double: [Double] = [],
         ext_opt_int32: Int32? = nil,
         ext_opt_uint32: UInt32? = nil,
         ext_opt_sint32: Int32? = nil,
@@ -1422,9 +1502,12 @@ public struct AllTypes {
                 default_string: default_string, default_bytes: default_bytes,
                 default_nested_enum: default_nested_enum, map_int32_int32: map_int32_int32,
                 map_string_string: map_string_string, map_string_message: map_string_message,
-                map_string_enum: map_string_enum, primitive_fixed32s: primitive_fixed32s,
-                primitive_fixed64s: primitive_fixed64s, primitive_floats: primitive_floats,
-                primitive_doubles: primitive_doubles, ext_opt_int32: ext_opt_int32,
+                map_string_enum: map_string_enum, array_int32: array_int32,
+                array_uint32: array_uint32, array_sint32: array_sint32,
+                array_fixed32: array_fixed32, array_sfixed32: array_sfixed32,
+                array_int64: array_int64, array_uint64: array_uint64, array_sint64: array_sint64,
+                array_fixed64: array_fixed64, array_sfixed64: array_sfixed64,
+                array_float: array_float, array_double: array_double, ext_opt_int32: ext_opt_int32,
                 ext_opt_uint32: ext_opt_uint32, ext_opt_sint32: ext_opt_sint32,
                 ext_opt_fixed32: ext_opt_fixed32, ext_opt_sfixed32: ext_opt_sfixed32,
                 ext_opt_int64: ext_opt_int64, ext_opt_uint64: ext_opt_uint64,
@@ -1572,10 +1655,18 @@ fileprivate struct _AllTypes {
     public var map_string_string: [String : String]
     public var map_string_message: [String : AllTypes.NestedMessage]
     public var map_string_enum: [String : AllTypes.NestedEnum]
-    public var primitive_fixed32s: [UInt32]
-    public var primitive_fixed64s: [UInt64]
-    public var primitive_floats: [Float]
-    public var primitive_doubles: [Double]
+    public var array_int32: [Int32]
+    public var array_uint32: [UInt32]
+    public var array_sint32: [Int32]
+    public var array_fixed32: [UInt32]
+    public var array_sfixed32: [Int32]
+    public var array_int64: [Int64]
+    public var array_uint64: [UInt64]
+    public var array_sint64: [Int64]
+    public var array_fixed64: [UInt64]
+    public var array_sfixed64: [Int64]
+    public var array_float: [Float]
+    public var array_double: [Double]
     public var ext_opt_int32: Int32?
     public var ext_opt_uint32: UInt32?
     public var ext_opt_sint32: Int32?
@@ -1712,10 +1803,18 @@ fileprivate struct _AllTypes {
         map_string_string: [String : String],
         map_string_message: [String : AllTypes.NestedMessage],
         map_string_enum: [String : AllTypes.NestedEnum],
-        primitive_fixed32s: [UInt32],
-        primitive_fixed64s: [UInt64],
-        primitive_floats: [Float],
-        primitive_doubles: [Double],
+        array_int32: [Int32],
+        array_uint32: [UInt32],
+        array_sint32: [Int32],
+        array_fixed32: [UInt32],
+        array_sfixed32: [Int32],
+        array_int64: [Int64],
+        array_uint64: [UInt64],
+        array_sint64: [Int64],
+        array_fixed64: [UInt64],
+        array_sfixed64: [Int64],
+        array_float: [Float],
+        array_double: [Double],
         ext_opt_int32: Int32?,
         ext_opt_uint32: UInt32?,
         ext_opt_sint32: Int32?,
@@ -1850,10 +1949,18 @@ fileprivate struct _AllTypes {
         self.map_string_string = map_string_string
         self.map_string_message = map_string_message
         self.map_string_enum = map_string_enum
-        self.primitive_fixed32s = primitive_fixed32s
-        self.primitive_fixed64s = primitive_fixed64s
-        self.primitive_floats = primitive_floats
-        self.primitive_doubles = primitive_doubles
+        self.array_int32 = array_int32
+        self.array_uint32 = array_uint32
+        self.array_sint32 = array_sint32
+        self.array_fixed32 = array_fixed32
+        self.array_sfixed32 = array_sfixed32
+        self.array_int64 = array_int64
+        self.array_uint64 = array_uint64
+        self.array_sint64 = array_sint64
+        self.array_fixed64 = array_fixed64
+        self.array_sfixed64 = array_sfixed64
+        self.array_float = array_float
+        self.array_double = array_double
         self.ext_opt_int32 = ext_opt_int32
         self.ext_opt_uint32 = ext_opt_uint32
         self.ext_opt_sint32 = ext_opt_sint32
@@ -2087,10 +2194,18 @@ extension _AllTypes : Proto2Codable {
         var map_string_string: [String : String] = [:]
         var map_string_message: [String : AllTypes.NestedMessage] = [:]
         var map_string_enum: [String : AllTypes.NestedEnum] = [:]
-        var primitive_fixed32s: [UInt32] = []
-        var primitive_fixed64s: [UInt64] = []
-        var primitive_floats: [Float] = []
-        var primitive_doubles: [Double] = []
+        var array_int32: [Int32] = []
+        var array_uint32: [UInt32] = []
+        var array_sint32: [Int32] = []
+        var array_fixed32: [UInt32] = []
+        var array_sfixed32: [Int32] = []
+        var array_int64: [Int64] = []
+        var array_uint64: [UInt64] = []
+        var array_sint64: [Int64] = []
+        var array_fixed64: [UInt64] = []
+        var array_sfixed64: [Int64] = []
+        var array_float: [Float] = []
+        var array_double: [Double] = []
         var ext_opt_int32: Int32? = nil
         var ext_opt_uint32: UInt32? = nil
         var ext_opt_sint32: Int32? = nil
@@ -2228,10 +2343,18 @@ extension _AllTypes : Proto2Codable {
             case 502: try reader.decode(into: &map_string_string)
             case 503: try reader.decode(into: &map_string_message)
             case 504: try reader.decode(into: &map_string_enum)
-            case 601: try reader.decode(into: &primitive_fixed32s, encoding: .fixed)
-            case 602: try reader.decode(into: &primitive_fixed64s, encoding: .fixed)
-            case 603: try reader.decode(into: &primitive_floats)
-            case 604: try reader.decode(into: &primitive_doubles)
+            case 601: try reader.decode(into: &array_int32)
+            case 602: try reader.decode(into: &array_uint32)
+            case 603: try reader.decode(into: &array_sint32, encoding: .signed)
+            case 604: try reader.decode(into: &array_fixed32, encoding: .fixed)
+            case 605: try reader.decode(into: &array_sfixed32)
+            case 606: try reader.decode(into: &array_int64)
+            case 607: try reader.decode(into: &array_uint64)
+            case 608: try reader.decode(into: &array_sint64, encoding: .signed)
+            case 609: try reader.decode(into: &array_fixed64, encoding: .fixed)
+            case 610: try reader.decode(into: &array_sfixed64)
+            case 612: try reader.decode(into: &array_float)
+            case 613: try reader.decode(into: &array_double)
             case 1001: ext_opt_int32 = try reader.decode(Int32.self)
             case 1002: ext_opt_uint32 = try reader.decode(UInt32.self)
             case 1003: ext_opt_sint32 = try reader.decode(Int32.self, encoding: .signed)
@@ -2370,10 +2493,18 @@ extension _AllTypes : Proto2Codable {
         self.map_string_string = map_string_string
         self.map_string_message = map_string_message
         self.map_string_enum = map_string_enum
-        self.primitive_fixed32s = primitive_fixed32s
-        self.primitive_fixed64s = primitive_fixed64s
-        self.primitive_floats = primitive_floats
-        self.primitive_doubles = primitive_doubles
+        self.array_int32 = array_int32
+        self.array_uint32 = array_uint32
+        self.array_sint32 = array_sint32
+        self.array_fixed32 = array_fixed32
+        self.array_sfixed32 = array_sfixed32
+        self.array_int64 = array_int64
+        self.array_uint64 = array_uint64
+        self.array_sint64 = array_sint64
+        self.array_fixed64 = array_fixed64
+        self.array_sfixed64 = array_sfixed64
+        self.array_float = array_float
+        self.array_double = array_double
         self.ext_opt_int32 = ext_opt_int32
         self.ext_opt_uint32 = ext_opt_uint32
         self.ext_opt_sint32 = ext_opt_sint32
@@ -2510,10 +2641,18 @@ extension _AllTypes : Proto2Codable {
         try writer.encode(tag: 502, value: self.map_string_string)
         try writer.encode(tag: 503, value: self.map_string_message)
         try writer.encode(tag: 504, value: self.map_string_enum)
-        try writer.encode(tag: 601, value: self.primitive_fixed32s, encoding: .fixed, packed: true)
-        try writer.encode(tag: 602, value: self.primitive_fixed64s, encoding: .fixed, packed: true)
-        try writer.encode(tag: 603, value: self.primitive_floats, packed: true)
-        try writer.encode(tag: 604, value: self.primitive_doubles, packed: true)
+        try writer.encode(tag: 601, value: self.array_int32, packed: true)
+        try writer.encode(tag: 602, value: self.array_uint32, packed: true)
+        try writer.encode(tag: 603, value: self.array_sint32, encoding: .signed, packed: true)
+        try writer.encode(tag: 604, value: self.array_fixed32, encoding: .fixed, packed: true)
+        try writer.encode(tag: 605, value: self.array_sfixed32, packed: true)
+        try writer.encode(tag: 606, value: self.array_int64, packed: true)
+        try writer.encode(tag: 607, value: self.array_uint64, packed: true)
+        try writer.encode(tag: 608, value: self.array_sint64, encoding: .signed, packed: true)
+        try writer.encode(tag: 609, value: self.array_fixed64, encoding: .fixed, packed: true)
+        try writer.encode(tag: 610, value: self.array_sfixed64, packed: true)
+        try writer.encode(tag: 612, value: self.array_float, packed: true)
+        try writer.encode(tag: 613, value: self.array_double, packed: true)
         try writer.encode(tag: 1001, value: self.ext_opt_int32)
         try writer.encode(tag: 1002, value: self.ext_opt_uint32)
         try writer.encode(tag: 1003, value: self.ext_opt_sint32, encoding: .signed)
@@ -2669,10 +2808,18 @@ extension _AllTypes : Codable {
         self.map_string_string = try container.decodeProtoMap([String : String].self, firstOfKeys: "mapStringString", "map_string_string")
         self.map_string_message = try container.decodeProtoMap([String : AllTypes.NestedMessage].self, firstOfKeys: "mapStringMessage", "map_string_message")
         self.map_string_enum = try container.decodeProtoMap([String : AllTypes.NestedEnum].self, firstOfKeys: "mapStringEnum", "map_string_enum")
-        self.primitive_fixed32s = try container.decodeProtoArray(UInt32.self, firstOfKeys: "primitiveFixed32s", "primitive_fixed32s")
-        self.primitive_fixed64s = try container.decodeProtoArray(UInt64.self, firstOfKeys: "primitiveFixed64s", "primitive_fixed64s")
-        self.primitive_floats = try container.decodeProtoArray(Float.self, firstOfKeys: "primitiveFloats", "primitive_floats")
-        self.primitive_doubles = try container.decodeProtoArray(Double.self, firstOfKeys: "primitiveDoubles", "primitive_doubles")
+        self.array_int32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "arrayInt32", "array_int32")
+        self.array_uint32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "arrayUint32", "array_uint32")
+        self.array_sint32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "arraySint32", "array_sint32")
+        self.array_fixed32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "arrayFixed32", "array_fixed32")
+        self.array_sfixed32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "arraySfixed32", "array_sfixed32")
+        self.array_int64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "arrayInt64", "array_int64")
+        self.array_uint64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "arrayUint64", "array_uint64")
+        self.array_sint64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "arraySint64", "array_sint64")
+        self.array_fixed64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "arrayFixed64", "array_fixed64")
+        self.array_sfixed64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "arraySfixed64", "array_sfixed64")
+        self.array_float = try container.decodeProtoArray(Float.self, firstOfKeys: "arrayFloat", "array_float")
+        self.array_double = try container.decodeProtoArray(Double.self, firstOfKeys: "arrayDouble", "array_double")
         self.ext_opt_int32 = try container.decodeIfPresent(Int32.self, firstOfKeys: "extOptInt32", "ext_opt_int32")
         self.ext_opt_uint32 = try container.decodeIfPresent(UInt32.self, firstOfKeys: "extOptUint32", "ext_opt_uint32")
         self.ext_opt_sint32 = try container.decodeIfPresent(Int32.self, firstOfKeys: "extOptSint32", "ext_opt_sint32")
@@ -2915,17 +3062,41 @@ extension _AllTypes : Codable {
         if includeDefaults || !self.map_string_enum.isEmpty {
             try container.encodeProtoMap(self.map_string_enum, forKey: preferCamelCase ? "mapStringEnum" : "map_string_enum")
         }
-        if includeDefaults || !self.primitive_fixed32s.isEmpty {
-            try container.encodeProtoArray(self.primitive_fixed32s, forKey: preferCamelCase ? "primitiveFixed32s" : "primitive_fixed32s")
+        if includeDefaults || !self.array_int32.isEmpty {
+            try container.encodeProtoArray(self.array_int32, forKey: preferCamelCase ? "arrayInt32" : "array_int32")
         }
-        if includeDefaults || !self.primitive_fixed64s.isEmpty {
-            try container.encodeProtoArray(self.primitive_fixed64s, forKey: preferCamelCase ? "primitiveFixed64s" : "primitive_fixed64s")
+        if includeDefaults || !self.array_uint32.isEmpty {
+            try container.encodeProtoArray(self.array_uint32, forKey: preferCamelCase ? "arrayUint32" : "array_uint32")
         }
-        if includeDefaults || !self.primitive_floats.isEmpty {
-            try container.encodeProtoArray(self.primitive_floats, forKey: preferCamelCase ? "primitiveFloats" : "primitive_floats")
+        if includeDefaults || !self.array_sint32.isEmpty {
+            try container.encodeProtoArray(self.array_sint32, forKey: preferCamelCase ? "arraySint32" : "array_sint32")
         }
-        if includeDefaults || !self.primitive_doubles.isEmpty {
-            try container.encodeProtoArray(self.primitive_doubles, forKey: preferCamelCase ? "primitiveDoubles" : "primitive_doubles")
+        if includeDefaults || !self.array_fixed32.isEmpty {
+            try container.encodeProtoArray(self.array_fixed32, forKey: preferCamelCase ? "arrayFixed32" : "array_fixed32")
+        }
+        if includeDefaults || !self.array_sfixed32.isEmpty {
+            try container.encodeProtoArray(self.array_sfixed32, forKey: preferCamelCase ? "arraySfixed32" : "array_sfixed32")
+        }
+        if includeDefaults || !self.array_int64.isEmpty {
+            try container.encodeProtoArray(self.array_int64, forKey: preferCamelCase ? "arrayInt64" : "array_int64")
+        }
+        if includeDefaults || !self.array_uint64.isEmpty {
+            try container.encodeProtoArray(self.array_uint64, forKey: preferCamelCase ? "arrayUint64" : "array_uint64")
+        }
+        if includeDefaults || !self.array_sint64.isEmpty {
+            try container.encodeProtoArray(self.array_sint64, forKey: preferCamelCase ? "arraySint64" : "array_sint64")
+        }
+        if includeDefaults || !self.array_fixed64.isEmpty {
+            try container.encodeProtoArray(self.array_fixed64, forKey: preferCamelCase ? "arrayFixed64" : "array_fixed64")
+        }
+        if includeDefaults || !self.array_sfixed64.isEmpty {
+            try container.encodeProtoArray(self.array_sfixed64, forKey: preferCamelCase ? "arraySfixed64" : "array_sfixed64")
+        }
+        if includeDefaults || !self.array_float.isEmpty {
+            try container.encodeProtoArray(self.array_float, forKey: preferCamelCase ? "arrayFloat" : "array_float")
+        }
+        if includeDefaults || !self.array_double.isEmpty {
+            try container.encodeProtoArray(self.array_double, forKey: preferCamelCase ? "arrayDouble" : "array_double")
         }
         try container.encodeIfPresent(self.ext_opt_int32, forKey: preferCamelCase ? "extOptInt32" : "ext_opt_int32")
         try container.encodeIfPresent(self.ext_opt_uint32, forKey: preferCamelCase ? "extOptUint32" : "ext_opt_uint32")

@@ -98,7 +98,7 @@ class TestAllTypes {
       ext_opt_bool = true,
       ext_rep_bool = list(true, numRepeated),
       ext_pack_bool = list(true, numRepeated),
-      primitive_floats = list(122.0f, numRepeated).toFloatArray(),
+      array_float = list(122.0f, numRepeated).toFloatArray(),
     )
   }
 

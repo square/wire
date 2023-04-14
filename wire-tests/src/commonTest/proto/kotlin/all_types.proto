@@ -124,10 +124,18 @@ message AllTypes {
   map<string, NestedMessage> map_string_message = 503;
   map<string, NestedEnum> map_string_enum = 504;
 
-  repeated fixed32 primitive_fixed32s = 601 [packed = true, wire.use_primitive_array = true];
-  repeated fixed64 primitive_fixed64s = 602 [packed = true, wire.use_primitive_array = true];
-  repeated float primitive_floats = 603 [packed = true, wire.use_primitive_array = true];
-  repeated double primitive_doubles = 604 [packed = true, wire.use_primitive_array = true];
+  repeated int32 array_int32 = 601 [packed = true, wire.use_array = true];
+  repeated uint32 array_uint32 = 602 [packed = true, wire.use_array = true];
+  repeated sint32 array_sint32 = 603 [packed = true, wire.use_array = true];
+  repeated fixed32 array_fixed32 = 604 [packed = true, wire.use_array = true];
+  repeated sfixed32 array_sfixed32 = 605 [packed = true, wire.use_array = true];
+  repeated int64 array_int64 = 606 [packed = true, wire.use_array = true];
+  repeated uint64 array_uint64 = 607 [packed = true, wire.use_array = true];
+  repeated sint64 array_sint64 = 608 [packed = true, wire.use_array = true];
+  repeated fixed64 array_fixed64 = 609 [packed = true, wire.use_array = true];
+  repeated sfixed64 array_sfixed64 = 610 [packed = true, wire.use_array = true];
+  repeated float array_float = 612 [packed = true, wire.use_array = true];
+  repeated double array_double = 613 [packed = true, wire.use_array = true];
 }
 
 extend AllTypes {

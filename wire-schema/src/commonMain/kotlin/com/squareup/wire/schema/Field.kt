@@ -108,8 +108,8 @@ data class Field(
   val isPacked: Boolean
     get() = encodeMode == EncodeMode.PACKED
 
-  val usePrimitiveArray: Boolean
-    get() = options.elements.contains(OptionElement.USE_PRIMITIVE_ARRAY_OPTION_ELEMENT)
+  val useArray: Boolean
+    get() = options.elements.contains(OptionElement.USE_ARRAY_OPTION_ELEMENT)
 
   // Null until this field is linked.
   var jsonName: String? = null

@@ -344,28 +344,76 @@ public class AllTypes(
   map_string_enum: Map<String, NestedEnum> = emptyMap(),
   @field:WireField(
     tag = 601,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.PACKED,
+  )
+  public val array_int32: FloatArray = FloatArray(0),
+  @field:WireField(
+    tag = 602,
+    adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+    label = WireField.Label.PACKED,
+  )
+  public val array_uint32: FloatArray = FloatArray(0),
+  @field:WireField(
+    tag = 603,
+    adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+    label = WireField.Label.PACKED,
+  )
+  public val array_sint32: FloatArray = FloatArray(0),
+  @field:WireField(
+    tag = 604,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.PACKED,
   )
-  public val primitive_fixed32s: FloatArray = FloatArray(0),
+  public val array_fixed32: FloatArray = FloatArray(0),
   @field:WireField(
-    tag = 602,
+    tag = 605,
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+    label = WireField.Label.PACKED,
+  )
+  public val array_sfixed32: FloatArray = FloatArray(0),
+  @field:WireField(
+    tag = 606,
+    adapter = "com.squareup.wire.ProtoAdapter#INT64",
+    label = WireField.Label.PACKED,
+  )
+  public val array_int64: FloatArray = FloatArray(0),
+  @field:WireField(
+    tag = 607,
+    adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+    label = WireField.Label.PACKED,
+  )
+  public val array_uint64: FloatArray = FloatArray(0),
+  @field:WireField(
+    tag = 608,
+    adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+    label = WireField.Label.PACKED,
+  )
+  public val array_sint64: FloatArray = FloatArray(0),
+  @field:WireField(
+    tag = 609,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.PACKED,
   )
-  public val primitive_fixed64s: FloatArray = FloatArray(0),
+  public val array_fixed64: FloatArray = FloatArray(0),
   @field:WireField(
-    tag = 603,
+    tag = 610,
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+    label = WireField.Label.PACKED,
+  )
+  public val array_sfixed64: FloatArray = FloatArray(0),
+  @field:WireField(
+    tag = 612,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.PACKED,
   )
-  public val primitive_floats: FloatArray = FloatArray(0),
+  public val array_float: FloatArray = FloatArray(0),
   @field:WireField(
-    tag = 604,
+    tag = 613,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.PACKED,
   )
-  public val primitive_doubles: FloatArray = FloatArray(0),
+  public val array_double: FloatArray = FloatArray(0),
   /**
    * Extension source: all_types.proto
    */
@@ -1194,10 +1242,18 @@ public class AllTypes(
     if (map_string_string != other.map_string_string) return false
     if (map_string_message != other.map_string_message) return false
     if (map_string_enum != other.map_string_enum) return false
-    if (!primitive_fixed32s.contentEquals(other.primitive_fixed32s)) return false
-    if (!primitive_fixed64s.contentEquals(other.primitive_fixed64s)) return false
-    if (!primitive_floats.contentEquals(other.primitive_floats)) return false
-    if (!primitive_doubles.contentEquals(other.primitive_doubles)) return false
+    if (!array_int32.contentEquals(other.array_int32)) return false
+    if (!array_uint32.contentEquals(other.array_uint32)) return false
+    if (!array_sint32.contentEquals(other.array_sint32)) return false
+    if (!array_fixed32.contentEquals(other.array_fixed32)) return false
+    if (!array_sfixed32.contentEquals(other.array_sfixed32)) return false
+    if (!array_int64.contentEquals(other.array_int64)) return false
+    if (!array_uint64.contentEquals(other.array_uint64)) return false
+    if (!array_sint64.contentEquals(other.array_sint64)) return false
+    if (!array_fixed64.contentEquals(other.array_fixed64)) return false
+    if (!array_sfixed64.contentEquals(other.array_sfixed64)) return false
+    if (!array_float.contentEquals(other.array_float)) return false
+    if (!array_double.contentEquals(other.array_double)) return false
     if (ext_opt_int32 != other.ext_opt_int32) return false
     if (ext_opt_uint32 != other.ext_opt_uint32) return false
     if (ext_opt_sint32 != other.ext_opt_sint32) return false
@@ -1338,10 +1394,18 @@ public class AllTypes(
       result = result * 37 + map_string_string.hashCode()
       result = result * 37 + map_string_message.hashCode()
       result = result * 37 + map_string_enum.hashCode()
-      result = result * 37 + primitive_fixed32s.contentHashCode()
-      result = result * 37 + primitive_fixed64s.contentHashCode()
-      result = result * 37 + primitive_floats.contentHashCode()
-      result = result * 37 + primitive_doubles.contentHashCode()
+      result = result * 37 + array_int32.contentHashCode()
+      result = result * 37 + array_uint32.contentHashCode()
+      result = result * 37 + array_sint32.contentHashCode()
+      result = result * 37 + array_fixed32.contentHashCode()
+      result = result * 37 + array_sfixed32.contentHashCode()
+      result = result * 37 + array_int64.contentHashCode()
+      result = result * 37 + array_uint64.contentHashCode()
+      result = result * 37 + array_sint64.contentHashCode()
+      result = result * 37 + array_fixed64.contentHashCode()
+      result = result * 37 + array_sfixed64.contentHashCode()
+      result = result * 37 + array_float.contentHashCode()
+      result = result * 37 + array_double.contentHashCode()
       result = result * 37 + (ext_opt_int32?.hashCode() ?: 0)
       result = result * 37 + (ext_opt_uint32?.hashCode() ?: 0)
       result = result * 37 + (ext_opt_sint32?.hashCode() ?: 0)
@@ -1482,10 +1546,20 @@ public class AllTypes(
     if (map_string_string.isNotEmpty()) result += """map_string_string=$map_string_string"""
     if (map_string_message.isNotEmpty()) result += """map_string_message=$map_string_message"""
     if (map_string_enum.isNotEmpty()) result += """map_string_enum=$map_string_enum"""
-    if (primitive_fixed32s.isNotEmpty()) result += """primitive_fixed32s=$primitive_fixed32s"""
-    if (primitive_fixed64s.isNotEmpty()) result += """primitive_fixed64s=$primitive_fixed64s"""
-    if (primitive_floats.isNotEmpty()) result += """primitive_floats=$primitive_floats"""
-    if (primitive_doubles.isNotEmpty()) result += """primitive_doubles=$primitive_doubles"""
+    if (array_int32.isNotEmpty()) result += """array_int32=${array_int32.contentToString()}"""
+    if (array_uint32.isNotEmpty()) result += """array_uint32=${array_uint32.contentToString()}"""
+    if (array_sint32.isNotEmpty()) result += """array_sint32=${array_sint32.contentToString()}"""
+    if (array_fixed32.isNotEmpty()) result += """array_fixed32=${array_fixed32.contentToString()}"""
+    if (array_sfixed32.isNotEmpty()) result +=
+        """array_sfixed32=${array_sfixed32.contentToString()}"""
+    if (array_int64.isNotEmpty()) result += """array_int64=${array_int64.contentToString()}"""
+    if (array_uint64.isNotEmpty()) result += """array_uint64=${array_uint64.contentToString()}"""
+    if (array_sint64.isNotEmpty()) result += """array_sint64=${array_sint64.contentToString()}"""
+    if (array_fixed64.isNotEmpty()) result += """array_fixed64=${array_fixed64.contentToString()}"""
+    if (array_sfixed64.isNotEmpty()) result +=
+        """array_sfixed64=${array_sfixed64.contentToString()}"""
+    if (array_float.isNotEmpty()) result += """array_float=${array_float.contentToString()}"""
+    if (array_double.isNotEmpty()) result += """array_double=${array_double.contentToString()}"""
     if (ext_opt_int32 != null) result += """ext_opt_int32=$ext_opt_int32"""
     if (ext_opt_uint32 != null) result += """ext_opt_uint32=$ext_opt_uint32"""
     if (ext_opt_sint32 != null) result += """ext_opt_sint32=$ext_opt_sint32"""
@@ -1626,10 +1700,18 @@ public class AllTypes(
     map_string_string: Map<String, String> = this.map_string_string,
     map_string_message: Map<String, NestedMessage> = this.map_string_message,
     map_string_enum: Map<String, NestedEnum> = this.map_string_enum,
-    primitive_fixed32s: FloatArray = this.primitive_fixed32s,
-    primitive_fixed64s: FloatArray = this.primitive_fixed64s,
-    primitive_floats: FloatArray = this.primitive_floats,
-    primitive_doubles: FloatArray = this.primitive_doubles,
+    array_int32: FloatArray = this.array_int32,
+    array_uint32: FloatArray = this.array_uint32,
+    array_sint32: FloatArray = this.array_sint32,
+    array_fixed32: FloatArray = this.array_fixed32,
+    array_sfixed32: FloatArray = this.array_sfixed32,
+    array_int64: FloatArray = this.array_int64,
+    array_uint64: FloatArray = this.array_uint64,
+    array_sint64: FloatArray = this.array_sint64,
+    array_fixed64: FloatArray = this.array_fixed64,
+    array_sfixed64: FloatArray = this.array_sfixed64,
+    array_float: FloatArray = this.array_float,
+    array_double: FloatArray = this.array_double,
     ext_opt_int32: Int? = this.ext_opt_int32,
     ext_opt_uint32: Int? = this.ext_opt_uint32,
     ext_opt_sint32: Int? = this.ext_opt_sint32,
@@ -1692,8 +1774,9 @@ public class AllTypes(
       default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64,
       default_fixed64, default_sfixed64, default_bool, default_float, default_double,
       default_string, default_bytes, default_nested_enum, map_int32_int32, map_string_string,
-      map_string_message, map_string_enum, primitive_fixed32s, primitive_fixed64s, primitive_floats,
-      primitive_doubles, ext_opt_int32, ext_opt_uint32, ext_opt_sint32, ext_opt_fixed32,
+      map_string_message, map_string_enum, array_int32, array_uint32, array_sint32, array_fixed32,
+      array_sfixed32, array_int64, array_uint64, array_sint64, array_fixed64, array_sfixed64,
+      array_float, array_double, ext_opt_int32, ext_opt_uint32, ext_opt_sint32, ext_opt_fixed32,
       ext_opt_sfixed32, ext_opt_int64, ext_opt_uint64, ext_opt_sint64, ext_opt_fixed64,
       ext_opt_sfixed64, ext_opt_bool, ext_opt_float, ext_opt_double, ext_opt_string, ext_opt_bytes,
       ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32, ext_rep_uint32, ext_rep_sint32,
@@ -1849,10 +1932,18 @@ public class AllTypes(
         size += map_string_stringAdapter.encodedSizeWithTag(502, value.map_string_string)
         size += map_string_messageAdapter.encodedSizeWithTag(503, value.map_string_message)
         size += map_string_enumAdapter.encodedSizeWithTag(504, value.map_string_enum)
-        size += ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodedSizeWithTag(601, value.primitive_fixed32s)
-        size += ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodedSizeWithTag(602, value.primitive_fixed64s)
-        size += ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodedSizeWithTag(603, value.primitive_floats)
-        size += ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodedSizeWithTag(604, value.primitive_doubles)
+        size += ProtoAdapter.FLOAT_ARRAY.encodedSizeWithTag(601, value.array_int32)
+        size += ProtoAdapter.FLOAT_ARRAY.encodedSizeWithTag(602, value.array_uint32)
+        size += ProtoAdapter.FLOAT_ARRAY.encodedSizeWithTag(603, value.array_sint32)
+        size += ProtoAdapter.FLOAT_ARRAY.encodedSizeWithTag(604, value.array_fixed32)
+        size += ProtoAdapter.FLOAT_ARRAY.encodedSizeWithTag(605, value.array_sfixed32)
+        size += ProtoAdapter.FLOAT_ARRAY.encodedSizeWithTag(606, value.array_int64)
+        size += ProtoAdapter.FLOAT_ARRAY.encodedSizeWithTag(607, value.array_uint64)
+        size += ProtoAdapter.FLOAT_ARRAY.encodedSizeWithTag(608, value.array_sint64)
+        size += ProtoAdapter.FLOAT_ARRAY.encodedSizeWithTag(609, value.array_fixed64)
+        size += ProtoAdapter.FLOAT_ARRAY.encodedSizeWithTag(610, value.array_sfixed64)
+        size += ProtoAdapter.FLOAT_ARRAY.encodedSizeWithTag(612, value.array_float)
+        size += ProtoAdapter.FLOAT_ARRAY.encodedSizeWithTag(613, value.array_double)
         size += ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32)
         size += ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32)
         size += ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32)
@@ -1991,10 +2082,18 @@ public class AllTypes(
         map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
         map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
         map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
-        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 601, value.primitive_fixed32s)
-        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 602, value.primitive_fixed64s)
-        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 603, value.primitive_floats)
-        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 604, value.primitive_doubles)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 601, value.array_int32)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 602, value.array_uint32)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 603, value.array_sint32)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 604, value.array_fixed32)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 605, value.array_sfixed32)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 606, value.array_int64)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 607, value.array_uint64)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 608, value.array_sint64)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 609, value.array_fixed64)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 610, value.array_sfixed64)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 612, value.array_float)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 613, value.array_double)
         ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32)
         ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32)
         ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32)
@@ -2096,10 +2195,18 @@ public class AllTypes(
         ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32)
         ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32)
         ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32)
-        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 604, value.primitive_doubles)
-        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 603, value.primitive_floats)
-        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 602, value.primitive_fixed64s)
-        ProtoAdapter.FLOAT_PRIMITIVE_ARRAY.encodeWithTag(writer, 601, value.primitive_fixed32s)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 613, value.array_double)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 612, value.array_float)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 610, value.array_sfixed64)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 609, value.array_fixed64)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 608, value.array_sint64)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 607, value.array_uint64)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 606, value.array_int64)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 605, value.array_sfixed32)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 604, value.array_fixed32)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 603, value.array_sint32)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 602, value.array_uint32)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 601, value.array_int32)
         map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
         map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
         map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
@@ -2273,10 +2380,18 @@ public class AllTypes(
         val map_string_string = mutableMapOf<String, String>()
         val map_string_message = mutableMapOf<String, NestedMessage>()
         val map_string_enum = mutableMapOf<String, NestedEnum>()
-        var primitive_fixed32s: FloatArrayList? = null
-        var primitive_fixed64s: FloatArrayList? = null
-        var primitive_floats: FloatArrayList? = null
-        var primitive_doubles: FloatArrayList? = null
+        var array_int32: FloatArrayList? = null
+        var array_uint32: FloatArrayList? = null
+        var array_sint32: FloatArrayList? = null
+        var array_fixed32: FloatArrayList? = null
+        var array_sfixed32: FloatArrayList? = null
+        var array_int64: FloatArrayList? = null
+        var array_uint64: FloatArrayList? = null
+        var array_sint64: FloatArrayList? = null
+        var array_fixed64: FloatArrayList? = null
+        var array_sfixed64: FloatArrayList? = null
+        var array_float: FloatArrayList? = null
+        var array_double: FloatArrayList? = null
         var ext_opt_int32: Int? = null
         var ext_opt_uint32: Int? = null
         var ext_opt_sint32: Int? = null
@@ -2550,44 +2665,124 @@ public class AllTypes(
             503 -> map_string_message.putAll(map_string_messageAdapter.decode(reader))
             504 -> map_string_enum.putAll(map_string_enumAdapter.decode(reader))
             601 -> {
-              if (primitive_fixed32s == null) {
-                val minimumByteSize = 4
+              if (array_int32 == null) {
+                val minimumByteSize = 1
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
-                primitive_fixed32s = FloatArrayList(initialCapacity)
+                array_int32 = FloatArrayList(initialCapacity)
               }
-              primitive_fixed32s!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+              array_int32!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
             }
             602 -> {
-              if (primitive_fixed64s == null) {
-                val minimumByteSize = 8
+              if (array_uint32 == null) {
+                val minimumByteSize = 1
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
-                primitive_fixed64s = FloatArrayList(initialCapacity)
+                array_uint32 = FloatArrayList(initialCapacity)
               }
-              primitive_fixed64s!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+              array_uint32!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
             }
             603 -> {
-              if (primitive_floats == null) {
+              if (array_sint32 == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                array_sint32 = FloatArrayList(initialCapacity)
+              }
+              array_sint32!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+            }
+            604 -> {
+              if (array_fixed32 == null) {
                 val minimumByteSize = 4
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
-                primitive_floats = FloatArrayList(initialCapacity)
+                array_fixed32 = FloatArrayList(initialCapacity)
               }
-              primitive_floats!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+              array_fixed32!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
             }
-            604 -> {
-              if (primitive_doubles == null) {
+            605 -> {
+              if (array_sfixed32 == null) {
+                val minimumByteSize = 4
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                array_sfixed32 = FloatArrayList(initialCapacity)
+              }
+              array_sfixed32!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+            }
+            606 -> {
+              if (array_int64 == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                array_int64 = FloatArrayList(initialCapacity)
+              }
+              array_int64!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+            }
+            607 -> {
+              if (array_uint64 == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                array_uint64 = FloatArrayList(initialCapacity)
+              }
+              array_uint64!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+            }
+            608 -> {
+              if (array_sint64 == null) {
+                val minimumByteSize = 1
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                array_sint64 = FloatArrayList(initialCapacity)
+              }
+              array_sint64!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+            }
+            609 -> {
+              if (array_fixed64 == null) {
                 val minimumByteSize = 8
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
                   .coerceAtMost(Int.MAX_VALUE.toLong())
                   .toInt()
-                primitive_doubles = FloatArrayList(initialCapacity)
+                array_fixed64 = FloatArrayList(initialCapacity)
               }
-              primitive_doubles!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+              array_fixed64!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+            }
+            610 -> {
+              if (array_sfixed64 == null) {
+                val minimumByteSize = 8
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                array_sfixed64 = FloatArrayList(initialCapacity)
+              }
+              array_sfixed64!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+            }
+            612 -> {
+              if (array_float == null) {
+                val minimumByteSize = 4
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                array_float = FloatArrayList(initialCapacity)
+              }
+              array_float!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+            }
+            613 -> {
+              if (array_double == null) {
+                val minimumByteSize = 8
+                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
+                  .coerceAtMost(Int.MAX_VALUE.toLong())
+                  .toInt()
+                array_double = FloatArrayList(initialCapacity)
+              }
+              array_double!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
             }
             1001 -> ext_opt_int32 = ProtoAdapter.INT32.decode(reader)
             1002 -> ext_opt_uint32 = ProtoAdapter.UINT32.decode(reader)
@@ -2857,10 +3052,18 @@ public class AllTypes(
           map_string_string = map_string_string,
           map_string_message = map_string_message,
           map_string_enum = map_string_enum,
-          primitive_fixed32s = primitive_fixed32s?.getTruncatedArray() ?: FloatArray(0),
-          primitive_fixed64s = primitive_fixed64s?.getTruncatedArray() ?: FloatArray(0),
-          primitive_floats = primitive_floats?.getTruncatedArray() ?: FloatArray(0),
-          primitive_doubles = primitive_doubles?.getTruncatedArray() ?: FloatArray(0),
+          array_int32 = array_int32?.getTruncatedArray() ?: FloatArray(0),
+          array_uint32 = array_uint32?.getTruncatedArray() ?: FloatArray(0),
+          array_sint32 = array_sint32?.getTruncatedArray() ?: FloatArray(0),
+          array_fixed32 = array_fixed32?.getTruncatedArray() ?: FloatArray(0),
+          array_sfixed32 = array_sfixed32?.getTruncatedArray() ?: FloatArray(0),
+          array_int64 = array_int64?.getTruncatedArray() ?: FloatArray(0),
+          array_uint64 = array_uint64?.getTruncatedArray() ?: FloatArray(0),
+          array_sint64 = array_sint64?.getTruncatedArray() ?: FloatArray(0),
+          array_fixed64 = array_fixed64?.getTruncatedArray() ?: FloatArray(0),
+          array_sfixed64 = array_sfixed64?.getTruncatedArray() ?: FloatArray(0),
+          array_float = array_float?.getTruncatedArray() ?: FloatArray(0),
+          array_double = array_double?.getTruncatedArray() ?: FloatArray(0),
           ext_opt_int32 = ext_opt_int32,
           ext_opt_uint32 = ext_opt_uint32,
           ext_opt_sint32 = ext_opt_sint32,

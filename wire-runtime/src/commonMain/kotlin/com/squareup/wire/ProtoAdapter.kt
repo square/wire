@@ -190,7 +190,7 @@ expect abstract class ProtoAdapter<E>(
     @JvmField val FIXED32: ProtoAdapter<Int>
     @JvmField val SFIXED32: ProtoAdapter<Int>
     @JvmField val INT64: ProtoAdapter<Long>
-    @JvmField val INT64_PRIMITIVE_ARRAY: ProtoAdapter<LongArray>
+    @JvmField val INT64_ARRAY: ProtoAdapter<LongArray>
     /**
      * Like INT64, but negative longs are interpreted as large positive values, and encoded that way
      * in JSON.
@@ -200,7 +200,7 @@ expect abstract class ProtoAdapter<E>(
     @JvmField val FIXED64: ProtoAdapter<Long>
     @JvmField val SFIXED64: ProtoAdapter<Long>
     @JvmField val FLOAT: ProtoAdapter<Float>
-    @JvmField val FLOAT_PRIMITIVE_ARRAY: ProtoAdapter<FloatArray>
+    @JvmField val FLOAT_ARRAY: ProtoAdapter<FloatArray>
     @JvmField val DOUBLE: ProtoAdapter<Double>
     @JvmField val BYTES: ProtoAdapter<ByteString>
     @JvmField val STRING: ProtoAdapter<String>

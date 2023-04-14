@@ -660,7 +660,7 @@ class KotlinGenerator private constructor(
         when (fieldOrOneOf) {
           is Field -> {
             val fieldName = localNameAllocator[fieldOrOneOf]
-            if (fieldOrOneOf.usePrimitiveArray) {
+            if (fieldOrOneOf.useArray) {
               addStatement("if (!%1L.contentEquals(%2N.%1L)) return·false", fieldName, otherName)
             } else {
               addStatement("if (%1L != %2N.%1L) return·false", fieldName, otherName)
@@ -718,7 +718,7 @@ class KotlinGenerator private constructor(
           is Field -> {
             val fieldName = localNameAllocator[fieldOrOneOf]
             add("%1N = %1N * 37 + ", resultName)
-            if (fieldOrOneOf.usePrimitiveArray) {
+            if (fieldOrOneOf.useArray) {
               addStatement("%L.contentHashCode()", fieldName)
             } else if (fieldOrOneOf.isRepeated || fieldOrOneOf.isRequired || fieldOrOneOf.isMap || !fieldOrOneOf.acceptsNull) {
               addStatement("%L.hashCode()", fieldName)
@@ -947,7 +947,7 @@ class KotlinGenerator private constructor(
           .build()
       )
     }
-    if (field.isRepeated && !field.usePrimitiveArray) {
+    if (field.isRepeated && !field.useArray) {
       val checkElementsNotNull = MemberName("com.squareup.wire.internal", "checkElementsNotNull")
       funBuilder.addStatement("%M(%L)", checkElementsNotNull, fieldName)
     }
@@ -1082,7 +1082,7 @@ class KotlinGenerator private constructor(
           fieldName
         )
       }
-      field.isPacked && field.isScalar && field.usePrimitiveArray -> {
+      field.isPacked && field.isScalar && field.useArray -> {
         CodeBlock.of(fieldName)
       }
       field.isRepeated || field.isMap -> {
@@ -1226,10 +1226,13 @@ class KotlinGenerator private constructor(
           when (fieldOrOneOf) {
             is Field -> {
               val fieldName = localNameAllocator[fieldOrOneOf]
-              if (fieldOrOneOf.isRepeated || fieldOrOneOf.isMap) {
-                add("if (%N.isNotEmpty()) ", fieldName)
-              } else if (fieldOrOneOf.acceptsNull) {
-                add("if (%N != null) ", fieldName)
+              when {
+                fieldOrOneOf.isRepeated || fieldOrOneOf.isMap -> {
+                  add("if (%N.isNotEmpty()) ", fieldName)
+                }
+                fieldOrOneOf.acceptsNull -> {
+                  add("if (%N != null) ", fieldName)
+                }
               }
               addStatement(
                 "%N += %P", resultName,
@@ -1240,6 +1243,11 @@ class KotlinGenerator private constructor(
                   } else {
                     if (fieldOrOneOf.type == ProtoType.STRING) {
                       add("=\${%M($fieldName)}", sanitizeMember)
+                    } else if (fieldOrOneOf.useArray) {
+                      add("=\${")
+                      add(fieldName)
+                      add(".contentToString()")
+                      add("}")
                     } else {
                       add("=\$")
                       add(fieldName)
@@ -1527,8 +1535,8 @@ class KotlinGenerator private constructor(
   }
 
   private fun adapterFor(field: Field) = buildCodeBlock {
-    if (field.usePrimitiveArray) {
-      add("%T.FLOAT_PRIMITIVE_ARRAY", ProtoAdapter::class)
+    if (field.useArray) {
+      add("%T.FLOAT_ARRAY", ProtoAdapter::class)
     } else {
       add("%L", field.getAdapterName())
       if (field.isPacked) {
@@ -1634,7 +1642,7 @@ class KotlinGenerator private constructor(
               }
 
             if (fieldOrOneOf.isPacked && fieldOrOneOf.isScalar) {
-              if (fieldOrOneOf.usePrimitiveArray) {
+              if (fieldOrOneOf.useArray) {
                 addStatement("%1L = %1L?.getTruncatedArray() ?: FloatArray(0),", fieldName)
               } else {
                 addStatement("%1L = %1L ?: listOf(),", fieldName)
@@ -1727,7 +1735,7 @@ class KotlinGenerator private constructor(
     return CodeBlock.of(
       when {
         field.isPacked && field.isScalar -> {
-          val type = if (field.usePrimitiveArray) "FloatArrayList" else "ArrayList"
+          val type = if (field.useArray) "FloatArrayList" else "ArrayList"
           buildCodeBlock {
             beginControlFlow("if (%L == null)", fieldName)
             addStatement("val minimumByteSize = ${field.getMinimumByteSize()}")
@@ -1816,7 +1824,7 @@ class KotlinGenerator private constructor(
   private fun Field.redact(fieldName: String): CodeBlock? {
     if (isRedacted) {
       return when {
-        usePrimitiveArray -> CodeBlock.of("FloatArray(0)")
+        useArray -> CodeBlock.of("FloatArray(0)")
         isRepeated -> CodeBlock.of("emptyList()")
         isMap -> CodeBlock.of("emptyMap()")
         encodeMode!! == EncodeMode.NULL_IF_ABSENT -> CodeBlock.of("null")
@@ -1846,7 +1854,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun Field.getAdapterName(nameDelimiter: Char = '.'): CodeBlock {
-    if (usePrimitiveArray) {
+    if (useArray) {
       return CodeBlock.of("%T.FLOAT", ProtoAdapter::class)
     }
     return if (type!!.isMap) {
@@ -2210,7 +2218,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun Field.getDeclaration(allocatedName: String) = when {
-    isPacked && isScalar && usePrimitiveArray -> CodeBlock.of("var %N: %T? = null", allocatedName, FloatArrayList::class)
+    isPacked && isScalar && useArray -> CodeBlock.of("var %N: %T? = null", allocatedName, FloatArrayList::class)
     isPacked && isScalar -> CodeBlock.of("var %N: MutableList<%T>? = null", allocatedName, type!!.typeName)
     isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", type!!.typeName)
     isMap -> CodeBlock.of(
@@ -2243,7 +2251,7 @@ class KotlinGenerator private constructor(
     return when (encodeMode!!) {
       EncodeMode.REPEATED -> List::class.asClassName().parameterizedBy(baseClass)
       EncodeMode.PACKED -> {
-        if (usePrimitiveArray) {
+        if (useArray) {
           FloatArray::class.asTypeName()
         } else {
           List::class.asTypeName().parameterizedBy(baseClass)
@@ -2268,7 +2276,7 @@ class KotlinGenerator private constructor(
           Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
         EncodeMode.PACKED -> {
           when {
-            usePrimitiveArray -> FloatArray::class.asTypeName()
+            useArray -> FloatArray::class.asTypeName()
             else -> List::class.asTypeName().parameterizedBy(type.typeName)
           }
         }
@@ -2292,7 +2300,7 @@ class KotlinGenerator private constructor(
         EncodeMode.MAP -> CodeBlock.of("emptyMap()")
         EncodeMode.REPEATED -> CodeBlock.of("emptyList()")
         EncodeMode.PACKED -> {
-          if (usePrimitiveArray) {
+          if (useArray) {
             CodeBlock.of("FloatArray(0)")
           } else {
             CodeBlock.of("emptyList()")

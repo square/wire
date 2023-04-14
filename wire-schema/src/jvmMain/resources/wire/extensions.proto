@@ -36,7 +36,11 @@ extend google.protobuf.FieldOptions {
    */
   optional string until = 1077;
 
-  optional string use_primitive_array = 1078;
+  /**
+   * Uses an Array at runtime to hold the values, to avoid autoboxing on the JVM. Will use the appropriate
+   * array type, for example `repeated float` would be represented as a FloatArray.
+   */
+  optional string use_array = 1078;
 }
 
 extend google.protobuf.EnumValueOptions {
