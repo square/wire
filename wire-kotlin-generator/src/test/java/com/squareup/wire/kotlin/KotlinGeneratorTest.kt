@@ -1528,7 +1528,8 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
-    assertContains(code, "foobarbazz")
+    assertContains(code, "public val name: FloatArray = FloatArray(0)")
+    assertContains(code, "ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 1, value.name)")
   }
 
   @Test fun documentationEscapesBrackets() {
