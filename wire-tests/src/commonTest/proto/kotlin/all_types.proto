@@ -134,8 +134,8 @@ message AllTypes {
   repeated sint64 array_sint64 = 608 [packed = true, wire.use_array = true];
   repeated fixed64 array_fixed64 = 609 [packed = true, wire.use_array = true];
   repeated sfixed64 array_sfixed64 = 610 [packed = true, wire.use_array = true];
-  repeated float array_float = 612 [packed = true, wire.use_array = true];
-  repeated double array_double = 613 [packed = true, wire.use_array = true];
+  repeated float array_float = 611 [packed = true, wire.use_array = true];
+  repeated double array_double = 612 [packed = true, wire.use_array = true];
 }
 
 extend AllTypes {

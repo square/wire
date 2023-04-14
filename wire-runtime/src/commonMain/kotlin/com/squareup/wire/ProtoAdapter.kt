@@ -185,10 +185,15 @@ expect abstract class ProtoAdapter<E>(
 
     @JvmField val BOOL: ProtoAdapter<Boolean>
     @JvmField val INT32: ProtoAdapter<Int>
+    @JvmField val INT32_ARRAY: ProtoAdapter<IntArray>
     @JvmField val UINT32: ProtoAdapter<Int>
+    @JvmField val UINT32_ARRAY: ProtoAdapter<IntArray>
     @JvmField val SINT32: ProtoAdapter<Int>
+    @JvmField val SINT32_ARRAY: ProtoAdapter<IntArray>
     @JvmField val FIXED32: ProtoAdapter<Int>
+    @JvmField val FIXED32_ARRAY: ProtoAdapter<IntArray>
     @JvmField val SFIXED32: ProtoAdapter<Int>
+    @JvmField val SFIXED32_ARRAY: ProtoAdapter<IntArray>
     @JvmField val INT64: ProtoAdapter<Long>
     @JvmField val INT64_ARRAY: ProtoAdapter<LongArray>
     /**
@@ -196,12 +201,17 @@ expect abstract class ProtoAdapter<E>(
      * in JSON.
      */
     @JvmField val UINT64: ProtoAdapter<Long>
+    @JvmField val UINT64_ARRAY: ProtoAdapter<LongArray>
     @JvmField val SINT64: ProtoAdapter<Long>
+    @JvmField val SINT64_ARRAY: ProtoAdapter<LongArray>
     @JvmField val FIXED64: ProtoAdapter<Long>
+    @JvmField val FIXED64_ARRAY: ProtoAdapter<LongArray>
     @JvmField val SFIXED64: ProtoAdapter<Long>
+    @JvmField val SFIXED64_ARRAY: ProtoAdapter<LongArray>
     @JvmField val FLOAT: ProtoAdapter<Float>
     @JvmField val FLOAT_ARRAY: ProtoAdapter<FloatArray>
     @JvmField val DOUBLE: ProtoAdapter<Double>
+    @JvmField val DOUBLE_ARRAY: ProtoAdapter<DoubleArray>
     @JvmField val BYTES: ProtoAdapter<ByteString>
     @JvmField val STRING: ProtoAdapter<String>
     @JvmField val DURATION: ProtoAdapter<Duration>
@@ -441,6 +451,61 @@ internal class RepeatedProtoAdapter<E>(
   override fun redact(value: List<E>): List<E> = emptyList()
 }
 
+class DoubleArrayProtoAdapter(
+  private val originalAdapter: ProtoAdapter<Double>,
+) : ProtoAdapter<DoubleArray>(
+  LENGTH_DELIMITED,
+  LongArray::class,
+  null,
+  originalAdapter.syntax,
+  DoubleArray(0),
+) {
+  @Throws(IOException::class)
+  override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: DoubleArray?) {
+    if (value != null && value.isNotEmpty()) {
+      super.encodeWithTag(writer, tag, value)
+    }
+  }
+
+  @Throws(IOException::class)
+  override fun encodeWithTag(writer: ReverseProtoWriter, tag: Int, value: DoubleArray?) {
+    if (value != null && value.isNotEmpty()) {
+      super.encodeWithTag(writer, tag, value)
+    }
+  }
+
+  override fun encodedSize(value: DoubleArray): Int {
+    var size = 0
+    for (i in 0 until value.size) {
+      size += originalAdapter.encodedSize(value[i])
+    }
+    return size
+  }
+
+  override fun encodedSizeWithTag(tag: Int, value: DoubleArray?): Int {
+    return if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ProtoWriter, value: DoubleArray) {
+    for (i in 0 until value.size) {
+      originalAdapter.encode(writer, value[i])
+    }
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: DoubleArray) {
+    for (i in (value.size - 1) downTo 0) {
+      originalAdapter.encode(writer, value[i])
+    }
+  }
+
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader): DoubleArray = DoubleArray(1) { originalAdapter.decode(reader) }
+
+  override fun redact(value: DoubleArray): DoubleArray = DoubleArray(0)
+}
+
 class LongArrayProtoAdapter(
   private val originalAdapter: ProtoAdapter<Long>,
 ) : ProtoAdapter<LongArray>(
@@ -549,6 +614,61 @@ class FloatArrayProtoAdapter(
   override fun decode(reader: ProtoReader): FloatArray = FloatArray(1) { originalAdapter.decode(reader) }
 
   override fun redact(value: FloatArray): FloatArray = FloatArray(0)
+}
+
+class IntArrayProtoAdapter(
+  private val originalAdapter: ProtoAdapter<Int>,
+) : ProtoAdapter<IntArray>(
+  LENGTH_DELIMITED,
+  IntArray::class,
+  null,
+  originalAdapter.syntax,
+  IntArray(0),
+) {
+  @Throws(IOException::class)
+  override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: IntArray?) {
+    if (value != null && value.isNotEmpty()) {
+      super.encodeWithTag(writer, tag, value)
+    }
+  }
+
+  @Throws(IOException::class)
+  override fun encodeWithTag(writer: ReverseProtoWriter, tag: Int, value: IntArray?) {
+    if (value != null && value.isNotEmpty()) {
+      super.encodeWithTag(writer, tag, value)
+    }
+  }
+
+  override fun encodedSize(value: IntArray): Int {
+    var size = 0
+    for (i in 0 until value.size) {
+      size += originalAdapter.encodedSize(value[i])
+    }
+    return size
+  }
+
+  override fun encodedSizeWithTag(tag: Int, value: IntArray?): Int {
+    return if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ProtoWriter, value: IntArray) {
+    for (i in 0 until value.size) {
+      originalAdapter.encode(writer, value[i])
+    }
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: IntArray) {
+    for (i in (value.size - 1) downTo 0) {
+      originalAdapter.encode(writer, value[i])
+    }
+  }
+
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader): IntArray = IntArray(1) { originalAdapter.decode(reader) }
+
+  override fun redact(value: IntArray): IntArray = IntArray(0)
 }
 
 internal class MapProtoAdapter<K, V> internal constructor(

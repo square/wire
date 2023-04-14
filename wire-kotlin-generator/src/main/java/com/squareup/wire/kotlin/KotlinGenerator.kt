@@ -52,6 +52,7 @@ import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.joinToCode
 import com.squareup.kotlinpoet.jvm.jvmField
 import com.squareup.kotlinpoet.jvm.jvmStatic
+import com.squareup.wire.DoubleArrayList
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.FloatArrayList
@@ -59,6 +60,8 @@ import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
 import com.squareup.wire.GrpcStreamingCall
+import com.squareup.wire.IntArrayList
+import com.squareup.wire.LongArrayList
 import com.squareup.wire.Message
 import com.squareup.wire.MessageSink
 import com.squareup.wire.MessageSource
@@ -157,6 +160,39 @@ class KotlinGenerator private constructor(
     get() = type.typeName
   private val Service.serviceName
     get() = type.typeName
+  private val Field.primitiveArrayForType
+    get() = when (type!!.typeName) {
+      LONG -> LongArray::class
+      INT -> IntArray::class
+      FLOAT -> FloatArray::class
+      DOUBLE -> DoubleArray::class
+      else -> throw IllegalArgumentException("No Array type for $type")
+    }
+  private val Field.arrayListForType
+    get() = when (type!!.typeName) {
+      LONG -> LongArrayList::class
+      INT -> IntArrayList::class
+      FLOAT -> FloatArrayList::class
+      DOUBLE -> DoubleArrayList::class
+      else -> throw IllegalArgumentException("No ArrayList type for $type")
+    }
+
+  private val Field.arrayAdapterForType
+    get() = when (type!!) {
+      ProtoType.INT32 -> CodeBlock.of("%T.INT32_ARRAY", ProtoAdapter::class)
+      ProtoType.UINT32 -> CodeBlock.of("%T.UINT32_ARRAY", ProtoAdapter::class)
+      ProtoType.SINT32 -> CodeBlock.of("%T.SINT32_ARRAY", ProtoAdapter::class)
+      ProtoType.FIXED32 -> CodeBlock.of("%T.FIXED32_ARRAY", ProtoAdapter::class)
+      ProtoType.SFIXED32 -> CodeBlock.of("%T.SFIXED32_ARRAY", ProtoAdapter::class)
+      ProtoType.INT64 -> CodeBlock.of("%T.INT64_ARRAY", ProtoAdapter::class)
+      ProtoType.UINT64 -> CodeBlock.of("%T.UINT64_ARRAY", ProtoAdapter::class)
+      ProtoType.SINT64 -> CodeBlock.of("%T.SINT64_ARRAY", ProtoAdapter::class)
+      ProtoType.FIXED64 -> CodeBlock.of("%T.FIXED64_ARRAY", ProtoAdapter::class)
+      ProtoType.SFIXED64 -> CodeBlock.of("%T.SFIXED64_ARRAY", ProtoAdapter::class)
+      ProtoType.FLOAT -> CodeBlock.of("%T.FLOAT_ARRAY", ProtoAdapter::class)
+      ProtoType.DOUBLE -> CodeBlock.of("%T.DOUBLE_ARRAY", ProtoAdapter::class)
+      else -> throw IllegalArgumentException("No Array adapter for $type")
+    }
 
   /** Returns the full name of the class generated for [type].  */
   fun generatedTypeName(type: Type) = type.typeName as ClassName
@@ -1536,7 +1572,7 @@ class KotlinGenerator private constructor(
 
   private fun adapterFor(field: Field) = buildCodeBlock {
     if (field.useArray) {
-      add("%T.FLOAT_ARRAY", ProtoAdapter::class)
+      add(field.arrayAdapterForType)
     } else {
       add("%L", field.getAdapterName())
       if (field.isPacked) {
@@ -1643,7 +1679,7 @@ class KotlinGenerator private constructor(
 
             if (fieldOrOneOf.isPacked && fieldOrOneOf.isScalar) {
               if (fieldOrOneOf.useArray) {
-                addStatement("%1L = %1L?.getTruncatedArray() ?: FloatArray(0),", fieldName)
+                addStatement("%1L = %1L?.getTruncatedArray() ?: %2T(0),", fieldName, fieldOrOneOf.primitiveArrayForType)
               } else {
                 addStatement("%1L = %1L ?: listOf(),", fieldName)
               }
@@ -1735,7 +1771,7 @@ class KotlinGenerator private constructor(
     return CodeBlock.of(
       when {
         field.isPacked && field.isScalar -> {
-          val type = if (field.useArray) "FloatArrayList" else "ArrayList"
+          val type = if (field.useArray) field.arrayListForType.simpleName else "ArrayList"
           buildCodeBlock {
             beginControlFlow("if (%L == null)", fieldName)
             addStatement("val minimumByteSize = ${field.getMinimumByteSize()}")
@@ -1824,7 +1860,7 @@ class KotlinGenerator private constructor(
   private fun Field.redact(fieldName: String): CodeBlock? {
     if (isRedacted) {
       return when {
-        useArray -> CodeBlock.of("FloatArray(0)")
+        useArray -> CodeBlock.of("%T(0)", primitiveArrayForType)
         isRepeated -> CodeBlock.of("emptyList()")
         isMap -> CodeBlock.of("emptyMap()")
         encodeMode!! == EncodeMode.NULL_IF_ABSENT -> CodeBlock.of("null")
@@ -1854,9 +1890,6 @@ class KotlinGenerator private constructor(
   }
 
   private fun Field.getAdapterName(nameDelimiter: Char = '.'): CodeBlock {
-    if (useArray) {
-      return CodeBlock.of("%T.FLOAT", ProtoAdapter::class)
-    }
     return if (type!!.isMap) {
       CodeBlock.of("%N", "${name}Adapter")
     } else {
@@ -2218,7 +2251,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun Field.getDeclaration(allocatedName: String) = when {
-    isPacked && isScalar && useArray -> CodeBlock.of("var %N: %T? = null", allocatedName, FloatArrayList::class)
+    useArray -> CodeBlock.of("var %N: %T? = null", allocatedName, arrayListForType)
     isPacked && isScalar -> CodeBlock.of("var %N: MutableList<%T>? = null", allocatedName, type!!.typeName)
     isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", type!!.typeName)
     isMap -> CodeBlock.of(
@@ -2252,7 +2285,7 @@ class KotlinGenerator private constructor(
       EncodeMode.REPEATED -> List::class.asClassName().parameterizedBy(baseClass)
       EncodeMode.PACKED -> {
         if (useArray) {
-          FloatArray::class.asTypeName()
+          primitiveArrayForType.asTypeName()
         } else {
           List::class.asTypeName().parameterizedBy(baseClass)
         }
@@ -2276,7 +2309,7 @@ class KotlinGenerator private constructor(
           Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
         EncodeMode.PACKED -> {
           when {
-            useArray -> FloatArray::class.asTypeName()
+            useArray -> primitiveArrayForType.asTypeName()
             else -> List::class.asTypeName().parameterizedBy(type.typeName)
           }
         }
@@ -2301,7 +2334,7 @@ class KotlinGenerator private constructor(
         EncodeMode.REPEATED -> CodeBlock.of("emptyList()")
         EncodeMode.PACKED -> {
           if (useArray) {
-            CodeBlock.of("FloatArray(0)")
+            CodeBlock.of("%T(0)", primitiveArrayForType)
           } else {
             CodeBlock.of("emptyList()")
           }

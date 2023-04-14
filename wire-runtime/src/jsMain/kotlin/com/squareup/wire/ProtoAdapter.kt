@@ -160,11 +160,17 @@ actual abstract class ProtoAdapter<E> actual constructor(
     }
 
     actual val BOOL: ProtoAdapter<Boolean> = commonBool()
+
     actual val INT32: ProtoAdapter<Int> = commonInt32()
+    actual val INT32_ARRAY: ProtoAdapter<IntArray> = IntArrayProtoAdapter(INT32)
     actual val UINT32: ProtoAdapter<Int> = commonUint32()
+    actual val UINT32_ARRAY: ProtoAdapter<IntArray> = IntArrayProtoAdapter(UINT32)
     actual val SINT32: ProtoAdapter<Int> = commonSint32()
+    actual val SINT32_ARRAY: ProtoAdapter<IntArray> = IntArrayProtoAdapter(SINT32)
     actual val FIXED32: ProtoAdapter<Int> = commonFixed32()
+    actual val FIXED32_ARRAY: ProtoAdapter<IntArray> = IntArrayProtoAdapter(FIXED32)
     actual val SFIXED32: ProtoAdapter<Int> = commonSfixed32()
+    actual val SFIXED32_ARRAY: ProtoAdapter<IntArray> = IntArrayProtoAdapter(SFIXED32)
     actual val INT64: ProtoAdapter<Long> = commonInt64()
     actual val INT64_ARRAY: ProtoAdapter<LongArray> = LongArrayProtoAdapter(INT64)
     /**
@@ -172,12 +178,17 @@ actual abstract class ProtoAdapter<E> actual constructor(
      * in JSON.
      */
     actual val UINT64: ProtoAdapter<Long> = commonUint64()
+    actual val UINT64_ARRAY: ProtoAdapter<LongArray> = LongArrayProtoAdapter(UINT64)
     actual val SINT64: ProtoAdapter<Long> = commonSint64()
+    actual val SINT64_ARRAY: ProtoAdapter<LongArray> = LongArrayProtoAdapter(SINT64)
     actual val FIXED64: ProtoAdapter<Long> = commonFixed64()
+    actual val FIXED64_ARRAY: ProtoAdapter<LongArray> = LongArrayProtoAdapter(FIXED64)
     actual val SFIXED64: ProtoAdapter<Long> = commonSfixed64()
+    actual val SFIXED64_ARRAY: ProtoAdapter<LongArray> = LongArrayProtoAdapter(SFIXED64)
     actual val FLOAT: ProtoAdapter<Float> = commonFloat()
     actual val FLOAT_ARRAY: ProtoAdapter<FloatArray> = FloatArrayProtoAdapter(FLOAT)
     actual val DOUBLE: ProtoAdapter<Double> = commonDouble()
+    actual val DOUBLE_ARRAY: ProtoAdapter<DoubleArray> = DoubleArrayProtoAdapter(DOUBLE)
     actual val BYTES: ProtoAdapter<ByteString> = commonBytes()
     actual val STRING: ProtoAdapter<String> = commonString()
     actual val DURATION: ProtoAdapter<Duration> = commonDuration()
