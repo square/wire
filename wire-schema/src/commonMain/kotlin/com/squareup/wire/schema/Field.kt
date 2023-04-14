@@ -144,6 +144,12 @@ data class Field(
     if (isPacked && !isPackable(linker, type!!)) {
       linker.errors += "packed=true not permitted on $type"
     }
+    if (useArray && !isPacked) {
+      linker.errors += "wire.use_array=true only permitted on packed fields"
+    }
+    if (useArray && type?.isScalar != true) {
+      linker.errors += "wire.use_array=true only permitted on scalar fields"
+    }
     if (isExtension) {
       if (isRequired) {
         linker.errors += "extension fields cannot be required"
