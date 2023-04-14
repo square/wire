@@ -185,7 +185,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     actual val FIXED64_ARRAY: ProtoAdapter<LongArray> = LongArrayProtoAdapter(FIXED64)
     actual val SFIXED64: ProtoAdapter<Long> = commonSfixed64()
     actual val SFIXED64_ARRAY: ProtoAdapter<LongArray> = LongArrayProtoAdapter(SFIXED64)
-    actual val FLOAT: ProtoAdapter<Float> = commonFloat()
+    actual val FLOAT: FloatProtoAdapter = commonFloat()
     actual val FLOAT_ARRAY: ProtoAdapter<FloatArray> = FloatArrayProtoAdapter(FLOAT)
     actual val DOUBLE: ProtoAdapter<Double> = commonDouble()
     actual val DOUBLE_ARRAY: ProtoAdapter<DoubleArray> = DoubleArrayProtoAdapter(DOUBLE)

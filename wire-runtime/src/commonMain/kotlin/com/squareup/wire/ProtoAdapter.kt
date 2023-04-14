@@ -208,7 +208,7 @@ expect abstract class ProtoAdapter<E>(
     @JvmField val FIXED64_ARRAY: ProtoAdapter<LongArray>
     @JvmField val SFIXED64: ProtoAdapter<Long>
     @JvmField val SFIXED64_ARRAY: ProtoAdapter<LongArray>
-    @JvmField val FLOAT: ProtoAdapter<Float>
+    @JvmField val FLOAT: FloatProtoAdapter
     @JvmField val FLOAT_ARRAY: ProtoAdapter<FloatArray>
     @JvmField val DOUBLE: ProtoAdapter<Double>
     @JvmField val DOUBLE_ARRAY: ProtoAdapter<DoubleArray>
@@ -562,7 +562,7 @@ class LongArrayProtoAdapter(
 }
 
 class FloatArrayProtoAdapter(
-  private val originalAdapter: ProtoAdapter<Float>,
+  private val originalAdapter: FloatProtoAdapter,
 ) : ProtoAdapter<FloatArray>(
   LENGTH_DELIMITED,
   LongArray::class,
@@ -599,19 +599,19 @@ class FloatArrayProtoAdapter(
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: FloatArray) {
     for (i in 0 until value.size) {
-      originalAdapter.encode(writer, value[i])
+      originalAdapter.encodePrimitive(writer, value[i])
     }
   }
 
   @Throws(IOException::class)
   override fun encode(writer: ReverseProtoWriter, value: FloatArray) {
     for (i in (value.size - 1) downTo 0) {
-      originalAdapter.encode(writer, value[i])
+      originalAdapter.encodePrimitive(writer, value[i])
     }
   }
 
   @Throws(IOException::class)
-  override fun decode(reader: ProtoReader): FloatArray = FloatArray(1) { originalAdapter.decode(reader) }
+  override fun decode(reader: ProtoReader): FloatArray = FloatArray(1) { originalAdapter.decodePrimitive(reader) }
 
   override fun redact(value: FloatArray): FloatArray = FloatArray(0)
 }
@@ -1027,33 +1027,52 @@ internal fun commonFixed64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
   override fun redact(value: Long): Long = throw UnsupportedOperationException()
 }
 
-internal fun commonSfixed64() = commonFixed64()
-internal fun commonFloat(): ProtoAdapter<Float> = object : ProtoAdapter<Float>(
+class FloatProtoAdapter : ProtoAdapter<Float>(
   FieldEncoding.FIXED32,
   Float::class,
   null,
   Syntax.PROTO_2,
   0.0f
 ) {
-  override fun encodedSize(value: Float): Int = FIXED_32_SIZE
+  @Throws(IOException::class)
+  fun encodePrimitive(writer: ProtoWriter, value: Float) {
+    writer.writeFixed32(value.toBits())
+  }
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Float) {
+    encodePrimitive(writer, value)
+  }
+
+  @Throws(IOException::class)
+  fun encodePrimitive(writer: ReverseProtoWriter, value: Float) {
     writer.writeFixed32(value.toBits())
   }
 
   @Throws(IOException::class)
   override fun encode(writer: ReverseProtoWriter, value: Float) {
-    writer.writeFixed32(value.toBits())
+    encodePrimitive(writer, value)
+  }
+
+  @Throws(IOException::class)
+  fun decodePrimitive(reader: ProtoReader): Float {
+    return Float.fromBits(reader.readFixed32())
   }
 
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Float {
-    return Float.fromBits(reader.readFixed32())
+    return decodePrimitive(reader)
   }
+
+  fun encodedSizePrimitive(): Int = FIXED_32_SIZE
+
+  override fun encodedSize(value: Float): Int = FIXED_32_SIZE
 
   override fun redact(value: Float): Float = throw UnsupportedOperationException()
 }
+
+internal fun commonSfixed64() = commonFixed64()
+internal fun commonFloat(): FloatProtoAdapter = FloatProtoAdapter()
 
 internal fun commonDouble(): ProtoAdapter<Double> = object : ProtoAdapter<Double>(
   FieldEncoding.FIXED64,
