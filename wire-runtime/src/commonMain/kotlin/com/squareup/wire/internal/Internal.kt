@@ -18,7 +18,13 @@
 
 package com.squareup.wire.internal
 
+import com.squareup.wire.DoubleProtoAdapter
+import com.squareup.wire.FieldEncoding
+import com.squareup.wire.FloatProtoAdapter
+import com.squareup.wire.IntProtoAdapter
+import com.squareup.wire.LongProtoAdapter
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.ReverseProtoWriter
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
@@ -222,4 +228,68 @@ fun boxedOneOfKeyFieldName(oneOfName: String, fieldName: String): String {
 /** Maps [oneOfName] to the companion object field of type `Set` containing the eligible keys.  */
 fun boxedOneOfKeysFieldName(oneOfName: String): String {
   return "${oneOfName}_keys".uppercase()
+}
+
+fun encodeArray(
+  array: LongArray,
+  protoAdapter: LongProtoAdapter,
+  writer: ReverseProtoWriter,
+  tag: Int,
+) {
+  if (array.isNotEmpty()) {
+    val byteCountBefore = writer.byteCount
+    for (i in (array.size - 1) downTo 0) {
+      protoAdapter.encodePrimitive(writer, array[i])
+    }
+    writer.writeVarint32(writer.byteCount - byteCountBefore)
+    writer.writeTag(tag, FieldEncoding.LENGTH_DELIMITED)
+  }
+}
+
+fun encodeArray(
+  array: IntArray,
+  protoAdapter: IntProtoAdapter,
+  writer: ReverseProtoWriter,
+  tag: Int,
+) {
+  if (array.isNotEmpty()) {
+    val byteCountBefore = writer.byteCount
+    for (i in (array.size - 1) downTo 0) {
+      protoAdapter.encodePrimitive(writer, array[i])
+    }
+    writer.writeVarint32(writer.byteCount - byteCountBefore)
+    writer.writeTag(tag, FieldEncoding.LENGTH_DELIMITED)
+  }
+}
+
+fun encodeArray(
+  array: DoubleArray,
+  protoAdapter: DoubleProtoAdapter,
+  writer: ReverseProtoWriter,
+  tag: Int,
+) {
+  if (array.isNotEmpty()) {
+    val byteCountBefore = writer.byteCount
+    for (i in (array.size - 1) downTo 0) {
+      protoAdapter.encodePrimitive(writer, array[i])
+    }
+    writer.writeVarint32(writer.byteCount - byteCountBefore)
+    writer.writeTag(tag, FieldEncoding.LENGTH_DELIMITED)
+  }
+}
+
+fun encodeArray(
+  array: FloatArray,
+  protoAdapter: FloatProtoAdapter,
+  writer: ReverseProtoWriter,
+  tag: Int,
+) {
+  if (array.isNotEmpty()) {
+    val byteCountBefore = writer.byteCount
+    for (i in (array.size - 1) downTo 0) {
+      protoAdapter.encodePrimitive(writer, array[i])
+    }
+    writer.writeVarint32(writer.byteCount - byteCountBefore)
+    writer.writeTag(tag, FieldEncoding.LENGTH_DELIMITED)
+  }
 }

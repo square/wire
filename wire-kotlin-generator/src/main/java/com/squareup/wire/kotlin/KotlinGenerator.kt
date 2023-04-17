@@ -1603,14 +1603,14 @@ class KotlinGenerator private constructor(
           add(fieldEqualsIdentityBlock(field, fieldName))
         }
         if (field.useArray && reverse) {
-          beginControlFlow("if (value.%L.isNotEmpty())", field.name)
-          addStatement("val byteCountBefore%L = writer.byteCount", field.tag)
-          beginControlFlow("for (i in (value.%L.size - 1) downTo 0)", field.name)
-          addStatement("%L.encodePrimitive(writer, value.%L[i])", field.getAdapterName(), field.name)
-          endControlFlow()
-          addStatement("writer.writeVarint32(writer.byteCount - byteCountBefore${field.tag})")
-          addStatement("writer.writeTag(%L, FieldEncoding.LENGTH_DELIMITED)", field.tag)
-          endControlFlow()
+          val encodeArray = MemberName("com.squareup.wire.internal", "encodeArray")
+          addStatement(
+            "%M(value.%L, %L, writer, %L)",
+            encodeArray,
+            fieldName,
+            field.getAdapterName(),
+            field.tag,
+          )
         } else {
           addStatement(
             "%L.encodeWithTag(writer, %L, value.%L)",

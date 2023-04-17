@@ -17,6 +17,7 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
+import com.squareup.wire.`internal`.encodeArray
 import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.missingRequiredFields
 import com.squareup.wire.`internal`.redactElements
@@ -2201,102 +2202,18 @@ public class AllTypes(
         ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32)
         ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32)
         ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32)
-        if (value.array_double.isNotEmpty()) {
-          val byteCountBefore612 = writer.byteCount
-          for (i in (value.array_double.size - 1) downTo 0) {
-            ProtoAdapter.DOUBLE.encodePrimitive(writer, value.array_double[i])
-          }
-          writer.writeVarint32(writer.byteCount - byteCountBefore612)
-          writer.writeTag(612, FieldEncoding.LENGTH_DELIMITED)
-        }
-        if (value.array_float.isNotEmpty()) {
-          val byteCountBefore611 = writer.byteCount
-          for (i in (value.array_float.size - 1) downTo 0) {
-            ProtoAdapter.FLOAT.encodePrimitive(writer, value.array_float[i])
-          }
-          writer.writeVarint32(writer.byteCount - byteCountBefore611)
-          writer.writeTag(611, FieldEncoding.LENGTH_DELIMITED)
-        }
-        if (value.array_sfixed64.isNotEmpty()) {
-          val byteCountBefore610 = writer.byteCount
-          for (i in (value.array_sfixed64.size - 1) downTo 0) {
-            ProtoAdapter.SFIXED64.encodePrimitive(writer, value.array_sfixed64[i])
-          }
-          writer.writeVarint32(writer.byteCount - byteCountBefore610)
-          writer.writeTag(610, FieldEncoding.LENGTH_DELIMITED)
-        }
-        if (value.array_fixed64.isNotEmpty()) {
-          val byteCountBefore609 = writer.byteCount
-          for (i in (value.array_fixed64.size - 1) downTo 0) {
-            ProtoAdapter.FIXED64.encodePrimitive(writer, value.array_fixed64[i])
-          }
-          writer.writeVarint32(writer.byteCount - byteCountBefore609)
-          writer.writeTag(609, FieldEncoding.LENGTH_DELIMITED)
-        }
-        if (value.array_sint64.isNotEmpty()) {
-          val byteCountBefore608 = writer.byteCount
-          for (i in (value.array_sint64.size - 1) downTo 0) {
-            ProtoAdapter.SINT64.encodePrimitive(writer, value.array_sint64[i])
-          }
-          writer.writeVarint32(writer.byteCount - byteCountBefore608)
-          writer.writeTag(608, FieldEncoding.LENGTH_DELIMITED)
-        }
-        if (value.array_uint64.isNotEmpty()) {
-          val byteCountBefore607 = writer.byteCount
-          for (i in (value.array_uint64.size - 1) downTo 0) {
-            ProtoAdapter.UINT64.encodePrimitive(writer, value.array_uint64[i])
-          }
-          writer.writeVarint32(writer.byteCount - byteCountBefore607)
-          writer.writeTag(607, FieldEncoding.LENGTH_DELIMITED)
-        }
-        if (value.array_int64.isNotEmpty()) {
-          val byteCountBefore606 = writer.byteCount
-          for (i in (value.array_int64.size - 1) downTo 0) {
-            ProtoAdapter.INT64.encodePrimitive(writer, value.array_int64[i])
-          }
-          writer.writeVarint32(writer.byteCount - byteCountBefore606)
-          writer.writeTag(606, FieldEncoding.LENGTH_DELIMITED)
-        }
-        if (value.array_sfixed32.isNotEmpty()) {
-          val byteCountBefore605 = writer.byteCount
-          for (i in (value.array_sfixed32.size - 1) downTo 0) {
-            ProtoAdapter.SFIXED32.encodePrimitive(writer, value.array_sfixed32[i])
-          }
-          writer.writeVarint32(writer.byteCount - byteCountBefore605)
-          writer.writeTag(605, FieldEncoding.LENGTH_DELIMITED)
-        }
-        if (value.array_fixed32.isNotEmpty()) {
-          val byteCountBefore604 = writer.byteCount
-          for (i in (value.array_fixed32.size - 1) downTo 0) {
-            ProtoAdapter.FIXED32.encodePrimitive(writer, value.array_fixed32[i])
-          }
-          writer.writeVarint32(writer.byteCount - byteCountBefore604)
-          writer.writeTag(604, FieldEncoding.LENGTH_DELIMITED)
-        }
-        if (value.array_sint32.isNotEmpty()) {
-          val byteCountBefore603 = writer.byteCount
-          for (i in (value.array_sint32.size - 1) downTo 0) {
-            ProtoAdapter.SINT32.encodePrimitive(writer, value.array_sint32[i])
-          }
-          writer.writeVarint32(writer.byteCount - byteCountBefore603)
-          writer.writeTag(603, FieldEncoding.LENGTH_DELIMITED)
-        }
-        if (value.array_uint32.isNotEmpty()) {
-          val byteCountBefore602 = writer.byteCount
-          for (i in (value.array_uint32.size - 1) downTo 0) {
-            ProtoAdapter.UINT32.encodePrimitive(writer, value.array_uint32[i])
-          }
-          writer.writeVarint32(writer.byteCount - byteCountBefore602)
-          writer.writeTag(602, FieldEncoding.LENGTH_DELIMITED)
-        }
-        if (value.array_int32.isNotEmpty()) {
-          val byteCountBefore601 = writer.byteCount
-          for (i in (value.array_int32.size - 1) downTo 0) {
-            ProtoAdapter.INT32.encodePrimitive(writer, value.array_int32[i])
-          }
-          writer.writeVarint32(writer.byteCount - byteCountBefore601)
-          writer.writeTag(601, FieldEncoding.LENGTH_DELIMITED)
-        }
+        encodeArray(value.array_double, ProtoAdapter.DOUBLE, writer, 612)
+        encodeArray(value.array_float, ProtoAdapter.FLOAT, writer, 611)
+        encodeArray(value.array_sfixed64, ProtoAdapter.SFIXED64, writer, 610)
+        encodeArray(value.array_fixed64, ProtoAdapter.FIXED64, writer, 609)
+        encodeArray(value.array_sint64, ProtoAdapter.SINT64, writer, 608)
+        encodeArray(value.array_uint64, ProtoAdapter.UINT64, writer, 607)
+        encodeArray(value.array_int64, ProtoAdapter.INT64, writer, 606)
+        encodeArray(value.array_sfixed32, ProtoAdapter.SFIXED32, writer, 605)
+        encodeArray(value.array_fixed32, ProtoAdapter.FIXED32, writer, 604)
+        encodeArray(value.array_sint32, ProtoAdapter.SINT32, writer, 603)
+        encodeArray(value.array_uint32, ProtoAdapter.UINT32, writer, 602)
+        encodeArray(value.array_int32, ProtoAdapter.INT32, writer, 601)
         map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
         map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
         map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
