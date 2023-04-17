@@ -38,6 +38,5 @@ class LongArrayList(initialCapacity: Int) {
     }
   }
 
-  override fun toString(): String =
-    (0 until size).joinToString(", ", "[", "]") { data[it].toString() }
+  override fun toString(): String = data.copyOf(size).contentToString()
 }

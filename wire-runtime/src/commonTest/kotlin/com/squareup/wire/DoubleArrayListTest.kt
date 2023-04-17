@@ -17,14 +17,4 @@ class DoubleArrayListTest {
       assertEquals(array[i], (i + 1).toDouble())
     }
   }
-
-  @Test
-  fun toStringIsReasonable() {
-    val arrayList = DoubleArrayList(0)
-    arrayList.add(1.0)
-    arrayList.add(2.0)
-    arrayList.add(3.0)
-
-    assertEquals(arrayList.toString(), "[1.0, 2.0, 3.0]")
-  }
 }

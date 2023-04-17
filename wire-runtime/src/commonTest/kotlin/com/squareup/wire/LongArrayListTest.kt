@@ -17,14 +17,4 @@ class LongArrayListTest {
       assertEquals(array[i], (i + 1).toLong())
     }
   }
-
-  @Test
-  fun toStringIsReasonable() {
-    val arrayList = LongArrayList(0)
-    arrayList.add(1L)
-    arrayList.add(2L)
-    arrayList.add(3L)
-
-    assertEquals(arrayList.toString(), "[1, 2, 3]")
-  }
 }

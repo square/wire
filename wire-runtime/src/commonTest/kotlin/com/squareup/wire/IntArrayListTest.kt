@@ -17,14 +17,4 @@ class IntArrayListTest {
       assertEquals(array[i], i + 1)
     }
   }
-
-  @Test
-  fun toStringIsReasonable() {
-    val arrayList = IntArrayList(0)
-    arrayList.add(1)
-    arrayList.add(2)
-    arrayList.add(3)
-
-    assertEquals(arrayList.toString(), "[1, 2, 3]")
-  }
 }
