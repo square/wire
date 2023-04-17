@@ -160,7 +160,7 @@ class KotlinGenerator private constructor(
     get() = type.typeName
   private val Service.serviceName
     get() = type.typeName
-  private val Field.primitiveArrayForType
+  private val Field.primitiveArrayClassForType
     get() = when (type!!.typeName) {
       LONG -> LongArray::class
       INT -> IntArray::class
@@ -168,7 +168,15 @@ class KotlinGenerator private constructor(
       DOUBLE -> DoubleArray::class
       else -> throw IllegalArgumentException("No Array type for $type")
     }
-  private val Field.arrayListForType
+  private val Field.emptyPrimitiveArrayForType
+    get() = when (type!!.typeName) {
+      LONG -> CodeBlock.of("longArrayOf()")
+      INT -> CodeBlock.of("intArrayOf()")
+      FLOAT -> CodeBlock.of("floatArrayOf()")
+      DOUBLE -> CodeBlock.of("doubleArrayOf()")
+      else -> throw IllegalArgumentException("No Array type for $type")
+    }
+  private val Field.arrayListClassForType
     get() = when (type!!.typeName) {
       LONG -> LongArrayList::class
       INT -> IntArrayList::class
@@ -1594,12 +1602,23 @@ class KotlinGenerator private constructor(
         if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
           add(fieldEqualsIdentityBlock(field, fieldName))
         }
-        addStatement(
-          "%L.encodeWithTag(writer, %L, value.%L)",
-          adapterFor(field),
-          field.tag,
-          fieldName
-        )
+        if (field.useArray && reverse) {
+          beginControlFlow("if (value.%L.isNotEmpty())", field.name)
+          addStatement("val byteCountBefore%L = writer.byteCount", field.tag)
+          beginControlFlow("for (i in (value.%L.size - 1) downTo 0)", field.name)
+          addStatement("%L.encodePrimitive(writer, value.%L[i])", field.getAdapterName(), field.name)
+          endControlFlow()
+          addStatement("writer.writeVarint32(writer.byteCount - byteCountBefore${field.tag})")
+          addStatement("writer.writeTag(%L, FieldEncoding.LENGTH_DELIMITED)", field.tag)
+          endControlFlow()
+        } else {
+          addStatement(
+            "%L.encodeWithTag(writer, %L, value.%L)",
+            adapterFor(field),
+            field.tag,
+            fieldName
+          )
+        }
       }
     }
     for (boxOneOf in message.boxOneOfs()) {
@@ -1679,7 +1698,7 @@ class KotlinGenerator private constructor(
 
             if (fieldOrOneOf.isPacked && fieldOrOneOf.isScalar) {
               if (fieldOrOneOf.useArray) {
-                addStatement("%1L = %1L?.getTruncatedArray() ?: %2T(0),", fieldName, fieldOrOneOf.primitiveArrayForType)
+                addStatement("%1L = %1L?.getTruncatedArray() ?: %2L,", fieldName, fieldOrOneOf.emptyPrimitiveArrayForType)
               } else {
                 addStatement("%1L = %1L ?: listOf(),", fieldName)
               }
@@ -1767,11 +1786,15 @@ class KotlinGenerator private constructor(
   }
 
   private fun decodeAndAssign(field: Field, fieldName: String, adapterName: CodeBlock): CodeBlock {
-    val decode = CodeBlock.of("%L.decode(reader)", adapterName)
+    val decode = CodeBlock.of(
+      "%L.%L(reader)",
+      adapterName,
+      if (field.useArray) "decodePrimitive" else "decode",
+    )
     return CodeBlock.of(
       when {
         field.isPacked && field.isScalar -> {
-          val type = if (field.useArray) field.arrayListForType.simpleName else "ArrayList"
+          val type = if (field.useArray) field.arrayListClassForType.simpleName else "ArrayList"
           buildCodeBlock {
             beginControlFlow("if (%L == null)", fieldName)
             addStatement("val minimumByteSize = ${field.getMinimumByteSize()}")
@@ -1860,7 +1883,7 @@ class KotlinGenerator private constructor(
   private fun Field.redact(fieldName: String): CodeBlock? {
     if (isRedacted) {
       return when {
-        useArray -> CodeBlock.of("%T(0)", primitiveArrayForType)
+        useArray -> emptyPrimitiveArrayForType
         isRepeated -> CodeBlock.of("emptyList()")
         isMap -> CodeBlock.of("emptyMap()")
         encodeMode!! == EncodeMode.NULL_IF_ABSENT -> CodeBlock.of("null")
@@ -2251,7 +2274,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun Field.getDeclaration(allocatedName: String) = when {
-    useArray -> CodeBlock.of("var %N: %T? = null", allocatedName, arrayListForType)
+    useArray -> CodeBlock.of("var %N: %T? = null", allocatedName, arrayListClassForType)
     isPacked && isScalar -> CodeBlock.of("var %N: MutableList<%T>? = null", allocatedName, type!!.typeName)
     isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", type!!.typeName)
     isMap -> CodeBlock.of(
@@ -2285,7 +2308,7 @@ class KotlinGenerator private constructor(
       EncodeMode.REPEATED -> List::class.asClassName().parameterizedBy(baseClass)
       EncodeMode.PACKED -> {
         if (useArray) {
-          primitiveArrayForType.asTypeName()
+          primitiveArrayClassForType.asTypeName()
         } else {
           List::class.asTypeName().parameterizedBy(baseClass)
         }
@@ -2309,7 +2332,7 @@ class KotlinGenerator private constructor(
           Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
         EncodeMode.PACKED -> {
           when {
-            useArray -> primitiveArrayForType.asTypeName()
+            useArray -> primitiveArrayClassForType.asTypeName()
             else -> List::class.asTypeName().parameterizedBy(type.typeName)
           }
         }
@@ -2334,7 +2357,7 @@ class KotlinGenerator private constructor(
         EncodeMode.REPEATED -> CodeBlock.of("emptyList()")
         EncodeMode.PACKED -> {
           if (useArray) {
-            CodeBlock.of("%T(0)", primitiveArrayForType)
+            emptyPrimitiveArrayForType
           } else {
             CodeBlock.of("emptyList()")
           }

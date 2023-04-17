@@ -401,84 +401,84 @@ public class AllTypes(
     label = WireField.Label.PACKED,
   )
   @JvmField
-  public val array_int32: IntArray = IntArray(0),
+  public val array_int32: IntArray = intArrayOf(),
   @field:WireField(
     tag = 602,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.PACKED,
   )
   @JvmField
-  public val array_uint32: IntArray = IntArray(0),
+  public val array_uint32: IntArray = intArrayOf(),
   @field:WireField(
     tag = 603,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.PACKED,
   )
   @JvmField
-  public val array_sint32: IntArray = IntArray(0),
+  public val array_sint32: IntArray = intArrayOf(),
   @field:WireField(
     tag = 604,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.PACKED,
   )
   @JvmField
-  public val array_fixed32: IntArray = IntArray(0),
+  public val array_fixed32: IntArray = intArrayOf(),
   @field:WireField(
     tag = 605,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.PACKED,
   )
   @JvmField
-  public val array_sfixed32: IntArray = IntArray(0),
+  public val array_sfixed32: IntArray = intArrayOf(),
   @field:WireField(
     tag = 606,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.PACKED,
   )
   @JvmField
-  public val array_int64: LongArray = LongArray(0),
+  public val array_int64: LongArray = longArrayOf(),
   @field:WireField(
     tag = 607,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.PACKED,
   )
   @JvmField
-  public val array_uint64: LongArray = LongArray(0),
+  public val array_uint64: LongArray = longArrayOf(),
   @field:WireField(
     tag = 608,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.PACKED,
   )
   @JvmField
-  public val array_sint64: LongArray = LongArray(0),
+  public val array_sint64: LongArray = longArrayOf(),
   @field:WireField(
     tag = 609,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.PACKED,
   )
   @JvmField
-  public val array_fixed64: LongArray = LongArray(0),
+  public val array_fixed64: LongArray = longArrayOf(),
   @field:WireField(
     tag = 610,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.PACKED,
   )
   @JvmField
-  public val array_sfixed64: LongArray = LongArray(0),
+  public val array_sfixed64: LongArray = longArrayOf(),
   @field:WireField(
     tag = 611,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.PACKED,
   )
   @JvmField
-  public val array_float: FloatArray = FloatArray(0),
+  public val array_float: FloatArray = floatArrayOf(),
   @field:WireField(
     tag = 612,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.PACKED,
   )
   @JvmField
-  public val array_double: DoubleArray = DoubleArray(0),
+  public val array_double: DoubleArray = doubleArrayOf(),
   /**
    * Extension source: all_types.proto
    */
@@ -2336,40 +2336,40 @@ public class AllTypes(
     public var map_string_enum: Map<String, NestedEnum> = emptyMap()
 
     @JvmField
-    public var array_int32: IntArray = IntArray(0)
+    public var array_int32: IntArray = intArrayOf()
 
     @JvmField
-    public var array_uint32: IntArray = IntArray(0)
+    public var array_uint32: IntArray = intArrayOf()
 
     @JvmField
-    public var array_sint32: IntArray = IntArray(0)
+    public var array_sint32: IntArray = intArrayOf()
 
     @JvmField
-    public var array_fixed32: IntArray = IntArray(0)
+    public var array_fixed32: IntArray = intArrayOf()
 
     @JvmField
-    public var array_sfixed32: IntArray = IntArray(0)
+    public var array_sfixed32: IntArray = intArrayOf()
 
     @JvmField
-    public var array_int64: LongArray = LongArray(0)
+    public var array_int64: LongArray = longArrayOf()
 
     @JvmField
-    public var array_uint64: LongArray = LongArray(0)
+    public var array_uint64: LongArray = longArrayOf()
 
     @JvmField
-    public var array_sint64: LongArray = LongArray(0)
+    public var array_sint64: LongArray = longArrayOf()
 
     @JvmField
-    public var array_fixed64: LongArray = LongArray(0)
+    public var array_fixed64: LongArray = longArrayOf()
 
     @JvmField
-    public var array_sfixed64: LongArray = LongArray(0)
+    public var array_sfixed64: LongArray = longArrayOf()
 
     @JvmField
-    public var array_float: FloatArray = FloatArray(0)
+    public var array_float: FloatArray = floatArrayOf()
 
     @JvmField
-    public var array_double: DoubleArray = DoubleArray(0)
+    public var array_double: DoubleArray = doubleArrayOf()
 
     @JvmField
     public var ext_opt_int32: Int? = null
@@ -3862,18 +3862,102 @@ public class AllTypes(
         ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32)
         ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32)
         ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32)
-        ProtoAdapter.DOUBLE_ARRAY.encodeWithTag(writer, 612, value.array_double)
-        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 611, value.array_float)
-        ProtoAdapter.SFIXED64_ARRAY.encodeWithTag(writer, 610, value.array_sfixed64)
-        ProtoAdapter.FIXED64_ARRAY.encodeWithTag(writer, 609, value.array_fixed64)
-        ProtoAdapter.SINT64_ARRAY.encodeWithTag(writer, 608, value.array_sint64)
-        ProtoAdapter.UINT64_ARRAY.encodeWithTag(writer, 607, value.array_uint64)
-        ProtoAdapter.INT64_ARRAY.encodeWithTag(writer, 606, value.array_int64)
-        ProtoAdapter.SFIXED32_ARRAY.encodeWithTag(writer, 605, value.array_sfixed32)
-        ProtoAdapter.FIXED32_ARRAY.encodeWithTag(writer, 604, value.array_fixed32)
-        ProtoAdapter.SINT32_ARRAY.encodeWithTag(writer, 603, value.array_sint32)
-        ProtoAdapter.UINT32_ARRAY.encodeWithTag(writer, 602, value.array_uint32)
-        ProtoAdapter.INT32_ARRAY.encodeWithTag(writer, 601, value.array_int32)
+        if (value.array_double.isNotEmpty()) {
+          val byteCountBefore612 = writer.byteCount
+          for (i in (value.array_double.size - 1) downTo 0) {
+            ProtoAdapter.DOUBLE.encodePrimitive(writer, value.array_double[i])
+          }
+          writer.writeVarint32(writer.byteCount - byteCountBefore612)
+          writer.writeTag(612, FieldEncoding.LENGTH_DELIMITED)
+        }
+        if (value.array_float.isNotEmpty()) {
+          val byteCountBefore611 = writer.byteCount
+          for (i in (value.array_float.size - 1) downTo 0) {
+            ProtoAdapter.FLOAT.encodePrimitive(writer, value.array_float[i])
+          }
+          writer.writeVarint32(writer.byteCount - byteCountBefore611)
+          writer.writeTag(611, FieldEncoding.LENGTH_DELIMITED)
+        }
+        if (value.array_sfixed64.isNotEmpty()) {
+          val byteCountBefore610 = writer.byteCount
+          for (i in (value.array_sfixed64.size - 1) downTo 0) {
+            ProtoAdapter.SFIXED64.encodePrimitive(writer, value.array_sfixed64[i])
+          }
+          writer.writeVarint32(writer.byteCount - byteCountBefore610)
+          writer.writeTag(610, FieldEncoding.LENGTH_DELIMITED)
+        }
+        if (value.array_fixed64.isNotEmpty()) {
+          val byteCountBefore609 = writer.byteCount
+          for (i in (value.array_fixed64.size - 1) downTo 0) {
+            ProtoAdapter.FIXED64.encodePrimitive(writer, value.array_fixed64[i])
+          }
+          writer.writeVarint32(writer.byteCount - byteCountBefore609)
+          writer.writeTag(609, FieldEncoding.LENGTH_DELIMITED)
+        }
+        if (value.array_sint64.isNotEmpty()) {
+          val byteCountBefore608 = writer.byteCount
+          for (i in (value.array_sint64.size - 1) downTo 0) {
+            ProtoAdapter.SINT64.encodePrimitive(writer, value.array_sint64[i])
+          }
+          writer.writeVarint32(writer.byteCount - byteCountBefore608)
+          writer.writeTag(608, FieldEncoding.LENGTH_DELIMITED)
+        }
+        if (value.array_uint64.isNotEmpty()) {
+          val byteCountBefore607 = writer.byteCount
+          for (i in (value.array_uint64.size - 1) downTo 0) {
+            ProtoAdapter.UINT64.encodePrimitive(writer, value.array_uint64[i])
+          }
+          writer.writeVarint32(writer.byteCount - byteCountBefore607)
+          writer.writeTag(607, FieldEncoding.LENGTH_DELIMITED)
+        }
+        if (value.array_int64.isNotEmpty()) {
+          val byteCountBefore606 = writer.byteCount
+          for (i in (value.array_int64.size - 1) downTo 0) {
+            ProtoAdapter.INT64.encodePrimitive(writer, value.array_int64[i])
+          }
+          writer.writeVarint32(writer.byteCount - byteCountBefore606)
+          writer.writeTag(606, FieldEncoding.LENGTH_DELIMITED)
+        }
+        if (value.array_sfixed32.isNotEmpty()) {
+          val byteCountBefore605 = writer.byteCount
+          for (i in (value.array_sfixed32.size - 1) downTo 0) {
+            ProtoAdapter.SFIXED32.encodePrimitive(writer, value.array_sfixed32[i])
+          }
+          writer.writeVarint32(writer.byteCount - byteCountBefore605)
+          writer.writeTag(605, FieldEncoding.LENGTH_DELIMITED)
+        }
+        if (value.array_fixed32.isNotEmpty()) {
+          val byteCountBefore604 = writer.byteCount
+          for (i in (value.array_fixed32.size - 1) downTo 0) {
+            ProtoAdapter.FIXED32.encodePrimitive(writer, value.array_fixed32[i])
+          }
+          writer.writeVarint32(writer.byteCount - byteCountBefore604)
+          writer.writeTag(604, FieldEncoding.LENGTH_DELIMITED)
+        }
+        if (value.array_sint32.isNotEmpty()) {
+          val byteCountBefore603 = writer.byteCount
+          for (i in (value.array_sint32.size - 1) downTo 0) {
+            ProtoAdapter.SINT32.encodePrimitive(writer, value.array_sint32[i])
+          }
+          writer.writeVarint32(writer.byteCount - byteCountBefore603)
+          writer.writeTag(603, FieldEncoding.LENGTH_DELIMITED)
+        }
+        if (value.array_uint32.isNotEmpty()) {
+          val byteCountBefore602 = writer.byteCount
+          for (i in (value.array_uint32.size - 1) downTo 0) {
+            ProtoAdapter.UINT32.encodePrimitive(writer, value.array_uint32[i])
+          }
+          writer.writeVarint32(writer.byteCount - byteCountBefore602)
+          writer.writeTag(602, FieldEncoding.LENGTH_DELIMITED)
+        }
+        if (value.array_int32.isNotEmpty()) {
+          val byteCountBefore601 = writer.byteCount
+          for (i in (value.array_int32.size - 1) downTo 0) {
+            ProtoAdapter.INT32.encodePrimitive(writer, value.array_int32[i])
+          }
+          writer.writeVarint32(writer.byteCount - byteCountBefore601)
+          writer.writeTag(601, FieldEncoding.LENGTH_DELIMITED)
+        }
         map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
         map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
         map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
@@ -4339,7 +4423,7 @@ public class AllTypes(
                   .toInt()
                 array_int32 = IntArrayList(initialCapacity)
               }
-              array_int32!!.add(com.squareup.wire.ProtoAdapter.INT32.decode(reader))
+              array_int32!!.add(com.squareup.wire.ProtoAdapter.INT32.decodePrimitive(reader))
             }
             602 -> {
               if (array_uint32 == null) {
@@ -4349,7 +4433,7 @@ public class AllTypes(
                   .toInt()
                 array_uint32 = IntArrayList(initialCapacity)
               }
-              array_uint32!!.add(com.squareup.wire.ProtoAdapter.UINT32.decode(reader))
+              array_uint32!!.add(com.squareup.wire.ProtoAdapter.UINT32.decodePrimitive(reader))
             }
             603 -> {
               if (array_sint32 == null) {
@@ -4359,7 +4443,7 @@ public class AllTypes(
                   .toInt()
                 array_sint32 = IntArrayList(initialCapacity)
               }
-              array_sint32!!.add(com.squareup.wire.ProtoAdapter.SINT32.decode(reader))
+              array_sint32!!.add(com.squareup.wire.ProtoAdapter.SINT32.decodePrimitive(reader))
             }
             604 -> {
               if (array_fixed32 == null) {
@@ -4369,7 +4453,7 @@ public class AllTypes(
                   .toInt()
                 array_fixed32 = IntArrayList(initialCapacity)
               }
-              array_fixed32!!.add(com.squareup.wire.ProtoAdapter.FIXED32.decode(reader))
+              array_fixed32!!.add(com.squareup.wire.ProtoAdapter.FIXED32.decodePrimitive(reader))
             }
             605 -> {
               if (array_sfixed32 == null) {
@@ -4379,7 +4463,7 @@ public class AllTypes(
                   .toInt()
                 array_sfixed32 = IntArrayList(initialCapacity)
               }
-              array_sfixed32!!.add(com.squareup.wire.ProtoAdapter.SFIXED32.decode(reader))
+              array_sfixed32!!.add(com.squareup.wire.ProtoAdapter.SFIXED32.decodePrimitive(reader))
             }
             606 -> {
               if (array_int64 == null) {
@@ -4389,7 +4473,7 @@ public class AllTypes(
                   .toInt()
                 array_int64 = LongArrayList(initialCapacity)
               }
-              array_int64!!.add(com.squareup.wire.ProtoAdapter.INT64.decode(reader))
+              array_int64!!.add(com.squareup.wire.ProtoAdapter.INT64.decodePrimitive(reader))
             }
             607 -> {
               if (array_uint64 == null) {
@@ -4399,7 +4483,7 @@ public class AllTypes(
                   .toInt()
                 array_uint64 = LongArrayList(initialCapacity)
               }
-              array_uint64!!.add(com.squareup.wire.ProtoAdapter.UINT64.decode(reader))
+              array_uint64!!.add(com.squareup.wire.ProtoAdapter.UINT64.decodePrimitive(reader))
             }
             608 -> {
               if (array_sint64 == null) {
@@ -4409,7 +4493,7 @@ public class AllTypes(
                   .toInt()
                 array_sint64 = LongArrayList(initialCapacity)
               }
-              array_sint64!!.add(com.squareup.wire.ProtoAdapter.SINT64.decode(reader))
+              array_sint64!!.add(com.squareup.wire.ProtoAdapter.SINT64.decodePrimitive(reader))
             }
             609 -> {
               if (array_fixed64 == null) {
@@ -4419,7 +4503,7 @@ public class AllTypes(
                   .toInt()
                 array_fixed64 = LongArrayList(initialCapacity)
               }
-              array_fixed64!!.add(com.squareup.wire.ProtoAdapter.FIXED64.decode(reader))
+              array_fixed64!!.add(com.squareup.wire.ProtoAdapter.FIXED64.decodePrimitive(reader))
             }
             610 -> {
               if (array_sfixed64 == null) {
@@ -4429,7 +4513,7 @@ public class AllTypes(
                   .toInt()
                 array_sfixed64 = LongArrayList(initialCapacity)
               }
-              array_sfixed64!!.add(com.squareup.wire.ProtoAdapter.SFIXED64.decode(reader))
+              array_sfixed64!!.add(com.squareup.wire.ProtoAdapter.SFIXED64.decodePrimitive(reader))
             }
             611 -> {
               if (array_float == null) {
@@ -4439,7 +4523,7 @@ public class AllTypes(
                   .toInt()
                 array_float = FloatArrayList(initialCapacity)
               }
-              array_float!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+              array_float!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decodePrimitive(reader))
             }
             612 -> {
               if (array_double == null) {
@@ -4449,7 +4533,7 @@ public class AllTypes(
                   .toInt()
                 array_double = DoubleArrayList(initialCapacity)
               }
-              array_double!!.add(com.squareup.wire.ProtoAdapter.DOUBLE.decode(reader))
+              array_double!!.add(com.squareup.wire.ProtoAdapter.DOUBLE.decodePrimitive(reader))
             }
             1001 -> ext_opt_int32 = ProtoAdapter.INT32.decode(reader)
             1002 -> ext_opt_uint32 = ProtoAdapter.UINT32.decode(reader)
@@ -4719,18 +4803,18 @@ public class AllTypes(
           map_string_string = map_string_string,
           map_string_message = map_string_message,
           map_string_enum = map_string_enum,
-          array_int32 = array_int32?.getTruncatedArray() ?: IntArray(0),
-          array_uint32 = array_uint32?.getTruncatedArray() ?: IntArray(0),
-          array_sint32 = array_sint32?.getTruncatedArray() ?: IntArray(0),
-          array_fixed32 = array_fixed32?.getTruncatedArray() ?: IntArray(0),
-          array_sfixed32 = array_sfixed32?.getTruncatedArray() ?: IntArray(0),
-          array_int64 = array_int64?.getTruncatedArray() ?: LongArray(0),
-          array_uint64 = array_uint64?.getTruncatedArray() ?: LongArray(0),
-          array_sint64 = array_sint64?.getTruncatedArray() ?: LongArray(0),
-          array_fixed64 = array_fixed64?.getTruncatedArray() ?: LongArray(0),
-          array_sfixed64 = array_sfixed64?.getTruncatedArray() ?: LongArray(0),
-          array_float = array_float?.getTruncatedArray() ?: FloatArray(0),
-          array_double = array_double?.getTruncatedArray() ?: DoubleArray(0),
+          array_int32 = array_int32?.getTruncatedArray() ?: intArrayOf(),
+          array_uint32 = array_uint32?.getTruncatedArray() ?: intArrayOf(),
+          array_sint32 = array_sint32?.getTruncatedArray() ?: intArrayOf(),
+          array_fixed32 = array_fixed32?.getTruncatedArray() ?: intArrayOf(),
+          array_sfixed32 = array_sfixed32?.getTruncatedArray() ?: intArrayOf(),
+          array_int64 = array_int64?.getTruncatedArray() ?: longArrayOf(),
+          array_uint64 = array_uint64?.getTruncatedArray() ?: longArrayOf(),
+          array_sint64 = array_sint64?.getTruncatedArray() ?: longArrayOf(),
+          array_fixed64 = array_fixed64?.getTruncatedArray() ?: longArrayOf(),
+          array_sfixed64 = array_sfixed64?.getTruncatedArray() ?: longArrayOf(),
+          array_float = array_float?.getTruncatedArray() ?: floatArrayOf(),
+          array_double = array_double?.getTruncatedArray() ?: doubleArrayOf(),
           ext_opt_int32 = ext_opt_int32,
           ext_opt_uint32 = ext_opt_uint32,
           ext_opt_sint32 = ext_opt_sint32,
