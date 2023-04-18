@@ -1,4 +1,4 @@
-package com.squareup.wire
+package com.squareup.wire.internal
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -16,5 +16,15 @@ class LongArrayListTest {
     for (i in 0..2) {
       assertEquals(array[i], (i + 1).toLong())
     }
+  }
+
+  @Test
+  fun getStringDelegatesToTheUnderlyingArray() {
+    val arrayList = LongArrayList(0)
+    arrayList.add(1L)
+    arrayList.add(2L)
+    arrayList.add(3L)
+
+    assertEquals(arrayList.toString(), longArrayOf(1L, 2L, 3L).contentToString())
   }
 }

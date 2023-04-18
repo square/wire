@@ -1,33 +1,33 @@
-package com.squareup.wire
+package com.squareup.wire.internal
 
 /**
  * Inspired by org.jetbrains.kotlin.utils.IntArrayList
  *
- * Offers a nice wrapper around DoubleArray, that handles resizing the underlying array as needed and
+ * Offers a nice wrapper around LongArray, that handles resizing the underlying array as needed and
  * provides a trimToSize() method to truncate the underlying array to the current number of elements.
  */
-class DoubleArrayList(initialCapacity: Int) {
-  private var data = DoubleArray(initialCapacity)
+class LongArrayList(initialCapacity: Int) {
+  private var data = LongArray(initialCapacity)
   private var size = 0
 
   /**
-   * Returns the underlying DoubleArray, truncating as necessary so that the returned array has
+   * Returns the underlying LongArray, truncating as necessary so that the returned array has
    * the same size as the number of elements in it.
    *
    * Because this method truncates the underlying array, it should only be called after all
    * elements have been added to the list, otherwise the next call to add() will cause the
    * array to be resized.
    */
-  fun getTruncatedArray(): DoubleArray {
+  fun getTruncatedArray(): LongArray {
     if (size < data.size) {
       data = data.copyOf(size)
     }
     return data
   }
 
-  fun add(double: Double) {
+  fun add(long: Long) {
     ensureCapacity(size + 1)
-    data[size++] = double
+    data[size++] = long
   }
 
   fun isNotEmpty() : Boolean = size > 0

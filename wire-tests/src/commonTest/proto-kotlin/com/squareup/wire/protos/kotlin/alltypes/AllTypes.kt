@@ -2,12 +2,8 @@
 // Source: squareup.protos.kotlin.alltypes.AllTypes in all_types.proto
 package com.squareup.wire.protos.kotlin.alltypes
 
-import com.squareup.wire.DoubleArrayList
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
-import com.squareup.wire.FloatArrayList
-import com.squareup.wire.IntArrayList
-import com.squareup.wire.LongArrayList
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
@@ -17,6 +13,10 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
+import com.squareup.wire.`internal`.DoubleArrayList
+import com.squareup.wire.`internal`.FloatArrayList
+import com.squareup.wire.`internal`.IntArrayList
+import com.squareup.wire.`internal`.LongArrayList
 import com.squareup.wire.`internal`.encodeArray
 import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.missingRequiredFields

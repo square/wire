@@ -1,4 +1,4 @@
-package com.squareup.wire
+package com.squareup.wire.internal
 
 /**
  * Inspired by org.jetbrains.kotlin.utils.IntArrayList
