@@ -19,10 +19,10 @@ option java_package = "com.squareup.wire.protos.person";
 option java_outer_classname = "PersonProtos";
 
 message Person {
-  // The customer's full name.
-  required string name = 1;
   // The customer's ID number.
   required int32 id = 2;
+  // The customer's full name.
+  required string name = 1;
   // Email address for the customer.
   optional string email = 3;
 

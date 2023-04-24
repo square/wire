@@ -31,21 +31,11 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
 
   private static final long serialVersionUID = 0L;
 
-  public static final String DEFAULT_NAME = "";
-
   public static final Integer DEFAULT_ID = 0;
 
-  public static final String DEFAULT_EMAIL = "";
+  public static final String DEFAULT_NAME = "";
 
-  /**
-   * The customer's full name.
-   */
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REQUIRED
-  )
-  public final String name;
+  public static final String DEFAULT_EMAIL = "";
 
   /**
    * The customer's ID number.
@@ -56,6 +46,16 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
       label = WireField.Label.REQUIRED
   )
   public final Integer id;
+
+  /**
+   * The customer's full name.
+   */
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REQUIRED
+  )
+  public final String name;
 
   /**
    * Email address for the customer.
@@ -83,16 +83,16 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   )
   public final List<String> aliases;
 
-  public Person(String name, Integer id, String email, List<PhoneNumber> phone,
+  public Person(Integer id, String name, String email, List<PhoneNumber> phone,
       List<String> aliases) {
-    this(name, id, email, phone, aliases, ByteString.EMPTY);
+    this(id, name, email, phone, aliases, ByteString.EMPTY);
   }
 
-  public Person(String name, Integer id, String email, List<PhoneNumber> phone,
+  public Person(Integer id, String name, String email, List<PhoneNumber> phone,
       List<String> aliases, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
-    this.name = name;
     this.id = id;
+    this.name = name;
     this.email = email;
     this.phone = Internal.immutableCopyOf("phone", phone);
     this.aliases = Internal.immutableCopyOf("aliases", aliases);
@@ -101,8 +101,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.name = name;
     builder.id = id;
+    builder.name = name;
     builder.email = email;
     builder.phone = Internal.copyOf(phone);
     builder.aliases = Internal.copyOf(aliases);
@@ -116,8 +116,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
     if (!(other instanceof Person)) return false;
     Person o = (Person) other;
     return unknownFields().equals(o.unknownFields())
-        && name.equals(o.name)
         && id.equals(o.id)
+        && name.equals(o.name)
         && Internal.equals(email, o.email)
         && phone.equals(o.phone)
         && aliases.equals(o.aliases);
@@ -128,8 +128,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + name.hashCode();
       result = result * 37 + id.hashCode();
+      result = result * 37 + name.hashCode();
       result = result * 37 + (email != null ? email.hashCode() : 0);
       result = result * 37 + phone.hashCode();
       result = result * 37 + aliases.hashCode();
@@ -141,8 +141,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append(", name=").append(Internal.sanitize(name));
     builder.append(", id=").append(id);
+    builder.append(", name=").append(Internal.sanitize(name));
     if (email != null) builder.append(", email=").append(Internal.sanitize(email));
     if (!phone.isEmpty()) builder.append(", phone=").append(phone);
     if (!aliases.isEmpty()) builder.append(", aliases=").append(Internal.sanitize(aliases));
@@ -150,9 +150,9 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   }
 
   public static final class Builder extends Message.Builder<Person, Builder> {
-    public String name;
-
     public Integer id;
+
+    public String name;
 
     public String email;
 
@@ -166,18 +166,18 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
     }
 
     /**
-     * The customer's full name.
-     */
-    public Builder name(String name) {
-      this.name = name;
-      return this;
-    }
-
-    /**
      * The customer's ID number.
      */
     public Builder id(Integer id) {
       this.id = id;
+      return this;
+    }
+
+    /**
+     * The customer's full name.
+     */
+    public Builder name(String name) {
+      this.name = name;
       return this;
     }
 
@@ -206,12 +206,12 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
 
     @Override
     public Person build() {
-      if (name == null
-          || id == null) {
-        throw Internal.missingRequiredFields(name, "name",
-            id, "id");
+      if (id == null
+          || name == null) {
+        throw Internal.missingRequiredFields(id, "id",
+            name, "name");
       }
-      return new Person(name, id, email, phone, aliases, super.buildUnknownFields());
+      return new Person(id, name, email, phone, aliases, super.buildUnknownFields());
     }
   }
 
@@ -443,8 +443,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
     @Override
     public int encodedSize(Person value) {
       int result = 0;
-      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name);
       result += ProtoAdapter.INT32.encodedSizeWithTag(2, value.id);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name);
       result += ProtoAdapter.STRING.encodedSizeWithTag(3, value.email);
       result += PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone);
       result += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.aliases);
@@ -454,8 +454,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
 
     @Override
     public void encode(ProtoWriter writer, Person value) throws IOException {
-      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
       ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
       ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
       PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
       ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases);
@@ -468,8 +468,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
       ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases);
       PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
       ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
-      ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
       ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
     }
 
     @Override

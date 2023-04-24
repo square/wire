@@ -34,6 +34,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "myInt32",
+    schemaIndex = 0,
   )
   @JvmField
   public val my_int32: Int = 0,
@@ -42,6 +43,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "myUint32",
+    schemaIndex = 1,
   )
   @JvmField
   public val my_uint32: Int = 0,
@@ -50,6 +52,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "mySint32",
+    schemaIndex = 2,
   )
   @JvmField
   public val my_sint32: Int = 0,
@@ -58,6 +61,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "myFixed32",
+    schemaIndex = 3,
   )
   @JvmField
   public val my_fixed32: Int = 0,
@@ -66,6 +70,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "mySfixed32",
+    schemaIndex = 4,
   )
   @JvmField
   public val my_sfixed32: Int = 0,
@@ -84,6 +89,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     jsonName = "oneofInt32",
     oneofName = "choice",
+    schemaIndex = 15,
   )
   @JvmField
   public val oneof_int32: Int? = null,
@@ -92,6 +98,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     jsonName = "oneofSfixed32",
     oneofName = "choice",
+    schemaIndex = 16,
   )
   @JvmField
   public val oneof_sfixed32: Int? = null,
@@ -107,6 +114,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REPEATED,
     jsonName = "repInt32",
+    schemaIndex = 5,
   )
   @JvmField
   public val rep_int32: List<Int> = immutableCopyOf("rep_int32", rep_int32)
@@ -116,6 +124,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.REPEATED,
     jsonName = "repUint32",
+    schemaIndex = 6,
   )
   @JvmField
   public val rep_uint32: List<Int> = immutableCopyOf("rep_uint32", rep_uint32)
@@ -125,6 +134,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.REPEATED,
     jsonName = "repSint32",
+    schemaIndex = 7,
   )
   @JvmField
   public val rep_sint32: List<Int> = immutableCopyOf("rep_sint32", rep_sint32)
@@ -134,6 +144,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.REPEATED,
     jsonName = "repFixed32",
+    schemaIndex = 8,
   )
   @JvmField
   public val rep_fixed32: List<Int> = immutableCopyOf("rep_fixed32", rep_fixed32)
@@ -143,6 +154,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.REPEATED,
     jsonName = "repSfixed32",
+    schemaIndex = 9,
   )
   @JvmField
   public val rep_sfixed32: List<Int> = immutableCopyOf("rep_sfixed32", rep_sfixed32)
@@ -152,6 +164,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.PACKED,
     jsonName = "packInt32",
+    schemaIndex = 10,
   )
   @JvmField
   public val pack_int32: List<Int> = immutableCopyOf("pack_int32", pack_int32)
@@ -161,6 +174,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.PACKED,
     jsonName = "packUint32",
+    schemaIndex = 11,
   )
   @JvmField
   public val pack_uint32: List<Int> = immutableCopyOf("pack_uint32", pack_uint32)
@@ -170,6 +184,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.PACKED,
     jsonName = "packSint32",
+    schemaIndex = 12,
   )
   @JvmField
   public val pack_sint32: List<Int> = immutableCopyOf("pack_sint32", pack_sint32)
@@ -179,6 +194,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.PACKED,
     jsonName = "packFixed32",
+    schemaIndex = 13,
   )
   @JvmField
   public val pack_fixed32: List<Int> = immutableCopyOf("pack_fixed32", pack_fixed32)
@@ -188,6 +204,7 @@ public class All32(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.PACKED,
     jsonName = "packSfixed32",
+    schemaIndex = 14,
   )
   @JvmField
   public val pack_sfixed32: List<Int> = immutableCopyOf("pack_sfixed32", pack_sfixed32)
@@ -197,6 +214,7 @@ public class All32(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     jsonName = "mapInt32Int32",
+    schemaIndex = 17,
   )
   @JvmField
   public val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32", map_int32_int32)
@@ -206,6 +224,7 @@ public class All32(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     jsonName = "mapInt32Uint32",
+    schemaIndex = 18,
   )
   @JvmField
   public val map_int32_uint32: Map<Int, Int> = immutableCopyOf("map_int32_uint32", map_int32_uint32)
@@ -215,6 +234,7 @@ public class All32(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     jsonName = "mapInt32Sint32",
+    schemaIndex = 19,
   )
   @JvmField
   public val map_int32_sint32: Map<Int, Int> = immutableCopyOf("map_int32_sint32", map_int32_sint32)
@@ -224,6 +244,7 @@ public class All32(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     jsonName = "mapInt32Fixed32",
+    schemaIndex = 20,
   )
   @JvmField
   public val map_int32_fixed32: Map<Int, Int> = immutableCopyOf("map_int32_fixed32",
@@ -234,6 +255,7 @@ public class All32(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     jsonName = "mapInt32Sfixed32",
+    schemaIndex = 21,
   )
   @JvmField
   public val map_int32_sfixed32: Map<Int, Int> = immutableCopyOf("map_int32_sfixed32",
