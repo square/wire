@@ -4334,121 +4334,73 @@ public class AllTypes(
             504 -> map_string_enum.putAll(map_string_enumAdapter.decode(reader))
             601 -> {
               if (array_int32 == null) {
-                val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
-                  .coerceAtMost(Int.MAX_VALUE.toLong())
-                  .toInt()
-                array_int32 = IntArrayList(initialCapacity)
+                array_int32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
               array_int32!!.add(com.squareup.wire.ProtoAdapter.INT32.decodePrimitive(reader))
             }
             602 -> {
               if (array_uint32 == null) {
-                val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
-                  .coerceAtMost(Int.MAX_VALUE.toLong())
-                  .toInt()
-                array_uint32 = IntArrayList(initialCapacity)
+                array_uint32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
               array_uint32!!.add(com.squareup.wire.ProtoAdapter.UINT32.decodePrimitive(reader))
             }
             603 -> {
               if (array_sint32 == null) {
-                val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
-                  .coerceAtMost(Int.MAX_VALUE.toLong())
-                  .toInt()
-                array_sint32 = IntArrayList(initialCapacity)
+                array_sint32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
               array_sint32!!.add(com.squareup.wire.ProtoAdapter.SINT32.decodePrimitive(reader))
             }
             604 -> {
               if (array_fixed32 == null) {
-                val minimumByteSize = 4
-                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
-                  .coerceAtMost(Int.MAX_VALUE.toLong())
-                  .toInt()
-                array_fixed32 = IntArrayList(initialCapacity)
+                array_fixed32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
               array_fixed32!!.add(com.squareup.wire.ProtoAdapter.FIXED32.decodePrimitive(reader))
             }
             605 -> {
               if (array_sfixed32 == null) {
-                val minimumByteSize = 4
-                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
-                  .coerceAtMost(Int.MAX_VALUE.toLong())
-                  .toInt()
-                array_sfixed32 = IntArrayList(initialCapacity)
+                array_sfixed32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
               array_sfixed32!!.add(com.squareup.wire.ProtoAdapter.SFIXED32.decodePrimitive(reader))
             }
             606 -> {
               if (array_int64 == null) {
-                val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
-                  .coerceAtMost(Int.MAX_VALUE.toLong())
-                  .toInt()
-                array_int64 = LongArrayList(initialCapacity)
+                array_int64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
               array_int64!!.add(com.squareup.wire.ProtoAdapter.INT64.decodePrimitive(reader))
             }
             607 -> {
               if (array_uint64 == null) {
-                val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
-                  .coerceAtMost(Int.MAX_VALUE.toLong())
-                  .toInt()
-                array_uint64 = LongArrayList(initialCapacity)
+                array_uint64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
               array_uint64!!.add(com.squareup.wire.ProtoAdapter.UINT64.decodePrimitive(reader))
             }
             608 -> {
               if (array_sint64 == null) {
-                val minimumByteSize = 1
-                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
-                  .coerceAtMost(Int.MAX_VALUE.toLong())
-                  .toInt()
-                array_sint64 = LongArrayList(initialCapacity)
+                array_sint64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
               array_sint64!!.add(com.squareup.wire.ProtoAdapter.SINT64.decodePrimitive(reader))
             }
             609 -> {
               if (array_fixed64 == null) {
-                val minimumByteSize = 8
-                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
-                  .coerceAtMost(Int.MAX_VALUE.toLong())
-                  .toInt()
-                array_fixed64 = LongArrayList(initialCapacity)
+                array_fixed64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
               array_fixed64!!.add(com.squareup.wire.ProtoAdapter.FIXED64.decodePrimitive(reader))
             }
             610 -> {
               if (array_sfixed64 == null) {
-                val minimumByteSize = 8
-                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
-                  .coerceAtMost(Int.MAX_VALUE.toLong())
-                  .toInt()
-                array_sfixed64 = LongArrayList(initialCapacity)
+                array_sfixed64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
               array_sfixed64!!.add(com.squareup.wire.ProtoAdapter.SFIXED64.decodePrimitive(reader))
             }
             611 -> {
               if (array_float == null) {
-                val minimumByteSize = 4
-                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
-                  .coerceAtMost(Int.MAX_VALUE.toLong())
-                  .toInt()
-                array_float = FloatArrayList(initialCapacity)
+                array_float = FloatArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
               array_float!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decodePrimitive(reader))
             }
             612 -> {
               if (array_double == null) {
-                val minimumByteSize = 8
-                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
-                  .coerceAtMost(Int.MAX_VALUE.toLong())
-                  .toInt()
-                array_double = DoubleArrayList(initialCapacity)
+                array_double = DoubleArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
               array_double!!.add(com.squareup.wire.ProtoAdapter.DOUBLE.decodePrimitive(reader))
             }
@@ -4720,18 +4672,18 @@ public class AllTypes(
           map_string_string = map_string_string,
           map_string_message = map_string_message,
           map_string_enum = map_string_enum,
-          array_int32 = array_int32?.getTruncatedArray() ?: intArrayOf(),
-          array_uint32 = array_uint32?.getTruncatedArray() ?: intArrayOf(),
-          array_sint32 = array_sint32?.getTruncatedArray() ?: intArrayOf(),
-          array_fixed32 = array_fixed32?.getTruncatedArray() ?: intArrayOf(),
-          array_sfixed32 = array_sfixed32?.getTruncatedArray() ?: intArrayOf(),
-          array_int64 = array_int64?.getTruncatedArray() ?: longArrayOf(),
-          array_uint64 = array_uint64?.getTruncatedArray() ?: longArrayOf(),
-          array_sint64 = array_sint64?.getTruncatedArray() ?: longArrayOf(),
-          array_fixed64 = array_fixed64?.getTruncatedArray() ?: longArrayOf(),
-          array_sfixed64 = array_sfixed64?.getTruncatedArray() ?: longArrayOf(),
-          array_float = array_float?.getTruncatedArray() ?: floatArrayOf(),
-          array_double = array_double?.getTruncatedArray() ?: doubleArrayOf(),
+          array_int32 = array_int32?.toArray() ?: intArrayOf(),
+          array_uint32 = array_uint32?.toArray() ?: intArrayOf(),
+          array_sint32 = array_sint32?.toArray() ?: intArrayOf(),
+          array_fixed32 = array_fixed32?.toArray() ?: intArrayOf(),
+          array_sfixed32 = array_sfixed32?.toArray() ?: intArrayOf(),
+          array_int64 = array_int64?.toArray() ?: longArrayOf(),
+          array_uint64 = array_uint64?.toArray() ?: longArrayOf(),
+          array_sint64 = array_sint64?.toArray() ?: longArrayOf(),
+          array_fixed64 = array_fixed64?.toArray() ?: longArrayOf(),
+          array_sfixed64 = array_sfixed64?.toArray() ?: longArrayOf(),
+          array_float = array_float?.toArray() ?: floatArrayOf(),
+          array_double = array_double?.toArray() ?: doubleArrayOf(),
           ext_opt_int32 = ext_opt_int32,
           ext_opt_uint32 = ext_opt_uint32,
           ext_opt_sint32 = ext_opt_sint32,

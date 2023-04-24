@@ -1698,7 +1698,7 @@ class KotlinGenerator private constructor(
 
             if (fieldOrOneOf.isPacked && fieldOrOneOf.isScalar) {
               if (fieldOrOneOf.useArray) {
-                addStatement("%1L = %1L?.getTruncatedArray() ?: %2L,", fieldName, fieldOrOneOf.emptyPrimitiveArrayForType)
+                addStatement("%1L = %1L?.toArray() ?: %2L,", fieldName, fieldOrOneOf.emptyPrimitiveArrayForType)
               } else {
                 addStatement("%1L = %1L ?: listOf(),", fieldName)
               }
@@ -1793,15 +1793,27 @@ class KotlinGenerator private constructor(
     )
     return CodeBlock.of(
       when {
+        field.useArray -> {
+          buildCodeBlock {
+            beginControlFlow("if (%L == null)", fieldName)
+            addStatement(
+              "%L = %L.forDecoding(reader.nextFieldMinLengthInBytes(), %L)",
+              fieldName,
+              field.arrayListClassForType.simpleName,
+              field.getMinimumByteSize(),
+            )
+            endControlFlow()
+            addStatement("%1L!!.add(%2L)", field, decode)
+          }.toString()
+        }
         field.isPacked && field.isScalar -> {
-          val type = if (field.useArray) field.arrayListClassForType.simpleName else "ArrayList"
           buildCodeBlock {
             beginControlFlow("if (%L == null)", fieldName)
             addStatement("val minimumByteSize = ${field.getMinimumByteSize()}")
             addStatement("val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)")
             addStatement("⇥.coerceAtMost(Int.MAX_VALUE.toLong())")
             addStatement(".toInt()")
-            addStatement("⇤%L = %L(initialCapacity)", fieldName, type)
+            addStatement("⇤%L = %L(initialCapacity)", fieldName, ArrayList::class.simpleName)
             endControlFlow()
             addStatement("%1L!!.add(%2L)", field, decode)
           }.toString()
