@@ -13,6 +13,11 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
+import com.squareup.wire.`internal`.DoubleArrayList
+import com.squareup.wire.`internal`.FloatArrayList
+import com.squareup.wire.`internal`.IntArrayList
+import com.squareup.wire.`internal`.LongArrayList
+import com.squareup.wire.`internal`.encodeArray
 import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.missingRequiredFields
 import com.squareup.wire.`internal`.redactElements
@@ -23,9 +28,13 @@ import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Double
+import kotlin.DoubleArray
 import kotlin.Float
+import kotlin.FloatArray
 import kotlin.Int
+import kotlin.IntArray
 import kotlin.Long
+import kotlin.LongArray
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
@@ -340,6 +349,78 @@ public class AllTypes(
   map_string_string: Map<String, String> = emptyMap(),
   map_string_message: Map<String, NestedMessage> = emptyMap(),
   map_string_enum: Map<String, NestedEnum> = emptyMap(),
+  @field:WireField(
+    tag = 601,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.PACKED,
+  )
+  public val array_int32: IntArray = intArrayOf(),
+  @field:WireField(
+    tag = 602,
+    adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+    label = WireField.Label.PACKED,
+  )
+  public val array_uint32: IntArray = intArrayOf(),
+  @field:WireField(
+    tag = 603,
+    adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+    label = WireField.Label.PACKED,
+  )
+  public val array_sint32: IntArray = intArrayOf(),
+  @field:WireField(
+    tag = 604,
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+    label = WireField.Label.PACKED,
+  )
+  public val array_fixed32: IntArray = intArrayOf(),
+  @field:WireField(
+    tag = 605,
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+    label = WireField.Label.PACKED,
+  )
+  public val array_sfixed32: IntArray = intArrayOf(),
+  @field:WireField(
+    tag = 606,
+    adapter = "com.squareup.wire.ProtoAdapter#INT64",
+    label = WireField.Label.PACKED,
+  )
+  public val array_int64: LongArray = longArrayOf(),
+  @field:WireField(
+    tag = 607,
+    adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+    label = WireField.Label.PACKED,
+  )
+  public val array_uint64: LongArray = longArrayOf(),
+  @field:WireField(
+    tag = 608,
+    adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+    label = WireField.Label.PACKED,
+  )
+  public val array_sint64: LongArray = longArrayOf(),
+  @field:WireField(
+    tag = 609,
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+    label = WireField.Label.PACKED,
+  )
+  public val array_fixed64: LongArray = longArrayOf(),
+  @field:WireField(
+    tag = 610,
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+    label = WireField.Label.PACKED,
+  )
+  public val array_sfixed64: LongArray = longArrayOf(),
+  @field:WireField(
+    tag = 611,
+    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+    label = WireField.Label.PACKED,
+  )
+  public val array_float: FloatArray = floatArrayOf(),
+  @field:WireField(
+    tag = 612,
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    label = WireField.Label.PACKED,
+  )
+  public val array_double: DoubleArray = doubleArrayOf(),
   /**
    * Extension source: all_types.proto
    */
@@ -1168,6 +1249,18 @@ public class AllTypes(
     if (map_string_string != other.map_string_string) return false
     if (map_string_message != other.map_string_message) return false
     if (map_string_enum != other.map_string_enum) return false
+    if (!array_int32.contentEquals(other.array_int32)) return false
+    if (!array_uint32.contentEquals(other.array_uint32)) return false
+    if (!array_sint32.contentEquals(other.array_sint32)) return false
+    if (!array_fixed32.contentEquals(other.array_fixed32)) return false
+    if (!array_sfixed32.contentEquals(other.array_sfixed32)) return false
+    if (!array_int64.contentEquals(other.array_int64)) return false
+    if (!array_uint64.contentEquals(other.array_uint64)) return false
+    if (!array_sint64.contentEquals(other.array_sint64)) return false
+    if (!array_fixed64.contentEquals(other.array_fixed64)) return false
+    if (!array_sfixed64.contentEquals(other.array_sfixed64)) return false
+    if (!array_float.contentEquals(other.array_float)) return false
+    if (!array_double.contentEquals(other.array_double)) return false
     if (ext_opt_int32 != other.ext_opt_int32) return false
     if (ext_opt_uint32 != other.ext_opt_uint32) return false
     if (ext_opt_sint32 != other.ext_opt_sint32) return false
@@ -1308,6 +1401,18 @@ public class AllTypes(
       result = result * 37 + map_string_string.hashCode()
       result = result * 37 + map_string_message.hashCode()
       result = result * 37 + map_string_enum.hashCode()
+      result = result * 37 + array_int32.contentHashCode()
+      result = result * 37 + array_uint32.contentHashCode()
+      result = result * 37 + array_sint32.contentHashCode()
+      result = result * 37 + array_fixed32.contentHashCode()
+      result = result * 37 + array_sfixed32.contentHashCode()
+      result = result * 37 + array_int64.contentHashCode()
+      result = result * 37 + array_uint64.contentHashCode()
+      result = result * 37 + array_sint64.contentHashCode()
+      result = result * 37 + array_fixed64.contentHashCode()
+      result = result * 37 + array_sfixed64.contentHashCode()
+      result = result * 37 + array_float.contentHashCode()
+      result = result * 37 + array_double.contentHashCode()
       result = result * 37 + (ext_opt_int32?.hashCode() ?: 0)
       result = result * 37 + (ext_opt_uint32?.hashCode() ?: 0)
       result = result * 37 + (ext_opt_sint32?.hashCode() ?: 0)
@@ -1448,6 +1553,20 @@ public class AllTypes(
     if (map_string_string.isNotEmpty()) result += """map_string_string=$map_string_string"""
     if (map_string_message.isNotEmpty()) result += """map_string_message=$map_string_message"""
     if (map_string_enum.isNotEmpty()) result += """map_string_enum=$map_string_enum"""
+    if (array_int32.isNotEmpty()) result += """array_int32=${array_int32.contentToString()}"""
+    if (array_uint32.isNotEmpty()) result += """array_uint32=${array_uint32.contentToString()}"""
+    if (array_sint32.isNotEmpty()) result += """array_sint32=${array_sint32.contentToString()}"""
+    if (array_fixed32.isNotEmpty()) result += """array_fixed32=${array_fixed32.contentToString()}"""
+    if (array_sfixed32.isNotEmpty()) result +=
+        """array_sfixed32=${array_sfixed32.contentToString()}"""
+    if (array_int64.isNotEmpty()) result += """array_int64=${array_int64.contentToString()}"""
+    if (array_uint64.isNotEmpty()) result += """array_uint64=${array_uint64.contentToString()}"""
+    if (array_sint64.isNotEmpty()) result += """array_sint64=${array_sint64.contentToString()}"""
+    if (array_fixed64.isNotEmpty()) result += """array_fixed64=${array_fixed64.contentToString()}"""
+    if (array_sfixed64.isNotEmpty()) result +=
+        """array_sfixed64=${array_sfixed64.contentToString()}"""
+    if (array_float.isNotEmpty()) result += """array_float=${array_float.contentToString()}"""
+    if (array_double.isNotEmpty()) result += """array_double=${array_double.contentToString()}"""
     if (ext_opt_int32 != null) result += """ext_opt_int32=$ext_opt_int32"""
     if (ext_opt_uint32 != null) result += """ext_opt_uint32=$ext_opt_uint32"""
     if (ext_opt_sint32 != null) result += """ext_opt_sint32=$ext_opt_sint32"""
@@ -1588,6 +1707,18 @@ public class AllTypes(
     map_string_string: Map<String, String> = this.map_string_string,
     map_string_message: Map<String, NestedMessage> = this.map_string_message,
     map_string_enum: Map<String, NestedEnum> = this.map_string_enum,
+    array_int32: IntArray = this.array_int32,
+    array_uint32: IntArray = this.array_uint32,
+    array_sint32: IntArray = this.array_sint32,
+    array_fixed32: IntArray = this.array_fixed32,
+    array_sfixed32: IntArray = this.array_sfixed32,
+    array_int64: LongArray = this.array_int64,
+    array_uint64: LongArray = this.array_uint64,
+    array_sint64: LongArray = this.array_sint64,
+    array_fixed64: LongArray = this.array_fixed64,
+    array_sfixed64: LongArray = this.array_sfixed64,
+    array_float: FloatArray = this.array_float,
+    array_double: DoubleArray = this.array_double,
     ext_opt_int32: Int? = this.ext_opt_int32,
     ext_opt_uint32: Int? = this.ext_opt_uint32,
     ext_opt_sint32: Int? = this.ext_opt_sint32,
@@ -1650,17 +1781,18 @@ public class AllTypes(
       default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64,
       default_fixed64, default_sfixed64, default_bool, default_float, default_double,
       default_string, default_bytes, default_nested_enum, map_int32_int32, map_string_string,
-      map_string_message, map_string_enum, ext_opt_int32, ext_opt_uint32, ext_opt_sint32,
-      ext_opt_fixed32, ext_opt_sfixed32, ext_opt_int64, ext_opt_uint64, ext_opt_sint64,
-      ext_opt_fixed64, ext_opt_sfixed64, ext_opt_bool, ext_opt_float, ext_opt_double,
-      ext_opt_string, ext_opt_bytes, ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32,
-      ext_rep_uint32, ext_rep_sint32, ext_rep_fixed32, ext_rep_sfixed32, ext_rep_int64,
-      ext_rep_uint64, ext_rep_sint64, ext_rep_fixed64, ext_rep_sfixed64, ext_rep_bool,
-      ext_rep_float, ext_rep_double, ext_rep_string, ext_rep_bytes, ext_rep_nested_enum,
-      ext_rep_nested_message, ext_pack_int32, ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32,
-      ext_pack_sfixed32, ext_pack_int64, ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64,
-      ext_pack_sfixed64, ext_pack_bool, ext_pack_float, ext_pack_double, ext_pack_nested_enum,
-      unknownFields)
+      map_string_message, map_string_enum, array_int32, array_uint32, array_sint32, array_fixed32,
+      array_sfixed32, array_int64, array_uint64, array_sint64, array_fixed64, array_sfixed64,
+      array_float, array_double, ext_opt_int32, ext_opt_uint32, ext_opt_sint32, ext_opt_fixed32,
+      ext_opt_sfixed32, ext_opt_int64, ext_opt_uint64, ext_opt_sint64, ext_opt_fixed64,
+      ext_opt_sfixed64, ext_opt_bool, ext_opt_float, ext_opt_double, ext_opt_string, ext_opt_bytes,
+      ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32, ext_rep_uint32, ext_rep_sint32,
+      ext_rep_fixed32, ext_rep_sfixed32, ext_rep_int64, ext_rep_uint64, ext_rep_sint64,
+      ext_rep_fixed64, ext_rep_sfixed64, ext_rep_bool, ext_rep_float, ext_rep_double,
+      ext_rep_string, ext_rep_bytes, ext_rep_nested_enum, ext_rep_nested_message, ext_pack_int32,
+      ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32, ext_pack_sfixed32, ext_pack_int64,
+      ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64, ext_pack_sfixed64, ext_pack_bool,
+      ext_pack_float, ext_pack_double, ext_pack_nested_enum, unknownFields)
 
   public companion object {
     public const val DEFAULT_DEFAULT_INT32: Int = Int.MAX_VALUE
@@ -1807,6 +1939,18 @@ public class AllTypes(
         size += map_string_stringAdapter.encodedSizeWithTag(502, value.map_string_string)
         size += map_string_messageAdapter.encodedSizeWithTag(503, value.map_string_message)
         size += map_string_enumAdapter.encodedSizeWithTag(504, value.map_string_enum)
+        size += ProtoAdapter.INT32_ARRAY.encodedSizeWithTag(601, value.array_int32)
+        size += ProtoAdapter.UINT32_ARRAY.encodedSizeWithTag(602, value.array_uint32)
+        size += ProtoAdapter.SINT32_ARRAY.encodedSizeWithTag(603, value.array_sint32)
+        size += ProtoAdapter.FIXED32_ARRAY.encodedSizeWithTag(604, value.array_fixed32)
+        size += ProtoAdapter.SFIXED32_ARRAY.encodedSizeWithTag(605, value.array_sfixed32)
+        size += ProtoAdapter.INT64_ARRAY.encodedSizeWithTag(606, value.array_int64)
+        size += ProtoAdapter.UINT64_ARRAY.encodedSizeWithTag(607, value.array_uint64)
+        size += ProtoAdapter.SINT64_ARRAY.encodedSizeWithTag(608, value.array_sint64)
+        size += ProtoAdapter.FIXED64_ARRAY.encodedSizeWithTag(609, value.array_fixed64)
+        size += ProtoAdapter.SFIXED64_ARRAY.encodedSizeWithTag(610, value.array_sfixed64)
+        size += ProtoAdapter.FLOAT_ARRAY.encodedSizeWithTag(611, value.array_float)
+        size += ProtoAdapter.DOUBLE_ARRAY.encodedSizeWithTag(612, value.array_double)
         size += ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32)
         size += ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32)
         size += ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32)
@@ -1945,6 +2089,18 @@ public class AllTypes(
         map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
         map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
         map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
+        ProtoAdapter.INT32_ARRAY.encodeWithTag(writer, 601, value.array_int32)
+        ProtoAdapter.UINT32_ARRAY.encodeWithTag(writer, 602, value.array_uint32)
+        ProtoAdapter.SINT32_ARRAY.encodeWithTag(writer, 603, value.array_sint32)
+        ProtoAdapter.FIXED32_ARRAY.encodeWithTag(writer, 604, value.array_fixed32)
+        ProtoAdapter.SFIXED32_ARRAY.encodeWithTag(writer, 605, value.array_sfixed32)
+        ProtoAdapter.INT64_ARRAY.encodeWithTag(writer, 606, value.array_int64)
+        ProtoAdapter.UINT64_ARRAY.encodeWithTag(writer, 607, value.array_uint64)
+        ProtoAdapter.SINT64_ARRAY.encodeWithTag(writer, 608, value.array_sint64)
+        ProtoAdapter.FIXED64_ARRAY.encodeWithTag(writer, 609, value.array_fixed64)
+        ProtoAdapter.SFIXED64_ARRAY.encodeWithTag(writer, 610, value.array_sfixed64)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 611, value.array_float)
+        ProtoAdapter.DOUBLE_ARRAY.encodeWithTag(writer, 612, value.array_double)
         ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32)
         ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32)
         ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32)
@@ -2046,6 +2202,18 @@ public class AllTypes(
         ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32)
         ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32)
         ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32)
+        encodeArray(value.array_double, ProtoAdapter.DOUBLE, writer, 612)
+        encodeArray(value.array_float, ProtoAdapter.FLOAT, writer, 611)
+        encodeArray(value.array_sfixed64, ProtoAdapter.SFIXED64, writer, 610)
+        encodeArray(value.array_fixed64, ProtoAdapter.FIXED64, writer, 609)
+        encodeArray(value.array_sint64, ProtoAdapter.SINT64, writer, 608)
+        encodeArray(value.array_uint64, ProtoAdapter.UINT64, writer, 607)
+        encodeArray(value.array_int64, ProtoAdapter.INT64, writer, 606)
+        encodeArray(value.array_sfixed32, ProtoAdapter.SFIXED32, writer, 605)
+        encodeArray(value.array_fixed32, ProtoAdapter.FIXED32, writer, 604)
+        encodeArray(value.array_sint32, ProtoAdapter.SINT32, writer, 603)
+        encodeArray(value.array_uint32, ProtoAdapter.UINT32, writer, 602)
+        encodeArray(value.array_int32, ProtoAdapter.INT32, writer, 601)
         map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
         map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
         map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
@@ -2219,6 +2387,18 @@ public class AllTypes(
         val map_string_string = mutableMapOf<String, String>()
         val map_string_message = mutableMapOf<String, NestedMessage>()
         val map_string_enum = mutableMapOf<String, NestedEnum>()
+        var array_int32: IntArrayList? = null
+        var array_uint32: IntArrayList? = null
+        var array_sint32: IntArrayList? = null
+        var array_fixed32: IntArrayList? = null
+        var array_sfixed32: IntArrayList? = null
+        var array_int64: LongArrayList? = null
+        var array_uint64: LongArrayList? = null
+        var array_sint64: LongArrayList? = null
+        var array_fixed64: LongArrayList? = null
+        var array_sfixed64: LongArrayList? = null
+        var array_float: FloatArrayList? = null
+        var array_double: DoubleArrayList? = null
         var ext_opt_int32: Int? = null
         var ext_opt_uint32: Int? = null
         var ext_opt_sint32: Int? = null
@@ -2491,6 +2671,78 @@ public class AllTypes(
             502 -> map_string_string.putAll(map_string_stringAdapter.decode(reader))
             503 -> map_string_message.putAll(map_string_messageAdapter.decode(reader))
             504 -> map_string_enum.putAll(map_string_enumAdapter.decode(reader))
+            601 -> {
+              if (array_int32 == null) {
+                array_int32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
+              }
+              array_int32!!.add(com.squareup.wire.ProtoAdapter.INT32.decodePrimitive(reader))
+            }
+            602 -> {
+              if (array_uint32 == null) {
+                array_uint32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
+              }
+              array_uint32!!.add(com.squareup.wire.ProtoAdapter.UINT32.decodePrimitive(reader))
+            }
+            603 -> {
+              if (array_sint32 == null) {
+                array_sint32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
+              }
+              array_sint32!!.add(com.squareup.wire.ProtoAdapter.SINT32.decodePrimitive(reader))
+            }
+            604 -> {
+              if (array_fixed32 == null) {
+                array_fixed32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
+              }
+              array_fixed32!!.add(com.squareup.wire.ProtoAdapter.FIXED32.decodePrimitive(reader))
+            }
+            605 -> {
+              if (array_sfixed32 == null) {
+                array_sfixed32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
+              }
+              array_sfixed32!!.add(com.squareup.wire.ProtoAdapter.SFIXED32.decodePrimitive(reader))
+            }
+            606 -> {
+              if (array_int64 == null) {
+                array_int64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
+              }
+              array_int64!!.add(com.squareup.wire.ProtoAdapter.INT64.decodePrimitive(reader))
+            }
+            607 -> {
+              if (array_uint64 == null) {
+                array_uint64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
+              }
+              array_uint64!!.add(com.squareup.wire.ProtoAdapter.UINT64.decodePrimitive(reader))
+            }
+            608 -> {
+              if (array_sint64 == null) {
+                array_sint64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
+              }
+              array_sint64!!.add(com.squareup.wire.ProtoAdapter.SINT64.decodePrimitive(reader))
+            }
+            609 -> {
+              if (array_fixed64 == null) {
+                array_fixed64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
+              }
+              array_fixed64!!.add(com.squareup.wire.ProtoAdapter.FIXED64.decodePrimitive(reader))
+            }
+            610 -> {
+              if (array_sfixed64 == null) {
+                array_sfixed64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
+              }
+              array_sfixed64!!.add(com.squareup.wire.ProtoAdapter.SFIXED64.decodePrimitive(reader))
+            }
+            611 -> {
+              if (array_float == null) {
+                array_float = FloatArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
+              }
+              array_float!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decodePrimitive(reader))
+            }
+            612 -> {
+              if (array_double == null) {
+                array_double = DoubleArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
+              }
+              array_double!!.add(com.squareup.wire.ProtoAdapter.DOUBLE.decodePrimitive(reader))
+            }
             1001 -> ext_opt_int32 = ProtoAdapter.INT32.decode(reader)
             1002 -> ext_opt_uint32 = ProtoAdapter.UINT32.decode(reader)
             1003 -> ext_opt_sint32 = ProtoAdapter.SINT32.decode(reader)
@@ -2759,6 +3011,18 @@ public class AllTypes(
           map_string_string = map_string_string,
           map_string_message = map_string_message,
           map_string_enum = map_string_enum,
+          array_int32 = array_int32?.toArray() ?: intArrayOf(),
+          array_uint32 = array_uint32?.toArray() ?: intArrayOf(),
+          array_sint32 = array_sint32?.toArray() ?: intArrayOf(),
+          array_fixed32 = array_fixed32?.toArray() ?: intArrayOf(),
+          array_sfixed32 = array_sfixed32?.toArray() ?: intArrayOf(),
+          array_int64 = array_int64?.toArray() ?: longArrayOf(),
+          array_uint64 = array_uint64?.toArray() ?: longArrayOf(),
+          array_sint64 = array_sint64?.toArray() ?: longArrayOf(),
+          array_fixed64 = array_fixed64?.toArray() ?: longArrayOf(),
+          array_sfixed64 = array_sfixed64?.toArray() ?: longArrayOf(),
+          array_float = array_float?.toArray() ?: floatArrayOf(),
+          array_double = array_double?.toArray() ?: doubleArrayOf(),
           ext_opt_int32 = ext_opt_int32,
           ext_opt_uint32 = ext_opt_uint32,
           ext_opt_sint32 = ext_opt_sint32,

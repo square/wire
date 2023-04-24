@@ -297,6 +297,44 @@ class SchemaTest {
   }
 
   @Test
+  fun fieldUsesUseArrayButShouldntBe() {
+    try {
+      buildSchema {
+        add(
+          "message.proto".toPath(),
+          """
+               |import "wire/extensions.proto";
+               |
+               |message Message {
+               |  repeated bytes a = 1 [wire.use_array=true];
+               |  repeated Message b = 2 [wire.use_array=true];
+               |  repeated float c = 3 [wire.use_array=true];
+               |}
+               """.trimMargin()
+        )
+      }
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage(
+        """
+            |wire.use_array=true only permitted on packed fields
+            |  for field a (/source/message.proto:4:3)
+            |  in message Message (/source/message.proto:3:1)
+            |wire.use_array=true only permitted on packed fields
+            |  for field b (/source/message.proto:5:3)
+            |  in message Message (/source/message.proto:3:1)
+            |wire.use_array=true only permitted on scalar fields
+            |  for field b (/source/message.proto:5:3)
+            |  in message Message (/source/message.proto:3:1)
+            |wire.use_array=true only permitted on packed fields
+            |  for field c (/source/message.proto:6:3)
+            |  in message Message (/source/message.proto:3:1)
+            """.trimMargin()
+      )
+    }
+  }
+
+  @Test
   fun fieldIsDeprecated() {
     val schema = buildSchema {
       add(

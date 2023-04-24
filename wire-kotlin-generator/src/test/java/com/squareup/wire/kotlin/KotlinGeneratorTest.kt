@@ -1513,6 +1513,25 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("import wire_package.Person"))
   }
 
+  @Test fun useArrayUsesTheCorrectType() {
+    val schema = buildSchema {
+      add(
+        "proto_package/person.proto".toPath(),
+        """
+        |package proto_package;
+        |import "wire/extensions.proto";
+        |
+        |message Person {
+        |	repeated float info = 1 [packed = true, wire.use_array = true];
+        |}
+        |""".trimMargin()
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
+    assertContains(code, "public val info: FloatArray = floatArrayOf()")
+    assertContains(code, "ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 1, value.info)")
+  }
+
   @Test fun documentationEscapesBrackets() {
     val schema = buildSchema {
       add(

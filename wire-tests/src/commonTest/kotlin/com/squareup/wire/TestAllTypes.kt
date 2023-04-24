@@ -97,7 +97,19 @@ class TestAllTypes {
       pack_nested_enum = list(AllTypes.NestedEnum.A, numRepeated),
       ext_opt_bool = true,
       ext_rep_bool = list(true, numRepeated),
-      ext_pack_bool = list(true, numRepeated)
+      ext_pack_bool = list(true, numRepeated),
+      array_int32 = list(111, numRepeated).toIntArray(),
+      array_uint32 = list(112, numRepeated).toIntArray(),
+      array_sint32 = list(113, numRepeated).toIntArray(),
+      array_fixed32 = list(114, numRepeated).toIntArray(),
+      array_sfixed32 = list(115, numRepeated).toIntArray(),
+      array_int64 = list(116L, numRepeated).toLongArray(),
+      array_uint64 = list(117L, numRepeated).toLongArray(),
+      array_sint64 = list(118L, numRepeated).toLongArray(),
+      array_fixed64 = list(119L, numRepeated).toLongArray(),
+      array_sfixed64 = list(120L, numRepeated).toLongArray(),
+      array_float = list(122.0f, numRepeated).toFloatArray(),
+      array_double = list(123.0, numRepeated).toDoubleArray(),
     )
   }
 
@@ -262,8 +274,8 @@ class TestAllTypes {
 
   @Test fun testWrite() {
     val output = adapter.encode(allTypes)
-    assertEquals(TestAllTypesData.expectedOutput.size, output.size)
     assertEquals(TestAllTypesData.expectedOutput, ByteString.of(*output))
+    assertEquals(TestAllTypesData.expectedOutput.size, output.size)
   }
 
   @Test fun testWriteSource() {

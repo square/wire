@@ -18,6 +18,7 @@ package com.squareup.wire.schema
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.GOOGLE_PROTOBUF_OPTION_TYPES
 import com.squareup.wire.schema.internal.parser.FieldElement
+import com.squareup.wire.schema.internal.parser.OptionElement
 import com.squareup.wire.schema.internal.parser.OptionElement.Companion.PACKED_OPTION_ELEMENT
 import kotlin.jvm.JvmStatic
 
@@ -107,6 +108,9 @@ data class Field(
   val isPacked: Boolean
     get() = encodeMode == EncodeMode.PACKED
 
+  val useArray: Boolean
+    get() = options.elements.contains(OptionElement.USE_ARRAY_OPTION_ELEMENT)
+
   // Null until this field is linked.
   var jsonName: String? = null
     private set
@@ -139,6 +143,12 @@ data class Field(
     val linker = linker.withContext(this)
     if (isPacked && !isPackable(linker, type!!)) {
       linker.errors += "packed=true not permitted on $type"
+    }
+    if (useArray && !isPacked) {
+      linker.errors += "wire.use_array=true only permitted on packed fields"
+    }
+    if (useArray && type?.isScalar != true) {
+      linker.errors += "wire.use_array=true only permitted on scalar fields"
     }
     if (isExtension) {
       if (isRequired) {

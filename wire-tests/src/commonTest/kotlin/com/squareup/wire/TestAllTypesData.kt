@@ -36,8 +36,12 @@ object TestAllTypesData {
       "e{a=999}], pack_int32=[111, 111], pack_uint32=[112, 112], pack_sint32=[113, 113], pack_fix" +
       "ed32=[114, 114], pack_sfixed32=[115, 115], pack_int64=[116, 116], pack_uint64=[117, 117], " +
       "pack_sint64=[118, 118], pack_fixed64=[119, 119], pack_sfixed64=[120, 120], pack_bool=[true" +
-      ", true], pack_float=[122.0, 122.0], pack_double=[123.0, 123.0], pack_nested_enum=[A, A], e" +
-      "xt_opt_bool=true, ext_rep_bool=[true, true], ext_pack_bool=[true, true]}"
+      ", true], pack_float=[122.0, 122.0], pack_double=[123.0, 123.0], pack_nested_enum=[A, A], a" +
+      "rray_int32=[111, 111], array_uint32=[112, 112], array_sint32=[113, 113], array_fixed32=[11" +
+      "4, 114], array_sfixed32=[115, 115], array_int64=[116, 116], array_uint64=[117, 117], array" +
+      "_sint64=[118, 118], array_fixed64=[119, 119], array_sfixed64=[120, 120], array_float=[122." +
+      "0, 122.0], array_double=[123.0, 123.0], ext_opt_bool=true, ext_rep_bool=[true, true], ext_" +
+      "pack_bool=[true, true]}"
     )
   val expectedOutput = (
     "" +
@@ -260,6 +264,56 @@ object TestAllTypesData {
       "02" + // length = 2
       "01" + // value = 1
       "01" + // value = 1
+
+      // arrays
+      "ca25" + // tag = 601, type = 2
+      "02" + // length = 2
+      "6f" + // value = 111
+      "6f" + // value = 111
+      "d225" + // tag = 602, type = 2
+      "02" + // length = 2
+      "70" + // value = 112
+      "70" + // value = 112
+      "da25" + // tag = 603, type = 2
+      "04" + // length = 4
+      "e201" + // value = 226 (=113 zig-zag)
+      "e201" + // value = 226 (=113 zig-zag)
+      "e225" + // tag = 604, type = 2
+      "08" + // length = 8
+      "72000000" + // value = 114 (fixed32)
+      "72000000" + // value = 114 (fixed32)
+      "ea25" + // tag = 605, type = 2
+      "08" + // length = 8
+      "73000000" + // value = 115 (sfixed32)
+      "73000000" + // value = 115 (sfixed32)
+      "f225" + // tag = 606, type = 2
+      "02" + // length = 2
+      "74" + // value = 116
+      "74" + // value = 116
+      "fa25" + // tag = 607, type = 2
+      "02" + // length = 2
+      "75" + // value = 117
+      "75" + // value = 117
+      "8226" + // tag = 608, type = 2
+      "04" + // length = 4
+      "ec01" + // value = 236 (=118 zigzag)
+      "ec01" + // value = 236 (=118 zigzag)
+      "8a26" + // tag = 609, type = 2
+      "10" + // length = 16
+      "7700000000000000" + // value = 119
+      "7700000000000000" + // value = 119
+      "9226" + // tag = 610, type = 2
+      "10" + // length = 16
+      "7800000000000000" + // value = 120
+      "7800000000000000" + // value = 120
+      "9a26" + // tag = 611, type = 2
+      "08" + // length = 8
+      "0000f442" + // value = 122.0F
+      "0000f442" + // value = 122.0F
+      "a226" + // tag = 612, type = 2
+      "10" + // length = 16
+      "0000000000c05e40" + // value = 123.0
+      "0000000000c05e40" + // value = 123.0
 
       // extensions
 
@@ -485,9 +539,9 @@ object TestAllTypesData {
       "01" + // value = 1 (true)
       "b813" + // tag = 311, type = 0
       "01" + // value = 1 (true)
-      "c513" + // tag = 312, type = 0
+      "c513" + // tag = 312, type = 5
       "0000f442" + // value = 122.0F
-      "c513" + // tag = 312, type = 0
+      "c513" + // tag = 312, type = 5
       "0000f442" + // value = 122.0F
       "c913" + // tag = 313, type = 0
       "0000000000c05e40" + // value = 123.0
@@ -497,6 +551,57 @@ object TestAllTypesData {
       "01" + // value = 1
       "e013" + // tag = 316, type = 0
       "01" + // value = 1
+
+      // arrays
+
+      "c825" + // tag = 601, type = 0
+      "6f" + // value = 111
+      "c825" + // tag = 601, type = 0
+      "6f" + // value = 111
+      "d025" + // tag = 602, type = 0
+      "70" + // value = 112
+      "d025" + // tag = 602, type = 0
+      "70" + // value = 112
+      "d825" + // tag = 603, type = 0
+      "e201" + // value = 226 (=113 zig-zag)
+      "d825" + // tag = 603, type = 0
+      "e201" + // value = 226 (=113 zig-zag)
+      "e525" + // tag = 604, type = 5
+      "72000000" + // value = 114 (fixed32)
+      "e525" + // tag = 604, type = 5
+      "72000000" + // value = 114 (fixed32)
+      "ed25" + // tag = 605, type = 5
+      "73000000" + // value = 115 (sfixed32)
+      "ed25" + // tag = 605, type = 5
+      "73000000" + // value = 115 (sfixed32)
+      "f025" + // tag = 606, type = 0
+      "74" + // value = 116
+      "f025" + // tag = 606, type = 0
+      "74" + // value = 116
+      "f825" + // tag = 607, type = 0
+      "75" + // value = 117
+      "f825" + // tag = 607, type = 0
+      "75" + // value = 117
+      "8026" + // tag = 608, type = 0
+      "ec01" + // value = 236 (=118 zigzag)
+      "8026" + // tag = 608, type = 0
+      "ec01" + // value = 236 (=118 zigzag)
+      "8926" + // tag = 609, type = 1
+      "7700000000000000" + // value = 119
+      "8926" + // tag = 609, type = 1
+      "7700000000000000" + // value = 119
+      "9126" + // tag = 610, type = 1
+      "7800000000000000" + // value = 120
+      "9126" + // tag = 610, type = 1
+      "7800000000000000" + // value = 120
+      "9d26" + // tag = 611, type = 5
+      "0000f442" + // value = 122.0F
+      "9d26" + // tag = 611, type = 5
+      "0000f442" + // value = 122.0F
+      "a126" + // tag = 612, type = 1
+      "0000000000c05e40" + // value = 123.0
+      "a126" + // tag = 612, type = 1
+      "0000000000c05e40" + // value = 123.0
 
       // extension
 
