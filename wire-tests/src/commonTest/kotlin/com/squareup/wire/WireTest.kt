@@ -76,8 +76,8 @@ class WireTest {
       aliases = listOf("B-lo,ved", "D{esperado}")
     )
     val expected = """Person{
-          |name=Such\, I mean it\, such \[a\] \{funny\} name.
-          |, id=1
+          |id=1
+          |, name=Such\, I mean it\, such \[a\] \{funny\} name.
           |, phone=[PhoneNumber{number=123\,456\,789}]
           |, aliases=[B-lo\,ved, D\{esperado\}]
           |}""".trimMargin().replace("\n", "")

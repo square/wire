@@ -30,7 +30,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT64",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "myInt64"
+      jsonName = "myInt64",
+      schemaIndex = 0
   )
   public final long my_int64;
 
@@ -38,7 +39,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 2,
       adapter = "com.squareup.wire.ProtoAdapter#UINT64",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "myUint64"
+      jsonName = "myUint64",
+      schemaIndex = 1
   )
   public final long my_uint64;
 
@@ -46,7 +48,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 3,
       adapter = "com.squareup.wire.ProtoAdapter#SINT64",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "mySint64"
+      jsonName = "mySint64",
+      schemaIndex = 2
   )
   public final long my_sint64;
 
@@ -54,7 +57,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 4,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "myFixed64"
+      jsonName = "myFixed64",
+      schemaIndex = 3
   )
   public final long my_fixed64;
 
@@ -62,7 +66,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 5,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "mySfixed64"
+      jsonName = "mySfixed64",
+      schemaIndex = 4
   )
   public final long my_sfixed64;
 
@@ -70,7 +75,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 201,
       adapter = "com.squareup.wire.ProtoAdapter#INT64",
       label = WireField.Label.REPEATED,
-      jsonName = "repInt64"
+      jsonName = "repInt64",
+      schemaIndex = 5
   )
   public final List<Long> rep_int64;
 
@@ -78,7 +84,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 202,
       adapter = "com.squareup.wire.ProtoAdapter#UINT64",
       label = WireField.Label.REPEATED,
-      jsonName = "repUint64"
+      jsonName = "repUint64",
+      schemaIndex = 6
   )
   public final List<Long> rep_uint64;
 
@@ -86,7 +93,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 203,
       adapter = "com.squareup.wire.ProtoAdapter#SINT64",
       label = WireField.Label.REPEATED,
-      jsonName = "repSint64"
+      jsonName = "repSint64",
+      schemaIndex = 7
   )
   public final List<Long> rep_sint64;
 
@@ -94,7 +102,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 204,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
       label = WireField.Label.REPEATED,
-      jsonName = "repFixed64"
+      jsonName = "repFixed64",
+      schemaIndex = 8
   )
   public final List<Long> rep_fixed64;
 
@@ -102,7 +111,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 205,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
       label = WireField.Label.REPEATED,
-      jsonName = "repSfixed64"
+      jsonName = "repSfixed64",
+      schemaIndex = 9
   )
   public final List<Long> rep_sfixed64;
 
@@ -110,7 +120,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 301,
       adapter = "com.squareup.wire.ProtoAdapter#INT64",
       label = WireField.Label.PACKED,
-      jsonName = "packInt64"
+      jsonName = "packInt64",
+      schemaIndex = 10
   )
   public final List<Long> pack_int64;
 
@@ -118,7 +129,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 302,
       adapter = "com.squareup.wire.ProtoAdapter#UINT64",
       label = WireField.Label.PACKED,
-      jsonName = "packUint64"
+      jsonName = "packUint64",
+      schemaIndex = 11
   )
   public final List<Long> pack_uint64;
 
@@ -126,7 +138,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 303,
       adapter = "com.squareup.wire.ProtoAdapter#SINT64",
       label = WireField.Label.PACKED,
-      jsonName = "packSint64"
+      jsonName = "packSint64",
+      schemaIndex = 12
   )
   public final List<Long> pack_sint64;
 
@@ -134,7 +147,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 304,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
       label = WireField.Label.PACKED,
-      jsonName = "packFixed64"
+      jsonName = "packFixed64",
+      schemaIndex = 13
   )
   public final List<Long> pack_fixed64;
 
@@ -142,7 +156,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 305,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
       label = WireField.Label.PACKED,
-      jsonName = "packSfixed64"
+      jsonName = "packSfixed64",
+      schemaIndex = 14
   )
   public final List<Long> pack_sfixed64;
 
@@ -150,7 +165,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 501,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
       adapter = "com.squareup.wire.ProtoAdapter#INT64",
-      jsonName = "mapInt64Int64"
+      jsonName = "mapInt64Int64",
+      schemaIndex = 15
   )
   public final Map<Long, Long> map_int64_int64;
 
@@ -158,7 +174,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 502,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
       adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-      jsonName = "mapInt64Uint64"
+      jsonName = "mapInt64Uint64",
+      schemaIndex = 16
   )
   public final Map<Long, Long> map_int64_uint64;
 
@@ -166,7 +183,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 503,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
       adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-      jsonName = "mapInt64Sint64"
+      jsonName = "mapInt64Sint64",
+      schemaIndex = 17
   )
   public final Map<Long, Long> map_int64_sint64;
 
@@ -174,7 +192,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 504,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
       adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-      jsonName = "mapInt64Fixed64"
+      jsonName = "mapInt64Fixed64",
+      schemaIndex = 18
   )
   public final Map<Long, Long> map_int64_fixed64;
 
@@ -182,7 +201,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 505,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-      jsonName = "mapInt64Sfixed64"
+      jsonName = "mapInt64Sfixed64",
+      schemaIndex = 19
   )
   public final Map<Long, Long> map_int64_sfixed64;
 
@@ -190,7 +210,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 401,
       adapter = "com.squareup.wire.ProtoAdapter#INT64",
       jsonName = "oneofInt64",
-      oneofName = "choice"
+      oneofName = "choice",
+      schemaIndex = 20
   )
   public final Long oneof_int64;
 
@@ -198,7 +219,8 @@ public final class All64 extends Message<All64, All64.Builder> {
       tag = 402,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
       jsonName = "oneofSfixed64",
-      oneofName = "choice"
+      oneofName = "choice",
+      schemaIndex = 21
   )
   public final Long oneof_sfixed64;
 

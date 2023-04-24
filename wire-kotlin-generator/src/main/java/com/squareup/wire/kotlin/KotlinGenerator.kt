@@ -1073,20 +1073,25 @@ class KotlinGenerator private constructor(
   ): List<Pair<ParameterSpec, PropertySpec>> {
     val result = mutableListOf<Pair<ParameterSpec, PropertySpec>>()
 
+    var index = 0
+    val fieldsAndOneOfFieldTags = message.fieldsAndOneOfFields.map { it.tag }
+    val printSchemaIndex = fieldsAndOneOfFieldTags != fieldsAndOneOfFieldTags.sorted()
+
     for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
       when (fieldOrOneOf) {
         is Field -> result.add(
           constructorParameterAndProperty(
-            message,
-            fieldOrOneOf,
-            nameAllocator
+            message = message,
+            field = fieldOrOneOf,
+            nameAllocator = nameAllocator,
+            schemaIndex = if (printSchemaIndex) index++ else null,
           )
         )
         is OneOf -> result.add(
           constructorParameterAndProperty(
-            message,
-            fieldOrOneOf,
-            nameAllocator
+            message = message,
+            oneOf = fieldOrOneOf,
+            nameAllocator = nameAllocator,
           )
         )
         else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
@@ -1099,7 +1104,8 @@ class KotlinGenerator private constructor(
   private fun constructorParameterAndProperty(
     message: MessageType,
     field: Field,
-    nameAllocator: NameAllocator
+    nameAllocator: NameAllocator,
+    schemaIndex: Int?,
   ): Pair<ParameterSpec, PropertySpec> {
     val fieldClass = field.typeNameForMessageField
     val fieldName = nameAllocator[field]
@@ -1153,7 +1159,7 @@ class KotlinGenerator private constructor(
         for (annotation in optionAnnotations(field.options)) {
           addAnnotation(annotation)
         }
-        addAnnotation(wireFieldAnnotation(message, field))
+        addAnnotation(wireFieldAnnotation(message, field, schemaIndex))
         if (javaInterOp && jvmOnly) {
           addAnnotation(JvmField::class)
         }
@@ -1192,7 +1198,11 @@ class KotlinGenerator private constructor(
     return parameterSpec.build() to propertySpec.build()
   }
 
-  private fun wireFieldAnnotation(message: MessageType, field: Field): AnnotationSpec {
+  private fun wireFieldAnnotation(
+    message: MessageType,
+    field: Field,
+    schemaIndex: Int?,
+  ): AnnotationSpec {
     return AnnotationSpec.builder(WireField::class)
       .useSiteTarget(FIELD)
       .addMember("tag = %L", field.tag)
@@ -1238,6 +1248,11 @@ class KotlinGenerator private constructor(
         if (field.isOneOf) {
           val oneofName = message.oneOfs.first { it.fields.contains(field) }.name
           addMember("oneofName = %S", oneofName)
+        }
+      }
+      .apply {
+        if (schemaIndex != null) {
+          addMember("schemaIndex = %L", schemaIndex)
         }
       }
       .build()

@@ -81,6 +81,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import okio.ByteString;
@@ -700,6 +701,13 @@ public final class JavaGenerator {
         .initializer("$LL", 0L)
         .build());
 
+    int schemaIndex = 0;
+    List<Integer> fieldsAndOneOfFieldTags = type.getFieldsAndOneOfFields().stream()
+      .map(Field::getTag)
+      .collect(Collectors.toList());
+    List<Integer> sortedFieldsAndOneOfFieldTags = fieldsAndOneOfFieldTags.stream().sorted().collect(
+      Collectors.toList());
+    boolean printSchemaIndex = !fieldsAndOneOfFieldTags.equals(sortedFieldsAndOneOfFieldTags);
     for (Field field : type.getFieldsAndOneOfFields()) {
       TypeName fieldJavaType = fieldType(field);
       Field.EncodeMode encodeMode = field.getEncodeMode();
@@ -720,7 +728,9 @@ public final class JavaGenerator {
       for (AnnotationSpec annotation : optionAnnotations(field.getOptions())) {
         fieldBuilder.addAnnotation(annotation);
       }
-      fieldBuilder.addAnnotation(wireFieldAnnotation(nameAllocator, field, type));
+      fieldBuilder.addAnnotation(
+        wireFieldAnnotation(nameAllocator, field, type, printSchemaIndex ? schemaIndex++ : null)
+      );
       if (field.isExtension()) {
         fieldBuilder.addJavadoc("Extension source: $L\n", field.getLocation().withPathOnly());
       }
@@ -1352,7 +1362,7 @@ public final class JavaGenerator {
   // )
   //
   private AnnotationSpec wireFieldAnnotation(NameAllocator nameAllocator, Field field,
-      MessageType message) {
+      MessageType message, @Nullable Integer schemaIndex) {
     AnnotationSpec.Builder result = AnnotationSpec.builder(WireField.class);
 
     NameAllocator localNameAllocator = nameAllocator.clone();
@@ -1420,6 +1430,10 @@ public final class JavaGenerator {
         throw new IllegalArgumentException("No oneof found for field: " + field.getQualifiedName());
       }
       result.addMember("oneofName", "$S", oneofName);
+    }
+
+    if (schemaIndex != null) {
+      result.addMember("schemaIndex", String.valueOf(schemaIndex));
     }
 
     return result.build();

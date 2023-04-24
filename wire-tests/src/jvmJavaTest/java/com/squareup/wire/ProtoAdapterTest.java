@@ -31,7 +31,7 @@ public final class ProtoAdapterTest {
         .id(99)
         .name("Omar Little")
         .build();
-    ByteString encoded = ByteString.decodeHex("0a0b4f6d6172204c6974746c651063");
+    ByteString encoded = ByteString.decodeHex("10630a0b4f6d6172204c6974746c65");
 
     ProtoAdapter<Person> personAdapter = ProtoAdapter.get(Person.class);
     assertThat(ByteString.of(personAdapter.encode(person))).isEqualTo(encoded);

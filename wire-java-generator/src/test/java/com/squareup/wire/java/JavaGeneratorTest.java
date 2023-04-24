@@ -449,6 +449,37 @@ public final class JavaGeneratorTest {
         + "    public final String c;");
   }
 
+  @Test public void unsortedTagsPrintSchemaIndex() throws IOException {
+    Schema schema = new SchemaBuilder()
+      .add(Path.get("message.proto"), ""
+        + "message A {\n"
+        + "  optional string two = 2;\n"
+        + "  optional string one = 1;\n"
+        + "}\n")
+      .build();
+    MessageType message = (MessageType) schema.getType("A");
+    JavaGenerator javaGenerator = JavaGenerator.get(schema).withAndroidAnnotations(true);
+    TypeSpec typeSpec = javaGenerator.generateType(message);
+    String javaOutput = JavaFile.builder("", typeSpec).build().toString();
+    System.out.println(javaOutput);
+    assertThat(javaOutput).contains(""
+      + "  @WireField(\n"
+      + "      tag = 2,\n"
+      + "      adapter = \"com.squareup.wire.ProtoAdapter#STRING\",\n"
+      + "      schemaIndex = 0\n"
+      + "  )\n"
+      + "  @Nullable\n"
+      + "  public final String two;");
+    assertThat(javaOutput).contains(""
+      + "  @WireField(\n"
+      + "      tag = 1,\n"
+      + "      adapter = \"com.squareup.wire.ProtoAdapter#STRING\",\n"
+      + "      schemaIndex = 1\n"
+      + "  )\n"
+      + "  @Nullable\n"
+      + "  public final String one;");
+  }
+
   @Test public void androidSupport() throws IOException {
     Schema schema = new SchemaBuilder()
         .add(Path.get("message.proto"), ""

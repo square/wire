@@ -30,7 +30,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "myInt32"
+      jsonName = "myInt32",
+      schemaIndex = 0
   )
   public final int my_int32;
 
@@ -38,7 +39,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 2,
       adapter = "com.squareup.wire.ProtoAdapter#UINT32",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "myUint32"
+      jsonName = "myUint32",
+      schemaIndex = 1
   )
   public final int my_uint32;
 
@@ -46,7 +48,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 3,
       adapter = "com.squareup.wire.ProtoAdapter#SINT32",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "mySint32"
+      jsonName = "mySint32",
+      schemaIndex = 2
   )
   public final int my_sint32;
 
@@ -54,7 +57,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 4,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "myFixed32"
+      jsonName = "myFixed32",
+      schemaIndex = 3
   )
   public final int my_fixed32;
 
@@ -62,7 +66,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 5,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "mySfixed32"
+      jsonName = "mySfixed32",
+      schemaIndex = 4
   )
   public final int my_sfixed32;
 
@@ -70,7 +75,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 201,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.REPEATED,
-      jsonName = "repInt32"
+      jsonName = "repInt32",
+      schemaIndex = 5
   )
   public final List<Integer> rep_int32;
 
@@ -78,7 +84,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 202,
       adapter = "com.squareup.wire.ProtoAdapter#UINT32",
       label = WireField.Label.REPEATED,
-      jsonName = "repUint32"
+      jsonName = "repUint32",
+      schemaIndex = 6
   )
   public final List<Integer> rep_uint32;
 
@@ -86,7 +93,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 203,
       adapter = "com.squareup.wire.ProtoAdapter#SINT32",
       label = WireField.Label.REPEATED,
-      jsonName = "repSint32"
+      jsonName = "repSint32",
+      schemaIndex = 7
   )
   public final List<Integer> rep_sint32;
 
@@ -94,7 +102,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 204,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
       label = WireField.Label.REPEATED,
-      jsonName = "repFixed32"
+      jsonName = "repFixed32",
+      schemaIndex = 8
   )
   public final List<Integer> rep_fixed32;
 
@@ -102,7 +111,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 205,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
       label = WireField.Label.REPEATED,
-      jsonName = "repSfixed32"
+      jsonName = "repSfixed32",
+      schemaIndex = 9
   )
   public final List<Integer> rep_sfixed32;
 
@@ -110,7 +120,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 301,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.PACKED,
-      jsonName = "packInt32"
+      jsonName = "packInt32",
+      schemaIndex = 10
   )
   public final List<Integer> pack_int32;
 
@@ -118,7 +129,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 302,
       adapter = "com.squareup.wire.ProtoAdapter#UINT32",
       label = WireField.Label.PACKED,
-      jsonName = "packUint32"
+      jsonName = "packUint32",
+      schemaIndex = 11
   )
   public final List<Integer> pack_uint32;
 
@@ -126,7 +138,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 303,
       adapter = "com.squareup.wire.ProtoAdapter#SINT32",
       label = WireField.Label.PACKED,
-      jsonName = "packSint32"
+      jsonName = "packSint32",
+      schemaIndex = 12
   )
   public final List<Integer> pack_sint32;
 
@@ -134,7 +147,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 304,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
       label = WireField.Label.PACKED,
-      jsonName = "packFixed32"
+      jsonName = "packFixed32",
+      schemaIndex = 13
   )
   public final List<Integer> pack_fixed32;
 
@@ -142,7 +156,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 305,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
       label = WireField.Label.PACKED,
-      jsonName = "packSfixed32"
+      jsonName = "packSfixed32",
+      schemaIndex = 14
   )
   public final List<Integer> pack_sfixed32;
 
@@ -150,7 +165,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 501,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      jsonName = "mapInt32Int32"
+      jsonName = "mapInt32Int32",
+      schemaIndex = 15
   )
   public final Map<Integer, Integer> map_int32_int32;
 
@@ -158,7 +174,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 502,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
       adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-      jsonName = "mapInt32Uint32"
+      jsonName = "mapInt32Uint32",
+      schemaIndex = 16
   )
   public final Map<Integer, Integer> map_int32_uint32;
 
@@ -166,7 +183,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 503,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
       adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-      jsonName = "mapInt32Sint32"
+      jsonName = "mapInt32Sint32",
+      schemaIndex = 17
   )
   public final Map<Integer, Integer> map_int32_sint32;
 
@@ -174,7 +192,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 504,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
       adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-      jsonName = "mapInt32Fixed32"
+      jsonName = "mapInt32Fixed32",
+      schemaIndex = 18
   )
   public final Map<Integer, Integer> map_int32_fixed32;
 
@@ -182,7 +201,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 505,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-      jsonName = "mapInt32Sfixed32"
+      jsonName = "mapInt32Sfixed32",
+      schemaIndex = 19
   )
   public final Map<Integer, Integer> map_int32_sfixed32;
 
@@ -190,7 +210,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 401,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
       jsonName = "oneofInt32",
-      oneofName = "choice"
+      oneofName = "choice",
+      schemaIndex = 20
   )
   public final Integer oneof_int32;
 
@@ -198,7 +219,8 @@ public final class All32 extends Message<All32, All32.Builder> {
       tag = 402,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
       jsonName = "oneofSfixed32",
-      oneofName = "choice"
+      oneofName = "choice",
+      schemaIndex = 21
   )
   public final Integer oneof_sfixed32;
 

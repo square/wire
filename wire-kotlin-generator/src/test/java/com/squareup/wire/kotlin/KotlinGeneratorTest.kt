@@ -1954,50 +1954,59 @@ class KotlinGeneratorTest {
       |  @field:WireField(
       |    tag = 1,
       |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      |    schemaIndex = 0,
       |  )
       |  public val a: String? = null,
       |  @field:WireField(
       |    tag = 2,
       |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      |    schemaIndex = 1,
       |  )
       |  public val b: String? = null,
       |  @field:WireField(
       |    tag = 3,
       |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
       |    oneofName = "choice",
+      |    schemaIndex = 2,
       |  )
       |  public val c: String? = null,
       |  @field:WireField(
       |    tag = 8,
       |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
       |    oneofName = "choice",
+      |    schemaIndex = 3,
       |  )
       |  public val d: String? = null,
       |  @field:WireField(
       |    tag = 4,
       |    adapter = "SecretData#ADAPTER",
+      |    schemaIndex = 4,
       |  )
       |  public val secret_data: SecretData? = null,
       |  @field:WireField(
       |    tag = 5,
       |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      |    schemaIndex = 5,
       |  )
       |  public val e: String? = null,
       |  public val decision: OneOf<Decision<*>, *>? = null,
       |  @field:WireField(
       |    tag = 10,
       |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      |    schemaIndex = 6,
       |  )
       |  public val i: String? = null,
       |  @field:WireField(
       |    tag = 12,
       |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
       |    oneofName = "unique",
+      |    schemaIndex = 7,
       |  )
       |  public val j: String? = null,
       |  @field:WireField(
       |    tag = 11,
       |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      |    schemaIndex = 8,
       |  )
       |  public val k: String? = null,
       |  unknownFields: ByteString = ByteString.EMPTY,

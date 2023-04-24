@@ -27,7 +27,7 @@ class ProtoAdapterTest {
       .id(99)
       .name("Omar Little")
       .build()
-    val encoded = "0a0b4f6d6172204c6974746c651063".decodeHex()
+    val encoded = "10630a0b4f6d6172204c6974746c65".decodeHex()
     val personAdapter = ProtoAdapter.get(Person::class.java)
     assertThat(personAdapter.encode(person).toByteString()).isEqualTo(encoded)
     assertThat(personAdapter.decode(encoded)).isEqualTo(person)
