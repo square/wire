@@ -62,6 +62,12 @@ annotation class WireField(
    * field is part of a oneof.
    */
   val oneofName: String = "",
+  /**
+   * This is the order that this field was declared in the `.proto` schema.
+   *
+   * It is -1 if their tags are declared in ascending order.
+   */
+  val schemaIndex: Int = -1,
 ) {
 
   /** A protocol buffer label.  */

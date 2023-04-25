@@ -392,8 +392,8 @@ public class WireTest {
     String printedPerson = person.toString();
     assertThat(printedPerson).isEqualTo(
         "Person{"
-            + "name=Such\\, I mean it\\, such \\[a\\] \\{funny\\} name., "
             + "id=1, "
+            + "name=Such\\, I mean it\\, such \\[a\\] \\{funny\\} name., "
             + "phone=[PhoneNumber{number=123\\,456\\,789}], "
             + "aliases=[B-lo\\,ved, D\\{esperado\\}]"
             + "}");

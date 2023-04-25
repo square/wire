@@ -34,6 +34,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "myInt64",
+    schemaIndex = 0,
   )
   @JvmField
   public val my_int64: Long = 0L,
@@ -42,6 +43,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "myUint64",
+    schemaIndex = 1,
   )
   @JvmField
   public val my_uint64: Long = 0L,
@@ -50,6 +52,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "mySint64",
+    schemaIndex = 2,
   )
   @JvmField
   public val my_sint64: Long = 0L,
@@ -58,6 +61,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "myFixed64",
+    schemaIndex = 3,
   )
   @JvmField
   public val my_fixed64: Long = 0L,
@@ -66,6 +70,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "mySfixed64",
+    schemaIndex = 4,
   )
   @JvmField
   public val my_sfixed64: Long = 0L,
@@ -84,6 +89,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     jsonName = "oneofInt64",
     oneofName = "choice",
+    schemaIndex = 15,
   )
   @JvmField
   public val oneof_int64: Long? = null,
@@ -92,6 +98,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     jsonName = "oneofSfixed64",
     oneofName = "choice",
+    schemaIndex = 16,
   )
   @JvmField
   public val oneof_sfixed64: Long? = null,
@@ -107,6 +114,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.REPEATED,
     jsonName = "repInt64",
+    schemaIndex = 5,
   )
   @JvmField
   public val rep_int64: List<Long> = immutableCopyOf("rep_int64", rep_int64)
@@ -116,6 +124,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.REPEATED,
     jsonName = "repUint64",
+    schemaIndex = 6,
   )
   @JvmField
   public val rep_uint64: List<Long> = immutableCopyOf("rep_uint64", rep_uint64)
@@ -125,6 +134,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.REPEATED,
     jsonName = "repSint64",
+    schemaIndex = 7,
   )
   @JvmField
   public val rep_sint64: List<Long> = immutableCopyOf("rep_sint64", rep_sint64)
@@ -134,6 +144,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.REPEATED,
     jsonName = "repFixed64",
+    schemaIndex = 8,
   )
   @JvmField
   public val rep_fixed64: List<Long> = immutableCopyOf("rep_fixed64", rep_fixed64)
@@ -143,6 +154,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.REPEATED,
     jsonName = "repSfixed64",
+    schemaIndex = 9,
   )
   @JvmField
   public val rep_sfixed64: List<Long> = immutableCopyOf("rep_sfixed64", rep_sfixed64)
@@ -152,6 +164,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.PACKED,
     jsonName = "packInt64",
+    schemaIndex = 10,
   )
   @JvmField
   public val pack_int64: List<Long> = immutableCopyOf("pack_int64", pack_int64)
@@ -161,6 +174,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.PACKED,
     jsonName = "packUint64",
+    schemaIndex = 11,
   )
   @JvmField
   public val pack_uint64: List<Long> = immutableCopyOf("pack_uint64", pack_uint64)
@@ -170,6 +184,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.PACKED,
     jsonName = "packSint64",
+    schemaIndex = 12,
   )
   @JvmField
   public val pack_sint64: List<Long> = immutableCopyOf("pack_sint64", pack_sint64)
@@ -179,6 +194,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.PACKED,
     jsonName = "packFixed64",
+    schemaIndex = 13,
   )
   @JvmField
   public val pack_fixed64: List<Long> = immutableCopyOf("pack_fixed64", pack_fixed64)
@@ -188,6 +204,7 @@ public class All64(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.PACKED,
     jsonName = "packSfixed64",
+    schemaIndex = 14,
   )
   @JvmField
   public val pack_sfixed64: List<Long> = immutableCopyOf("pack_sfixed64", pack_sfixed64)
@@ -197,6 +214,7 @@ public class All64(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     jsonName = "mapInt64Int64",
+    schemaIndex = 17,
   )
   @JvmField
   public val map_int64_int64: Map<Long, Long> = immutableCopyOf("map_int64_int64", map_int64_int64)
@@ -206,6 +224,7 @@ public class All64(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     jsonName = "mapInt64Uint64",
+    schemaIndex = 18,
   )
   @JvmField
   public val map_int64_uint64: Map<Long, Long> = immutableCopyOf("map_int64_uint64",
@@ -216,6 +235,7 @@ public class All64(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     jsonName = "mapInt64Sint64",
+    schemaIndex = 19,
   )
   @JvmField
   public val map_int64_sint64: Map<Long, Long> = immutableCopyOf("map_int64_sint64",
@@ -226,6 +246,7 @@ public class All64(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     jsonName = "mapInt64Fixed64",
+    schemaIndex = 20,
   )
   @JvmField
   public val map_int64_fixed64: Map<Long, Long> = immutableCopyOf("map_int64_fixed64",
@@ -236,6 +257,7 @@ public class All64(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     jsonName = "mapInt64Sfixed64",
+    schemaIndex = 21,
   )
   @JvmField
   public val map_int64_sfixed64: Map<Long, Long> = immutableCopyOf("map_int64_sfixed64",

@@ -9,13 +9,13 @@ import Wire
 public struct Person {
 
     /**
-     * The customer's full name.
-     */
-    public var name: String
-    /**
      * The customer's ID number.
      */
     public var id: Int32
+    /**
+     * The customer's full name.
+     */
+    public var name: String
     /**
      * Email address for the customer.
      */
@@ -28,14 +28,14 @@ public struct Person {
     public var unknownFields: Data = .init()
 
     public init(
-        name: String,
         id: Int32,
+        name: String,
         email: String? = nil,
         phone: [PhoneNumber] = [],
         aliases: [String] = []
     ) {
-        self.name = name
         self.id = id
+        self.name = name
         self.email = email
         self.phone = phone
         self.aliases = aliases
@@ -179,8 +179,8 @@ extension Person : ProtoMessage {
 
 extension Person : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        var name: String? = nil
         var id: Int32? = nil
+        var name: String? = nil
         var email: String? = nil
         var phone: [Person.PhoneNumber] = []
         var aliases: [String] = []
@@ -188,8 +188,8 @@ extension Person : Proto2Codable {
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
-            case 1: name = try reader.decode(String.self)
             case 2: id = try reader.decode(Int32.self)
+            case 1: name = try reader.decode(String.self)
             case 3: email = try reader.decode(String.self)
             case 4: try reader.decode(into: &phone)
             case 5: try reader.decode(into: &aliases)
@@ -198,16 +198,16 @@ extension Person : Proto2Codable {
         }
         self.unknownFields = try reader.endMessage(token: token)
 
-        self.name = try Person.checkIfMissing(name, "name")
         self.id = try Person.checkIfMissing(id, "id")
+        self.name = try Person.checkIfMissing(name, "name")
         self.email = email
         self.phone = phone
         self.aliases = aliases
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.name)
         try writer.encode(tag: 2, value: self.id)
+        try writer.encode(tag: 1, value: self.name)
         try writer.encode(tag: 3, value: self.email)
         try writer.encode(tag: 4, value: self.phone)
         try writer.encode(tag: 5, value: self.aliases)
@@ -219,8 +219,8 @@ extension Person : Proto2Codable {
 extension Person : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.name = try container.decode(String.self, forKey: "name")
         self.id = try container.decode(Int32.self, forKey: "id")
+        self.name = try container.decode(String.self, forKey: "name")
         self.email = try container.decodeIfPresent(String.self, forKey: "email")
         self.phone = try container.decodeProtoArray(Person.PhoneNumber.self, forKey: "phone")
         self.aliases = try container.decodeProtoArray(String.self, forKey: "aliases")
@@ -230,11 +230,11 @@ extension Person : Codable {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || !self.name.isEmpty {
-            try container.encode(self.name, forKey: "name")
-        }
         if includeDefaults || self.id != 0 {
             try container.encode(self.id, forKey: "id")
+        }
+        if includeDefaults || !self.name.isEmpty {
+            try container.encode(self.name, forKey: "name")
         }
         try container.encodeIfPresent(self.email, forKey: "email")
         if includeDefaults || !self.phone.isEmpty {

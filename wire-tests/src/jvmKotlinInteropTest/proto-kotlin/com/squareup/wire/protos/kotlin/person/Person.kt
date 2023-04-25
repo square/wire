@@ -34,31 +34,34 @@ import okio.ByteString
  */
 public class Person(
   /**
-   * The customer's full name.
-   */
-  @field:WireField(
-    tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REQUIRED,
-  )
-  @JvmField
-  public val name: String,
-  /**
    * The customer's ID number.
    */
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REQUIRED,
+    schemaIndex = 0,
   )
   @JvmField
   public val id: Int,
+  /**
+   * The customer's full name.
+   */
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    label = WireField.Label.REQUIRED,
+    schemaIndex = 1,
+  )
+  @JvmField
+  public val name: String,
   /**
    * Email address for the customer.
    */
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 2,
   )
   @JvmField
   public val email: String? = null,
@@ -73,6 +76,7 @@ public class Person(
     tag = 4,
     adapter = "com.squareup.wire.protos.kotlin.person.Person${'$'}PhoneNumber#ADAPTER",
     label = WireField.Label.REPEATED,
+    schemaIndex = 3,
   )
   @JvmField
   public val phone: List<PhoneNumber> = immutableCopyOf("phone", phone)
@@ -81,14 +85,15 @@ public class Person(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
+    schemaIndex = 4,
   )
   @JvmField
   public val aliases: List<String> = immutableCopyOf("aliases", aliases)
 
   public override fun newBuilder(): Builder {
     val builder = Builder()
-    builder.name = name
     builder.id = id
+    builder.name = name
     builder.email = email
     builder.phone = phone
     builder.aliases = aliases
@@ -100,8 +105,8 @@ public class Person(
     if (other === this) return true
     if (other !is Person) return false
     if (unknownFields != other.unknownFields) return false
-    if (name != other.name) return false
     if (id != other.id) return false
+    if (name != other.name) return false
     if (email != other.email) return false
     if (phone != other.phone) return false
     if (aliases != other.aliases) return false
@@ -112,8 +117,8 @@ public class Person(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + name.hashCode()
       result = result * 37 + id.hashCode()
+      result = result * 37 + name.hashCode()
       result = result * 37 + (email?.hashCode() ?: 0)
       result = result * 37 + phone.hashCode()
       result = result * 37 + aliases.hashCode()
@@ -124,8 +129,8 @@ public class Person(
 
   public override fun toString(): String {
     val result = mutableListOf<String>()
-    result += """name=${sanitize(name)}"""
     result += """id=$id"""
+    result += """name=${sanitize(name)}"""
     if (email != null) result += """email=${sanitize(email)}"""
     if (phone.isNotEmpty()) result += """phone=$phone"""
     if (aliases.isNotEmpty()) result += """aliases=${sanitize(aliases)}"""
@@ -133,20 +138,20 @@ public class Person(
   }
 
   public fun copy(
-    name: String = this.name,
     id: Int = this.id,
+    name: String = this.name,
     email: String? = this.email,
     phone: List<PhoneNumber> = this.phone,
     aliases: List<String> = this.aliases,
     unknownFields: ByteString = this.unknownFields,
-  ): Person = Person(name, id, email, phone, aliases, unknownFields)
+  ): Person = Person(id, name, email, phone, aliases, unknownFields)
 
   public class Builder : Message.Builder<Person, Builder>() {
     @JvmField
-    public var name: String? = null
+    public var id: Int? = null
 
     @JvmField
-    public var id: Int? = null
+    public var name: String? = null
 
     @JvmField
     public var email: String? = null
@@ -158,18 +163,18 @@ public class Person(
     public var aliases: List<String> = emptyList()
 
     /**
-     * The customer's full name.
-     */
-    public fun name(name: String): Builder {
-      this.name = name
-      return this
-    }
-
-    /**
      * The customer's ID number.
      */
     public fun id(id: Int): Builder {
       this.id = id
+      return this
+    }
+
+    /**
+     * The customer's full name.
+     */
+    public fun name(name: String): Builder {
+      this.name = name
       return this
     }
 
@@ -197,8 +202,8 @@ public class Person(
     }
 
     public override fun build(): Person = Person(
-      name = name ?: throw missingRequiredFields(name, "name"),
       id = id ?: throw missingRequiredFields(id, "id"),
+      name = name ?: throw missingRequiredFields(name, "name"),
       email = email,
       phone = phone,
       aliases = aliases,
@@ -218,8 +223,8 @@ public class Person(
     ) {
       public override fun encodedSize(`value`: Person): Int {
         var size = value.unknownFields.size
-        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
         size += PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone)
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.aliases)
@@ -227,8 +232,8 @@ public class Person(
       }
 
       public override fun encode(writer: ProtoWriter, `value`: Person): Unit {
-        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
         PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases)
@@ -240,20 +245,20 @@ public class Person(
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases)
         PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
-        ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
+        ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
       }
 
       public override fun decode(reader: ProtoReader): Person {
-        var name: String? = null
         var id: Int? = null
+        var name: String? = null
         var email: String? = null
         val phone = mutableListOf<PhoneNumber>()
         val aliases = mutableListOf<String>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> name = ProtoAdapter.STRING.decode(reader)
             2 -> id = ProtoAdapter.INT32.decode(reader)
+            1 -> name = ProtoAdapter.STRING.decode(reader)
             3 -> email = ProtoAdapter.STRING.decode(reader)
             4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
             5 -> aliases.add(ProtoAdapter.STRING.decode(reader))
@@ -261,8 +266,8 @@ public class Person(
           }
         }
         return Person(
-          name = name ?: throw missingRequiredFields(name, "name"),
           id = id ?: throw missingRequiredFields(id, "id"),
+          name = name ?: throw missingRequiredFields(name, "name"),
           email = email,
           phone = phone,
           aliases = aliases,

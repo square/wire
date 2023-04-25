@@ -125,6 +125,7 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
         .firstOrNull()
       return@mapNotNull wireField?.let { ProtoField(field.type, wireField) }
     }
+    .sortedBy { it.wireField.schemaIndex }
 
   private class ProtoField(
     // TODO(Benoit) Delete if unused?

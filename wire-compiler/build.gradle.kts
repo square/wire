@@ -37,7 +37,7 @@ dependencies {
 }
 
 val shadowJar by tasks.getting(ShadowJar::class) {
-  classifier = "jar-with-dependencies"
+  archiveClassifier.set("jar-with-dependencies")
 }
 
 if (project.rootProject.name == "wire") {
