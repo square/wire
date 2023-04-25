@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 4.5.6
+-------------
+
+_2023-04-25_
+
+* Fix: JSON serialization is now bullet-proofed against `Class.getDeclaredFields` random ordering.
+* Perf: Add option `wire.use_array` to use primitive arrays for packed scalars. This should improve
+  performances as it avoids autoboxing on the JVM. It will use the appropriate array type, for
+  example `repeated float` would be represented as a `FloatArray`.
+
 Version 4.5.5
 -------------
 
