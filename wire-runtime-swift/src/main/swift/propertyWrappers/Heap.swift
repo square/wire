@@ -28,11 +28,6 @@ public final class Heap<T> {
 
     public var wrappedValue: T
 
-    @available(*, deprecated, message: "Replace with init(wrappedValue:)")
-    public init(value: T) {
-        self.wrappedValue = value
-    }
-
     public init(wrappedValue: T) {
         self.wrappedValue = wrappedValue
     }
