@@ -22,11 +22,6 @@ public enum Indirect<T : ProtoCodable> {
 
     indirect case some(T)
 
-    @available(*, deprecated, message: "Replace with init(wrappedValue:)")
-    public init(value: T?) {
-        self.init(wrappedValue: value)
-    }
-
     public init(wrappedValue: T?) {
         if let value = wrappedValue {
           self = .some(value)
