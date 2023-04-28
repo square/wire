@@ -32,22 +32,6 @@ public final class com/squareup/wire/AnyMessage$Companion {
 	public final fun pack (Lcom/squareup/wire/Message;)Lcom/squareup/wire/AnyMessage;
 }
 
-public final class com/squareup/wire/DoubleProtoAdapter : com/squareup/wire/ProtoAdapter {
-	public fun <init> ()V
-	public fun decode (Lcom/squareup/wire/ProtoReader;)Ljava/lang/Double;
-	public synthetic fun decode (Lcom/squareup/wire/ProtoReader;)Ljava/lang/Object;
-	public final fun decodePrimitive (Lcom/squareup/wire/ProtoReader;)D
-	public fun encode (Lcom/squareup/wire/ProtoWriter;D)V
-	public synthetic fun encode (Lcom/squareup/wire/ProtoWriter;Ljava/lang/Object;)V
-	public fun encode (Lcom/squareup/wire/ReverseProtoWriter;D)V
-	public synthetic fun encode (Lcom/squareup/wire/ReverseProtoWriter;Ljava/lang/Object;)V
-	public final fun encodePrimitive (Lcom/squareup/wire/ReverseProtoWriter;D)V
-	public fun encodedSize (D)I
-	public synthetic fun encodedSize (Ljava/lang/Object;)I
-	public fun redact (D)Ljava/lang/Double;
-	public synthetic fun redact (Ljava/lang/Object;)Ljava/lang/Object;
-}
-
 public final class com/squareup/wire/DurationKt {
 	public static final fun durationOfSeconds (JJ)Ljava/time/Duration;
 }
@@ -87,36 +71,8 @@ public final class com/squareup/wire/FieldEncoding : java/lang/Enum {
 public final class com/squareup/wire/FieldEncoding$Companion {
 }
 
-public final class com/squareup/wire/FloatProtoAdapter : com/squareup/wire/ProtoAdapter {
-	public fun <init> ()V
-	public fun decode (Lcom/squareup/wire/ProtoReader;)Ljava/lang/Float;
-	public synthetic fun decode (Lcom/squareup/wire/ProtoReader;)Ljava/lang/Object;
-	public final fun decodePrimitive (Lcom/squareup/wire/ProtoReader;)F
-	public fun encode (Lcom/squareup/wire/ProtoWriter;F)V
-	public synthetic fun encode (Lcom/squareup/wire/ProtoWriter;Ljava/lang/Object;)V
-	public fun encode (Lcom/squareup/wire/ReverseProtoWriter;F)V
-	public synthetic fun encode (Lcom/squareup/wire/ReverseProtoWriter;Ljava/lang/Object;)V
-	public final fun encodePrimitive (Lcom/squareup/wire/ReverseProtoWriter;F)V
-	public fun encodedSize (F)I
-	public synthetic fun encodedSize (Ljava/lang/Object;)I
-	public fun redact (F)Ljava/lang/Float;
-	public synthetic fun redact (Ljava/lang/Object;)Ljava/lang/Object;
-}
-
 public final class com/squareup/wire/InstantKt {
 	public static final fun ofEpochSecond (JJ)Ljava/time/Instant;
-}
-
-public abstract class com/squareup/wire/IntProtoAdapter : com/squareup/wire/ProtoAdapter {
-	public fun <init> (Lcom/squareup/wire/FieldEncoding;)V
-	public abstract fun decodePrimitive (Lcom/squareup/wire/ProtoReader;)I
-	public abstract fun encodePrimitive (Lcom/squareup/wire/ReverseProtoWriter;I)V
-}
-
-public abstract class com/squareup/wire/LongProtoAdapter : com/squareup/wire/ProtoAdapter {
-	public fun <init> (Lcom/squareup/wire/FieldEncoding;)V
-	public abstract fun decodePrimitive (Lcom/squareup/wire/ProtoReader;)J
-	public abstract fun encodePrimitive (Lcom/squareup/wire/ReverseProtoWriter;J)V
 }
 
 public abstract class com/squareup/wire/Message : java/io/Serializable {
@@ -189,44 +145,32 @@ public abstract class com/squareup/wire/ProtoAdapter {
 	public static final field BYTES Lcom/squareup/wire/ProtoAdapter;
 	public static final field BYTES_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public static final field Companion Lcom/squareup/wire/ProtoAdapter$Companion;
-	public static final field DOUBLE Lcom/squareup/wire/DoubleProtoAdapter;
-	public static final field DOUBLE_ARRAY Lcom/squareup/wire/ProtoAdapter;
+	public static final field DOUBLE Lcom/squareup/wire/ProtoAdapter;
 	public static final field DOUBLE_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public static final field DURATION Lcom/squareup/wire/ProtoAdapter;
 	public static final field EMPTY Lcom/squareup/wire/ProtoAdapter;
-	public static final field FIXED32 Lcom/squareup/wire/IntProtoAdapter;
-	public static final field FIXED32_ARRAY Lcom/squareup/wire/ProtoAdapter;
-	public static final field FIXED64 Lcom/squareup/wire/LongProtoAdapter;
-	public static final field FIXED64_ARRAY Lcom/squareup/wire/ProtoAdapter;
-	public static final field FLOAT Lcom/squareup/wire/FloatProtoAdapter;
-	public static final field FLOAT_ARRAY Lcom/squareup/wire/ProtoAdapter;
+	public static final field FIXED32 Lcom/squareup/wire/ProtoAdapter;
+	public static final field FIXED64 Lcom/squareup/wire/ProtoAdapter;
+	public static final field FLOAT Lcom/squareup/wire/ProtoAdapter;
 	public static final field FLOAT_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public static final field INSTANT Lcom/squareup/wire/ProtoAdapter;
-	public static final field INT32 Lcom/squareup/wire/IntProtoAdapter;
-	public static final field INT32_ARRAY Lcom/squareup/wire/ProtoAdapter;
+	public static final field INT32 Lcom/squareup/wire/ProtoAdapter;
 	public static final field INT32_VALUE Lcom/squareup/wire/ProtoAdapter;
-	public static final field INT64 Lcom/squareup/wire/LongProtoAdapter;
-	public static final field INT64_ARRAY Lcom/squareup/wire/ProtoAdapter;
+	public static final field INT64 Lcom/squareup/wire/ProtoAdapter;
 	public static final field INT64_VALUE Lcom/squareup/wire/ProtoAdapter;
-	public static final field SFIXED32 Lcom/squareup/wire/IntProtoAdapter;
-	public static final field SFIXED32_ARRAY Lcom/squareup/wire/ProtoAdapter;
-	public static final field SFIXED64 Lcom/squareup/wire/LongProtoAdapter;
-	public static final field SFIXED64_ARRAY Lcom/squareup/wire/ProtoAdapter;
-	public static final field SINT32 Lcom/squareup/wire/IntProtoAdapter;
-	public static final field SINT32_ARRAY Lcom/squareup/wire/ProtoAdapter;
-	public static final field SINT64 Lcom/squareup/wire/LongProtoAdapter;
-	public static final field SINT64_ARRAY Lcom/squareup/wire/ProtoAdapter;
+	public static final field SFIXED32 Lcom/squareup/wire/ProtoAdapter;
+	public static final field SFIXED64 Lcom/squareup/wire/ProtoAdapter;
+	public static final field SINT32 Lcom/squareup/wire/ProtoAdapter;
+	public static final field SINT64 Lcom/squareup/wire/ProtoAdapter;
 	public static final field STRING Lcom/squareup/wire/ProtoAdapter;
 	public static final field STRING_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public static final field STRUCT_LIST Lcom/squareup/wire/ProtoAdapter;
 	public static final field STRUCT_MAP Lcom/squareup/wire/ProtoAdapter;
 	public static final field STRUCT_NULL Lcom/squareup/wire/ProtoAdapter;
 	public static final field STRUCT_VALUE Lcom/squareup/wire/ProtoAdapter;
-	public static final field UINT32 Lcom/squareup/wire/IntProtoAdapter;
-	public static final field UINT32_ARRAY Lcom/squareup/wire/ProtoAdapter;
+	public static final field UINT32 Lcom/squareup/wire/ProtoAdapter;
 	public static final field UINT32_VALUE Lcom/squareup/wire/ProtoAdapter;
-	public static final field UINT64 Lcom/squareup/wire/LongProtoAdapter;
-	public static final field UINT64_ARRAY Lcom/squareup/wire/ProtoAdapter;
+	public static final field UINT64 Lcom/squareup/wire/ProtoAdapter;
 	public static final field UINT64_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public fun <init> (Lcom/squareup/wire/FieldEncoding;Ljava/lang/Class;)V
 	public fun <init> (Lcom/squareup/wire/FieldEncoding;Ljava/lang/Class;Ljava/lang/String;)V
