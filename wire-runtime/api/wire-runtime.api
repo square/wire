@@ -146,22 +146,32 @@ public abstract class com/squareup/wire/ProtoAdapter {
 	public static final field BYTES_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public static final field Companion Lcom/squareup/wire/ProtoAdapter$Companion;
 	public static final field DOUBLE Lcom/squareup/wire/ProtoAdapter;
+	public static final field DOUBLE_ARRAY Lcom/squareup/wire/ProtoAdapter;
 	public static final field DOUBLE_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public static final field DURATION Lcom/squareup/wire/ProtoAdapter;
 	public static final field EMPTY Lcom/squareup/wire/ProtoAdapter;
 	public static final field FIXED32 Lcom/squareup/wire/ProtoAdapter;
+	public static final field FIXED32_ARRAY Lcom/squareup/wire/ProtoAdapter;
 	public static final field FIXED64 Lcom/squareup/wire/ProtoAdapter;
+	public static final field FIXED64_ARRAY Lcom/squareup/wire/ProtoAdapter;
 	public static final field FLOAT Lcom/squareup/wire/ProtoAdapter;
+	public static final field FLOAT_ARRAY Lcom/squareup/wire/ProtoAdapter;
 	public static final field FLOAT_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public static final field INSTANT Lcom/squareup/wire/ProtoAdapter;
 	public static final field INT32 Lcom/squareup/wire/ProtoAdapter;
+	public static final field INT32_ARRAY Lcom/squareup/wire/ProtoAdapter;
 	public static final field INT32_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public static final field INT64 Lcom/squareup/wire/ProtoAdapter;
+	public static final field INT64_ARRAY Lcom/squareup/wire/ProtoAdapter;
 	public static final field INT64_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public static final field SFIXED32 Lcom/squareup/wire/ProtoAdapter;
+	public static final field SFIXED32_ARRAY Lcom/squareup/wire/ProtoAdapter;
 	public static final field SFIXED64 Lcom/squareup/wire/ProtoAdapter;
+	public static final field SFIXED64_ARRAY Lcom/squareup/wire/ProtoAdapter;
 	public static final field SINT32 Lcom/squareup/wire/ProtoAdapter;
+	public static final field SINT32_ARRAY Lcom/squareup/wire/ProtoAdapter;
 	public static final field SINT64 Lcom/squareup/wire/ProtoAdapter;
+	public static final field SINT64_ARRAY Lcom/squareup/wire/ProtoAdapter;
 	public static final field STRING Lcom/squareup/wire/ProtoAdapter;
 	public static final field STRING_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public static final field STRUCT_LIST Lcom/squareup/wire/ProtoAdapter;
@@ -169,8 +179,10 @@ public abstract class com/squareup/wire/ProtoAdapter {
 	public static final field STRUCT_NULL Lcom/squareup/wire/ProtoAdapter;
 	public static final field STRUCT_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public static final field UINT32 Lcom/squareup/wire/ProtoAdapter;
+	public static final field UINT32_ARRAY Lcom/squareup/wire/ProtoAdapter;
 	public static final field UINT32_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public static final field UINT64 Lcom/squareup/wire/ProtoAdapter;
+	public static final field UINT64_ARRAY Lcom/squareup/wire/ProtoAdapter;
 	public static final field UINT64_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public fun <init> (Lcom/squareup/wire/FieldEncoding;Ljava/lang/Class;)V
 	public fun <init> (Lcom/squareup/wire/FieldEncoding;Ljava/lang/Class;Ljava/lang/String;)V

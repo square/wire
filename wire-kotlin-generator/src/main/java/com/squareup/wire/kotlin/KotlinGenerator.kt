@@ -52,16 +52,12 @@ import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.joinToCode
 import com.squareup.kotlinpoet.jvm.jvmField
 import com.squareup.kotlinpoet.jvm.jvmStatic
-import com.squareup.wire.internal.DoubleArrayList
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
-import com.squareup.wire.internal.FloatArrayList
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
 import com.squareup.wire.GrpcStreamingCall
-import com.squareup.wire.internal.IntArrayList
-import com.squareup.wire.internal.LongArrayList
 import com.squareup.wire.Message
 import com.squareup.wire.MessageSink
 import com.squareup.wire.MessageSource
@@ -74,6 +70,10 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
 import com.squareup.wire.WireField
 import com.squareup.wire.WireRpc
+import com.squareup.wire.internal.DoubleArrayList
+import com.squareup.wire.internal.FloatArrayList
+import com.squareup.wire.internal.IntArrayList
+import com.squareup.wire.internal.LongArrayList
 import com.squareup.wire.internal.boxedOneOfClassName
 import com.squareup.wire.internal.boxedOneOfKeyFieldName
 import com.squareup.wire.internal.boxedOneOfKeysFieldName
@@ -110,11 +110,11 @@ import com.squareup.wire.schema.internal.javaPackage
 import com.squareup.wire.schema.internal.legacyQualifiedFieldName
 import com.squareup.wire.schema.internal.optionValueToInt
 import com.squareup.wire.schema.internal.optionValueToLong
+import java.util.Locale
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.ByteString
 import okio.ByteString.Companion.encode
-import java.util.Locale
 
 class KotlinGenerator private constructor(
   val schema: Schema,
@@ -1618,12 +1618,14 @@ class KotlinGenerator private constructor(
           add(fieldEqualsIdentityBlock(field, fieldName))
         }
         if (field.useArray && reverse) {
-          val encodeArray = MemberName("com.squareup.wire.internal", "encodeArray")
+          val encodeArray = MemberName(
+            "com.squareup.wire.internal",
+            "encodeArray_${field.type!!.simpleName}",
+          )
           addStatement(
-            "%M(value.%L, %L, writer, %L)",
+            "%M(value.%L, writer, %L)",
             encodeArray,
             fieldName,
-            field.getAdapterName(),
             field.tag,
           )
         } else {
@@ -1801,11 +1803,19 @@ class KotlinGenerator private constructor(
   }
 
   private fun decodeAndAssign(field: Field, fieldName: String, adapterName: CodeBlock): CodeBlock {
-    val decode = CodeBlock.of(
-      "%L.%L(reader)",
-      adapterName,
-      if (field.useArray) "decodePrimitive" else "decode",
-    )
+    val decode = if (field.useArray) {
+      CodeBlock.of(
+        "%M(reader)",
+        MemberName("com.squareup.wire.internal", "decodePrimitive_${field.type!!.simpleName}")
+      )
+    } else {
+      CodeBlock.of(
+        "%L.%L(reader)",
+        adapterName,
+        "decode",
+      )
+    }
+
     return CodeBlock.of(
       when {
         field.useArray -> {
