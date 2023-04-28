@@ -10,6 +10,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import kotlinx.validation.ApiValidationExtension
 
 buildscript {
   dependencies {
@@ -17,7 +18,7 @@ buildscript {
     classpath(libs.dokka.core)
     classpath(libs.dokka.gradlePlugin)
     classpath(libs.pluginz.android)
-    classpath(libs.pluginz.japicmp)
+    classpath(libs.pluginz.binaryCompatibilityValidator)
     classpath(libs.pluginz.kotlin)
     classpath(libs.pluginz.kotlinSerialization)
     classpath(libs.pluginz.shadow)
@@ -228,6 +229,15 @@ allprojects {
           developerConnection.set("scm:git:ssh://git@github.com/square/wire.git")
         }
       }
+    }
+  }
+}
+
+subprojects {
+  plugins.withId("binary-compatibility-validator") {
+    configure<ApiValidationExtension> {
+      ignoredPackages += "com.squareup.wire.internal"
+      ignoredPackages += "grpc.reflection.v1alpha"
     }
   }
 }

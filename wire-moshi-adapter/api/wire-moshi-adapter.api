@@ -1,0 +1,14 @@
+public final class com/squareup/wire/RedactingJsonAdapterKt {
+	public static final fun redacting (Lcom/squareup/moshi/JsonAdapter;)Lcom/squareup/moshi/JsonAdapter;
+}
+
+public final class com/squareup/wire/WireJsonAdapterFactory : com/squareup/moshi/JsonAdapter$Factory {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/Map;)V
+	public fun <init> (Ljava/util/Map;Z)V
+	public synthetic fun <init> (Ljava/util/Map;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun create (Ljava/lang/reflect/Type;Ljava/util/Set;Lcom/squareup/moshi/Moshi;)Lcom/squareup/moshi/JsonAdapter;
+	public final fun plus (Lcom/squareup/wire/ProtoAdapter;)Lcom/squareup/wire/WireJsonAdapterFactory;
+	public final fun plus (Ljava/util/List;)Lcom/squareup/wire/WireJsonAdapterFactory;
+}
+
