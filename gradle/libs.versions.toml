@@ -72,7 +72,7 @@ okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem" }
 # Check https://docs.gradle.org/current/userguide/platforms.html#sec:version-catalog-plugin
 #  if we ever wanna migrate to this.
 pluginz-android = { module = "com.android.tools.build:gradle", version = "7.1.2" }
-pluginz-japicmp = { module = "me.champeau.gradle:japicmp-gradle-plugin", version = "0.3.1" }
+pluginz-binaryCompatibilityValidator = { module = "org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin", version = "0.13.0" }
 pluginz-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 pluginz-kotlinSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 pluginz-shadow = { module = "com.github.jengelman.gradle.plugins:shadow", version = "4.0.1" }

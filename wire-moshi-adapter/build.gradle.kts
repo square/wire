@@ -14,6 +14,7 @@ plugins {
 if (project.rootProject.name == "wire") {
   apply(plugin = "ru.vyarus.animalsniffer")
   apply(plugin = "com.vanniktech.maven.publish.base")
+  apply(plugin = "binary-compatibility-validator")
 
   val main by sourceSets.getting
   configure<AnimalSnifferExtension> {

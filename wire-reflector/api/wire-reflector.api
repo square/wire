@@ -1,0 +1,6 @@
+public final class com/squareup/wire/reflector/SchemaReflector {
+	public fun <init> (Lcom/squareup/wire/schema/Schema;Z)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Schema;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun process (Lgrpc/reflection/v1alpha/ServerReflectionRequest;)Lgrpc/reflection/v1alpha/ServerReflectionResponse;
+}
+

@@ -1,0 +1,18 @@
+public final class com/squareup/wire/AnyMessageTypeAdapter : com/google/gson/TypeAdapter {
+	public fun <init> (Lcom/google/gson/Gson;Ljava/util/Map;)V
+	public fun read (Lcom/google/gson/stream/JsonReader;)Lcom/squareup/wire/AnyMessage;
+	public synthetic fun read (Lcom/google/gson/stream/JsonReader;)Ljava/lang/Object;
+	public fun write (Lcom/google/gson/stream/JsonWriter;Lcom/squareup/wire/AnyMessage;)V
+	public synthetic fun write (Lcom/google/gson/stream/JsonWriter;Ljava/lang/Object;)V
+}
+
+public final class com/squareup/wire/WireTypeAdapterFactory : com/google/gson/TypeAdapterFactory {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/Map;)V
+	public fun <init> (Ljava/util/Map;Z)V
+	public synthetic fun <init> (Ljava/util/Map;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun create (Lcom/google/gson/Gson;Lcom/google/gson/reflect/TypeToken;)Lcom/google/gson/TypeAdapter;
+	public final fun plus (Lcom/squareup/wire/ProtoAdapter;)Lcom/squareup/wire/WireTypeAdapterFactory;
+	public final fun plus (Ljava/util/List;)Lcom/squareup/wire/WireTypeAdapterFactory;
+}
+

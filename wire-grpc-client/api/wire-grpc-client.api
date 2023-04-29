@@ -1,0 +1,108 @@
+public abstract interface class com/squareup/wire/GrpcCall {
+	public abstract fun cancel ()V
+	public abstract fun clone ()Lcom/squareup/wire/GrpcCall;
+	public abstract fun enqueue (Ljava/lang/Object;Lcom/squareup/wire/GrpcCall$Callback;)V
+	public abstract fun execute (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun executeBlocking (Ljava/lang/Object;)Ljava/lang/Object;
+	public abstract fun getMethod ()Lcom/squareup/wire/GrpcMethod;
+	public abstract fun getRequestMetadata ()Ljava/util/Map;
+	public abstract fun getResponseMetadata ()Ljava/util/Map;
+	public abstract fun getTimeout ()Lokio/Timeout;
+	public abstract fun isCanceled ()Z
+	public abstract fun isExecuted ()Z
+	public abstract fun setRequestMetadata (Ljava/util/Map;)V
+}
+
+public abstract interface class com/squareup/wire/GrpcCall$Callback {
+	public abstract fun onFailure (Lcom/squareup/wire/GrpcCall;Ljava/io/IOException;)V
+	public abstract fun onSuccess (Lcom/squareup/wire/GrpcCall;Ljava/lang/Object;)V
+}
+
+public final class com/squareup/wire/GrpcCalls {
+	public static final fun grpcCall (Lkotlin/jvm/functions/Function1;)Lcom/squareup/wire/GrpcCall;
+	public static final fun grpcStreamingCall (Lkotlin/jvm/functions/Function3;)Lcom/squareup/wire/GrpcStreamingCall;
+}
+
+public final class com/squareup/wire/GrpcClient {
+	public synthetic fun <init> (Lokhttp3/Call$Factory;Lokhttp3/HttpUrl;JLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun create (Lkotlin/reflect/KClass;)Lcom/squareup/wire/Service;
+	public final fun newBuilder ()Lcom/squareup/wire/GrpcClient$Builder;
+	public final fun newCall (Lcom/squareup/wire/GrpcMethod;)Lcom/squareup/wire/GrpcCall;
+	public final fun newStreamingCall (Lcom/squareup/wire/GrpcMethod;)Lcom/squareup/wire/GrpcStreamingCall;
+}
+
+public final class com/squareup/wire/GrpcClient$Builder {
+	public fun <init> ()V
+	public final fun baseUrl (Ljava/lang/String;)Lcom/squareup/wire/GrpcClient$Builder;
+	public final fun baseUrl (Lokhttp3/HttpUrl;)Lcom/squareup/wire/GrpcClient$Builder;
+	public final fun build ()Lcom/squareup/wire/GrpcClient;
+	public final fun callFactory (Lokhttp3/Call$Factory;)Lcom/squareup/wire/GrpcClient$Builder;
+	public final fun client (Lokhttp3/OkHttpClient;)Lcom/squareup/wire/GrpcClient$Builder;
+	public final fun minMessageToCompress (J)Lcom/squareup/wire/GrpcClient$Builder;
+}
+
+public final class com/squareup/wire/GrpcException : java/io/IOException {
+	public fun <init> (Lcom/squareup/wire/GrpcStatus;Ljava/lang/String;[B)V
+	public synthetic fun <init> (Lcom/squareup/wire/GrpcStatus;Ljava/lang/String;[BILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getGrpcMessage ()Ljava/lang/String;
+	public final fun getGrpcStatus ()Lcom/squareup/wire/GrpcStatus;
+	public final fun getGrpcStatusDetails ()[B
+}
+
+public final class com/squareup/wire/GrpcHttpUrlKt {
+	public static final fun toHttpUrl (Ljava/lang/String;)Lokhttp3/HttpUrl;
+}
+
+public final class com/squareup/wire/GrpcMethod {
+	public fun <init> (Ljava/lang/String;Lcom/squareup/wire/ProtoAdapter;Lcom/squareup/wire/ProtoAdapter;)V
+	public final fun getPath ()Ljava/lang/String;
+	public final fun getRequestAdapter ()Lcom/squareup/wire/ProtoAdapter;
+	public final fun getResponseAdapter ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public final class com/squareup/wire/GrpcStatus {
+	public static final field ABORTED Lcom/squareup/wire/GrpcStatus;
+	public static final field ALREADY_EXISTS Lcom/squareup/wire/GrpcStatus;
+	public static final field CANCELLED Lcom/squareup/wire/GrpcStatus;
+	public static final field Companion Lcom/squareup/wire/GrpcStatus$Companion;
+	public static final field DATA_LOSS Lcom/squareup/wire/GrpcStatus;
+	public static final field DEADLINE_EXCEEDED Lcom/squareup/wire/GrpcStatus;
+	public static final field FAILED_PRECONDITION Lcom/squareup/wire/GrpcStatus;
+	public static final field INTERNAL Lcom/squareup/wire/GrpcStatus;
+	public static final field INVALID_ARGUMENT Lcom/squareup/wire/GrpcStatus;
+	public static final field NOT_FOUND Lcom/squareup/wire/GrpcStatus;
+	public static final field OK Lcom/squareup/wire/GrpcStatus;
+	public static final field OUT_OF_RANGE Lcom/squareup/wire/GrpcStatus;
+	public static final field PERMISSION_DENIED Lcom/squareup/wire/GrpcStatus;
+	public static final field RESOURCE_EXHAUSTED Lcom/squareup/wire/GrpcStatus;
+	public static final field UNAUTHENTICATED Lcom/squareup/wire/GrpcStatus;
+	public static final field UNAVAILABLE Lcom/squareup/wire/GrpcStatus;
+	public static final field UNIMPLEMENTED Lcom/squareup/wire/GrpcStatus;
+	public static final field UNKNOWN Lcom/squareup/wire/GrpcStatus;
+	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getCode ()I
+	public final fun getName ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/GrpcStatus$Companion {
+	public final fun get (I)Lcom/squareup/wire/GrpcStatus;
+}
+
+public abstract interface class com/squareup/wire/GrpcStreamingCall {
+	public abstract fun cancel ()V
+	public abstract fun clone ()Lcom/squareup/wire/GrpcStreamingCall;
+	public abstract fun execute ()Lkotlin/Pair;
+	public abstract fun executeBlocking ()Lkotlin/Pair;
+	public abstract fun executeIn (Lkotlinx/coroutines/CoroutineScope;)Lkotlin/Pair;
+	public abstract fun getMethod ()Lcom/squareup/wire/GrpcMethod;
+	public abstract fun getRequestMetadata ()Ljava/util/Map;
+	public abstract fun getResponseMetadata ()Ljava/util/Map;
+	public abstract fun getTimeout ()Lokio/Timeout;
+	public abstract fun isCanceled ()Z
+	public abstract fun isExecuted ()Z
+	public abstract fun setRequestMetadata (Ljava/util/Map;)V
+}
+
+public abstract interface annotation class com/squareup/wire/WireGrpcExperimental : java/lang/annotation/Annotation {
+}
+
