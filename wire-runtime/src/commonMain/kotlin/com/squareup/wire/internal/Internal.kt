@@ -18,12 +18,10 @@
 
 package com.squareup.wire.internal
 
-import com.squareup.wire.DoubleProtoAdapter
 import com.squareup.wire.FieldEncoding
-import com.squareup.wire.FloatProtoAdapter
-import com.squareup.wire.IntProtoAdapter
-import com.squareup.wire.LongProtoAdapter
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.ProtoReader
+import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -230,66 +228,132 @@ fun boxedOneOfKeysFieldName(oneOfName: String): String {
   return "${oneOfName}_keys".uppercase()
 }
 
-fun encodeArray(
-  array: LongArray,
-  protoAdapter: LongProtoAdapter,
-  writer: ReverseProtoWriter,
-  tag: Int,
-) {
+fun encodeArray_int32(array: IntArray, writer: ReverseProtoWriter, tag: Int) {
   if (array.isNotEmpty()) {
     val byteCountBefore = writer.byteCount
     for (i in (array.size - 1) downTo 0) {
-      protoAdapter.encodePrimitive(writer, array[i])
+      writer.writeSignedVarint32(array[i])
     }
     writer.writeVarint32(writer.byteCount - byteCountBefore)
     writer.writeTag(tag, FieldEncoding.LENGTH_DELIMITED)
   }
 }
 
-fun encodeArray(
-  array: IntArray,
-  protoAdapter: IntProtoAdapter,
-  writer: ReverseProtoWriter,
-  tag: Int,
-) {
+fun encodeArray_uint32(array: IntArray, writer: ReverseProtoWriter, tag: Int) {
   if (array.isNotEmpty()) {
     val byteCountBefore = writer.byteCount
     for (i in (array.size - 1) downTo 0) {
-      protoAdapter.encodePrimitive(writer, array[i])
+      writer.writeVarint32(array[i])
     }
     writer.writeVarint32(writer.byteCount - byteCountBefore)
     writer.writeTag(tag, FieldEncoding.LENGTH_DELIMITED)
   }
 }
 
-fun encodeArray(
-  array: DoubleArray,
-  protoAdapter: DoubleProtoAdapter,
-  writer: ReverseProtoWriter,
-  tag: Int,
-) {
+fun encodeArray_sint32(array: IntArray, writer: ReverseProtoWriter, tag: Int) {
   if (array.isNotEmpty()) {
     val byteCountBefore = writer.byteCount
     for (i in (array.size - 1) downTo 0) {
-      protoAdapter.encodePrimitive(writer, array[i])
+      writer.writeVarint32(ProtoWriter.encodeZigZag32(array[i]))
     }
     writer.writeVarint32(writer.byteCount - byteCountBefore)
     writer.writeTag(tag, FieldEncoding.LENGTH_DELIMITED)
   }
 }
 
-fun encodeArray(
-  array: FloatArray,
-  protoAdapter: FloatProtoAdapter,
-  writer: ReverseProtoWriter,
-  tag: Int,
-) {
+fun encodeArray_fixed32(array: IntArray, writer: ReverseProtoWriter, tag: Int) {
   if (array.isNotEmpty()) {
     val byteCountBefore = writer.byteCount
     for (i in (array.size - 1) downTo 0) {
-      protoAdapter.encodePrimitive(writer, array[i])
+      writer.writeFixed32(array[i])
     }
     writer.writeVarint32(writer.byteCount - byteCountBefore)
     writer.writeTag(tag, FieldEncoding.LENGTH_DELIMITED)
   }
 }
+
+fun encodeArray_sfixed32(array: IntArray, writer: ReverseProtoWriter, tag: Int) {
+  return encodeArray_fixed32(array, writer, tag)
+}
+
+fun encodeArray_int64(array: LongArray, writer: ReverseProtoWriter, tag: Int) {
+  if (array.isNotEmpty()) {
+    val byteCountBefore = writer.byteCount
+    for (i in (array.size - 1) downTo 0) {
+      writer.writeVarint64(array[i])
+    }
+    writer.writeVarint32(writer.byteCount - byteCountBefore)
+    writer.writeTag(tag, FieldEncoding.LENGTH_DELIMITED)
+  }
+}
+
+fun encodeArray_uint64(array: LongArray, writer: ReverseProtoWriter, tag: Int) =
+  encodeArray_int64(array, writer, tag)
+
+fun encodeArray_sint64(array: LongArray, writer: ReverseProtoWriter, tag: Int) {
+  if (array.isNotEmpty()) {
+    val byteCountBefore = writer.byteCount
+    for (i in (array.size - 1) downTo 0) {
+      writer.writeVarint64(ProtoWriter.encodeZigZag64(array[i]))
+    }
+    writer.writeVarint32(writer.byteCount - byteCountBefore)
+    writer.writeTag(tag, FieldEncoding.LENGTH_DELIMITED)
+  }
+}
+
+fun encodeArray_fixed64(array: LongArray, writer: ReverseProtoWriter, tag: Int) {
+  if (array.isNotEmpty()) {
+    val byteCountBefore = writer.byteCount
+    for (i in (array.size - 1) downTo 0) {
+      writer.writeFixed64(array[i])
+    }
+    writer.writeVarint32(writer.byteCount - byteCountBefore)
+    writer.writeTag(tag, FieldEncoding.LENGTH_DELIMITED)
+  }
+}
+
+fun encodeArray_sfixed64(array: LongArray, writer: ReverseProtoWriter, tag: Int) =
+  encodeArray_fixed64(array, writer, tag)
+
+fun encodeArray_float(array: FloatArray, writer: ReverseProtoWriter, tag: Int) {
+  if (array.isNotEmpty()) {
+    val byteCountBefore = writer.byteCount
+    for (i in (array.size - 1) downTo 0) {
+      writer.writeFixed32(array[i].toBits())
+    }
+    writer.writeVarint32(writer.byteCount - byteCountBefore)
+    writer.writeTag(tag, FieldEncoding.LENGTH_DELIMITED)
+  }
+}
+
+fun encodeArray_double(array: DoubleArray, writer: ReverseProtoWriter, tag: Int) {
+  if (array.isNotEmpty()) {
+    val byteCountBefore = writer.byteCount
+    for (i in (array.size - 1) downTo 0) {
+      writer.writeFixed64(array[i].toBits())
+    }
+    writer.writeVarint32(writer.byteCount - byteCountBefore)
+    writer.writeTag(tag, FieldEncoding.LENGTH_DELIMITED)
+  }
+}
+
+fun decodePrimitive_int32(reader: ProtoReader): Int = reader.readVarint32()
+fun decodePrimitive_uint32(reader: ProtoReader): Int = reader.readVarint32()
+fun decodePrimitive_sint32(reader: ProtoReader): Int =
+  ProtoWriter.decodeZigZag32(reader.readVarint32())
+fun decodePrimitive_fixed32(reader: ProtoReader): Int = reader.readFixed32()
+fun decodePrimitive_sfixed32(reader: ProtoReader): Int = reader.readFixed32()
+fun decodePrimitive_int64(reader: ProtoReader): Long =
+  reader.readVarint64()
+fun decodePrimitive_uint64(reader: ProtoReader): Long =
+  reader.readVarint64()
+fun decodePrimitive_sint64(reader: ProtoReader): Long =
+  ProtoWriter.decodeZigZag64(reader.readVarint64())
+fun decodePrimitive_fixed64(reader: ProtoReader): Long =
+  reader.readFixed64()
+fun decodePrimitive_sfixed64(reader: ProtoReader): Long =
+  reader.readFixed64()
+fun decodePrimitive_float(reader: ProtoReader): Float =
+  Float.fromBits(reader.readFixed32())
+fun decodePrimitive_double(reader: ProtoReader): Double =
+  Double.fromBits(reader.readFixed64())

@@ -17,7 +17,18 @@ import com.squareup.wire.`internal`.DoubleArrayList
 import com.squareup.wire.`internal`.FloatArrayList
 import com.squareup.wire.`internal`.IntArrayList
 import com.squareup.wire.`internal`.LongArrayList
-import com.squareup.wire.`internal`.encodeArray
+import com.squareup.wire.`internal`.encodeArray_double
+import com.squareup.wire.`internal`.encodeArray_fixed32
+import com.squareup.wire.`internal`.encodeArray_fixed64
+import com.squareup.wire.`internal`.encodeArray_float
+import com.squareup.wire.`internal`.encodeArray_int32
+import com.squareup.wire.`internal`.encodeArray_int64
+import com.squareup.wire.`internal`.encodeArray_sfixed32
+import com.squareup.wire.`internal`.encodeArray_sfixed64
+import com.squareup.wire.`internal`.encodeArray_sint32
+import com.squareup.wire.`internal`.encodeArray_sint64
+import com.squareup.wire.`internal`.encodeArray_uint32
+import com.squareup.wire.`internal`.encodeArray_uint64
 import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.missingRequiredFields
 import com.squareup.wire.`internal`.redactElements
@@ -2202,18 +2213,18 @@ public class AllTypes(
         ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32)
         ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32)
         ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32)
-        encodeArray(value.array_double, ProtoAdapter.DOUBLE, writer, 612)
-        encodeArray(value.array_float, ProtoAdapter.FLOAT, writer, 611)
-        encodeArray(value.array_sfixed64, ProtoAdapter.SFIXED64, writer, 610)
-        encodeArray(value.array_fixed64, ProtoAdapter.FIXED64, writer, 609)
-        encodeArray(value.array_sint64, ProtoAdapter.SINT64, writer, 608)
-        encodeArray(value.array_uint64, ProtoAdapter.UINT64, writer, 607)
-        encodeArray(value.array_int64, ProtoAdapter.INT64, writer, 606)
-        encodeArray(value.array_sfixed32, ProtoAdapter.SFIXED32, writer, 605)
-        encodeArray(value.array_fixed32, ProtoAdapter.FIXED32, writer, 604)
-        encodeArray(value.array_sint32, ProtoAdapter.SINT32, writer, 603)
-        encodeArray(value.array_uint32, ProtoAdapter.UINT32, writer, 602)
-        encodeArray(value.array_int32, ProtoAdapter.INT32, writer, 601)
+        encodeArray_double(value.array_double, writer, 612)
+        encodeArray_float(value.array_float, writer, 611)
+        encodeArray_sfixed64(value.array_sfixed64, writer, 610)
+        encodeArray_fixed64(value.array_fixed64, writer, 609)
+        encodeArray_sint64(value.array_sint64, writer, 608)
+        encodeArray_uint64(value.array_uint64, writer, 607)
+        encodeArray_int64(value.array_int64, writer, 606)
+        encodeArray_sfixed32(value.array_sfixed32, writer, 605)
+        encodeArray_fixed32(value.array_fixed32, writer, 604)
+        encodeArray_sint32(value.array_sint32, writer, 603)
+        encodeArray_uint32(value.array_uint32, writer, 602)
+        encodeArray_int32(value.array_int32, writer, 601)
         map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
         map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
         map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
@@ -2675,73 +2686,73 @@ public class AllTypes(
               if (array_int32 == null) {
                 array_int32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_int32!!.add(com.squareup.wire.ProtoAdapter.INT32.decodePrimitive(reader))
+              array_int32!!.add(com.squareup.wire.`internal`.decodePrimitive_int32(reader))
             }
             602 -> {
               if (array_uint32 == null) {
                 array_uint32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_uint32!!.add(com.squareup.wire.ProtoAdapter.UINT32.decodePrimitive(reader))
+              array_uint32!!.add(com.squareup.wire.`internal`.decodePrimitive_uint32(reader))
             }
             603 -> {
               if (array_sint32 == null) {
                 array_sint32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_sint32!!.add(com.squareup.wire.ProtoAdapter.SINT32.decodePrimitive(reader))
+              array_sint32!!.add(com.squareup.wire.`internal`.decodePrimitive_sint32(reader))
             }
             604 -> {
               if (array_fixed32 == null) {
                 array_fixed32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
-              array_fixed32!!.add(com.squareup.wire.ProtoAdapter.FIXED32.decodePrimitive(reader))
+              array_fixed32!!.add(com.squareup.wire.`internal`.decodePrimitive_fixed32(reader))
             }
             605 -> {
               if (array_sfixed32 == null) {
                 array_sfixed32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
-              array_sfixed32!!.add(com.squareup.wire.ProtoAdapter.SFIXED32.decodePrimitive(reader))
+              array_sfixed32!!.add(com.squareup.wire.`internal`.decodePrimitive_sfixed32(reader))
             }
             606 -> {
               if (array_int64 == null) {
                 array_int64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_int64!!.add(com.squareup.wire.ProtoAdapter.INT64.decodePrimitive(reader))
+              array_int64!!.add(com.squareup.wire.`internal`.decodePrimitive_int64(reader))
             }
             607 -> {
               if (array_uint64 == null) {
                 array_uint64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_uint64!!.add(com.squareup.wire.ProtoAdapter.UINT64.decodePrimitive(reader))
+              array_uint64!!.add(com.squareup.wire.`internal`.decodePrimitive_uint64(reader))
             }
             608 -> {
               if (array_sint64 == null) {
                 array_sint64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_sint64!!.add(com.squareup.wire.ProtoAdapter.SINT64.decodePrimitive(reader))
+              array_sint64!!.add(com.squareup.wire.`internal`.decodePrimitive_sint64(reader))
             }
             609 -> {
               if (array_fixed64 == null) {
                 array_fixed64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
-              array_fixed64!!.add(com.squareup.wire.ProtoAdapter.FIXED64.decodePrimitive(reader))
+              array_fixed64!!.add(com.squareup.wire.`internal`.decodePrimitive_fixed64(reader))
             }
             610 -> {
               if (array_sfixed64 == null) {
                 array_sfixed64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
-              array_sfixed64!!.add(com.squareup.wire.ProtoAdapter.SFIXED64.decodePrimitive(reader))
+              array_sfixed64!!.add(com.squareup.wire.`internal`.decodePrimitive_sfixed64(reader))
             }
             611 -> {
               if (array_float == null) {
                 array_float = FloatArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
-              array_float!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decodePrimitive(reader))
+              array_float!!.add(com.squareup.wire.`internal`.decodePrimitive_float(reader))
             }
             612 -> {
               if (array_double == null) {
                 array_double = DoubleArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
-              array_double!!.add(com.squareup.wire.ProtoAdapter.DOUBLE.decodePrimitive(reader))
+              array_double!!.add(com.squareup.wire.`internal`.decodePrimitive_double(reader))
             }
             1001 -> ext_opt_int32 = ProtoAdapter.INT32.decode(reader)
             1002 -> ext_opt_uint32 = ProtoAdapter.UINT32.decode(reader)
