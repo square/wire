@@ -1,7 +1,16 @@
 Change Log
 ==========
 
-Version 4.5.6
+Version 4.6.0
+-------------
+
+_2023-05-01_
+
+* Fix: the version `4.5.6` had a breaking change which has been reverted in `4.6.0` without losing
+  any functionality.
+* Update `descriptor.proto` from the `7dbe742` version of `protocolbuffers/protobuf`.
+
+Version 4.5.6 (Note that this holds a breaking change, update directly to `4.6.0` to avoid it.)
 -------------
 
 _2023-04-25_
