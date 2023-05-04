@@ -159,7 +159,7 @@ jobs:
   publish:
     runs-on: macos-latest
     if: github.repository == 'square/wire' && github.ref == 'refs/heads/master'
-    needs: [jvm, multiplatform]
+    needs: [jvm, multiplatform, windows, swift]
 
     steps:
       - name: Checkout
