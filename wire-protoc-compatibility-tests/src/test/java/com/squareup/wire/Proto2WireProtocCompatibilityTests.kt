@@ -16,17 +16,24 @@
 package com.squareup.wire
 
 import com.google.protobuf.ExtensionRegistry
+import com.squareup.wire.proto2.kotlin.simple.SimpleMessage as SimpleMessageK
 import com.squareup.wire.proto2.kotlin.simple.SimpleMessageOuterClass
 import okio.ByteString
+import okio.ByteString.Companion.decodeHex
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import squareup.proto2.java.interop.InteropMessage as InteropMessageJ
+import squareup.proto2.java.interop.type.EnumProto2 as EnumProto2J
+import squareup.proto2.java.interop.type.MessageProto2 as MessageProto2J
 import squareup.proto2.kotlin.MapTypes
 import squareup.proto2.kotlin.MapTypesOuterClass
+import squareup.proto2.kotlin.alltypes.AllTypes as AllTypesK
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extOptBool
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extPackBool
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extRepBool
 import squareup.proto2.kotlin.extensions.WireMessageOuterClass
+import squareup.proto2.kotlin.interop.InteropMessage as InteropMessageK
 import squareup.proto2.kotlin.interop.InteropMessageOuterClass
 import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extOptProto2Enum
 import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extOptProto2Message
@@ -36,22 +43,20 @@ import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extRepProto2Enum
 import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extRepProto2Message
 import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extRepProto3Enum
 import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extRepProto3Message
+import squareup.proto2.kotlin.interop.Quilt
+import squareup.proto2.kotlin.interop.QuiltColor
+import squareup.proto2.kotlin.interop.QuiltContainer
+import squareup.proto2.kotlin.interop.RepeatedEnum
+import squareup.proto2.kotlin.interop.type.EnumProto2 as EnumProto2K
 import squareup.proto2.kotlin.interop.type.InteropTypes.EnumProto2
 import squareup.proto2.kotlin.interop.type.InteropTypes.MessageProto2
-import squareup.proto2.wire.extensions.WireMessage
-import squareup.proto3.kotlin.interop.type.InteropTypes.EnumProto3
-import squareup.proto3.kotlin.interop.type.InteropTypes.MessageProto3
-import com.squareup.wire.proto2.kotlin.simple.SimpleMessage as SimpleMessageK
-import squareup.proto2.java.interop.InteropMessage as InteropMessageJ
-import squareup.proto2.java.interop.type.EnumProto2 as EnumProto2J
-import squareup.proto2.java.interop.type.MessageProto2 as MessageProto2J
-import squareup.proto2.kotlin.alltypes.AllTypes as AllTypesK
-import squareup.proto2.kotlin.interop.InteropMessage as InteropMessageK
-import squareup.proto2.kotlin.interop.type.EnumProto2 as EnumProto2K
 import squareup.proto2.kotlin.interop.type.MessageProto2 as MessageProto2K
+import squareup.proto2.wire.extensions.WireMessage
 import squareup.proto3.java.interop.type.EnumProto3 as EnumProto3J
 import squareup.proto3.java.interop.type.MessageProto3 as MessageProto3J
 import squareup.proto3.kotlin.interop.type.EnumProto3 as EnumProto3K
+import squareup.proto3.kotlin.interop.type.InteropTypes.EnumProto3
+import squareup.proto3.kotlin.interop.type.InteropTypes.MessageProto3
 import squareup.proto3.kotlin.interop.type.MessageProto3 as MessageProto3K
 
 class Proto2WireProtocCompatibilityTests {
@@ -154,6 +159,40 @@ class Proto2WireProtocCompatibilityTests {
     assertThat(mapTypeWire.map_string_string.size).isEqualTo(2)
     assertThat(mapTypeWire.map_string_string["de"]).isEqualTo("")
     assertThat(mapTypeWire.map_string_string[""]).isEqualTo("ed")
+  }
+
+  /**
+   * The TS-proto library encodes enums differently from Wire or Protoc. Protoc is fine with this,
+   * but it causes Wire to crash. The fix is to make Wire accept this format also.
+   *
+   * https://github.com/stephenh/ts-proto
+   */
+  @Test fun repeatedEnumIsPackedAndLengthIsZero() {
+    val wireMessage = QuiltContainer(
+      quilt = Quilt(
+        fringe = listOf(QuiltColor.GREEN),
+        cozy = true,
+      )
+    )
+
+    // A sample value encoded by ts-proto.
+    val encodedByTsProto = "12091201041a0022003801".decodeHex()
+
+    val googleMessage = RepeatedEnum.QuiltContainer.newBuilder()
+      .setQuilt(
+        RepeatedEnum.Quilt.newBuilder()
+          .addAllFringe(listOf(RepeatedEnum.QuiltColor.GREEN))
+          .setCozy(true)
+          .build()
+      ).build()
+
+    val wireMessageDecodedFromGoogleMessage =
+      QuiltContainer.ADAPTER.decode(encodedByTsProto)
+    val googleMessageDecodedFromWireMessage =
+      RepeatedEnum.QuiltContainer.parseFrom(encodedByTsProto.toByteArray())
+
+    assertThat(wireMessageDecodedFromGoogleMessage).isEqualTo(wireMessage)
+    assertThat(googleMessageDecodedFromWireMessage).isEqualTo(googleMessage)
   }
 
   companion object {
