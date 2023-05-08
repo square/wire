@@ -50,26 +50,29 @@ extension Dinosaur : Sendable {
 #endif
 
 extension Dinosaur : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.dinosaurs.Dinosaur"
     }
+
 }
 
 extension Dinosaur : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var name: String? = nil
-        var picture_urls: [String] = []
-        var length_meters: Double? = nil
-        var mass_kilograms: Double? = nil
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var name: Swift.String? = nil
+        var picture_urls: [Swift.String] = []
+        var length_meters: Swift.Double? = nil
+        var mass_kilograms: Swift.Double? = nil
         var period: Period? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
-            case 1: name = try reader.decode(String.self)
+            case 1: name = try reader.decode(Swift.String.self)
             case 2: try reader.decode(into: &picture_urls)
-            case 3: length_meters = try reader.decode(Double.self)
-            case 4: mass_kilograms = try reader.decode(Double.self)
+            case 3: length_meters = try reader.decode(Swift.Double.self)
+            case 4: mass_kilograms = try reader.decode(Swift.Double.self)
             case 5: period = try reader.decode(Period.self)
             default: try reader.readUnknownField(tag: tag)
             }
@@ -83,7 +86,7 @@ extension Dinosaur : Proto2Codable {
         self.period = period
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.encode(tag: 1, value: self.name)
         try writer.encode(tag: 2, value: self.picture_urls)
         try writer.encode(tag: 3, value: self.length_meters)
@@ -91,21 +94,23 @@ extension Dinosaur : Proto2Codable {
         try writer.encode(tag: 5, value: self.period)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Dinosaur : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.name = try container.decodeIfPresent(String.self, forKey: "name")
-        self.picture_urls = try container.decodeProtoArray(String.self, firstOfKeys: "pictureUrls", "picture_urls")
-        self.length_meters = try container.decodeIfPresent(Double.self, firstOfKeys: "lengthMeters", "length_meters")
-        self.mass_kilograms = try container.decodeIfPresent(Double.self, firstOfKeys: "massKilograms", "mass_kilograms")
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        self.name = try container.decodeIfPresent(Swift.String.self, forKey: "name")
+        self.picture_urls = try container.decodeProtoArray(Swift.String.self, firstOfKeys: "pictureUrls", "picture_urls")
+        self.length_meters = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "lengthMeters", "length_meters")
+        self.mass_kilograms = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "massKilograms", "mass_kilograms")
         self.period = try container.decodeIfPresent(Period.self, forKey: "period")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
@@ -117,5 +122,6 @@ extension Dinosaur : Codable {
         try container.encodeIfPresent(self.mass_kilograms, forKey: preferCamelCase ? "massKilograms" : "mass_kilograms")
         try container.encodeIfPresent(self.period, forKey: "period")
     }
+
 }
 #endif

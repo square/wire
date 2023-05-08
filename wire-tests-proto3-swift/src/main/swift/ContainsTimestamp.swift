@@ -30,13 +30,16 @@ extension ContainsTimestamp : Sendable {
 #endif
 
 extension ContainsTimestamp : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos3.kotlin.contains_timestamp.ContainsTimestamp"
     }
+
 }
 
 extension ContainsTimestamp : Proto3Codable {
-    public init(from reader: ProtoReader) throws {
+
+    public init(from reader: Wire.ProtoReader) throws {
         var timestamp: Timestamp? = nil
 
         let token = try reader.beginMessage()
@@ -51,23 +54,26 @@ extension ContainsTimestamp : Proto3Codable {
         self.timestamp = timestamp
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.encode(tag: 1, value: self.timestamp)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension ContainsTimestamp : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         self.timestamp = try container.decodeIfPresent(Timestamp.self, forKey: "timestamp")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
 
         try container.encodeIfPresent(self.timestamp, forKey: "timestamp")
     }
+
 }
 #endif

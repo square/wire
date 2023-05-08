@@ -30,14 +30,17 @@ extension Mappy : Sendable {
 #endif
 
 extension Mappy : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Mappy"
     }
+
 }
 
 extension Mappy : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var things: [String : Thing] = [:]
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var things: [Swift.String : Thing] = [:]
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
@@ -51,26 +54,29 @@ extension Mappy : Proto2Codable {
         self.things = things
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.encode(tag: 1, value: self.things)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Mappy : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.things = try container.decodeProtoMap([String : Thing].self, forKey: "things")
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        self.things = try container.decodeProtoMap([Swift.String : Thing].self, forKey: "things")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || !self.things.isEmpty {
             try container.encodeProtoMap(self.things, forKey: "things")
         }
     }
+
 }
 #endif

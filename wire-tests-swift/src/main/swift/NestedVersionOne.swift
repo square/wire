@@ -30,19 +30,22 @@ extension NestedVersionOne : Sendable {
 #endif
 
 extension NestedVersionOne : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.unknownfields.NestedVersionOne"
     }
+
 }
 
 extension NestedVersionOne : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var i: Int32? = nil
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var i: Swift.Int32? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
-            case 1: i = try reader.decode(Int32.self)
+            case 1: i = try reader.decode(Swift.Int32.self)
             default: try reader.readUnknownField(tag: tag)
             }
         }
@@ -51,23 +54,26 @@ extension NestedVersionOne : Proto2Codable {
         self.i = i
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.encode(tag: 1, value: self.i)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension NestedVersionOne : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.i = try container.decodeIfPresent(Int32.self, forKey: "i")
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        self.i = try container.decodeIfPresent(Swift.Int32.self, forKey: "i")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
 
         try container.encodeIfPresent(self.i, forKey: "i")
     }
+
 }
 #endif

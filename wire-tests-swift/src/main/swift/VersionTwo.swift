@@ -53,30 +53,33 @@ extension VersionTwo : Sendable {
 #endif
 
 extension VersionTwo : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.unknownfields.VersionTwo"
     }
+
 }
 
 extension VersionTwo : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var i: Int32? = nil
-        var v2_i: Int32? = nil
-        var v2_s: String? = nil
-        var v2_f32: UInt32? = nil
-        var v2_f64: UInt64? = nil
-        var v2_rs: [String] = []
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var i: Swift.Int32? = nil
+        var v2_i: Swift.Int32? = nil
+        var v2_s: Swift.String? = nil
+        var v2_f32: Swift.UInt32? = nil
+        var v2_f64: Swift.UInt64? = nil
+        var v2_rs: [Swift.String] = []
         var obj: NestedVersionTwo? = nil
         var en: EnumVersionTwo? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
-            case 1: i = try reader.decode(Int32.self)
-            case 2: v2_i = try reader.decode(Int32.self)
-            case 3: v2_s = try reader.decode(String.self)
-            case 4: v2_f32 = try reader.decode(UInt32.self, encoding: .fixed)
-            case 5: v2_f64 = try reader.decode(UInt64.self, encoding: .fixed)
+            case 1: i = try reader.decode(Swift.Int32.self)
+            case 2: v2_i = try reader.decode(Swift.Int32.self)
+            case 3: v2_s = try reader.decode(Swift.String.self)
+            case 4: v2_f32 = try reader.decode(Swift.UInt32.self, encoding: .fixed)
+            case 5: v2_f64 = try reader.decode(Swift.UInt64.self, encoding: .fixed)
             case 6: try reader.decode(into: &v2_rs)
             case 7: obj = try reader.decode(NestedVersionTwo.self)
             case 8: en = try reader.decode(EnumVersionTwo.self)
@@ -95,7 +98,7 @@ extension VersionTwo : Proto2Codable {
         self.en = en
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.encode(tag: 1, value: self.i)
         try writer.encode(tag: 2, value: self.v2_i)
         try writer.encode(tag: 3, value: self.v2_s)
@@ -106,24 +109,26 @@ extension VersionTwo : Proto2Codable {
         try writer.encode(tag: 8, value: self.en)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension VersionTwo : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.i = try container.decodeIfPresent(Int32.self, forKey: "i")
-        self.v2_i = try container.decodeIfPresent(Int32.self, firstOfKeys: "v2I", "v2_i")
-        self.v2_s = try container.decodeIfPresent(String.self, firstOfKeys: "v2S", "v2_s")
-        self.v2_f32 = try container.decodeIfPresent(UInt32.self, firstOfKeys: "v2F32", "v2_f32")
-        self.v2_f64 = try container.decodeIfPresent(stringEncoded: UInt64.self, firstOfKeys: "v2F64", "v2_f64")
-        self.v2_rs = try container.decodeProtoArray(String.self, firstOfKeys: "v2Rs", "v2_rs")
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        self.i = try container.decodeIfPresent(Swift.Int32.self, forKey: "i")
+        self.v2_i = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "v2I", "v2_i")
+        self.v2_s = try container.decodeIfPresent(Swift.String.self, firstOfKeys: "v2S", "v2_s")
+        self.v2_f32 = try container.decodeIfPresent(Swift.UInt32.self, firstOfKeys: "v2F32", "v2_f32")
+        self.v2_f64 = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, firstOfKeys: "v2F64", "v2_f64")
+        self.v2_rs = try container.decodeProtoArray(Swift.String.self, firstOfKeys: "v2Rs", "v2_rs")
         self.obj = try container.decodeIfPresent(NestedVersionTwo.self, forKey: "obj")
         self.en = try container.decodeIfPresent(EnumVersionTwo.self, forKey: "en")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
@@ -138,5 +143,6 @@ extension VersionTwo : Codable {
         try container.encodeIfPresent(self.obj, forKey: "obj")
         try container.encodeIfPresent(self.en, forKey: "en")
     }
+
 }
 #endif

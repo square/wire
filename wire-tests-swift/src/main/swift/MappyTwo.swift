@@ -5,14 +5,14 @@ import Wire
 
 public struct MappyTwo {
 
-    public var string_enums: [String : ValueEnum]
+    public var string_enums: [String : MappyTwo.ValueEnum]
     public var int_things: [Int64 : Thing]
     public var string_ints: [String : Int64]
     public var int_things_two: [Int32 : Thing]
     public var unknownFields: Data = .init()
 
     public init(
-        string_enums: [String : ValueEnum] = [:],
+        string_enums: [String : MappyTwo.ValueEnum] = [:],
         int_things: [Int64 : Thing] = [:],
         string_ints: [String : Int64] = [:],
         int_things_two: [Int32 : Thing] = [:]
@@ -62,17 +62,20 @@ extension MappyTwo : Sendable {
 #endif
 
 extension MappyTwo : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/com.squareup.wire.protos.kotlin.map.MappyTwo"
     }
+
 }
 
 extension MappyTwo : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var string_enums: [String : MappyTwo.ValueEnum] = [:]
-        var int_things: [Int64 : Thing] = [:]
-        var string_ints: [String : Int64] = [:]
-        var int_things_two: [Int32 : Thing] = [:]
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var string_enums: [Swift.String : MappyTwo.ValueEnum] = [:]
+        var int_things: [Swift.Int64 : Thing] = [:]
+        var string_ints: [Swift.String : Swift.Int64] = [:]
+        var int_things_two: [Swift.Int32 : Thing] = [:]
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
@@ -92,27 +95,29 @@ extension MappyTwo : Proto2Codable {
         self.int_things_two = int_things_two
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.encode(tag: 1, value: self.string_enums)
         try writer.encode(tag: 2, value: self.int_things, keyEncoding: .signed)
         try writer.encode(tag: 3, value: self.string_ints, valueEncoding: .signed)
         try writer.encode(tag: 4, value: self.int_things_two, keyEncoding: .signed)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension MappyTwo : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.string_enums = try container.decodeProtoMap([String : MappyTwo.ValueEnum].self, firstOfKeys: "stringEnums", "string_enums")
-        self.int_things = try container.decodeProtoMap([Int64 : Thing].self, firstOfKeys: "intThings", "int_things")
-        self.string_ints = try container.decodeProtoMap([String : Int64].self, firstOfKeys: "stringInts", "string_ints")
-        self.int_things_two = try container.decodeProtoMap([Int32 : Thing].self, firstOfKeys: "intThingsTwo", "int_things_two")
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        self.string_enums = try container.decodeProtoMap([Swift.String : MappyTwo.ValueEnum].self, firstOfKeys: "stringEnums", "string_enums")
+        self.int_things = try container.decodeProtoMap([Swift.Int64 : Thing].self, firstOfKeys: "intThings", "int_things")
+        self.string_ints = try container.decodeProtoMap([Swift.String : Swift.Int64].self, firstOfKeys: "stringInts", "string_ints")
+        self.int_things_two = try container.decodeProtoMap([Swift.Int32 : Thing].self, firstOfKeys: "intThingsTwo", "int_things_two")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
@@ -129,5 +134,6 @@ extension MappyTwo : Codable {
             try container.encodeProtoMap(self.int_things_two, forKey: preferCamelCase ? "intThingsTwo" : "int_things_two")
         }
     }
+
 }
 #endif

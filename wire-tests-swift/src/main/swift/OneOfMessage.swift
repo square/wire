@@ -76,21 +76,24 @@ extension OneOfMessage : Sendable {
 #endif
 
 extension OneOfMessage : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.OneOfMessage"
     }
+
 }
 
 extension OneOfMessage : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var choice: OneOfMessage.Choice? = nil
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var choice: Choice? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
-            case 1: choice = .foo(try reader.decode(Int32.self))
-            case 3: choice = .bar(try reader.decode(String.self))
-            case 4: choice = .baz(try reader.decode(String.self))
+            case 1: choice = .foo(try reader.decode(Swift.Int32.self))
+            case 3: choice = .bar(try reader.decode(Swift.String.self))
+            case 4: choice = .baz(try reader.decode(Swift.String.self))
             default: try reader.readUnknownField(tag: tag)
             }
         }
@@ -99,38 +102,41 @@ extension OneOfMessage : Proto2Codable {
         self.choice = choice
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         if let choice = self.choice {
             try choice.encode(to: writer)
         }
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension OneOfMessage : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        if let foo = try container.decodeIfPresent(Int32.self, forKey: "foo") {
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        if let foo = try container.decodeIfPresent(Swift.Int32.self, forKey: "foo") {
             self.choice = .foo(foo)
-        } else if let bar = try container.decodeIfPresent(String.self, forKey: "bar") {
+        } else if let bar = try container.decodeIfPresent(Swift.String.self, forKey: "bar") {
             self.choice = .bar(bar)
-        } else if let baz = try container.decodeIfPresent(String.self, forKey: "baz") {
+        } else if let baz = try container.decodeIfPresent(Swift.String.self, forKey: "baz") {
             self.choice = .baz(baz)
         } else {
             self.choice = nil
         }
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
 
         switch self.choice {
         case .foo(let foo): try container.encode(foo, forKey: "foo")
         case .bar(let bar): try container.encode(bar, forKey: "bar")
         case .baz(let baz): try container.encode(baz, forKey: "baz")
-        case Optional.none: break
+        case Swift.Optional.none: break
         }
     }
+
 }
 #endif

@@ -5,10 +5,10 @@ import Wire
 
 public struct OptionalEnumUser {
 
-    public var optional_enum: OptionalEnum?
+    public var optional_enum: OptionalEnumUser.OptionalEnum?
     public var unknownFields: Data = .init()
 
-    public init(optional_enum: OptionalEnum? = nil) {
+    public init(optional_enum: OptionalEnumUser.OptionalEnum? = nil) {
         self.optional_enum = optional_enum
     }
 
@@ -49,13 +49,16 @@ extension OptionalEnumUser : Sendable {
 #endif
 
 extension OptionalEnumUser : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.OptionalEnumUser"
     }
+
 }
 
 extension OptionalEnumUser : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
+
+    public init(from reader: Wire.ProtoReader) throws {
         var optional_enum: OptionalEnumUser.OptionalEnum? = nil
 
         let token = try reader.beginMessage()
@@ -70,24 +73,27 @@ extension OptionalEnumUser : Proto2Codable {
         self.optional_enum = optional_enum
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.encode(tag: 1, value: self.optional_enum)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension OptionalEnumUser : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         self.optional_enum = try container.decodeIfPresent(OptionalEnumUser.OptionalEnum.self, firstOfKeys: "optionalEnum", "optional_enum")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
 
         try container.encodeIfPresent(self.optional_enum, forKey: preferCamelCase ? "optionalEnum" : "optional_enum")
     }
+
 }
 #endif

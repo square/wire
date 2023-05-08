@@ -53,22 +53,25 @@ extension ModelEvaluation : Sendable {
 #endif
 
 extension ModelEvaluation : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/ModelEvaluation"
     }
+
 }
 
 extension ModelEvaluation : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var name: String? = nil
-        var score: Double? = nil
-        var models: [String : ModelEvaluation] = [:]
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var name: Swift.String? = nil
+        var score: Swift.Double? = nil
+        var models: [Swift.String : ModelEvaluation] = [:]
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
-            case 1: name = try reader.decode(String.self)
-            case 2: score = try reader.decode(Double.self)
+            case 1: name = try reader.decode(Swift.String.self)
+            case 2: score = try reader.decode(Swift.Double.self)
             case 3: try reader.decode(into: &models)
             default: try reader.readUnknownField(tag: tag)
             }
@@ -80,25 +83,27 @@ extension ModelEvaluation : Proto2Codable {
         self.models = models
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.encode(tag: 1, value: self.name)
         try writer.encode(tag: 2, value: self.score)
         try writer.encode(tag: 3, value: self.models)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension ModelEvaluation : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.name = try container.decodeIfPresent(String.self, forKey: "name")
-        self.score = try container.decodeIfPresent(Double.self, forKey: "score")
-        self.models = try container.decodeProtoMap([String : ModelEvaluation].self, forKey: "models")
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        self.name = try container.decodeIfPresent(Swift.String.self, forKey: "name")
+        self.score = try container.decodeIfPresent(Swift.Double.self, forKey: "score")
+        self.models = try container.decodeProtoMap([Swift.String : ModelEvaluation].self, forKey: "models")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encodeIfPresent(self.name, forKey: "name")
@@ -107,5 +112,6 @@ extension ModelEvaluation : Codable {
             try container.encodeProtoMap(self.models, forKey: "models")
         }
     }
+
 }
 #endif

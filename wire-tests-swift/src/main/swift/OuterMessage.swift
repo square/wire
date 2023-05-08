@@ -32,20 +32,23 @@ extension OuterMessage : Sendable {
 #endif
 
 extension OuterMessage : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.packed_encoding.OuterMessage"
     }
+
 }
 
 extension OuterMessage : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var outer_number_before: Int32? = nil
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var outer_number_before: Swift.Int32? = nil
         var embedded_message: EmbeddedMessage? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
-            case 1: outer_number_before = try reader.decode(Int32.self)
+            case 1: outer_number_before = try reader.decode(Swift.Int32.self)
             case 2: embedded_message = try reader.decode(EmbeddedMessage.self)
             default: try reader.readUnknownField(tag: tag)
             }
@@ -56,27 +59,30 @@ extension OuterMessage : Proto2Codable {
         self.embedded_message = embedded_message
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.encode(tag: 1, value: self.outer_number_before)
         try writer.encode(tag: 2, value: self.embedded_message)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension OuterMessage : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.outer_number_before = try container.decodeIfPresent(Int32.self, firstOfKeys: "outerNumberBefore", "outer_number_before")
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        self.outer_number_before = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "outerNumberBefore", "outer_number_before")
         self.embedded_message = try container.decodeIfPresent(EmbeddedMessage.self, firstOfKeys: "embeddedMessage", "embedded_message")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
 
         try container.encodeIfPresent(self.outer_number_before, forKey: preferCamelCase ? "outerNumberBefore" : "outer_number_before")
         try container.encodeIfPresent(self.embedded_message, forKey: preferCamelCase ? "embeddedMessage" : "embedded_message")
     }
+
 }
 #endif
