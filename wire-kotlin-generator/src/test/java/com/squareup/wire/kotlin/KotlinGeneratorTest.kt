@@ -1901,16 +1901,22 @@ class KotlinGeneratorTest {
         |""".trimMargin()
       )
     }
-    assertThat(KotlinWithProfilesGenerator(schema)
-      .generateKotlin("SomeMessage", javaInterop = false))
+    assertThat(
+      KotlinWithProfilesGenerator(schema)
+        .generateKotlin("SomeMessage", javaInterop = false)
+    )
       .contains("Builders are deprecated and only available in a javaInterop build")
-    assertThat(KotlinWithProfilesGenerator(schema)
-      .generateKotlin("SomeMessage", javaInterop = true))
+    assertThat(
+      KotlinWithProfilesGenerator(schema)
+        .generateKotlin("SomeMessage", javaInterop = true)
+    )
       .doesNotContain("Builders are deprecated and only available in a javaInterop build")
     // If `buildersOnly` is set to true, it takes precedence over `javaInterop` for it would
     // otherwise create non-instantiable types.
-    assertThat(KotlinWithProfilesGenerator(schema)
-      .generateKotlin("SomeMessage", javaInterop = false, buildersOnly = true))
+    assertThat(
+      KotlinWithProfilesGenerator(schema)
+        .generateKotlin("SomeMessage", javaInterop = false, buildersOnly = true)
+    )
       .doesNotContain("Builders are deprecated and only available in a javaInterop build")
   }
 

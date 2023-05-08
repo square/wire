@@ -257,6 +257,32 @@ class ProtoReader(private val source: BufferedSource) {
     return source.readByteString(byteCount)
   }
 
+  /**
+   * Prepares to read a value and returns true if the read should proceed. If there's nothing to
+   * read (because a packed value has length 0), this will clear the reader state.
+   */
+  internal fun beforePossiblyPackedScalar(): Boolean {
+    return when (state) {
+      STATE_LENGTH_DELIMITED -> {
+        if (pos < limit) {
+          // It's packed and there's a value.
+          true
+        } else {
+          // It's packed and there aren't any values.
+          limit = pushedLimit
+          pushedLimit = -1
+          state = STATE_TAG
+          false
+        }
+      }
+      STATE_VARINT,
+      STATE_FIXED64,
+      STATE_FIXED32 -> true // Not packed.
+
+      else -> throw ProtocolException("unexpected state: $state")
+    }
+  }
+
   /** Reads a `string` field value from the stream. */
   @Throws(IOException::class)
   fun readString(): String {

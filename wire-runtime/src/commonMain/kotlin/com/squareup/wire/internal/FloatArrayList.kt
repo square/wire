@@ -32,7 +32,7 @@ class FloatArrayList(initialCapacity: Int) {
     data[size++] = float
   }
 
-  fun isNotEmpty() : Boolean = size > 0
+  fun isNotEmpty(): Boolean = size > 0
 
   private fun ensureCapacity(minCapacity: Int) {
     if (minCapacity > data.size) {
@@ -40,14 +40,13 @@ class FloatArrayList(initialCapacity: Int) {
     }
   }
 
-
   override fun toString(): String = data.copyOf(size).contentToString()
 
   companion object {
     fun forDecoding(
       minLengthInBytes: Long,
       minimumElementByteSize: Long,
-    ) : FloatArrayList {
+    ): FloatArrayList {
       val minElements = (minLengthInBytes / minimumElementByteSize)
         .coerceAtMost(Int.MAX_VALUE.toLong())
         .toInt()
