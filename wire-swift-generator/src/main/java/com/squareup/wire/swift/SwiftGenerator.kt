@@ -238,7 +238,7 @@ class SwiftGenerator private constructor(
     // TODO use a NameAllocator
     val propertyNames = type.fields.map { it.name } + type.oneOfs.map { it.name }
 
-    val storageType = structType.peerType("_${structType.simpleName}")
+    val storageType = structType.nestedType("Storage")
     val storageName = if ("storage" in propertyNames) "_storage" else "storage"
 
     val typeSpecs = mutableListOf<TypeSpec>()
@@ -349,13 +349,18 @@ class SwiftGenerator private constructor(
     }
 
     if (type.isHeapAllocated) {
-      typeSpecs += TypeSpec.structBuilder(storageType)
-        .addModifiers(FILEPRIVATE)
-        .apply {
-          generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
-          generateMessageConstructor(type, oneOfEnumNames, includeDefaults = false)
-        }
+      val storageExtension = ExtensionSpec.builder(structType)
+        .addType(
+          TypeSpec.structBuilder(storageType)
+            .addModifiers(PUBLIC)
+            .apply {
+              generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
+              generateMessageConstructor(type, oneOfEnumNames, includeDefaults = false)
+            }
+            .build()
+        )
         .build()
+      fileMembers += FileMemberSpec.builder(storageExtension).build()
 
       val structProtoCodableExtension = ExtensionSpec.builder(structType)
         .addSuperType(type.protoCodableType)

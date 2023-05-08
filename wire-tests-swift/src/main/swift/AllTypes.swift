@@ -6,7 +6,7 @@ import Wire
 public struct AllTypes {
 
     @Heap
-    private var storage: _AllTypes
+    private var storage: AllTypes.Storage
     public var opt_int32: Int32? {
         get {
             storage.opt_int32
@@ -1469,7 +1469,7 @@ public struct AllTypes {
         ext_pack_double: [Double] = [],
         ext_pack_nested_enum: [AllTypes.NestedEnum] = []
     ) {
-        self.storage = _AllTypes(opt_int32: opt_int32, opt_uint32: opt_uint32,
+        self.storage = AllTypes.Storage(opt_int32: opt_int32, opt_uint32: opt_uint32,
                 opt_sint32: opt_sint32, opt_fixed32: opt_fixed32, opt_sfixed32: opt_sfixed32,
                 opt_int64: opt_int64, opt_uint64: opt_uint64, opt_sint64: opt_sint64,
                 opt_fixed64: opt_fixed64, opt_sfixed64: opt_sfixed64, opt_bool: opt_bool,
@@ -1568,451 +1568,6 @@ public struct AllTypes {
 
 }
 
-fileprivate struct _AllTypes {
-
-    public var opt_int32: Int32?
-    public var opt_uint32: UInt32?
-    public var opt_sint32: Int32?
-    public var opt_fixed32: UInt32?
-    public var opt_sfixed32: Int32?
-    public var opt_int64: Int64?
-    public var opt_uint64: UInt64?
-    public var opt_sint64: Int64?
-    public var opt_fixed64: UInt64?
-    public var opt_sfixed64: Int64?
-    public var opt_bool: Bool?
-    public var opt_float: Float?
-    public var opt_double: Double?
-    public var opt_string: String?
-    public var opt_bytes: Data?
-    public var opt_nested_enum: AllTypes.NestedEnum?
-    public var opt_nested_message: AllTypes.NestedMessage?
-    public var req_int32: Int32
-    public var req_uint32: UInt32
-    public var req_sint32: Int32
-    public var req_fixed32: UInt32
-    public var req_sfixed32: Int32
-    public var req_int64: Int64
-    public var req_uint64: UInt64
-    public var req_sint64: Int64
-    public var req_fixed64: UInt64
-    public var req_sfixed64: Int64
-    public var req_bool: Bool
-    public var req_float: Float
-    public var req_double: Double
-    public var req_string: String
-    public var req_bytes: Data
-    public var req_nested_enum: AllTypes.NestedEnum
-    public var req_nested_message: AllTypes.NestedMessage
-    public var rep_int32: [Int32]
-    public var rep_uint32: [UInt32]
-    public var rep_sint32: [Int32]
-    public var rep_fixed32: [UInt32]
-    public var rep_sfixed32: [Int32]
-    public var rep_int64: [Int64]
-    public var rep_uint64: [UInt64]
-    public var rep_sint64: [Int64]
-    public var rep_fixed64: [UInt64]
-    public var rep_sfixed64: [Int64]
-    public var rep_bool: [Bool]
-    public var rep_float: [Float]
-    public var rep_double: [Double]
-    public var rep_string: [String]
-    public var rep_bytes: [Data]
-    public var rep_nested_enum: [AllTypes.NestedEnum]
-    public var rep_nested_message: [AllTypes.NestedMessage]
-    public var pack_int32: [Int32]
-    public var pack_uint32: [UInt32]
-    public var pack_sint32: [Int32]
-    public var pack_fixed32: [UInt32]
-    public var pack_sfixed32: [Int32]
-    public var pack_int64: [Int64]
-    public var pack_uint64: [UInt64]
-    public var pack_sint64: [Int64]
-    public var pack_fixed64: [UInt64]
-    public var pack_sfixed64: [Int64]
-    public var pack_bool: [Bool]
-    public var pack_float: [Float]
-    public var pack_double: [Double]
-    public var pack_nested_enum: [AllTypes.NestedEnum]
-    public var default_int32: Int32?
-    public var default_uint32: UInt32?
-    public var default_sint32: Int32?
-    public var default_fixed32: UInt32?
-    public var default_sfixed32: Int32?
-    public var default_int64: Int64?
-    public var default_uint64: UInt64?
-    public var default_sint64: Int64?
-    public var default_fixed64: UInt64?
-    public var default_sfixed64: Int64?
-    public var default_bool: Bool?
-    public var default_float: Float?
-    public var default_double: Double?
-    public var default_string: String?
-    public var default_bytes: Data?
-    public var default_nested_enum: AllTypes.NestedEnum?
-    public var map_int32_int32: [Int32 : Int32]
-    public var map_string_string: [String : String]
-    public var map_string_message: [String : AllTypes.NestedMessage]
-    public var map_string_enum: [String : AllTypes.NestedEnum]
-    public var array_int32: [Int32]
-    public var array_uint32: [UInt32]
-    public var array_sint32: [Int32]
-    public var array_fixed32: [UInt32]
-    public var array_sfixed32: [Int32]
-    public var array_int64: [Int64]
-    public var array_uint64: [UInt64]
-    public var array_sint64: [Int64]
-    public var array_fixed64: [UInt64]
-    public var array_sfixed64: [Int64]
-    public var array_float: [Float]
-    public var array_double: [Double]
-    public var ext_opt_int32: Int32?
-    public var ext_opt_uint32: UInt32?
-    public var ext_opt_sint32: Int32?
-    public var ext_opt_fixed32: UInt32?
-    public var ext_opt_sfixed32: Int32?
-    public var ext_opt_int64: Int64?
-    public var ext_opt_uint64: UInt64?
-    public var ext_opt_sint64: Int64?
-    public var ext_opt_fixed64: UInt64?
-    public var ext_opt_sfixed64: Int64?
-    public var ext_opt_bool: Bool?
-    public var ext_opt_float: Float?
-    public var ext_opt_double: Double?
-    public var ext_opt_string: String?
-    public var ext_opt_bytes: Data?
-    public var ext_opt_nested_enum: AllTypes.NestedEnum?
-    public var ext_opt_nested_message: AllTypes.NestedMessage?
-    public var ext_rep_int32: [Int32]
-    public var ext_rep_uint32: [UInt32]
-    public var ext_rep_sint32: [Int32]
-    public var ext_rep_fixed32: [UInt32]
-    public var ext_rep_sfixed32: [Int32]
-    public var ext_rep_int64: [Int64]
-    public var ext_rep_uint64: [UInt64]
-    public var ext_rep_sint64: [Int64]
-    public var ext_rep_fixed64: [UInt64]
-    public var ext_rep_sfixed64: [Int64]
-    public var ext_rep_bool: [Bool]
-    public var ext_rep_float: [Float]
-    public var ext_rep_double: [Double]
-    public var ext_rep_string: [String]
-    public var ext_rep_bytes: [Data]
-    public var ext_rep_nested_enum: [AllTypes.NestedEnum]
-    public var ext_rep_nested_message: [AllTypes.NestedMessage]
-    public var ext_pack_int32: [Int32]
-    public var ext_pack_uint32: [UInt32]
-    public var ext_pack_sint32: [Int32]
-    public var ext_pack_fixed32: [UInt32]
-    public var ext_pack_sfixed32: [Int32]
-    public var ext_pack_int64: [Int64]
-    public var ext_pack_uint64: [UInt64]
-    public var ext_pack_sint64: [Int64]
-    public var ext_pack_fixed64: [UInt64]
-    public var ext_pack_sfixed64: [Int64]
-    public var ext_pack_bool: [Bool]
-    public var ext_pack_float: [Float]
-    public var ext_pack_double: [Double]
-    public var ext_pack_nested_enum: [AllTypes.NestedEnum]
-    public var unknownFields: Data = .init()
-
-    public init(
-        opt_int32: Int32?,
-        opt_uint32: UInt32?,
-        opt_sint32: Int32?,
-        opt_fixed32: UInt32?,
-        opt_sfixed32: Int32?,
-        opt_int64: Int64?,
-        opt_uint64: UInt64?,
-        opt_sint64: Int64?,
-        opt_fixed64: UInt64?,
-        opt_sfixed64: Int64?,
-        opt_bool: Bool?,
-        opt_float: Float?,
-        opt_double: Double?,
-        opt_string: String?,
-        opt_bytes: Data?,
-        opt_nested_enum: AllTypes.NestedEnum?,
-        opt_nested_message: AllTypes.NestedMessage?,
-        req_int32: Int32,
-        req_uint32: UInt32,
-        req_sint32: Int32,
-        req_fixed32: UInt32,
-        req_sfixed32: Int32,
-        req_int64: Int64,
-        req_uint64: UInt64,
-        req_sint64: Int64,
-        req_fixed64: UInt64,
-        req_sfixed64: Int64,
-        req_bool: Bool,
-        req_float: Float,
-        req_double: Double,
-        req_string: String,
-        req_bytes: Data,
-        req_nested_enum: AllTypes.NestedEnum,
-        req_nested_message: AllTypes.NestedMessage,
-        rep_int32: [Int32],
-        rep_uint32: [UInt32],
-        rep_sint32: [Int32],
-        rep_fixed32: [UInt32],
-        rep_sfixed32: [Int32],
-        rep_int64: [Int64],
-        rep_uint64: [UInt64],
-        rep_sint64: [Int64],
-        rep_fixed64: [UInt64],
-        rep_sfixed64: [Int64],
-        rep_bool: [Bool],
-        rep_float: [Float],
-        rep_double: [Double],
-        rep_string: [String],
-        rep_bytes: [Data],
-        rep_nested_enum: [AllTypes.NestedEnum],
-        rep_nested_message: [AllTypes.NestedMessage],
-        pack_int32: [Int32],
-        pack_uint32: [UInt32],
-        pack_sint32: [Int32],
-        pack_fixed32: [UInt32],
-        pack_sfixed32: [Int32],
-        pack_int64: [Int64],
-        pack_uint64: [UInt64],
-        pack_sint64: [Int64],
-        pack_fixed64: [UInt64],
-        pack_sfixed64: [Int64],
-        pack_bool: [Bool],
-        pack_float: [Float],
-        pack_double: [Double],
-        pack_nested_enum: [AllTypes.NestedEnum],
-        default_int32: Int32?,
-        default_uint32: UInt32?,
-        default_sint32: Int32?,
-        default_fixed32: UInt32?,
-        default_sfixed32: Int32?,
-        default_int64: Int64?,
-        default_uint64: UInt64?,
-        default_sint64: Int64?,
-        default_fixed64: UInt64?,
-        default_sfixed64: Int64?,
-        default_bool: Bool?,
-        default_float: Float?,
-        default_double: Double?,
-        default_string: String?,
-        default_bytes: Data?,
-        default_nested_enum: AllTypes.NestedEnum?,
-        map_int32_int32: [Int32 : Int32],
-        map_string_string: [String : String],
-        map_string_message: [String : AllTypes.NestedMessage],
-        map_string_enum: [String : AllTypes.NestedEnum],
-        array_int32: [Int32],
-        array_uint32: [UInt32],
-        array_sint32: [Int32],
-        array_fixed32: [UInt32],
-        array_sfixed32: [Int32],
-        array_int64: [Int64],
-        array_uint64: [UInt64],
-        array_sint64: [Int64],
-        array_fixed64: [UInt64],
-        array_sfixed64: [Int64],
-        array_float: [Float],
-        array_double: [Double],
-        ext_opt_int32: Int32?,
-        ext_opt_uint32: UInt32?,
-        ext_opt_sint32: Int32?,
-        ext_opt_fixed32: UInt32?,
-        ext_opt_sfixed32: Int32?,
-        ext_opt_int64: Int64?,
-        ext_opt_uint64: UInt64?,
-        ext_opt_sint64: Int64?,
-        ext_opt_fixed64: UInt64?,
-        ext_opt_sfixed64: Int64?,
-        ext_opt_bool: Bool?,
-        ext_opt_float: Float?,
-        ext_opt_double: Double?,
-        ext_opt_string: String?,
-        ext_opt_bytes: Data?,
-        ext_opt_nested_enum: AllTypes.NestedEnum?,
-        ext_opt_nested_message: AllTypes.NestedMessage?,
-        ext_rep_int32: [Int32],
-        ext_rep_uint32: [UInt32],
-        ext_rep_sint32: [Int32],
-        ext_rep_fixed32: [UInt32],
-        ext_rep_sfixed32: [Int32],
-        ext_rep_int64: [Int64],
-        ext_rep_uint64: [UInt64],
-        ext_rep_sint64: [Int64],
-        ext_rep_fixed64: [UInt64],
-        ext_rep_sfixed64: [Int64],
-        ext_rep_bool: [Bool],
-        ext_rep_float: [Float],
-        ext_rep_double: [Double],
-        ext_rep_string: [String],
-        ext_rep_bytes: [Data],
-        ext_rep_nested_enum: [AllTypes.NestedEnum],
-        ext_rep_nested_message: [AllTypes.NestedMessage],
-        ext_pack_int32: [Int32],
-        ext_pack_uint32: [UInt32],
-        ext_pack_sint32: [Int32],
-        ext_pack_fixed32: [UInt32],
-        ext_pack_sfixed32: [Int32],
-        ext_pack_int64: [Int64],
-        ext_pack_uint64: [UInt64],
-        ext_pack_sint64: [Int64],
-        ext_pack_fixed64: [UInt64],
-        ext_pack_sfixed64: [Int64],
-        ext_pack_bool: [Bool],
-        ext_pack_float: [Float],
-        ext_pack_double: [Double],
-        ext_pack_nested_enum: [AllTypes.NestedEnum]
-    ) {
-        self.opt_int32 = opt_int32
-        self.opt_uint32 = opt_uint32
-        self.opt_sint32 = opt_sint32
-        self.opt_fixed32 = opt_fixed32
-        self.opt_sfixed32 = opt_sfixed32
-        self.opt_int64 = opt_int64
-        self.opt_uint64 = opt_uint64
-        self.opt_sint64 = opt_sint64
-        self.opt_fixed64 = opt_fixed64
-        self.opt_sfixed64 = opt_sfixed64
-        self.opt_bool = opt_bool
-        self.opt_float = opt_float
-        self.opt_double = opt_double
-        self.opt_string = opt_string
-        self.opt_bytes = opt_bytes
-        self.opt_nested_enum = opt_nested_enum
-        self.opt_nested_message = opt_nested_message
-        self.req_int32 = req_int32
-        self.req_uint32 = req_uint32
-        self.req_sint32 = req_sint32
-        self.req_fixed32 = req_fixed32
-        self.req_sfixed32 = req_sfixed32
-        self.req_int64 = req_int64
-        self.req_uint64 = req_uint64
-        self.req_sint64 = req_sint64
-        self.req_fixed64 = req_fixed64
-        self.req_sfixed64 = req_sfixed64
-        self.req_bool = req_bool
-        self.req_float = req_float
-        self.req_double = req_double
-        self.req_string = req_string
-        self.req_bytes = req_bytes
-        self.req_nested_enum = req_nested_enum
-        self.req_nested_message = req_nested_message
-        self.rep_int32 = rep_int32
-        self.rep_uint32 = rep_uint32
-        self.rep_sint32 = rep_sint32
-        self.rep_fixed32 = rep_fixed32
-        self.rep_sfixed32 = rep_sfixed32
-        self.rep_int64 = rep_int64
-        self.rep_uint64 = rep_uint64
-        self.rep_sint64 = rep_sint64
-        self.rep_fixed64 = rep_fixed64
-        self.rep_sfixed64 = rep_sfixed64
-        self.rep_bool = rep_bool
-        self.rep_float = rep_float
-        self.rep_double = rep_double
-        self.rep_string = rep_string
-        self.rep_bytes = rep_bytes
-        self.rep_nested_enum = rep_nested_enum
-        self.rep_nested_message = rep_nested_message
-        self.pack_int32 = pack_int32
-        self.pack_uint32 = pack_uint32
-        self.pack_sint32 = pack_sint32
-        self.pack_fixed32 = pack_fixed32
-        self.pack_sfixed32 = pack_sfixed32
-        self.pack_int64 = pack_int64
-        self.pack_uint64 = pack_uint64
-        self.pack_sint64 = pack_sint64
-        self.pack_fixed64 = pack_fixed64
-        self.pack_sfixed64 = pack_sfixed64
-        self.pack_bool = pack_bool
-        self.pack_float = pack_float
-        self.pack_double = pack_double
-        self.pack_nested_enum = pack_nested_enum
-        self.default_int32 = default_int32
-        self.default_uint32 = default_uint32
-        self.default_sint32 = default_sint32
-        self.default_fixed32 = default_fixed32
-        self.default_sfixed32 = default_sfixed32
-        self.default_int64 = default_int64
-        self.default_uint64 = default_uint64
-        self.default_sint64 = default_sint64
-        self.default_fixed64 = default_fixed64
-        self.default_sfixed64 = default_sfixed64
-        self.default_bool = default_bool
-        self.default_float = default_float
-        self.default_double = default_double
-        self.default_string = default_string
-        self.default_bytes = default_bytes
-        self.default_nested_enum = default_nested_enum
-        self.map_int32_int32 = map_int32_int32
-        self.map_string_string = map_string_string
-        self.map_string_message = map_string_message
-        self.map_string_enum = map_string_enum
-        self.array_int32 = array_int32
-        self.array_uint32 = array_uint32
-        self.array_sint32 = array_sint32
-        self.array_fixed32 = array_fixed32
-        self.array_sfixed32 = array_sfixed32
-        self.array_int64 = array_int64
-        self.array_uint64 = array_uint64
-        self.array_sint64 = array_sint64
-        self.array_fixed64 = array_fixed64
-        self.array_sfixed64 = array_sfixed64
-        self.array_float = array_float
-        self.array_double = array_double
-        self.ext_opt_int32 = ext_opt_int32
-        self.ext_opt_uint32 = ext_opt_uint32
-        self.ext_opt_sint32 = ext_opt_sint32
-        self.ext_opt_fixed32 = ext_opt_fixed32
-        self.ext_opt_sfixed32 = ext_opt_sfixed32
-        self.ext_opt_int64 = ext_opt_int64
-        self.ext_opt_uint64 = ext_opt_uint64
-        self.ext_opt_sint64 = ext_opt_sint64
-        self.ext_opt_fixed64 = ext_opt_fixed64
-        self.ext_opt_sfixed64 = ext_opt_sfixed64
-        self.ext_opt_bool = ext_opt_bool
-        self.ext_opt_float = ext_opt_float
-        self.ext_opt_double = ext_opt_double
-        self.ext_opt_string = ext_opt_string
-        self.ext_opt_bytes = ext_opt_bytes
-        self.ext_opt_nested_enum = ext_opt_nested_enum
-        self.ext_opt_nested_message = ext_opt_nested_message
-        self.ext_rep_int32 = ext_rep_int32
-        self.ext_rep_uint32 = ext_rep_uint32
-        self.ext_rep_sint32 = ext_rep_sint32
-        self.ext_rep_fixed32 = ext_rep_fixed32
-        self.ext_rep_sfixed32 = ext_rep_sfixed32
-        self.ext_rep_int64 = ext_rep_int64
-        self.ext_rep_uint64 = ext_rep_uint64
-        self.ext_rep_sint64 = ext_rep_sint64
-        self.ext_rep_fixed64 = ext_rep_fixed64
-        self.ext_rep_sfixed64 = ext_rep_sfixed64
-        self.ext_rep_bool = ext_rep_bool
-        self.ext_rep_float = ext_rep_float
-        self.ext_rep_double = ext_rep_double
-        self.ext_rep_string = ext_rep_string
-        self.ext_rep_bytes = ext_rep_bytes
-        self.ext_rep_nested_enum = ext_rep_nested_enum
-        self.ext_rep_nested_message = ext_rep_nested_message
-        self.ext_pack_int32 = ext_pack_int32
-        self.ext_pack_uint32 = ext_pack_uint32
-        self.ext_pack_sint32 = ext_pack_sint32
-        self.ext_pack_fixed32 = ext_pack_fixed32
-        self.ext_pack_sfixed32 = ext_pack_sfixed32
-        self.ext_pack_int64 = ext_pack_int64
-        self.ext_pack_uint64 = ext_pack_uint64
-        self.ext_pack_sint64 = ext_pack_sint64
-        self.ext_pack_fixed64 = ext_pack_fixed64
-        self.ext_pack_sfixed64 = ext_pack_sfixed64
-        self.ext_pack_bool = ext_pack_bool
-        self.ext_pack_float = ext_pack_float
-        self.ext_pack_double = ext_pack_double
-        self.ext_pack_nested_enum = ext_pack_nested_enum
-    }
-
-}
-
 #if swift(>=5.5)
 extension AllTypes.NestedEnum : Sendable {
 }
@@ -2097,10 +1652,459 @@ extension AllTypes : @unchecked Sendable {
 }
 #endif
 
+extension AllTypes {
+
+    public struct Storage {
+
+        public var opt_int32: Swift.Int32?
+        public var opt_uint32: Swift.UInt32?
+        public var opt_sint32: Swift.Int32?
+        public var opt_fixed32: Swift.UInt32?
+        public var opt_sfixed32: Swift.Int32?
+        public var opt_int64: Swift.Int64?
+        public var opt_uint64: Swift.UInt64?
+        public var opt_sint64: Swift.Int64?
+        public var opt_fixed64: Swift.UInt64?
+        public var opt_sfixed64: Swift.Int64?
+        public var opt_bool: Swift.Bool?
+        public var opt_float: Swift.Float?
+        public var opt_double: Swift.Double?
+        public var opt_string: Swift.String?
+        public var opt_bytes: Foundation.Data?
+        public var opt_nested_enum: AllTypes.NestedEnum?
+        public var opt_nested_message: AllTypes.NestedMessage?
+        public var req_int32: Swift.Int32
+        public var req_uint32: Swift.UInt32
+        public var req_sint32: Swift.Int32
+        public var req_fixed32: Swift.UInt32
+        public var req_sfixed32: Swift.Int32
+        public var req_int64: Swift.Int64
+        public var req_uint64: Swift.UInt64
+        public var req_sint64: Swift.Int64
+        public var req_fixed64: Swift.UInt64
+        public var req_sfixed64: Swift.Int64
+        public var req_bool: Swift.Bool
+        public var req_float: Swift.Float
+        public var req_double: Swift.Double
+        public var req_string: Swift.String
+        public var req_bytes: Foundation.Data
+        public var req_nested_enum: AllTypes.NestedEnum
+        public var req_nested_message: AllTypes.NestedMessage
+        public var rep_int32: [Swift.Int32]
+        public var rep_uint32: [Swift.UInt32]
+        public var rep_sint32: [Swift.Int32]
+        public var rep_fixed32: [Swift.UInt32]
+        public var rep_sfixed32: [Swift.Int32]
+        public var rep_int64: [Swift.Int64]
+        public var rep_uint64: [Swift.UInt64]
+        public var rep_sint64: [Swift.Int64]
+        public var rep_fixed64: [Swift.UInt64]
+        public var rep_sfixed64: [Swift.Int64]
+        public var rep_bool: [Swift.Bool]
+        public var rep_float: [Swift.Float]
+        public var rep_double: [Swift.Double]
+        public var rep_string: [Swift.String]
+        public var rep_bytes: [Foundation.Data]
+        public var rep_nested_enum: [AllTypes.NestedEnum]
+        public var rep_nested_message: [AllTypes.NestedMessage]
+        public var pack_int32: [Swift.Int32]
+        public var pack_uint32: [Swift.UInt32]
+        public var pack_sint32: [Swift.Int32]
+        public var pack_fixed32: [Swift.UInt32]
+        public var pack_sfixed32: [Swift.Int32]
+        public var pack_int64: [Swift.Int64]
+        public var pack_uint64: [Swift.UInt64]
+        public var pack_sint64: [Swift.Int64]
+        public var pack_fixed64: [Swift.UInt64]
+        public var pack_sfixed64: [Swift.Int64]
+        public var pack_bool: [Swift.Bool]
+        public var pack_float: [Swift.Float]
+        public var pack_double: [Swift.Double]
+        public var pack_nested_enum: [AllTypes.NestedEnum]
+        public var default_int32: Swift.Int32?
+        public var default_uint32: Swift.UInt32?
+        public var default_sint32: Swift.Int32?
+        public var default_fixed32: Swift.UInt32?
+        public var default_sfixed32: Swift.Int32?
+        public var default_int64: Swift.Int64?
+        public var default_uint64: Swift.UInt64?
+        public var default_sint64: Swift.Int64?
+        public var default_fixed64: Swift.UInt64?
+        public var default_sfixed64: Swift.Int64?
+        public var default_bool: Swift.Bool?
+        public var default_float: Swift.Float?
+        public var default_double: Swift.Double?
+        public var default_string: Swift.String?
+        public var default_bytes: Foundation.Data?
+        public var default_nested_enum: AllTypes.NestedEnum?
+        public var map_int32_int32: [Swift.Int32 : Swift.Int32]
+        public var map_string_string: [Swift.String : Swift.String]
+        public var map_string_message: [Swift.String : AllTypes.NestedMessage]
+        public var map_string_enum: [Swift.String : AllTypes.NestedEnum]
+        public var array_int32: [Swift.Int32]
+        public var array_uint32: [Swift.UInt32]
+        public var array_sint32: [Swift.Int32]
+        public var array_fixed32: [Swift.UInt32]
+        public var array_sfixed32: [Swift.Int32]
+        public var array_int64: [Swift.Int64]
+        public var array_uint64: [Swift.UInt64]
+        public var array_sint64: [Swift.Int64]
+        public var array_fixed64: [Swift.UInt64]
+        public var array_sfixed64: [Swift.Int64]
+        public var array_float: [Swift.Float]
+        public var array_double: [Swift.Double]
+        public var ext_opt_int32: Swift.Int32?
+        public var ext_opt_uint32: Swift.UInt32?
+        public var ext_opt_sint32: Swift.Int32?
+        public var ext_opt_fixed32: Swift.UInt32?
+        public var ext_opt_sfixed32: Swift.Int32?
+        public var ext_opt_int64: Swift.Int64?
+        public var ext_opt_uint64: Swift.UInt64?
+        public var ext_opt_sint64: Swift.Int64?
+        public var ext_opt_fixed64: Swift.UInt64?
+        public var ext_opt_sfixed64: Swift.Int64?
+        public var ext_opt_bool: Swift.Bool?
+        public var ext_opt_float: Swift.Float?
+        public var ext_opt_double: Swift.Double?
+        public var ext_opt_string: Swift.String?
+        public var ext_opt_bytes: Foundation.Data?
+        public var ext_opt_nested_enum: AllTypes.NestedEnum?
+        public var ext_opt_nested_message: AllTypes.NestedMessage?
+        public var ext_rep_int32: [Swift.Int32]
+        public var ext_rep_uint32: [Swift.UInt32]
+        public var ext_rep_sint32: [Swift.Int32]
+        public var ext_rep_fixed32: [Swift.UInt32]
+        public var ext_rep_sfixed32: [Swift.Int32]
+        public var ext_rep_int64: [Swift.Int64]
+        public var ext_rep_uint64: [Swift.UInt64]
+        public var ext_rep_sint64: [Swift.Int64]
+        public var ext_rep_fixed64: [Swift.UInt64]
+        public var ext_rep_sfixed64: [Swift.Int64]
+        public var ext_rep_bool: [Swift.Bool]
+        public var ext_rep_float: [Swift.Float]
+        public var ext_rep_double: [Swift.Double]
+        public var ext_rep_string: [Swift.String]
+        public var ext_rep_bytes: [Foundation.Data]
+        public var ext_rep_nested_enum: [AllTypes.NestedEnum]
+        public var ext_rep_nested_message: [AllTypes.NestedMessage]
+        public var ext_pack_int32: [Swift.Int32]
+        public var ext_pack_uint32: [Swift.UInt32]
+        public var ext_pack_sint32: [Swift.Int32]
+        public var ext_pack_fixed32: [Swift.UInt32]
+        public var ext_pack_sfixed32: [Swift.Int32]
+        public var ext_pack_int64: [Swift.Int64]
+        public var ext_pack_uint64: [Swift.UInt64]
+        public var ext_pack_sint64: [Swift.Int64]
+        public var ext_pack_fixed64: [Swift.UInt64]
+        public var ext_pack_sfixed64: [Swift.Int64]
+        public var ext_pack_bool: [Swift.Bool]
+        public var ext_pack_float: [Swift.Float]
+        public var ext_pack_double: [Swift.Double]
+        public var ext_pack_nested_enum: [AllTypes.NestedEnum]
+        public var unknownFields: Foundation.Data = .init()
+
+        public init(
+            opt_int32: Swift.Int32?,
+            opt_uint32: Swift.UInt32?,
+            opt_sint32: Swift.Int32?,
+            opt_fixed32: Swift.UInt32?,
+            opt_sfixed32: Swift.Int32?,
+            opt_int64: Swift.Int64?,
+            opt_uint64: Swift.UInt64?,
+            opt_sint64: Swift.Int64?,
+            opt_fixed64: Swift.UInt64?,
+            opt_sfixed64: Swift.Int64?,
+            opt_bool: Swift.Bool?,
+            opt_float: Swift.Float?,
+            opt_double: Swift.Double?,
+            opt_string: Swift.String?,
+            opt_bytes: Foundation.Data?,
+            opt_nested_enum: AllTypes.NestedEnum?,
+            opt_nested_message: AllTypes.NestedMessage?,
+            req_int32: Swift.Int32,
+            req_uint32: Swift.UInt32,
+            req_sint32: Swift.Int32,
+            req_fixed32: Swift.UInt32,
+            req_sfixed32: Swift.Int32,
+            req_int64: Swift.Int64,
+            req_uint64: Swift.UInt64,
+            req_sint64: Swift.Int64,
+            req_fixed64: Swift.UInt64,
+            req_sfixed64: Swift.Int64,
+            req_bool: Swift.Bool,
+            req_float: Swift.Float,
+            req_double: Swift.Double,
+            req_string: Swift.String,
+            req_bytes: Foundation.Data,
+            req_nested_enum: AllTypes.NestedEnum,
+            req_nested_message: AllTypes.NestedMessage,
+            rep_int32: [Swift.Int32],
+            rep_uint32: [Swift.UInt32],
+            rep_sint32: [Swift.Int32],
+            rep_fixed32: [Swift.UInt32],
+            rep_sfixed32: [Swift.Int32],
+            rep_int64: [Swift.Int64],
+            rep_uint64: [Swift.UInt64],
+            rep_sint64: [Swift.Int64],
+            rep_fixed64: [Swift.UInt64],
+            rep_sfixed64: [Swift.Int64],
+            rep_bool: [Swift.Bool],
+            rep_float: [Swift.Float],
+            rep_double: [Swift.Double],
+            rep_string: [Swift.String],
+            rep_bytes: [Foundation.Data],
+            rep_nested_enum: [AllTypes.NestedEnum],
+            rep_nested_message: [AllTypes.NestedMessage],
+            pack_int32: [Swift.Int32],
+            pack_uint32: [Swift.UInt32],
+            pack_sint32: [Swift.Int32],
+            pack_fixed32: [Swift.UInt32],
+            pack_sfixed32: [Swift.Int32],
+            pack_int64: [Swift.Int64],
+            pack_uint64: [Swift.UInt64],
+            pack_sint64: [Swift.Int64],
+            pack_fixed64: [Swift.UInt64],
+            pack_sfixed64: [Swift.Int64],
+            pack_bool: [Swift.Bool],
+            pack_float: [Swift.Float],
+            pack_double: [Swift.Double],
+            pack_nested_enum: [AllTypes.NestedEnum],
+            default_int32: Swift.Int32?,
+            default_uint32: Swift.UInt32?,
+            default_sint32: Swift.Int32?,
+            default_fixed32: Swift.UInt32?,
+            default_sfixed32: Swift.Int32?,
+            default_int64: Swift.Int64?,
+            default_uint64: Swift.UInt64?,
+            default_sint64: Swift.Int64?,
+            default_fixed64: Swift.UInt64?,
+            default_sfixed64: Swift.Int64?,
+            default_bool: Swift.Bool?,
+            default_float: Swift.Float?,
+            default_double: Swift.Double?,
+            default_string: Swift.String?,
+            default_bytes: Foundation.Data?,
+            default_nested_enum: AllTypes.NestedEnum?,
+            map_int32_int32: [Swift.Int32 : Swift.Int32],
+            map_string_string: [Swift.String : Swift.String],
+            map_string_message: [Swift.String : AllTypes.NestedMessage],
+            map_string_enum: [Swift.String : AllTypes.NestedEnum],
+            array_int32: [Swift.Int32],
+            array_uint32: [Swift.UInt32],
+            array_sint32: [Swift.Int32],
+            array_fixed32: [Swift.UInt32],
+            array_sfixed32: [Swift.Int32],
+            array_int64: [Swift.Int64],
+            array_uint64: [Swift.UInt64],
+            array_sint64: [Swift.Int64],
+            array_fixed64: [Swift.UInt64],
+            array_sfixed64: [Swift.Int64],
+            array_float: [Swift.Float],
+            array_double: [Swift.Double],
+            ext_opt_int32: Swift.Int32?,
+            ext_opt_uint32: Swift.UInt32?,
+            ext_opt_sint32: Swift.Int32?,
+            ext_opt_fixed32: Swift.UInt32?,
+            ext_opt_sfixed32: Swift.Int32?,
+            ext_opt_int64: Swift.Int64?,
+            ext_opt_uint64: Swift.UInt64?,
+            ext_opt_sint64: Swift.Int64?,
+            ext_opt_fixed64: Swift.UInt64?,
+            ext_opt_sfixed64: Swift.Int64?,
+            ext_opt_bool: Swift.Bool?,
+            ext_opt_float: Swift.Float?,
+            ext_opt_double: Swift.Double?,
+            ext_opt_string: Swift.String?,
+            ext_opt_bytes: Foundation.Data?,
+            ext_opt_nested_enum: AllTypes.NestedEnum?,
+            ext_opt_nested_message: AllTypes.NestedMessage?,
+            ext_rep_int32: [Swift.Int32],
+            ext_rep_uint32: [Swift.UInt32],
+            ext_rep_sint32: [Swift.Int32],
+            ext_rep_fixed32: [Swift.UInt32],
+            ext_rep_sfixed32: [Swift.Int32],
+            ext_rep_int64: [Swift.Int64],
+            ext_rep_uint64: [Swift.UInt64],
+            ext_rep_sint64: [Swift.Int64],
+            ext_rep_fixed64: [Swift.UInt64],
+            ext_rep_sfixed64: [Swift.Int64],
+            ext_rep_bool: [Swift.Bool],
+            ext_rep_float: [Swift.Float],
+            ext_rep_double: [Swift.Double],
+            ext_rep_string: [Swift.String],
+            ext_rep_bytes: [Foundation.Data],
+            ext_rep_nested_enum: [AllTypes.NestedEnum],
+            ext_rep_nested_message: [AllTypes.NestedMessage],
+            ext_pack_int32: [Swift.Int32],
+            ext_pack_uint32: [Swift.UInt32],
+            ext_pack_sint32: [Swift.Int32],
+            ext_pack_fixed32: [Swift.UInt32],
+            ext_pack_sfixed32: [Swift.Int32],
+            ext_pack_int64: [Swift.Int64],
+            ext_pack_uint64: [Swift.UInt64],
+            ext_pack_sint64: [Swift.Int64],
+            ext_pack_fixed64: [Swift.UInt64],
+            ext_pack_sfixed64: [Swift.Int64],
+            ext_pack_bool: [Swift.Bool],
+            ext_pack_float: [Swift.Float],
+            ext_pack_double: [Swift.Double],
+            ext_pack_nested_enum: [AllTypes.NestedEnum]
+        ) {
+            self.opt_int32 = opt_int32
+            self.opt_uint32 = opt_uint32
+            self.opt_sint32 = opt_sint32
+            self.opt_fixed32 = opt_fixed32
+            self.opt_sfixed32 = opt_sfixed32
+            self.opt_int64 = opt_int64
+            self.opt_uint64 = opt_uint64
+            self.opt_sint64 = opt_sint64
+            self.opt_fixed64 = opt_fixed64
+            self.opt_sfixed64 = opt_sfixed64
+            self.opt_bool = opt_bool
+            self.opt_float = opt_float
+            self.opt_double = opt_double
+            self.opt_string = opt_string
+            self.opt_bytes = opt_bytes
+            self.opt_nested_enum = opt_nested_enum
+            self.opt_nested_message = opt_nested_message
+            self.req_int32 = req_int32
+            self.req_uint32 = req_uint32
+            self.req_sint32 = req_sint32
+            self.req_fixed32 = req_fixed32
+            self.req_sfixed32 = req_sfixed32
+            self.req_int64 = req_int64
+            self.req_uint64 = req_uint64
+            self.req_sint64 = req_sint64
+            self.req_fixed64 = req_fixed64
+            self.req_sfixed64 = req_sfixed64
+            self.req_bool = req_bool
+            self.req_float = req_float
+            self.req_double = req_double
+            self.req_string = req_string
+            self.req_bytes = req_bytes
+            self.req_nested_enum = req_nested_enum
+            self.req_nested_message = req_nested_message
+            self.rep_int32 = rep_int32
+            self.rep_uint32 = rep_uint32
+            self.rep_sint32 = rep_sint32
+            self.rep_fixed32 = rep_fixed32
+            self.rep_sfixed32 = rep_sfixed32
+            self.rep_int64 = rep_int64
+            self.rep_uint64 = rep_uint64
+            self.rep_sint64 = rep_sint64
+            self.rep_fixed64 = rep_fixed64
+            self.rep_sfixed64 = rep_sfixed64
+            self.rep_bool = rep_bool
+            self.rep_float = rep_float
+            self.rep_double = rep_double
+            self.rep_string = rep_string
+            self.rep_bytes = rep_bytes
+            self.rep_nested_enum = rep_nested_enum
+            self.rep_nested_message = rep_nested_message
+            self.pack_int32 = pack_int32
+            self.pack_uint32 = pack_uint32
+            self.pack_sint32 = pack_sint32
+            self.pack_fixed32 = pack_fixed32
+            self.pack_sfixed32 = pack_sfixed32
+            self.pack_int64 = pack_int64
+            self.pack_uint64 = pack_uint64
+            self.pack_sint64 = pack_sint64
+            self.pack_fixed64 = pack_fixed64
+            self.pack_sfixed64 = pack_sfixed64
+            self.pack_bool = pack_bool
+            self.pack_float = pack_float
+            self.pack_double = pack_double
+            self.pack_nested_enum = pack_nested_enum
+            self.default_int32 = default_int32
+            self.default_uint32 = default_uint32
+            self.default_sint32 = default_sint32
+            self.default_fixed32 = default_fixed32
+            self.default_sfixed32 = default_sfixed32
+            self.default_int64 = default_int64
+            self.default_uint64 = default_uint64
+            self.default_sint64 = default_sint64
+            self.default_fixed64 = default_fixed64
+            self.default_sfixed64 = default_sfixed64
+            self.default_bool = default_bool
+            self.default_float = default_float
+            self.default_double = default_double
+            self.default_string = default_string
+            self.default_bytes = default_bytes
+            self.default_nested_enum = default_nested_enum
+            self.map_int32_int32 = map_int32_int32
+            self.map_string_string = map_string_string
+            self.map_string_message = map_string_message
+            self.map_string_enum = map_string_enum
+            self.array_int32 = array_int32
+            self.array_uint32 = array_uint32
+            self.array_sint32 = array_sint32
+            self.array_fixed32 = array_fixed32
+            self.array_sfixed32 = array_sfixed32
+            self.array_int64 = array_int64
+            self.array_uint64 = array_uint64
+            self.array_sint64 = array_sint64
+            self.array_fixed64 = array_fixed64
+            self.array_sfixed64 = array_sfixed64
+            self.array_float = array_float
+            self.array_double = array_double
+            self.ext_opt_int32 = ext_opt_int32
+            self.ext_opt_uint32 = ext_opt_uint32
+            self.ext_opt_sint32 = ext_opt_sint32
+            self.ext_opt_fixed32 = ext_opt_fixed32
+            self.ext_opt_sfixed32 = ext_opt_sfixed32
+            self.ext_opt_int64 = ext_opt_int64
+            self.ext_opt_uint64 = ext_opt_uint64
+            self.ext_opt_sint64 = ext_opt_sint64
+            self.ext_opt_fixed64 = ext_opt_fixed64
+            self.ext_opt_sfixed64 = ext_opt_sfixed64
+            self.ext_opt_bool = ext_opt_bool
+            self.ext_opt_float = ext_opt_float
+            self.ext_opt_double = ext_opt_double
+            self.ext_opt_string = ext_opt_string
+            self.ext_opt_bytes = ext_opt_bytes
+            self.ext_opt_nested_enum = ext_opt_nested_enum
+            self.ext_opt_nested_message = ext_opt_nested_message
+            self.ext_rep_int32 = ext_rep_int32
+            self.ext_rep_uint32 = ext_rep_uint32
+            self.ext_rep_sint32 = ext_rep_sint32
+            self.ext_rep_fixed32 = ext_rep_fixed32
+            self.ext_rep_sfixed32 = ext_rep_sfixed32
+            self.ext_rep_int64 = ext_rep_int64
+            self.ext_rep_uint64 = ext_rep_uint64
+            self.ext_rep_sint64 = ext_rep_sint64
+            self.ext_rep_fixed64 = ext_rep_fixed64
+            self.ext_rep_sfixed64 = ext_rep_sfixed64
+            self.ext_rep_bool = ext_rep_bool
+            self.ext_rep_float = ext_rep_float
+            self.ext_rep_double = ext_rep_double
+            self.ext_rep_string = ext_rep_string
+            self.ext_rep_bytes = ext_rep_bytes
+            self.ext_rep_nested_enum = ext_rep_nested_enum
+            self.ext_rep_nested_message = ext_rep_nested_message
+            self.ext_pack_int32 = ext_pack_int32
+            self.ext_pack_uint32 = ext_pack_uint32
+            self.ext_pack_sint32 = ext_pack_sint32
+            self.ext_pack_fixed32 = ext_pack_fixed32
+            self.ext_pack_sfixed32 = ext_pack_sfixed32
+            self.ext_pack_int64 = ext_pack_int64
+            self.ext_pack_uint64 = ext_pack_uint64
+            self.ext_pack_sint64 = ext_pack_sint64
+            self.ext_pack_fixed64 = ext_pack_fixed64
+            self.ext_pack_sfixed64 = ext_pack_sfixed64
+            self.ext_pack_bool = ext_pack_bool
+            self.ext_pack_float = ext_pack_float
+            self.ext_pack_double = ext_pack_double
+            self.ext_pack_nested_enum = ext_pack_nested_enum
+        }
+
+    }
+
+}
+
 extension AllTypes : Proto2Codable {
 
     public init(from reader: Wire.ProtoReader) throws {
-        self.storage = try _AllTypes(from: reader)
+        self.storage = try Storage(from: reader)
     }
 
     public func encode(to writer: Wire.ProtoWriter) throws {
@@ -2109,7 +2113,7 @@ extension AllTypes : Proto2Codable {
 
 }
 
-extension _AllTypes : ProtoMessage {
+extension AllTypes.Storage : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes"
@@ -2117,7 +2121,7 @@ extension _AllTypes : ProtoMessage {
 
 }
 
-extension _AllTypes : Proto2Codable {
+extension AllTypes.Storage : Proto2Codable {
 
     public init(from reader: Wire.ProtoReader) throws {
         var opt_int32: Swift.Int32? = nil
@@ -2722,7 +2726,7 @@ extension AllTypes : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.singleValueContainer()
-        self.storage = try container.decode(_AllTypes.self)
+        self.storage = try container.decode(Storage.self)
     }
 
     public func encode(to encoder: Swift.Encoder) throws {
@@ -2734,7 +2738,7 @@ extension AllTypes : Codable {
 #endif
 
 #if !WIRE_REMOVE_CODABLE
-extension _AllTypes : Codable {
+extension AllTypes.Storage : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
@@ -3229,16 +3233,16 @@ extension _AllTypes : Codable {
 #endif
 
 #if !WIRE_REMOVE_EQUATABLE
-extension _AllTypes : Equatable {
+extension AllTypes.Storage : Equatable {
 }
 #endif
 
 #if !WIRE_REMOVE_HASHABLE
-extension _AllTypes : Hashable {
+extension AllTypes.Storage : Hashable {
 }
 #endif
 
 #if swift(>=5.5)
-extension _AllTypes : Sendable {
+extension AllTypes.Storage : Sendable {
 }
 #endif
