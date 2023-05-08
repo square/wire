@@ -125,7 +125,7 @@ public class EmbeddedMessage(
                   .toInt()
                 inner_repeated_number = ArrayList(initialCapacity)
               }
-              inner_repeated_number!!.add(com.squareup.wire.ProtoAdapter.INT32.decode(reader))
+              inner_repeated_number!!.add(ProtoAdapter.INT32.decode(reader))
             }
             2 -> inner_number_after = ProtoAdapter.INT32.decode(reader)
             else -> reader.readUnknownField(tag)

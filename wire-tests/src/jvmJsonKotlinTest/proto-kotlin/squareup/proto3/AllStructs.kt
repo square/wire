@@ -702,7 +702,7 @@ public class AllStructs(
             102 -> rep_list.add(ProtoAdapter.STRUCT_LIST.decode(reader))
             103 -> rep_value_a.add(ProtoAdapter.STRUCT_VALUE.decode(reader))
             104 -> try {
-              rep_null_value.add(ProtoAdapter.STRUCT_NULL.decode(reader))
+              ProtoAdapter.STRUCT_NULL.tryDecode(reader, rep_null_value)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }

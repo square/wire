@@ -232,7 +232,7 @@ public class Person(
                   .toInt()
                 favorite_numbers = ArrayList(initialCapacity)
               }
-              favorite_numbers!!.add(com.squareup.wire.ProtoAdapter.INT32.decode(reader))
+              favorite_numbers!!.add(ProtoAdapter.INT32.decode(reader))
             }
             6 -> area_numbers.putAll(area_numbersAdapter.decode(reader))
             7 -> is_canadian = ProtoAdapter.BOOL.decode(reader)

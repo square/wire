@@ -241,7 +241,7 @@ public class KeywordKotlin(
             3 -> fun_.putAll(funAdapter.decode(reader))
             4 -> return_.add(ProtoAdapter.BOOL.decode(reader))
             5 -> try {
-              enums.add(KeywordKotlinEnum.ADAPTER.decode(reader))
+              KeywordKotlinEnum.ADAPTER.tryDecode(reader, enums)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }

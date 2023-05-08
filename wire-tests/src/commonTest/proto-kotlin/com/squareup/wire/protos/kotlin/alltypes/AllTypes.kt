@@ -17,6 +17,18 @@ import com.squareup.wire.`internal`.DoubleArrayList
 import com.squareup.wire.`internal`.FloatArrayList
 import com.squareup.wire.`internal`.IntArrayList
 import com.squareup.wire.`internal`.LongArrayList
+import com.squareup.wire.`internal`.decodePrimitive_double
+import com.squareup.wire.`internal`.decodePrimitive_fixed32
+import com.squareup.wire.`internal`.decodePrimitive_fixed64
+import com.squareup.wire.`internal`.decodePrimitive_float
+import com.squareup.wire.`internal`.decodePrimitive_int32
+import com.squareup.wire.`internal`.decodePrimitive_int64
+import com.squareup.wire.`internal`.decodePrimitive_sfixed32
+import com.squareup.wire.`internal`.decodePrimitive_sfixed64
+import com.squareup.wire.`internal`.decodePrimitive_sint32
+import com.squareup.wire.`internal`.decodePrimitive_sint64
+import com.squareup.wire.`internal`.decodePrimitive_uint32
+import com.squareup.wire.`internal`.decodePrimitive_uint64
 import com.squareup.wire.`internal`.encodeArray_double
 import com.squareup.wire.`internal`.encodeArray_fixed32
 import com.squareup.wire.`internal`.encodeArray_fixed64
@@ -2518,7 +2530,7 @@ public class AllTypes(
             214 -> rep_string.add(ProtoAdapter.STRING.decode(reader))
             215 -> rep_bytes.add(ProtoAdapter.BYTES.decode(reader))
             216 -> try {
-              rep_nested_enum.add(NestedEnum.ADAPTER.decode(reader))
+              NestedEnum.ADAPTER.tryDecode(reader, rep_nested_enum)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
@@ -2531,7 +2543,7 @@ public class AllTypes(
                   .toInt()
                 pack_int32 = ArrayList(initialCapacity)
               }
-              pack_int32!!.add(com.squareup.wire.ProtoAdapter.INT32.decode(reader))
+              pack_int32!!.add(ProtoAdapter.INT32.decode(reader))
             }
             302 -> {
               if (pack_uint32 == null) {
@@ -2541,7 +2553,7 @@ public class AllTypes(
                   .toInt()
                 pack_uint32 = ArrayList(initialCapacity)
               }
-              pack_uint32!!.add(com.squareup.wire.ProtoAdapter.UINT32.decode(reader))
+              pack_uint32!!.add(ProtoAdapter.UINT32.decode(reader))
             }
             303 -> {
               if (pack_sint32 == null) {
@@ -2551,7 +2563,7 @@ public class AllTypes(
                   .toInt()
                 pack_sint32 = ArrayList(initialCapacity)
               }
-              pack_sint32!!.add(com.squareup.wire.ProtoAdapter.SINT32.decode(reader))
+              pack_sint32!!.add(ProtoAdapter.SINT32.decode(reader))
             }
             304 -> {
               if (pack_fixed32 == null) {
@@ -2561,7 +2573,7 @@ public class AllTypes(
                   .toInt()
                 pack_fixed32 = ArrayList(initialCapacity)
               }
-              pack_fixed32!!.add(com.squareup.wire.ProtoAdapter.FIXED32.decode(reader))
+              pack_fixed32!!.add(ProtoAdapter.FIXED32.decode(reader))
             }
             305 -> {
               if (pack_sfixed32 == null) {
@@ -2571,7 +2583,7 @@ public class AllTypes(
                   .toInt()
                 pack_sfixed32 = ArrayList(initialCapacity)
               }
-              pack_sfixed32!!.add(com.squareup.wire.ProtoAdapter.SFIXED32.decode(reader))
+              pack_sfixed32!!.add(ProtoAdapter.SFIXED32.decode(reader))
             }
             306 -> {
               if (pack_int64 == null) {
@@ -2581,7 +2593,7 @@ public class AllTypes(
                   .toInt()
                 pack_int64 = ArrayList(initialCapacity)
               }
-              pack_int64!!.add(com.squareup.wire.ProtoAdapter.INT64.decode(reader))
+              pack_int64!!.add(ProtoAdapter.INT64.decode(reader))
             }
             307 -> {
               if (pack_uint64 == null) {
@@ -2591,7 +2603,7 @@ public class AllTypes(
                   .toInt()
                 pack_uint64 = ArrayList(initialCapacity)
               }
-              pack_uint64!!.add(com.squareup.wire.ProtoAdapter.UINT64.decode(reader))
+              pack_uint64!!.add(ProtoAdapter.UINT64.decode(reader))
             }
             308 -> {
               if (pack_sint64 == null) {
@@ -2601,7 +2613,7 @@ public class AllTypes(
                   .toInt()
                 pack_sint64 = ArrayList(initialCapacity)
               }
-              pack_sint64!!.add(com.squareup.wire.ProtoAdapter.SINT64.decode(reader))
+              pack_sint64!!.add(ProtoAdapter.SINT64.decode(reader))
             }
             309 -> {
               if (pack_fixed64 == null) {
@@ -2611,7 +2623,7 @@ public class AllTypes(
                   .toInt()
                 pack_fixed64 = ArrayList(initialCapacity)
               }
-              pack_fixed64!!.add(com.squareup.wire.ProtoAdapter.FIXED64.decode(reader))
+              pack_fixed64!!.add(ProtoAdapter.FIXED64.decode(reader))
             }
             310 -> {
               if (pack_sfixed64 == null) {
@@ -2621,7 +2633,7 @@ public class AllTypes(
                   .toInt()
                 pack_sfixed64 = ArrayList(initialCapacity)
               }
-              pack_sfixed64!!.add(com.squareup.wire.ProtoAdapter.SFIXED64.decode(reader))
+              pack_sfixed64!!.add(ProtoAdapter.SFIXED64.decode(reader))
             }
             311 -> {
               if (pack_bool == null) {
@@ -2631,7 +2643,7 @@ public class AllTypes(
                   .toInt()
                 pack_bool = ArrayList(initialCapacity)
               }
-              pack_bool!!.add(com.squareup.wire.ProtoAdapter.BOOL.decode(reader))
+              pack_bool!!.add(ProtoAdapter.BOOL.decode(reader))
             }
             312 -> {
               if (pack_float == null) {
@@ -2641,7 +2653,7 @@ public class AllTypes(
                   .toInt()
                 pack_float = ArrayList(initialCapacity)
               }
-              pack_float!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+              pack_float!!.add(ProtoAdapter.FLOAT.decode(reader))
             }
             313 -> {
               if (pack_double == null) {
@@ -2651,10 +2663,10 @@ public class AllTypes(
                   .toInt()
                 pack_double = ArrayList(initialCapacity)
               }
-              pack_double!!.add(com.squareup.wire.ProtoAdapter.DOUBLE.decode(reader))
+              pack_double!!.add(ProtoAdapter.DOUBLE.decode(reader))
             }
             316 -> try {
-              pack_nested_enum.add(NestedEnum.ADAPTER.decode(reader))
+              NestedEnum.ADAPTER.tryDecode(reader, pack_nested_enum)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
@@ -2686,73 +2698,73 @@ public class AllTypes(
               if (array_int32 == null) {
                 array_int32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_int32!!.add(com.squareup.wire.`internal`.decodePrimitive_int32(reader))
+              array_int32!!.add(decodePrimitive_int32(reader))
             }
             602 -> {
               if (array_uint32 == null) {
                 array_uint32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_uint32!!.add(com.squareup.wire.`internal`.decodePrimitive_uint32(reader))
+              array_uint32!!.add(decodePrimitive_uint32(reader))
             }
             603 -> {
               if (array_sint32 == null) {
                 array_sint32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_sint32!!.add(com.squareup.wire.`internal`.decodePrimitive_sint32(reader))
+              array_sint32!!.add(decodePrimitive_sint32(reader))
             }
             604 -> {
               if (array_fixed32 == null) {
                 array_fixed32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
-              array_fixed32!!.add(com.squareup.wire.`internal`.decodePrimitive_fixed32(reader))
+              array_fixed32!!.add(decodePrimitive_fixed32(reader))
             }
             605 -> {
               if (array_sfixed32 == null) {
                 array_sfixed32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
-              array_sfixed32!!.add(com.squareup.wire.`internal`.decodePrimitive_sfixed32(reader))
+              array_sfixed32!!.add(decodePrimitive_sfixed32(reader))
             }
             606 -> {
               if (array_int64 == null) {
                 array_int64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_int64!!.add(com.squareup.wire.`internal`.decodePrimitive_int64(reader))
+              array_int64!!.add(decodePrimitive_int64(reader))
             }
             607 -> {
               if (array_uint64 == null) {
                 array_uint64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_uint64!!.add(com.squareup.wire.`internal`.decodePrimitive_uint64(reader))
+              array_uint64!!.add(decodePrimitive_uint64(reader))
             }
             608 -> {
               if (array_sint64 == null) {
                 array_sint64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_sint64!!.add(com.squareup.wire.`internal`.decodePrimitive_sint64(reader))
+              array_sint64!!.add(decodePrimitive_sint64(reader))
             }
             609 -> {
               if (array_fixed64 == null) {
                 array_fixed64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
-              array_fixed64!!.add(com.squareup.wire.`internal`.decodePrimitive_fixed64(reader))
+              array_fixed64!!.add(decodePrimitive_fixed64(reader))
             }
             610 -> {
               if (array_sfixed64 == null) {
                 array_sfixed64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
-              array_sfixed64!!.add(com.squareup.wire.`internal`.decodePrimitive_sfixed64(reader))
+              array_sfixed64!!.add(decodePrimitive_sfixed64(reader))
             }
             611 -> {
               if (array_float == null) {
                 array_float = FloatArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
-              array_float!!.add(com.squareup.wire.`internal`.decodePrimitive_float(reader))
+              array_float!!.add(decodePrimitive_float(reader))
             }
             612 -> {
               if (array_double == null) {
                 array_double = DoubleArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
-              array_double!!.add(com.squareup.wire.`internal`.decodePrimitive_double(reader))
+              array_double!!.add(decodePrimitive_double(reader))
             }
             1001 -> ext_opt_int32 = ProtoAdapter.INT32.decode(reader)
             1002 -> ext_opt_uint32 = ProtoAdapter.UINT32.decode(reader)
@@ -2791,7 +2803,7 @@ public class AllTypes(
             1114 -> ext_rep_string.add(ProtoAdapter.STRING.decode(reader))
             1115 -> ext_rep_bytes.add(ProtoAdapter.BYTES.decode(reader))
             1116 -> try {
-              ext_rep_nested_enum.add(NestedEnum.ADAPTER.decode(reader))
+              NestedEnum.ADAPTER.tryDecode(reader, ext_rep_nested_enum)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
@@ -2804,7 +2816,7 @@ public class AllTypes(
                   .toInt()
                 ext_pack_int32 = ArrayList(initialCapacity)
               }
-              ext_pack_int32!!.add(com.squareup.wire.ProtoAdapter.INT32.decode(reader))
+              ext_pack_int32!!.add(ProtoAdapter.INT32.decode(reader))
             }
             1202 -> {
               if (ext_pack_uint32 == null) {
@@ -2814,7 +2826,7 @@ public class AllTypes(
                   .toInt()
                 ext_pack_uint32 = ArrayList(initialCapacity)
               }
-              ext_pack_uint32!!.add(com.squareup.wire.ProtoAdapter.UINT32.decode(reader))
+              ext_pack_uint32!!.add(ProtoAdapter.UINT32.decode(reader))
             }
             1203 -> {
               if (ext_pack_sint32 == null) {
@@ -2824,7 +2836,7 @@ public class AllTypes(
                   .toInt()
                 ext_pack_sint32 = ArrayList(initialCapacity)
               }
-              ext_pack_sint32!!.add(com.squareup.wire.ProtoAdapter.SINT32.decode(reader))
+              ext_pack_sint32!!.add(ProtoAdapter.SINT32.decode(reader))
             }
             1204 -> {
               if (ext_pack_fixed32 == null) {
@@ -2834,7 +2846,7 @@ public class AllTypes(
                   .toInt()
                 ext_pack_fixed32 = ArrayList(initialCapacity)
               }
-              ext_pack_fixed32!!.add(com.squareup.wire.ProtoAdapter.FIXED32.decode(reader))
+              ext_pack_fixed32!!.add(ProtoAdapter.FIXED32.decode(reader))
             }
             1205 -> {
               if (ext_pack_sfixed32 == null) {
@@ -2844,7 +2856,7 @@ public class AllTypes(
                   .toInt()
                 ext_pack_sfixed32 = ArrayList(initialCapacity)
               }
-              ext_pack_sfixed32!!.add(com.squareup.wire.ProtoAdapter.SFIXED32.decode(reader))
+              ext_pack_sfixed32!!.add(ProtoAdapter.SFIXED32.decode(reader))
             }
             1206 -> {
               if (ext_pack_int64 == null) {
@@ -2854,7 +2866,7 @@ public class AllTypes(
                   .toInt()
                 ext_pack_int64 = ArrayList(initialCapacity)
               }
-              ext_pack_int64!!.add(com.squareup.wire.ProtoAdapter.INT64.decode(reader))
+              ext_pack_int64!!.add(ProtoAdapter.INT64.decode(reader))
             }
             1207 -> {
               if (ext_pack_uint64 == null) {
@@ -2864,7 +2876,7 @@ public class AllTypes(
                   .toInt()
                 ext_pack_uint64 = ArrayList(initialCapacity)
               }
-              ext_pack_uint64!!.add(com.squareup.wire.ProtoAdapter.UINT64.decode(reader))
+              ext_pack_uint64!!.add(ProtoAdapter.UINT64.decode(reader))
             }
             1208 -> {
               if (ext_pack_sint64 == null) {
@@ -2874,7 +2886,7 @@ public class AllTypes(
                   .toInt()
                 ext_pack_sint64 = ArrayList(initialCapacity)
               }
-              ext_pack_sint64!!.add(com.squareup.wire.ProtoAdapter.SINT64.decode(reader))
+              ext_pack_sint64!!.add(ProtoAdapter.SINT64.decode(reader))
             }
             1209 -> {
               if (ext_pack_fixed64 == null) {
@@ -2884,7 +2896,7 @@ public class AllTypes(
                   .toInt()
                 ext_pack_fixed64 = ArrayList(initialCapacity)
               }
-              ext_pack_fixed64!!.add(com.squareup.wire.ProtoAdapter.FIXED64.decode(reader))
+              ext_pack_fixed64!!.add(ProtoAdapter.FIXED64.decode(reader))
             }
             1210 -> {
               if (ext_pack_sfixed64 == null) {
@@ -2894,7 +2906,7 @@ public class AllTypes(
                   .toInt()
                 ext_pack_sfixed64 = ArrayList(initialCapacity)
               }
-              ext_pack_sfixed64!!.add(com.squareup.wire.ProtoAdapter.SFIXED64.decode(reader))
+              ext_pack_sfixed64!!.add(ProtoAdapter.SFIXED64.decode(reader))
             }
             1211 -> {
               if (ext_pack_bool == null) {
@@ -2904,7 +2916,7 @@ public class AllTypes(
                   .toInt()
                 ext_pack_bool = ArrayList(initialCapacity)
               }
-              ext_pack_bool!!.add(com.squareup.wire.ProtoAdapter.BOOL.decode(reader))
+              ext_pack_bool!!.add(ProtoAdapter.BOOL.decode(reader))
             }
             1212 -> {
               if (ext_pack_float == null) {
@@ -2914,7 +2926,7 @@ public class AllTypes(
                   .toInt()
                 ext_pack_float = ArrayList(initialCapacity)
               }
-              ext_pack_float!!.add(com.squareup.wire.ProtoAdapter.FLOAT.decode(reader))
+              ext_pack_float!!.add(ProtoAdapter.FLOAT.decode(reader))
             }
             1213 -> {
               if (ext_pack_double == null) {
@@ -2924,10 +2936,10 @@ public class AllTypes(
                   .toInt()
                 ext_pack_double = ArrayList(initialCapacity)
               }
-              ext_pack_double!!.add(com.squareup.wire.ProtoAdapter.DOUBLE.decode(reader))
+              ext_pack_double!!.add(ProtoAdapter.DOUBLE.decode(reader))
             }
             1216 -> try {
-              ext_pack_nested_enum.add(NestedEnum.ADAPTER.decode(reader))
+              NestedEnum.ADAPTER.tryDecode(reader, ext_pack_nested_enum)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }

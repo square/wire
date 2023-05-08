@@ -394,7 +394,7 @@ public class FooBar(
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
             102 -> try {
-              rep.add(FooBarBazEnum.ADAPTER.decode(reader))
+              FooBarBazEnum.ADAPTER.tryDecode(reader, rep)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }

@@ -785,7 +785,7 @@ public class All64(
                   .toInt()
                 pack_int64 = ArrayList(initialCapacity)
               }
-              pack_int64!!.add(com.squareup.wire.ProtoAdapter.INT64.decode(reader))
+              pack_int64!!.add(ProtoAdapter.INT64.decode(reader))
             }
             302 -> {
               if (pack_uint64 == null) {
@@ -795,7 +795,7 @@ public class All64(
                   .toInt()
                 pack_uint64 = ArrayList(initialCapacity)
               }
-              pack_uint64!!.add(com.squareup.wire.ProtoAdapter.UINT64.decode(reader))
+              pack_uint64!!.add(ProtoAdapter.UINT64.decode(reader))
             }
             303 -> {
               if (pack_sint64 == null) {
@@ -805,7 +805,7 @@ public class All64(
                   .toInt()
                 pack_sint64 = ArrayList(initialCapacity)
               }
-              pack_sint64!!.add(com.squareup.wire.ProtoAdapter.SINT64.decode(reader))
+              pack_sint64!!.add(ProtoAdapter.SINT64.decode(reader))
             }
             304 -> {
               if (pack_fixed64 == null) {
@@ -815,7 +815,7 @@ public class All64(
                   .toInt()
                 pack_fixed64 = ArrayList(initialCapacity)
               }
-              pack_fixed64!!.add(com.squareup.wire.ProtoAdapter.FIXED64.decode(reader))
+              pack_fixed64!!.add(ProtoAdapter.FIXED64.decode(reader))
             }
             305 -> {
               if (pack_sfixed64 == null) {
@@ -825,7 +825,7 @@ public class All64(
                   .toInt()
                 pack_sfixed64 = ArrayList(initialCapacity)
               }
-              pack_sfixed64!!.add(com.squareup.wire.ProtoAdapter.SFIXED64.decode(reader))
+              pack_sfixed64!!.add(ProtoAdapter.SFIXED64.decode(reader))
             }
             401 -> oneof_int64 = ProtoAdapter.INT64.decode(reader)
             402 -> oneof_sfixed64 = ProtoAdapter.SFIXED64.decode(reader)
