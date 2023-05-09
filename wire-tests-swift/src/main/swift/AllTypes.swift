@@ -8,7 +8,7 @@ public struct AllTypes {
 
     @Heap
     private var storage: AllTypes.Storage
-    public subscript<Property>(dynamicMember keyPath: KeyPath<AllTypes.Storage, Property>) -> Property {
+    public subscript<Property>(dynamicMember keyPath: WritableKeyPath<AllTypes.Storage, Property>) -> Property {
         get {
             storage[keyPath: keyPath]
         }

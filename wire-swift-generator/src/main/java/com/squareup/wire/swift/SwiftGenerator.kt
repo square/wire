@@ -80,7 +80,7 @@ class SwiftGenerator private constructor(
   private val codingKey = DeclaredTypeName.typeName("Swift.CodingKey")
   private val decoder = DeclaredTypeName.typeName("Swift.Decoder")
   private val encoder = DeclaredTypeName.typeName("Swift.Encoder")
-  private val keyPath = DeclaredTypeName.typeName("Swift.KeyPath")
+  private val writableKeyPath = DeclaredTypeName.typeName("Swift.WritableKeyPath")
 
   private val deprecated = AttributeSpec.builder("available").addArguments("*", "deprecated").build()
 
@@ -1029,7 +1029,7 @@ class SwiftGenerator private constructor(
         .addParameter(
           "dynamicMember",
           "keyPath",
-          keyPath.parameterizedBy(storageType, propertyVariable),
+          writableKeyPath.parameterizedBy(storageType, propertyVariable),
         )
         .returns(propertyVariable)
         .build()
