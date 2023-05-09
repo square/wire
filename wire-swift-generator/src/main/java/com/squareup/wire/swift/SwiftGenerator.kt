@@ -152,18 +152,16 @@ class SwiftGenerator private constructor(
     get() = jsonName?.takeIf { it != name } ?: camelCase(name).takeIf { it != name }
 
   private val Field.typeName: TypeName
-    get() {
-      return when (encodeMode!!) {
-        EncodeMode.MAP -> DICTIONARY.parameterizedBy(keyType.typeName, valueType.typeName)
-        EncodeMode.REPEATED,
-        EncodeMode.PACKED -> ARRAY.parameterizedBy(type!!.typeName)
-        EncodeMode.NULL_IF_ABSENT -> OPTIONAL.parameterizedBy(type!!.typeName)
-        EncodeMode.REQUIRED -> type!!.typeName
-        EncodeMode.OMIT_IDENTITY -> {
-          when {
-            isOneOf || isMessage -> OPTIONAL.parameterizedBy(type!!.typeName)
-            else -> type!!.typeName
-          }
+    get() = when (encodeMode!!) {
+      EncodeMode.MAP -> DICTIONARY.parameterizedBy(keyType.typeName, valueType.typeName)
+      EncodeMode.REPEATED,
+      EncodeMode.PACKED -> ARRAY.parameterizedBy(type!!.typeName)
+      EncodeMode.NULL_IF_ABSENT -> OPTIONAL.parameterizedBy(type!!.typeName)
+      EncodeMode.REQUIRED -> type!!.typeName
+      EncodeMode.OMIT_IDENTITY -> {
+        when {
+          isOneOf || isMessage -> OPTIONAL.parameterizedBy(type!!.typeName)
+          else -> type!!.typeName
         }
       }
     }
@@ -539,10 +537,9 @@ class SwiftGenerator private constructor(
               if (field.isRepeated) {
                 decoder.add("try $reader.decode(into: &%N", field.name)
               } else {
-                decoder.add(
-                  "%N = try $reader.decode(%T.self", field.name,
-                  field.typeName.makeNonOptional()
-                )
+                val typeName = field.typeName.makeNonOptional()
+
+                decoder.add("%N = try $reader.decode(%T.self", field.name, typeName)
               }
               field.type!!.encoding?.let { encoding ->
                 decoder.add(", encoding: .%N", encoding)
@@ -1294,7 +1291,7 @@ class SwiftGenerator private constructor(
       ProtoType.STRING to STRING,
       ProtoType.UINT32 to UINT32,
       ProtoType.UINT64 to UINT64,
-      ProtoType.ANY to DeclaredTypeName.typeName("Wire.AnyMessage")
+      ProtoType.ANY to DeclaredTypeName.typeName("Wire.AnyMessage"),
 //        Options.FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
 //        Options.MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
 //        Options.ENUM_OPTIONS to ClassName("com.google.protobuf", "EnumOptions")
@@ -1318,13 +1315,18 @@ class SwiftGenerator private constructor(
         for (type in types) {
           val protoType = type.type
           val name = protoType.simpleName
+
           val className = if (enclosingClassName != null) {
             // Temporary work around for https://bugs.swift.org/browse/SR-13160.
-            enclosingClassName.nestedType(if (name == "Type") "Type_" else name)
+            val safeName = if (name == "Type") "Type_" else name
+
+            enclosingClassName.nestedType(safeName, alwaysQualify = true)
           } else {
             val moduleName = existingTypeModuleName[protoType] ?: ""
+
             DeclaredTypeName(moduleName, name)
           }
+
           nameToTypeName[protoType] = className
           putAll(className, type.nestedTypes)
         }
@@ -1335,8 +1337,11 @@ class SwiftGenerator private constructor(
 
         for (service in protoFile.services) {
           val protoType = service.type
+          val name = protoType.simpleName
+
           val moduleName = existingTypeModuleName[protoType] ?: ""
-          val className = DeclaredTypeName(moduleName, protoType.simpleName)
+          val className = DeclaredTypeName(moduleName, name)
+
           nameToTypeName[protoType] = className
         }
       }

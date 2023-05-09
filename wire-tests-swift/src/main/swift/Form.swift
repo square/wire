@@ -16,19 +16,19 @@ public struct Form {
 
     public enum Choice {
 
-        case button_element(ButtonElement)
-        case local_image_element(LocalImageElement)
-        case remote_image_element(RemoteImageElement)
-        case money_element(MoneyElement)
-        case spacer_element(SpacerElement)
-        case text_element(TextElement)
-        case customized_card_element(CustomizedCardElement)
-        case address_element(AddressElement)
-        case text_input_element(TextInputElement)
+        case button_element(Form.ButtonElement)
+        case local_image_element(Form.LocalImageElement)
+        case remote_image_element(Form.RemoteImageElement)
+        case money_element(Form.MoneyElement)
+        case spacer_element(Form.SpacerElement)
+        case text_element(Form.TextElement)
+        case customized_card_element(Form.CustomizedCardElement)
+        case address_element(Form.AddressElement)
+        case text_input_element(Form.TextInputElement)
         @available(*, deprecated)
-        case option_picker_element(OptionPickerElement)
-        case detail_row_element(DetailRowElement)
-        case currency_conversion_flags_element(CurrencyConversionFlagsElement)
+        case option_picker_element(Form.OptionPickerElement)
+        case detail_row_element(Form.DetailRowElement)
+        case currency_conversion_flags_element(Form.CurrencyConversionFlagsElement)
 
         fileprivate func encode(to writer: ProtoWriter) throws {
             switch self {
@@ -219,11 +219,13 @@ extension Form.Decision : Sendable {
 
 #if !WIRE_REMOVE_REDACTABLE
 extension Form.Decision : Redactable {
-    public enum RedactedKeys : String, RedactedKey {
+
+    public enum RedactedKeys : Swift.String, Wire.RedactedKey {
 
         case e
 
     }
+
 }
 #endif
 
@@ -243,13 +245,16 @@ extension Form.ButtonElement : Sendable {
 #endif
 
 extension Form.ButtonElement : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.ButtonElement"
     }
+
 }
 
 extension Form.ButtonElement : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
+
+    public init(from reader: Wire.ProtoReader) throws {
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
@@ -260,15 +265,18 @@ extension Form.ButtonElement : Proto2Codable {
 
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.ButtonElement : Codable {
-    public enum CodingKeys : CodingKey {
+
+    public enum CodingKeys : Swift.CodingKey {
     }
+
 }
 #endif
 
@@ -288,13 +296,16 @@ extension Form.LocalImageElement : Sendable {
 #endif
 
 extension Form.LocalImageElement : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.LocalImageElement"
     }
+
 }
 
 extension Form.LocalImageElement : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
+
+    public init(from reader: Wire.ProtoReader) throws {
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
@@ -305,15 +316,18 @@ extension Form.LocalImageElement : Proto2Codable {
 
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.LocalImageElement : Codable {
-    public enum CodingKeys : CodingKey {
+
+    public enum CodingKeys : Swift.CodingKey {
     }
+
 }
 #endif
 
@@ -333,13 +347,16 @@ extension Form.RemoteImageElement : Sendable {
 #endif
 
 extension Form.RemoteImageElement : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.RemoteImageElement"
     }
+
 }
 
 extension Form.RemoteImageElement : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
+
+    public init(from reader: Wire.ProtoReader) throws {
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
@@ -350,15 +367,18 @@ extension Form.RemoteImageElement : Proto2Codable {
 
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.RemoteImageElement : Codable {
-    public enum CodingKeys : CodingKey {
+
+    public enum CodingKeys : Swift.CodingKey {
     }
+
 }
 #endif
 
@@ -378,13 +398,16 @@ extension Form.MoneyElement : Sendable {
 #endif
 
 extension Form.MoneyElement : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.MoneyElement"
     }
+
 }
 
 extension Form.MoneyElement : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
+
+    public init(from reader: Wire.ProtoReader) throws {
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
@@ -395,15 +418,18 @@ extension Form.MoneyElement : Proto2Codable {
 
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.MoneyElement : Codable {
-    public enum CodingKeys : CodingKey {
+
+    public enum CodingKeys : Swift.CodingKey {
     }
+
 }
 #endif
 
@@ -423,13 +449,16 @@ extension Form.SpacerElement : Sendable {
 #endif
 
 extension Form.SpacerElement : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.SpacerElement"
     }
+
 }
 
 extension Form.SpacerElement : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
+
+    public init(from reader: Wire.ProtoReader) throws {
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
@@ -440,15 +469,18 @@ extension Form.SpacerElement : Proto2Codable {
 
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.SpacerElement : Codable {
-    public enum CodingKeys : CodingKey {
+
+    public enum CodingKeys : Swift.CodingKey {
     }
+
 }
 #endif
 
@@ -468,19 +500,22 @@ extension Form.TextElement : Sendable {
 #endif
 
 extension Form.TextElement : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextElement"
     }
+
 }
 
 extension Form.TextElement : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var text: String? = nil
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var text: Swift.String? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
-            case 1: text = try reader.decode(String.self)
+            case 1: text = try reader.decode(Swift.String.self)
             default: try reader.readUnknownField(tag: tag)
             }
         }
@@ -489,24 +524,27 @@ extension Form.TextElement : Proto2Codable {
         self.text = text
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.encode(tag: 1, value: self.text)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.TextElement : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.text = try container.decodeIfPresent(String.self, forKey: "text")
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        self.text = try container.decodeIfPresent(Swift.String.self, forKey: "text")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
 
         try container.encodeIfPresent(self.text, forKey: "text")
     }
+
 }
 #endif
 
@@ -526,13 +564,16 @@ extension Form.CustomizedCardElement : Sendable {
 #endif
 
 extension Form.CustomizedCardElement : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CustomizedCardElement"
     }
+
 }
 
 extension Form.CustomizedCardElement : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
+
+    public init(from reader: Wire.ProtoReader) throws {
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
@@ -543,15 +584,18 @@ extension Form.CustomizedCardElement : Proto2Codable {
 
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.CustomizedCardElement : Codable {
-    public enum CodingKeys : CodingKey {
+
+    public enum CodingKeys : Swift.CodingKey {
     }
+
 }
 #endif
 
@@ -571,13 +615,16 @@ extension Form.AddressElement : Sendable {
 #endif
 
 extension Form.AddressElement : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.AddressElement"
     }
+
 }
 
 extension Form.AddressElement : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
+
+    public init(from reader: Wire.ProtoReader) throws {
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
@@ -588,15 +635,18 @@ extension Form.AddressElement : Proto2Codable {
 
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.AddressElement : Codable {
-    public enum CodingKeys : CodingKey {
+
+    public enum CodingKeys : Swift.CodingKey {
     }
+
 }
 #endif
 
@@ -616,13 +666,16 @@ extension Form.TextInputElement : Sendable {
 #endif
 
 extension Form.TextInputElement : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextInputElement"
     }
+
 }
 
 extension Form.TextInputElement : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
+
+    public init(from reader: Wire.ProtoReader) throws {
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
@@ -633,15 +686,18 @@ extension Form.TextInputElement : Proto2Codable {
 
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.TextInputElement : Codable {
-    public enum CodingKeys : CodingKey {
+
+    public enum CodingKeys : Swift.CodingKey {
     }
+
 }
 #endif
 
@@ -661,13 +717,16 @@ extension Form.OptionPickerElement : Sendable {
 #endif
 
 extension Form.OptionPickerElement : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.OptionPickerElement"
     }
+
 }
 
 extension Form.OptionPickerElement : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
+
+    public init(from reader: Wire.ProtoReader) throws {
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
@@ -678,15 +737,18 @@ extension Form.OptionPickerElement : Proto2Codable {
 
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.OptionPickerElement : Codable {
-    public enum CodingKeys : CodingKey {
+
+    public enum CodingKeys : Swift.CodingKey {
     }
+
 }
 #endif
 
@@ -706,13 +768,16 @@ extension Form.DetailRowElement : Sendable {
 #endif
 
 extension Form.DetailRowElement : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.DetailRowElement"
     }
+
 }
 
 extension Form.DetailRowElement : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
+
+    public init(from reader: Wire.ProtoReader) throws {
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
@@ -723,15 +788,18 @@ extension Form.DetailRowElement : Proto2Codable {
 
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.DetailRowElement : Codable {
-    public enum CodingKeys : CodingKey {
+
+    public enum CodingKeys : Swift.CodingKey {
     }
+
 }
 #endif
 
@@ -751,13 +819,16 @@ extension Form.CurrencyConversionFlagsElement : Sendable {
 #endif
 
 extension Form.CurrencyConversionFlagsElement : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CurrencyConversionFlagsElement"
     }
+
 }
 
 extension Form.CurrencyConversionFlagsElement : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
+
+    public init(from reader: Wire.ProtoReader) throws {
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
@@ -768,15 +839,18 @@ extension Form.CurrencyConversionFlagsElement : Proto2Codable {
 
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.CurrencyConversionFlagsElement : Codable {
-    public enum CodingKeys : CodingKey {
+
+    public enum CodingKeys : Swift.CodingKey {
     }
+
 }
 #endif
 
@@ -796,15 +870,18 @@ extension Form : Sendable {
 #endif
 
 extension Form : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.Form"
     }
+
 }
 
 extension Form : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var choice: Form.Choice? = nil
-        var decision: Form.Decision? = nil
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var choice: Choice? = nil
+        var decision: Decision? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
@@ -821,14 +898,14 @@ extension Form : Proto2Codable {
             case 10: choice = .option_picker_element(try reader.decode(Form.OptionPickerElement.self))
             case 11: choice = .detail_row_element(try reader.decode(Form.DetailRowElement.self))
             case 12: choice = .currency_conversion_flags_element(try reader.decode(Form.CurrencyConversionFlagsElement.self))
-            case 101: decision = .a(try reader.decode(String.self))
-            case 102: decision = .b(try reader.decode(String.self))
-            case 103: decision = .c(try reader.decode(String.self))
-            case 104: decision = .d(try reader.decode(String.self))
-            case 105: decision = .e(try reader.decode(String.self))
-            case 106: decision = .f(try reader.decode(String.self))
-            case 107: decision = .g(try reader.decode(String.self))
-            case 108: decision = .h(try reader.decode(String.self))
+            case 101: decision = .a(try reader.decode(Swift.String.self))
+            case 102: decision = .b(try reader.decode(Swift.String.self))
+            case 103: decision = .c(try reader.decode(Swift.String.self))
+            case 104: decision = .d(try reader.decode(Swift.String.self))
+            case 105: decision = .e(try reader.decode(Swift.String.self))
+            case 106: decision = .f(try reader.decode(Swift.String.self))
+            case 107: decision = .g(try reader.decode(Swift.String.self))
+            case 108: decision = .h(try reader.decode(Swift.String.self))
             default: try reader.readUnknownField(tag: tag)
             }
         }
@@ -838,7 +915,7 @@ extension Form : Proto2Codable {
         self.decision = decision
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         if let choice = self.choice {
             try choice.encode(to: writer)
         }
@@ -847,12 +924,14 @@ extension Form : Proto2Codable {
         }
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Form : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         if let button_element = try container.decodeIfPresent(Form.ButtonElement.self, forKey: "buttonElement") {
             self.choice = .button_element(button_element)
         } else if let button_element = try container.decodeIfPresent(Form.ButtonElement.self, forKey: "button_element") {
@@ -904,29 +983,29 @@ extension Form : Codable {
         } else {
             self.choice = nil
         }
-        if let a = try container.decodeIfPresent(String.self, forKey: "a") {
+        if let a = try container.decodeIfPresent(Swift.String.self, forKey: "a") {
             self.decision = .a(a)
-        } else if let b = try container.decodeIfPresent(String.self, forKey: "b") {
+        } else if let b = try container.decodeIfPresent(Swift.String.self, forKey: "b") {
             self.decision = .b(b)
-        } else if let c = try container.decodeIfPresent(String.self, forKey: "c") {
+        } else if let c = try container.decodeIfPresent(Swift.String.self, forKey: "c") {
             self.decision = .c(c)
-        } else if let d = try container.decodeIfPresent(String.self, forKey: "d") {
+        } else if let d = try container.decodeIfPresent(Swift.String.self, forKey: "d") {
             self.decision = .d(d)
-        } else if let e = try container.decodeIfPresent(String.self, forKey: "e") {
+        } else if let e = try container.decodeIfPresent(Swift.String.self, forKey: "e") {
             self.decision = .e(e)
-        } else if let f = try container.decodeIfPresent(String.self, forKey: "f") {
+        } else if let f = try container.decodeIfPresent(Swift.String.self, forKey: "f") {
             self.decision = .f(f)
-        } else if let g = try container.decodeIfPresent(String.self, forKey: "g") {
+        } else if let g = try container.decodeIfPresent(Swift.String.self, forKey: "g") {
             self.decision = .g(g)
-        } else if let h = try container.decodeIfPresent(String.self, forKey: "h") {
+        } else if let h = try container.decodeIfPresent(Swift.String.self, forKey: "h") {
             self.decision = .h(h)
         } else {
             self.decision = nil
         }
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
 
         switch self.choice {
@@ -942,7 +1021,7 @@ extension Form : Codable {
         case .option_picker_element(let option_picker_element): try container.encode(option_picker_element, forKey: preferCamelCase ? "optionPickerElement" : "option_picker_element")
         case .detail_row_element(let detail_row_element): try container.encode(detail_row_element, forKey: preferCamelCase ? "detailRowElement" : "detail_row_element")
         case .currency_conversion_flags_element(let currency_conversion_flags_element): try container.encode(currency_conversion_flags_element, forKey: preferCamelCase ? "currencyConversionFlagsElement" : "currency_conversion_flags_element")
-        case Optional.none: break
+        case Swift.Optional.none: break
         }
         switch self.decision {
         case .a(let a): try container.encode(a, forKey: "a")
@@ -953,8 +1032,9 @@ extension Form : Codable {
         case .f(let f): try container.encode(f, forKey: "f")
         case .g(let g): try container.encode(g, forKey: "g")
         case .h(let h): try container.encode(h, forKey: "h")
-        case Optional.none: break
+        case Swift.Optional.none: break
         }
     }
+
 }
 #endif

@@ -45,11 +45,13 @@ extension RedactedOneOf.A : Sendable {
 
 #if !WIRE_REMOVE_REDACTABLE
 extension RedactedOneOf.A : Redactable {
-    public enum RedactedKeys : String, RedactedKey {
+
+    public enum RedactedKeys : Swift.String, Wire.RedactedKey {
 
         case c
 
     }
+
 }
 #endif
 
@@ -69,20 +71,23 @@ extension RedactedOneOf : Sendable {
 #endif
 
 extension RedactedOneOf : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedOneOf"
     }
+
 }
 
 extension RedactedOneOf : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var a: RedactedOneOf.A? = nil
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var a: A? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
-            case 1: a = .b(try reader.decode(Int32.self))
-            case 2: a = .c(try reader.decode(String.self))
+            case 1: a = .b(try reader.decode(Swift.Int32.self))
+            case 2: a = .c(try reader.decode(Swift.String.self))
             default: try reader.readUnknownField(tag: tag)
             }
         }
@@ -91,35 +96,38 @@ extension RedactedOneOf : Proto2Codable {
         self.a = a
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         if let a = self.a {
             try a.encode(to: writer)
         }
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension RedactedOneOf : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        if let b = try container.decodeIfPresent(Int32.self, forKey: "b") {
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        if let b = try container.decodeIfPresent(Swift.Int32.self, forKey: "b") {
             self.a = .b(b)
-        } else if let c = try container.decodeIfPresent(String.self, forKey: "c") {
+        } else if let c = try container.decodeIfPresent(Swift.String.self, forKey: "c") {
             self.a = .c(c)
         } else {
             self.a = nil
         }
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
 
         switch self.a {
         case .b(let b): try container.encode(b, forKey: "b")
         case .c(let c): try container.encode(c, forKey: "c")
-        case Optional.none: break
+        case Swift.Optional.none: break
         }
     }
+
 }
 #endif

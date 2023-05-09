@@ -33,19 +33,22 @@ extension Percents : Sendable {
 #endif
 
 extension Percents : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.Percents"
     }
+
 }
 
 extension Percents : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var text: String? = nil
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var text: Swift.String? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
-            case 1: text = try reader.decode(String.self)
+            case 1: text = try reader.decode(Swift.String.self)
             default: try reader.readUnknownField(tag: tag)
             }
         }
@@ -54,23 +57,26 @@ extension Percents : Proto2Codable {
         self.text = text
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.encode(tag: 1, value: self.text)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Percents : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.text = try container.decodeIfPresent(String.self, forKey: "text")
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        self.text = try container.decodeIfPresent(Swift.String.self, forKey: "text")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
 
         try container.encodeIfPresent(self.text, forKey: "text")
     }
+
 }
 #endif

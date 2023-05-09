@@ -30,19 +30,22 @@ extension ExternalMessage : Sendable {
 #endif
 
 extension ExternalMessage : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.simple.ExternalMessage"
     }
+
 }
 
 extension ExternalMessage : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var f: Float? = nil
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var f: Swift.Float? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
-            case 1: f = try reader.decode(Float.self)
+            case 1: f = try reader.decode(Swift.Float.self)
             default: try reader.readUnknownField(tag: tag)
             }
         }
@@ -51,23 +54,26 @@ extension ExternalMessage : Proto2Codable {
         self.f = f
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.encode(tag: 1, value: self.f)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension ExternalMessage : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.f = try container.decodeIfPresent(Float.self, forKey: "f")
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        self.f = try container.decodeIfPresent(Swift.Float.self, forKey: "f")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
 
         try container.encodeIfPresent(self.f, forKey: "f")
     }
+
 }
 #endif

@@ -23,7 +23,7 @@ public struct Person {
     /**
      * A list of the customer's phone numbers.
      */
-    public var phone: [PhoneNumber]
+    public var phone: [Person.PhoneNumber]
     public var aliases: [String]
     public var unknownFields: Data = .init()
 
@@ -31,7 +31,7 @@ public struct Person {
         id: Int32,
         name: String,
         email: String? = nil,
-        phone: [PhoneNumber] = [],
+        phone: [Person.PhoneNumber] = [],
         aliases: [String] = []
     ) {
         self.id = id
@@ -72,10 +72,10 @@ public struct Person {
         /**
          * The type of phone stored here.
          */
-        public var type: PhoneType?
+        public var type: Person.PhoneType?
         public var unknownFields: Data = .init()
 
-        public init(number: String, type: PhoneType? = nil) {
+        public init(number: String, type: Person.PhoneType? = nil) {
             self.number = number
             self.type = type
         }
@@ -105,20 +105,23 @@ extension Person.PhoneNumber : Sendable {
 #endif
 
 extension Person.PhoneNumber : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.person.Person.PhoneNumber"
     }
+
 }
 
 extension Person.PhoneNumber : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var number: String? = nil
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var number: Swift.String? = nil
         var type: Person.PhoneType? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
-            case 1: number = try reader.decode(String.self)
+            case 1: number = try reader.decode(Swift.String.self)
             case 2: type = try reader.decode(Person.PhoneType.self)
             default: try reader.readUnknownField(tag: tag)
             }
@@ -129,23 +132,25 @@ extension Person.PhoneNumber : Proto2Codable {
         self.type = type
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.encode(tag: 1, value: self.number)
         try writer.encode(tag: 2, value: self.type)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Person.PhoneNumber : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.number = try container.decode(String.self, forKey: "number")
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        self.number = try container.decode(Swift.String.self, forKey: "number")
         self.type = try container.decodeIfPresent(Person.PhoneType.self, forKey: "type")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || !self.number.isEmpty {
@@ -153,6 +158,7 @@ extension Person.PhoneNumber : Codable {
         }
         try container.encodeIfPresent(self.type, forKey: "type")
     }
+
 }
 #endif
 
@@ -172,25 +178,28 @@ extension Person : Sendable {
 #endif
 
 extension Person : ProtoMessage {
-    public static func protoMessageTypeURL() -> String {
+
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.protos.kotlin.person.Person"
     }
+
 }
 
 extension Person : Proto2Codable {
-    public init(from reader: ProtoReader) throws {
-        var id: Int32? = nil
-        var name: String? = nil
-        var email: String? = nil
+
+    public init(from reader: Wire.ProtoReader) throws {
+        var id: Swift.Int32? = nil
+        var name: Swift.String? = nil
+        var email: Swift.String? = nil
         var phone: [Person.PhoneNumber] = []
-        var aliases: [String] = []
+        var aliases: [Swift.String] = []
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
-            case 2: id = try reader.decode(Int32.self)
-            case 1: name = try reader.decode(String.self)
-            case 3: email = try reader.decode(String.self)
+            case 2: id = try reader.decode(Swift.Int32.self)
+            case 1: name = try reader.decode(Swift.String.self)
+            case 3: email = try reader.decode(Swift.String.self)
             case 4: try reader.decode(into: &phone)
             case 5: try reader.decode(into: &aliases)
             default: try reader.readUnknownField(tag: tag)
@@ -205,7 +214,7 @@ extension Person : Proto2Codable {
         self.aliases = aliases
     }
 
-    public func encode(to writer: ProtoWriter) throws {
+    public func encode(to writer: Wire.ProtoWriter) throws {
         try writer.encode(tag: 2, value: self.id)
         try writer.encode(tag: 1, value: self.name)
         try writer.encode(tag: 3, value: self.email)
@@ -213,21 +222,23 @@ extension Person : Proto2Codable {
         try writer.encode(tag: 5, value: self.aliases)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Person : Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.id = try container.decode(Int32.self, forKey: "id")
-        self.name = try container.decode(String.self, forKey: "name")
-        self.email = try container.decodeIfPresent(String.self, forKey: "email")
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        self.id = try container.decode(Swift.Int32.self, forKey: "id")
+        self.name = try container.decode(Swift.String.self, forKey: "name")
+        self.email = try container.decodeIfPresent(Swift.String.self, forKey: "email")
         self.phone = try container.decodeProtoArray(Person.PhoneNumber.self, forKey: "phone")
-        self.aliases = try container.decodeProtoArray(String.self, forKey: "aliases")
+        self.aliases = try container.decodeProtoArray(Swift.String.self, forKey: "aliases")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || self.id != 0 {
@@ -244,5 +255,6 @@ extension Person : Codable {
             try container.encodeProtoArray(self.aliases, forKey: "aliases")
         }
     }
+
 }
 #endif
