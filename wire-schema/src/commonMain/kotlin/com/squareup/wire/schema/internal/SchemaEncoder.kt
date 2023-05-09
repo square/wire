@@ -22,6 +22,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.internal.camelCase
+import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumConstant
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
@@ -33,6 +34,7 @@ import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
+import com.squareup.wire.schema.Type
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
 
@@ -102,6 +104,8 @@ class SchemaEncoder(
       enumEncoder.asRepeated().encodeWithTag(writer, 5, value.types.filterIsInstance<EnumType>())
       messageEncoder.asRepeated()
         .encodeWithTag(writer, 4, value.types.filterIsInstance<MessageType>())
+      enclosingEncoder.asRepeated()
+        .encodeWithTag(writer, 4, value.types.filterIsInstance<EnclosingType>())
       // INT32.asRepeated().encodeWithTag(writer, 11, value.weak_dependency)
       // INT32.asRepeated().encodeWithTag(writer, 10, value.public_dependency)
       STRING.asRepeated().encodeWithTag(writer, 3, value.imports)
@@ -156,12 +160,10 @@ class SchemaEncoder(
 
       extensionRangeEncoder.asRepeated()
         .encodeWithTag(writer, 5, value.extensionsList.flatMap { it.values })
-      enumEncoder.asRepeated()
-        .encodeWithTag(writer, 4, value.nestedTypes.filterIsInstance<EnumType>())
 
       // Real and synthetic nested types.
       syntheticMapEntryEncoder.asRepeated().encodeWithTag(writer, 3, syntheticMaps.values.toList())
-      this.asRepeated().encodeWithTag(writer, 3, value.nestedTypes.filterIsInstance<MessageType>())
+      encodeNestedTypes(writer, value.nestedTypes)
 
       // FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.extension)
 
@@ -169,6 +171,23 @@ class SchemaEncoder(
         .sortedWith(compareBy({ it.field.location.line }, { it.field.location.column }))
       fieldEncoder.asRepeated().encodeWithTag(writer, 2, fieldsAndOneOfFields)
 
+      STRING.encodeWithTag(writer, 1, value.type.simpleName)
+    }
+  }
+
+  private fun encodeNestedTypes(writer: ReverseProtoWriter, types: List<Type>) {
+    enumEncoder.asRepeated()
+      .encodeWithTag(writer, 4, types.filterIsInstance<EnumType>())
+    messageEncoder.asRepeated()
+      .encodeWithTag(writer, 3, types.filterIsInstance<MessageType>())
+    enclosingEncoder.asRepeated()
+      .encodeWithTag(writer, 3, types.filterIsInstance<EnclosingType>())
+  }
+
+  private val enclosingEncoder: Encoder<EnclosingType> = object : Encoder<EnclosingType>() {
+    override fun encode(writer: ReverseProtoWriter, value: EnclosingType) {
+      messageOptionsProtoAdapter.encodeWithTag(writer, 7, value.options.toJsonOptions())
+      encodeNestedTypes(writer, value.nestedTypes)
       STRING.encodeWithTag(writer, 1, value.type.simpleName)
     }
   }
