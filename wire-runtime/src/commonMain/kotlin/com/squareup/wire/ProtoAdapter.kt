@@ -145,8 +145,8 @@ expect abstract class ProtoAdapter<E>(
   fun decode(source: BufferedSource): E
 
   /**
-   * Reads a value and appends it to [destination] if this has data available. Otherwise, does
-   * nothing.
+   * Reads a value and appends it to [destination] if this has data available. Otherwise, it
+   * will only clear the reader state.
    */
   @Throws(IOException::class)
   fun tryDecode(reader: ProtoReader, destination: MutableList<E>)
