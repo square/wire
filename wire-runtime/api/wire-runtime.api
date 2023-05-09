@@ -229,6 +229,7 @@ public abstract class com/squareup/wire/ProtoAdapter {
 	public static final fun newMessageAdapter (Ljava/lang/Class;Ljava/lang/String;Lcom/squareup/wire/Syntax;Ljava/lang/ClassLoader;)Lcom/squareup/wire/ProtoAdapter;
 	public abstract fun redact (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun toString (Ljava/lang/Object;)Ljava/lang/String;
+	public final fun tryDecode (Lcom/squareup/wire/ProtoReader;Ljava/util/List;)V
 }
 
 public final class com/squareup/wire/ProtoAdapter$Companion {
