@@ -255,6 +255,10 @@ class SwiftGenerator private constructor(
         }
 
         if (type.isHeapAllocated) {
+          addAttribute(
+            AttributeSpec.builder("dynamicMemberLookup").build()
+          )
+
           addProperty(
             PropertySpec.varBuilder(storageName, storageType, PRIVATE)
               .addAttribute(AttributeSpec.builder(heap).build())
@@ -1016,13 +1020,6 @@ class SwiftGenerator private constructor(
     if (!type.isHeapAllocated) {
       println("Generating storage property delegates for a non-heap allocated type?!")
     }
-    /*
-    @dynamicMemberLookup struct Foo {}
-
-    public subscript<Property>(dynamicMember keyPath: KeyPath<BackingData, Property>) -> Property {
-        data[keyPath: keyPath]
-    }
-    */
 
     val propertyVariable = TypeVariableName.typeVariable("Property")
 

@@ -3,6 +3,7 @@
 import Foundation
 import Wire
 
+@dynamicMemberLookup
 public struct AllTypes {
 
     @Heap
