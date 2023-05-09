@@ -107,6 +107,10 @@ actual abstract class ProtoAdapter<E> actual constructor(
     return commonDecode(source)
   }
 
+  actual fun tryDecode(reader: ProtoReader, destination: MutableList<E>) {
+    return commonTryDecode(reader, destination)
+  }
+
   /** Returns a human-readable version of the given `value`. */
   actual open fun toString(value: E): String {
     return commonToString(value)

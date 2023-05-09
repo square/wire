@@ -26,15 +26,15 @@ import com.squareup.wire.ProtoWriter.Companion.tagSize
 import com.squareup.wire.ProtoWriter.Companion.varint32Size
 import com.squareup.wire.ProtoWriter.Companion.varint64Size
 import com.squareup.wire.internal.Throws
-import kotlin.jvm.JvmField
-import kotlin.jvm.JvmStatic
-import kotlin.reflect.KClass
 import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
 import okio.ByteString
 import okio.IOException
 import okio.utf8Size
+import kotlin.jvm.JvmField
+import kotlin.jvm.JvmStatic
+import kotlin.reflect.KClass
 
 expect abstract class ProtoAdapter<E>(
   fieldEncoding: FieldEncoding,
@@ -143,6 +143,13 @@ expect abstract class ProtoAdapter<E>(
   /** Read an encoded message from `source`. */
   @Throws(IOException::class)
   fun decode(source: BufferedSource): E
+
+  /**
+   * Reads a value and appends it to [destination] if this has data available. Otherwise, it
+   * will only clear the reader state.
+   */
+  @Throws(IOException::class)
+  fun tryDecode(reader: ProtoReader, destination: MutableList<E>)
 
   /** Returns a human-readable version of the given `value`. */
   open fun toString(value: E): String
@@ -318,6 +325,16 @@ internal inline fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteString): E {
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun <E> ProtoAdapter<E>.commonDecode(source: BufferedSource): E {
   return decode(ProtoReader(source))
+}
+
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonTryDecode(
+  reader: ProtoReader,
+  destination: MutableList<E>,
+) {
+  if (reader.beforePossiblyPackedScalar()) {
+    destination.add(decode(reader))
+  }
 }
 
 @Suppress("NOTHING_TO_INLINE")

@@ -32,7 +32,7 @@ class DoubleArrayList(initialCapacity: Int) {
     data[size++] = double
   }
 
-  fun isNotEmpty() : Boolean = size > 0
+  fun isNotEmpty(): Boolean = size > 0
 
   private fun ensureCapacity(minCapacity: Int) {
     if (minCapacity > data.size) {
@@ -46,7 +46,7 @@ class DoubleArrayList(initialCapacity: Int) {
     fun forDecoding(
       minLengthInBytes: Long,
       minimumElementByteSize: Long,
-    ) : DoubleArrayList {
+    ): DoubleArrayList {
       val minElements = (minLengthInBytes / minimumElementByteSize)
         .coerceAtMost(Int.MAX_VALUE.toLong())
         .toInt()

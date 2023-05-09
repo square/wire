@@ -220,7 +220,7 @@ public class CamelCase(
                   .toInt()
                 _Rep_int32 = ArrayList(initialCapacity)
               }
-              _Rep_int32!!.add(com.squareup.wire.ProtoAdapter.INT32.decode(reader))
+              _Rep_int32!!.add(ProtoAdapter.INT32.decode(reader))
             }
             3 -> IDitIt_my_wAy = ProtoAdapter.STRING.decode(reader)
             4 -> map_int32_Int32.putAll(map_int32_Int32Adapter.decode(reader))

@@ -156,6 +156,11 @@ actual abstract class ProtoAdapter<E> actual constructor(
   }
 
   @Throws(IOException::class)
+  actual fun tryDecode(reader: ProtoReader, destination: MutableList<E>) {
+    return commonTryDecode(reader, destination)
+  }
+
+  @Throws(IOException::class)
   fun decode(stream: InputStream): E = decode(stream.source().buffer())
 
   actual open fun toString(value: E): String {

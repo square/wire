@@ -46,7 +46,7 @@ class LongArrayList(initialCapacity: Int) {
     fun forDecoding(
       minLengthInBytes: Long,
       minimumElementByteSize: Long,
-    ) : LongArrayList {
+    ): LongArrayList {
       val minElements = (minLengthInBytes / minimumElementByteSize)
         .coerceAtMost(Int.MAX_VALUE.toLong())
         .toInt()
