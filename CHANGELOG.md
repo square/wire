@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Version 4.6.1
+-------------
+
+_2023-05-10_
+
+* Fix: Handle length-prefixed messages of length 0.
+* Swift: Bump to `1.5`.
+
 Version 4.6.0
 -------------
 

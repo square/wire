@@ -755,14 +755,14 @@ With Maven:
 <dependency>
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire-runtime-jvm</artifactId>
-  <version>4.6.0</version>
+  <version>4.6.1</version>
 </dependency>
 ```
 
 With Gradle:
 
 ```groovy
-api "com.squareup.wire:wire-runtime:4.6.0"
+api "com.squareup.wire:wire-runtime:4.6.1"
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
