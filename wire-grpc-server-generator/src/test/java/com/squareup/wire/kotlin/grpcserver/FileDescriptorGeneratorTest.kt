@@ -15,26 +15,31 @@
  */
 package com.squareup.wire.kotlin.grpcserver
 
+import com.google.protobuf.DescriptorProtos
+import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Label
 import com.google.protobuf.Descriptors
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.buildSchema
-import com.squareup.wire.schema.addLocal
+import com.squareup.wire.schema.Pruner
+import com.squareup.wire.schema.PruningRules
 import okio.Path.Companion.toPath
-import okio.buffer
-import okio.source
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.io.File
 import javax.script.ScriptEngineManager
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import org.assertj.core.api.Assertions
 
 internal class FileDescriptorGeneratorTest {
+  private data class Schema(val path: String, val content: String)
+
   @Test
   fun `generated descriptor can be used correctly`() {
-    val protoSchema = """
+    val descriptor = descriptorFor(
+      "test.proto",
+      PruningRules.Builder(),
+      Schema("test.proto",
+      """
       |syntax = "proto2";
       |
       |package test;
@@ -42,40 +47,96 @@ internal class FileDescriptorGeneratorTest {
       |
       |message Test {}
       |""".trimMargin()
-
-    val importedSchema = """
+    ), Schema(
+      "imported.proto",
+      """
       |syntax = "proto2";
       |
       |package test;
       |
       |message Imported {}
       |""".trimMargin()
-
-    val path = "test.proto".toPath()
-    val imported = "imported.proto".toPath()
-    val schema = buildSchema {
-      add(imported, importedSchema)
-      add(path, protoSchema)
-    }
-
-    val file = FileSpec.scriptBuilder("test", "test.kts")
-      .addType(TypeSpec.classBuilder("Test")
-        .apply { FileDescriptorGenerator.addDescriptorDataProperty(this, schema.protoFile(path), schema) }
-        .addFunction(FunSpec.builder("output")
-          .returns(Descriptors.FileDescriptor::class)
-          .addCode("return fileDescriptor(\"test.proto\", emptySet())")
-          .build())
-        .build()
-      ).addCode("Test().output()").build()
-
-    val engine = ScriptEngineManager().getEngineByExtension("kts")
-    val result = engine.eval(file.toString())
-    val descriptor = result as Descriptors.FileDescriptor
+    ))
 
     assertEquals("test", descriptor.`package`)
     assertEquals("test.proto", descriptor.name)
     assertEquals(descriptor.messageTypes.size, 1)
     assertEquals("Test", descriptor.messageTypes.first().name)
     assertEquals( 1, descriptor.dependencies.size)
+  }
+
+  @Test
+  fun `generates descriptors correctly to references of nested enums after pruning`() {
+    val descriptor = descriptorFor(
+      "test.proto",
+      PruningRules.Builder().addRoot("test.Caller"),
+      Schema("test.proto",
+      """
+      |syntax = "proto2";
+      |package test;
+      |
+      |message Test {
+      |  enum Nested {
+      |    NESTED_UNDEFINED = 0;
+      |    NESTED_DEFINED = 1;
+      |  }
+      |}
+      |
+      |message Caller {
+      |  optional Test.Nested field = 1;
+      |}
+      |""".trimMargin()
+    ))
+
+    Assertions.assertThat(descriptor.toProto()).isEqualTo(
+      DescriptorProtos.FileDescriptorProto.newBuilder()
+        .setName("test.proto")
+        .setPackage("test")
+        .addMessageType(
+          DescriptorProtos.DescriptorProto.newBuilder()
+            .setName("Test")
+            .addEnumType(
+              DescriptorProtos.EnumDescriptorProto.newBuilder()
+              .setName("Nested")
+              .addValue(0, DescriptorProtos.EnumValueDescriptorProto.newBuilder().setName("NESTED_UNDEFINED").setNumber(0))
+              .addValue(1, DescriptorProtos.EnumValueDescriptorProto.newBuilder().setName("NESTED_DEFINED").setNumber(1))
+            )
+        )
+        .addMessageType(DescriptorProtos.DescriptorProto.newBuilder()
+          .setName("Caller")
+          .addField(DescriptorProtos.FieldDescriptorProto.newBuilder()
+            .setName("field")
+            .setNumber(1)
+            .setTypeName(".test.Test.Nested")
+            .setType(DescriptorProtos.FieldDescriptorProto.Type.TYPE_ENUM)
+            .setLabel(Label.LABEL_OPTIONAL)
+          )
+        )
+        .build()
+    )
+  }
+
+  private fun descriptorFor(fileName: String, pruning: PruningRules.Builder, vararg schemas: Schema): Descriptors.FileDescriptor {
+    val schema = buildSchema {
+      schemas.forEach {
+        apply { add(it.path.toPath(), it.content) }
+      }
+    }
+    val pruner = Pruner(schema, pruning.build())
+    val pruned = pruner.prune()
+    val protoFile = pruned.protoFile(schemas.first().path.toPath())
+    val file = FileSpec.scriptBuilder("test", "test.kts")
+      .addType(TypeSpec.classBuilder("Test")
+        .apply { FileDescriptorGenerator.addDescriptorDataProperty(this, protoFile, pruned) }
+        .addFunction(FunSpec.builder("output")
+          .returns(Descriptors.FileDescriptor::class)
+          .addCode("return fileDescriptor(\"$fileName\", emptySet())")
+          .build())
+        .build()
+      ).addCode("Test().output()").build()
+
+    val engine = ScriptEngineManager().getEngineByExtension("kts")
+    val result = engine.eval(file.toString())
+    return result as Descriptors.FileDescriptor
   }
 }

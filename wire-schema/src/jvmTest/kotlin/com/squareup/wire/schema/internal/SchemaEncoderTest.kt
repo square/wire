@@ -203,6 +203,44 @@ class SchemaEncoderTest {
     )
   }
 
+  @Test fun `encode nested enums`() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+            |syntax = "proto2";
+            |
+            |message TestMessage {
+            |  enum Nested {
+            |    NESTED_UNDEFINED = 0;
+            |    NESTED_DEFINED = 1;
+            |  }
+            |}
+            |""".trimMargin()
+      )
+    }
+
+    val handleServiceProto = schema.protoFile("test.proto")!!
+    val encoded = SchemaEncoder(schema).encode(handleServiceProto)
+
+    val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
+    assertThat(fileDescriptorProto).isEqualTo(
+      FileDescriptorProto.newBuilder()
+        .setName("test.proto")
+        .addMessageType(
+          DescriptorProto.newBuilder()
+            .setName("TestMessage")
+            .addEnumType(EnumDescriptorProto.newBuilder()
+              .setName("Nested")
+              .addValue(0, EnumValueDescriptorProto.newBuilder().setName("NESTED_UNDEFINED").setNumber(0))
+              .addValue(1, EnumValueDescriptorProto.newBuilder().setName("NESTED_DEFINED").setNumber(1))
+            )
+            .build()
+        )
+        .build()
+    )
+  }
+
   @Test fun `oneof tag order`() {
     val schema = buildSchema {
       add(
