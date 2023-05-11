@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Version 4.6.2
+-------------
+
+_2023-05-11_
+
+* Fix: Explicitly adds `jvm` variants of multiplatform artifacts into the BOM.
+* Fix: Produce Descriptors for messages without fields after pruning.
+
 Version 4.6.1
 -------------
 
