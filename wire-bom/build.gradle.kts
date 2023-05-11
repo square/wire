@@ -8,6 +8,7 @@ dependencies {
     api(projects.wireCompiler)
     api(projects.wireGradlePlugin)
     api(projects.wireGrpcClient)
+    api(projects.wireGrpcClient.group + ":wire-grpc-client-jvm:" + projects.wireGrpcClient.version)
     api(projects.wireGrpcServer)
     api(projects.wireGrpcServerGenerator)
     api(projects.wireGrpcMockwebserver)
@@ -17,7 +18,9 @@ dependencies {
     api(projects.wireMoshiAdapter)
     api(projects.wireReflector)
     api(projects.wireRuntime)
+    api(projects.wireRuntime.group + ":wire-runtime-jvm:" + projects.wireRuntime.version)
     api(projects.wireSchema)
+    api(projects.wireSchema.group + ":wire-schema-jvm:" + projects.wireSchema.version)
     api(projects.wireSchemaTests)
     api(projects.wireSwiftGenerator)
   }
