@@ -106,16 +106,8 @@ class WirePlugin : Plugin<Project> {
     }
 
     if (extension.protoLibrary) {
-      val libraryProtoSources = File(project.libraryProtoOutputPath())
-      val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
-      // Note that there are no source sets for some platforms such as native.
-      if (sourceSets.isNotEmpty()) {
-        sourceSets.getByName("main") { main: SourceSet ->
-          main.resources.srcDir(libraryProtoSources)
-        }
-      }
       extension.proto { protoOutput ->
-        protoOutput.out = libraryProtoSources.path
+        protoOutput.out = File(project.libraryProtoOutputPath()).path
       }
     }
 
@@ -251,24 +243,20 @@ class WirePlugin : Plugin<Project> {
       source.kotlinSourceDirectorySet?.srcDir(taskOutputDirectories)
       source.javaSourceDirectorySet?.srcDir(taskOutputDirectories)
       source.registerGeneratedDirectory?.invoke(taskOutputDirectories)
+      if (extension.protoLibrary) {
+        val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
+        // Note that there are no source sets for some platforms such as native.
+        if (sourceSets.isNotEmpty()) {
+          sourceSets.getByName("main") { main: SourceSet ->
+            main.resources.srcDir(taskOutputDirectories)
+          }
+        }
+      }
 
       project.tasks.named(ROOT_TASK).configure {
         it.dependsOn(task)
       }
 
-      // In some instances, even though we add `libraryProtoOutputPath` to the resources of the
-      // project, the generated `.proto` files would not be copied over to the `resources` folder of
-      // the module on the first execution. We explicitly declare the dependency here as a
-      // consequence of that.
-      if (extension.protoLibrary) {
-        try {
-          project.tasks.named("processResources").configure { it.dependsOn(task) }
-        } catch (e: UnknownTaskException) {
-          if (project.logger.isDebugEnabled) {
-            project.logger.debug("Could not find a task named `processResources` for project:${project.name}")
-          }
-        }
-      }
       source.registerTaskDependency?.invoke(task)
     }
   }
