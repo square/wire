@@ -4,11 +4,6 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.VERSION
 import com.squareup.wire.testing.withPlatformSlashes
-import java.io.File
-import java.io.IOException
-import java.util.zip.ZipFile
-import kotlin.text.RegexOption.DOT_MATCHES_ALL
-import kotlin.text.RegexOption.MULTILINE
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
@@ -19,6 +14,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import java.io.File
+import java.io.IOException
+import java.util.zip.ZipFile
+import kotlin.text.RegexOption.DOT_MATCHES_ALL
+import kotlin.text.RegexOption.MULTILINE
 
 class WirePluginTest {
 

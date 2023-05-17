@@ -25,6 +25,7 @@ import com.squareup.wire.gradle.kotlin.sourceRoots
 import com.squareup.wire.schema.KotlinTarget
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.UnknownTaskException
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.UnknownConfigurationException
@@ -160,8 +161,9 @@ class WirePlugin : Plugin<Project> {
           }
         )
         if (target is KotlinTarget) {
-          val isMultiplatformOrJs = project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform") ||
-            project.plugins.hasPlugin("org.jetbrains.kotlin.js")
+          val isMultiplatformOrJs =
+            project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform") ||
+              project.plugins.hasPlugin("org.jetbrains.kotlin.js")
           target = target.copy(jvmOnly = !isMultiplatformOrJs)
         }
         return@map target
@@ -254,6 +256,19 @@ class WirePlugin : Plugin<Project> {
         it.dependsOn(task)
       }
 
+      // In some instances, even though we add `libraryProtoOutputPath` to the resources of the
+      // project, the generated `.proto` files would not be copied over to the `resources` folder of
+      // the module on the first execution. We explicitly declare the dependency here as a
+      // consequence of that.
+      if (extension.protoLibrary) {
+        try {
+          project.tasks.named("processResources").configure { it.dependsOn(task) }
+        } catch (e: UnknownTaskException) {
+          if (project.logger.isDebugEnabled) {
+            project.logger.debug("Could not find a task named `processResources` for project:${project.name}")
+          }
+        }
+      }
       source.registerTaskDependency?.invoke(task)
     }
   }
