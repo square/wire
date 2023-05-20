@@ -1110,11 +1110,9 @@ class GrpcClientTest {
     try {
       grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
       fail()
-    } catch (expected: IOException) {
-      assertThat(expected).hasMessage(
-        "gRPC transport failure (HTTP status=200, grpc-status=2, grpc-message=null)"
-      )
-      assertThat(expected.cause).hasMessage("expected 1 message but got none")
+    } catch (expected: GrpcException) {
+      assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.UNKNOWN)
+      assertThat(expected.grpcMessage).isNull()
     }
   }
 
@@ -1130,11 +1128,9 @@ class GrpcClientTest {
     try {
       grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
       fail()
-    } catch (expected: IOException) {
-      assertThat(expected).hasMessage(
-        "gRPC transport failure (HTTP status=200, grpc-status=13, grpc-message=boom)"
-      )
-      assertThat(expected.cause).hasMessage("expected 1 message but got none")
+    } catch (expected: GrpcException) {
+      assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
+      assertThat(expected.grpcMessage).isEqualTo("boom")
     }
   }
 
