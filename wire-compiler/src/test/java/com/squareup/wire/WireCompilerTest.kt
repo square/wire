@@ -17,6 +17,7 @@
 
 package com.squareup.wire
 
+import com.squareup.wire.schema.ProtoType
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
@@ -29,10 +30,12 @@ import org.junit.rules.TemporaryFolder
 import java.util.Collections
 
 class WireCompilerTest {
-  @Rule @JvmField val temp = TemporaryFolder()
+  @Rule
+  @JvmField
+  val temp = TemporaryFolder()
   private val fileSystem = FileSystem.SYSTEM
 
-  private var logger: StringWireLogger? = null
+  private var logger: WireLogger? = null
   private lateinit var testDir: Path
 
   /** Returns all paths within `root`, and relative to `root`.  */
@@ -43,7 +46,8 @@ class WireCompilerTest {
         .toList()
     }
 
-  @Before fun setUp() {
+  @Before
+  fun setUp() {
     testDir = temp.root.toOkioPath()
   }
 
@@ -78,6 +82,37 @@ class WireCompilerTest {
 
     val outputs = arrayOf("com/squareup/wire/protos/person/Person.java")
     assertJavaOutputs(outputs)
+  }
+
+  @Test
+  fun testPersonDryRun() {
+    val sources = arrayOf("person.proto")
+
+    val args = ArrayList<String>()
+    args.add(TargetLanguage.JAVA.protoPathArg())
+    args.add(TargetLanguage.JAVA.outArg("/".toPath() / testDir))
+    args.add("--dry_run")
+    args.addAll(sources)
+
+    val logs = mutableListOf<String>()
+    val logger = object : WireLogger {
+      override fun artifactHandled(outputPath: Path, qualifiedName: String, targetName: String) {
+        logs.add("artifactHandled($qualifiedName, $targetName)")
+      }
+      override fun artifactSkipped(type: ProtoType, targetName: String) = Unit
+      override fun unusedRoots(unusedRoots: Set<String>) = Unit
+      override fun unusedPrunes(unusedPrunes: Set<String>) = Unit
+      override fun unusedIncludesInTarget(unusedIncludes: Set<String>) = Unit
+      override fun unusedExcludesInTarget(unusedExcludes: Set<String>) = Unit
+    }
+    val fs = fileSystem
+    val compiler = WireCompiler.forArgs(fs, logger, *args.toTypedArray<String>())
+    compiler.compile()
+
+    // We assert nothing has been generated.
+    assertJavaOutputs(arrayOf())
+    // But we logged things because we're dry-running.
+    assertThat(logs).containsExactly("artifactHandled(com.squareup.wire.protos.person.Person, Java)")
   }
 
   @Test
@@ -424,7 +459,6 @@ class WireCompilerTest {
     val args = ArrayList<String>()
     args.add("--proto_path=../wire-tests/src/commonTest/proto/kotlin/protos.jar")
     args.add(TargetLanguage.KOTLIN.outArg("/".toPath() / testDir))
-    Collections.addAll(args)
     Collections.addAll(args, *sources)
     logger = StringWireLogger()
     val compiler = WireCompiler.forArgs(fileSystem, logger!!, *args.toTypedArray())
@@ -444,7 +478,6 @@ class WireCompilerTest {
     val args = ArrayList<String>()
     args.add("--proto_path=../wire-tests/src/commonTest/proto/kotlin/protos.jar")
     args.add(TargetLanguage.KOTLIN.outArg("/".toPath() / testDir))
-    Collections.addAll(args)
     Collections.addAll(args, *sources)
     logger = StringWireLogger()
     val compiler = WireCompiler.forArgs(fileSystem, logger!!, *args.toTypedArray())
@@ -729,6 +762,7 @@ class WireCompilerTest {
           ".android" -> "jvmKotlinAndroidTest"
           else -> throw AssertionError("Unknown suffix: $suffix")
         }
+
         "java" -> when (suffix) {
           "" -> "jvmJavaTest"
           ".noOptions" -> "jvmJavaNoOptionsTest"
@@ -738,6 +772,7 @@ class WireCompilerTest {
           ".android.compact" -> "jvmJavaAndroidCompactTest"
           else -> throw AssertionError("Unknown suffix: $suffix")
         }
+
         else -> throw AssertionError("Unknown proto folder suffix: $protoFolderSuffix")
       }
       val expectedFile = "../wire-tests/src/$sourceSet/proto-${protoFolderSuffix()}/$path".toPath()

@@ -46,14 +46,14 @@ class WirePluginTest {
       .withDebug(true)
   }
 
-  @Test fun versionIsExposed() {
-    assertThat(VERSION).isNotNull()
-  }
-
   @After
   fun clearOutputs() {
     // We clear outputs otherwise tests' tasks will be skip after their first execution.
     getOutputDirectories(File("src/test/projects")).forEach(::unsafeDelete)
+  }
+
+  @Test fun versionIsExposed() {
+    assertThat(VERSION).isNotNull()
   }
 
   @Test
@@ -133,6 +133,22 @@ class WirePluginTest {
       .contains("Writing com.squareup.dinosaurs.Dinosaur")
       .contains("Writing com.squareup.geology.Period")
       .contains("src/test/projects/sourcepath-default/build/generated/source/wire".withPlatformSlashes())
+  }
+
+  @Test
+  fun dryRun() {
+    val fixtureRoot = File("src/test/projects/dry-run")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull()
+    assertThat(result.output)
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+
+    // We didn't generate any file.
+    assertThat(File(fixtureRoot, "build/generated/source/wire").walk().toList().filter { it.isFile }).isEmpty()
   }
 
   @Test

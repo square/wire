@@ -131,6 +131,14 @@ open class WireExtension(project: Project) {
   @get:Optional
   var protoLibrary = false
 
+  /**
+   * True to not write generated types to disk, but emit the names of the source files that would otherwise be
+   * generated.
+   */
+  @get:Input
+  @get:Optional
+  var dryRun = false
+
   @InputFiles
   @Optional
   fun getSourcePaths() = sourcePaths.toSet()
