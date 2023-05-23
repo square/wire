@@ -419,7 +419,9 @@ data class SwiftTarget(
         }
 
         context.logger.artifactHandled(
-          modulePath, "${swiftFile.moduleName}.${typeName.canonicalName}", "Swift"
+          outputPath = modulePath,
+          qualifiedName = "${swiftFile.moduleName}.${typeName.canonicalName} declared in ${type.location.withPathOnly()}",
+          targetName = "Swift",
         )
         return filePath
       }
