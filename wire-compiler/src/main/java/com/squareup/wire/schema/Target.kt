@@ -15,13 +15,9 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.javapoet.JavaFile
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.WireCompiler
-import com.squareup.wire.java.JavaGenerator
-import com.squareup.wire.kotlin.KotlinGenerator
+import com.squareup.wire.java.JavaSchemaHandler
+import com.squareup.wire.kotlin.KotlinSchemaHandler
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.swift.SwiftGenerator
@@ -78,7 +74,6 @@ sealed class Target : Serializable {
   abstract fun newHandler(): SchemaHandler
 }
 
-// TODO(Benoit) Get JavaGenerator to expose a factory from its module. Code should not be here.
 /** Generate `.java` sources. */
 data class JavaTarget(
   override val includes: List<String> = listOf("*"),
@@ -110,76 +105,14 @@ data class JavaTarget(
   val buildersOnly: Boolean = false,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
-    return object : SchemaHandler() {
-      private lateinit var javaGenerator: JavaGenerator
-
-      override fun handle(schema: Schema, context: Context) {
-        val profileName = if (android) "android" else "java"
-        val profile = context.profileLoader!!.loadProfile(profileName, schema)
-        javaGenerator = JavaGenerator.get(schema)
-          .withProfile(profile)
-          .withAndroid(android)
-          .withAndroidAnnotations(androidAnnotations)
-          .withCompact(compact)
-          .withOptions(emitDeclaredOptions, emitAppliedOptions)
-          .withBuildersOnly(buildersOnly)
-
-        context.fileSystem.createDirectories(context.outDirectory)
-
-        super.handle(schema, context)
-      }
-
-      override fun handle(type: Type, context: Context): Path? {
-        if (JavaGenerator.builtInType(type.type)) return null
-
-        val typeSpec = javaGenerator.generateType(type)
-        val javaTypeName = javaGenerator.generatedTypeName(type)
-        return write(javaTypeName, typeSpec, type.type, type.location, context)
-      }
-
-      override fun handle(service: Service, context: Context): List<Path> {
-        // Service handling isn't supporting in Java.
-        return emptyList()
-      }
-
-      override fun handle(extend: Extend, field: Field, context: Context): Path? {
-        val typeSpec = javaGenerator.generateOptionType(extend, field) ?: return null
-        val javaTypeName = javaGenerator.generatedTypeName(extend.member(field))
-        return write(javaTypeName, typeSpec, field.qualifiedName, field.location, context)
-      }
-
-      private fun write(
-        javaTypeName: com.squareup.javapoet.ClassName,
-        typeSpec: com.squareup.javapoet.TypeSpec,
-        source: Any,
-        location: Location,
-        context: Context,
-      ): Path {
-        val outDirectory = context.outDirectory
-        val javaFile = JavaFile.builder(javaTypeName.packageName(), typeSpec)
-          .addFileComment("\$L", WireCompiler.CODE_GENERATED_BY_WIRE)
-          .addFileComment("\nSource: \$L in \$L", source, location.withPathOnly())
-          .build()
-        val filePath = outDirectory /
-          javaFile.packageName.replace(".", "/") /
-          "${javaTypeName.simpleName()}.java"
-
-        context.logger.artifactHandled(
-          outDirectory, "${javaFile.packageName}.${javaFile.typeSpec.name}", "Java"
-        )
-        try {
-          context.fileSystem.createDirectories(filePath.parent!!)
-          context.fileSystem.write(filePath) {
-            writeUtf8(javaFile.toString())
-          }
-        } catch (e: IOException) {
-          throw IOException(
-            "Error emitting ${javaFile.packageName}.${javaFile.typeSpec.name} to $outDirectory", e
-          )
-        }
-        return filePath
-      }
-    }
+    return JavaSchemaHandler(
+      android = android,
+      androidAnnotations = androidAnnotations,
+      compact = compact,
+      emitDeclaredOptions = emitDeclaredOptions,
+      emitAppliedOptions = emitAppliedOptions,
+      buildersOnly = buildersOnly,
+    )
   }
 
   override fun copyTarget(
@@ -197,7 +130,6 @@ data class JavaTarget(
   }
 }
 
-// TODO(Benoit) Get kotlinGenerator to expose a factory from its module. Code should not be here.
 /** Generate `.kt` sources. */
 data class KotlinTarget(
   override val includes: List<String> = listOf("*"),
@@ -256,109 +188,21 @@ data class KotlinTarget(
   val jvmOnly: Boolean = true,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
-    return object : SchemaHandler() {
-      private lateinit var kotlinGenerator: KotlinGenerator
-
-      override fun handle(schema: Schema, context: Context) {
-        val profileName = if (android) "android" else "java"
-        val profile = context.profileLoader!!.loadProfile(profileName, schema)
-        kotlinGenerator = KotlinGenerator(
-          schema = schema,
-          profile = profile,
-          emitAndroid = android,
-          javaInterop = javaInterop,
-          emitDeclaredOptions = emitDeclaredOptions,
-          emitAppliedOptions = emitAppliedOptions,
-          rpcCallStyle = rpcCallStyle,
-          rpcRole = rpcRole,
-          boxOneOfsMinSize = boxOneOfsMinSize,
-          grpcServerCompatible = grpcServerCompatible,
-          nameSuffix = nameSuffix,
-          buildersOnly = buildersOnly,
-          singleMethodServices = singleMethodServices,
-          jvmOnly = jvmOnly,
-        )
-        context.fileSystem.createDirectories(context.outDirectory)
-        super.handle(schema, context)
-      }
-
-      override fun handle(type: Type, context: Context): Path? {
-        if (KotlinGenerator.builtInType(type.type)) return null
-
-        val typeSpec = kotlinGenerator.generateType(type)
-        val className = kotlinGenerator.generatedTypeName(type)
-        return write(className, typeSpec, type.type, type.location, context)
-      }
-
-      override fun handle(service: Service, context: Context): List<Path> {
-        if (rpcRole === RpcRole.NONE) return emptyList()
-
-        val generatedPaths = mutableListOf<Path>()
-
-        if (singleMethodServices) {
-          service.rpcs.forEach { rpc ->
-            val map = kotlinGenerator.generateServiceTypeSpecs(service, rpc)
-            for ((className, typeSpec) in map) {
-              generatedPaths.add(
-                write(className, typeSpec, service.type, service.location, context)
-              )
-            }
-          }
-        } else {
-          val map = kotlinGenerator.generateServiceTypeSpecs(service, null)
-          for ((className, typeSpec) in map) {
-            generatedPaths.add(write(className, typeSpec, service.type, service.location, context))
-          }
-        }
-
-        if (grpcServerCompatible) {
-          val map = kotlinGenerator.generateGrpcServerAdapter(service)
-          for ((className, typeSpec) in map) {
-            generatedPaths.add(write(className, typeSpec, service.type, service.location, context))
-          }
-        }
-
-        return generatedPaths
-      }
-
-      override fun handle(extend: Extend, field: Field, context: Context): Path? {
-        val typeSpec = kotlinGenerator.generateOptionType(extend, field) ?: return null
-        val name = kotlinGenerator.generatedTypeName(extend.member(field))
-        return write(name, typeSpec, field.qualifiedName, field.location, context)
-      }
-
-      private fun write(
-        name: ClassName,
-        typeSpec: TypeSpec,
-        source: Any,
-        location: Location,
-        context: Context,
-      ): Path {
-        val modulePath = context.outDirectory
-        val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
-          .addFileComment(WireCompiler.CODE_GENERATED_BY_WIRE)
-          .addFileComment("\nSource: %L in %L", source, location.withPathOnly())
-          .addType(typeSpec)
-          .build()
-        val filePath = modulePath /
-          kotlinFile.packageName.replace(".", "/") /
-          "${kotlinFile.name}.kt"
-
-        context.logger.artifactHandled(
-          modulePath, "${kotlinFile.packageName}.${(kotlinFile.members.first() as TypeSpec).name}",
-          "Kotlin"
-        )
-        try {
-          context.fileSystem.createDirectories(filePath.parent!!)
-          context.fileSystem.write(filePath) {
-            writeUtf8(kotlinFile.toString())
-          }
-        } catch (e: IOException) {
-          throw IOException("Error emitting ${kotlinFile.packageName}.$source to $outDirectory", e)
-        }
-        return filePath
-      }
-    }
+    return KotlinSchemaHandler(
+      outDirectory = outDirectory,
+      android = android,
+      javaInterop = javaInterop,
+      emitDeclaredOptions = emitDeclaredOptions,
+      emitAppliedOptions = emitAppliedOptions,
+      rpcCallStyle = rpcCallStyle,
+      rpcRole = rpcRole,
+      singleMethodServices = singleMethodServices,
+      boxOneOfsMinSize = boxOneOfsMinSize,
+      grpcServerCompatible = grpcServerCompatible,
+      nameSuffix = nameSuffix,
+      buildersOnly = buildersOnly,
+      jvmOnly = jvmOnly,
+    )
   }
 
   override fun copyTarget(
