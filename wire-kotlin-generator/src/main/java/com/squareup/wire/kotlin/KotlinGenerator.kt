@@ -110,11 +110,11 @@ import com.squareup.wire.schema.internal.javaPackage
 import com.squareup.wire.schema.internal.legacyQualifiedFieldName
 import com.squareup.wire.schema.internal.optionValueToInt
 import com.squareup.wire.schema.internal.optionValueToLong
-import java.util.Locale
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.ByteString
 import okio.ByteString.Companion.encode
+import java.util.Locale
 
 class KotlinGenerator private constructor(
   val schema: Schema,
