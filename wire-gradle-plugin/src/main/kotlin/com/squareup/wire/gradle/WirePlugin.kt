@@ -25,7 +25,6 @@ import com.squareup.wire.gradle.kotlin.sourceRoots
 import com.squareup.wire.schema.KotlinTarget
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.UnknownTaskException
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.UnknownConfigurationException
@@ -226,6 +225,7 @@ class WirePlugin : Plugin<Project> {
         task.rules.set(extension.rules)
         task.targets.set(targets)
         task.permitPackageCycles.set(extension.permitPackageCycles)
+        task.dryRun.set(extension.dryRun)
 
         task.inputFiles.setFrom(inputFiles)
 

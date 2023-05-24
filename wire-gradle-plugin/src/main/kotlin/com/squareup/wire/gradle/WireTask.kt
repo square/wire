@@ -15,11 +15,13 @@
  */
 package com.squareup.wire.gradle
 
+import com.squareup.wire.DryRunFileSystem
 import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.internal.GradleWireLogger
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
+import okio.FileSystem
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
@@ -98,6 +100,10 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
   @get:Internal
   abstract val buildDirProperty: DirectoryProperty
 
+  @get:Input
+  val dryRun: Property<Boolean> = objects.property(Boolean::class.java)
+    .convention(false)
+
   @TaskAction
   fun generateWireFiles() {
     val includes = mutableListOf<String>()
@@ -161,7 +167,10 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
         projectDir.file(target.outDirectory).asFile.deleteRecursively()
       }
     }
-    wireRun.execute(logger = GradleWireLogger)
+    wireRun.execute(
+      fs = if (dryRun.get()) DryRunFileSystem(FileSystem.SYSTEM) else FileSystem.SYSTEM,
+      logger = GradleWireLogger,
+    )
   }
 
   @InputFiles

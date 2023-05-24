@@ -77,7 +77,7 @@ import java.nio.file.FileSystem as NioFileSystem
  * during the compile. This list is suitable for passing to Wire's constructor at runtime for
  * constructing its internal extension registry.
  *
- * The `--dry_run` flag causes the compile to just emit the names of the source files that would be
+ * The `--dry_run` flag causes the compiler to just emit the names of the source files that would be
  * generated to stdout.
  *
  * The `--android` flag will cause all messages to implement the `Parcelable`
@@ -219,10 +219,12 @@ class WireCompiler internal constructor(
     private const val SKIP_APPLIED_OPTIONS = "--skip_applied_options"
     private const val PERMIT_PACKAGE_CYCLES_OPTIONS = "--permit_package_cycles"
     private const val JAVA_INTEROP = "--java_interop"
+    private const val DRY_RUN = "--dry_run"
     private const val KOTLIN_BOX_ONEOFS_MIN_SIZE = "--kotlin_box_oneofs_min_size="
 
     @Throws(IOException::class)
-    @JvmStatic fun main(args: Array<String>) {
+    @JvmStatic
+    fun main(args: Array<String>) {
       try {
         val wireCompiler = forArgs(args = args)
         wireCompiler.compile()
@@ -269,6 +271,7 @@ class WireCompiler internal constructor(
       var permitPackageCycles = false
       var javaInterop = false
       var kotlinBoxOneOfsMinSize = 5_000
+      var dryRun = false
 
       for (arg in args) {
         when {
@@ -332,6 +335,7 @@ class WireCompiler internal constructor(
           arg == ANDROID -> emitAndroid = true
           arg == ANDROID_ANNOTATIONS -> emitAndroidAnnotations = true
           arg == COMPACT -> emitCompact = true
+          arg == DRY_RUN -> dryRun = true
           arg == SKIP_DECLARED_OPTIONS -> emitDeclaredOptions = false
           arg == SKIP_APPLIED_OPTIONS -> emitAppliedOptions = false
           arg == PERMIT_PACKAGE_CYCLES_OPTIONS -> permitPackageCycles = true
@@ -352,7 +356,7 @@ class WireCompiler internal constructor(
       }
 
       return WireCompiler(
-        fs = fileSystem,
+        fs = if (dryRun) DryRunFileSystem(fileSystem) else fileSystem,
         log = logger,
         protoPaths = protoPaths,
         javaOut = javaOut,
@@ -371,7 +375,7 @@ class WireCompiler internal constructor(
         emitAppliedOptions = emitAppliedOptions,
         permitPackageCycles = permitPackageCycles,
         javaInterop = javaInterop,
-        kotlinBoxOneOfsMinSize = kotlinBoxOneOfsMinSize
+        kotlinBoxOneOfsMinSize = kotlinBoxOneOfsMinSize,
       )
     }
   }

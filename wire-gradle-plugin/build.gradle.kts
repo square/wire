@@ -53,6 +53,7 @@ dependencies {
   implementation(projects.wireCompiler)
   implementation(projects.wireKotlinGenerator)
   implementation(libs.swiftpoet)
+  implementation(libs.okio.fakefilesystem)
 
   compileOnly(gradleApi())
   implementation(libs.pluginz.kotlin)
