@@ -361,6 +361,17 @@ This is most useful when building `.jar` files for other `wire` tasks to use as 
 that only the true sources are included – proto messages that are pruned or not used are not
 included in the output artifact.
 
+### Dry run
+
+With the dry run option, the compiler will just emit the names of the source files that would be otherwise generated to
+stdout.
+
+```groovy
+wire {
+  dryRun = true
+}
+```
+
 Customizing Output
 ------------------
 

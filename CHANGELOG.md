@@ -1,6 +1,23 @@
 Change Log
 ==========
 
+Version 4.7.0
+-------------
+
+_2023-05-24_
+
+* New: Add a dry run option. If enabled, the compiler will just emit the names of the source files that would be 
+  otherwise * generated to stdout. You can use the flag `--dry_run` with the Wire compiler or define the option with
+  Gradle as the following:
+
+  ```kotlin
+  wire {
+    dryRun = true
+  }
+  ```
+* Fix: Correctly set task dependencies on `processResources` if `protoLibrary` is set to true.
+* Fix: If a valid grpc-status header is present, raise a GrpcException rather than an IOException.
+
 Version 4.6.2
 -------------
 
