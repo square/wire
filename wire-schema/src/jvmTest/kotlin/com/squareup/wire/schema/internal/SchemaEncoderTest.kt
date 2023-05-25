@@ -22,35 +22,35 @@ class SchemaEncoderTest {
       add(
         "handle_service.proto".toPath(),
         """
-            |syntax = "proto2";
-            |
-            |import "google/protobuf/descriptor.proto";
-            |
-            |enum GreekLetter {
-            |  ALPHA = 1;
-            |  BETA = 2;
-            |}
-            |
-            |extend google.protobuf.MethodOptions {
-            |  optional double timeout = 22000;
-            |  optional GreekLetter greek_letter = 22001;
-            |  repeated GreekLetter fraternity = 22002;
-            |}
-            |
-            |message HandleRequest {
-            |}
-            |
-            |message HandleResponse {
-            |}
-            |
-            |service HandleService {
-            |  rpc Handle ( HandleRequest ) returns ( HandleResponse ) {
-            |    option (timeout) = 2.1;
-            |    option (greek_letter) = BETA;
-            |    option (fraternity) = [ALPHA, BETA, ALPHA];
-            |  }
-            |}
-            |""".trimMargin()
+        |syntax = "proto2";
+        |
+        |import "google/protobuf/descriptor.proto";
+        |
+        |enum GreekLetter {
+        |  ALPHA = 1;
+        |  BETA = 2;
+        |}
+        |
+        |extend google.protobuf.MethodOptions {
+        |  optional double timeout = 22000;
+        |  optional GreekLetter greek_letter = 22001;
+        |  repeated GreekLetter fraternity = 22002;
+        |}
+        |
+        |message HandleRequest {
+        |}
+        |
+        |message HandleResponse {
+        |}
+        |
+        |service HandleService {
+        |  rpc Handle ( HandleRequest ) returns ( HandleResponse ) {
+        |    option (timeout) = 2.1;
+        |    option (greek_letter) = BETA;
+        |    option (fraternity) = [ALPHA, BETA, ALPHA];
+        |  }
+        |}
+        |""".trimMargin()
       )
     }
 
@@ -166,12 +166,12 @@ class SchemaEncoderTest {
       add(
         "test.proto".toPath(),
         """
-            |syntax = "proto2";
-            |
-            |message TestMessage {
-            |  extensions 5, 1000 to max;
-            |}
-            |""".trimMargin()
+        |syntax = "proto2";
+        |
+        |message TestMessage {
+        |  extensions 5, 1000 to max;
+        |}
+        |""".trimMargin()
       )
     }
 
@@ -208,17 +208,17 @@ class SchemaEncoderTest {
       add(
         "test.proto".toPath(),
         """
-            |syntax = "proto3";
-            |
-            |message AMessage {
-            |  string two = 2;
-            |
-            |  oneof a_oneof {
-            |    string one = 1;
-            |    string three = 3;
-            |  }
-            |}
-            |""".trimMargin()
+        |syntax = "proto3";
+        |
+        |message AMessage {
+        |  string two = 2;
+        |
+        |  oneof a_oneof {
+        |    string one = 1;
+        |    string three = 3;
+        |  }
+        |}
+        |""".trimMargin()
       )
     }
     val handleServiceProto = schema.protoFile("test.proto")!!

@@ -34,6 +34,7 @@ import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
 import okio.ByteString
+import okio.ByteString.Companion.encodeUtf8
 import okio.ByteString.Companion.toByteString
 
 /**
@@ -419,18 +420,34 @@ class SchemaEncoder(
     }
   }
 
+  /**
+   * Convert [value] to a untyped value that preserves its binary encoding. This converts strings
+   * to the right-sized primitive type. This converts unsigned values to the signed value that has
+   * the same binary encoding.
+   */
   private fun toJsonSingle(type: ProtoType, value: Any): Any {
     // TODO: use optionValueToInt(value) when that's available in commonMain.
     return when (type) {
-      ProtoType.INT32 -> (value as String).toInt()
-      ProtoType.DOUBLE -> (value as String).toDouble()
       ProtoType.BOOL -> (value as String).toBoolean()
-      ProtoType.STRING -> value as String
+      ProtoType.BYTES -> (value as String).encodeUtf8()
+      ProtoType.DOUBLE -> (value as String).toDouble()
+      ProtoType.FIXED32 -> (value as String).toUInt().toInt()
+      ProtoType.FIXED64 -> (value as String).toULong().toLong()
+      ProtoType.FLOAT -> (value as String).toFloat()
+      ProtoType.INT32 -> (value as String).toInt()
+      ProtoType.INT64 -> (value as String).toLong()
+      ProtoType.SFIXED32 -> (value as String).toInt()
+      ProtoType.SFIXED64 -> (value as String).toLong()
+      ProtoType.SINT32 -> (value as String).toInt()
+      ProtoType.SINT64 -> (value as String).toLong()
+      ProtoType.STRING -> (value as String)
+      ProtoType.UINT32 -> (value as String).toUInt().toInt()
+      ProtoType.UINT64 -> (value as String).toULong().toLong()
       else -> {
         when (schema.getType(type)) {
           is MessageType -> toJsonMap(value as Map<ProtoMember, Any>)
           is EnumType -> value as String
-          else -> error("not implemented yet!!")
+          else -> error("not implemented: $type")
         }
       }
     }

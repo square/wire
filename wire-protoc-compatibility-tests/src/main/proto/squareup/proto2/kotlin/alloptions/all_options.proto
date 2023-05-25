@@ -1,0 +1,82 @@
+/*
+ * Copyright 2023 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto2";
+
+package squareup.proto2.kotlin.alloptions;
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.MethodOptions {
+  optional bool bool_value = 22000;
+  optional bytes bytes_value = 22001;
+  optional double double_value = 22002;
+  optional float float_value = 22003;
+  optional fixed32 fixed32_value = 22004;
+  optional fixed64 fixed64_value = 22005;
+  optional int32 int32_value = 22006;
+  optional int64 int64_value = 22007;
+  optional sfixed32 sfixed32_value = 22008;
+  optional sfixed64 sfixed64_value = 22009;
+  optional sint32 sint32_value = 22010;
+  optional sint64 sint64_value = 22011;
+  optional string string_value = 22012;
+  optional uint32 uint32_value = 22013;
+  optional uint64 uint64_value = 22014;
+}
+
+message HandleRequest {
+}
+
+message HandleResponse {
+}
+
+service HandleService {
+  rpc MaxValues ( HandleRequest ) returns ( HandleResponse ) {
+    option (bool_value) = true;
+    option (bytes_value) = "bytes value";
+    option (double_value) = 1.79769e308;
+    option (float_value) = 3.40282e38;
+    option (fixed32_value) = 4294967295;
+    option (fixed64_value) = 18446744073709551615;
+    option (int32_value) = 2147483647;
+    option (int64_value) = 9223372036854775807;
+    option (sfixed32_value) = 2147483647;
+    option (sfixed64_value) = 9223372036854775807;
+    option (sint32_value) = 2147483647;
+    option (sint64_value) = 9223372036854775807;
+    option (string_value) = "string value";
+    option (uint32_value) = 4294967295;
+    option (uint64_value) = 18446744073709551615;
+  }
+
+  rpc MinValues ( HandleRequest ) returns ( HandleResponse ) {
+    option (bool_value) = false;
+    option (bytes_value) = "";
+    option (double_value) = 4.9e-324;
+    option (float_value) = 1.4e-45;
+    option (fixed32_value) = 0;
+    option (fixed64_value) = 0;
+    option (int32_value) = -2147483648;
+    option (int64_value) = -9223372036854775808;
+    option (sfixed32_value) = -2147483648;
+    option (sfixed64_value) = -9223372036854775808;
+    option (sint32_value) = -2147483648;
+    option (sint64_value) = -9223372036854775808;
+    option (string_value) = "";
+    option (uint32_value) = 0;
+    option (uint64_value) = 0;
+  }
+}
