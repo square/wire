@@ -16,6 +16,10 @@ Pod::Spec.new do |s|
 
   s.prepare_command = <<-CMD
     curl https://repo.maven.apache.org/maven2/com/squareup/wire/wire-compiler/#{version}/wire-compiler-#{version}-jar-with-dependencies.jar --output compiler.jar
+    if ! jar tf compiler.jar >/dev/null 2>&1; then
+      echo "[WireCompiler] The compiler.jar file is invalid or corrupted."
+      exit 1
+    fi
   CMD
 
   s.preserve_paths = 'compiler.jar'
