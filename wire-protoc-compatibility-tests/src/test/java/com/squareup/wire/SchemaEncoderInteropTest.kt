@@ -21,9 +21,10 @@ import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.SchemaLoader
 import com.squareup.wire.schema.internal.SchemaEncoder
+import java.nio.file.FileSystems
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.nio.file.FileSystems
+import squareup.proto2.kotlin.alloptions.AllOptions as AllOptionsP2
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass as AllTypesOuterClassP2
 import squareup.proto2.kotlin.interop.InteropServiceOuterClass as InteropServiceOuterClassP2
 import squareup.proto2.kotlin.interop.InteropTest as InteropTestP2
@@ -77,6 +78,13 @@ class SchemaEncoderInteropTest {
     )
   }
 
+  @Test fun `proto2 all_options`() {
+    checkFileSchemaOptionsMatch(
+      wireProtoFile = schema.protoFile("squareup/proto2/kotlin/alloptions/all_options.proto")!!,
+      protocProtoFile = AllOptionsP2.getDescriptor().toProto()
+    )
+  }
+
   /**
    * Confirm the schemas described by [wireProtoFile] and [protocProtoFile] are equal.
    *
@@ -90,5 +98,24 @@ class SchemaEncoderInteropTest {
     val unwantedValueStripper = UnwantedValueStripper(clearJsonName = true)
     assertThat(unwantedValueStripper.stripOptionsAndDefaults(wireDescriptor))
       .isEqualTo(unwantedValueStripper.stripOptionsAndDefaults(protocProtoFile))
+  }
+
+  /**
+   * Confirm the encoded [wireProtoFile] and the re-encoded [protocProtoFile] match. We must
+   * re-encode to strip extension name and type information because that data isn't retained in the
+   * encoded form.
+   */
+  private fun checkFileSchemaOptionsMatch(
+    wireProtoFile: ProtoFile,
+    protocProtoFile: FileDescriptorProto
+  ) {
+    val wireBytes = SchemaEncoder(schema).encode(wireProtoFile)
+    val wireDescriptor = FileDescriptorProto.parseFrom(wireBytes.toByteArray(), extensionRegistry)
+    val protocDescriptorReencoded = FileDescriptorProto.parseFrom(
+      protocProtoFile.toByteArray(),
+      extensionRegistry,
+    )
+    assertThat(wireDescriptor)
+      .isEqualTo(protocDescriptorReencoded)
   }
 }
