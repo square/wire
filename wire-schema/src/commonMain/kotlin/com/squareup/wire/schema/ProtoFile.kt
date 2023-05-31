@@ -33,6 +33,7 @@ data class ProtoFile(
   val syntax: Syntax?,
 ) {
   private var javaPackage: Any? = null
+  private var wirePackage: Any? = null
 
   fun toElement(): ProtoFileElement {
     return ProtoFileElement(
@@ -84,7 +85,7 @@ data class ProtoFile(
   }
 
   fun wirePackage(): String? {
-    return options.get(WIRE_PACKAGE)?.toString()
+    return wirePackage?.toString()
   }
 
   /**
@@ -105,6 +106,7 @@ data class ProtoFile(
       retainedServices, retainedExtends, retainedOptions, syntax
     )
     result.javaPackage = javaPackage
+    result.wirePackage = wirePackage
     return result
   }
 
@@ -123,6 +125,7 @@ data class ProtoFile(
       retainedServices, retainedExtends, retainedOptions, syntax
     )
     result.javaPackage = javaPackage
+    result.wirePackage = wirePackage
     return result
   }
 
@@ -151,6 +154,7 @@ data class ProtoFile(
         extendList, options, syntax
       )
       result.javaPackage = javaPackage
+      result.wirePackage = wirePackage
       result
     } else {
       this
@@ -160,6 +164,7 @@ data class ProtoFile(
   fun linkOptions(linker: Linker, validate: Boolean) {
     options.link(linker, location, validate)
     javaPackage = options.get(JAVA_PACKAGE)
+    wirePackage = options.get(WIRE_PACKAGE)
   }
 
   override fun toString(): String {
