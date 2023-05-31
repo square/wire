@@ -79,19 +79,19 @@ internal class SchemaReflectorTest {
   fun `transitive dependencies included`() {
     val schema = buildSchema {
       add(
-        "/source/a.proto".toPath(),
+        "a.proto".toPath(),
         """
-                |import "b.proto";
-                |message A {
-                |  optional B b = 1;
-                |}
-                |""".trimMargin()
+        |import "b.proto";
+        |message A {
+        |  optional B b = 1;
+        |}
+        |""".trimMargin()
       )
       add(
-        "/source/b.proto".toPath(),
+        "b.proto".toPath(),
         """
-                |message B { }
-                |""".trimMargin()
+        |message B { }
+        |""".trimMargin()
       )
     }
 
@@ -116,27 +116,27 @@ internal class SchemaReflectorTest {
   fun `transitive dependencies included once`() {
     val schema = buildSchema {
       add(
-        "/source/a.proto".toPath(),
+        "a.proto".toPath(),
         """
-                |import "b.proto";
-                |import "c.proto";
-                |message A {
-                |  optional B b = 1;
-                |  optional C c = 2;
-                |}
-                |""".trimMargin()
+        |import "b.proto";
+        |import "c.proto";
+        |message A {
+        |  optional B b = 1;
+        |  optional C c = 2;
+        |}
+        |""".trimMargin()
       )
       add(
-        "/source/b.proto".toPath(),
+        "b.proto".toPath(),
         """
-                |message B { }
-                |""".trimMargin()
+        |message B { }
+        |""".trimMargin()
       )
       add(
-        "/source/c.proto".toPath(),
+        "c.proto".toPath(),
         """
-                |message C { }
-                |""".trimMargin()
+        |message C { }
+        |""".trimMargin()
       )
     }
 
@@ -153,30 +153,30 @@ internal class SchemaReflectorTest {
   fun `transitive dependencies included ordered`() {
     val schema = buildSchema {
       add(
-        "/source/a.proto".toPath(),
+        "a.proto".toPath(),
         """
-                |import "b.proto";
-                |import "c.proto";
-                |message A {
-                |  optional B b = 1;
-                |  optional C c = 2;
-                |}
-                |""".trimMargin()
+        |import "b.proto";
+        |import "c.proto";
+        |message A {
+        |  optional B b = 1;
+        |  optional C c = 2;
+        |}
+        |""".trimMargin()
       )
       add(
-        "/source/b.proto".toPath(),
+        "b.proto".toPath(),
         """
-                |import "c.proto";
-                |message B {
-                |  optional C c = 1;
-                | }
-                |""".trimMargin()
+        |import "c.proto";
+        |message B {
+        |  optional C c = 1;
+        | }
+        |""".trimMargin()
       )
       add(
-        "/source/c.proto".toPath(),
+        "c.proto".toPath(),
         """
-                |message C { }
-                |""".trimMargin()
+        |message C { }
+        |""".trimMargin()
       )
     }
 
@@ -193,34 +193,34 @@ internal class SchemaReflectorTest {
   fun `transitive dependencies with public import`() {
     val schema = buildSchema {
       add(
-        "/source/a.proto".toPath(),
+        "a.proto".toPath(),
         """
-                |import "b.proto";
-                |message A {
-                |  optional B b = 1;
-                |}
-                |""".trimMargin()
+        |import "b.proto";
+        |message A {
+        |  optional B b = 1;
+        |}
+        |""".trimMargin()
       )
       add(
-        "/source/b.proto".toPath(),
+        "b.proto".toPath(),
         """
-                |import public "b-new.proto";
-                |""".trimMargin()
+        |import public "b-new.proto";
+        |""".trimMargin()
       )
       add(
-        "/source/b-new.proto".toPath(),
+        "b-new.proto".toPath(),
         """
-                |import "c.proto";
-                |message B {
-                |  optional C c = 1;
-                | }
-                |""".trimMargin()
+        |import "c.proto";
+        |message B {
+        |  optional C c = 1;
+        | }
+        |""".trimMargin()
       )
       add(
-        "/source/c.proto".toPath(),
+        "c.proto".toPath(),
         """
-                |message C { }
-                |""".trimMargin()
+        |message C { }
+        |""".trimMargin()
       )
     }
 
