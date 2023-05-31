@@ -41,6 +41,7 @@ class SchemaBuilder {
    * @param name The qualified name of the file.
    * @param protoFile The content of the file.
    */
+  @JvmOverloads
   fun add(name: Path, protoFile: String, path: Path = sourcePath): SchemaBuilder {
     require(name.toString().endsWith(".proto")) {
       "unexpected file extension for $name. Proto files should use the '.proto' extension"
