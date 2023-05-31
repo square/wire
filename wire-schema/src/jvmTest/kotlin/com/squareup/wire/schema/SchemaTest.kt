@@ -34,26 +34,26 @@ class SchemaTest {
       add(
         "service.proto".toPath(),
         """
-            |import "request.proto";
-            |import "response.proto";
-            |service Service {
-            |  rpc Call (Request) returns (Response);
-            |}
-            """.trimMargin()
+        |import "request.proto";
+        |import "response.proto";
+        |service Service {
+        |  rpc Call (Request) returns (Response);
+        |}
+        """.trimMargin()
       )
       add(
         "request.proto".toPath(),
         """
-            |message Request {
-            |}
-            """.trimMargin()
+        |message Request {
+        |}
+        """.trimMargin()
       )
       add(
         "response.proto".toPath(),
         """
-            |message Response {
-            |}
-            """.trimMargin()
+        |message Response {
+        |}
+        """.trimMargin()
       )
     }
 
@@ -69,22 +69,22 @@ class SchemaTest {
       add(
         "message.proto".toPath(),
         """
-            |import "foo.proto";
-            |message Message {
-            |  optional foo_package.Foo field = 1;
-            |  map<string, foo_package.Bar> bars = 2;
-            |}
-            """.trimMargin()
+        |import "foo.proto";
+        |message Message {
+        |  optional foo_package.Foo field = 1;
+        |  map<string, foo_package.Bar> bars = 2;
+        |}
+        """.trimMargin()
       )
       add(
         "foo.proto".toPath(),
         """
-            |package foo_package;
-            |message Foo {
-            |}
-            |message Bar {
-            |}
-            """.trimMargin()
+        |package foo_package;
+        |message Foo {
+        |}
+        |message Bar {
+        |}
+        """.trimMargin()
       )
     }
 
@@ -103,19 +103,19 @@ class SchemaTest {
       add(
         "foo.proto".toPath(),
         """
-            |message Other {
-            |  extensions 1;
-            |}
-            |message Outer {
-            |  enum Choice {
-            |    ZERO = 0;
-            |    ONE = 1;
-            |  }
-            |
-            |  extend Other {
-            |    optional Choice choice = 1;
-            |  }
-            """.trimMargin()
+        |message Other {
+        |  extensions 1;
+        |}
+        |message Outer {
+        |  enum Choice {
+        |    ZERO = 0;
+        |    ONE = 1;
+        |  }
+        |
+        |  extend Other {
+        |    optional Choice choice = 1;
+        |  }
+        """.trimMargin()
       )
     }
 
@@ -142,36 +142,36 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-            |message Message {
-            |  optional int32 a = 0;
-            |  optional int32 b = 1;
-            |  optional int32 c = 18999;
-            |  optional int32 d = 19000;
-            |  optional int32 e = 19999;
-            |  optional int32 f = 20000;
-            |  optional int32 g = 536870911;
-            |  optional int32 h = 536870912;
-            |}
-            """.trimMargin()
+          |message Message {
+          |  optional int32 a = 0;
+          |  optional int32 b = 1;
+          |  optional int32 c = 18999;
+          |  optional int32 d = 19000;
+          |  optional int32 e = 19999;
+          |  optional int32 f = 20000;
+          |  optional int32 g = 536870911;
+          |  optional int32 h = 536870912;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo(
         """
-            |tag is out of range: 0
-            |  for field a (/source/message.proto:2:3)
-            |  in message Message (/source/message.proto:1:1)
-            |tag is out of range: 19000
-            |  for field d (/source/message.proto:5:3)
-            |  in message Message (/source/message.proto:1:1)
-            |tag is out of range: 19999
-            |  for field e (/source/message.proto:6:3)
-            |  in message Message (/source/message.proto:1:1)
-            |tag is out of range: 536870912
-            |  for field h (/source/message.proto:9:3)
-            |  in message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |tag is out of range: 0
+        |  for field a (/sourcePath/message.proto:2:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        |tag is out of range: 19000
+        |  for field d (/sourcePath/message.proto:5:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        |tag is out of range: 19999
+        |  for field e (/sourcePath/message.proto:6:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        |tag is out of range: 536870912
+        |  for field h (/sourcePath/message.proto:9:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -183,32 +183,32 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |  extensions 0;
-               |  extensions 1;
-               |  extensions 18999;
-               |  extensions 19000, 19001 to 19998, 19999;
-               |  extensions 20000;
-               |  extensions 536870911;
-               |  extensions 536870912;
-               |}
-               """.trimMargin()
+          |message Message {
+          |  extensions 0;
+          |  extensions 1;
+          |  extensions 18999;
+          |  extensions 19000, 19001 to 19998, 19999;
+          |  extensions 20000;
+          |  extensions 536870911;
+          |  extensions 536870912;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |tags are out of range: 0
-            |  for extensions (/source/message.proto:2:3)
-            |  in message Message (/source/message.proto:1:1)
-            |tags are out of range: 19000, 19001 to 19998, 19999
-            |  for extensions (/source/message.proto:5:3)
-            |  in message Message (/source/message.proto:1:1)
-            |tags are out of range: 536870912
-            |  for extensions (/source/message.proto:8:3)
-            |  in message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |tags are out of range: 0
+        |  for extensions (/sourcePath/message.proto:2:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        |tags are out of range: 19000, 19001 to 19998, 19999
+        |  for extensions (/sourcePath/message.proto:5:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        |tags are out of range: 536870912
+        |  for extensions (/sourcePath/message.proto:8:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -219,12 +219,12 @@ class SchemaTest {
       add(
         "message.proto".toPath(),
         """
-             |message Message {
-             |  repeated int32 a = 1;
-             |  repeated int32 b = 2 [packed=false];
-             |  repeated int32 c = 3 [packed=true];
-             |}
-             """.trimMargin()
+        |message Message {
+        |  repeated int32 a = 1;
+        |  repeated int32 b = 2 [packed=false];
+        |  repeated int32 c = 3 [packed=true];
+        |}
+        """.trimMargin()
       )
     }
 
@@ -240,13 +240,13 @@ class SchemaTest {
       add(
         "message.proto".toPath(),
         """
-             |message Message {
-             |  repeated HabitablePlanet home_planet = 1 [packed=true];
-             |  enum HabitablePlanet {
-             |    EARTH = 1;
-             |  }
-             |}
-             """.trimMargin()
+        |message Message {
+        |  repeated HabitablePlanet home_planet = 1 [packed=true];
+        |  enum HabitablePlanet {
+        |    EARTH = 1;
+        |  }
+        |}
+        """.trimMargin()
       )
     }
     val message = schema.getType("Message") as MessageType
@@ -260,38 +260,38 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |  repeated bytes a = 1 [packed=false];
-               |  repeated bytes b = 2 [packed=true];
-               |  repeated string c = 3 [packed=false];
-               |  repeated string d = 4 [packed=true];
-               |  repeated Message e = 5 [packed=false];
-               |  repeated Message f = 6 [packed=true];
-               |}
-               |extend Message {
-               |  repeated bytes g = 7 [packed=false];
-               |  repeated bytes h = 8 [packed=true];
-               |}
-               """.trimMargin()
+          |message Message {
+          |  repeated bytes a = 1 [packed=false];
+          |  repeated bytes b = 2 [packed=true];
+          |  repeated string c = 3 [packed=false];
+          |  repeated string d = 4 [packed=true];
+          |  repeated Message e = 5 [packed=false];
+          |  repeated Message f = 6 [packed=true];
+          |}
+          |extend Message {
+          |  repeated bytes g = 7 [packed=false];
+          |  repeated bytes h = 8 [packed=true];
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |packed=true not permitted on bytes
-            |  for field b (/source/message.proto:3:3)
-            |  in message Message (/source/message.proto:1:1)
-            |packed=true not permitted on string
-            |  for field d (/source/message.proto:5:3)
-            |  in message Message (/source/message.proto:1:1)
-            |packed=true not permitted on Message
-            |  for field f (/source/message.proto:7:3)
-            |  in message Message (/source/message.proto:1:1)
-            |packed=true not permitted on bytes
-            |  for field h (/source/message.proto:11:3)
-            |  in message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |packed=true not permitted on bytes
+        |  for field b (/sourcePath/message.proto:3:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        |packed=true not permitted on string
+        |  for field d (/sourcePath/message.proto:5:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        |packed=true not permitted on Message
+        |  for field f (/sourcePath/message.proto:7:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        |packed=true not permitted on bytes
+        |  for field h (/sourcePath/message.proto:11:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -303,33 +303,33 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |import "wire/extensions.proto";
-               |
-               |message Message {
-               |  repeated bytes a = 1 [wire.use_array=true];
-               |  repeated Message b = 2 [wire.use_array=true];
-               |  repeated float c = 3 [wire.use_array=true];
-               |}
-               """.trimMargin()
+          |import "wire/extensions.proto";
+          |
+          |message Message {
+          |  repeated bytes a = 1 [wire.use_array=true];
+          |  repeated Message b = 2 [wire.use_array=true];
+          |  repeated float c = 3 [wire.use_array=true];
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |wire.use_array=true only permitted on packed fields
-            |  for field a (/source/message.proto:4:3)
-            |  in message Message (/source/message.proto:3:1)
-            |wire.use_array=true only permitted on packed fields
-            |  for field b (/source/message.proto:5:3)
-            |  in message Message (/source/message.proto:3:1)
-            |wire.use_array=true only permitted on scalar fields
-            |  for field b (/source/message.proto:5:3)
-            |  in message Message (/source/message.proto:3:1)
-            |wire.use_array=true only permitted on packed fields
-            |  for field c (/source/message.proto:6:3)
-            |  in message Message (/source/message.proto:3:1)
-            """.trimMargin()
+        |wire.use_array=true only permitted on packed fields
+        |  for field a (/sourcePath/message.proto:4:3)
+        |  in message Message (/sourcePath/message.proto:3:1)
+        |wire.use_array=true only permitted on packed fields
+        |  for field b (/sourcePath/message.proto:5:3)
+        |  in message Message (/sourcePath/message.proto:3:1)
+        |wire.use_array=true only permitted on scalar fields
+        |  for field b (/sourcePath/message.proto:5:3)
+        |  in message Message (/sourcePath/message.proto:3:1)
+        |wire.use_array=true only permitted on packed fields
+        |  for field c (/sourcePath/message.proto:6:3)
+        |  in message Message (/sourcePath/message.proto:3:1)
+        """.trimMargin()
       )
     }
   }
@@ -340,12 +340,12 @@ class SchemaTest {
       add(
         "message.proto".toPath(),
         """
-             |message Message {
-             |  optional int32 a = 1;
-             |  optional int32 b = 2 [deprecated=false];
-             |  optional int32 c = 3 [deprecated=true];
-             |}
-             """.trimMargin()
+        |message Message {
+        |  optional int32 a = 1;
+        |  optional int32 b = 2 [deprecated=false];
+        |  optional int32 c = 3 [deprecated=true];
+        |}
+        """.trimMargin()
       )
     }
 
@@ -361,19 +361,19 @@ class SchemaTest {
       add(
         "message.proto".toPath(),
         """
-             |message Message {
-             |  optional int32 a = 1;
-             |  optional int32 b = 2 [default = 5];
-             |  optional bool c = 3 [default = true];
-             |  optional string d = 4 [default = "foo"];
-             |  optional Roshambo e = 5 [default = PAPER];
-             |  enum Roshambo {
-             |    ROCK = 0;
-             |    SCISSORS = 1;
-             |    PAPER = 2;
-             |  }
-             |}
-             """.trimMargin()
+        |message Message {
+        |  optional int32 a = 1;
+        |  optional int32 b = 2 [default = 5];
+        |  optional bool c = 3 [default = true];
+        |  optional string d = 4 [default = "foo"];
+        |  optional Roshambo e = 5 [default = PAPER];
+        |  enum Roshambo {
+        |    ROCK = 0;
+        |    SCISSORS = 1;
+        |    PAPER = 2;
+        |  }
+        |}
+        """.trimMargin()
       )
     }
 
@@ -391,15 +391,15 @@ class SchemaTest {
       add(
         "message.proto".toPath(),
         """
-             |import "google/protobuf/descriptor.proto";
-             |message Message {
-             |  optional int32 a = 1;
-             |  optional int32 b = 2 [color=red, deprecated=true, packed=true];
-             |}
-             |extend google.protobuf.FieldOptions {
-             |  optional string color = 60001;
-             |}
-             """.trimMargin()
+        |import "google/protobuf/descriptor.proto";
+        |message Message {
+        |  optional int32 a = 1;
+        |  optional int32 b = 2 [color=red, deprecated=true, packed=true];
+        |}
+        |extend google.protobuf.FieldOptions {
+        |  optional string color = 60001;
+        |}
+        """.trimMargin()
       )
     }
     val message = schema.getType("Message") as MessageType
@@ -422,24 +422,24 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |import "google/protobuf/descriptor.proto";
-               |message Message {
-               |  optional int32 a = 1 [color=red, color=blue];
-               |}
-               |extend google.protobuf.FieldOptions {
-               |  optional string color = 60001;
-               |}
-               """.trimMargin()
+          |import "google/protobuf/descriptor.proto";
+          |message Message {
+          |  optional int32 a = 1 [color=red, color=blue];
+          |}
+          |extend google.protobuf.FieldOptions {
+          |  optional string color = 60001;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |conflicting options: red, blue
-            |  for field a (/source/message.proto:3:3)
-            |  in message Message (/source/message.proto:2:1)
-            """.trimMargin()
+        |conflicting options: red, blue
+        |  for field a (/sourcePath/message.proto:3:3)
+        |  in message Message (/sourcePath/message.proto:2:1)
+        """.trimMargin()
       )
     }
   }
@@ -451,20 +451,20 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |  optional foo_package.Foo unknown = 1;
-               |}
-               """.trimMargin()
+          |message Message {
+          |  optional foo_package.Foo unknown = 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |unable to resolve foo_package.Foo
-            |  for field unknown (/source/message.proto:2:3)
-            |  in message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |unable to resolve foo_package.Foo
+        |  for field unknown (/sourcePath/message.proto:2:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -476,23 +476,23 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |  oneof selection {
-               |    int32 known = 1;
-               |    foo_package.Foo unknown = 2;
-               |  }
-               |}
-               """.trimMargin()
+          |message Message {
+          |  oneof selection {
+          |    int32 known = 1;
+          |    foo_package.Foo unknown = 2;
+          |  }
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |unable to resolve foo_package.Foo
-            |  for field unknown (/source/message.proto:4:5)
-            |  in message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |unable to resolve foo_package.Foo
+        |  for field unknown (/sourcePath/message.proto:4:5)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -504,22 +504,22 @@ class SchemaTest {
         add(
           "service.proto".toPath(),
           """
-               |service Service {
-               |  rpc Call (string) returns (Response);
-               |}
-               |message Response {
-               |}
-               """.trimMargin()
+          |service Service {
+          |  rpc Call (string) returns (Response);
+          |}
+          |message Response {
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |expected a message but was string
-            |  for rpc Call (/source/service.proto:2:3)
-            |  in service Service (/source/service.proto:1:1)
-            """.trimMargin()
+        |expected a message but was string
+        |  for rpc Call (/sourcePath/service.proto:2:3)
+        |  in service Service (/sourcePath/service.proto:1:1)
+        """.trimMargin()
       )
     }
 
@@ -528,22 +528,22 @@ class SchemaTest {
         add(
           "service.proto".toPath(),
           """
-               |service Service {
-               |  rpc Call (Request) returns (string);
-               |}
-               |message Request {
-               |}
-               """.trimMargin()
+          |service Service {
+          |  rpc Call (Request) returns (string);
+          |}
+          |message Request {
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |expected a message but was string
-            |  for rpc Call (/source/service.proto:2:3)
-            |  in service Service (/source/service.proto:1:1)
-            """.trimMargin()
+        |expected a message but was string
+        |  for rpc Call (/sourcePath/service.proto:2:3)
+        |  in service Service (/sourcePath/service.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -555,22 +555,22 @@ class SchemaTest {
         add(
           "service.proto".toPath(),
           """
-               |service Service {
-               |  rpc Call (foo_package.Foo) returns (Response);
-               |}
-               |message Response {
-               |}
-               """.trimMargin()
+          |service Service {
+          |  rpc Call (foo_package.Foo) returns (Response);
+          |}
+          |message Response {
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |unable to resolve foo_package.Foo
-            |  for rpc Call (/source/service.proto:2:3)
-            |  in service Service (/source/service.proto:1:1)
-            """.trimMargin()
+        |unable to resolve foo_package.Foo
+        |  for rpc Call (/sourcePath/service.proto:2:3)
+        |  in service Service (/sourcePath/service.proto:1:1)
+        """.trimMargin()
       )
     }
 
@@ -579,22 +579,22 @@ class SchemaTest {
         add(
           "service.proto".toPath(),
           """
-               |service Service {
-               |  rpc Call (Request) returns (foo_package.Foo);
-               |}
-               |message Request {
-               |}
-               """.trimMargin()
+          |service Service {
+          |  rpc Call (Request) returns (foo_package.Foo);
+          |}
+          |message Request {
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |unable to resolve foo_package.Foo
-            |  for rpc Call (/source/service.proto:2:3)
-            |  in service Service (/source/service.proto:1:1)
-            """.trimMargin()
+        |unable to resolve foo_package.Foo
+        |  for rpc Call (/sourcePath/service.proto:2:3)
+        |  in service Service (/sourcePath/service.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -606,18 +606,18 @@ class SchemaTest {
         add(
           "extend.proto".toPath(),
           """
-               |extend foo_package.Foo {
-               |}
-               """.trimMargin()
+          |extend foo_package.Foo {
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |unable to resolve foo_package.Foo
-            |  for extend (/source/extend.proto:1:1)
-            """.trimMargin()
+        |unable to resolve foo_package.Foo
+        |  for extend (/sourcePath/extend.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -629,21 +629,21 @@ class SchemaTest {
         add(
           "extend.proto".toPath(),
           """
-               |extend string {
-               |  optional Value value = 1000;
-               |}
-               |message Value {
-               |}
-               """.trimMargin()
+          |extend string {
+          |  optional Value value = 1000;
+          |}
+          |message Value {
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |expected a message but was string
-            |  for extend (/source/extend.proto:1:1)
-            """.trimMargin()
+        |expected a message but was string
+        |  for extend (/sourcePath/extend.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -655,22 +655,22 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |}
-               |extend Message {
-               |  optional foo_package.Foo unknown = 1;
-               |}
-               """.trimMargin()
+          |message Message {
+          |}
+          |extend Message {
+          |  optional foo_package.Foo unknown = 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |unable to resolve foo_package.Foo
-            |  for field unknown (/source/message.proto:4:3)
-            |  in extend Message (/source/message.proto:3:1)
-            """.trimMargin()
+        |unable to resolve foo_package.Foo
+        |  for field unknown (/sourcePath/message.proto:4:3)
+        |  in extend Message (/sourcePath/message.proto:3:1)
+        """.trimMargin()
       )
     }
   }
@@ -682,24 +682,24 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |  optional foo_package.Foo unknown = 1;
-               |  optional foo_package.Foo also_unknown = 2;
-               |}
-               """.trimMargin()
+          |message Message {
+          |  optional foo_package.Foo unknown = 1;
+          |  optional foo_package.Foo also_unknown = 2;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |unable to resolve foo_package.Foo
-            |  for field unknown (/source/message.proto:2:3)
-            |  in message Message (/source/message.proto:1:1)
-            |unable to resolve foo_package.Foo
-            |  for field also_unknown (/source/message.proto:3:3)
-            |  in message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |unable to resolve foo_package.Foo
+        |  for field unknown (/sourcePath/message.proto:2:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        |unable to resolve foo_package.Foo
+        |  for field also_unknown (/sourcePath/message.proto:3:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -711,22 +711,22 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |  required string name1 = 1;
-               |  required string name2 = 1;
-               |}
-               """.trimMargin()
+          |message Message {
+          |  required string name1 = 1;
+          |  required string name2 = 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |multiple fields share tag 1:
-            |  1. name1 (/source/message.proto:2:3)
-            |  2. name2 (/source/message.proto:3:3)
-            |  for message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |multiple fields share tag 1:
+        |  1. name1 (/sourcePath/message.proto:2:3)
+        |  2. name2 (/sourcePath/message.proto:3:3)
+        |  for message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -738,24 +738,24 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |  required string name1 = 1;
-               |  oneof selection {
-               |    string name2 = 1;
-               |  }
-               |}
-               """.trimMargin()
+          |message Message {
+          |  required string name1 = 1;
+          |  oneof selection {
+          |    string name2 = 1;
+          |  }
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |multiple fields share tag 1:
-            |  1. name1 (/source/message.proto:2:3)
-            |  2. name2 (/source/message.proto:4:5)
-            |  for message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |multiple fields share tag 1:
+        |  1. name1 (/sourcePath/message.proto:2:3)
+        |  2. name2 (/sourcePath/message.proto:4:5)
+        |  for message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -767,24 +767,24 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |}
-               |extend Message {
-               |  optional string name1 = 1;
-               |  optional string name2 = 1;
-               |}
-               """.trimMargin()
+          |message Message {
+          |}
+          |extend Message {
+          |  optional string name1 = 1;
+          |  optional string name2 = 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |multiple fields share tag 1:
-            |  1. name1 (/source/message.proto:4:3)
-            |  2. name2 (/source/message.proto:5:3)
-            |  for message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |multiple fields share tag 1:
+        |  1. name1 (/sourcePath/message.proto:4:3)
+        |  2. name2 (/sourcePath/message.proto:5:3)
+        |  for message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -796,22 +796,22 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |  optional string a = 1;
-               |  optional string a = 2;
-               |}
-               """.trimMargin()
+          |message Message {
+          |  optional string a = 1;
+          |  optional string a = 2;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |multiple fields share name a:
-            |  1. a (/source/message.proto:2:3)
-            |  2. a (/source/message.proto:3:3)
-            |  for message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |multiple fields share name a:
+        |  1. a (/sourcePath/message.proto:2:3)
+        |  2. a (/sourcePath/message.proto:3:3)
+        |  for message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -822,20 +822,20 @@ class SchemaTest {
       add(
         "message.proto".toPath(),
         """
-             |message Message {
-             |  optional string a = 1;
-             |}
-             """.trimMargin()
+        |message Message {
+        |  optional string a = 1;
+        |}
+        """.trimMargin()
       )
       add(
         "extend.proto".toPath(),
         """
-             |package p;
-             |import "message.proto";
-             |extend Message {
-             |  optional string a = 2;
-             |}
-             """.trimMargin()
+        |package p;
+        |import "message.proto";
+        |extend Message {
+        |  optional string a = 2;
+        |}
+        """.trimMargin()
       )
     }
     val messageType = schema.getType("Message") as MessageType
@@ -851,38 +851,38 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |}
-               """.trimMargin()
+          |message Message {
+          |}
+          """.trimMargin()
         )
         add(
           "extend1.proto".toPath(),
           """
-               |import "message.proto";
-               |extend Message {
-               |  optional string a = 1;
-               |}
-               """.trimMargin()
+          |import "message.proto";
+          |extend Message {
+          |  optional string a = 1;
+          |}
+          """.trimMargin()
         )
         add(
           "extend2.proto".toPath(),
           """
-               |import "message.proto";
-               |extend Message {
-               |  optional string a = 2;
-               |}
-               """.trimMargin()
+          |import "message.proto";
+          |extend Message {
+          |  optional string a = 2;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |multiple fields share name a:
-            |  1. a (/source/extend1.proto:3:3)
-            |  2. a (/source/extend2.proto:3:3)
-            |  for message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |multiple fields share name a:
+        |  1. a (/sourcePath/extend1.proto:3:3)
+        |  2. a (/sourcePath/extend2.proto:3:3)
+        |  for message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -893,29 +893,29 @@ class SchemaTest {
       add(
         "message.proto".toPath(),
         """
-             |message Message {
-             |}
-             """.trimMargin()
+        |message Message {
+        |}
+        """.trimMargin()
       )
       add(
         "extend1.proto".toPath(),
         """
-             |package p1;
-             |import "message.proto";
-             |extend Message {
-             |  optional string a = 1;
-             |}
-             """.trimMargin()
+        |package p1;
+        |import "message.proto";
+        |extend Message {
+        |  optional string a = 1;
+        |}
+        """.trimMargin()
       )
       add(
         "extend2.proto".toPath(),
         """
-             |package p2;
-             |import "message.proto";
-             |extend Message {
-             |  optional string a = 2;
-             |}
-             """.trimMargin()
+        |package p2;
+        |import "message.proto";
+        |extend Message {
+        |  optional string a = 2;
+        |}
+        """.trimMargin()
       )
     }
     val messageType = schema.getType("Message") as MessageType
@@ -932,29 +932,29 @@ class SchemaTest {
         add(
           "enum.proto".toPath(),
           """
-               |enum Enum {
-               |  A = 1;
-               |  B = 2;
-               |}
-               """.trimMargin()
+          |enum Enum {
+          |  A = 1;
+          |  B = 2;
+          |}
+          """.trimMargin()
         )
         add(
           "extend.proto".toPath(),
           """
-               |import "enum.proto";
-               |extend Enum {
-               |  optional string a = 2;
-               |}
-               """.trimMargin()
+          |import "enum.proto";
+          |extend Enum {
+          |  optional string a = 2;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |expected a message but was Enum
-            |  for extend (/source/extend.proto:2:1)
-            """.trimMargin()
+        |expected a message but was Enum
+        |  for extend (/sourcePath/extend.proto:2:1)
+        """.trimMargin()
       )
     }
   }
@@ -966,22 +966,22 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |}
-               |extend Message {
-               |  required string a = 1;
-               |}
-               """.trimMargin()
+          |message Message {
+          |}
+          |extend Message {
+          |  required string a = 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |extension fields cannot be required
-            |  for field a (/source/message.proto:4:3)
-            |  in message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |extension fields cannot be required
+        |  for field a (/sourcePath/message.proto:4:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -993,15 +993,15 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |  oneof string s = 1;
-               |}
-               """.trimMargin()
+          |message Message {
+          |  oneof string s = 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: IllegalStateException) {
-      assertThat(expected).hasMessage("Syntax error in /source/message.proto:2:17: expected '{'")
+      assertThat(expected).hasMessage("Syntax error in /sourcePath/message.proto:2:17: expected '{'")
     }
   }
 
@@ -1012,26 +1012,26 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |  enum Enum1 {
-               |    VALUE = 1;
-               |  }
-               |  enum Enum2 {
-               |    VALUE = 2;
-               |  }
-               |}
-               """.trimMargin()
+          |message Message {
+          |  enum Enum1 {
+          |    VALUE = 1;
+          |  }
+          |  enum Enum2 {
+          |    VALUE = 2;
+          |  }
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |multiple enums share constant VALUE:
-            |  1. Message.Enum1.VALUE (/source/message.proto:3:5)
-            |  2. Message.Enum2.VALUE (/source/message.proto:6:5)
-            |  for message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |multiple enums share constant VALUE:
+        |  1. Message.Enum1.VALUE (/sourcePath/message.proto:3:5)
+        |  2. Message.Enum2.VALUE (/sourcePath/message.proto:6:5)
+        |  for message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -1043,22 +1043,22 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |enum Enum {
-               |  A = 1;
-               |  B = 1;
-               |}
-               """.trimMargin()
+          |enum Enum {
+          |  A = 1;
+          |  B = 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |multiple enum constants share tag 1:
-            |  1. A (/source/message.proto:2:3)
-            |  2. B (/source/message.proto:3:3)
-            |  for enum Enum (/source/message.proto:1:1)
-            """.trimMargin()
+        |multiple enum constants share tag 1:
+        |  1. A (/sourcePath/message.proto:2:3)
+        |  2. B (/sourcePath/message.proto:3:3)
+        |  for enum Enum (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -1070,23 +1070,23 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |enum Enum {
-               |  option allow_alias = false;
-               |  A = 1;
-               |  B = 1;
-               |}
-               """.trimMargin()
+          |enum Enum {
+          |  option allow_alias = false;
+          |  A = 1;
+          |  B = 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |multiple enum constants share tag 1:
-            |  1. A (/source/message.proto:3:3)
-            |  2. B (/source/message.proto:4:3)
-            |  for enum Enum (/source/message.proto:1:1)
-            """.trimMargin()
+        |multiple enum constants share tag 1:
+        |  1. A (/sourcePath/message.proto:3:3)
+        |  2. B (/sourcePath/message.proto:4:3)
+        |  for enum Enum (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -1097,12 +1097,12 @@ class SchemaTest {
       add(
         "message.proto".toPath(),
         """
-             |enum Enum {
-             |  option allow_alias = true;
-             |  A = 1;
-             |  B = 1;
-             |}
-             """.trimMargin()
+        |enum Enum {
+        |  option allow_alias = true;
+        |  A = 1;
+        |  B = 1;
+        |}
+        """.trimMargin()
       )
     }
     val enumType = schema.getType("Enum") as EnumType
@@ -1116,20 +1116,20 @@ class SchemaTest {
       add(
         "a.proto".toPath(),
         """
-             |package pa;
-             |import "b.proto";
-             |message A {
-             |  optional pb.B b = 1;
-             |}
-             """.trimMargin()
+        |package pa;
+        |import "b.proto";
+        |message A {
+        |  optional pb.B b = 1;
+        |}
+        """.trimMargin()
       )
       add(
         "b.proto".toPath(),
         """
-             |package pb;
-             |message B {
-             |}
-             """.trimMargin()
+        |package pb;
+        |message B {
+        |}
+        """.trimMargin()
       )
     }
     val a = schema.getType("pa.A") as MessageType
@@ -1143,20 +1143,20 @@ class SchemaTest {
       add(
         "a.proto".toPath(),
         """
-             |package pa;
-             |import "b.proto";
-             |message A {
-             |  map<string, pb.B> b = 1;
-             |}
-             """.trimMargin()
+        |package pa;
+        |import "b.proto";
+        |message A {
+        |  map<string, pb.B> b = 1;
+        |}
+        """.trimMargin()
       )
       add(
         "b.proto".toPath(),
         """
-             |package pb;
-             |message B {
-             |}
-             """.trimMargin()
+        |package pb;
+        |message B {
+        |}
+        """.trimMargin()
       )
     }
     val a = schema.getType("pa.A") as MessageType
@@ -1171,29 +1171,29 @@ class SchemaTest {
         add(
           "a.proto".toPath(),
           """
-               |package pa;
-               |message A {
-               |  optional pb.B b = 1;
-               |}
-               """.trimMargin()
+          |package pa;
+          |message A {
+          |  optional pb.B b = 1;
+          |}
+          """.trimMargin()
         )
         add(
           "b.proto".toPath(),
           """
-               |package pb;
-               |message B {
-               |}
-               """.trimMargin()
+          |package pb;
+          |message B {
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo(
         """
-            |a.proto needs to import b.proto
-            |  for field b (/source/a.proto:3:3)
-            |  in message pa.A (/source/a.proto:2:1)
-            """.trimMargin()
+        |a.proto needs to import b.proto
+        |  for field b (/sourcePath/a.proto:3:3)
+        |  in message pa.A (/sourcePath/a.proto:2:1)
+        """.trimMargin()
       )
     }
   }
@@ -1205,29 +1205,29 @@ class SchemaTest {
         add(
           "a.proto".toPath(),
           """
-               |package pa;
-               |message A {
-               |  map<string, pb.B> b = 1;
-               |}
-               """.trimMargin()
+          |package pa;
+          |message A {
+          |  map<string, pb.B> b = 1;
+          |}
+          """.trimMargin()
         )
         add(
           "b.proto".toPath(),
           """
-               |package pb;
-               |message B {
-               |}
-               """.trimMargin()
+          |package pb;
+          |message B {
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo(
         """
-            |a.proto needs to import b.proto
-            |  for field b (/source/a.proto:3:3)
-            |  in message pa.A (/source/a.proto:2:1)
-            """.trimMargin()
+        |a.proto needs to import b.proto
+        |  for field b (/sourcePath/a.proto:3:3)
+        |  in message pa.A (/sourcePath/a.proto:2:1)
+        """.trimMargin()
       )
     }
   }
@@ -1238,20 +1238,20 @@ class SchemaTest {
       add(
         "a.proto".toPath(),
         """
-             |package pa;
-             |import "b.proto";
-             |service Service {
-             |  rpc Call (pb.B) returns (pb.B);
-             |}
-             """.trimMargin()
+        |package pa;
+        |import "b.proto";
+        |service Service {
+        |  rpc Call (pb.B) returns (pb.B);
+        |}
+        """.trimMargin()
       )
       add(
         "b.proto".toPath(),
         """
-             |package pb;
-             |message B {
-             |}
-             """.trimMargin()
+        |package pb;
+        |message B {
+        |}
+        """.trimMargin()
       )
     }
     val service = schema.getService("pa.Service")!!
@@ -1267,32 +1267,32 @@ class SchemaTest {
         add(
           "a.proto".toPath(),
           """
-               |package pa;
-               |service Service {
-               |  rpc Call (pb.B) returns (pb.B);
-               |}
-               """.trimMargin()
+          |package pa;
+          |service Service {
+          |  rpc Call (pb.B) returns (pb.B);
+          |}
+          """.trimMargin()
         )
         add(
           "b.proto".toPath(),
           """
-               |package pb;
-               |message B {
-               |}
-               """.trimMargin()
+          |package pb;
+          |message B {
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo(
         """
-            |a.proto needs to import b.proto
-            |  for rpc Call (/source/a.proto:3:3)
-            |  in service pa.Service (/source/a.proto:2:1)
-            |a.proto needs to import b.proto
-            |  for rpc Call (/source/a.proto:3:3)
-            |  in service pa.Service (/source/a.proto:2:1)
-            """.trimMargin()
+        |a.proto needs to import b.proto
+        |  for rpc Call (/sourcePath/a.proto:3:3)
+        |  in service pa.Service (/sourcePath/a.proto:2:1)
+        |a.proto needs to import b.proto
+        |  for rpc Call (/sourcePath/a.proto:3:3)
+        |  in service pa.Service (/sourcePath/a.proto:2:1)
+        """.trimMargin()
       )
     }
   }
@@ -1303,21 +1303,21 @@ class SchemaTest {
       add(
         "a.proto".toPath(),
         """
-             |package pa;
-             |import "b.proto";
-             |extend pb.B {
-             |  optional string a = 1;
-             |}
-             """.trimMargin()
+        |package pa;
+        |import "b.proto";
+        |extend pb.B {
+        |  optional string a = 1;
+        |}
+        """.trimMargin()
       )
       add(
         "b.proto".toPath(),
         """
-             |package pb;
-             |message B {
-             |  extensions 1;
-             |}
-             """.trimMargin()
+        |package pb;
+        |message B {
+        |  extensions 1;
+        |}
+        """.trimMargin()
       )
     }
     val extendB = schema.protoFiles[0].extendList[0]
@@ -1332,29 +1332,29 @@ class SchemaTest {
         add(
           "a.proto".toPath(),
           """
-               |package pa;
-               |extend pb.B {
-               |  optional string a = 1;
-               |}
-               """.trimMargin()
+          |package pa;
+          |extend pb.B {
+          |  optional string a = 1;
+          |}
+          """.trimMargin()
         )
         add(
           "b.proto".toPath(),
           """
-               |package pb;
-               |message B {
-               |  extensions 1;
-               |}
-               """.trimMargin()
+          |package pb;
+          |message B {
+          |  extensions 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo(
         """
-            |a.proto needs to import b.proto
-            |  for extend pb.B (/source/a.proto:2:1)
-            """.trimMargin()
+        |a.proto needs to import b.proto
+        |  for extend pb.B (/sourcePath/a.proto:2:1)
+        """.trimMargin()
       )
     }
   }
@@ -1366,39 +1366,39 @@ class SchemaTest {
         add(
           "a.proto".toPath(),
           """
-               |package pa;
-               |import "b.proto";
-               |message A {
-               |  optional pc.C c = 1;
-               |}
-               """.trimMargin()
+          |package pa;
+          |import "b.proto";
+          |message A {
+          |  optional pc.C c = 1;
+          |}
+          """.trimMargin()
         )
         add(
           "b.proto".toPath(),
           """
-               |package pb;
-               |import "c.proto";
-               |message B {
-               |}
-               """.trimMargin()
+          |package pb;
+          |import "c.proto";
+          |message B {
+          |}
+          """.trimMargin()
         )
         add(
           "c.proto".toPath(),
           """
-               |package pc;
-               |message C {
-               |}
-               """.trimMargin()
+          |package pc;
+          |message C {
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo(
         """
-            |a.proto needs to import c.proto
-            |  for field c (/source/a.proto:4:3)
-            |  in message pa.A (/source/a.proto:3:1)
-            """.trimMargin()
+        |a.proto needs to import c.proto
+        |  for field c (/sourcePath/a.proto:4:3)
+        |  in message pa.A (/sourcePath/a.proto:3:1)
+        """.trimMargin()
       )
     }
   }
@@ -1409,29 +1409,29 @@ class SchemaTest {
       add(
         "a.proto".toPath(),
         """
-             |package pa;
-             |import "b.proto";
-             |message A {
-             |  optional pc.C c = 1;
-             |}
-             """.trimMargin()
+        |package pa;
+        |import "b.proto";
+        |message A {
+        |  optional pc.C c = 1;
+        |}
+        """.trimMargin()
       )
       add(
         "b.proto".toPath(),
         """
-             |package pb;
-             |import public "c.proto";
-             |message B {
-             |}
-             """.trimMargin()
+        |package pb;
+        |import public "c.proto";
+        |message B {
+        |}
+        """.trimMargin()
       )
       add(
         "c.proto".toPath(),
         """
-             |package pc;
-             |message C {
-             |}
-             """.trimMargin()
+        |package pc;
+        |message C {
+        |}
+        """.trimMargin()
       )
     }
     val a = schema.getType("pa.A") as MessageType
@@ -1445,26 +1445,26 @@ class SchemaTest {
       add(
         "a_b_1.proto".toPath(),
         """
-             |package a.b;
-             |
-             |import "a_b_2.proto";
-             |
-             |message MessageB {
-             |  optional .a.b.MessageC c1 = 1;
-             |  optional a.b.MessageC c2 = 2;
-             |  optional b.MessageC c3 = 3;
-             |  optional MessageC c4 = 4;
-             |}
-             """.trimMargin()
+        |package a.b;
+        |
+        |import "a_b_2.proto";
+        |
+        |message MessageB {
+        |  optional .a.b.MessageC c1 = 1;
+        |  optional a.b.MessageC c2 = 2;
+        |  optional b.MessageC c3 = 3;
+        |  optional MessageC c4 = 4;
+        |}
+        """.trimMargin()
       )
       add(
         "a_b_2.proto".toPath(),
         """
-             |package a.b;
-             |
-             |message MessageC {
-             |}
-             """.trimMargin()
+        |package a.b;
+        |
+        |message MessageC {
+        |}
+        """.trimMargin()
       )
     }
     val messageC = schema.getType("a.b.MessageB") as MessageType
@@ -1480,23 +1480,23 @@ class SchemaTest {
       add(
         "a_b.proto".toPath(),
         """
-             |package a.b;
-             |
-             |message MessageB {
-             |}
-             """.trimMargin()
+        |package a.b;
+        |
+        |message MessageB {
+        |}
+        """.trimMargin()
       )
       add(
         "a_b_c.proto".toPath(),
         """
-             |package a.b.c;
-             |
-             |import "a_b.proto";
-             |
-             |message MessageC {
-             |  optional b.MessageB message_b = 1;
-             |}
-             """.trimMargin()
+        |package a.b.c;
+        |
+        |import "a_b.proto";
+        |
+        |message MessageC {
+        |  optional b.MessageB message_b = 1;
+        |}
+        """.trimMargin()
       )
     }
     val messageC = schema.getType("a.b.c.MessageC") as MessageType
@@ -1509,23 +1509,23 @@ class SchemaTest {
       add(
         "a_b.proto".toPath(),
         """
-             |package a.b;
-             |
-             |import "a_b_c.proto";
-             |
-             |message MessageB {
-             |  optional c.MessageC message_c = 1;
-             |}
-             """.trimMargin()
+        |package a.b;
+        |
+        |import "a_b_c.proto";
+        |
+        |message MessageB {
+        |  optional c.MessageC message_c = 1;
+        |}
+        """.trimMargin()
       )
       add(
         "a_b_c.proto".toPath(),
         """
-             |package a.b.c;
-             |
-             |message MessageC {
-             |}
-             """.trimMargin()
+        |package a.b.c;
+        |
+        |message MessageC {
+        |}
+        """.trimMargin()
       )
     }
     val messageC = schema.getType("a.b.MessageB") as MessageType
@@ -1538,33 +1538,33 @@ class SchemaTest {
       add(
         "a.proto".toPath(),
         """
-             |package a;
-             |
-             |message MessageA {
-             |}
-             """.trimMargin()
+        |package a;
+        |
+        |message MessageA {
+        |}
+        """.trimMargin()
       )
       add(
         "a_b.proto".toPath(),
         """
-             |package a.b;
-             |
-             |import "a.proto";
-             |import "a_b_a.proto";
-             |
-             |message MessageB {
-             |  optional a.MessageA message_a = 1;
-             |}
-             """.trimMargin()
+        |package a.b;
+        |
+        |import "a.proto";
+        |import "a_b_a.proto";
+        |
+        |message MessageB {
+        |  optional a.MessageA message_a = 1;
+        |}
+        """.trimMargin()
       )
       add(
         "a_b_a.proto".toPath(),
         """
-             |package a.b.a;
-             |
-             |message MessageA {
-             |}
-             """.trimMargin()
+        |package a.b.a;
+        |
+        |message MessageA {
+        |}
+        """.trimMargin()
       )
     }
     val messageC = schema.getType("a.b.MessageB") as MessageType
@@ -1577,33 +1577,33 @@ class SchemaTest {
       add(
         "a.proto".toPath(),
         """
-             |package a;
-             |
-             |message MessageA {
-             |}
-             """.trimMargin()
+        |package a;
+        |
+        |message MessageA {
+        |}
+        """.trimMargin()
       )
       add(
         "a_b.proto".toPath(),
         """
-             |package a.b;
-             |
-             |import "a.proto";
-             |import "a_b_a.proto";
-             |
-             |message MessageB {
-             |  optional .a.MessageA message_a = 1;
-             |}
-             """.trimMargin()
+        |package a.b;
+        |
+        |import "a.proto";
+        |import "a_b_a.proto";
+        |
+        |message MessageB {
+        |  optional .a.MessageA message_a = 1;
+        |}
+        """.trimMargin()
       )
       add(
         "a_b_a.proto".toPath(),
         """
-             |package a.b.a;
-             |
-             |message MessageA {
-             |}
-             """.trimMargin()
+        |package a.b.a;
+        |
+        |message MessageA {
+        |}
+        """.trimMargin()
       )
     }
     val messageC = schema.getType("a.b.MessageB") as MessageType
@@ -1617,33 +1617,33 @@ class SchemaTest {
         add(
           "a_b.proto".toPath(),
           """
-               |package a.b;
-               |
-               |message MessageB {
-               |}
-               """.trimMargin()
+          |package a.b;
+          |
+          |message MessageB {
+          |}
+          """.trimMargin()
         )
         add(
           "a_b_c.proto".toPath(),
           """
-               |package a.b.c;
-               |
-               |import "a_b.proto";
-               |
-               |message MessageC {
-               |  optional .b.MessageB message_b = 1;
-               |}
-               """.trimMargin()
+          |package a.b.c;
+          |
+          |import "a_b.proto";
+          |
+          |message MessageC {
+          |  optional .b.MessageB message_b = 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |unable to resolve .b.MessageB
-            |  for field message_b (/source/a_b_c.proto:6:3)
-            |  in message a.b.c.MessageC (/source/a_b_c.proto:5:1)
-            """.trimMargin()
+        |unable to resolve .b.MessageB
+        |  for field message_b (/sourcePath/a_b_c.proto:6:3)
+        |  in message a.b.c.MessageC (/sourcePath/a_b_c.proto:5:1)
+        """.trimMargin()
       )
     }
   }
@@ -1655,19 +1655,19 @@ class SchemaTest {
         add(
           "test.proto".toPath(),
           """
-               |message SearchResponse {
-               |  repeated group Result = 1 {
-               |    required string url = 2;
-               |    optional string title = 3;
-               |    repeated string snippets = 4;
-               |  }
-               |}
-               """.trimMargin()
+          |message SearchResponse {
+          |  repeated group Result = 1 {
+          |    required string url = 2;
+          |    optional string title = 3;
+          |    repeated string snippets = 4;
+          |  }
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: IllegalStateException) {
-      assertThat(expected).hasMessage("/source/test.proto:2:3: 'group' is not supported")
+      assertThat(expected).hasMessage("/sourcePath/test.proto:2:3: 'group' is not supported")
     }
   }
 
@@ -1678,22 +1678,22 @@ class SchemaTest {
         add(
           "test.proto".toPath(),
           """
-               |message Message {
-               |  oneof hi {
-               |    string name = 1;
-               |
-               |    group Stuff = 3 {
-               |      optional int32 result_per_page = 4;
-               |      optional int32 page_count = 5;
-               |    }
-               |  }
-               |}
-               """.trimMargin()
+          |message Message {
+          |  oneof hi {
+          |    string name = 1;
+          |
+          |    group Stuff = 3 {
+          |      optional int32 result_per_page = 4;
+          |      optional int32 page_count = 5;
+          |    }
+          |  }
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: IllegalStateException) {
-      assertThat(expected).hasMessage("/source/test.proto:5:5: 'group' is not supported")
+      assertThat(expected).hasMessage("/sourcePath/test.proto:5:5: 'group' is not supported")
     }
   }
 
@@ -1704,21 +1704,21 @@ class SchemaTest {
         add(
           "test.proto".toPath(),
           """
-               |message Message {
-               |  reserved 1;
-               |  optional string name = 1;
-               |}
-               """.trimMargin()
+          |message Message {
+          |  reserved 1;
+          |  optional string name = 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |tag 1 is reserved (/source/test.proto:2:3)
-            |  for field name (/source/test.proto:3:3)
-            |  in message Message (/source/test.proto:1:1)
-            """.trimMargin()
+        |tag 1 is reserved (/sourcePath/test.proto:2:3)
+        |  for field name (/sourcePath/test.proto:3:3)
+        |  in message Message (/sourcePath/test.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -1730,21 +1730,21 @@ class SchemaTest {
         add(
           "test.proto".toPath(),
           """
-               |message Message {
-               |  reserved 1 to max;
-               |  optional string name = 3;
-               |}
-               """.trimMargin()
+          |message Message {
+          |  reserved 1 to max;
+          |  optional string name = 3;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |tag 3 is reserved (/source/test.proto:2:3)
-            |  for field name (/source/test.proto:3:3)
-            |  in message Message (/source/test.proto:1:1)
-            """.trimMargin()
+        |tag 3 is reserved (/sourcePath/test.proto:2:3)
+        |  for field name (/sourcePath/test.proto:3:3)
+        |  in message Message (/sourcePath/test.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -1756,25 +1756,25 @@ class SchemaTest {
         add(
           "test.proto".toPath(),
           """
-               |enum Enum {
-               |  reserved 3 to max, 'FOO';
-               |  FOO = 2;
-               |  NAME = 4;
-               |}
-               """.trimMargin()
+          |enum Enum {
+          |  reserved 3 to max, 'FOO';
+          |  FOO = 2;
+          |  NAME = 4;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |name 'FOO' is reserved (/source/test.proto:2:3)
-            |  for constant FOO (/source/test.proto:3:3)
-            |  in enum Enum (/source/test.proto:1:1)
-            |tag 4 is reserved (/source/test.proto:2:3)
-            |  for constant NAME (/source/test.proto:4:3)
-            |  in enum Enum (/source/test.proto:1:1)
-            """.trimMargin()
+        |name 'FOO' is reserved (/sourcePath/test.proto:2:3)
+        |  for constant FOO (/sourcePath/test.proto:3:3)
+        |  in enum Enum (/sourcePath/test.proto:1:1)
+        |tag 4 is reserved (/sourcePath/test.proto:2:3)
+        |  for constant NAME (/sourcePath/test.proto:4:3)
+        |  in enum Enum (/sourcePath/test.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -1786,21 +1786,21 @@ class SchemaTest {
         add(
           "test.proto".toPath(),
           """
-               |message Message {
-               |  reserved 1 to 3;
-               |  optional string name = 2;
-               |}
-               """.trimMargin()
+          |message Message {
+          |  reserved 1 to 3;
+          |  optional string name = 2;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |tag 2 is reserved (/source/test.proto:2:3)
-            |  for field name (/source/test.proto:3:3)
-            |  in message Message (/source/test.proto:1:1)
-            """.trimMargin()
+        |tag 2 is reserved (/sourcePath/test.proto:2:3)
+        |  for field name (/sourcePath/test.proto:3:3)
+        |  in message Message (/sourcePath/test.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -1812,21 +1812,21 @@ class SchemaTest {
         add(
           "test.proto".toPath(),
           """
-               |message Message {
-               |  reserved 'foo';
-               |  optional string foo = 1;
-               |}
-               """.trimMargin()
+          |message Message {
+          |  reserved 'foo';
+          |  optional string foo = 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |name 'foo' is reserved (/source/test.proto:2:3)
-            |  for field foo (/source/test.proto:3:3)
-            |  in message Message (/source/test.proto:1:1)
-            """.trimMargin()
+        |name 'foo' is reserved (/sourcePath/test.proto:2:3)
+        |  for field foo (/sourcePath/test.proto:3:3)
+        |  in message Message (/sourcePath/test.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -1838,25 +1838,25 @@ class SchemaTest {
         add(
           "test.proto".toPath(),
           """
-               |message Message {
-               |  reserved 'foo';
-               |  reserved 1;
-               |  optional string foo = 1;
-               |}
-               """.trimMargin()
+          |message Message {
+          |  reserved 'foo';
+          |  reserved 1;
+          |  optional string foo = 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |name 'foo' is reserved (/source/test.proto:2:3)
-            |  for field foo (/source/test.proto:4:3)
-            |  in message Message (/source/test.proto:1:1)
-            |tag 1 is reserved (/source/test.proto:3:3)
-            |  for field foo (/source/test.proto:4:3)
-            |  in message Message (/source/test.proto:1:1)
-            """.trimMargin()
+        |name 'foo' is reserved (/sourcePath/test.proto:2:3)
+        |  for field foo (/sourcePath/test.proto:4:3)
+        |  in message Message (/sourcePath/test.proto:1:1)
+        |tag 1 is reserved (/sourcePath/test.proto:3:3)
+        |  for field foo (/sourcePath/test.proto:4:3)
+        |  in message Message (/sourcePath/test.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -1867,15 +1867,15 @@ class SchemaTest {
       add(
         "period.proto".toPath(),
         """
-            |syntax = "proto3";
-            |
-            |enum Period {
-            |  ZERO = 0;
-            |  CRETACEOUS = 1;
-            |  JURASSIC = 2;
-            |  TRIASSIC = 3;
-            |}
-            |""".trimMargin()
+        |syntax = "proto3";
+        |
+        |enum Period {
+        |  ZERO = 0;
+        |  CRETACEOUS = 1;
+        |  JURASSIC = 2;
+        |  TRIASSIC = 3;
+        |}
+        |""".trimMargin()
       )
     }
     val enum = schema.getType("Period") as EnumType
@@ -1892,14 +1892,14 @@ class SchemaTest {
         add(
           "period.proto".toPath(),
           """
-              |syntax = "proto3";
-              |
-              |enum Period {
-              |  CRETACEOUS = 1;
-              |  JURASSIC = 2;
-              |  TRIASSIC = 3;
-              |}
-              |""".trimMargin()
+         |syntax = "proto3";
+         |
+         |enum Period {
+         |  CRETACEOUS = 1;
+         |  JURASSIC = 2;
+         |  TRIASSIC = 3;
+         |}
+         |""".trimMargin()
         )
       }
       fail()
@@ -1907,7 +1907,7 @@ class SchemaTest {
       assertThat(expected).hasMessage(
         """
           |missing a zero value at the first element in proto3
-          |  for enum Period (/source/period.proto:3:1)
+          |  for enum Period (/sourcePath/period.proto:3:1)
           """.trimMargin()
       )
     }
@@ -1920,15 +1920,15 @@ class SchemaTest {
         add(
           "period.proto".toPath(),
           """
-              |syntax = "proto3";
-              |
-              |enum Period {
-              |  CRETACEOUS = 1;
-              |  CHAOS = 0;
-              |  JURASSIC = 2;
-              |  TRIASSIC = 3;
-              |}
-              |""".trimMargin()
+         |syntax = "proto3";
+         |
+         |enum Period {
+         |  CRETACEOUS = 1;
+         |  CHAOS = 0;
+         |  JURASSIC = 2;
+         |  TRIASSIC = 3;
+         |}
+         |""".trimMargin()
         )
       }
       fail()
@@ -1936,7 +1936,7 @@ class SchemaTest {
       assertThat(expected).hasMessage(
         """
           |missing a zero value at the first element in proto3
-          |  for enum Period (/source/period.proto:3:1)
+          |  for enum Period (/sourcePath/period.proto:3:1)
           """.trimMargin()
       )
     }
@@ -1949,10 +1949,10 @@ class SchemaTest {
         add(
           "period.proto".toPath(),
           """
-              |syntax = "proto3";
-              |
-              |enum Period {}
-              |""".trimMargin()
+         |syntax = "proto3";
+         |
+         |enum Period {}
+         |""".trimMargin()
         )
       }
       fail()
@@ -1960,7 +1960,7 @@ class SchemaTest {
       assertThat(expected).hasMessage(
         """
           |missing a zero value at the first element in proto3
-          |  for enum Period (/source/period.proto:3:1)
+          |  for enum Period (/sourcePath/period.proto:3:1)
           """.trimMargin()
       )
     }
@@ -1972,14 +1972,14 @@ class SchemaTest {
       add(
         "period.proto".toPath(),
         """
-            |syntax = "proto2";
-            |
-            |enum Period {
-            |  CRETACEOUS = 1;
-            |  JURASSIC = 2;
-            |  TRIASSIC = 3;
-            |}
-            |""".trimMargin()
+        |syntax = "proto2";
+        |
+        |enum Period {
+        |  CRETACEOUS = 1;
+        |  JURASSIC = 2;
+        |  TRIASSIC = 3;
+        |}
+        |""".trimMargin()
       )
     }
     val enum = schema.getType("Period") as EnumType
@@ -1995,12 +1995,12 @@ class SchemaTest {
       add(
         "period.proto".toPath(),
         """
-            |enum Period {
-            |  CRETACEOUS = 1;
-            |  JURASSIC = 2;
-            |  TRIASSIC = 3;
-            |}
-            |""".trimMargin()
+        |enum Period {
+        |  CRETACEOUS = 1;
+        |  JURASSIC = 2;
+        |  TRIASSIC = 3;
+        |}
+        |""".trimMargin()
       )
     }
     val enum = schema.getType("Period") as EnumType
@@ -2016,16 +2016,16 @@ class SchemaTest {
       add(
         "test.proto".toPath(),
         """
-            |syntax = "proto3";
-            |import "google/protobuf/descriptor.proto";
-            |
-            |extend google.protobuf.FieldOptions {
-            |  string a = 22101;
-            |}
-            |message Message {
-            |  string title = 1 [(a) = "hello"];
-            |}
-            """.trimMargin()
+        |syntax = "proto3";
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.FieldOptions {
+        |  string a = 22101;
+        |}
+        |message Message {
+        |  string title = 1 [(a) = "hello"];
+        |}
+        """.trimMargin()
       )
     }
     val fieldOptions = schema.getType("google.protobuf.FieldOptions") as MessageType
@@ -2038,21 +2038,21 @@ class SchemaTest {
       add(
         "test.proto".toPath(),
         """
-            |syntax = "proto3";
-            |import "google/protobuf/descriptor.proto";
-            |
-            |extend google.protobuf.OneofOptions {
-            |  string my_oneof_option = 22101;
-            |}
-            |message Message {
-            |  oneof choice {
-            |    option (my_oneof_option) = "Well done";
-            |
-            |    string one = 1;
-            |    string two = 2;
-            |  }
-            |}
-            """.trimMargin()
+        |syntax = "proto3";
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.OneofOptions {
+        |  string my_oneof_option = 22101;
+        |}
+        |message Message {
+        |  oneof choice {
+        |    option (my_oneof_option) = "Well done";
+        |
+        |    string one = 1;
+        |    string two = 2;
+        |  }
+        |}
+        """.trimMargin()
       )
     }
     val fieldOptions = schema.getType("google.protobuf.OneofOptions") as MessageType
@@ -2068,16 +2068,16 @@ class SchemaTest {
         add(
           "dinosaur.proto".toPath(),
           """
-              |syntax = "proto3";
-              |
-              |message Dinosaur {
-              |  string name = 1;
-              |}
-              |
-              |extend Dinosaur {
-              |  bool scary = 2;
-              |}
-              |""".trimMargin()
+         |syntax = "proto3";
+         |
+         |message Dinosaur {
+         |  string name = 1;
+         |}
+         |
+         |extend Dinosaur {
+         |  bool scary = 2;
+         |}
+         |""".trimMargin()
         )
       }
       fail()
@@ -2085,7 +2085,7 @@ class SchemaTest {
       assertThat(expected).hasMessage(
         """
           |extensions are not allowed in proto3
-          |  for extend Dinosaur (/source/dinosaur.proto:7:1)
+          |  for extend Dinosaur (/sourcePath/dinosaur.proto:7:1)
           """.trimMargin()
       )
     }
@@ -2098,22 +2098,22 @@ class SchemaTest {
         add(
           "dinosaur.proto".toPath(),
           """
-              |syntax = "proto3";
-              |
-              |message Dinosaur {
-              |  string name = 1 [default = "T-Rex"];
-              |}
-              |""".trimMargin()
+         |syntax = "proto3";
+         |
+         |message Dinosaur {
+         |  string name = 1 [default = "T-Rex"];
+         |}
+         |""".trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |user-defined default values are not permitted in proto3
-            |  for field name (/source/dinosaur.proto:4:3)
-            |  in message Dinosaur (/source/dinosaur.proto:3:1)
-            """.trimMargin()
+        |user-defined default values are not permitted in proto3
+        |  for field name (/sourcePath/dinosaur.proto:4:3)
+        |  in message Dinosaur (/sourcePath/dinosaur.proto:3:1)
+        """.trimMargin()
       )
     }
   }
@@ -2124,33 +2124,33 @@ class SchemaTest {
       add(
         "message.proto".toPath(),
         """
-            |syntax = "proto3";
-            |
-            |message Message {
-            |  repeated OtherMessage a = 1;
-            |  repeated bool b = 2;
-            |  repeated bytes c = 3;
-            |  repeated string d = 4;
-            |
-            |  repeated double e = 5;
-            |  repeated float f = 6;
-            |  repeated fixed32 g = 7;
-            |  repeated fixed64 h = 8;
-            |  repeated int32 i = 9;
-            |  repeated int64 j = 10;
-            |  repeated sfixed32 k = 11;
-            |  repeated sfixed64 l = 12;
-            |  repeated sint32 m = 13;
-            |  repeated sint64 n = 14;
-            |  repeated uint32 o = 15;
-            |  repeated uint64 p = 16;
-            |
-            |  repeated int32 set_to_false = 17 [packed = false];
-            |  repeated int32 set_to_true = 18 [packed = true];
-            |}
-            |
-            |message OtherMessage {}
-            |""".trimMargin()
+        |syntax = "proto3";
+        |
+        |message Message {
+        |  repeated OtherMessage a = 1;
+        |  repeated bool b = 2;
+        |  repeated bytes c = 3;
+        |  repeated string d = 4;
+        |
+        |  repeated double e = 5;
+        |  repeated float f = 6;
+        |  repeated fixed32 g = 7;
+        |  repeated fixed64 h = 8;
+        |  repeated int32 i = 9;
+        |  repeated int64 j = 10;
+        |  repeated sfixed32 k = 11;
+        |  repeated sfixed64 l = 12;
+        |  repeated sint32 m = 13;
+        |  repeated sint64 n = 14;
+        |  repeated uint32 o = 15;
+        |  repeated uint64 p = 16;
+        |
+        |  repeated int32 set_to_false = 17 [packed = false];
+        |  repeated int32 set_to_true = 18 [packed = true];
+        |}
+        |
+        |message OtherMessage {}
+        |""".trimMargin()
       )
     }
 
@@ -2190,27 +2190,27 @@ class SchemaTest {
       add(
         "message.proto".toPath(),
         """
-            |option deprecated = true;
-            |
-            |message Message {
-            |  option deprecated = true;
-            |  optional string s = 1 [deprecated = true];
-            |}
-            |
-            |enum Enum {
-            |  option deprecated = true;
-            |  A = 1 [deprecated = true];
-            |}
-            |
-            |service Service {
-            |  option deprecated = true;
-            |  rpc Call (Request) returns (Response) {
-            |    option deprecated = true;
-            |  };
-            |}
-            |message Request {}
-            |message Response {}
-            |""".trimMargin()
+        |option deprecated = true;
+        |
+        |message Message {
+        |  option deprecated = true;
+        |  optional string s = 1 [deprecated = true];
+        |}
+        |
+        |enum Enum {
+        |  option deprecated = true;
+        |  A = 1 [deprecated = true];
+        |}
+        |
+        |service Service {
+        |  option deprecated = true;
+        |  rpc Call (Request) returns (Response) {
+        |    option deprecated = true;
+        |  };
+        |}
+        |message Request {}
+        |message Response {}
+        |""".trimMargin()
       )
     }
 
@@ -2237,24 +2237,24 @@ class SchemaTest {
         add(
           "dinosaur.proto".toPath(),
           """
-              |syntax = "proto3";
-              |
-              |message Dinosaur {
-              |  string myName = 1;
-              |  string my_name = 2;
-              |}
-              |""".trimMargin()
+         |syntax = "proto3";
+         |
+         |message Dinosaur {
+         |  string myName = 1;
+         |  string my_name = 2;
+         |}
+         |""".trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |multiple fields share same JSON name 'myName':
-            |  1. myName (/source/dinosaur.proto:4:3)
-            |  2. my_name (/source/dinosaur.proto:5:3)
-            |  for message Dinosaur (/source/dinosaur.proto:3:1)
-            """.trimMargin()
+        |multiple fields share same JSON name 'myName':
+        |  1. myName (/sourcePath/dinosaur.proto:4:3)
+        |  2. my_name (/sourcePath/dinosaur.proto:5:3)
+        |  for message Dinosaur (/sourcePath/dinosaur.proto:3:1)
+        """.trimMargin()
       )
     }
   }
@@ -2267,13 +2267,13 @@ class SchemaTest {
       add(
         "dinosaur.proto".toPath(),
         """
-              |syntax = "proto3";
-              |
-              |message Dinosaur {
-              |  string myName = 1 [json_name = "one"];
-              |  string my_name = 2 [json_name = "two"];
-              |}
-              |""".trimMargin()
+         |syntax = "proto3";
+         |
+         |message Dinosaur {
+         |  string myName = 1 [json_name = "one"];
+         |  string my_name = 2 [json_name = "two"];
+         |}
+         |""".trimMargin()
       )
     }
     assertThat(schema).isNotNull()
@@ -2286,22 +2286,22 @@ class SchemaTest {
         add(
           "dinosaur.proto".toPath(),
           """
-              |message Dinosaur {
-              |  optional string myName = 1 [json_name = "JsonName"];
-              |  optional string my_name = 2 [json_name = "JsonName"];
-              |}
-              |""".trimMargin()
+         |message Dinosaur {
+         |  optional string myName = 1 [json_name = "JsonName"];
+         |  optional string my_name = 2 [json_name = "JsonName"];
+         |}
+         |""".trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |multiple fields share same JSON name 'JsonName':
-            |  1. myName (/source/dinosaur.proto:2:3)
-            |  2. my_name (/source/dinosaur.proto:3:3)
-            |  for message Dinosaur (/source/dinosaur.proto:1:1)
-            """.trimMargin()
+        |multiple fields share same JSON name 'JsonName':
+        |  1. myName (/sourcePath/dinosaur.proto:2:3)
+        |  2. my_name (/sourcePath/dinosaur.proto:3:3)
+        |  for message Dinosaur (/sourcePath/dinosaur.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -2312,13 +2312,13 @@ class SchemaTest {
       add(
         "dinosaur.proto".toPath(),
         """
-              |syntax = "proto2";
-              |
-              |message Dinosaur {
-              |  optional string myName = 1;
-              |  optional string my_name = 2;
-              |}
-              |""".trimMargin()
+         |syntax = "proto2";
+         |
+         |message Dinosaur {
+         |  optional string myName = 1;
+         |  optional string my_name = 2;
+         |}
+         |""".trimMargin()
       )
     }
     assertThat(schema.getType("Dinosaur")).isNotNull()
@@ -2330,19 +2330,19 @@ class SchemaTest {
       add(
         "dinosaur.proto".toPath(),
         """
-              |package wire;
-              |import 'google/protobuf/descriptor.proto';
-              |extend google.protobuf.FieldOptions {
-              |  optional Foo my_field_option = 60004;
-              |}
-              |message Foo {
-              |  optional double a = 1 [(wire.my_field_option).baz.value = "b"];
-              |  optional Nested baz = 2;
-              |}
-              |message Nested {
-              |  optional string value = 1;
-              |}
-              |""".trimMargin()
+         |package wire;
+         |import 'google/protobuf/descriptor.proto';
+         |extend google.protobuf.FieldOptions {
+         |  optional Foo my_field_option = 60004;
+         |}
+         |message Foo {
+         |  optional double a = 1 [(wire.my_field_option).baz.value = "b"];
+         |  optional Nested baz = 2;
+         |}
+         |message Nested {
+         |  optional string value = 1;
+         |}
+         |""".trimMargin()
       )
     }
     assertThat(schema.getType("wire.Foo")).isNotNull()
@@ -2355,20 +2355,20 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |  optional string name = 1 [(unicorn) = true];
-               |}
-               """.trimMargin()
+          |message Message {
+          |  optional string name = 1 [(unicorn) = true];
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |unable to resolve option unicorn
-            |  for field name (/source/message.proto:2:3)
-            |  in message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |unable to resolve option unicorn
+        |  for field name (/sourcePath/message.proto:2:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -2380,31 +2380,31 @@ class SchemaTest {
         add(
           "cashapp/pii.proto".toPath(),
           """
-              |package cashapp;
-              |import 'google/protobuf/descriptor.proto';
-              |extend google.protobuf.FieldOptions {
-              |  optional bool friday = 60004;
-              |}
-              |""".trimMargin()
+         |package cashapp;
+         |import 'google/protobuf/descriptor.proto';
+         |extend google.protobuf.FieldOptions {
+         |  optional bool friday = 60004;
+         |}
+         |""".trimMargin()
         )
         add(
           "message.proto".toPath(),
           """
-              |message Message {
-              |  optional string name = 1 [(cashapp.friday) = true];
-              |}
-              """.trimMargin()
+         |message Message {
+         |  optional string name = 1 [(cashapp.friday) = true];
+         |}
+         """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |message.proto needs to import cashapp/pii.proto
-            |  for field friday (/source/cashapp/pii.proto:4:3)
-            |  in field name (/source/message.proto:2:3)
-            |  in message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |message.proto needs to import cashapp/pii.proto
+        |  for field friday (/sourcePath/cashapp/pii.proto:4:3)
+        |  in field name (/sourcePath/message.proto:2:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -2416,20 +2416,20 @@ class SchemaTest {
         add(
           "enum.proto".toPath(),
           """
-               |enum Enum {
-               |  A = 1 [(unicorn) = true];
-               |}
-               """.trimMargin()
+          |enum Enum {
+          |  A = 1 [(unicorn) = true];
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |unable to resolve option unicorn
-            |  for constant A (/source/enum.proto:2:3)
-            |  in enum Enum (/source/enum.proto:1:1)
-            """.trimMargin()
+        |unable to resolve option unicorn
+        |  for constant A (/sourcePath/enum.proto:2:3)
+        |  in enum Enum (/sourcePath/enum.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -2441,19 +2441,19 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |  option (unicorn) = true;
-               |}
-               """.trimMargin()
+          |message Message {
+          |  option (unicorn) = true;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |unable to resolve option unicorn
-            |  for message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |unable to resolve option unicorn
+        |  for message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -2465,19 +2465,19 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |
-               |option (unicorn) = true;
-               |message Message {}
-               """.trimMargin()
+          |
+          |option (unicorn) = true;
+          |message Message {}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |unable to resolve option unicorn
-            |  for file /source/message.proto
-            """.trimMargin()
+        |unable to resolve option unicorn
+        |  for file /sourcePath/message.proto
+        """.trimMargin()
       )
     }
   }
@@ -2488,25 +2488,25 @@ class SchemaTest {
       add(
         "squareup/common/options.proto".toPath(),
         """
-             |syntax = "proto2";
-             |package squareup.common;
-             |import "google/protobuf/descriptor.proto";
-             |
-             |extend google.protobuf.FileOptions {
-             |  optional string file_status = 60000;
-             |}
-             """.trimMargin()
+        |syntax = "proto2";
+        |package squareup.common;
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.FileOptions {
+        |  optional string file_status = 60000;
+        |}
+        """.trimMargin()
       )
       add(
         "squareup/domain/message.proto".toPath(),
         """
-             |syntax = "proto2";
-             |package squareup.domain;
-             |import "squareup/common/options.proto";
-             |option (common.file_status) = "INTERNAL";
-             |
-             |message Message{}
-             """.trimMargin()
+        |syntax = "proto2";
+        |package squareup.domain;
+        |import "squareup/common/options.proto";
+        |option (common.file_status) = "INTERNAL";
+        |
+        |message Message{}
+        """.trimMargin()
       )
     }
     assertThat(schema.protoFile("squareup/domain/message.proto")).isNotNull()
@@ -2518,29 +2518,29 @@ class SchemaTest {
       add(
         "squareup/domain/message.proto".toPath(),
         """
-             |syntax = "proto2";
-             |package squareup.domain;
-             |
-             |message Message{}
-             """.trimMargin()
+        |syntax = "proto2";
+        |package squareup.domain;
+        |
+        |message Message{}
+        """.trimMargin()
       )
       add(
         "squareup/common/options.proto".toPath(),
         """
-             |syntax = "proto2";
-             |package squareup.common;
-             |
-             |import "google/protobuf/descriptor.proto";
-             |import "squareup/domain/message.proto";
-             |
-             |extend squareup.domain.Message {
-             |  optional string type = 12000 [(maps_to) = "sup"];
-             |}
-             |
-             |extend google.protobuf.FieldOptions {
-             |  optional string maps_to = 123301;
-             |}
-             """.trimMargin()
+        |syntax = "proto2";
+        |package squareup.common;
+        |
+        |import "google/protobuf/descriptor.proto";
+        |import "squareup/domain/message.proto";
+        |
+        |extend squareup.domain.Message {
+        |  optional string type = 12000 [(maps_to) = "sup"];
+        |}
+        |
+        |extend google.protobuf.FieldOptions {
+        |  optional string maps_to = 123301;
+        |}
+        """.trimMargin()
       )
     }
     assertThat(schema.protoFile("squareup/domain/message.proto")).isNotNull()
@@ -2553,62 +2553,62 @@ class SchemaTest {
         add(
           "squareup/domain/message.proto".toPath(),
           """
-             |syntax = "proto2";
-             |package squareup.domain;
-             |
-             |message Message{}
-             """.trimMargin()
+          |syntax = "proto2";
+          |package squareup.domain;
+          |
+          |message Message{}
+          """.trimMargin()
         )
         add(
           "squareup/common/options.proto".toPath(),
           """
-             |syntax = "proto2";
-             |package squareup.common;
-             |
-             |import "squareup/domain/message.proto";
-             |import "squareup/options1/special.proto";
-             |import "squareup/options2/special.proto";
-             |
-             |extend squareup.domain.Message {
-             |  optional string type = 12000 [(maps_to) = "sup"]; // missing package qualifier
-             |}
-             """.trimMargin()
+          |syntax = "proto2";
+          |package squareup.common;
+          |
+          |import "squareup/domain/message.proto";
+          |import "squareup/options1/special.proto";
+          |import "squareup/options2/special.proto";
+          |
+          |extend squareup.domain.Message {
+          |  optional string type = 12000 [(maps_to) = "sup"]; // missing package qualifier
+          |}
+          """.trimMargin()
         )
         add(
           "squareup/options1/special.proto".toPath(),
           """
-             |syntax = "proto2";
-             |package squareup.options1;
-             |
-             |import "google/protobuf/descriptor.proto";
-             |
-             |extend google.protobuf.FieldOptions {
-             |  optional string maps_to = 123301;
-             |}
-             """.trimMargin()
+          |syntax = "proto2";
+          |package squareup.options1;
+          |
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.FieldOptions {
+          |  optional string maps_to = 123301;
+          |}
+          """.trimMargin()
         )
         add(
           "squareup/options2/special.proto".toPath(),
           """
-             |syntax = "proto2";
-             |package squareup.options2;
-             |
-             |import "google/protobuf/descriptor.proto";
-             |
-             |extend google.protobuf.FieldOptions {
-             |  optional string maps_to = 123302;
-             |}
-             """.trimMargin()
+          |syntax = "proto2";
+          |package squareup.options2;
+          |
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.FieldOptions {
+          |  optional string maps_to = 123302;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |unable to resolve option maps_to
-            |  for field type (/source/squareup/common/options.proto:9:3)
-            |  in extend squareup.domain.Message (/source/squareup/common/options.proto:8:1)
-            """.trimMargin()
+        |unable to resolve option maps_to
+        |  for field type (/sourcePath/squareup/common/options.proto:9:3)
+        |  in extend squareup.domain.Message (/sourcePath/squareup/common/options.proto:8:1)
+        """.trimMargin()
       )
     }
   }
@@ -2619,43 +2619,43 @@ class SchemaTest {
       add(
         "squareup/domain/message.proto".toPath(),
         """
-           |syntax = "proto2";
-           |package squareup.domain;
-           |
-           |message Message{}
-           """.trimMargin()
+        |syntax = "proto2";
+        |package squareup.domain;
+        |
+        |message Message{}
+        """.trimMargin()
       )
       add(
         "squareup/common/options.proto".toPath(),
         """
-           |syntax = "proto2";
-           |package squareup.common;
-           |
-           |import "squareup/domain/message.proto";
-           |import "squareup/options/special.proto";
-           |import "google/protobuf/descriptor.proto";
-           |
-           |extend squareup.domain.Message {
-           |  optional string type = 12000 [(maps_to) = "sup"];
-           |}
-           |
-           |extend google.protobuf.FieldOptions {
-           |  optional string maps_to = 123301;
-           |}
-           """.trimMargin()
+        |syntax = "proto2";
+        |package squareup.common;
+        |
+        |import "squareup/domain/message.proto";
+        |import "squareup/options/special.proto";
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend squareup.domain.Message {
+        |  optional string type = 12000 [(maps_to) = "sup"];
+        |}
+        |
+        |extend google.protobuf.FieldOptions {
+        |  optional string maps_to = 123301;
+        |}
+        """.trimMargin()
       )
       add(
         "squareup/options/special.proto".toPath(),
         """
-           |syntax = "proto2";
-           |package squareup.options;
-           |
-           |import "google/protobuf/descriptor.proto";
-           |
-           |extend google.protobuf.FieldOptions {
-           |  optional string maps_to = 123302;
-           |}
-           """.trimMargin()
+        |syntax = "proto2";
+        |package squareup.options;
+        |
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.FieldOptions {
+        |  optional string maps_to = 123302;
+        |}
+        """.trimMargin()
       )
     }
   }
@@ -2666,52 +2666,52 @@ class SchemaTest {
       add(
         "squareup/domain/message.proto".toPath(),
         """
-             |syntax = "proto2";
-             |package squareup.domain;
-             |
-             |message Message{}
-             """.trimMargin()
+        |syntax = "proto2";
+        |package squareup.domain;
+        |
+        |message Message{}
+        """.trimMargin()
       )
       add(
         "squareup/common/options.proto".toPath(),
         """
-             |syntax = "proto2";
-             |package squareup.common;
-             |
-             |import "squareup/domain/message.proto";
-             |import "squareup/options1/special.proto";
-             |import "squareup/options2/special.proto";
-             |
-             |extend squareup.domain.Message {
-             |  optional string type = 12000 [(options1.maps_to) = "sup"];
-             |}
-             """.trimMargin()
+        |syntax = "proto2";
+        |package squareup.common;
+        |
+        |import "squareup/domain/message.proto";
+        |import "squareup/options1/special.proto";
+        |import "squareup/options2/special.proto";
+        |
+        |extend squareup.domain.Message {
+        |  optional string type = 12000 [(options1.maps_to) = "sup"];
+        |}
+        """.trimMargin()
       )
       add(
         "squareup/options1/special.proto".toPath(),
         """
-             |syntax = "proto2";
-             |package squareup.options1;
-             |
-             |import "google/protobuf/descriptor.proto";
-             |
-             |extend google.protobuf.FieldOptions {
-             |  optional string maps_to = 123301;
-             |}
-             """.trimMargin()
+        |syntax = "proto2";
+        |package squareup.options1;
+        |
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.FieldOptions {
+        |  optional string maps_to = 123301;
+        |}
+        """.trimMargin()
       )
       add(
         "squareup/options2/special.proto".toPath(),
         """
-             |syntax = "proto2";
-             |package squareup.options2;
-             |
-             |import "google/protobuf/descriptor.proto";
-             |
-             |extend google.protobuf.FieldOptions {
-             |  optional string maps_to = 123302;
-             |}
-             """.trimMargin()
+        |syntax = "proto2";
+        |package squareup.options2;
+        |
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.FieldOptions {
+        |  optional string maps_to = 123302;
+        |}
+        """.trimMargin()
       )
     }
     assertThat(schema.protoFile("squareup/domain/message.proto")).isNotNull()
@@ -2724,20 +2724,20 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {}
-               |extend Message {
-               |  map<int32, int32> map_int_int = 1;
-               |}
-               """.trimMargin()
+          |message Message {}
+          |extend Message {
+          |  map<int32, int32> map_int_int = 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |extension fields cannot be a map
-            |  for field map_int_int (/source/message.proto:3:3)
-            |  in message Message (/source/message.proto:1:1)
+        |extension fields cannot be a map
+        |  for field map_int_int (/sourcePath/message.proto:3:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -2750,22 +2750,22 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |  map<int32, Enum> map = 1;
-               |}
-               |enum Enum {
-               |  ONE = 1;
-               |}
-               """.trimMargin()
+          |message Message {
+          |  map<int32, Enum> map = 1;
+          |}
+          |enum Enum {
+          |  ONE = 1;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |enum value in map must define 0 as the first value
-            |  for field map (/source/message.proto:2:3)
-            |  in message Message (/source/message.proto:1:1)
+        |enum value in map must define 0 as the first value
+        |  for field map (/sourcePath/message.proto:2:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -2778,24 +2778,24 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-               |message Message {
-               |  map<int32, Enum> map = 1;
-               |}
-               |enum Enum {
-               |  ONE = 1;
-               |  ZERO = 0;
-               |}
-               """.trimMargin()
+          |message Message {
+          |  map<int32, Enum> map = 1;
+          |}
+          |enum Enum {
+          |  ONE = 1;
+          |  ZERO = 0;
+          |}
+          """.trimMargin()
         )
       }
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         """
-            |enum value in map must define 0 as the first value
-            |  for field map (/source/message.proto:2:3)
-            |  in message Message (/source/message.proto:1:1)
-            """.trimMargin()
+        |enum value in map must define 0 as the first value
+        |  for field map (/sourcePath/message.proto:2:3)
+        |  in message Message (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -2813,13 +2813,13 @@ class SchemaTest {
           |message Message {
           |  optional string title = 1;
           |}
-        """.trimMargin()
+          """.trimMargin()
         )
       }
       fail()
     } catch (exception: IllegalStateException) {
       assertThat(exception).hasMessage(
-        "Message (/source/message.proto:4:1) is already defined at /source/message.proto:1:1"
+        "Message (/sourcePath/message.proto:4:1) is already defined at /sourcePath/message.proto:1:1"
       )
     }
   }
@@ -2838,13 +2838,13 @@ class SchemaTest {
           |  rpc Receive (Data) returns (Data) {}
           |}
           |message Data {}
-        """.trimMargin()
+          """.trimMargin()
         )
       }
       fail()
     } catch (exception: IllegalStateException) {
       assertThat(exception).hasMessage(
-        "Service (/source/service.proto:4:1) is already defined at /source/service.proto:1:1"
+        "Service (/sourcePath/service.proto:4:1) is already defined at /sourcePath/service.proto:1:1"
       )
     }
   }
@@ -2861,7 +2861,7 @@ class SchemaTest {
           |  rpc Send (Data) returns (Data) {}
           |}
           |message Data {}
-        """.trimMargin()
+          """.trimMargin()
         )
       }
       fail()
@@ -2869,10 +2869,10 @@ class SchemaTest {
       assertThat(exception).hasMessage(
         """
         |mutable rpcs share name Send:
-        |  1. Send (/source/service.proto:2:3)
-        |  2. Send (/source/service.proto:3:3)
-        |  for service Service (/source/service.proto:1:1)
-      """.trimMargin()
+        |  1. Send (/sourcePath/service.proto:2:3)
+        |  2. Send (/sourcePath/service.proto:3:3)
+        |  for service Service (/sourcePath/service.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -2884,21 +2884,21 @@ class SchemaTest {
         add(
           "proto2.proto".toPath(),
           """
-            |syntax = "proto2";
-            |enum Bit {
-            |  ZERO = 0;
-            |  ONE = 1;
-            |}
+          |syntax = "proto2";
+          |enum Bit {
+          |  ZERO = 0;
+          |  ONE = 1;
+          |}
           """.trimMargin()
         )
         add(
           "proto3.proto".toPath(),
           """
-            |syntax = "proto3";
-            |import "proto2.proto";
-            |message Joint {
-            |  Bit bit = 1;
-            |}
+          |syntax = "proto3";
+          |import "proto2.proto";
+          |message Joint {
+          |  Bit bit = 1;
+          |}
           """.trimMargin()
         )
       }
@@ -2907,9 +2907,9 @@ class SchemaTest {
       assertThat(exception).hasMessage(
         """
         |Proto2 enums cannot be referenced in a proto3 message
-        |  for field bit (/source/proto3.proto:4:3)
-        |  in message Joint (/source/proto3.proto:3:1)
-      """.trimMargin()
+        |  for field bit (/sourcePath/proto3.proto:4:3)
+        |  in message Joint (/sourcePath/proto3.proto:3:1)
+        """.trimMargin()
       )
     }
   }
@@ -2920,10 +2920,10 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-            |enum Foo {
-            |  ZERO = 0;
-            |  zero = 1;
-            |}
+          |enum Foo {
+          |  ZERO = 0;
+          |  zero = 1;
+          |}
           """.trimMargin()
         )
       }
@@ -2931,10 +2931,10 @@ class SchemaTest {
     } catch (e: SchemaException) {
       assertThat(e).hasMessage(
         """|Ambiguous constant names (if you are using allow_alias, use the same value for these constants):
-             |  ZERO:0 (/source/message.proto:2:3)
-             |  zero:1 (/source/message.proto:3:3)
-             |  for enum Foo (/source/message.proto:1:1)
-             """.trimMargin()
+        |  ZERO:0 (/sourcePath/message.proto:2:3)
+        |  zero:1 (/sourcePath/message.proto:3:3)
+        |  for enum Foo (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
@@ -2944,12 +2944,12 @@ class SchemaTest {
       add(
         "message.proto".toPath(),
         """
-            |enum Foo {
-            |  option allow_alias = true;
-            |  ZERO = 0;
-            |  zero = 0;
-            |}
-          """.trimMargin()
+        |enum Foo {
+        |  option allow_alias = true;
+        |  ZERO = 0;
+        |  zero = 0;
+        |}
+        """.trimMargin()
       )
     }
 
@@ -2964,11 +2964,11 @@ class SchemaTest {
         add(
           "message.proto".toPath(),
           """
-            |enum Foo {
-            |  option allow_alias = true;
-            |  ZERO = 0;
-            |  zero = 1;
-            |}
+          |enum Foo {
+          |  option allow_alias = true;
+          |  ZERO = 0;
+          |  zero = 1;
+          |}
           """.trimMargin()
         )
       }
@@ -2976,10 +2976,10 @@ class SchemaTest {
     } catch (e: SchemaException) {
       assertThat(e).hasMessage(
         """|Ambiguous constant names (if you are using allow_alias, use the same value for these constants):
-             |  ZERO:0 (/source/message.proto:3:3)
-             |  zero:1 (/source/message.proto:4:3)
-             |  for enum Foo (/source/message.proto:1:1)
-             """.trimMargin()
+        |  ZERO:0 (/sourcePath/message.proto:3:3)
+        |  zero:1 (/sourcePath/message.proto:4:3)
+        |  for enum Foo (/sourcePath/message.proto:1:1)
+        """.trimMargin()
       )
     }
   }
