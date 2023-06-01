@@ -26,25 +26,29 @@ import okio.fakefilesystem.FakeFileSystem
 
 /** Builds a schema out of written `.proto` files. */
 class SchemaBuilder {
-  private val sourcePath: Path = "/source".toPath()
+  private val sourcePath: Path = "/sourcePath".toPath()
+  private val protoPath: Path = "/protoPath".toPath()
   private val fileSystem: FileSystem = FakeFileSystem()
 
   init {
     fileSystem.createDirectories(sourcePath)
+    fileSystem.createDirectories(protoPath)
   }
 
   /**
    * Add a file to be loaded into the schema.
+   *
    * @param name The qualified name of the file.
    * @param protoFile The content of the file.
    */
-  fun add(name: Path, protoFile: String): SchemaBuilder {
+  @JvmOverloads
+  fun add(name: Path, protoFile: String, path: Path = sourcePath): SchemaBuilder {
     require(name.toString().endsWith(".proto")) {
       "unexpected file extension for $name. Proto files should use the '.proto' extension"
     }
 
     try {
-      val resolvedPath = sourcePath / name
+      val resolvedPath = path / name
       val parent = resolvedPath.parent
       if (parent != null) {
         fileSystem.createDirectories(parent)
@@ -58,11 +62,16 @@ class SchemaBuilder {
     return this
   }
 
+  /** Add a file to be linked against, but not used to generate artifacts. */
+  fun addProtoPath(name: Path, protoFile: String): SchemaBuilder {
+    return add(name, protoFile, protoPath)
+  }
+
   fun build(): Schema {
     val schemaLoader = SchemaLoader(fileSystem)
     schemaLoader.initRoots(
       sourcePath = listOf(Location.get(sourcePath.toString())),
-      protoPath = listOf(),
+      protoPath = listOf(Location.get(protoPath.toString())),
     )
     return schemaLoader.loadSchema()
   }

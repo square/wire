@@ -90,9 +90,13 @@ class Linker {
       sourceFiles += fileLinker
     }
 
-    // Ensure linking the descriptor.proto, if not provided.
-    if (fileLinkers["google/protobuf/descriptor.proto"] == null) {
-      sourceFiles += getFileLinker("google/protobuf/descriptor.proto")
+    // Ensure linking the descriptor.proto and wire_options.proto, if not provided. This ensures
+    // we can resolve our java_package and wire_package options.
+    if (fileLinkers[DESCRIPTOR_PROTO] == null) {
+      sourceFiles += getFileLinker(DESCRIPTOR_PROTO)
+    }
+    if (fileLinkers[WIRE_EXTENSIONS_PROTO] == null) {
+      sourceFiles += getFileLinker(WIRE_EXTENSIONS_PROTO)
     }
 
     // When loading exhaustively, every import (and transitive import!) is a source file.

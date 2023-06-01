@@ -21,12 +21,12 @@ import com.squareup.wire.buildSchema
 import com.squareup.wire.kotlin.KotlinGenerator.Companion.sanitizeKdoc
 import com.squareup.wire.schema.PruningRules
 import com.squareup.wire.schema.addFromTest
-import okio.Path.Companion.toPath
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
+import okio.Path.Companion.toPath
 
 class KotlinGeneratorTest {
   @Test fun basic() {
@@ -1842,7 +1842,6 @@ class KotlinGeneratorTest {
       addFromTest("option_redacted.proto".toPath())
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("RedactedFields")
-    println(code)
     assertThat(code).contains("""public val a: String = "",""")
     assertThat(code).contains("""public val b: Int = 0,""")
     assertThat(code).contains("""public val c: String? = null,""")
@@ -1953,7 +1952,6 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("SomeMessage", boxOneOfsMinSize = 3)
-    println(code)
     assertThat(code).contains(
       """
       |public class SomeMessage(
@@ -2115,6 +2113,42 @@ class KotlinGeneratorTest {
     assertContains(code, "var values: MutableList<Float>? = null")
     assertContains(code, "val minimumByteSize = 4")
     assertContains(code, "values = ArrayList(initialCapacity)")
+  }
+
+  /**
+   * We had a bug where java_package and wire_package were asymmetric. We would lose the
+   * wire_package when it was used on the protoPath.
+   */
+  @Test fun wirePackageInProtoPathHonoredWhenGeneratingCode() {
+    val schema = buildSchema {
+      addProtoPath(
+        "person_proto_package/person.proto".toPath(),
+        """
+        |package person_proto_package;
+        |import "wire/extensions.proto";
+        |
+        |option (wire.wire_package) = "wire_package";
+        |
+        |message Person {
+        |	required string name = 1;
+        |}
+        |""".trimMargin()
+      )
+      add(
+        "employer_proto_package/employer.proto".toPath(),
+        """
+        |package employer_proto_package;
+        |import "person_proto_package/person.proto";
+        |
+        |message Employer {
+        |	repeated person_proto_package.Person employees = 1;
+        |}
+        |""".trimMargin()
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("employer_proto_package.Employer")
+    assertThat(code).contains("import wire_package.Person")
   }
 
   companion object {

@@ -33,25 +33,26 @@ class LinkerTest {
     fs.add(
       "source-path/a.proto",
       """
-            |import "b.proto";
-            |message A {
-            |  optional B b = 1;
-            |}
-            """.trimMargin()
+      |import "b.proto";
+      |message A {
+      |  optional B b = 1;
+      |}
+      """.trimMargin()
     )
     fs.add(
       "proto-path/b.proto",
       """
-            |message B {
-            |}
-            """.trimMargin()
+      |message B {
+      |}
+      """.trimMargin()
     )
     val schema = loadAndLinkSchema()
 
     assertThat(schema.protoFiles.map { it.location }).containsExactly(
       Location.get("source-path", "a.proto"),
       Location.get("proto-path", "b.proto"),
-      Location.get("google/protobuf/descriptor.proto")
+      Location.get("google/protobuf/descriptor.proto"),
+      Location.get("wire/extensions.proto"),
     )
   }
 
@@ -60,23 +61,24 @@ class LinkerTest {
     fs.add(
       "source-path/a.proto",
       """
-            |import "b.proto";
-            |message A {
-            |}
-            """.trimMargin()
+      |import "b.proto";
+      |message A {
+      |}
+      """.trimMargin()
     )
     fs.add(
       "proto-path/b.proto",
       """
-            |message B {
-            |}
-            """.trimMargin()
+      |message B {
+      |}
+      """.trimMargin()
     )
     val schema = loadAndLinkSchema()
 
     assertThat(schema.protoFiles.map { it.location }).containsExactly(
       Location.get("source-path", "a.proto"),
-      Location.get("google/protobuf/descriptor.proto")
+      Location.get("google/protobuf/descriptor.proto"),
+      Location.get("wire/extensions.proto")
     )
   }
 
@@ -85,20 +87,20 @@ class LinkerTest {
     fs.add(
       "source-path/a.proto",
       """
-            |import "b.proto";
-            |message A {
-            |  optional B b = 1;
-            |}
-            """.trimMargin()
+      |import "b.proto";
+      |message A {
+      |  optional B b = 1;
+      |}
+      """.trimMargin()
     )
     fs.add(
       "proto-path/b.proto",
       """
-            |message B {
-            |}
-            |message C {
-            |}
-            """.trimMargin()
+      |message B {
+      |}
+      |message C {
+      |}
+      """.trimMargin()
     )
     val schema = loadAndLinkSchema()
 
@@ -111,37 +113,37 @@ class LinkerTest {
     fs.add(
       "source-path/a.proto",
       """
-             |import "formatting_options.proto";
-             |message A {
-             |  optional string s = 1 [formatting_options.language.name = "English"];
-             |}
-            """.trimMargin()
+     |import "formatting_options.proto";
+     |message A {
+     |  optional string s = 1 [formatting_options.language.name = "English"];
+     |}
+    """.trimMargin()
     )
     fs.add(
       "proto-path/formatting_options.proto",
       """
-             |import "google/protobuf/descriptor.proto";
-             |
-             |message FormattingOptions {
-             |  optional Language language = 1;
-             |  optional StringCasing string_casing = 2;
-             |}
-             |
-             |extend google.protobuf.FieldOptions {
-             |  optional FormattingOptions formatting_options = 22001;
-             |}
-             |
-             |message Language {
-             |  optional string name = 1;
-             |  optional string locale = 2;
-             |}
-             |
-             |enum StringCasing {
-             |  LOWER_CASE = 1;
-             |  TITLE_CASE = 2;
-             |  SENTENCE_CASE = 3;
-             |}
-            """.trimMargin()
+      |import "google/protobuf/descriptor.proto";
+      |
+      |message FormattingOptions {
+      |  optional Language language = 1;
+      |  optional StringCasing string_casing = 2;
+      |}
+      |
+      |extend google.protobuf.FieldOptions {
+      |  optional FormattingOptions formatting_options = 22001;
+      |}
+      |
+      |message Language {
+      |  optional string name = 1;
+      |  optional string locale = 2;
+      |}
+      |
+      |enum StringCasing {
+      |  LOWER_CASE = 1;
+      |  TITLE_CASE = 2;
+      |  SENTENCE_CASE = 3;
+      |}
+      """.trimMargin()
     )
     val schema = loadAndLinkSchema()
 
@@ -162,21 +164,21 @@ class LinkerTest {
     fs.add(
       "source-path/a.proto",
       """
-            |import "b.proto";
-            |message A {
-            |  optional B b = 1;
-            |}
-            """.trimMargin()
+      |import "b.proto";
+      |message A {
+      |  optional B b = 1;
+      |}
+      """.trimMargin()
     )
     fs.add(
       "proto-path/b.proto",
       """
-            |message B {
-            |  optional C c = 1;
-            |}
-            |message C {
-            |}
-            """.trimMargin()
+      |message B {
+      |  optional C c = 1;
+      |}
+      |message C {
+      |}
+      """.trimMargin()
     )
     val schema = loadAndLinkSchema()
 
@@ -190,19 +192,19 @@ class LinkerTest {
     fs.add(
       "source-path/a.proto",
       """
-            |import "b.proto";
-            |message A {
-            |  optional B b = 1;
-            |}
-            """.trimMargin()
+      |import "b.proto";
+      |message A {
+      |  optional B b = 1;
+      |}
+      """.trimMargin()
     )
     fs.add(
       "proto-path/b.proto",
       """
-            |option java_package = "com.squareup.b";
-            |message B {
-            |}
-            """.trimMargin()
+      |option java_package = "com.squareup.b";
+      |message B {
+      |}
+      """.trimMargin()
     )
     val schema = loadAndLinkSchema()
 
@@ -214,14 +216,14 @@ class LinkerTest {
     fs.add(
       "source-path/a.proto",
       """
-             |import "google/protobuf/descriptor.proto";
-             |
-             |enum Roshambo {
-             |  ROCK = 1 [deprecated = true];
-             |  SCISSORS = 2;
-             |  PAPER = 3;
-             |}
-            """.trimMargin()
+      |import "google/protobuf/descriptor.proto";
+      |
+      |enum Roshambo {
+      |  ROCK = 1 [deprecated = true];
+      |  SCISSORS = 2;
+      |  PAPER = 3;
+      |}
+      """.trimMargin()
     )
     fs.add("proto-path/b.proto", "")
     val schema = loadAndLinkSchema()
