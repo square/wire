@@ -81,6 +81,8 @@ code. It uses [KotlinPoet][kotlinpoet] internally to generate compact and legibl
 
 ![Basic](images/gradle_basic@2x.png)
 
+If `sourcePath` isn't set, Wire will look for `.proto` files in `src/main/proto` by default.
+
 Wire will generate files in `build/generated/source/wire`. It'll also register this directory as a
 source directory for the project so the generated sources are compiled by the Kotlin compiler.
 
