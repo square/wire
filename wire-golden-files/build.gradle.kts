@@ -10,4 +10,11 @@ wire {
     out = "src/main/kotlin"
     buildersOnly = true
   }
+
+  kotlin {
+    includes = listOf("squareup.wire.boxedoneof.*")
+    out = "src/main/kotlin"
+    javaInterop = true
+    boxOneOfsMinSize = 1
+  }
 }

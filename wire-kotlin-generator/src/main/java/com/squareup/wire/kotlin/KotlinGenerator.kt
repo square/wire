@@ -1179,7 +1179,7 @@ class KotlinGenerator private constructor(
     nameAllocator: NameAllocator
   ): Pair<ParameterSpec, PropertySpec> {
     val fieldClass = message.oneOfClassFor(oneOf, nameAllocator)
-    val fieldName = oneOf.name
+    val fieldName = nameAllocator[oneOf]
 
     val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
     parameterSpec.defaultValue(CodeBlock.of("null"))
