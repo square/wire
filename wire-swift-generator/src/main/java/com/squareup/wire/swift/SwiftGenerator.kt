@@ -27,6 +27,7 @@ import io.outfoxx.swiftpoet.ExtensionSpec
 import io.outfoxx.swiftpoet.FLOAT
 import io.outfoxx.swiftpoet.FileMemberSpec
 import io.outfoxx.swiftpoet.FileSpec
+import io.outfoxx.swiftpoet.FunctionSignatureSpec
 import io.outfoxx.swiftpoet.FunctionSpec
 import io.outfoxx.swiftpoet.INT
 import io.outfoxx.swiftpoet.INT32
@@ -79,6 +80,7 @@ class SwiftGenerator private constructor(
   private val codingKey = DeclaredTypeName.typeName("Swift.CodingKey")
   private val decoder = DeclaredTypeName.typeName("Swift.Decoder")
   private val encoder = DeclaredTypeName.typeName("Swift.Encoder")
+  private val writableKeyPath = DeclaredTypeName.typeName("Swift.WritableKeyPath")
 
   private val deprecated = AttributeSpec.builder("available").addArguments("*", "deprecated").build()
 
@@ -238,7 +240,7 @@ class SwiftGenerator private constructor(
     // TODO use a NameAllocator
     val propertyNames = type.fields.map { it.name } + type.oneOfs.map { it.name }
 
-    val storageType = structType.peerType("_${structType.simpleName}")
+    val storageType = structType.nestedType("Storage")
     val storageName = if ("storage" in propertyNames) "_storage" else "storage"
 
     val typeSpecs = mutableListOf<TypeSpec>()
@@ -253,12 +255,18 @@ class SwiftGenerator private constructor(
         }
 
         if (type.isHeapAllocated) {
+          addAttribute(
+            AttributeSpec.builder("dynamicMemberLookup").build()
+          )
+
           addProperty(
             PropertySpec.varBuilder(storageName, storageType, PRIVATE)
               .addAttribute(AttributeSpec.builder(heap).build())
               .build()
           )
-          generateMessageStoragePropertyDelegates(type, storageName, oneOfEnumNames)
+
+          generateMessageStoragePropertyDelegates(type, storageName, storageType)
+
           addFunction(
             FunctionSpec.constructorBuilder()
               .addModifiers(PUBLIC)
@@ -272,12 +280,15 @@ class SwiftGenerator private constructor(
                   storageParams += CodeBlock.of("%1N: %1N", oneOf.name)
                 }
                 addStatement(
-                  "self.storage = %T(%L)", storageType,
+                  "self.%N = %T(%L)",
+                  storageName,
+                  storageType,
                   storageParams.joinToCode(separator = ",%W")
                 )
               }
               .build()
           )
+
           addFunction(
             FunctionSpec.builder("copyStorage")
               .addModifiers(PRIVATE, MUTATING)
@@ -349,13 +360,18 @@ class SwiftGenerator private constructor(
     }
 
     if (type.isHeapAllocated) {
-      typeSpecs += TypeSpec.structBuilder(storageType)
-        .addModifiers(FILEPRIVATE)
-        .apply {
-          generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
-          generateMessageConstructor(type, oneOfEnumNames, includeDefaults = false)
-        }
+      val storageExtension = ExtensionSpec.builder(structType)
+        .addType(
+          TypeSpec.structBuilder(storageType)
+            .addModifiers(PUBLIC)
+            .apply {
+              generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
+              generateMessageConstructor(type, oneOfEnumNames, includeDefaults = false)
+            }
+            .build()
+        )
         .build()
+      fileMembers += FileMemberSpec.builder(storageExtension).build()
 
       val structProtoCodableExtension = ExtensionSpec.builder(structType)
         .addSuperType(type.protoCodableType)
@@ -999,74 +1015,40 @@ class SwiftGenerator private constructor(
   private fun TypeSpec.Builder.generateMessageStoragePropertyDelegates(
     type: MessageType,
     storageName: String,
-    oneOfEnumNames: Map<OneOf, DeclaredTypeName>
+    storageType: DeclaredTypeName
   ) {
-    type.fields.forEach { field ->
-      val property = PropertySpec.varBuilder(field.name, field.typeName, PUBLIC)
-        .getter(
-          FunctionSpec.getterBuilder()
-            .addStatement("%N.%N", storageName, field.name)
-            .build()
-        )
-        .setter(
-          FunctionSpec.setterBuilder()
-            .addStatement("copyStorage()")
-            .addStatement("%N.%N = newValue", storageName, field.name)
-            .build()
-        )
-      if (field.documentation.isNotBlank()) {
-        property.addDoc("%L\n", field.documentation.sanitizeDoc())
-      }
-      if (field.isDeprecated) {
-        property.addAttribute(
-          AttributeSpec.builder("available")
-            .addArguments("*", "deprecated")
-            .build()
-        )
-      }
-      addProperty(property.build())
+    if (!type.isHeapAllocated) {
+      println("Generating storage property delegates for a non-heap allocated type?!")
     }
 
-    type.oneOfs.forEach { oneOf ->
-      val enumName = oneOfEnumNames.getValue(oneOf)
+    val propertyVariable = TypeVariableName.typeVariable("Property")
 
-      addProperty(
-        PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
-          .getter(
-            FunctionSpec.getterBuilder()
-              .addStatement("%N.%N", storageName, oneOf.name)
-              .build()
-          )
-          .setter(
-            FunctionSpec.setterBuilder()
-              .addStatement("copyStorage()")
-              .addStatement("%N.%N = newValue", storageName, oneOf.name)
-              .build()
-          )
-          .apply {
-            if (oneOf.documentation.isNotBlank()) {
-              addDoc("%N\n", oneOf.documentation.sanitizeDoc())
-            }
-          }
-          .build()
-      )
-    }
-
-    addProperty(
-      PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
-        .getter(
-          FunctionSpec.getterBuilder()
-            .addStatement("%N.unknownFields", storageName)
-            .build()
+    val subscript = PropertySpec.subscriptBuilder(
+      FunctionSignatureSpec.builder()
+        .addTypeVariable(propertyVariable)
+        .addParameter(
+          "dynamicMember",
+          "keyPath",
+          writableKeyPath.parameterizedBy(storageType, propertyVariable),
         )
-        .setter(
-          FunctionSpec.setterBuilder()
-            .addStatement("copyStorage()")
-            .addStatement("%N.unknownFields = newValue", storageName)
-            .build()
-        )
+        .returns(propertyVariable)
         .build()
     )
+    .addModifiers(PUBLIC)
+    .getter(
+      FunctionSpec.getterBuilder()
+        .addStatement("%N[keyPath: keyPath]", storageName)
+        .build()
+    )
+    .setter(
+      FunctionSpec.setterBuilder()
+        .addStatement("copyStorage()")
+        .addStatement("%N[keyPath: keyPath] = newValue", storageName)
+        .build()
+    )
+    .build()
+
+    addProperty(subscript)
   }
 
   private fun TypeSpec.Builder.generateMessageOneOfs(

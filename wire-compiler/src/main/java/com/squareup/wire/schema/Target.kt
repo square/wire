@@ -243,6 +243,7 @@ data class SwiftTarget(
         val modulePath = context.outDirectory
         val typeName = generator.generatedTypeName(type)
         val swiftFile = SwiftFileSpec.builder(typeName.moduleName, typeName.simpleName)
+          .addImport("Foundation")
           .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
           .addComment("\nSource: %L in %L", type.type, type.location.withPathOnly())
           .indent("    ")
