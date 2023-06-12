@@ -17,4 +17,8 @@ wire {
     javaInterop = true
     boxOneOfsMinSize = 1
   }
+
+  kotlin {
+    out = "src/main/kotlin"
+  }
 }
