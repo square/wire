@@ -1827,7 +1827,7 @@ class KotlinGenerator private constructor(
             field.getMinimumByteSize(),
           )
           endControlFlow()
-          addStatement("%1L!!.add(%2L)", field, decode)
+          addStatement("%1L!!.add(%2L)", fieldName, decode)
         }
       }
 
@@ -1840,7 +1840,7 @@ class KotlinGenerator private constructor(
           addStatement(".toInt()")
           addStatement("⇤%L = %L(initialCapacity)", fieldName, ArrayList::class.simpleName)
           endControlFlow()
-          addStatement("%1L!!.add(%2L)", field, decode)
+          addStatement("%1L!!.add(%2L)", fieldName, decode)
         }
       }
 

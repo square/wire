@@ -16,6 +16,12 @@
 syntax = "proto2";
 package squareup.wire.repeateddata;
 
+import "wire/extensions.proto";
+
 message ParameterValue {
  repeated float data = 1 [packed = true];
- }
+}
+
+message ParameterValueWithArray {
+ repeated float data = 1 [packed = true, (wire.use_array) = true];
+}
