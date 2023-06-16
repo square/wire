@@ -1,0 +1,29 @@
+public final class com/squareup/wire/SchemaBuilder {
+	public fun <init> ()V
+	public final fun add (Lokio/Path;Ljava/lang/String;)Lcom/squareup/wire/SchemaBuilder;
+	public final fun add (Lokio/Path;Ljava/lang/String;Lokio/Path;)Lcom/squareup/wire/SchemaBuilder;
+	public static synthetic fun add$default (Lcom/squareup/wire/SchemaBuilder;Lokio/Path;Ljava/lang/String;Lokio/Path;ILjava/lang/Object;)Lcom/squareup/wire/SchemaBuilder;
+	public final fun addProtoPath (Lokio/Path;Ljava/lang/String;)Lcom/squareup/wire/SchemaBuilder;
+	public final fun build ()Lcom/squareup/wire/schema/Schema;
+}
+
+public final class com/squareup/wire/SchemaBuilderKt {
+	public static final fun buildSchema (Lkotlin/jvm/functions/Function1;)Lcom/squareup/wire/schema/Schema;
+}
+
+public final class com/squareup/wire/WireTestLogger : com/squareup/wire/WireLogger {
+	public fun <init> ()V
+	public fun artifactHandled (Lokio/Path;Ljava/lang/String;Ljava/lang/String;)V
+	public fun artifactSkipped (Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;)V
+	public final fun getArtifactHandled ()Lkotlin/collections/ArrayDeque;
+	public final fun getArtifactSkipped ()Lkotlin/collections/ArrayDeque;
+	public final fun getUnusedExcludesInTarget ()Lkotlin/collections/ArrayDeque;
+	public final fun getUnusedIncludesInTarget ()Lkotlin/collections/ArrayDeque;
+	public final fun getUnusedPrunes ()Lkotlin/collections/ArrayDeque;
+	public final fun getUnusedRoots ()Lkotlin/collections/ArrayDeque;
+	public fun unusedExcludesInTarget (Ljava/util/Set;)V
+	public fun unusedIncludesInTarget (Ljava/util/Set;)V
+	public fun unusedPrunes (Ljava/util/Set;)V
+	public fun unusedRoots (Ljava/util/Set;)V
+}
+

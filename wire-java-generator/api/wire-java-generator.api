@@ -1,0 +1,34 @@
+public final class com/squareup/wire/java/JavaGenerator {
+	public fun abstractAdapterName (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/javapoet/ClassName;
+	public static fun builtInType (Lcom/squareup/wire/schema/ProtoType;)Z
+	public fun generateAdapterForCustomType (Lcom/squareup/wire/schema/Type;)Lcom/squareup/javapoet/TypeSpec;
+	public fun generateOptionType (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Field;)Lcom/squareup/javapoet/TypeSpec;
+	public fun generateType (Lcom/squareup/wire/schema/Type;)Lcom/squareup/javapoet/TypeSpec;
+	public fun generatedTypeName (Lcom/squareup/wire/schema/ProtoMember;)Lcom/squareup/javapoet/ClassName;
+	public fun generatedTypeName (Lcom/squareup/wire/schema/Type;)Lcom/squareup/javapoet/ClassName;
+	public static fun get (Lcom/squareup/wire/schema/Schema;)Lcom/squareup/wire/java/JavaGenerator;
+	public fun isEnum (Lcom/squareup/wire/schema/ProtoType;)Z
+	public fun schema ()Lcom/squareup/wire/schema/Schema;
+	public fun typeName (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/javapoet/TypeName;
+	public fun withAndroid (Z)Lcom/squareup/wire/java/JavaGenerator;
+	public fun withAndroidAnnotations (Z)Lcom/squareup/wire/java/JavaGenerator;
+	public fun withBuildersOnly (Z)Lcom/squareup/wire/java/JavaGenerator;
+	public fun withCompact (Z)Lcom/squareup/wire/java/JavaGenerator;
+	public fun withOptions (ZZ)Lcom/squareup/wire/java/JavaGenerator;
+	public fun withProfile (Lcom/squareup/wire/schema/Profile;)Lcom/squareup/wire/java/JavaGenerator;
+}
+
+public final class com/squareup/wire/java/JavaSchemaHandler : com/squareup/wire/schema/SchemaHandler {
+	public static final field Companion Lcom/squareup/wire/java/JavaSchemaHandler$Companion;
+	public fun <init> ()V
+	public fun <init> (ZZZZZZ)V
+	public synthetic fun <init> (ZZZZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun handle (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Field;Lcom/squareup/wire/schema/SchemaHandler$Context;)Lokio/Path;
+	public fun handle (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/SchemaHandler$Context;)V
+	public fun handle (Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/SchemaHandler$Context;)Ljava/util/List;
+	public fun handle (Lcom/squareup/wire/schema/Type;Lcom/squareup/wire/schema/SchemaHandler$Context;)Lokio/Path;
+}
+
+public final class com/squareup/wire/java/JavaSchemaHandler$Companion {
+}
+

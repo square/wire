@@ -14,6 +14,7 @@ plugins {
 
 if (project.rootProject.name == "wire") {
   apply(plugin = "com.vanniktech.maven.publish.base")
+  apply(plugin = "binary-compatibility-validator")
 }
 
 application {
