@@ -40,3 +40,32 @@ message Redacted3 {
 
   optional bool enabled = 2 [(squareup.protos.redacted_option.redacted) = true];
 }
+
+message RedactedLargeMessage {
+  optional string a = 1 [(squareup.protos.redacted_option.redacted) = true];
+  optional string b = 2 [(squareup.protos.redacted_option.redacted) = false];
+  optional string c = 3;
+  optional string d = 4;
+  optional string e = 5;
+  optional string f = 6;
+  optional string g = 7;
+  optional string h = 8;
+  optional string i = 9;
+  optional string j = 10;
+  optional string k = 11;
+  optional string l = 12;
+  optional string m = 13;
+  optional string n = 14;
+  optional string o = 15;
+  optional string p = 16;
+  optional string q = 17;
+  optional string r = 18;
+  optional string s = 19;
+  optional string t = 20;
+  optional string u = 21;
+  optional string v = 22;
+  optional string w = 23;
+  optional string x = 24;
+  optional string y = 25;
+  optional string z = 26;
+}
