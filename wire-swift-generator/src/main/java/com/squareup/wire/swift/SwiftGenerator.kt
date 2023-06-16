@@ -451,6 +451,7 @@ class SwiftGenerator private constructor(
           .addSuperType(redactable)
           .addType(
             TypeAliasSpec.builder("RedactedKeys", structType.nestedType("RedactedKeys"))
+              .addModifiers(PUBLIC)
               .build()
           )
           .build()
