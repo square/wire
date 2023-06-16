@@ -1,12 +1,22 @@
 Change Log
 ==========
 
+Version 4.7.1
+-------------
+
+_2023-06-16_
+
+* Swift: Heap types should use `DynamicMemberLookup` for storage.
+* Fix: Don't drop the wire_package in a `protoPath`.
+* Fix: Normalize conflict strategy for boxed `oneof` field names.
+* Fix: Support all the scalar types in `SchemaEncoder`.
+
 Version 4.7.0
 -------------
 
 _2023-05-24_
 
-* New: Add a dry run option. If enabled, the compiler will just emit the names of the source files that would be 
+* New: Add a dry run option. If enabled, the compiler will just emit the names of the source files that would be
   otherwise * generated to stdout. You can use the flag `--dry_run` with the Wire compiler or define the option with
   Gradle as the following:
 
