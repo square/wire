@@ -65,4 +65,10 @@ final class RedactableTests: XCTestCase {
         )
     }
 
+    func testHeapStorageRedaction() {
+        XCTAssertEqual(
+            RedactedLargeMessage.Storage.RedactedKeys.a,
+            RedactedLargeMessage.RedactedKeys.a
+        )
+    }
 }
