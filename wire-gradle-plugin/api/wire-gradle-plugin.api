@@ -1,0 +1,205 @@
+public class com/squareup/wire/gradle/CustomOutput : com/squareup/wire/gradle/WireOutput {
+	public fun <init> ()V
+	public final fun getExcludes ()Ljava/util/List;
+	public final fun getExclusive ()Z
+	public final fun getIncludes ()Ljava/util/List;
+	public final fun getSchemaHandlerFactory ()Lcom/squareup/wire/schema/SchemaHandler$Factory;
+	public final fun getSchemaHandlerFactoryClass ()Ljava/lang/String;
+	public final fun setExcludes (Ljava/util/List;)V
+	public final fun setExclusive (Z)V
+	public final fun setIncludes (Ljava/util/List;)V
+	public final fun setSchemaHandlerFactory (Lcom/squareup/wire/schema/SchemaHandler$Factory;)V
+	public final fun setSchemaHandlerFactoryClass (Ljava/lang/String;)V
+	public fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/CustomTarget;
+	public synthetic fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/Target;
+}
+
+public final class com/squareup/wire/gradle/InputLocation : java/io/Serializable {
+	public static final field Companion Lcom/squareup/wire/gradle/InputLocation$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final fun get (Lorg/gradle/api/Project;Ljava/lang/String;)Lcom/squareup/wire/gradle/InputLocation;
+	public static final fun get (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;)Lcom/squareup/wire/gradle/InputLocation;
+	public final fun getBase ()Ljava/lang/String;
+	public final fun getPath ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/gradle/InputLocation$Companion {
+	public final fun get (Lorg/gradle/api/Project;Ljava/lang/String;)Lcom/squareup/wire/gradle/InputLocation;
+	public final fun get (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;)Lcom/squareup/wire/gradle/InputLocation;
+}
+
+public class com/squareup/wire/gradle/JavaOutput : com/squareup/wire/gradle/WireOutput {
+	public fun <init> ()V
+	public final fun getAndroid ()Z
+	public final fun getAndroidAnnotations ()Z
+	public final fun getBuildersOnly ()Z
+	public final fun getCompact ()Z
+	public final fun getEmitAppliedOptions ()Z
+	public final fun getEmitDeclaredOptions ()Z
+	public final fun getExcludes ()Ljava/util/List;
+	public final fun getExclusive ()Z
+	public final fun getIncludes ()Ljava/util/List;
+	public final fun setAndroid (Z)V
+	public final fun setAndroidAnnotations (Z)V
+	public final fun setBuildersOnly (Z)V
+	public final fun setCompact (Z)V
+	public final fun setEmitAppliedOptions (Z)V
+	public final fun setEmitDeclaredOptions (Z)V
+	public final fun setExcludes (Ljava/util/List;)V
+	public final fun setExclusive (Z)V
+	public final fun setIncludes (Ljava/util/List;)V
+	public fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/JavaTarget;
+	public synthetic fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/Target;
+}
+
+public class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/WireOutput {
+	public fun <init> ()V
+	public final fun getAndroid ()Z
+	public final fun getBoxOneOfsMinSize ()I
+	public final fun getBuildersOnly ()Z
+	public final fun getEmitAppliedOptions ()Z
+	public final fun getEmitDeclaredOptions ()Z
+	public final fun getExcludes ()Ljava/util/List;
+	public final fun getExclusive ()Z
+	public final fun getGrpcServerCompatible ()Z
+	public final fun getIncludes ()Ljava/util/List;
+	public final fun getJavaInterop ()Z
+	public final fun getNameSuffix ()Ljava/lang/String;
+	public final fun getRpcCallStyle ()Ljava/lang/String;
+	public final fun getRpcRole ()Ljava/lang/String;
+	public final fun getSingleMethodServices ()Z
+	public final fun setAndroid (Z)V
+	public final fun setBoxOneOfsMinSize (I)V
+	public final fun setBuildersOnly (Z)V
+	public final fun setEmitAppliedOptions (Z)V
+	public final fun setEmitDeclaredOptions (Z)V
+	public final fun setExcludes (Ljava/util/List;)V
+	public final fun setExclusive (Z)V
+	public final fun setGrpcServerCompatible (Z)V
+	public final fun setIncludes (Ljava/util/List;)V
+	public final fun setJavaInterop (Z)V
+	public final fun setNameSuffix (Ljava/lang/String;)V
+	public final fun setRpcCallStyle (Ljava/lang/String;)V
+	public final fun setRpcRole (Ljava/lang/String;)V
+	public final fun setSingleMethodServices (Z)V
+	public fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/KotlinTarget;
+	public synthetic fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/Target;
+}
+
+public class com/squareup/wire/gradle/Move : java/io/Serializable {
+	public fun <init> ()V
+	public final fun getTargetPath ()Ljava/lang/String;
+	public final fun getType ()Ljava/lang/String;
+	public final fun setTargetPath (Ljava/lang/String;)V
+	public final fun setType (Ljava/lang/String;)V
+	public final fun toTypeMoverMove ()Lcom/squareup/wire/schema/internal/TypeMover$Move;
+}
+
+public class com/squareup/wire/gradle/ProtoOutput : com/squareup/wire/gradle/WireOutput {
+	public fun <init> ()V
+	public fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoTarget;
+	public synthetic fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/Target;
+}
+
+public class com/squareup/wire/gradle/WireExtension {
+	public fun <init> (Lorg/gradle/api/Project;)V
+	public final fun custom (Lorg/gradle/api/Action;)V
+	public final fun getDryRun ()Z
+	public final fun getOutputs ()Ljava/util/List;
+	public final fun getProtoJars ()Ljava/util/Set;
+	public final fun getProtoLibrary ()Z
+	public final fun getProtoPaths ()Ljava/util/Set;
+	public final fun getProtoTrees ()Ljava/util/Set;
+	public final fun getRules ()Ljava/lang/String;
+	public final fun getSourceJars ()Ljava/util/Set;
+	public final fun getSourcePaths ()Ljava/util/Set;
+	public final fun getSourceTrees ()Ljava/util/Set;
+	public final fun java (Lorg/gradle/api/Action;)V
+	public final fun kotlin (Lorg/gradle/api/Action;)V
+	public final fun move (Lorg/gradle/api/Action;)V
+	public final fun onlyVersion ()Ljava/lang/String;
+	public final fun onlyVersion (Ljava/lang/String;)V
+	public final fun permitPackageCycles ()Z
+	public final fun permitPackageCycles (Z)V
+	public final fun proto (Lorg/gradle/api/Action;)V
+	public final fun protoPath (Lorg/gradle/api/Action;)V
+	public final fun protoPath ([Ljava/lang/String;)V
+	public final fun prune ([Ljava/lang/String;)V
+	public final fun prunes ()Ljava/util/Set;
+	public final fun root ([Ljava/lang/String;)V
+	public final fun roots ()Ljava/util/Set;
+	public final fun setDryRun (Z)V
+	public final fun setProtoLibrary (Z)V
+	public final fun setRules (Ljava/lang/String;)V
+	public final fun sinceVersion ()Ljava/lang/String;
+	public final fun sinceVersion (Ljava/lang/String;)V
+	public final fun sourcePath (Lorg/gradle/api/Action;)V
+	public final fun sourcePath ([Ljava/lang/String;)V
+	public final fun untilVersion ()Ljava/lang/String;
+	public final fun untilVersion (Ljava/lang/String;)V
+}
+
+public class com/squareup/wire/gradle/WireExtension$ProtoRootSet {
+	public fun <init> ()V
+	public final fun exclude ([Ljava/lang/String;)V
+	public final fun getExcludes ()Ljava/util/List;
+	public final fun getIncludes ()Ljava/util/List;
+	public final fun getSrcDirs ()Ljava/util/List;
+	public final fun getSrcJar ()Ljava/lang/String;
+	public final fun getSrcJarAsExternalModuleDependency ()Lorg/gradle/api/provider/Provider;
+	public final fun getSrcProject ()Ljava/lang/String;
+	public final fun getSrcProjectDependency ()Lorg/gradle/api/internal/catalog/DelegatingProjectDependency;
+	public final fun include ([Ljava/lang/String;)V
+	public final fun setSrcJar (Ljava/lang/String;)V
+	public final fun setSrcJarAsExternalModuleDependency (Lorg/gradle/api/provider/Provider;)V
+	public final fun setSrcProject (Ljava/lang/String;)V
+	public final fun setSrcProjectDependency (Lorg/gradle/api/internal/catalog/DelegatingProjectDependency;)V
+	public final fun srcDir (Ljava/lang/String;)V
+	public final fun srcDirs ([Ljava/lang/String;)V
+	public final fun srcJar (Ljava/lang/String;)V
+	public final fun srcJar (Lorg/gradle/api/provider/Provider;)V
+	public final fun srcJar (Lorg/gradle/api/provider/ProviderConvertible;)V
+	public final fun srcProject (Ljava/lang/String;)V
+	public final fun srcProject (Lorg/gradle/api/internal/catalog/DelegatingProjectDependency;)V
+}
+
+public abstract class com/squareup/wire/gradle/WireOutput {
+	public fun <init> ()V
+	public final fun getOut ()Ljava/lang/String;
+	public final fun setOut (Ljava/lang/String;)V
+	public abstract fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/Target;
+}
+
+public final class com/squareup/wire/gradle/WirePlugin : org/gradle/api/Plugin {
+	public static final field GROUP Ljava/lang/String;
+	public static final field ROOT_TASK Ljava/lang/String;
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+
+public abstract class com/squareup/wire/gradle/WireTask : org/gradle/api/tasks/SourceTask {
+	public static final field Companion Lcom/squareup/wire/gradle/WireTask$Companion;
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun generateWireFiles ()V
+	public abstract fun getBuildDirProperty ()Lorg/gradle/api/file/DirectoryProperty;
+	public final fun getDryRun ()Lorg/gradle/api/provider/Property;
+	public abstract fun getInputFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getMoves ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getOnlyVersion ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputDirectories ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public final fun getPermitPackageCycles ()Lorg/gradle/api/provider/Property;
+	public final fun getPluginVersion ()Lorg/gradle/api/provider/Property;
+	public abstract fun getProjectDirProperty ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getPrunes ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getRoots ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getRules ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSinceVersion ()Lorg/gradle/api/provider/Property;
+	public fun getSource ()Lorg/gradle/api/file/FileTree;
+	public abstract fun getTargets ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getUntilVersion ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/squareup/wire/gradle/WireTask$Companion {
+}
+

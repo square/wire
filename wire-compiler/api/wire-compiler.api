@@ -1,0 +1,244 @@
+public final class com/squareup/wire/DryRunFileSystem : okio/ForwardingFileSystem {
+	public fun <init> (Lokio/FileSystem;)V
+	public fun appendingSink (Lokio/Path;Z)Lokio/Sink;
+	public fun openReadWrite (Lokio/Path;ZZ)Lokio/FileHandle;
+	public fun sink (Lokio/Path;Z)Lokio/Sink;
+}
+
+public final class com/squareup/wire/WireCompiler {
+	public static final field CODE_GENERATED_BY_WIRE Ljava/lang/String;
+	public static final field Companion Lcom/squareup/wire/WireCompiler$Companion;
+	public final fun compile ()V
+	public static final fun forArgs (Ljava/nio/file/FileSystem;Lcom/squareup/wire/WireLogger;[Ljava/lang/String;)Lcom/squareup/wire/WireCompiler;
+	public static final fun forArgs (Lokio/FileSystem;Lcom/squareup/wire/WireLogger;[Ljava/lang/String;)Lcom/squareup/wire/WireCompiler;
+	public static final fun forArgs (Lokio/FileSystem;[Ljava/lang/String;)Lcom/squareup/wire/WireCompiler;
+	public static final fun forArgs ([Ljava/lang/String;)Lcom/squareup/wire/WireCompiler;
+	public final fun getCustomOut ()Ljava/lang/String;
+	public final fun getEmitAndroid ()Z
+	public final fun getEmitAndroidAnnotations ()Z
+	public final fun getEmitAppliedOptions ()Z
+	public final fun getEmitCompact ()Z
+	public final fun getEmitDeclaredOptions ()Z
+	public final fun getFs ()Lokio/FileSystem;
+	public final fun getJavaInterop ()Z
+	public final fun getJavaOut ()Ljava/lang/String;
+	public final fun getKotlinBoxOneOfsMinSize ()I
+	public final fun getKotlinOut ()Ljava/lang/String;
+	public final fun getLog ()Lcom/squareup/wire/WireLogger;
+	public final fun getModules ()Ljava/util/Map;
+	public final fun getPermitPackageCycles ()Z
+	public final fun getProtoPaths ()Ljava/util/List;
+	public final fun getSchemaHandlerFactoryClass ()Ljava/lang/String;
+	public final fun getSourceFileNames ()Ljava/util/List;
+	public final fun getSwiftOut ()Ljava/lang/String;
+	public final fun getTreeShakingRoots ()Ljava/util/List;
+	public final fun getTreeShakingRubbish ()Ljava/util/List;
+	public static final fun main ([Ljava/lang/String;)V
+}
+
+public final class com/squareup/wire/WireCompiler$Companion {
+	public final fun forArgs (Ljava/nio/file/FileSystem;Lcom/squareup/wire/WireLogger;[Ljava/lang/String;)Lcom/squareup/wire/WireCompiler;
+	public final fun forArgs (Lokio/FileSystem;Lcom/squareup/wire/WireLogger;[Ljava/lang/String;)Lcom/squareup/wire/WireCompiler;
+	public final fun forArgs (Lokio/FileSystem;[Ljava/lang/String;)Lcom/squareup/wire/WireCompiler;
+	public final fun forArgs ([Ljava/lang/String;)Lcom/squareup/wire/WireCompiler;
+	public static synthetic fun forArgs$default (Lcom/squareup/wire/WireCompiler$Companion;Lokio/FileSystem;Lcom/squareup/wire/WireLogger;[Ljava/lang/String;ILjava/lang/Object;)Lcom/squareup/wire/WireCompiler;
+	public final fun main ([Ljava/lang/String;)V
+}
+
+public final class com/squareup/wire/schema/CustomTarget : com/squareup/wire/schema/Target {
+	public fun <init> (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;Lcom/squareup/wire/schema/SchemaHandler$Factory;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;Lcom/squareup/wire/schema/SchemaHandler$Factory;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Z
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Lcom/squareup/wire/schema/SchemaHandler$Factory;
+	public final fun copy (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;Lcom/squareup/wire/schema/SchemaHandler$Factory;)Lcom/squareup/wire/schema/CustomTarget;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/CustomTarget;Ljava/util/List;Ljava/util/List;ZLjava/lang/String;Lcom/squareup/wire/schema/SchemaHandler$Factory;ILjava/lang/Object;)Lcom/squareup/wire/schema/CustomTarget;
+	public fun copyTarget (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;)Lcom/squareup/wire/schema/Target;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getExcludes ()Ljava/util/List;
+	public fun getExclusive ()Z
+	public fun getIncludes ()Ljava/util/List;
+	public fun getOutDirectory ()Ljava/lang/String;
+	public final fun getSchemaHandlerFactory ()Lcom/squareup/wire/schema/SchemaHandler$Factory;
+	public fun hashCode ()I
+	public fun newHandler ()Lcom/squareup/wire/schema/SchemaHandler;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/JavaTarget : com/squareup/wire/schema/Target {
+	public fun <init> (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZZZ)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component10 ()Z
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Z
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Z
+	public final fun component6 ()Z
+	public final fun component7 ()Z
+	public final fun component8 ()Z
+	public final fun component9 ()Z
+	public final fun copy (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZZZ)Lcom/squareup/wire/schema/JavaTarget;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/JavaTarget;Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZZZILjava/lang/Object;)Lcom/squareup/wire/schema/JavaTarget;
+	public fun copyTarget (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;)Lcom/squareup/wire/schema/Target;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAndroid ()Z
+	public final fun getAndroidAnnotations ()Z
+	public final fun getBuildersOnly ()Z
+	public final fun getCompact ()Z
+	public final fun getEmitAppliedOptions ()Z
+	public final fun getEmitDeclaredOptions ()Z
+	public fun getExcludes ()Ljava/util/List;
+	public fun getExclusive ()Z
+	public fun getIncludes ()Ljava/util/List;
+	public fun getOutDirectory ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun newHandler ()Lcom/squareup/wire/schema/SchemaHandler;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/KotlinTarget : com/squareup/wire/schema/Target {
+	public fun <init> (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZIZLjava/lang/String;ZZ)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZIZLjava/lang/String;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component10 ()Lcom/squareup/wire/kotlin/RpcRole;
+	public final fun component11 ()Z
+	public final fun component12 ()I
+	public final fun component13 ()Z
+	public final fun component14 ()Ljava/lang/String;
+	public final fun component15 ()Z
+	public final fun component16 ()Z
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Z
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Z
+	public final fun component6 ()Z
+	public final fun component7 ()Z
+	public final fun component8 ()Z
+	public final fun component9 ()Lcom/squareup/wire/kotlin/RpcCallStyle;
+	public final fun copy (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZIZLjava/lang/String;ZZ)Lcom/squareup/wire/schema/KotlinTarget;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/KotlinTarget;Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZIZLjava/lang/String;ZZILjava/lang/Object;)Lcom/squareup/wire/schema/KotlinTarget;
+	public fun copyTarget (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;)Lcom/squareup/wire/schema/Target;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAndroid ()Z
+	public final fun getBoxOneOfsMinSize ()I
+	public final fun getBuildersOnly ()Z
+	public final fun getEmitAppliedOptions ()Z
+	public final fun getEmitDeclaredOptions ()Z
+	public fun getExcludes ()Ljava/util/List;
+	public fun getExclusive ()Z
+	public final fun getGrpcServerCompatible ()Z
+	public fun getIncludes ()Ljava/util/List;
+	public final fun getJavaInterop ()Z
+	public final fun getJvmOnly ()Z
+	public final fun getNameSuffix ()Ljava/lang/String;
+	public fun getOutDirectory ()Ljava/lang/String;
+	public final fun getRpcCallStyle ()Lcom/squareup/wire/kotlin/RpcCallStyle;
+	public final fun getRpcRole ()Lcom/squareup/wire/kotlin/RpcRole;
+	public final fun getSingleMethodServices ()Z
+	public fun hashCode ()I
+	public fun newHandler ()Lcom/squareup/wire/schema/SchemaHandler;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/ProtoTarget : com/squareup/wire/schema/Target {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoTarget;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/ProtoTarget;Ljava/lang/String;ILjava/lang/Object;)Lcom/squareup/wire/schema/ProtoTarget;
+	public fun copyTarget (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;)Lcom/squareup/wire/schema/Target;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getExcludes ()Ljava/util/List;
+	public fun getExclusive ()Z
+	public fun getIncludes ()Ljava/util/List;
+	public fun getOutDirectory ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun newHandler ()Lcom/squareup/wire/schema/SchemaHandler;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/SwiftTarget : com/squareup/wire/schema/Target {
+	public fun <init> (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Z
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;)Lcom/squareup/wire/schema/SwiftTarget;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/SwiftTarget;Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ILjava/lang/Object;)Lcom/squareup/wire/schema/SwiftTarget;
+	public fun copyTarget (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;)Lcom/squareup/wire/schema/Target;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getExcludes ()Ljava/util/List;
+	public fun getExclusive ()Z
+	public fun getIncludes ()Ljava/util/List;
+	public fun getOutDirectory ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun newHandler ()Lcom/squareup/wire/schema/SchemaHandler;
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/squareup/wire/schema/Target : java/io/Serializable {
+	public abstract fun copyTarget (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;)Lcom/squareup/wire/schema/Target;
+	public static synthetic fun copyTarget$default (Lcom/squareup/wire/schema/Target;Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ILjava/lang/Object;)Lcom/squareup/wire/schema/Target;
+	public abstract fun getExcludes ()Ljava/util/List;
+	public abstract fun getExclusive ()Z
+	public abstract fun getIncludes ()Ljava/util/List;
+	public abstract fun getOutDirectory ()Ljava/lang/String;
+	public abstract fun newHandler ()Lcom/squareup/wire/schema/SchemaHandler;
+}
+
+public final class com/squareup/wire/schema/TargetKt {
+	public static final fun newSchemaHandler (Ljava/lang/String;)Lcom/squareup/wire/schema/SchemaHandler$Factory;
+}
+
+public final class com/squareup/wire/schema/WireRun {
+	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;Z)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component10 ()Ljava/util/Map;
+	public final fun component11 ()Z
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;Z)Lcom/squareup/wire/schema/WireRun;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/WireRun;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ZILjava/lang/Object;)Lcom/squareup/wire/schema/WireRun;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun execute (Lokio/FileSystem;Lcom/squareup/wire/WireLogger;)V
+	public static synthetic fun execute$default (Lcom/squareup/wire/schema/WireRun;Lokio/FileSystem;Lcom/squareup/wire/WireLogger;ILjava/lang/Object;)V
+	public final fun getModules ()Ljava/util/Map;
+	public final fun getMoves ()Ljava/util/List;
+	public final fun getOnlyVersion ()Ljava/lang/String;
+	public final fun getPermitPackageCycles ()Z
+	public final fun getProtoPath ()Ljava/util/List;
+	public final fun getSinceVersion ()Ljava/lang/String;
+	public final fun getSourcePath ()Ljava/util/List;
+	public final fun getTargets ()Ljava/util/List;
+	public final fun getTreeShakingRoots ()Ljava/util/List;
+	public final fun getTreeShakingRubbish ()Ljava/util/List;
+	public final fun getUntilVersion ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/WireRun$Module {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/Set;Lcom/squareup/wire/schema/PruningRules;)V
+	public synthetic fun <init> (Ljava/util/Set;Lcom/squareup/wire/schema/PruningRules;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/Set;
+	public final fun component2 ()Lcom/squareup/wire/schema/PruningRules;
+	public final fun copy (Ljava/util/Set;Lcom/squareup/wire/schema/PruningRules;)Lcom/squareup/wire/schema/WireRun$Module;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/WireRun$Module;Ljava/util/Set;Lcom/squareup/wire/schema/PruningRules;ILjava/lang/Object;)Lcom/squareup/wire/schema/WireRun$Module;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDependencies ()Ljava/util/Set;
+	public final fun getPruningRules ()Lcom/squareup/wire/schema/PruningRules;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+

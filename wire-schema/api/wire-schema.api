@@ -1,0 +1,1412 @@
+public abstract interface class com/squareup/wire/WireLogger {
+	public abstract fun artifactHandled (Lokio/Path;Ljava/lang/String;Ljava/lang/String;)V
+	public abstract fun artifactSkipped (Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;)V
+	public abstract fun unusedExcludesInTarget (Ljava/util/Set;)V
+	public abstract fun unusedIncludesInTarget (Ljava/util/Set;)V
+	public abstract fun unusedPrunes (Ljava/util/Set;)V
+	public abstract fun unusedRoots (Ljava/util/Set;)V
+}
+
+public final class com/squareup/wire/schema/AdapterConstant {
+	public static final field Companion Lcom/squareup/wire/schema/AdapterConstant$Companion;
+	public final field javaClassName Lcom/squareup/javapoet/ClassName;
+	public final field kotlinClassName Lcom/squareup/kotlinpoet/ClassName;
+	public final field memberName Ljava/lang/String;
+	public fun <init> (Lcom/squareup/javapoet/ClassName;Lcom/squareup/kotlinpoet/ClassName;Ljava/lang/String;)V
+	public final fun component1 ()Lcom/squareup/javapoet/ClassName;
+	public final fun component2 ()Lcom/squareup/kotlinpoet/ClassName;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Lcom/squareup/javapoet/ClassName;Lcom/squareup/kotlinpoet/ClassName;Ljava/lang/String;)Lcom/squareup/wire/schema/AdapterConstant;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/AdapterConstant;Lcom/squareup/javapoet/ClassName;Lcom/squareup/kotlinpoet/ClassName;Ljava/lang/String;ILjava/lang/Object;)Lcom/squareup/wire/schema/AdapterConstant;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/AdapterConstant$Companion {
+	public final fun invoke (Ljava/lang/String;)Lcom/squareup/wire/schema/AdapterConstant;
+}
+
+public final class com/squareup/wire/schema/ClaimedDefinitions {
+	public fun <init> ()V
+	public final fun claim (Lcom/squareup/wire/schema/ProtoMember;)V
+	public final fun claim (Lcom/squareup/wire/schema/ProtoType;)V
+	public final fun claim (Lcom/squareup/wire/schema/Service;)V
+	public final fun claim (Lcom/squareup/wire/schema/Type;)V
+	public final fun contains (Lcom/squareup/wire/schema/ProtoMember;)Z
+	public final fun contains (Lcom/squareup/wire/schema/ProtoType;)Z
+	public final fun contains (Lcom/squareup/wire/schema/Service;)Z
+	public final fun contains (Lcom/squareup/wire/schema/Type;)Z
+}
+
+public final class com/squareup/wire/schema/ClaimedPaths {
+	public fun <init> ()V
+	public final fun claim (Lokio/Path;Lcom/squareup/wire/schema/Service;)V
+	public final fun claim (Lokio/Path;Lcom/squareup/wire/schema/Type;)V
+}
+
+public final class com/squareup/wire/schema/CoreLoader : com/squareup/wire/schema/Loader {
+	public static final field INSTANCE Lcom/squareup/wire/schema/CoreLoader;
+	public fun load (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoFile;
+	public fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/CoreLoader;
+	public synthetic fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/Loader;
+}
+
+public final class com/squareup/wire/schema/CoreLoaderKt {
+	public static final field WIRE_RUNTIME_JAR Ljava/lang/String;
+	public static final fun isWireRuntimeProto (Lcom/squareup/wire/schema/Location;)Z
+	public static final fun isWireRuntimeProto (Ljava/lang/String;)Z
+}
+
+public final class com/squareup/wire/schema/EmittingRules {
+	public static final field Companion Lcom/squareup/wire/schema/EmittingRules$Companion;
+	public fun <init> ()V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/EmittingRules$Builder;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun includes (Lcom/squareup/wire/schema/ProtoType;)Z
+	public final fun isEmpty ()Z
+	public final fun unusedExcludes ()Ljava/util/Set;
+	public final fun unusedIncludes ()Ljava/util/Set;
+}
+
+public final class com/squareup/wire/schema/EmittingRules$Builder {
+	public fun <init> ()V
+	public final fun build ()Lcom/squareup/wire/schema/EmittingRules;
+	public final fun exclude (Ljava/lang/Iterable;)Lcom/squareup/wire/schema/EmittingRules$Builder;
+	public final fun exclude (Ljava/lang/String;)Lcom/squareup/wire/schema/EmittingRules$Builder;
+	public final fun include (Ljava/lang/Iterable;)Lcom/squareup/wire/schema/EmittingRules$Builder;
+	public final fun include (Ljava/lang/String;)Lcom/squareup/wire/schema/EmittingRules$Builder;
+}
+
+public final class com/squareup/wire/schema/EmittingRules$Companion {
+}
+
+public final class com/squareup/wire/schema/EnclosingType : com/squareup/wire/schema/Type {
+	public fun <init> (Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/Syntax;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Lcom/squareup/wire/schema/ProtoType;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Ljava/util/List;
+	public final fun component7 ()Lcom/squareup/wire/Syntax;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/Syntax;)Lcom/squareup/wire/schema/EnclosingType;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/EnclosingType;Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/Syntax;ILjava/lang/Object;)Lcom/squareup/wire/schema/EnclosingType;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDocumentation ()Ljava/lang/String;
+	public fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public fun getName ()Ljava/lang/String;
+	public fun getNestedExtendList ()Ljava/util/List;
+	public fun getNestedTypes ()Ljava/util/List;
+	public fun getOptions ()Lcom/squareup/wire/schema/Options;
+	public fun getSyntax ()Lcom/squareup/wire/Syntax;
+	public fun getType ()Lcom/squareup/wire/schema/ProtoType;
+	public fun hashCode ()I
+	public fun linkMembers (Lcom/squareup/wire/schema/Linker;)V
+	public fun linkOptions (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;Z)V
+	public fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;)Lcom/squareup/wire/schema/Type;
+	public fun retainLinked (Ljava/util/Set;Ljava/util/Set;)Lcom/squareup/wire/schema/Type;
+	public final fun toElement ()Lcom/squareup/wire/schema/internal/parser/MessageElement;
+	public fun toString ()Ljava/lang/String;
+	public fun validate (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;)V
+}
+
+public final class com/squareup/wire/schema/EnumConstant {
+	public static final field Companion Lcom/squareup/wire/schema/EnumConstant$Companion;
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;ILjava/lang/String;Lcom/squareup/wire/schema/Options;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()I
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Lcom/squareup/wire/schema/Options;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;ILjava/lang/String;Lcom/squareup/wire/schema/Options;)Lcom/squareup/wire/schema/EnumConstant;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/EnumConstant;Lcom/squareup/wire/schema/Location;Ljava/lang/String;ILjava/lang/String;Lcom/squareup/wire/schema/Options;ILjava/lang/Object;)Lcom/squareup/wire/schema/EnumConstant;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getOptions ()Lcom/squareup/wire/schema/Options;
+	public final fun getTag ()I
+	public fun hashCode ()I
+	public final fun isDeprecated ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/EnumConstant$Companion {
+}
+
+public final class com/squareup/wire/schema/EnumType : com/squareup/wire/schema/Type {
+	public static final field Companion Lcom/squareup/wire/schema/EnumType$Companion;
+	public fun <init> (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/schema/Options;Lcom/squareup/wire/Syntax;)V
+	public final fun allowAlias ()Z
+	public final fun component1 ()Lcom/squareup/wire/schema/ProtoType;
+	public final fun component2 ()Lcom/squareup/wire/schema/Location;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component7 ()Lcom/squareup/wire/schema/Options;
+	public final fun component8 ()Lcom/squareup/wire/Syntax;
+	public final fun constant (I)Lcom/squareup/wire/schema/EnumConstant;
+	public final fun constant (Ljava/lang/String;)Lcom/squareup/wire/schema/EnumConstant;
+	public final fun copy (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/schema/Options;Lcom/squareup/wire/Syntax;)Lcom/squareup/wire/schema/EnumType;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/EnumType;Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/schema/Options;Lcom/squareup/wire/Syntax;ILjava/lang/Object;)Lcom/squareup/wire/schema/EnumType;
+	public fun equals (Ljava/lang/Object;)Z
+	public static final fun fromElement (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/internal/parser/EnumElement;Lcom/squareup/wire/Syntax;)Lcom/squareup/wire/schema/EnumType;
+	public final fun getConstants ()Ljava/util/List;
+	public fun getDocumentation ()Ljava/lang/String;
+	public fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public fun getName ()Ljava/lang/String;
+	public fun getNestedExtendList ()Ljava/util/List;
+	public fun getNestedTypes ()Ljava/util/List;
+	public fun getOptions ()Lcom/squareup/wire/schema/Options;
+	public fun getSyntax ()Lcom/squareup/wire/Syntax;
+	public fun getType ()Lcom/squareup/wire/schema/ProtoType;
+	public fun hashCode ()I
+	public final fun isDeprecated ()Z
+	public fun linkMembers (Lcom/squareup/wire/schema/Linker;)V
+	public fun linkOptions (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;Z)V
+	public fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;)Lcom/squareup/wire/schema/Type;
+	public fun retainLinked (Ljava/util/Set;Ljava/util/Set;)Lcom/squareup/wire/schema/Type;
+	public final fun toElement ()Lcom/squareup/wire/schema/internal/parser/EnumElement;
+	public fun toString ()Ljava/lang/String;
+	public fun validate (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;)V
+}
+
+public final class com/squareup/wire/schema/EnumType$Companion {
+	public final fun fromElement (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/internal/parser/EnumElement;Lcom/squareup/wire/Syntax;)Lcom/squareup/wire/schema/EnumType;
+}
+
+public final class com/squareup/wire/schema/ErrorCollector {
+	public fun <init> ()V
+	public final fun at (Ljava/lang/Object;)Lcom/squareup/wire/schema/ErrorCollector;
+	public final fun plusAssign (Ljava/lang/String;)V
+	public final fun throwIfNonEmpty ()V
+}
+
+public final class com/squareup/wire/schema/Extend {
+	public static final field Companion Lcom/squareup/wire/schema/Extend$Companion;
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lcom/squareup/wire/schema/Extend;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/Extend;
+	public fun equals (Ljava/lang/Object;)Z
+	public static final fun fromElements (Ljava/util/List;Ljava/util/List;)Ljava/util/List;
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getFields ()Ljava/util/List;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getType ()Lcom/squareup/wire/schema/ProtoType;
+	public fun hashCode ()I
+	public final fun link (Lcom/squareup/wire/schema/Linker;)V
+	public final fun linkOptions (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;Z)V
+	public final fun member (Lcom/squareup/wire/schema/Field;)Lcom/squareup/wire/schema/ProtoMember;
+	public final fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;)Lcom/squareup/wire/schema/Extend;
+	public final fun retainLinked (Ljava/util/Set;)Lcom/squareup/wire/schema/Extend;
+	public static final fun toElements (Ljava/util/List;)Ljava/util/List;
+	public fun toString ()Ljava/lang/String;
+	public final fun validate (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;)V
+}
+
+public final class com/squareup/wire/schema/Extend$Companion {
+	public final fun fromElements (Ljava/util/List;Ljava/util/List;)Ljava/util/List;
+	public final fun toElements (Ljava/util/List;)Ljava/util/List;
+}
+
+public final class com/squareup/wire/schema/Extensions {
+	public static final field Companion Lcom/squareup/wire/schema/Extensions$Companion;
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;)Lcom/squareup/wire/schema/Extensions;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/Extensions;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/Extensions;
+	public fun equals (Ljava/lang/Object;)Z
+	public static final fun fromElements (Ljava/util/List;)Ljava/util/List;
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getValues ()Ljava/util/List;
+	public fun hashCode ()I
+	public static final fun toElements (Ljava/util/List;)Ljava/util/List;
+	public fun toString ()Ljava/lang/String;
+	public final fun validate (Lcom/squareup/wire/schema/Linker;)V
+}
+
+public final class com/squareup/wire/schema/Extensions$Companion {
+	public final fun fromElements (Ljava/util/List;)Ljava/util/List;
+	public final fun toElements (Ljava/util/List;)Ljava/util/List;
+}
+
+public final class com/squareup/wire/schema/Field {
+	public static final field Companion Lcom/squareup/wire/schema/Field$Companion;
+	public fun <init> (Ljava/util/List;Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/Field$Label;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Lcom/squareup/wire/schema/Options;ZZLjava/lang/String;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component10 ()Z
+	public final fun component11 ()Z
+	public final fun component12 ()Ljava/lang/String;
+	public final fun component2 ()Lcom/squareup/wire/schema/Location;
+	public final fun component3 ()Lcom/squareup/wire/schema/Field$Label;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()I
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component9 ()Lcom/squareup/wire/schema/Options;
+	public final fun copy (Ljava/util/List;Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/Field$Label;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Lcom/squareup/wire/schema/Options;ZZLjava/lang/String;)Lcom/squareup/wire/schema/Field;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/Field;Ljava/util/List;Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/Field$Label;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Lcom/squareup/wire/schema/Options;ZZLjava/lang/String;ILjava/lang/Object;)Lcom/squareup/wire/schema/Field;
+	public fun equals (Ljava/lang/Object;)Z
+	public static final fun fromElements (Ljava/util/List;Ljava/util/List;ZZ)Ljava/util/List;
+	public final fun getDeclaredJsonName ()Ljava/lang/String;
+	public final fun getDefault ()Ljava/lang/String;
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getEncodeMode ()Lcom/squareup/wire/schema/Field$EncodeMode;
+	public final fun getJsonName ()Ljava/lang/String;
+	public final fun getLabel ()Lcom/squareup/wire/schema/Field$Label;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getNamespaces ()Ljava/util/List;
+	public final fun getOptions ()Lcom/squareup/wire/schema/Options;
+	public final fun getPackageName ()Ljava/lang/String;
+	public final fun getQualifiedName ()Ljava/lang/String;
+	public final fun getTag ()I
+	public final fun getType ()Lcom/squareup/wire/schema/ProtoType;
+	public final fun getUseArray ()Z
+	public fun hashCode ()I
+	public final fun isDeprecated ()Z
+	public final fun isExtension ()Z
+	public final fun isOneOf ()Z
+	public final fun isPacked ()Z
+	public final fun isRedacted ()Z
+	public final fun isRepeated ()Z
+	public final fun isRequired ()Z
+	public final fun link (Lcom/squareup/wire/schema/Linker;)V
+	public final fun linkOptions (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;Z)V
+	public final fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/wire/schema/Field;
+	public static final fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;Lcom/squareup/wire/schema/ProtoType;Ljava/util/Collection;)Ljava/util/List;
+	public static final fun retainLinked (Ljava/util/List;)Ljava/util/List;
+	public static final fun toElements (Ljava/util/List;)Ljava/util/List;
+	public fun toString ()Ljava/lang/String;
+	public final fun validate (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;)V
+}
+
+public final class com/squareup/wire/schema/Field$Companion {
+	public final fun fromElements (Ljava/util/List;Ljava/util/List;ZZ)Ljava/util/List;
+	public final fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;Lcom/squareup/wire/schema/ProtoType;Ljava/util/Collection;)Ljava/util/List;
+	public final fun retainLinked (Ljava/util/List;)Ljava/util/List;
+	public final fun toElements (Ljava/util/List;)Ljava/util/List;
+}
+
+public final class com/squareup/wire/schema/Field$EncodeMode : java/lang/Enum {
+	public static final field MAP Lcom/squareup/wire/schema/Field$EncodeMode;
+	public static final field NULL_IF_ABSENT Lcom/squareup/wire/schema/Field$EncodeMode;
+	public static final field OMIT_IDENTITY Lcom/squareup/wire/schema/Field$EncodeMode;
+	public static final field PACKED Lcom/squareup/wire/schema/Field$EncodeMode;
+	public static final field REPEATED Lcom/squareup/wire/schema/Field$EncodeMode;
+	public static final field REQUIRED Lcom/squareup/wire/schema/Field$EncodeMode;
+	public static fun valueOf (Ljava/lang/String;)Lcom/squareup/wire/schema/Field$EncodeMode;
+	public static fun values ()[Lcom/squareup/wire/schema/Field$EncodeMode;
+}
+
+public final class com/squareup/wire/schema/Field$Label : java/lang/Enum {
+	public static final field ONE_OF Lcom/squareup/wire/schema/Field$Label;
+	public static final field OPTIONAL Lcom/squareup/wire/schema/Field$Label;
+	public static final field REPEATED Lcom/squareup/wire/schema/Field$Label;
+	public static final field REQUIRED Lcom/squareup/wire/schema/Field$Label;
+	public static fun valueOf (Ljava/lang/String;)Lcom/squareup/wire/schema/Field$Label;
+	public static fun values ()[Lcom/squareup/wire/schema/Field$Label;
+}
+
+public final class com/squareup/wire/schema/LinkedOptionEntry {
+	public fun <init> (Lcom/squareup/wire/schema/internal/parser/OptionElement;Lcom/squareup/wire/schema/ProtoMember;Ljava/lang/Object;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/internal/parser/OptionElement;
+	public final fun component2 ()Lcom/squareup/wire/schema/ProtoMember;
+	public final fun component3 ()Ljava/lang/Object;
+	public final fun copy (Lcom/squareup/wire/schema/internal/parser/OptionElement;Lcom/squareup/wire/schema/ProtoMember;Ljava/lang/Object;)Lcom/squareup/wire/schema/LinkedOptionEntry;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/LinkedOptionEntry;Lcom/squareup/wire/schema/internal/parser/OptionElement;Lcom/squareup/wire/schema/ProtoMember;Ljava/lang/Object;ILjava/lang/Object;)Lcom/squareup/wire/schema/LinkedOptionEntry;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getOptionElement ()Lcom/squareup/wire/schema/internal/parser/OptionElement;
+	public final fun getProtoMember ()Lcom/squareup/wire/schema/ProtoMember;
+	public final fun getValue ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/Linker {
+	public fun <init> (Lcom/squareup/wire/schema/Loader;Lcom/squareup/wire/schema/ErrorCollector;ZZ)V
+	public final fun addType (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Type;)V
+	public final fun dereference (Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;)Lcom/squareup/wire/schema/Field;
+	public final fun get (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/wire/schema/Type;
+	public final fun getErrors ()Lcom/squareup/wire/schema/ErrorCollector;
+	public final fun getForOptions (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/wire/schema/Type;
+	public final fun getLoadExhaustively ()Z
+	public final fun link (Ljava/lang/Iterable;)Lcom/squareup/wire/schema/Schema;
+	public final fun request (Lcom/squareup/wire/schema/Field;)V
+	public final fun resolve (Ljava/lang/String;Ljava/util/Map;)Ljava/lang/Object;
+	public final fun resolveContext ()Ljava/lang/String;
+	public final fun resolveMessageType (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoType;
+	public final fun resolveType (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoType;
+	public final fun validateEnumConstantNameUniqueness (Ljava/lang/Iterable;)V
+	public final fun validateFields (Ljava/lang/Iterable;Ljava/util/List;Lcom/squareup/wire/schema/SyntaxRules;)V
+	public final fun validateImportForPath (Lcom/squareup/wire/schema/Location;Ljava/lang/String;)V
+	public final fun validateImportForType (Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/ProtoType;)V
+	public final fun withContext (Ljava/lang/Object;)Lcom/squareup/wire/schema/Linker;
+}
+
+public abstract interface class com/squareup/wire/schema/Loader {
+	public abstract fun load (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoFile;
+	public abstract fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/Loader;
+}
+
+public final class com/squareup/wire/schema/Location {
+	public static final field Companion Lcom/squareup/wire/schema/Location$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;II)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;IIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun at (II)Lcom/squareup/wire/schema/Location;
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;II)Lcom/squareup/wire/schema/Location;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;IIILjava/lang/Object;)Lcom/squareup/wire/schema/Location;
+	public fun equals (Ljava/lang/Object;)Z
+	public static final fun get (Ljava/lang/String;)Lcom/squareup/wire/schema/Location;
+	public static final fun get (Ljava/lang/String;Ljava/lang/String;)Lcom/squareup/wire/schema/Location;
+	public final fun getBase ()Ljava/lang/String;
+	public final fun getColumn ()I
+	public final fun getLine ()I
+	public final fun getPath ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public final fun withPathOnly ()Lcom/squareup/wire/schema/Location;
+	public final fun withoutBase ()Lcom/squareup/wire/schema/Location;
+}
+
+public final class com/squareup/wire/schema/Location$Companion {
+	public final fun get (Ljava/lang/String;)Lcom/squareup/wire/schema/Location;
+	public final fun get (Ljava/lang/String;Ljava/lang/String;)Lcom/squareup/wire/schema/Location;
+}
+
+public final class com/squareup/wire/schema/MarkSet {
+	public static final field Companion Lcom/squareup/wire/schema/MarkSet$Companion;
+	public fun <init> (Lcom/squareup/wire/schema/PruningRules;)V
+	public final fun contains (Lcom/squareup/wire/schema/ProtoMember;)Z
+	public final fun contains (Lcom/squareup/wire/schema/ProtoType;)Z
+	public final fun getMembers ()Ljava/util/Map;
+	public final fun getPruningRules ()Lcom/squareup/wire/schema/PruningRules;
+	public final fun getTypes ()Ljava/util/Set;
+	public final fun mark (Lcom/squareup/wire/schema/ProtoMember;)Z
+	public final fun mark (Lcom/squareup/wire/schema/ProtoType;)Z
+	public final fun mark (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/ProtoMember;)Z
+	public final fun root (Lcom/squareup/wire/schema/ProtoMember;)V
+	public final fun root (Lcom/squareup/wire/schema/ProtoType;)V
+}
+
+public final class com/squareup/wire/schema/MarkSet$Companion {
+}
+
+public final class com/squareup/wire/schema/MessageType : com/squareup/wire/schema/Type {
+	public static final field Companion Lcom/squareup/wire/schema/MessageType$Companion;
+	public fun <init> (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/schema/Options;Lcom/squareup/wire/Syntax;)V
+	public final fun addExtensionFields (Ljava/util/List;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/ProtoType;
+	public final fun component10 ()Ljava/util/List;
+	public final fun component12 ()Lcom/squareup/wire/schema/Options;
+	public final fun component13 ()Lcom/squareup/wire/Syntax;
+	public final fun component2 ()Lcom/squareup/wire/schema/Location;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Ljava/util/List;
+	public final fun component7 ()Ljava/util/List;
+	public final fun component8 ()Ljava/util/List;
+	public final fun component9 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/schema/Options;Lcom/squareup/wire/Syntax;)Lcom/squareup/wire/schema/MessageType;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/MessageType;Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/schema/Options;Lcom/squareup/wire/Syntax;ILjava/lang/Object;)Lcom/squareup/wire/schema/MessageType;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun extensionField (Ljava/lang/String;)Lcom/squareup/wire/schema/Field;
+	public final fun extensionFieldsMap ()Ljava/util/Map;
+	public final fun field (I)Lcom/squareup/wire/schema/Field;
+	public final fun field (Ljava/lang/String;)Lcom/squareup/wire/schema/Field;
+	public final fun fields ()Ljava/util/List;
+	public static final fun fromElement (Ljava/util/List;Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/internal/parser/MessageElement;Lcom/squareup/wire/Syntax;)Lcom/squareup/wire/schema/MessageType;
+	public final fun getDeclaredFields ()Ljava/util/List;
+	public fun getDocumentation ()Ljava/lang/String;
+	public final fun getExtensionFields ()Ljava/util/List;
+	public final fun getExtensionsList ()Ljava/util/List;
+	public final fun getFieldsAndOneOfFields ()Ljava/util/List;
+	public fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public fun getName ()Ljava/lang/String;
+	public fun getNestedExtendList ()Ljava/util/List;
+	public fun getNestedTypes ()Ljava/util/List;
+	public final fun getOneOfs ()Ljava/util/List;
+	public fun getOptions ()Lcom/squareup/wire/schema/Options;
+	public final fun getRequiredFields ()Ljava/util/List;
+	public fun getSyntax ()Lcom/squareup/wire/Syntax;
+	public fun getType ()Lcom/squareup/wire/schema/ProtoType;
+	public fun hashCode ()I
+	public final fun isDeprecated ()Z
+	public fun linkMembers (Lcom/squareup/wire/schema/Linker;)V
+	public fun linkOptions (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;Z)V
+	public fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;)Lcom/squareup/wire/schema/Type;
+	public fun retainLinked (Ljava/util/Set;Ljava/util/Set;)Lcom/squareup/wire/schema/Type;
+	public final fun toElement ()Lcom/squareup/wire/schema/internal/parser/MessageElement;
+	public fun toString ()Ljava/lang/String;
+	public fun validate (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;)V
+}
+
+public final class com/squareup/wire/schema/MessageType$Companion {
+	public final fun fromElement (Ljava/util/List;Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/internal/parser/MessageElement;Lcom/squareup/wire/Syntax;)Lcom/squareup/wire/schema/MessageType;
+}
+
+public final class com/squareup/wire/schema/OneOf {
+	public static final field Companion Lcom/squareup/wire/schema/OneOf$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lcom/squareup/wire/schema/OneOf;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/OneOf;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/OneOf;
+	public fun equals (Ljava/lang/Object;)Z
+	public static final fun fromElements (Ljava/util/List;Ljava/util/List;)Ljava/util/List;
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getFields ()Ljava/util/List;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun link (Lcom/squareup/wire/schema/Linker;)V
+	public final fun linkOptions (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;Z)V
+	public final fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/wire/schema/OneOf;
+	public final fun retainLinked ()Lcom/squareup/wire/schema/OneOf;
+	public static final fun toElements (Ljava/util/List;)Ljava/util/List;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/OneOf$Companion {
+	public final fun fromElements (Ljava/util/List;Ljava/util/List;)Ljava/util/List;
+	public final fun toElements (Ljava/util/List;)Ljava/util/List;
+}
+
+public final class com/squareup/wire/schema/Options {
+	public static final field Companion Lcom/squareup/wire/schema/Options$Companion;
+	public static final field ENUM_OPTIONS Lcom/squareup/wire/schema/ProtoType;
+	public static final field ENUM_VALUE_OPTIONS Lcom/squareup/wire/schema/ProtoType;
+	public static final field FIELD_OPTIONS Lcom/squareup/wire/schema/ProtoType;
+	public static final field FILE_OPTIONS Lcom/squareup/wire/schema/ProtoType;
+	public static final field MESSAGE_OPTIONS Lcom/squareup/wire/schema/ProtoType;
+	public static final field METHOD_OPTIONS Lcom/squareup/wire/schema/ProtoType;
+	public static final field ONEOF_OPTIONS Lcom/squareup/wire/schema/ProtoType;
+	public static final field SERVICE_OPTIONS Lcom/squareup/wire/schema/ProtoType;
+	public fun <init> (Lcom/squareup/wire/schema/ProtoType;Ljava/util/List;)V
+	public final fun fields ()Lcom/google/common/collect/Multimap;
+	public final fun fields (Lcom/squareup/wire/schema/PruningRules;)Lcom/google/common/collect/Multimap;
+	public final fun get (Lcom/squareup/wire/schema/ProtoMember;)Ljava/lang/Object;
+	public final fun getElements ()Ljava/util/List;
+	public final fun getMap ()Ljava/util/Map;
+	public final fun link (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/Location;Z)V
+	public final fun optionMatches (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;)Lcom/squareup/wire/schema/Options;
+	public final fun retainLinked ()Lcom/squareup/wire/schema/Options;
+}
+
+public final class com/squareup/wire/schema/Options$Companion {
+	public final fun getGOOGLE_PROTOBUF_OPTION_TYPES ()[Lcom/squareup/wire/schema/ProtoType;
+	public final fun resolveFieldPath (Ljava/lang/String;Ljava/util/Set;)[Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/Profile {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getAdapter (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/wire/schema/AdapterConstant;
+	public final fun javaTarget (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/javapoet/TypeName;
+	public final fun kotlinTarget (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/kotlinpoet/TypeName;
+}
+
+public abstract interface class com/squareup/wire/schema/ProfileLoader {
+	public abstract fun loadProfile (Ljava/lang/String;Lcom/squareup/wire/schema/Schema;)Lcom/squareup/wire/schema/Profile;
+}
+
+public final class com/squareup/wire/schema/ProtoFile {
+	public static final field Companion Lcom/squareup/wire/schema/ProtoFile$Companion;
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/schema/Options;Lcom/squareup/wire/Syntax;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Ljava/util/List;
+	public final fun component7 ()Ljava/util/List;
+	public final fun component8 ()Lcom/squareup/wire/schema/Options;
+	public final fun component9 ()Lcom/squareup/wire/Syntax;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/schema/Options;Lcom/squareup/wire/Syntax;)Lcom/squareup/wire/schema/ProtoFile;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/ProtoFile;Lcom/squareup/wire/schema/Location;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/schema/Options;Lcom/squareup/wire/Syntax;ILjava/lang/Object;)Lcom/squareup/wire/schema/ProtoFile;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getExtendList ()Ljava/util/List;
+	public final fun getImports ()Ljava/util/List;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getOptions ()Lcom/squareup/wire/schema/Options;
+	public final fun getPackageName ()Ljava/lang/String;
+	public final fun getPublicImports ()Ljava/util/List;
+	public final fun getServices ()Ljava/util/List;
+	public final fun getSyntax ()Lcom/squareup/wire/Syntax;
+	public final fun getTypes ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun javaPackage ()Ljava/lang/String;
+	public final fun linkOptions (Lcom/squareup/wire/schema/Linker;Z)V
+	public final fun name ()Ljava/lang/String;
+	public final fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;)Lcom/squareup/wire/schema/ProtoFile;
+	public final fun retainImports (Ljava/util/List;)Lcom/squareup/wire/schema/ProtoFile;
+	public final fun retainLinked (Ljava/util/Set;Ljava/util/Set;)Lcom/squareup/wire/schema/ProtoFile;
+	public final fun toElement ()Lcom/squareup/wire/schema/internal/parser/ProtoFileElement;
+	public final fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+	public final fun typesAndNestedTypes ()Ljava/util/List;
+	public final fun wirePackage ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/ProtoFile$Companion {
+	public final fun get (Lcom/squareup/wire/schema/internal/parser/ProtoFileElement;)Lcom/squareup/wire/schema/ProtoFile;
+	public final fun getJAVA_PACKAGE ()Lcom/squareup/wire/schema/ProtoMember;
+	public final fun getWIRE_PACKAGE ()Lcom/squareup/wire/schema/ProtoMember;
+}
+
+public final class com/squareup/wire/schema/ProtoMember {
+	public static final field Companion Lcom/squareup/wire/schema/ProtoMember$Companion;
+	public synthetic fun <init> (Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public static final fun get (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Field;)Lcom/squareup/wire/schema/ProtoMember;
+	public static final fun get (Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoMember;
+	public static final fun get (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoMember;
+	public final fun getMember ()Ljava/lang/String;
+	public final fun getSimpleName ()Ljava/lang/String;
+	public final fun getType ()Lcom/squareup/wire/schema/ProtoType;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/ProtoMember$Companion {
+	public final fun get (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Field;)Lcom/squareup/wire/schema/ProtoMember;
+	public final fun get (Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoMember;
+	public final fun get (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoMember;
+}
+
+public final class com/squareup/wire/schema/ProtoType {
+	public static final field ANY Lcom/squareup/wire/schema/ProtoType;
+	public static final field BOOL Lcom/squareup/wire/schema/ProtoType;
+	public static final field BOOL_VALUE Lcom/squareup/wire/schema/ProtoType;
+	public static final field BYTES Lcom/squareup/wire/schema/ProtoType;
+	public static final field BYTES_VALUE Lcom/squareup/wire/schema/ProtoType;
+	public static final field Companion Lcom/squareup/wire/schema/ProtoType$Companion;
+	public static final field DOUBLE Lcom/squareup/wire/schema/ProtoType;
+	public static final field DOUBLE_VALUE Lcom/squareup/wire/schema/ProtoType;
+	public static final field DURATION Lcom/squareup/wire/schema/ProtoType;
+	public static final field EMPTY Lcom/squareup/wire/schema/ProtoType;
+	public static final field FIXED32 Lcom/squareup/wire/schema/ProtoType;
+	public static final field FIXED64 Lcom/squareup/wire/schema/ProtoType;
+	public static final field FLOAT Lcom/squareup/wire/schema/ProtoType;
+	public static final field FLOAT_VALUE Lcom/squareup/wire/schema/ProtoType;
+	public static final field INT32 Lcom/squareup/wire/schema/ProtoType;
+	public static final field INT32_VALUE Lcom/squareup/wire/schema/ProtoType;
+	public static final field INT64 Lcom/squareup/wire/schema/ProtoType;
+	public static final field INT64_VALUE Lcom/squareup/wire/schema/ProtoType;
+	public static final field SFIXED32 Lcom/squareup/wire/schema/ProtoType;
+	public static final field SFIXED64 Lcom/squareup/wire/schema/ProtoType;
+	public static final field SINT32 Lcom/squareup/wire/schema/ProtoType;
+	public static final field SINT64 Lcom/squareup/wire/schema/ProtoType;
+	public static final field STRING Lcom/squareup/wire/schema/ProtoType;
+	public static final field STRING_VALUE Lcom/squareup/wire/schema/ProtoType;
+	public static final field STRUCT_LIST Lcom/squareup/wire/schema/ProtoType;
+	public static final field STRUCT_MAP Lcom/squareup/wire/schema/ProtoType;
+	public static final field STRUCT_NULL Lcom/squareup/wire/schema/ProtoType;
+	public static final field STRUCT_VALUE Lcom/squareup/wire/schema/ProtoType;
+	public static final field TIMESTAMP Lcom/squareup/wire/schema/ProtoType;
+	public static final field UINT32 Lcom/squareup/wire/schema/ProtoType;
+	public static final field UINT32_VALUE Lcom/squareup/wire/schema/ProtoType;
+	public static final field UINT64 Lcom/squareup/wire/schema/ProtoType;
+	public static final field UINT64_VALUE Lcom/squareup/wire/schema/ProtoType;
+	public synthetic fun <init> (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (ZLjava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public static final fun get (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoType;
+	public static final fun get (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoType;
+	public static final fun get (Ljava/lang/String;Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoType;
+	public final fun getEnclosingTypeOrPackage ()Ljava/lang/String;
+	public final fun getKeyType ()Lcom/squareup/wire/schema/ProtoType;
+	public final fun getSimpleName ()Ljava/lang/String;
+	public final fun getTypeUrl ()Ljava/lang/String;
+	public final fun getValueType ()Lcom/squareup/wire/schema/ProtoType;
+	public fun hashCode ()I
+	public final fun isMap ()Z
+	public final fun isScalar ()Z
+	public final fun isWrapper ()Z
+	public final fun nestedType (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoType;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/ProtoType$Companion {
+	public final fun get (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoType;
+	public final fun get (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoType;
+	public final fun get (Ljava/lang/String;Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoType;
+}
+
+public final class com/squareup/wire/schema/Pruner {
+	public fun <init> (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/PruningRules;)V
+	public final fun prune ()Lcom/squareup/wire/schema/Schema;
+}
+
+public final class com/squareup/wire/schema/PruningRules {
+	public static final field Companion Lcom/squareup/wire/schema/PruningRules$Companion;
+	public synthetic fun <init> (Lcom/squareup/wire/schema/PruningRules$Builder;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getOnly ()Ljava/lang/String;
+	public final fun getPrunes ()Ljava/util/Set;
+	public final fun getRoots ()Ljava/util/Set;
+	public final fun getSince ()Ljava/lang/String;
+	public final fun getUntil ()Ljava/lang/String;
+	public final fun isEmpty ()Z
+	public final fun isEnumConstantRetainedVersion (Lcom/squareup/wire/schema/Options;)Z
+	public final fun isFieldRetainedVersion (Lcom/squareup/wire/schema/Options;)Z
+	public final fun isRoot (Lcom/squareup/wire/schema/ProtoMember;)Z
+	public final fun isRoot (Lcom/squareup/wire/schema/ProtoType;)Z
+	public final fun prunes (Lcom/squareup/wire/schema/ProtoMember;)Z
+	public final fun prunes (Lcom/squareup/wire/schema/ProtoType;)Z
+	public final fun unusedPrunes ()Ljava/util/Set;
+	public final fun unusedRoots ()Ljava/util/Set;
+}
+
+public final class com/squareup/wire/schema/PruningRules$Builder {
+	public fun <init> ()V
+	public final fun addRoot (Ljava/lang/Iterable;)Lcom/squareup/wire/schema/PruningRules$Builder;
+	public final fun addRoot (Ljava/lang/String;)Lcom/squareup/wire/schema/PruningRules$Builder;
+	public final fun build ()Lcom/squareup/wire/schema/PruningRules;
+	public final fun only (Ljava/lang/String;)Lcom/squareup/wire/schema/PruningRules$Builder;
+	public final fun prune (Ljava/lang/Iterable;)Lcom/squareup/wire/schema/PruningRules$Builder;
+	public final fun prune (Ljava/lang/String;)Lcom/squareup/wire/schema/PruningRules$Builder;
+	public final fun since (Ljava/lang/String;)Lcom/squareup/wire/schema/PruningRules$Builder;
+	public final fun until (Ljava/lang/String;)Lcom/squareup/wire/schema/PruningRules$Builder;
+}
+
+public final class com/squareup/wire/schema/PruningRules$Companion {
+}
+
+public final class com/squareup/wire/schema/Reserved {
+	public static final field Companion Lcom/squareup/wire/schema/Reserved$Companion;
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;)Lcom/squareup/wire/schema/Reserved;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/Reserved;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/Reserved;
+	public fun equals (Ljava/lang/Object;)Z
+	public static final fun fromElements (Ljava/util/List;)Ljava/util/List;
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getValues ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun matchesName (Ljava/lang/String;)Z
+	public final fun matchesTag (I)Z
+	public static final fun toElements (Ljava/util/List;)Ljava/util/List;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/Reserved$Companion {
+	public final fun fromElements (Ljava/util/List;)Ljava/util/List;
+	public final fun toElements (Ljava/util/List;)Ljava/util/List;
+}
+
+public final class com/squareup/wire/schema/Rpc {
+	public static final field Companion Lcom/squareup/wire/schema/Rpc$Companion;
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLcom/squareup/wire/schema/Options;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component6 ()Z
+	public final fun component7 ()Z
+	public final fun component8 ()Lcom/squareup/wire/schema/Options;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLcom/squareup/wire/schema/Options;)Lcom/squareup/wire/schema/Rpc;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/Rpc;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLcom/squareup/wire/schema/Options;ILjava/lang/Object;)Lcom/squareup/wire/schema/Rpc;
+	public fun equals (Ljava/lang/Object;)Z
+	public static final fun fromElements (Ljava/util/List;)Ljava/util/List;
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getOptions ()Lcom/squareup/wire/schema/Options;
+	public final fun getRequestStreaming ()Z
+	public final fun getRequestType ()Lcom/squareup/wire/schema/ProtoType;
+	public final fun getResponseStreaming ()Z
+	public final fun getResponseType ()Lcom/squareup/wire/schema/ProtoType;
+	public fun hashCode ()I
+	public final fun link (Lcom/squareup/wire/schema/Linker;)V
+	public final fun linkOptions (Lcom/squareup/wire/schema/Linker;Z)V
+	public final fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;)Lcom/squareup/wire/schema/Rpc;
+	public static final fun toElements (Ljava/util/List;)Ljava/util/List;
+	public fun toString ()Ljava/lang/String;
+	public final fun validate (Lcom/squareup/wire/schema/Linker;)V
+}
+
+public final class com/squareup/wire/schema/Rpc$Companion {
+	public final fun fromElements (Ljava/util/List;)Ljava/util/List;
+	public final fun toElements (Ljava/util/List;)Ljava/util/List;
+}
+
+public final class com/squareup/wire/schema/Schema {
+	public static final field Companion Lcom/squareup/wire/schema/Schema$Companion;
+	public final fun getField (Lcom/squareup/wire/schema/ProtoMember;)Lcom/squareup/wire/schema/Field;
+	public final fun getField (Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;)Lcom/squareup/wire/schema/Field;
+	public final fun getField (Ljava/lang/String;Ljava/lang/String;)Lcom/squareup/wire/schema/Field;
+	public final fun getProtoFiles ()Ljava/util/List;
+	public final fun getService (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/wire/schema/Service;
+	public final fun getService (Ljava/lang/String;)Lcom/squareup/wire/schema/Service;
+	public final fun getType (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/wire/schema/Type;
+	public final fun getType (Ljava/lang/String;)Lcom/squareup/wire/schema/Type;
+	public final fun getTypes ()Ljava/util/Set;
+	public final fun isExtensionField (Lcom/squareup/wire/schema/ProtoMember;)Z
+	public final fun protoAdapter (Ljava/lang/String;Z)Lcom/squareup/wire/ProtoAdapter;
+	public final fun protoFile (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/wire/schema/ProtoFile;
+	public final fun protoFile (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoFile;
+	public final fun protoFile (Lokio/Path;)Lcom/squareup/wire/schema/ProtoFile;
+	public final fun prune (Lcom/squareup/wire/schema/PruningRules;)Lcom/squareup/wire/schema/Schema;
+}
+
+public final class com/squareup/wire/schema/Schema$Companion {
+}
+
+public final class com/squareup/wire/schema/SchemaException : java/lang/RuntimeException {
+	public fun <init> (Ljava/util/List;)V
+}
+
+public abstract class com/squareup/wire/schema/SchemaHandler {
+	public fun <init> ()V
+	public abstract fun handle (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Field;Lcom/squareup/wire/schema/SchemaHandler$Context;)Lokio/Path;
+	public fun handle (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/SchemaHandler$Context;)V
+	public abstract fun handle (Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/SchemaHandler$Context;)Ljava/util/List;
+	public abstract fun handle (Lcom/squareup/wire/schema/Type;Lcom/squareup/wire/schema/SchemaHandler$Context;)Lokio/Path;
+}
+
+public final class com/squareup/wire/schema/SchemaHandler$Context {
+	public fun <init> (Lokio/FileSystem;Lokio/Path;Lcom/squareup/wire/WireLogger;Lcom/squareup/wire/schema/ErrorCollector;Lcom/squareup/wire/schema/EmittingRules;Lcom/squareup/wire/schema/ClaimedDefinitions;Lcom/squareup/wire/schema/ClaimedPaths;Lcom/squareup/wire/schema/SchemaHandler$Module;Ljava/util/Set;Lcom/squareup/wire/schema/ProfileLoader;)V
+	public synthetic fun <init> (Lokio/FileSystem;Lokio/Path;Lcom/squareup/wire/WireLogger;Lcom/squareup/wire/schema/ErrorCollector;Lcom/squareup/wire/schema/EmittingRules;Lcom/squareup/wire/schema/ClaimedDefinitions;Lcom/squareup/wire/schema/ClaimedPaths;Lcom/squareup/wire/schema/SchemaHandler$Module;Ljava/util/Set;Lcom/squareup/wire/schema/ProfileLoader;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lokio/FileSystem;
+	public final fun component10 ()Lcom/squareup/wire/schema/ProfileLoader;
+	public final fun component2 ()Lokio/Path;
+	public final fun component3 ()Lcom/squareup/wire/WireLogger;
+	public final fun component4 ()Lcom/squareup/wire/schema/ErrorCollector;
+	public final fun component5 ()Lcom/squareup/wire/schema/EmittingRules;
+	public final fun component6 ()Lcom/squareup/wire/schema/ClaimedDefinitions;
+	public final fun component7 ()Lcom/squareup/wire/schema/ClaimedPaths;
+	public final fun component8 ()Lcom/squareup/wire/schema/SchemaHandler$Module;
+	public final fun component9 ()Ljava/util/Set;
+	public final fun copy (Lokio/FileSystem;Lokio/Path;Lcom/squareup/wire/WireLogger;Lcom/squareup/wire/schema/ErrorCollector;Lcom/squareup/wire/schema/EmittingRules;Lcom/squareup/wire/schema/ClaimedDefinitions;Lcom/squareup/wire/schema/ClaimedPaths;Lcom/squareup/wire/schema/SchemaHandler$Module;Ljava/util/Set;Lcom/squareup/wire/schema/ProfileLoader;)Lcom/squareup/wire/schema/SchemaHandler$Context;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/SchemaHandler$Context;Lokio/FileSystem;Lokio/Path;Lcom/squareup/wire/WireLogger;Lcom/squareup/wire/schema/ErrorCollector;Lcom/squareup/wire/schema/EmittingRules;Lcom/squareup/wire/schema/ClaimedDefinitions;Lcom/squareup/wire/schema/ClaimedPaths;Lcom/squareup/wire/schema/SchemaHandler$Module;Ljava/util/Set;Lcom/squareup/wire/schema/ProfileLoader;ILjava/lang/Object;)Lcom/squareup/wire/schema/SchemaHandler$Context;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getClaimedDefinitions ()Lcom/squareup/wire/schema/ClaimedDefinitions;
+	public final fun getClaimedPaths ()Lcom/squareup/wire/schema/ClaimedPaths;
+	public final fun getEmittingRules ()Lcom/squareup/wire/schema/EmittingRules;
+	public final fun getErrorCollector ()Lcom/squareup/wire/schema/ErrorCollector;
+	public final fun getFileSystem ()Lokio/FileSystem;
+	public final fun getLogger ()Lcom/squareup/wire/WireLogger;
+	public final fun getModule ()Lcom/squareup/wire/schema/SchemaHandler$Module;
+	public final fun getOutDirectory ()Lokio/Path;
+	public final fun getProfileLoader ()Lcom/squareup/wire/schema/ProfileLoader;
+	public final fun getSourcePathPaths ()Ljava/util/Set;
+	public fun hashCode ()I
+	public final fun inSourcePath (Lcom/squareup/wire/schema/Location;)Z
+	public final fun inSourcePath (Lcom/squareup/wire/schema/ProtoFile;)Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/squareup/wire/schema/SchemaHandler$Factory : java/io/Serializable {
+	public abstract fun create ()Lcom/squareup/wire/schema/SchemaHandler;
+}
+
+public final class com/squareup/wire/schema/SchemaHandler$Module {
+	public fun <init> (Ljava/lang/String;Ljava/util/Set;Ljava/util/Map;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Set;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/Set;
+	public final fun component3 ()Ljava/util/Map;
+	public final fun copy (Ljava/lang/String;Ljava/util/Set;Ljava/util/Map;)Lcom/squareup/wire/schema/SchemaHandler$Module;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/SchemaHandler$Module;Ljava/lang/String;Ljava/util/Set;Ljava/util/Map;ILjava/lang/Object;)Lcom/squareup/wire/schema/SchemaHandler$Module;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getName ()Ljava/lang/String;
+	public final fun getTypes ()Ljava/util/Set;
+	public final fun getUpstreamTypes ()Ljava/util/Map;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/SchemaLoader : com/squareup/wire/schema/Loader, com/squareup/wire/schema/ProfileLoader {
+	public fun <init> (Ljava/nio/file/FileSystem;)V
+	public fun <init> (Lokio/FileSystem;)V
+	public final fun getLoadExhaustively ()Z
+	public final fun getPermitPackageCycles ()Z
+	public final fun getSourcePathFiles ()Ljava/util/List;
+	public final fun initRoots (Ljava/util/List;Ljava/util/List;)V
+	public static synthetic fun initRoots$default (Lcom/squareup/wire/schema/SchemaLoader;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)V
+	public fun load (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoFile;
+	public fun loadProfile (Ljava/lang/String;Lcom/squareup/wire/schema/Schema;)Lcom/squareup/wire/schema/Profile;
+	public final fun loadSchema ()Lcom/squareup/wire/schema/Schema;
+	public final fun setLoadExhaustively (Z)V
+	public final fun setPermitPackageCycles (Z)V
+	public synthetic fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/Loader;
+	public fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/SchemaLoader;
+}
+
+public final class com/squareup/wire/schema/Service {
+	public static final field Companion Lcom/squareup/wire/schema/Service$Companion;
+	public fun <init> (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lcom/squareup/wire/schema/Options;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/ProtoType;
+	public final fun component2 ()Lcom/squareup/wire/schema/Location;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Lcom/squareup/wire/schema/Options;
+	public final fun copy (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lcom/squareup/wire/schema/Options;)Lcom/squareup/wire/schema/Service;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lcom/squareup/wire/schema/Options;ILjava/lang/Object;)Lcom/squareup/wire/schema/Service;
+	public final fun documentation ()Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static final fun fromElements$wire_schema (Ljava/lang/String;Ljava/util/List;)Ljava/util/List;
+	public fun hashCode ()I
+	public final fun link (Lcom/squareup/wire/schema/Linker;)V
+	public final fun linkOptions (Lcom/squareup/wire/schema/Linker;Z)V
+	public final fun location ()Lcom/squareup/wire/schema/Location;
+	public final fun name ()Ljava/lang/String;
+	public final fun options ()Lcom/squareup/wire/schema/Options;
+	public final fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;)Lcom/squareup/wire/schema/Service;
+	public final fun rpc (Ljava/lang/String;)Lcom/squareup/wire/schema/Rpc;
+	public final fun rpcs ()Ljava/util/List;
+	public static final fun toElements$wire_schema (Ljava/util/List;)Ljava/util/List;
+	public fun toString ()Ljava/lang/String;
+	public final fun type ()Lcom/squareup/wire/schema/ProtoType;
+	public final fun validate (Lcom/squareup/wire/schema/Linker;)V
+}
+
+public final class com/squareup/wire/schema/Service$Companion {
+}
+
+public abstract interface class com/squareup/wire/schema/SyntaxRules {
+	public static final field Companion Lcom/squareup/wire/schema/SyntaxRules$Companion;
+	public abstract fun getEncodeMode (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Field$Label;ZZ)Lcom/squareup/wire/schema/Field$EncodeMode;
+	public abstract fun isPackedByDefault (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Field$Label;)Z
+	public abstract fun jsonName (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public abstract fun validateDefaultValue (ZLcom/squareup/wire/schema/ErrorCollector;)V
+	public abstract fun validateEnumConstants (Ljava/util/List;Lcom/squareup/wire/schema/ErrorCollector;)V
+	public abstract fun validateExtension (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/ErrorCollector;)V
+	public abstract fun validateTypeReference (Lcom/squareup/wire/schema/Type;Lcom/squareup/wire/schema/ErrorCollector;)V
+}
+
+public final class com/squareup/wire/schema/SyntaxRules$Companion {
+	public final fun get (Lcom/squareup/wire/Syntax;)Lcom/squareup/wire/schema/SyntaxRules;
+}
+
+public abstract class com/squareup/wire/schema/Type {
+	public static final field Companion Lcom/squareup/wire/schema/Type$Companion;
+	public static final fun fromElements (Ljava/lang/String;Ljava/util/List;Lcom/squareup/wire/Syntax;)Ljava/util/List;
+	public abstract fun getDocumentation ()Ljava/lang/String;
+	public abstract fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getNestedExtendList ()Ljava/util/List;
+	public abstract fun getNestedTypes ()Ljava/util/List;
+	public abstract fun getOptions ()Lcom/squareup/wire/schema/Options;
+	public abstract fun getSyntax ()Lcom/squareup/wire/Syntax;
+	public abstract fun getType ()Lcom/squareup/wire/schema/ProtoType;
+	public abstract fun linkMembers (Lcom/squareup/wire/schema/Linker;)V
+	public abstract fun linkOptions (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;Z)V
+	public abstract fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;)Lcom/squareup/wire/schema/Type;
+	public abstract fun retainLinked (Ljava/util/Set;Ljava/util/Set;)Lcom/squareup/wire/schema/Type;
+	public static final fun toElements (Ljava/util/List;)Ljava/util/List;
+	public final fun typesAndNestedTypes ()Ljava/util/List;
+	public abstract fun validate (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;)V
+}
+
+public final class com/squareup/wire/schema/Type$Companion {
+	public final fun fromElements (Ljava/lang/String;Ljava/util/List;Lcom/squareup/wire/Syntax;)Ljava/util/List;
+	public final fun get (Ljava/util/List;Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/internal/parser/TypeElement;Lcom/squareup/wire/Syntax;)Lcom/squareup/wire/schema/Type;
+	public final fun toElements (Ljava/util/List;)Ljava/util/List;
+}
+
+public final class com/squareup/wire/schema/internal/DagChecker {
+	public fun <init> (Ljava/lang/Iterable;Lkotlin/jvm/functions/Function1;)V
+	public final fun check ()Ljava/util/Set;
+}
+
+public final class com/squareup/wire/schema/internal/JvmLanguages {
+	public static final fun annotationName (Lcom/squareup/wire/schema/ProtoFile;Lcom/squareup/wire/schema/Field;Lcom/squareup/wire/schema/internal/NameFactory;)Ljava/lang/Object;
+	public static final fun annotationTargetType (Lcom/squareup/wire/schema/Extend;)Ljava/lang/annotation/ElementType;
+	public static final fun builtInAdapterString (Lcom/squareup/wire/schema/ProtoType;)Ljava/lang/String;
+	public static final fun eligibleAsAnnotationMember (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/Field;)Z
+	public static final fun hasEponymousType (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/Field;)Z
+	public static final fun javaPackage (Lcom/squareup/wire/schema/ProtoFile;)Ljava/lang/String;
+	public static final fun legacyQualifiedFieldName (Lcom/squareup/wire/schema/Field;)Ljava/lang/String;
+	public static final fun optionValueToInt (Ljava/lang/Object;)I
+	public static final fun optionValueToLong (Ljava/lang/Object;)J
+}
+
+public abstract interface class com/squareup/wire/schema/internal/NameFactory {
+	public abstract fun nestedName (Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+	public abstract fun newName (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+}
+
+public final class com/squareup/wire/schema/internal/ProfileFileElement {
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;Ljava/util/List;)Lcom/squareup/wire/schema/internal/ProfileFileElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/ProfileFileElement;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/ProfileFileElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getImports ()Ljava/util/List;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getPackageName ()Ljava/lang/String;
+	public final fun getTypeConfigs ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/ProfileParser {
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;)V
+	public final fun read ()Lcom/squareup/wire/schema/internal/ProfileFileElement;
+}
+
+public final class com/squareup/wire/schema/internal/SchemaEncoder {
+	public fun <init> (Lcom/squareup/wire/schema/Schema;)V
+	public final fun encode (Lcom/squareup/wire/schema/ProtoFile;)Lokio/ByteString;
+}
+
+public final class com/squareup/wire/schema/internal/TypeConfigElement {
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;)Lcom/squareup/wire/schema/internal/TypeConfigElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/TypeConfigElement;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/TypeConfigElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAdapter ()Ljava/lang/String;
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getTarget ()Ljava/lang/String;
+	public final fun getType ()Ljava/lang/String;
+	public final fun getWith ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/TypeMover {
+	public fun <init> (Lcom/squareup/wire/schema/Schema;Ljava/util/List;)V
+	public final fun move ()Lcom/squareup/wire/schema/Schema;
+}
+
+public final class com/squareup/wire/schema/internal/TypeMover$Move {
+	public fun <init> (Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/ProtoType;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;)Lcom/squareup/wire/schema/internal/TypeMover$Move;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/TypeMover$Move;Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/TypeMover$Move;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getTargetPath ()Ljava/lang/String;
+	public final fun getType ()Lcom/squareup/wire/schema/ProtoType;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/UtilKt {
+	public static final fun appendDocumentation (Ljava/lang/StringBuilder;Ljava/lang/String;)V
+	public static final fun appendIndented (Ljava/lang/StringBuilder;Ljava/lang/String;)V
+	public static final fun withStubs (Lcom/squareup/wire/schema/Schema;Ljava/util/Set;)Lcom/squareup/wire/schema/Schema;
+	public static final fun withUnixSlashes (Lokio/Path;)Lokio/Path;
+}
+
+public final class com/squareup/wire/schema/internal/parser/EnumConstantElement {
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;ILjava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;ILjava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()I
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;ILjava/lang/String;Ljava/util/List;)Lcom/squareup/wire/schema/internal/parser/EnumConstantElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/EnumConstantElement;Lcom/squareup/wire/schema/Location;Ljava/lang/String;ILjava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/EnumConstantElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getOptions ()Ljava/util/List;
+	public final fun getTag ()I
+	public fun hashCode ()I
+	public final fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/parser/EnumElement : com/squareup/wire/schema/internal/parser/TypeElement {
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;)Lcom/squareup/wire/schema/internal/parser/EnumElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/EnumElement;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/EnumElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConstants ()Ljava/util/List;
+	public fun getDocumentation ()Ljava/lang/String;
+	public fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public fun getName ()Ljava/lang/String;
+	public fun getNestedTypes ()Ljava/util/List;
+	public fun getOptions ()Ljava/util/List;
+	public final fun getReserveds ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/parser/ExtendElement {
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lcom/squareup/wire/schema/internal/parser/ExtendElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/ExtendElement;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/ExtendElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getFields ()Ljava/util/List;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/parser/ExtensionsElement {
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;)Lcom/squareup/wire/schema/internal/parser/ExtensionsElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/ExtensionsElement;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/ExtensionsElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getValues ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/parser/FieldElement {
+	public fun <init> (Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/Field$Label;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/Field$Label;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Lcom/squareup/wire/schema/Field$Label;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()I
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/Field$Label;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/util/List;)Lcom/squareup/wire/schema/internal/parser/FieldElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/FieldElement;Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/Field$Label;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/FieldElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDefaultValue ()Ljava/lang/String;
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getJsonName ()Ljava/lang/String;
+	public final fun getLabel ()Lcom/squareup/wire/schema/Field$Label;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getOptions ()Ljava/util/List;
+	public final fun getTag ()I
+	public final fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/parser/GroupElement {
+	public fun <init> (Lcom/squareup/wire/schema/Field$Label;Lcom/squareup/wire/schema/Location;Ljava/lang/String;ILjava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Field$Label;Lcom/squareup/wire/schema/Location;Ljava/lang/String;ILjava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Field$Label;
+	public final fun component2 ()Lcom/squareup/wire/schema/Location;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()I
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Field$Label;Lcom/squareup/wire/schema/Location;Ljava/lang/String;ILjava/lang/String;Ljava/util/List;)Lcom/squareup/wire/schema/internal/parser/GroupElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/GroupElement;Lcom/squareup/wire/schema/Field$Label;Lcom/squareup/wire/schema/Location;Ljava/lang/String;ILjava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/GroupElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getFields ()Ljava/util/List;
+	public final fun getLabel ()Lcom/squareup/wire/schema/Field$Label;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getTag ()I
+	public fun hashCode ()I
+	public final fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/parser/MessageElement : com/squareup/wire/schema/internal/parser/TypeElement {
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component10 ()Ljava/util/List;
+	public final fun component11 ()Ljava/util/List;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Ljava/util/List;
+	public final fun component7 ()Ljava/util/List;
+	public final fun component8 ()Ljava/util/List;
+	public final fun component9 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;)Lcom/squareup/wire/schema/internal/parser/MessageElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/MessageElement;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/MessageElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDocumentation ()Ljava/lang/String;
+	public final fun getExtendDeclarations ()Ljava/util/List;
+	public final fun getExtensions ()Ljava/util/List;
+	public final fun getFields ()Ljava/util/List;
+	public final fun getGroups ()Ljava/util/List;
+	public fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public fun getName ()Ljava/lang/String;
+	public fun getNestedTypes ()Ljava/util/List;
+	public final fun getOneOfs ()Ljava/util/List;
+	public fun getOptions ()Ljava/util/List;
+	public final fun getReserveds ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/parser/OneOfElement {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;)Lcom/squareup/wire/schema/internal/parser/OneOfElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/OneOfElement;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/OneOfElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getFields ()Ljava/util/List;
+	public final fun getGroups ()Ljava/util/List;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getOptions ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/parser/OptionElement {
+	public static final field Companion Lcom/squareup/wire/schema/internal/parser/OptionElement$Companion;
+	public fun <init> (Ljava/lang/String;Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;Ljava/lang/Object;Z)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;
+	public final fun component3 ()Ljava/lang/Object;
+	public final fun component4 ()Z
+	public final fun copy (Ljava/lang/String;Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;Ljava/lang/Object;Z)Lcom/squareup/wire/schema/internal/parser/OptionElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/OptionElement;Ljava/lang/String;Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;Ljava/lang/Object;ZILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/OptionElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKind ()Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getValue ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public final fun isParenthesized ()Z
+	public final fun toSchema ()Ljava/lang/String;
+	public final fun toSchemaDeclaration ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/parser/OptionElement$Companion {
+	public final fun create (Ljava/lang/String;Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;Ljava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/OptionElement;
+	public final fun create (Ljava/lang/String;Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;Ljava/lang/Object;Z)Lcom/squareup/wire/schema/internal/parser/OptionElement;
+	public static synthetic fun create$default (Lcom/squareup/wire/schema/internal/parser/OptionElement$Companion;Ljava/lang/String;Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;Ljava/lang/Object;ZILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/OptionElement;
+}
+
+public final class com/squareup/wire/schema/internal/parser/OptionElement$Kind : java/lang/Enum {
+	public static final field BOOLEAN Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;
+	public static final field ENUM Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;
+	public static final field LIST Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;
+	public static final field MAP Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;
+	public static final field NUMBER Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;
+	public static final field OPTION Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;
+	public static final field STRING Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;
+	public static fun valueOf (Ljava/lang/String;)Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;
+	public static fun values ()[Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;
+}
+
+public final class com/squareup/wire/schema/internal/parser/OptionElement$OptionPrimitive {
+	public fun <init> (Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;Ljava/lang/Object;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;
+	public final fun component2 ()Ljava/lang/Object;
+	public final fun copy (Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;Ljava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/OptionElement$OptionPrimitive;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/OptionElement$OptionPrimitive;Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;Ljava/lang/Object;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/OptionElement$OptionPrimitive;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKind ()Lcom/squareup/wire/schema/internal/parser/OptionElement$Kind;
+	public final fun getValue ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/parser/OptionReader {
+	public fun <init> (Lcom/squareup/wire/schema/internal/parser/SyntaxReader;)V
+	public final fun readOption (C)Lcom/squareup/wire/schema/internal/parser/OptionElement;
+	public final fun readOptions ()Ljava/util/List;
+}
+
+public final class com/squareup/wire/schema/internal/parser/ProtoFileElement {
+	public static final field Companion Lcom/squareup/wire/schema/internal/parser/ProtoFileElement$Companion;
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Lcom/squareup/wire/Syntax;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Lcom/squareup/wire/Syntax;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lcom/squareup/wire/Syntax;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Ljava/util/List;
+	public final fun component7 ()Ljava/util/List;
+	public final fun component8 ()Ljava/util/List;
+	public final fun component9 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Lcom/squareup/wire/Syntax;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;)Lcom/squareup/wire/schema/internal/parser/ProtoFileElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/ProtoFileElement;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Lcom/squareup/wire/Syntax;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/ProtoFileElement;
+	public static final fun empty (Ljava/lang/String;)Lcom/squareup/wire/schema/internal/parser/ProtoFileElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getExtendDeclarations ()Ljava/util/List;
+	public final fun getImports ()Ljava/util/List;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getOptions ()Ljava/util/List;
+	public final fun getPackageName ()Ljava/lang/String;
+	public final fun getPublicImports ()Ljava/util/List;
+	public final fun getServices ()Ljava/util/List;
+	public final fun getSyntax ()Lcom/squareup/wire/Syntax;
+	public final fun getTypes ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/parser/ProtoFileElement$Companion {
+	public final fun empty (Ljava/lang/String;)Lcom/squareup/wire/schema/internal/parser/ProtoFileElement;
+}
+
+public final class com/squareup/wire/schema/internal/parser/ProtoParser {
+	public static final field Companion Lcom/squareup/wire/schema/internal/parser/ProtoParser$Companion;
+	public final fun readProtoFile ()Lcom/squareup/wire/schema/internal/parser/ProtoFileElement;
+}
+
+public final class com/squareup/wire/schema/internal/parser/ProtoParser$Companion {
+	public final fun parse (Lcom/squareup/wire/schema/Location;Ljava/lang/String;)Lcom/squareup/wire/schema/internal/parser/ProtoFileElement;
+}
+
+public final class com/squareup/wire/schema/internal/parser/ReservedElement {
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;)Lcom/squareup/wire/schema/internal/parser/ReservedElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/ReservedElement;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/ReservedElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getValues ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/parser/RpcElement {
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/util/List;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Z
+	public final fun component7 ()Z
+	public final fun component8 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/util/List;)Lcom/squareup/wire/schema/internal/parser/RpcElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/RpcElement;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/RpcElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getOptions ()Ljava/util/List;
+	public final fun getRequestStreaming ()Z
+	public final fun getRequestType ()Ljava/lang/String;
+	public final fun getResponseStreaming ()Z
+	public final fun getResponseType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/parser/ServiceElement {
+	public fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/squareup/wire/schema/Location;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/util/List;
+	public final fun copy (Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;)Lcom/squareup/wire/schema/internal/parser/ServiceElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/ServiceElement;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/ServiceElement;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDocumentation ()Ljava/lang/String;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getOptions ()Ljava/util/List;
+	public final fun getRpcs ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun toSchema ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/schema/internal/parser/SyntaxReader {
+	public fun <init> ([CLcom/squareup/wire/schema/Location;)V
+	public final fun exhausted ()Z
+	public final fun expect (ZLcom/squareup/wire/schema/Location;Lkotlin/jvm/functions/Function0;)V
+	public static synthetic fun expect$default (Lcom/squareup/wire/schema/internal/parser/SyntaxReader;ZLcom/squareup/wire/schema/Location;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)V
+	public final fun location ()Lcom/squareup/wire/schema/Location;
+	public final fun peekChar ()C
+	public final fun peekChar (C)Z
+	public final fun pushBack (C)V
+	public final fun readChar ()C
+	public final fun readDataType ()Ljava/lang/String;
+	public final fun readDataType (Ljava/lang/String;)Ljava/lang/String;
+	public final fun readDocumentation ()Ljava/lang/String;
+	public final fun readInt ()I
+	public final fun readName (ZZ)Ljava/lang/String;
+	public static synthetic fun readName$default (Lcom/squareup/wire/schema/internal/parser/SyntaxReader;ZZILjava/lang/Object;)Ljava/lang/String;
+	public final fun readQuotedString ()Ljava/lang/String;
+	public final fun readString ()Ljava/lang/String;
+	public final fun readWord (Z)Ljava/lang/String;
+	public static synthetic fun readWord$default (Lcom/squareup/wire/schema/internal/parser/SyntaxReader;ZILjava/lang/Object;)Ljava/lang/String;
+	public final fun require (C)V
+	public final fun tryAppendTrailingDocumentation (Ljava/lang/String;)Ljava/lang/String;
+	public final fun unexpected (Ljava/lang/String;Lcom/squareup/wire/schema/Location;)Ljava/lang/RuntimeException;
+	public static synthetic fun unexpected$default (Lcom/squareup/wire/schema/internal/parser/SyntaxReader;Ljava/lang/String;Lcom/squareup/wire/schema/Location;ILjava/lang/Object;)Ljava/lang/RuntimeException;
+}
+
+public abstract interface class com/squareup/wire/schema/internal/parser/TypeElement {
+	public abstract fun getDocumentation ()Ljava/lang/String;
+	public abstract fun getLocation ()Lcom/squareup/wire/schema/Location;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getNestedTypes ()Ljava/util/List;
+	public abstract fun getOptions ()Ljava/util/List;
+	public abstract fun toSchema ()Ljava/lang/String;
+}
+
