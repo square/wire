@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 4.7.2
+-------------
+
+_2023-06-18_
+
+* Swift: Resolve Redactable regression.
+
 Version 4.7.1
 -------------
 
