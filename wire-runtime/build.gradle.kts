@@ -1,19 +1,16 @@
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import ru.vyarus.gradle.plugin.animalsniffer.AnimalSnifferExtension
 
 // apply(plugin = "org.jetbrains.kotlin.multiplatform")
 plugins {
   kotlin("multiplatform")
   id("com.github.gmazzo.buildconfig")
-  id("ru.vyarus.animalsniffer").apply(false)
   id("org.jetbrains.dokka")
   id("com.vanniktech.maven.publish.base").apply(false)
 }
 
 if (project.rootProject.name == "wire") {
-  apply(plugin = "ru.vyarus.animalsniffer")
   apply(plugin = "com.vanniktech.maven.publish.base")
   apply(plugin = "binary-compatibility-validator")
 }
@@ -160,12 +157,6 @@ buildConfig {
 }
 
 if (project.rootProject.name == "wire") {
-  val main by sourceSets.getting
-  configure<AnimalSnifferExtension> {
-    sourceSets = listOf(main)
-    ignore("com.squareup.wire.internal")
-  }
-
   configure<MavenPublishBaseExtension> {
     configure(
       KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))

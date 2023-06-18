@@ -21,7 +21,6 @@ buildscript {
 plugins {
   id("java-library")
   kotlin("jvm")
-  id("ru.vyarus.animalsniffer")
   id("com.google.protobuf")
 }
 
@@ -55,12 +54,6 @@ sourceSets {
     java.srcDir("build/generated/source/proto/test/java")
     java.srcDir("src/test/proto-grpc")
   }
-}
-
-val main by sourceSets.getting
-animalsniffer {
-  sourceSets = listOf(main)
-  ignore("com.squareup.wire.internal")
 }
 
 dependencies {

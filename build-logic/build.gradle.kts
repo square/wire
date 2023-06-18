@@ -6,7 +6,6 @@ buildscript {
   dependencies {
     classpath(libs.pluginz.kotlin)
     classpath(libs.vanniktechPublishPlugin)
-    classpath(libs.animalSniffer.gradle)
     classpath(libs.dokka.core)
     classpath(libs.dokka.gradlePlugin)
     classpath(libs.pluginz.buildConfig)
