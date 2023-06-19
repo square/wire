@@ -983,6 +983,24 @@ class WirePluginTest {
   }
 
   @Test
+  fun customLogger() {
+    val fixtureRoot = File("src/test/projects/custom-logger")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    assertThat(result.output)
+      .contains("custom artifactHandled com.squareup.geology.Period")
+  }
+
+  @Test
+  fun customLoggerNoSuchClass() {
+    val fixtureRoot = File("src/test/projects/custom-logger-no-such-class")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    assertThat(result.output)
+      .contains("Couldn't find LoggerClass 'NoSuchClass'")
+  }
+
+  @Test
   fun sinceUntil() {
     val fixtureRoot = File("src/test/projects/since-until")
 

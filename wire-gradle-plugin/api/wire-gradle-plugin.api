@@ -105,6 +105,8 @@ public class com/squareup/wire/gradle/WireExtension {
 	public fun <init> (Lorg/gradle/api/Project;)V
 	public final fun custom (Lorg/gradle/api/Action;)V
 	public final fun getDryRun ()Z
+	public final fun getLoggerFactory ()Lcom/squareup/wire/WireLogger$Factory;
+	public final fun getLoggerFactoryClass ()Ljava/lang/String;
 	public final fun getOutputs ()Ljava/util/List;
 	public final fun getProtoJars ()Ljava/util/Set;
 	public final fun getProtoLibrary ()Z
@@ -129,6 +131,8 @@ public class com/squareup/wire/gradle/WireExtension {
 	public final fun root ([Ljava/lang/String;)V
 	public final fun roots ()Ljava/util/Set;
 	public final fun setDryRun (Z)V
+	public final fun setLoggerFactory (Lcom/squareup/wire/WireLogger$Factory;)V
+	public final fun setLoggerFactoryClass (Ljava/lang/String;)V
 	public final fun setProtoLibrary (Z)V
 	public final fun setRules (Ljava/lang/String;)V
 	public final fun sinceVersion ()Ljava/lang/String;
@@ -185,6 +189,7 @@ public abstract class com/squareup/wire/gradle/WireTask : org/gradle/api/tasks/S
 	public abstract fun getBuildDirProperty ()Lorg/gradle/api/file/DirectoryProperty;
 	public final fun getDryRun ()Lorg/gradle/api/provider/Property;
 	public abstract fun getInputFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getLoggerFactory ()Lorg/gradle/api/provider/Property;
 	public abstract fun getMoves ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getOnlyVersion ()Lorg/gradle/api/provider/Property;
 	public abstract fun getOutputDirectories ()Lorg/gradle/api/file/ConfigurableFileCollection;

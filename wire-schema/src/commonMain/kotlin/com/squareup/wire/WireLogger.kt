@@ -15,8 +15,11 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.internal.Serializable
 import com.squareup.wire.schema.ProtoType
+import com.squareup.wire.schema.SchemaHandler
 import okio.Path
+import kotlin.jvm.Transient
 
 /**
  * Logger class used by [WireRun][com.squareup.wire.schema.WireRun] and
@@ -93,4 +96,9 @@ interface WireLogger {
    */
   // TODO(Benoit) We could pass the target name or something which makes it identifiable.
   fun unusedExcludesInTarget(unusedExcludes: Set<String>)
+
+  /** Implementations of this interface must have a no-arguments public constructor. */
+  fun interface Factory : Serializable {
+    fun create(): WireLogger
+  }
 }
