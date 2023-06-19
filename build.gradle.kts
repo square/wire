@@ -14,7 +14,6 @@ import kotlinx.validation.ApiValidationExtension
 
 buildscript {
   dependencies {
-    classpath(libs.animalSniffer.gradle)
     classpath(libs.dokka.core)
     classpath(libs.dokka.gradlePlugin)
     classpath(libs.pluginz.android)
