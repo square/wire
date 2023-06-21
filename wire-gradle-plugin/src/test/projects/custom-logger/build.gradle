@@ -1,0 +1,55 @@
+import com.squareup.wire.WireLogger
+import com.squareup.wire.schema.ProtoType
+import org.jetbrains.annotations.NotNull
+import org.slf4j.LoggerFactory
+
+plugins {
+  id 'application'
+  id 'org.jetbrains.kotlin.jvm'
+  id 'com.squareup.wire'
+}
+
+class MyCustomLoggerFactory implements WireLogger.Factory {
+  @Override public WireLogger create() {
+    return new WireLogger() {
+      private org.slf4j.Logger delegate = LoggerFactory.getLogger("MyCustomLoggerFactory")
+      @Override
+      void artifactHandled(@NotNull okio.Path path, @NotNull String qualifiedName, @NotNull String targetName) {
+        delegate.info("custom artifactHandled " + qualifiedName);
+      }
+
+      @Override
+      void artifactSkipped(@NotNull ProtoType protoType, @NotNull String s) {
+        delegate.info("custom artifactSkipped");
+      }
+
+      @Override
+      void unusedRoots(@NotNull Set<String> set) {
+        delegate.info("custom unusedRoots");
+      }
+
+      @Override
+      void unusedPrunes(@NotNull Set<String> set) {
+        delegate.info("custom unusedPrunes");
+      }
+
+      @Override
+      void unusedIncludesInTarget(@NotNull Set<String> set) {
+        delegate.info("custom unusedIncludesInTarget");
+      }
+
+      @Override
+      void unusedExcludesInTarget(@NotNull Set<String> set) {
+        delegate.info("custom unusedExcludesInTarget");
+      }
+    }
+  }
+}
+
+wire {
+  loggerFactory = new MyCustomLoggerFactory()
+  sourcePath 'src/main/proto'
+
+  kotlin {
+  }
+}

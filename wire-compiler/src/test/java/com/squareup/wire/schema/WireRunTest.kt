@@ -19,20 +19,18 @@ import com.squareup.wire.StringWireLogger
 import com.squareup.wire.WireLogger
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
+import com.squareup.wire.newLoggerFactory
 import com.squareup.wire.schema.WireRun.Module
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.containsRelativePaths
 import com.squareup.wire.testing.findFiles
 import com.squareup.wire.testing.readUtf8
-import okio.Buffer
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
 import kotlin.test.assertFailsWith
 
 class WireRunTest {
@@ -594,6 +592,63 @@ class WireRunTest {
     ).hasMessage("java.lang.Object does not implement SchemaHandler.Factory")
   }
 
+  @Test
+  fun noSuchClassLogger() {
+    assertThat(
+      assertFailsWith<IllegalArgumentException> {
+        newLoggerFactory("foo").create()
+      }
+    ).hasMessage("Couldn't find LoggerClass 'foo'")
+  }
+
+  @Test
+  fun noPublicConstructorLogger() {
+    assertThat(
+      assertFailsWith<IllegalArgumentException> {
+        newLoggerFactory("java.lang.Void").create()
+      }
+    ).hasMessage("No public constructor on java.lang.Void")
+  }
+
+  @Test
+  fun classDoesNotImplementWireLoggerInterface() {
+    assertThat(
+      assertFailsWith<IllegalArgumentException> {
+        newLoggerFactory("java.lang.Object").create()
+      }
+    ).hasMessage("java.lang.Object does not implement WireLogger.Factory")
+  }
+
+  @Test
+  fun customLogger() {
+    val logger = CustomLogger()
+
+    writeBlueProto()
+    writeRedProto()
+    writeTriangleProto()
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      protoPath = listOf(Location.get("polygons/src/main/proto")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
+    )
+    wireRun.execute(fs, logger)
+    assertThat(fs.findFiles("generated")).containsRelativePaths(
+      "generated/kt/squareup/colors/Blue.kt",
+      "generated/kt/squareup/colors/Red.kt"
+    )
+    assertThat(fs.readUtf8("generated/kt/squareup/colors/Blue.kt"))
+      .contains("class Blue")
+    assertThat(fs.readUtf8("generated/kt/squareup/colors/Red.kt"))
+      .contains("class Red")
+
+    assertThat(logger.takeLog())
+      .isEqualTo("artifactHandled: generated/kt, squareup.colors.Blue, Kotlin")
+    assertThat(logger.takeLog())
+      .isEqualTo("artifactHandled: generated/kt, squareup.colors.Red, Kotlin")
+
+    logger.assertAllEventsAreConsumed()
+  }
+
   class ErrorReportingCustomHandler : SchemaHandler.Factory {
     override fun create(): SchemaHandler {
       return object : SchemaHandler() {
@@ -617,6 +672,46 @@ class WireRunTest {
     }
   }
 
+  class CustomLogger : WireLogger {
+    private val logs = ArrayDeque<String>()
+
+    fun takeLog() = logs.removeFirst()
+
+    fun assertAllEventsAreConsumed() {
+      if (logs.isNotEmpty()) {
+        throw AssertionError("Unconsumed logs: ${logs.joinToString("")}")
+      }
+    }
+
+    override fun artifactHandled(outputPath: Path, qualifiedName: String, targetName: String) {
+      logs.add("artifactHandled: $outputPath, $qualifiedName, $targetName")
+    }
+
+    override fun artifactSkipped(type: ProtoType, targetName: String) {
+      logs.add("artifactSkipped: $type, $targetName")
+    }
+
+    override fun unusedRoots(unusedRoots: Set<String>) {
+      logs.add("unusedRoots: $unusedRoots")
+    }
+
+    override fun unusedPrunes(unusedPrunes: Set<String>) {
+      logs.add("unusedPrunes: $unusedPrunes")
+    }
+
+    override fun unusedIncludesInTarget(unusedIncludes: Set<String>) {
+      logs.add("unusedIncludesInTarget: $unusedIncludes")
+    }
+
+    override fun unusedExcludesInTarget(unusedExcludes: Set<String>) {
+      logs.add("unusedExcludesInTarget: $unusedExcludes")
+    }
+  }
+
+  class CustomLoggerFactory : WireLogger.Factory {
+    override fun create(): WireLogger = CustomLogger()
+  }
+
   @Test
   fun errorReportingCustomHandler() {
     val customHandler = newSchemaHandler(
@@ -633,16 +728,6 @@ class WireRunTest {
         |  for field angles (polygons/src/main/proto/squareup/polygons/triangle.proto:4:3)
         """.trimMargin()
     )
-  }
-
-  private fun <T> reserialize(value: T): T {
-    val buffer = Buffer()
-    ObjectOutputStream(buffer.outputStream()).use {
-      it.writeObject(value)
-    }
-    return ObjectInputStream(buffer.inputStream()).use {
-      it.readObject() as T
-    }
   }
 
   private fun callCustomHandler(schemaHandlerFactory: SchemaHandler.Factory) {
@@ -801,7 +886,8 @@ class WireRunTest {
     )
   }
 
-  @Test fun crashWhenTypeGenerationConflicts() {
+  @Test
+  fun crashWhenTypeGenerationConflicts() {
     fs.add(
       "protos/one/au.proto",
       """
@@ -835,7 +921,8 @@ class WireRunTest {
     }
   }
 
-  @Test fun crashWhenServiceGenerationConflicts() {
+  @Test
+  fun crashWhenServiceGenerationConflicts() {
     writeRedProto()
     fs.add(
       "routes/src/main/proto/squareup/routes1/route.proto",
@@ -879,7 +966,8 @@ class WireRunTest {
     }
   }
 
-  @Test fun crashOnDependencyCycle() {
+  @Test
+  fun crashOnDependencyCycle() {
     try {
       WireRun(
         sourcePath = emptyList(),
@@ -901,7 +989,8 @@ class WireRunTest {
     }
   }
 
-  @Test fun crashOnPackageCycle() {
+  @Test
+  fun crashOnPackageCycle() {
     fs.add(
       "source-path/people/employee.proto",
       """

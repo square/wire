@@ -22,6 +22,7 @@ import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.Source
 import com.squareup.wire.gradle.kotlin.sourceRoots
+import com.squareup.wire.newLoggerFactory
 import com.squareup.wire.schema.KotlinTarget
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -202,6 +203,13 @@ class WirePlugin : Plugin<Project> {
         task.group = GROUP
         task.description = "Generate protobuf implementation for ${source.name}"
         task.source(protoSourceInput.configuration)
+
+        if (extension.loggerFactoryClass != null && extension.loggerFactory != null) {
+          error("Cannot set both loggerFactoryClass and loggerFactory at the same time.")
+        }
+        val loggerFactory = extension.loggerFactory
+          ?: extension.loggerFactoryClass?.let(::newLoggerFactory)
+        task.loggerFactory.set(loggerFactory)
 
         if (task.logger.isDebugEnabled) {
           protoSourceInput.debug(task.logger)
