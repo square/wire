@@ -1,5 +1,3 @@
-import com.diffplug.gradle.spotless.SpotlessExtension
-
 plugins {
   id("java-library")
   kotlin("jvm")
@@ -22,13 +20,5 @@ wire {
 
   kotlin {
     out = "src/main/kotlin"
-  }
-}
-
-configure<SpotlessExtension> {
-  kotlin {
-    targetExclude(
-      "src/main/kotlin/**/*.kt",
-    )
   }
 }
