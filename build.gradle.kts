@@ -235,7 +235,6 @@ allprojects {
 subprojects {
   plugins.withId("binary-compatibility-validator") {
     configure<ApiValidationExtension> {
-      ignoredPackages += "com.squareup.wire.internal"
       ignoredPackages += "grpc.reflection.v1alpha"
     }
   }

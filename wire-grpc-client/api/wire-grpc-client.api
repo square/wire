@@ -106,3 +106,18 @@ public abstract interface class com/squareup/wire/GrpcStreamingCall {
 public abstract interface annotation class com/squareup/wire/WireGrpcExperimental : java/lang/annotation/Annotation {
 }
 
+public final class com/squareup/wire/internal/GrpcMessageSink : com/squareup/wire/MessageSink {
+	public fun <init> (Lokio/BufferedSink;JLcom/squareup/wire/ProtoAdapter;Lokhttp3/Call;Ljava/lang/String;)V
+	public fun cancel ()V
+	public fun close ()V
+	public fun write (Ljava/lang/Object;)V
+}
+
+public final class com/squareup/wire/internal/GrpcMessageSource : com/squareup/wire/MessageSource {
+	public fun <init> (Lokio/BufferedSource;Lcom/squareup/wire/ProtoAdapter;Ljava/lang/String;)V
+	public synthetic fun <init> (Lokio/BufferedSource;Lcom/squareup/wire/ProtoAdapter;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun close ()V
+	public fun read ()Ljava/lang/Object;
+	public final fun readExactlyOneAndClose ()Ljava/lang/Object;
+}
+
