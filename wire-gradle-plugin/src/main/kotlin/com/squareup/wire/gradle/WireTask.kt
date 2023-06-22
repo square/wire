@@ -17,7 +17,6 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.DryRunFileSystem
 import com.squareup.wire.VERSION
-import com.squareup.wire.WireLogger
 import com.squareup.wire.gradle.internal.GradleWireLogger
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
@@ -105,10 +104,6 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
   val dryRun: Property<Boolean> = objects.property(Boolean::class.java)
     .convention(false)
 
-  @get:Input
-  @get:Optional
-  abstract val loggerFactory: Property<WireLogger.Factory>
-
   @TaskAction
   fun generateWireFiles() {
     val includes = mutableListOf<String>()
@@ -174,7 +169,7 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
     }
     wireRun.execute(
       fs = if (dryRun.get()) DryRunFileSystem(FileSystem.SYSTEM) else FileSystem.SYSTEM,
-      logger = loggerFactory.orNull?.create() ?: GradleWireLogger,
+      logger = GradleWireLogger,
     )
   }
 

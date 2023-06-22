@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.gradle
 
-import com.squareup.wire.WireLogger
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
@@ -116,16 +115,6 @@ open class WireExtension(project: Project) {
   @get:Input
   @get:Optional
   var rules: String? = null
-
-  /** Assign the custom logger factory instance. */
-  @get:Input
-  @get:Optional
-  var loggerFactory: WireLogger.Factory? = null
-
-  /** Assign the custom logger factory by name. The referred class must have a no-arguments constructor. */
-  @get:Input
-  @get:Optional
-  var loggerFactoryClass: String? = null
 
   /** Specified what types to output where. Maps to [com.squareup.wire.schema.Target] */
   @get:Input
