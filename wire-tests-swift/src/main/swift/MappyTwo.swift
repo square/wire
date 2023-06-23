@@ -9,7 +9,7 @@ public struct MappyTwo {
     public var int_things: [Int64 : Thing]
     public var string_ints: [String : Int64]
     public var int_things_two: [Int32 : Thing]
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init(
         string_enums: [String : MappyTwo.ValueEnum] = [:],

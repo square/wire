@@ -6,7 +6,7 @@ import Wire
 public struct ExternalMessage {
 
     public var f: Float?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init(f: Float? = nil) {
         self.f = f

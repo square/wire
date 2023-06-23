@@ -7,7 +7,7 @@ public struct DeprecatedProto {
 
     @available(*, deprecated)
     public var foo: String?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init(foo: String? = nil) {
         self.foo = foo

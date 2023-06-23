@@ -15,7 +15,7 @@ public struct FooBar {
     public var ext: FooBar.FooBarBazEnum?
     public var rep: [FooBar.FooBarBazEnum]
     public var more_string: String?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init(
         foo: Int32? = nil,
@@ -44,7 +44,7 @@ public struct FooBar {
     public struct Nested {
 
         public var value: FooBar.FooBarBazEnum?
-        public var unknownFields: Data = .init()
+        public var unknownFields: Foundation.Data = .init()
 
         public init(value: FooBar.FooBarBazEnum? = nil) {
             self.value = value
@@ -55,7 +55,7 @@ public struct FooBar {
     public struct More {
 
         public var serial: [Int32]
-        public var unknownFields: Data = .init()
+        public var unknownFields: Foundation.Data = .init()
 
         public init(serial: [Int32] = []) {
             self.serial = serial

@@ -11,7 +11,7 @@ public struct NestedVersionTwo {
     public var v2_f32: UInt32?
     public var v2_f64: UInt64?
     public var v2_rs: [String]
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init(
         i: Int32? = nil,

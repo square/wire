@@ -21,12 +21,14 @@ import XCTest
 final class RoundTripTests: XCTestCase {
 
     func testPersonEncodeDecode() throws {
+        let personData = Data(json_data: "")
         let person = Person(
             name: "Luke Skywalker",
             id: 42,
             email: "luke@skywalker.net",
             phone: [.init(number: "800-555-1234", type: .WORK)],
-            aliases: ["Nerfherder"]
+            aliases: ["Nerfherder"],
+            data: personData
         )
 
         let encoder = ProtoEncoder()
@@ -43,7 +45,7 @@ final class RoundTripTests: XCTestCase {
         let empty = EmptyOmitted(
             numeric_value: 0,
             string_value: "",
-            bytes_value: Data(),
+            bytes_value: Foundation.Data(),
             bool_value: false,
             enum_value: .UNKNOWN,
             message_value: nil,

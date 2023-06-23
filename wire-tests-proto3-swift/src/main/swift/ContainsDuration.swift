@@ -6,7 +6,7 @@ import Wire
 public struct ContainsDuration {
 
     public var duration: Duration?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init(duration: Duration? = nil) {
         self.duration = duration

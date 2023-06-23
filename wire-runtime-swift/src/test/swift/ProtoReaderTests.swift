@@ -23,7 +23,7 @@ final class ProtoReaderTests: XCTestCase {
     // MARK: - Tests - Decoding Integers
 
     func testDecodeFixedInt32() throws {
-        let data = Data(hexEncoded: "0D_FBFFFFFF")!
+        let data = Foundation.Data(hexEncoded: "0D_FBFFFFFF")!
         try test(data: data) { reader in
             let value = try reader.decode(tag: 1) { try reader.decode(Int32.self, encoding: .fixed) }
             XCTAssertEqual(value, -5)
@@ -31,7 +31,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeFixedInt64() throws {
-        let data = Data(hexEncoded: "09_FBFFFFFFFFFFFFFF")!
+        let data = Foundation.Data(hexEncoded: "09_FBFFFFFFFFFFFFFF")!
         try test(data: data) { reader in
             let value = try reader.decode(tag: 1) { try reader.decode(Int64.self, encoding: .fixed) }
             XCTAssertEqual(value, -5)
@@ -39,7 +39,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeFixedUInt32() throws {
-        let data = Data(hexEncoded: "0D_05000000")!
+        let data = Foundation.Data(hexEncoded: "0D_05000000")!
         try test(data: data) { reader in
             let value = try reader.decode(tag: 1) { try reader.decode(UInt32.self, encoding: .fixed) }
             XCTAssertEqual(value, 5)
@@ -47,7 +47,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeFixedUInt64() throws {
-        let data = Data(hexEncoded: "09_0500000000000000")!
+        let data = Foundation.Data(hexEncoded: "09_0500000000000000")!
         try test(data: data) { reader in
             let value = try reader.decode(tag: 1) { try reader.decode(UInt64.self, encoding: .fixed) }
             XCTAssertEqual(value, 5)
@@ -55,7 +55,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeSignedInt32() throws {
-        let data = Data(hexEncoded: "08_09")!
+        let data = Foundation.Data(hexEncoded: "08_09")!
         try test(data: data) { reader in
             let value = try reader.decode(tag: 1) { try reader.decode(Int32.self, encoding: .signed) }
             XCTAssertEqual(value, -5)
@@ -63,7 +63,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeSignedInt64() throws {
-        let data = Data(hexEncoded: "08_09")!
+        let data = Foundation.Data(hexEncoded: "08_09")!
         try test(data: data) { reader in
             let value = try reader.decode(tag: 1) { try reader.decode(Int64.self, encoding: .signed) }
             XCTAssertEqual(value, -5)
@@ -71,7 +71,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeVarintInt32() throws {
-        let data = Data(hexEncoded: "08_FBFFFFFF0F")!
+        let data = Foundation.Data(hexEncoded: "08_FBFFFFFF0F")!
         try test(data: data) { reader in
             let value = try reader.decode(tag: 1) { try reader.decode(Int32.self, encoding: .variable) }
             XCTAssertEqual(value, -5)
@@ -79,7 +79,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeVarintInt64() throws {
-        let data = Data(hexEncoded: "08_FBFFFFFFFFFFFFFFFF01")!
+        let data = Foundation.Data(hexEncoded: "08_FBFFFFFFFFFFFFFFFF01")!
         try test(data: data) { reader in
             let value = try reader.decode(tag: 1) { try reader.decode(Int64.self, encoding: .variable) }
             XCTAssertEqual(value, -5)
@@ -87,7 +87,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeVarintUInt32() throws {
-        let data = Data(hexEncoded: "08_05")!
+        let data = Foundation.Data(hexEncoded: "08_05")!
         try test(data: data) { reader in
             let value = try reader.decode(tag: 1) { try reader.decode(UInt32.self, encoding: .variable) }
             XCTAssertEqual(value, 5)
@@ -95,7 +95,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeVarintUInt64() throws {
-        let data = Data(hexEncoded: "08_05")!
+        let data = Foundation.Data(hexEncoded: "08_05")!
         try test(data: data) { reader in
             let value = try reader.decode(tag: 1) { try reader.decode(UInt64.self, encoding: .variable) }
             XCTAssertEqual(value, 5)
@@ -105,7 +105,7 @@ final class ProtoReaderTests: XCTestCase {
     // MARK: - Tests - Decoding Messages And More
 
     func testDecodeBool() throws {
-        let data = Data(hexEncoded: "08_01")!
+        let data = Foundation.Data(hexEncoded: "08_01")!
         try test(data: data) { reader in
             let value = try reader.decode(tag: 1) { try reader.decode(Bool.self) }
             XCTAssertEqual(value, true)
@@ -113,40 +113,46 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeBytes() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A           // (tag 1 | Length Delimited)
             06           // Data length
             001122334455 // Random data
         """)!
         try test(data: data) { reader in
-            let value = try reader.decode(tag: 1) { try reader.decode(Data.self) }
-            XCTAssertEqual(value, Data(hexEncoded: "001122334455")!)
+            let value = try reader.decode(tag: 1) { try reader.decode(Foundation.Data.self) }
+            XCTAssertEqual(value, Foundation.Data(hexEncoded: "001122334455")!)
         }
     }
 
     func testDecodeMessage() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A       // (tag 1 | Length Delimited)
             04       // Length of name
             4C756B65 // Name value "Luke"
             10       // (tag 2 | Varint)
             05       // ID value 5
+            3A       // (tag 7 | Data)
+              04       // Length 4 for Data
+              0A       // (Tag 1 | Length Delimited)
+              02       // Length 2 for json_data
+              3132     // UTF-8 Value '12'
         """)!
         try test(data: data) { reader in
-            let message = Person(name: "Luke", id: 5)
+            let data = Data(json_data: "12")
+            let message = Person(name: "Luke", id: 5, data: data)
             XCTAssertEqual(try reader.decode(Person.self), message)
         }
     }
 
     func testDecodeString() throws {
-        let data = Data(hexEncoded: "666F6F")!
+        let data = Foundation.Data(hexEncoded: "666F6F")!
         try test(data: data) { reader in
             XCTAssertEqual(try reader.decode(String.self), "foo")
         }
     }
 
     func testDecodeNestedEmptyMessage() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A     // (Tag 1 | Varint) for `name`
             03     // Length 3
             426F62 // "Bob"
@@ -162,7 +168,7 @@ final class ProtoReaderTests: XCTestCase {
     // MARK: - Tests - Decoding Proto3 Well-Known Types
 
     func testDecodeBoolValue() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A   // (Tag 1 | Length Delimited)
             02   // Length 2
             08   // (Tag 1 | Varint)
@@ -175,7 +181,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeBytesValue() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A           // (Tag 1 | Length Delimited)
             08           // Length 8
             0A           // (tag 1 | Length Delimited)
@@ -183,13 +189,13 @@ final class ProtoReaderTests: XCTestCase {
             001122334455 // Random data
         """)!
         try test(data: data) { reader in
-            let value = try reader.decode(tag: 1) { try reader.decode(Data.self, boxed: true) }
-            XCTAssertEqual(value, Data(hexEncoded: "001122334455")!)
+            let value = try reader.decode(tag: 1) { try reader.decode(Foundation.Data.self, boxed: true) }
+            XCTAssertEqual(value, Foundation.Data(hexEncoded: "001122334455")!)
         }
     }
 
     func testDecodeDoubleValue() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A                // (Tag 1 | Length Delimited)
             09                // Length 9
             09                // (Tag 1 | Fixed64)
@@ -202,7 +208,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeFloatValue() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A        // (Tag 1 | Length Delimited)
             05        // Length 9
             0D        // (Tag 1 | Fixed32)
@@ -215,7 +221,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeInt32Value() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A         // (Tag 1 | Length Delimited)
             06         // Length 6
             08         // (Tag 1 | Varint)
@@ -228,7 +234,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeInt64Value() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A                   // (Tag 1 | Length Delimited)
             0B                   // Length 11
             08                   // (Tag 1 | Varint)
@@ -241,7 +247,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeStringValue() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A     // (Tag 1 | Length Delimited)
             05     // Length 5
             0A     // (tag 1 | Length Delimited)
@@ -255,7 +261,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeUInt32Value() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A // (Tag 1 | Length Delimited)
             02 // Length 2
             08 // (Tag 1 | Varint)
@@ -268,7 +274,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeUInt64Value() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A // (Tag 1 | Length Delimited)
             02 // Length 2
             08 // (Tag 1 | Varint)
@@ -283,7 +289,7 @@ final class ProtoReaderTests: XCTestCase {
     // MARK: - Tests - Decoding Enums
 
     func testDecodeEnum() throws {
-        let data = Data(hexEncoded: "08_01")!
+        let data = Foundation.Data(hexEncoded: "08_01")!
         try test(data: data) { reader in
             let value = try reader.decode(tag: 1) { try reader.decode(Person.PhoneType.self) }
             XCTAssertEqual(value, .HOME)
@@ -291,7 +297,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeUnknownEnumNilStrategy() throws {
-        let data = Data(hexEncoded: "08_05")!
+        let data = Foundation.Data(hexEncoded: "08_05")!
         try test(data: data, enumStrategy: .returnNil) { reader in
             let value = try reader.decode(tag: 1) { try reader.decode(Person.PhoneType.self) }
             XCTAssertNil(value)
@@ -299,7 +305,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeUnknownEnumThrowStrategy() throws {
-        let data = Data(hexEncoded: "08_05")!
+        let data = Foundation.Data(hexEncoded: "08_05")!
         var didThrow = false
 
         try test(data: data, enumStrategy: .throwError) { reader in
@@ -315,7 +321,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeEnumInOneOf() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             20 // (Tag 4 | Varint)
             01 // Value 1
             10 // (Tag 2 | Varint)
@@ -328,7 +334,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeUnknownEnumInOneOfNilStrategy() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             20 // (Tag 4 | Varint)
             01 // Value 1
             10 // (Tag 2 | Varint)
@@ -343,7 +349,7 @@ final class ProtoReaderTests: XCTestCase {
     // MARK: - Tests - Decoding Repeated Fields
 
     func testDecodeRepeatedBools() throws {
-        let data = Data(hexEncoded: "08_01_08_00")!
+        let data = Foundation.Data(hexEncoded: "08_01_08_00")!
         try test(data: data) { reader in
             var values: [Bool] = []
             try reader.decode(tag: 1) { try reader.decode(into: &values) }
@@ -353,7 +359,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodePackedRepeatedBools() throws {
-        let data = Data(hexEncoded: "0A_02_01_00")!
+        let data = Foundation.Data(hexEncoded: "0A_02_01_00")!
         try test(data: data) { reader in
             var values: [Bool] = []
             try reader.decode(tag: 1) { try reader.decode(into: &values) }
@@ -363,7 +369,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeRepeatedEnums() throws {
-        let data = Data(hexEncoded: "08_01_08_00")!
+        let data = Foundation.Data(hexEncoded: "08_01_08_00")!
         try test(data: data) { reader in
             var values: [Person.PhoneType] = []
             try reader.decode(tag: 1) { try reader.decode(into: &values) }
@@ -373,7 +379,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeRepeatedUnknownEnumsThrowStrategy() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
              08       // (tag 1 | Varint)
              01       // .HOME
              08       // (tag 1 | Varint)
@@ -405,7 +411,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeRepeatedUnknownEnumsNilStrategySomeFail() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
              08       // (tag 1 | Varint)
              01       // .HOME
              08       // (tag 1 | Varint)
@@ -425,7 +431,7 @@ final class ProtoReaderTests: XCTestCase {
             }
 
             XCTAssertEqual(values, [.HOME])
-            let expectedData = Data(hexEncoded: """
+            let expectedData = Foundation.Data(hexEncoded: """
                 08       // (tag 1 | Varint)
                 05       // Unknown enum
             """)!
@@ -434,7 +440,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeRepeatedUnknownEnumsNilStrategyAllFail() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
              08       // (tag 1 | Varint)
              04       // Unknown enum
              08       // (tag 1 | Varint)
@@ -460,7 +466,7 @@ final class ProtoReaderTests: XCTestCase {
 
 
     func testDecodePackedRepeatedEnums() throws {
-        let data = Data(hexEncoded: "0A_02_01_00")!
+        let data = Foundation.Data(hexEncoded: "0A_02_01_00")!
         try test(data: data) { reader in
             var values: [Person.PhoneType] = []
             try reader.decode(tag: 1) { try reader.decode(into: &values) }
@@ -470,7 +476,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodePackedRepeatedUnknownEnumsSomeFail() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A       // (tag 1 | Length Delimited)
             02       // Number of enums
             01       // .HOME
@@ -489,7 +495,7 @@ final class ProtoReaderTests: XCTestCase {
                 }
             }
 
-            let expectedData = Data(hexEncoded: """
+            let expectedData = Foundation.Data(hexEncoded: """
                        08       // (Tag 1 | Varint)
                        05       // Unknown enum
                    """)!
@@ -500,7 +506,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodePackedRepeatedUnknownEnumsAllFail() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A       // (tag 1 | Length Delimited)
             02       // Number of enums
             04       // Unknown enum
@@ -523,7 +529,7 @@ final class ProtoReaderTests: XCTestCase {
             // The original data is packed (length delimited), but we encode it as
             // unpacked in the unknown data, so it shows up as individual varints.
 
-            let expectedData = Data(hexEncoded: """
+            let expectedData = Foundation.Data(hexEncoded: """
                 08       // (Tag 1 | Varint)
                 04       // Unknown enum
                 08       // (Tag 1 | Varint)
@@ -535,7 +541,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeRepeatedStrings() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A     // (Tag 1 | Length Delimited)
             03     // Length 3
             666F6F // Value "foo"
@@ -552,7 +558,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeRepeatedDoubles() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             09               // (Tag 1 | Fixed64)
             8D976E1283C0F33F // Value 1.2345
             09               // (Tag 1 | Fixed64)
@@ -567,7 +573,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodePackedRepeatedDoubles() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A
             10
             8D976E1283C0F33F
@@ -582,7 +588,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeRepeatedFloats() throws {
-        let data = Data(hexEncoded: "0D_19049E3F_0D_7D3FD940")!
+        let data = Foundation.Data(hexEncoded: "0D_19049E3F_0D_7D3FD940")!
         try test(data: data) { reader in
             var values: [Float] = []
             try reader.decode(tag: 1) { try reader.decode(into: &values) }
@@ -592,7 +598,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodePackedRepeatedFloats() throws {
-        let data = Data(hexEncoded: "0A_08_19049E3F_7D3FD940")!
+        let data = Foundation.Data(hexEncoded: "0A_08_19049E3F_7D3FD940")!
         try test(data: data) { reader in
             var values: [Float] = []
             try reader.decode(tag: 1) { try reader.decode(into: &values) }
@@ -602,7 +608,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeRepeatedFixedUInt32() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0D       // (Tag 1 | Fixed32)
             01000000 // Value 1
             0D       // (Tag 1 | Fixed 32)
@@ -618,7 +624,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodePackedRepeatedFixedUInt32() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A       // (Tag 1 | Length Delimited)
             08       // Length 8
             01000000 // Value 1
@@ -634,7 +640,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeRepeatedVarintUInt32() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             08         // (Tag 1 | Varint)
             01         // Value 1
             08         // (Tag 1 | Varint)
@@ -650,7 +656,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodePackedRepeatedVarintUInt32() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0A         // (Tag 1 | Varint)
             06         // Length 6
             01         // Value 1
@@ -668,7 +674,7 @@ final class ProtoReaderTests: XCTestCase {
     // MARK: - Tests - Decoding Maps
 
     func testDecodeUInt32ToUInt32FixedMap() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             // Key/Value 1
             0A       // (Tag 1 | Length Delimited)
             0A       // Length 10
@@ -695,7 +701,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeUInt32ToUInt64VarintMap() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             // Key/Value 1
             0A // (Tag 1 | Length Delimited)
             04 // Length 4
@@ -722,7 +728,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeUInt32ToStringMap() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             // Key/Value 1
             0A     // (Tag 1 | Length Delimited)
             07     // Length 7
@@ -751,7 +757,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeStringToEnumMap() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             // Key/Value 1
             0A // (Tag 1 | Length Delimited)
             05 // Length 5
@@ -780,7 +786,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeStringToUnknownEnumMapOneFail() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             // Key/Value 1
             0A // (Tag 1 | Length Delimited)
             05 // Length 5
@@ -813,7 +819,7 @@ final class ProtoReaderTests: XCTestCase {
             }
 
             XCTAssertEqual(values, ["b": .MOBILE])
-            let expectedData = Data(hexEncoded: """
+            let expectedData = Foundation.Data(hexEncoded: """
                 // Key/Value 1
                 0A // (Tag 1 | Length Delimited)
                 05 // Length 5
@@ -829,7 +835,7 @@ final class ProtoReaderTests: XCTestCase {
 
     func testDecodeStringToUnknownEnumMapOneFailReverseOrder() throws {
         
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             // Key/Value 1 out of order
             0A // (Tag 1 | Length Delimited)
             05 // Length 5
@@ -863,7 +869,7 @@ final class ProtoReaderTests: XCTestCase {
             }
 
             XCTAssertEqual(values, ["b": .MOBILE])
-            let expectedData = Data(hexEncoded: """
+            let expectedData = Foundation.Data(hexEncoded: """
                     // Key/Value 1 in proper order
                     0A // (Tag 1 | Length Delimited)
                     05 // Length 5
@@ -878,7 +884,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeStringToUnknownEnumMapAllFail() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             // Key/Value 1
             0A // (Tag 1 | Length Delimited)
             05 // Length 5
@@ -916,7 +922,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeStringToInt32FixedMap() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             // Key/Value 1
             0A       // (Tag 1 | Length Delimited)
             08       // Length 8
@@ -945,7 +951,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeStringToStringMap() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             // Key/Value 1
             0A     // (Tag 1 | Length Delimited)
             08     // Length 8
@@ -978,7 +984,7 @@ final class ProtoReaderTests: XCTestCase {
     // MARK: - Tests - Groups
 
     func testSkippingGroup() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0B       // (Tag 1 | Start Group)
             10       // (Tag 2 | Varint)
             05       // Value 5
@@ -1003,7 +1009,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testSkippingRepeatedGroup() throws {
-        var data = Data(hexEncoded: """
+        var data = Foundation.Data(hexEncoded: """
             0B       // (Tag 1 | Start Group)
             10       // (Tag 2 | Varint)
             05       // Value 5
@@ -1030,7 +1036,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testSkippingNestedGroups() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0B       // (Tag 1 | Start Group)
             10       // (Tag 2 | Varint)
             05       // Value 5
@@ -1057,7 +1063,7 @@ final class ProtoReaderTests: XCTestCase {
     // MARK: - Tests - Unknown Fields
 
     func testUnknownFields() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0D       // (Tag 1 | Fixed32)
             05000000 // Value 5
             15       // (Tag 2 | Fixed32)
@@ -1071,12 +1077,12 @@ final class ProtoReaderTests: XCTestCase {
                 }
             }
 
-            XCTAssertEqual(unknownFields, Data(hexEncoded: "15_FFFFFFFF"))
+            XCTAssertEqual(unknownFields, Foundation.Data(hexEncoded: "15_FFFFFFFF"))
         }
     }
 
     func testNonContiguousUnknownFields() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             08         // (Tag 1 | Varint)
             05         // Value 5
             10         // (Tag 2 | Varint)
@@ -1092,7 +1098,7 @@ final class ProtoReaderTests: XCTestCase {
                 }
             }
 
-            XCTAssertEqual(unknownFields, Data(hexEncoded: "08_05_18_FFFFFFFF0F"))
+            XCTAssertEqual(unknownFields, Foundation.Data(hexEncoded: "08_05_18_FFFFFFFF0F"))
         }
     }
 
@@ -1100,7 +1106,7 @@ final class ProtoReaderTests: XCTestCase {
 
         static var protoSyntax: ProtoSyntax? { .proto2 }
 
-        let unknownFields: Data
+        let unknownFields: Foundation.Data
 
         init(from reader: ProtoReader) throws {
             self.unknownFields = try reader.forEachTag { tag in
@@ -1110,7 +1116,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testNestedUnknownFields() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             08       // (Tag 1 | Varint)
             05       // Value 5
             12       // (Tag 2 | Length Delimited)
@@ -1128,19 +1134,19 @@ final class ProtoReaderTests: XCTestCase {
                 case 1: XCTAssertEqual(try reader.readVarint32(), 5)
                 case 2:
                     let nestedMessage = try reader.decode(NestedMessage.self)
-                    XCTAssertEqual(nestedMessage.unknownFields, Data(hexEncoded: "0D_05000000_15_FFFFFFFF"))
+                    XCTAssertEqual(nestedMessage.unknownFields, Foundation.Data(hexEncoded: "0D_05000000_15_FFFFFFFF"))
                 default: try reader.readUnknownField(tag: tag)
                 }
             }
 
-            XCTAssertEqual(unknownFields, Data(hexEncoded: "1D_FBFFFFFF"))
+            XCTAssertEqual(unknownFields, Foundation.Data(hexEncoded: "1D_FBFFFFFF"))
         }
     }
 
     // MARK: - Tests - Reading Primitives
 
     func testReadFixed32() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             0D       // (Tag 1 | Fixed32)
             05000000 // Value 5
             15       // (Tag 2 | Fixed32)
@@ -1158,7 +1164,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testReadFixed64() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             09               // (Tag 1 | Fixed64)
             0500000000000000 // Value 5
             11               // (Tag 2 | Fixed64)
@@ -1176,7 +1182,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testReadVarint32() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             08         // (Tag 1 | Varint)
             05         // Value 5
             10         // (Tag 2 | Varint)
@@ -1197,7 +1203,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testReadVarint64() throws {
-        let data = Data(hexEncoded: """
+        let data = Foundation.Data(hexEncoded: """
             08                   // (Tag 1 | Varint)
             05                   // Value 5
             10                   // (Tag 2 | Varint)
@@ -1219,7 +1225,7 @@ final class ProtoReaderTests: XCTestCase {
 
     // MARK: - Private Methods
 
-    private func test(data: Data, enumStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy = .throwError, test: (ProtoReader) throws -> Void) rethrows {
+    private func test(data: Foundation.Data, enumStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy = .throwError, test: (ProtoReader) throws -> Void) rethrows {
         try data.withUnsafeBytes { buffer in
             guard let baseAddress = buffer.baseAddress, buffer.count > 0 else {
                 return
@@ -1250,7 +1256,7 @@ extension ProtoReader {
         return value!
     }
 
-    func forEachTag(_ decode: (UInt32) throws -> Void) throws -> Data {
+    func forEachTag(_ decode: (UInt32) throws -> Void) throws -> Foundation.Data {
         let token = try beginMessage()
         while let tag = try nextTag(token: token) {
             try decode(tag)

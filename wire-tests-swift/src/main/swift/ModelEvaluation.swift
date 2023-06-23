@@ -23,7 +23,7 @@ public struct ModelEvaluation {
     public var name: String?
     public var score: Double?
     public var models: [String : ModelEvaluation]
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init(
         name: String? = nil,

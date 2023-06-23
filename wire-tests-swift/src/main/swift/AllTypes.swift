@@ -33,7 +33,7 @@ public struct AllTypes {
         opt_float: Float? = nil,
         opt_double: Double? = nil,
         opt_string: String? = nil,
-        opt_bytes: Data? = nil,
+        opt_bytes: Foundation.Data? = nil,
         opt_nested_enum: AllTypes.NestedEnum? = nil,
         opt_nested_message: AllTypes.NestedMessage? = nil,
         req_int32: Int32,
@@ -50,7 +50,7 @@ public struct AllTypes {
         req_float: Float,
         req_double: Double,
         req_string: String,
-        req_bytes: Data,
+        req_bytes: Foundation.Data,
         req_nested_enum: AllTypes.NestedEnum,
         req_nested_message: AllTypes.NestedMessage,
         rep_int32: [Int32] = [],
@@ -67,7 +67,7 @@ public struct AllTypes {
         rep_float: [Float] = [],
         rep_double: [Double] = [],
         rep_string: [String] = [],
-        rep_bytes: [Data] = [],
+        rep_bytes: [Foundation.Data] = [],
         rep_nested_enum: [AllTypes.NestedEnum] = [],
         rep_nested_message: [AllTypes.NestedMessage] = [],
         pack_int32: [Int32] = [],
@@ -98,7 +98,7 @@ public struct AllTypes {
         default_float: Float? = nil,
         default_double: Double? = nil,
         default_string: String? = nil,
-        default_bytes: Data? = nil,
+        default_bytes: Foundation.Data? = nil,
         default_nested_enum: AllTypes.NestedEnum? = nil,
         map_int32_int32: [Int32 : Int32] = [:],
         map_string_string: [String : String] = [:],
@@ -130,7 +130,7 @@ public struct AllTypes {
         ext_opt_float: Float? = nil,
         ext_opt_double: Double? = nil,
         ext_opt_string: String? = nil,
-        ext_opt_bytes: Data? = nil,
+        ext_opt_bytes: Foundation.Data? = nil,
         ext_opt_nested_enum: AllTypes.NestedEnum? = nil,
         ext_opt_nested_message: AllTypes.NestedMessage? = nil,
         ext_rep_int32: [Int32] = [],
@@ -147,7 +147,7 @@ public struct AllTypes {
         ext_rep_float: [Float] = [],
         ext_rep_double: [Double] = [],
         ext_rep_string: [String] = [],
-        ext_rep_bytes: [Data] = [],
+        ext_rep_bytes: [Foundation.Data] = [],
         ext_rep_nested_enum: [AllTypes.NestedEnum] = [],
         ext_rep_nested_message: [AllTypes.NestedMessage] = [],
         ext_pack_int32: [Int32] = [],
@@ -254,7 +254,7 @@ public struct AllTypes {
     public struct NestedMessage {
 
         public var a: Int32?
-        public var unknownFields: Data = .init()
+        public var unknownFields: Foundation.Data = .init()
 
         public init(a: Int32? = nil) {
             self.a = a

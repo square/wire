@@ -17,6 +17,10 @@ syntax = "proto2";
 
 package squareup.protos.person;
 
+message Data {
+  required string json_data = 1;
+}
+
 message Person {
   required string name = 1;
   required int32 id = 2;
@@ -37,4 +41,9 @@ message Person {
 
   repeated string aliases = 5;
   repeated int32 ids = 6;
+
+  required Data data = 7;
+
+  map<string, Data> person_to_data = 8;
+  map<string, bytes> person_to_byte_data = 9;
 }
