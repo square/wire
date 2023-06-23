@@ -5,7 +5,7 @@ import Wire
 
 public struct NoFields {
 
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init() {
     }

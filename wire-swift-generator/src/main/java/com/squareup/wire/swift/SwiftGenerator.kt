@@ -913,9 +913,8 @@ class SwiftGenerator private constructor(
     includeDefaults: Boolean = true
   ) = apply {
     type.fields.forEach { field ->
-      val fieldType = field.typeName
       addParameter(
-        ParameterSpec.builder(field.name, fieldType)
+        ParameterSpec.builder(field.name, field.typeName)
           .apply {
             if (includeDefaults) {
               withFieldDefault(field)
@@ -990,7 +989,7 @@ class SwiftGenerator private constructor(
     }
 
     addProperty(
-      PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
+      PropertySpec.varBuilder("unknownFields", FOUNDATION_DATA, PUBLIC)
         .initializer(".init()")
         .build()
     )
@@ -1273,11 +1272,14 @@ class SwiftGenerator private constructor(
   }
 
   companion object {
+    // Always fully-qualified in case a message type is named `Data`.
+    private val FOUNDATION_DATA = DeclaredTypeName.typeName("Foundation.Data", true)
+
     fun builtInType(protoType: ProtoType): Boolean = protoType in BUILT_IN_TYPES.keys
 
     private val BUILT_IN_TYPES: Map<out ProtoType, DeclaredTypeName> = mapOf(
       ProtoType.BOOL to BOOL,
-      ProtoType.BYTES to DATA,
+      ProtoType.BYTES to FOUNDATION_DATA,
       ProtoType.DOUBLE to DOUBLE,
       ProtoType.FLOAT to FLOAT,
       ProtoType.FIXED32 to UINT32,

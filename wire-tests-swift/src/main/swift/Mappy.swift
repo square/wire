@@ -6,7 +6,7 @@ import Wire
 public struct Mappy {
 
     public var things: [String : Thing]
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init(things: [String : Thing] = [:]) {
         self.things = things

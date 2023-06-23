@@ -83,7 +83,7 @@ extension StringEncodedTests {
     struct DataStruct : Codable, Equatable {
         @DefaultEmpty
         @StringEncoded
-        var data: Data
+        var data: Foundation.Data
     }
 
     func testNullInflatesData() throws {
@@ -125,7 +125,7 @@ extension StringEncodedTests {
     }
 
     func testDecodingURLSafeData() throws {
-        let data = Data(base64Encoded: "ab+e/fg=")!
+        let data = Foundation.Data(base64Encoded: "ab+e/fg=")!
 
         let json = """
         {"data":"ab-e_fg"}

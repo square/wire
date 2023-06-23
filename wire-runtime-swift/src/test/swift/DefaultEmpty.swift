@@ -83,7 +83,7 @@ extension Array : EmptyInitializable {
 extension Dictionary : EmptyInitializable {
 }
 
-extension Data : EmptyInitializable {
+extension Foundation.Data : EmptyInitializable {
 }
 
 extension Int64 : EmptyInitializable {

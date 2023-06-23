@@ -5,7 +5,7 @@ import Wire
 
 public struct OtherMessageWithStatus {
 
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init() {
     }

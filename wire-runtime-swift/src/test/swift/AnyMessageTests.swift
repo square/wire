@@ -20,20 +20,23 @@ import XCTest
 
 final class AnyMessageTests: XCTestCase {
     func testPackingAny() throws {
-        let person = Person(name: "foo bar", id: 12345)
+        let data = Data(json_data: "")
+        let person = Person(name: "foo bar", id: 12345, data: data)
         let any = try AnyMessage.pack(person)
         XCTAssertEqual(any.typeURL, Person.protoMessageTypeURL())
         XCTAssertEqual(any.value, try ProtoEncoder().encode(person))
     }
 
     func testUnpackingAnyToCorrectType() throws {
-        let person = Person(name: "foo bar", id: 12345)
+        let data = Data(json_data: "")
+        let person = Person(name: "foo bar", id: 12345, data: data)
         let any = try AnyMessage.pack(person)
         XCTAssertEqual(person, try any.unpack(Person.self))
     }
 
     func testUnpackingAnyToIncorrectTypeThrows() throws {
-        let person = Person(name: "foo bar", id: 12345)
+        let data = Data(json_data: "")
+        let person = Person(name: "foo bar", id: 12345, data: data)
         let any = try AnyMessage.pack(person)
         XCTAssertThrowsError(try any.unpack(Parent.self)) { error in
             XCTAssertEqual(.typeURLMismatch, error as? AnyMessage.DecodingError)
@@ -41,7 +44,8 @@ final class AnyMessageTests: XCTestCase {
     }
 
     func testSerializingAndDeserializingAny() throws {
-        let person = Person(name: "foo bar", id: 12345)
+        let data = Data(json_data: "")
+        let person = Person(name: "foo bar", id: 12345, data: data)
         let any = try AnyMessage.pack(person)
         let anyData = try ProtoEncoder().encode(any)
         XCTAssertEqual(any, try ProtoDecoder().decode(AnyMessage.self, from: anyData))
