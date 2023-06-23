@@ -9,7 +9,6 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
-import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
@@ -26,7 +25,6 @@ import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.jvm.JvmField
@@ -466,7 +464,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1001,
+    tag = 1_001,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     schemaIndex = 88,
   )
@@ -476,7 +474,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1002,
+    tag = 1_002,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     schemaIndex = 89,
   )
@@ -486,7 +484,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1003,
+    tag = 1_003,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     schemaIndex = 90,
   )
@@ -496,7 +494,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1004,
+    tag = 1_004,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     schemaIndex = 91,
   )
@@ -506,7 +504,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1005,
+    tag = 1_005,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     schemaIndex = 92,
   )
@@ -516,7 +514,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1006,
+    tag = 1_006,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     schemaIndex = 93,
   )
@@ -526,7 +524,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1007,
+    tag = 1_007,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     schemaIndex = 94,
   )
@@ -536,7 +534,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1008,
+    tag = 1_008,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     schemaIndex = 95,
   )
@@ -546,7 +544,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1009,
+    tag = 1_009,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     schemaIndex = 96,
   )
@@ -556,7 +554,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1010,
+    tag = 1_010,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     schemaIndex = 97,
   )
@@ -566,7 +564,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1011,
+    tag = 1_011,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     schemaIndex = 98,
   )
@@ -576,7 +574,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1012,
+    tag = 1_012,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     schemaIndex = 99,
   )
@@ -586,7 +584,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1013,
+    tag = 1_013,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     schemaIndex = 100,
   )
@@ -596,7 +594,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1014,
+    tag = 1_014,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     schemaIndex = 101,
   )
@@ -606,7 +604,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1015,
+    tag = 1_015,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
     schemaIndex = 102,
   )
@@ -616,7 +614,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1016,
+    tag = 1_016,
     adapter = "com.squareup.wire.proto2.alltypes.AllTypes${'$'}NestedEnum#ADAPTER",
     schemaIndex = 103,
   )
@@ -626,7 +624,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1017,
+    tag = 1_017,
     adapter = "com.squareup.wire.proto2.alltypes.AllTypes${'$'}NestedMessage#ADAPTER",
     schemaIndex = 104,
   )
@@ -989,7 +987,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1101,
+    tag = 1_101,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REPEATED,
     schemaIndex = 105,
@@ -1001,7 +999,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1102,
+    tag = 1_102,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.REPEATED,
     schemaIndex = 106,
@@ -1013,7 +1011,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1103,
+    tag = 1_103,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.REPEATED,
     schemaIndex = 107,
@@ -1025,7 +1023,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1104,
+    tag = 1_104,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.REPEATED,
     schemaIndex = 108,
@@ -1037,7 +1035,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1105,
+    tag = 1_105,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.REPEATED,
     schemaIndex = 109,
@@ -1049,7 +1047,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1106,
+    tag = 1_106,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.REPEATED,
     schemaIndex = 110,
@@ -1061,7 +1059,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1107,
+    tag = 1_107,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.REPEATED,
     schemaIndex = 111,
@@ -1073,7 +1071,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1108,
+    tag = 1_108,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.REPEATED,
     schemaIndex = 112,
@@ -1085,7 +1083,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1109,
+    tag = 1_109,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.REPEATED,
     schemaIndex = 113,
@@ -1097,7 +1095,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1110,
+    tag = 1_110,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.REPEATED,
     schemaIndex = 114,
@@ -1109,7 +1107,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1111,
+    tag = 1_111,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.REPEATED,
     schemaIndex = 115,
@@ -1121,7 +1119,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1112,
+    tag = 1_112,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.REPEATED,
     schemaIndex = 116,
@@ -1133,7 +1131,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1113,
+    tag = 1_113,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.REPEATED,
     schemaIndex = 117,
@@ -1145,7 +1143,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1114,
+    tag = 1_114,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
     schemaIndex = 118,
@@ -1157,7 +1155,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1115,
+    tag = 1_115,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
     label = WireField.Label.REPEATED,
     schemaIndex = 119,
@@ -1169,7 +1167,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1116,
+    tag = 1_116,
     adapter = "com.squareup.wire.proto2.alltypes.AllTypes${'$'}NestedEnum#ADAPTER",
     label = WireField.Label.REPEATED,
     schemaIndex = 120,
@@ -1182,7 +1180,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1117,
+    tag = 1_117,
     adapter = "com.squareup.wire.proto2.alltypes.AllTypes${'$'}NestedMessage#ADAPTER",
     label = WireField.Label.REPEATED,
     schemaIndex = 121,
@@ -1195,7 +1193,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1201,
+    tag = 1_201,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.PACKED,
     schemaIndex = 122,
@@ -1207,7 +1205,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1202,
+    tag = 1_202,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.PACKED,
     schemaIndex = 123,
@@ -1219,7 +1217,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1203,
+    tag = 1_203,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.PACKED,
     schemaIndex = 124,
@@ -1231,7 +1229,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1204,
+    tag = 1_204,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.PACKED,
     schemaIndex = 125,
@@ -1243,7 +1241,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1205,
+    tag = 1_205,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.PACKED,
     schemaIndex = 126,
@@ -1255,7 +1253,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1206,
+    tag = 1_206,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.PACKED,
     schemaIndex = 127,
@@ -1267,7 +1265,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1207,
+    tag = 1_207,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.PACKED,
     schemaIndex = 128,
@@ -1279,7 +1277,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1208,
+    tag = 1_208,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.PACKED,
     schemaIndex = 129,
@@ -1291,7 +1289,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1209,
+    tag = 1_209,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.PACKED,
     schemaIndex = 130,
@@ -1303,7 +1301,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1210,
+    tag = 1_210,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.PACKED,
     schemaIndex = 131,
@@ -1315,7 +1313,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1211,
+    tag = 1_211,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.PACKED,
     schemaIndex = 132,
@@ -1327,7 +1325,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1212,
+    tag = 1_212,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.PACKED,
     schemaIndex = 133,
@@ -1339,7 +1337,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1213,
+    tag = 1_213,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.PACKED,
     schemaIndex = 134,
@@ -1351,7 +1349,7 @@ public class AllTypes(
    * Extension source: all_types_proto2.proto
    */
   @field:WireField(
-    tag = 1216,
+    tag = 1_216,
     adapter = "com.squareup.wire.proto2.alltypes.AllTypes${'$'}NestedEnum#ADAPTER",
     label = WireField.Label.PACKED,
     schemaIndex = 135,
@@ -1366,7 +1364,7 @@ public class AllTypes(
     }
   }
 
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.opt_int32 = opt_int32
     builder.opt_uint32 = opt_uint32
@@ -1508,7 +1506,7 @@ public class AllTypes(
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is AllTypes) return false
     if (unknownFields != other.unknownFields) return false
@@ -1651,7 +1649,7 @@ public class AllTypes(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -1796,7 +1794,7 @@ public class AllTypes(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (opt_int32 != null) result += """opt_int32=$opt_int32"""
     if (opt_uint32 != null) result += """opt_uint32=$opt_uint32"""
@@ -3260,7 +3258,7 @@ public class AllTypes(
       return this
     }
 
-    public override fun build(): AllTypes = AllTypes(
+    override fun build(): AllTypes = AllTypes(
       opt_int32 = opt_int32,
       opt_uint32 = opt_uint32,
       opt_sint32 = opt_sint32,
@@ -3428,7 +3426,8 @@ public class AllTypes(
 
     public const val DEFAULT_DEFAULT_FLOAT: Float = 123.456e7f
 
-    public const val DEFAULT_DEFAULT_DOUBLE: Double = 1.23456E80
+    public const val DEFAULT_DEFAULT_DOUBLE: Double =
+        123_456_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000.0
 
     public const val DEFAULT_DEFAULT_STRING: String =
         "çok\u0007\b\u000c\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel"
@@ -3461,7 +3460,7 @@ public class AllTypes(
       private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
 
-      public override fun encodedSize(`value`: AllTypes): Int {
+      override fun encodedSize(`value`: AllTypes): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32)
         size += ProtoAdapter.UINT32.encodedSizeWithTag(2, value.opt_uint32)
@@ -3551,59 +3550,59 @@ public class AllTypes(
         size += ProtoAdapter.STRING.encodedSizeWithTag(601, value.oneof_string)
         size += ProtoAdapter.INT32.encodedSizeWithTag(602, value.oneof_int32)
         size += NestedMessage.ADAPTER.encodedSizeWithTag(603, value.oneof_nested_message)
-        size += ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32)
-        size += ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32)
-        size += ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32)
-        size += ProtoAdapter.FIXED32.encodedSizeWithTag(1004, value.ext_opt_fixed32)
-        size += ProtoAdapter.SFIXED32.encodedSizeWithTag(1005, value.ext_opt_sfixed32)
-        size += ProtoAdapter.INT64.encodedSizeWithTag(1006, value.ext_opt_int64)
-        size += ProtoAdapter.UINT64.encodedSizeWithTag(1007, value.ext_opt_uint64)
-        size += ProtoAdapter.SINT64.encodedSizeWithTag(1008, value.ext_opt_sint64)
-        size += ProtoAdapter.FIXED64.encodedSizeWithTag(1009, value.ext_opt_fixed64)
-        size += ProtoAdapter.SFIXED64.encodedSizeWithTag(1010, value.ext_opt_sfixed64)
-        size += ProtoAdapter.BOOL.encodedSizeWithTag(1011, value.ext_opt_bool)
-        size += ProtoAdapter.FLOAT.encodedSizeWithTag(1012, value.ext_opt_float)
-        size += ProtoAdapter.DOUBLE.encodedSizeWithTag(1013, value.ext_opt_double)
-        size += ProtoAdapter.STRING.encodedSizeWithTag(1014, value.ext_opt_string)
-        size += ProtoAdapter.BYTES.encodedSizeWithTag(1015, value.ext_opt_bytes)
-        size += NestedEnum.ADAPTER.encodedSizeWithTag(1016, value.ext_opt_nested_enum)
-        size += NestedMessage.ADAPTER.encodedSizeWithTag(1017, value.ext_opt_nested_message)
-        size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1101, value.ext_rep_int32)
-        size += ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(1102, value.ext_rep_uint32)
-        size += ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(1103, value.ext_rep_sint32)
-        size += ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(1104, value.ext_rep_fixed32)
-        size += ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(1105, value.ext_rep_sfixed32)
-        size += ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(1106, value.ext_rep_int64)
-        size += ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(1107, value.ext_rep_uint64)
-        size += ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(1108, value.ext_rep_sint64)
-        size += ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(1109, value.ext_rep_fixed64)
-        size += ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(1110, value.ext_rep_sfixed64)
-        size += ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(1111, value.ext_rep_bool)
-        size += ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(1112, value.ext_rep_float)
-        size += ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(1113, value.ext_rep_double)
-        size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1114, value.ext_rep_string)
-        size += ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(1115, value.ext_rep_bytes)
-        size += NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(1116, value.ext_rep_nested_enum)
-        size += NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(1117,
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1_001, value.ext_opt_int32)
+        size += ProtoAdapter.UINT32.encodedSizeWithTag(1_002, value.ext_opt_uint32)
+        size += ProtoAdapter.SINT32.encodedSizeWithTag(1_003, value.ext_opt_sint32)
+        size += ProtoAdapter.FIXED32.encodedSizeWithTag(1_004, value.ext_opt_fixed32)
+        size += ProtoAdapter.SFIXED32.encodedSizeWithTag(1_005, value.ext_opt_sfixed32)
+        size += ProtoAdapter.INT64.encodedSizeWithTag(1_006, value.ext_opt_int64)
+        size += ProtoAdapter.UINT64.encodedSizeWithTag(1_007, value.ext_opt_uint64)
+        size += ProtoAdapter.SINT64.encodedSizeWithTag(1_008, value.ext_opt_sint64)
+        size += ProtoAdapter.FIXED64.encodedSizeWithTag(1_009, value.ext_opt_fixed64)
+        size += ProtoAdapter.SFIXED64.encodedSizeWithTag(1_010, value.ext_opt_sfixed64)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(1_011, value.ext_opt_bool)
+        size += ProtoAdapter.FLOAT.encodedSizeWithTag(1_012, value.ext_opt_float)
+        size += ProtoAdapter.DOUBLE.encodedSizeWithTag(1_013, value.ext_opt_double)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1_014, value.ext_opt_string)
+        size += ProtoAdapter.BYTES.encodedSizeWithTag(1_015, value.ext_opt_bytes)
+        size += NestedEnum.ADAPTER.encodedSizeWithTag(1_016, value.ext_opt_nested_enum)
+        size += NestedMessage.ADAPTER.encodedSizeWithTag(1_017, value.ext_opt_nested_message)
+        size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1_101, value.ext_rep_int32)
+        size += ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(1_102, value.ext_rep_uint32)
+        size += ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(1_103, value.ext_rep_sint32)
+        size += ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(1_104, value.ext_rep_fixed32)
+        size += ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(1_105, value.ext_rep_sfixed32)
+        size += ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(1_106, value.ext_rep_int64)
+        size += ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(1_107, value.ext_rep_uint64)
+        size += ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(1_108, value.ext_rep_sint64)
+        size += ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(1_109, value.ext_rep_fixed64)
+        size += ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(1_110, value.ext_rep_sfixed64)
+        size += ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(1_111, value.ext_rep_bool)
+        size += ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(1_112, value.ext_rep_float)
+        size += ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(1_113, value.ext_rep_double)
+        size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1_114, value.ext_rep_string)
+        size += ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(1_115, value.ext_rep_bytes)
+        size += NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(1_116, value.ext_rep_nested_enum)
+        size += NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(1_117,
             value.ext_rep_nested_message)
-        size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1201, value.ext_pack_int32)
-        size += ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(1202, value.ext_pack_uint32)
-        size += ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(1203, value.ext_pack_sint32)
-        size += ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(1204, value.ext_pack_fixed32)
-        size += ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(1205, value.ext_pack_sfixed32)
-        size += ProtoAdapter.INT64.asPacked().encodedSizeWithTag(1206, value.ext_pack_int64)
-        size += ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(1207, value.ext_pack_uint64)
-        size += ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(1208, value.ext_pack_sint64)
-        size += ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(1209, value.ext_pack_fixed64)
-        size += ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(1210, value.ext_pack_sfixed64)
-        size += ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(1211, value.ext_pack_bool)
-        size += ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1212, value.ext_pack_float)
-        size += ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(1213, value.ext_pack_double)
-        size += NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(1216, value.ext_pack_nested_enum)
+        size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1_201, value.ext_pack_int32)
+        size += ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(1_202, value.ext_pack_uint32)
+        size += ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(1_203, value.ext_pack_sint32)
+        size += ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(1_204, value.ext_pack_fixed32)
+        size += ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(1_205, value.ext_pack_sfixed32)
+        size += ProtoAdapter.INT64.asPacked().encodedSizeWithTag(1_206, value.ext_pack_int64)
+        size += ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(1_207, value.ext_pack_uint64)
+        size += ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(1_208, value.ext_pack_sint64)
+        size += ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(1_209, value.ext_pack_fixed64)
+        size += ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(1_210, value.ext_pack_sfixed64)
+        size += ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(1_211, value.ext_pack_bool)
+        size += ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1_212, value.ext_pack_float)
+        size += ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(1_213, value.ext_pack_double)
+        size += NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(1_216, value.ext_pack_nested_enum)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: AllTypes): Unit {
+      override fun encode(writer: ProtoWriter, `value`: AllTypes) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32)
         ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.opt_uint32)
         ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.opt_sint32)
@@ -3689,113 +3688,115 @@ public class AllTypes(
         map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
         map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
         map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
-        ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32)
-        ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32)
-        ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32)
-        ProtoAdapter.FIXED32.encodeWithTag(writer, 1004, value.ext_opt_fixed32)
-        ProtoAdapter.SFIXED32.encodeWithTag(writer, 1005, value.ext_opt_sfixed32)
-        ProtoAdapter.INT64.encodeWithTag(writer, 1006, value.ext_opt_int64)
-        ProtoAdapter.UINT64.encodeWithTag(writer, 1007, value.ext_opt_uint64)
-        ProtoAdapter.SINT64.encodeWithTag(writer, 1008, value.ext_opt_sint64)
-        ProtoAdapter.FIXED64.encodeWithTag(writer, 1009, value.ext_opt_fixed64)
-        ProtoAdapter.SFIXED64.encodeWithTag(writer, 1010, value.ext_opt_sfixed64)
-        ProtoAdapter.BOOL.encodeWithTag(writer, 1011, value.ext_opt_bool)
-        ProtoAdapter.FLOAT.encodeWithTag(writer, 1012, value.ext_opt_float)
-        ProtoAdapter.DOUBLE.encodeWithTag(writer, 1013, value.ext_opt_double)
-        ProtoAdapter.STRING.encodeWithTag(writer, 1014, value.ext_opt_string)
-        ProtoAdapter.BYTES.encodeWithTag(writer, 1015, value.ext_opt_bytes)
-        NestedEnum.ADAPTER.encodeWithTag(writer, 1016, value.ext_opt_nested_enum)
-        NestedMessage.ADAPTER.encodeWithTag(writer, 1017, value.ext_opt_nested_message)
-        ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1101, value.ext_rep_int32)
-        ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 1102, value.ext_rep_uint32)
-        ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 1103, value.ext_rep_sint32)
-        ProtoAdapter.FIXED32.asRepeated().encodeWithTag(writer, 1104, value.ext_rep_fixed32)
-        ProtoAdapter.SFIXED32.asRepeated().encodeWithTag(writer, 1105, value.ext_rep_sfixed32)
-        ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 1106, value.ext_rep_int64)
-        ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 1107, value.ext_rep_uint64)
-        ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 1108, value.ext_rep_sint64)
-        ProtoAdapter.FIXED64.asRepeated().encodeWithTag(writer, 1109, value.ext_rep_fixed64)
-        ProtoAdapter.SFIXED64.asRepeated().encodeWithTag(writer, 1110, value.ext_rep_sfixed64)
-        ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 1111, value.ext_rep_bool)
-        ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 1112, value.ext_rep_float)
-        ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 1113, value.ext_rep_double)
-        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1114, value.ext_rep_string)
-        ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 1115, value.ext_rep_bytes)
-        NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 1116, value.ext_rep_nested_enum)
-        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 1117, value.ext_rep_nested_message)
-        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1201, value.ext_pack_int32)
-        ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 1202, value.ext_pack_uint32)
-        ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 1203, value.ext_pack_sint32)
-        ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 1204, value.ext_pack_fixed32)
-        ProtoAdapter.SFIXED32.asPacked().encodeWithTag(writer, 1205, value.ext_pack_sfixed32)
-        ProtoAdapter.INT64.asPacked().encodeWithTag(writer, 1206, value.ext_pack_int64)
-        ProtoAdapter.UINT64.asPacked().encodeWithTag(writer, 1207, value.ext_pack_uint64)
-        ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 1208, value.ext_pack_sint64)
-        ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 1209, value.ext_pack_fixed64)
-        ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 1210, value.ext_pack_sfixed64)
-        ProtoAdapter.BOOL.asPacked().encodeWithTag(writer, 1211, value.ext_pack_bool)
-        ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1212, value.ext_pack_float)
-        ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 1213, value.ext_pack_double)
-        NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 1216, value.ext_pack_nested_enum)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1_001, value.ext_opt_int32)
+        ProtoAdapter.UINT32.encodeWithTag(writer, 1_002, value.ext_opt_uint32)
+        ProtoAdapter.SINT32.encodeWithTag(writer, 1_003, value.ext_opt_sint32)
+        ProtoAdapter.FIXED32.encodeWithTag(writer, 1_004, value.ext_opt_fixed32)
+        ProtoAdapter.SFIXED32.encodeWithTag(writer, 1_005, value.ext_opt_sfixed32)
+        ProtoAdapter.INT64.encodeWithTag(writer, 1_006, value.ext_opt_int64)
+        ProtoAdapter.UINT64.encodeWithTag(writer, 1_007, value.ext_opt_uint64)
+        ProtoAdapter.SINT64.encodeWithTag(writer, 1_008, value.ext_opt_sint64)
+        ProtoAdapter.FIXED64.encodeWithTag(writer, 1_009, value.ext_opt_fixed64)
+        ProtoAdapter.SFIXED64.encodeWithTag(writer, 1_010, value.ext_opt_sfixed64)
+        ProtoAdapter.BOOL.encodeWithTag(writer, 1_011, value.ext_opt_bool)
+        ProtoAdapter.FLOAT.encodeWithTag(writer, 1_012, value.ext_opt_float)
+        ProtoAdapter.DOUBLE.encodeWithTag(writer, 1_013, value.ext_opt_double)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1_014, value.ext_opt_string)
+        ProtoAdapter.BYTES.encodeWithTag(writer, 1_015, value.ext_opt_bytes)
+        NestedEnum.ADAPTER.encodeWithTag(writer, 1_016, value.ext_opt_nested_enum)
+        NestedMessage.ADAPTER.encodeWithTag(writer, 1_017, value.ext_opt_nested_message)
+        ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1_101, value.ext_rep_int32)
+        ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 1_102, value.ext_rep_uint32)
+        ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 1_103, value.ext_rep_sint32)
+        ProtoAdapter.FIXED32.asRepeated().encodeWithTag(writer, 1_104, value.ext_rep_fixed32)
+        ProtoAdapter.SFIXED32.asRepeated().encodeWithTag(writer, 1_105, value.ext_rep_sfixed32)
+        ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 1_106, value.ext_rep_int64)
+        ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 1_107, value.ext_rep_uint64)
+        ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 1_108, value.ext_rep_sint64)
+        ProtoAdapter.FIXED64.asRepeated().encodeWithTag(writer, 1_109, value.ext_rep_fixed64)
+        ProtoAdapter.SFIXED64.asRepeated().encodeWithTag(writer, 1_110, value.ext_rep_sfixed64)
+        ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 1_111, value.ext_rep_bool)
+        ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 1_112, value.ext_rep_float)
+        ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 1_113, value.ext_rep_double)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1_114, value.ext_rep_string)
+        ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 1_115, value.ext_rep_bytes)
+        NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 1_116, value.ext_rep_nested_enum)
+        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 1_117,
+            value.ext_rep_nested_message)
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1_201, value.ext_pack_int32)
+        ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 1_202, value.ext_pack_uint32)
+        ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 1_203, value.ext_pack_sint32)
+        ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 1_204, value.ext_pack_fixed32)
+        ProtoAdapter.SFIXED32.asPacked().encodeWithTag(writer, 1_205, value.ext_pack_sfixed32)
+        ProtoAdapter.INT64.asPacked().encodeWithTag(writer, 1_206, value.ext_pack_int64)
+        ProtoAdapter.UINT64.asPacked().encodeWithTag(writer, 1_207, value.ext_pack_uint64)
+        ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 1_208, value.ext_pack_sint64)
+        ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 1_209, value.ext_pack_fixed64)
+        ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 1_210, value.ext_pack_sfixed64)
+        ProtoAdapter.BOOL.asPacked().encodeWithTag(writer, 1_211, value.ext_pack_bool)
+        ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1_212, value.ext_pack_float)
+        ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 1_213, value.ext_pack_double)
+        NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 1_216, value.ext_pack_nested_enum)
         ProtoAdapter.STRING.encodeWithTag(writer, 601, value.oneof_string)
         ProtoAdapter.INT32.encodeWithTag(writer, 602, value.oneof_int32)
         NestedMessage.ADAPTER.encodeWithTag(writer, 603, value.oneof_nested_message)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: AllTypes): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: AllTypes) {
         writer.writeBytes(value.unknownFields)
         NestedMessage.ADAPTER.encodeWithTag(writer, 603, value.oneof_nested_message)
         ProtoAdapter.INT32.encodeWithTag(writer, 602, value.oneof_int32)
         ProtoAdapter.STRING.encodeWithTag(writer, 601, value.oneof_string)
-        NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 1216, value.ext_pack_nested_enum)
-        ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 1213, value.ext_pack_double)
-        ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1212, value.ext_pack_float)
-        ProtoAdapter.BOOL.asPacked().encodeWithTag(writer, 1211, value.ext_pack_bool)
-        ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 1210, value.ext_pack_sfixed64)
-        ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 1209, value.ext_pack_fixed64)
-        ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 1208, value.ext_pack_sint64)
-        ProtoAdapter.UINT64.asPacked().encodeWithTag(writer, 1207, value.ext_pack_uint64)
-        ProtoAdapter.INT64.asPacked().encodeWithTag(writer, 1206, value.ext_pack_int64)
-        ProtoAdapter.SFIXED32.asPacked().encodeWithTag(writer, 1205, value.ext_pack_sfixed32)
-        ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 1204, value.ext_pack_fixed32)
-        ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 1203, value.ext_pack_sint32)
-        ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 1202, value.ext_pack_uint32)
-        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1201, value.ext_pack_int32)
-        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 1117, value.ext_rep_nested_message)
-        NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 1116, value.ext_rep_nested_enum)
-        ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 1115, value.ext_rep_bytes)
-        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1114, value.ext_rep_string)
-        ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 1113, value.ext_rep_double)
-        ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 1112, value.ext_rep_float)
-        ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 1111, value.ext_rep_bool)
-        ProtoAdapter.SFIXED64.asRepeated().encodeWithTag(writer, 1110, value.ext_rep_sfixed64)
-        ProtoAdapter.FIXED64.asRepeated().encodeWithTag(writer, 1109, value.ext_rep_fixed64)
-        ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 1108, value.ext_rep_sint64)
-        ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 1107, value.ext_rep_uint64)
-        ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 1106, value.ext_rep_int64)
-        ProtoAdapter.SFIXED32.asRepeated().encodeWithTag(writer, 1105, value.ext_rep_sfixed32)
-        ProtoAdapter.FIXED32.asRepeated().encodeWithTag(writer, 1104, value.ext_rep_fixed32)
-        ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 1103, value.ext_rep_sint32)
-        ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 1102, value.ext_rep_uint32)
-        ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1101, value.ext_rep_int32)
-        NestedMessage.ADAPTER.encodeWithTag(writer, 1017, value.ext_opt_nested_message)
-        NestedEnum.ADAPTER.encodeWithTag(writer, 1016, value.ext_opt_nested_enum)
-        ProtoAdapter.BYTES.encodeWithTag(writer, 1015, value.ext_opt_bytes)
-        ProtoAdapter.STRING.encodeWithTag(writer, 1014, value.ext_opt_string)
-        ProtoAdapter.DOUBLE.encodeWithTag(writer, 1013, value.ext_opt_double)
-        ProtoAdapter.FLOAT.encodeWithTag(writer, 1012, value.ext_opt_float)
-        ProtoAdapter.BOOL.encodeWithTag(writer, 1011, value.ext_opt_bool)
-        ProtoAdapter.SFIXED64.encodeWithTag(writer, 1010, value.ext_opt_sfixed64)
-        ProtoAdapter.FIXED64.encodeWithTag(writer, 1009, value.ext_opt_fixed64)
-        ProtoAdapter.SINT64.encodeWithTag(writer, 1008, value.ext_opt_sint64)
-        ProtoAdapter.UINT64.encodeWithTag(writer, 1007, value.ext_opt_uint64)
-        ProtoAdapter.INT64.encodeWithTag(writer, 1006, value.ext_opt_int64)
-        ProtoAdapter.SFIXED32.encodeWithTag(writer, 1005, value.ext_opt_sfixed32)
-        ProtoAdapter.FIXED32.encodeWithTag(writer, 1004, value.ext_opt_fixed32)
-        ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32)
-        ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32)
-        ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32)
+        NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 1_216, value.ext_pack_nested_enum)
+        ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 1_213, value.ext_pack_double)
+        ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1_212, value.ext_pack_float)
+        ProtoAdapter.BOOL.asPacked().encodeWithTag(writer, 1_211, value.ext_pack_bool)
+        ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 1_210, value.ext_pack_sfixed64)
+        ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 1_209, value.ext_pack_fixed64)
+        ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 1_208, value.ext_pack_sint64)
+        ProtoAdapter.UINT64.asPacked().encodeWithTag(writer, 1_207, value.ext_pack_uint64)
+        ProtoAdapter.INT64.asPacked().encodeWithTag(writer, 1_206, value.ext_pack_int64)
+        ProtoAdapter.SFIXED32.asPacked().encodeWithTag(writer, 1_205, value.ext_pack_sfixed32)
+        ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 1_204, value.ext_pack_fixed32)
+        ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 1_203, value.ext_pack_sint32)
+        ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 1_202, value.ext_pack_uint32)
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1_201, value.ext_pack_int32)
+        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 1_117,
+            value.ext_rep_nested_message)
+        NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 1_116, value.ext_rep_nested_enum)
+        ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 1_115, value.ext_rep_bytes)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1_114, value.ext_rep_string)
+        ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 1_113, value.ext_rep_double)
+        ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 1_112, value.ext_rep_float)
+        ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 1_111, value.ext_rep_bool)
+        ProtoAdapter.SFIXED64.asRepeated().encodeWithTag(writer, 1_110, value.ext_rep_sfixed64)
+        ProtoAdapter.FIXED64.asRepeated().encodeWithTag(writer, 1_109, value.ext_rep_fixed64)
+        ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 1_108, value.ext_rep_sint64)
+        ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 1_107, value.ext_rep_uint64)
+        ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 1_106, value.ext_rep_int64)
+        ProtoAdapter.SFIXED32.asRepeated().encodeWithTag(writer, 1_105, value.ext_rep_sfixed32)
+        ProtoAdapter.FIXED32.asRepeated().encodeWithTag(writer, 1_104, value.ext_rep_fixed32)
+        ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 1_103, value.ext_rep_sint32)
+        ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 1_102, value.ext_rep_uint32)
+        ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1_101, value.ext_rep_int32)
+        NestedMessage.ADAPTER.encodeWithTag(writer, 1_017, value.ext_opt_nested_message)
+        NestedEnum.ADAPTER.encodeWithTag(writer, 1_016, value.ext_opt_nested_enum)
+        ProtoAdapter.BYTES.encodeWithTag(writer, 1_015, value.ext_opt_bytes)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1_014, value.ext_opt_string)
+        ProtoAdapter.DOUBLE.encodeWithTag(writer, 1_013, value.ext_opt_double)
+        ProtoAdapter.FLOAT.encodeWithTag(writer, 1_012, value.ext_opt_float)
+        ProtoAdapter.BOOL.encodeWithTag(writer, 1_011, value.ext_opt_bool)
+        ProtoAdapter.SFIXED64.encodeWithTag(writer, 1_010, value.ext_opt_sfixed64)
+        ProtoAdapter.FIXED64.encodeWithTag(writer, 1_009, value.ext_opt_fixed64)
+        ProtoAdapter.SINT64.encodeWithTag(writer, 1_008, value.ext_opt_sint64)
+        ProtoAdapter.UINT64.encodeWithTag(writer, 1_007, value.ext_opt_uint64)
+        ProtoAdapter.INT64.encodeWithTag(writer, 1_006, value.ext_opt_int64)
+        ProtoAdapter.SFIXED32.encodeWithTag(writer, 1_005, value.ext_opt_sfixed32)
+        ProtoAdapter.FIXED32.encodeWithTag(writer, 1_004, value.ext_opt_fixed32)
+        ProtoAdapter.SINT32.encodeWithTag(writer, 1_003, value.ext_opt_sint32)
+        ProtoAdapter.UINT32.encodeWithTag(writer, 1_002, value.ext_opt_uint32)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1_001, value.ext_opt_int32)
         map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
         map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
         map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
@@ -3883,7 +3884,7 @@ public class AllTypes(
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32)
       }
 
-      public override fun decode(reader: ProtoReader): AllTypes {
+      override fun decode(reader: ProtoReader): AllTypes {
         var opt_int32: Int? = null
         var opt_uint32: Int? = null
         var opt_sint32: Int? = null
@@ -4247,49 +4248,49 @@ public class AllTypes(
             601 -> oneof_string = ProtoAdapter.STRING.decode(reader)
             602 -> oneof_int32 = ProtoAdapter.INT32.decode(reader)
             603 -> oneof_nested_message = NestedMessage.ADAPTER.decode(reader)
-            1001 -> ext_opt_int32 = ProtoAdapter.INT32.decode(reader)
-            1002 -> ext_opt_uint32 = ProtoAdapter.UINT32.decode(reader)
-            1003 -> ext_opt_sint32 = ProtoAdapter.SINT32.decode(reader)
-            1004 -> ext_opt_fixed32 = ProtoAdapter.FIXED32.decode(reader)
-            1005 -> ext_opt_sfixed32 = ProtoAdapter.SFIXED32.decode(reader)
-            1006 -> ext_opt_int64 = ProtoAdapter.INT64.decode(reader)
-            1007 -> ext_opt_uint64 = ProtoAdapter.UINT64.decode(reader)
-            1008 -> ext_opt_sint64 = ProtoAdapter.SINT64.decode(reader)
-            1009 -> ext_opt_fixed64 = ProtoAdapter.FIXED64.decode(reader)
-            1010 -> ext_opt_sfixed64 = ProtoAdapter.SFIXED64.decode(reader)
-            1011 -> ext_opt_bool = ProtoAdapter.BOOL.decode(reader)
-            1012 -> ext_opt_float = ProtoAdapter.FLOAT.decode(reader)
-            1013 -> ext_opt_double = ProtoAdapter.DOUBLE.decode(reader)
-            1014 -> ext_opt_string = ProtoAdapter.STRING.decode(reader)
-            1015 -> ext_opt_bytes = ProtoAdapter.BYTES.decode(reader)
-            1016 -> try {
+            1_001 -> ext_opt_int32 = ProtoAdapter.INT32.decode(reader)
+            1_002 -> ext_opt_uint32 = ProtoAdapter.UINT32.decode(reader)
+            1_003 -> ext_opt_sint32 = ProtoAdapter.SINT32.decode(reader)
+            1_004 -> ext_opt_fixed32 = ProtoAdapter.FIXED32.decode(reader)
+            1_005 -> ext_opt_sfixed32 = ProtoAdapter.SFIXED32.decode(reader)
+            1_006 -> ext_opt_int64 = ProtoAdapter.INT64.decode(reader)
+            1_007 -> ext_opt_uint64 = ProtoAdapter.UINT64.decode(reader)
+            1_008 -> ext_opt_sint64 = ProtoAdapter.SINT64.decode(reader)
+            1_009 -> ext_opt_fixed64 = ProtoAdapter.FIXED64.decode(reader)
+            1_010 -> ext_opt_sfixed64 = ProtoAdapter.SFIXED64.decode(reader)
+            1_011 -> ext_opt_bool = ProtoAdapter.BOOL.decode(reader)
+            1_012 -> ext_opt_float = ProtoAdapter.FLOAT.decode(reader)
+            1_013 -> ext_opt_double = ProtoAdapter.DOUBLE.decode(reader)
+            1_014 -> ext_opt_string = ProtoAdapter.STRING.decode(reader)
+            1_015 -> ext_opt_bytes = ProtoAdapter.BYTES.decode(reader)
+            1_016 -> try {
               ext_opt_nested_enum = NestedEnum.ADAPTER.decode(reader)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
-            1017 -> ext_opt_nested_message = NestedMessage.ADAPTER.decode(reader)
-            1101 -> ext_rep_int32.add(ProtoAdapter.INT32.decode(reader))
-            1102 -> ext_rep_uint32.add(ProtoAdapter.UINT32.decode(reader))
-            1103 -> ext_rep_sint32.add(ProtoAdapter.SINT32.decode(reader))
-            1104 -> ext_rep_fixed32.add(ProtoAdapter.FIXED32.decode(reader))
-            1105 -> ext_rep_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader))
-            1106 -> ext_rep_int64.add(ProtoAdapter.INT64.decode(reader))
-            1107 -> ext_rep_uint64.add(ProtoAdapter.UINT64.decode(reader))
-            1108 -> ext_rep_sint64.add(ProtoAdapter.SINT64.decode(reader))
-            1109 -> ext_rep_fixed64.add(ProtoAdapter.FIXED64.decode(reader))
-            1110 -> ext_rep_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader))
-            1111 -> ext_rep_bool.add(ProtoAdapter.BOOL.decode(reader))
-            1112 -> ext_rep_float.add(ProtoAdapter.FLOAT.decode(reader))
-            1113 -> ext_rep_double.add(ProtoAdapter.DOUBLE.decode(reader))
-            1114 -> ext_rep_string.add(ProtoAdapter.STRING.decode(reader))
-            1115 -> ext_rep_bytes.add(ProtoAdapter.BYTES.decode(reader))
-            1116 -> try {
+            1_017 -> ext_opt_nested_message = NestedMessage.ADAPTER.decode(reader)
+            1_101 -> ext_rep_int32.add(ProtoAdapter.INT32.decode(reader))
+            1_102 -> ext_rep_uint32.add(ProtoAdapter.UINT32.decode(reader))
+            1_103 -> ext_rep_sint32.add(ProtoAdapter.SINT32.decode(reader))
+            1_104 -> ext_rep_fixed32.add(ProtoAdapter.FIXED32.decode(reader))
+            1_105 -> ext_rep_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader))
+            1_106 -> ext_rep_int64.add(ProtoAdapter.INT64.decode(reader))
+            1_107 -> ext_rep_uint64.add(ProtoAdapter.UINT64.decode(reader))
+            1_108 -> ext_rep_sint64.add(ProtoAdapter.SINT64.decode(reader))
+            1_109 -> ext_rep_fixed64.add(ProtoAdapter.FIXED64.decode(reader))
+            1_110 -> ext_rep_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader))
+            1_111 -> ext_rep_bool.add(ProtoAdapter.BOOL.decode(reader))
+            1_112 -> ext_rep_float.add(ProtoAdapter.FLOAT.decode(reader))
+            1_113 -> ext_rep_double.add(ProtoAdapter.DOUBLE.decode(reader))
+            1_114 -> ext_rep_string.add(ProtoAdapter.STRING.decode(reader))
+            1_115 -> ext_rep_bytes.add(ProtoAdapter.BYTES.decode(reader))
+            1_116 -> try {
               NestedEnum.ADAPTER.tryDecode(reader, ext_rep_nested_enum)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
-            1117 -> ext_rep_nested_message.add(NestedMessage.ADAPTER.decode(reader))
-            1201 -> {
+            1_117 -> ext_rep_nested_message.add(NestedMessage.ADAPTER.decode(reader))
+            1_201 -> {
               if (ext_pack_int32 == null) {
                 val minimumByteSize = 1
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
@@ -4299,7 +4300,7 @@ public class AllTypes(
               }
               ext_pack_int32!!.add(ProtoAdapter.INT32.decode(reader))
             }
-            1202 -> {
+            1_202 -> {
               if (ext_pack_uint32 == null) {
                 val minimumByteSize = 1
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
@@ -4309,7 +4310,7 @@ public class AllTypes(
               }
               ext_pack_uint32!!.add(ProtoAdapter.UINT32.decode(reader))
             }
-            1203 -> {
+            1_203 -> {
               if (ext_pack_sint32 == null) {
                 val minimumByteSize = 1
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
@@ -4319,7 +4320,7 @@ public class AllTypes(
               }
               ext_pack_sint32!!.add(ProtoAdapter.SINT32.decode(reader))
             }
-            1204 -> {
+            1_204 -> {
               if (ext_pack_fixed32 == null) {
                 val minimumByteSize = 4
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
@@ -4329,7 +4330,7 @@ public class AllTypes(
               }
               ext_pack_fixed32!!.add(ProtoAdapter.FIXED32.decode(reader))
             }
-            1205 -> {
+            1_205 -> {
               if (ext_pack_sfixed32 == null) {
                 val minimumByteSize = 4
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
@@ -4339,7 +4340,7 @@ public class AllTypes(
               }
               ext_pack_sfixed32!!.add(ProtoAdapter.SFIXED32.decode(reader))
             }
-            1206 -> {
+            1_206 -> {
               if (ext_pack_int64 == null) {
                 val minimumByteSize = 1
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
@@ -4349,7 +4350,7 @@ public class AllTypes(
               }
               ext_pack_int64!!.add(ProtoAdapter.INT64.decode(reader))
             }
-            1207 -> {
+            1_207 -> {
               if (ext_pack_uint64 == null) {
                 val minimumByteSize = 1
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
@@ -4359,7 +4360,7 @@ public class AllTypes(
               }
               ext_pack_uint64!!.add(ProtoAdapter.UINT64.decode(reader))
             }
-            1208 -> {
+            1_208 -> {
               if (ext_pack_sint64 == null) {
                 val minimumByteSize = 1
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
@@ -4369,7 +4370,7 @@ public class AllTypes(
               }
               ext_pack_sint64!!.add(ProtoAdapter.SINT64.decode(reader))
             }
-            1209 -> {
+            1_209 -> {
               if (ext_pack_fixed64 == null) {
                 val minimumByteSize = 8
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
@@ -4379,7 +4380,7 @@ public class AllTypes(
               }
               ext_pack_fixed64!!.add(ProtoAdapter.FIXED64.decode(reader))
             }
-            1210 -> {
+            1_210 -> {
               if (ext_pack_sfixed64 == null) {
                 val minimumByteSize = 8
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
@@ -4389,7 +4390,7 @@ public class AllTypes(
               }
               ext_pack_sfixed64!!.add(ProtoAdapter.SFIXED64.decode(reader))
             }
-            1211 -> {
+            1_211 -> {
               if (ext_pack_bool == null) {
                 val minimumByteSize = 1
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
@@ -4399,7 +4400,7 @@ public class AllTypes(
               }
               ext_pack_bool!!.add(ProtoAdapter.BOOL.decode(reader))
             }
-            1212 -> {
+            1_212 -> {
               if (ext_pack_float == null) {
                 val minimumByteSize = 4
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
@@ -4409,7 +4410,7 @@ public class AllTypes(
               }
               ext_pack_float!!.add(ProtoAdapter.FLOAT.decode(reader))
             }
-            1213 -> {
+            1_213 -> {
               if (ext_pack_double == null) {
                 val minimumByteSize = 8
                 val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
@@ -4419,7 +4420,7 @@ public class AllTypes(
               }
               ext_pack_double!!.add(ProtoAdapter.DOUBLE.decode(reader))
             }
-            1216 -> try {
+            1_216 -> try {
               NestedEnum.ADAPTER.tryDecode(reader, ext_pack_nested_enum)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
@@ -4570,7 +4571,7 @@ public class AllTypes(
         )
       }
 
-      public override fun redact(`value`: AllTypes): AllTypes = value.copy(
+      override fun redact(`value`: AllTypes): AllTypes = value.copy(
         opt_nested_message = value.opt_nested_message?.let(NestedMessage.ADAPTER::redact),
         req_nested_message = NestedMessage.ADAPTER.redact(value.req_nested_message),
         rep_nested_message = value.rep_nested_message.redactElements(NestedMessage.ADAPTER),
@@ -4586,7 +4587,7 @@ public class AllTypes(
   }
 
   public enum class NestedEnum(
-    public override val `value`: Int,
+    override val `value`: Int,
   ) : WireEnum {
     UNKNOWN(0),
     A(1),
@@ -4599,7 +4600,7 @@ public class AllTypes(
         PROTO_2, 
         NestedEnum.UNKNOWN
       ) {
-        public override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
+        override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
 
       @JvmStatic
@@ -4620,14 +4621,14 @@ public class AllTypes(
     public val a: Int? = null,
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<NestedMessage, NestedMessage.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.a = a
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NestedMessage) return false
       if (unknownFields != other.unknownFields) return false
@@ -4635,7 +4636,7 @@ public class AllTypes(
       return true
     }
 
-    public override fun hashCode(): Int {
+    override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
@@ -4645,7 +4646,7 @@ public class AllTypes(
       return result
     }
 
-    public override fun toString(): String {
+    override fun toString(): String {
       val result = mutableListOf<String>()
       if (a != null) result += """a=$a"""
       return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
@@ -4663,7 +4664,7 @@ public class AllTypes(
         return this
       }
 
-      public override fun build(): NestedMessage = NestedMessage(
+      override fun build(): NestedMessage = NestedMessage(
         a = a,
         unknownFields = buildUnknownFields()
       )
@@ -4679,23 +4680,23 @@ public class AllTypes(
         null, 
         "all_types_proto2.proto"
       ) {
-        public override fun encodedSize(`value`: NestedMessage): Int {
+        override fun encodedSize(`value`: NestedMessage): Int {
           var size = value.unknownFields.size
           size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: NestedMessage): Unit {
+        override fun encode(writer: ProtoWriter, `value`: NestedMessage) {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage) {
           writer.writeBytes(value.unknownFields)
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
         }
 
-        public override fun decode(reader: ProtoReader): NestedMessage {
+        override fun decode(reader: ProtoReader): NestedMessage {
           var a: Int? = null
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
@@ -4709,7 +4710,7 @@ public class AllTypes(
           )
         }
 
-        public override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
+        override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }

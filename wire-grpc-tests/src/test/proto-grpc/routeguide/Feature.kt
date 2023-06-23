@@ -20,7 +20,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -52,10 +51,10 @@ public class Feature(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Feature) return false
     if (unknownFields != other.unknownFields) return false
@@ -64,7 +63,7 @@ public class Feature(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -75,7 +74,7 @@ public class Feature(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (name != null) result += """name=${sanitize(name)}"""
     if (location != null) result += """location=$location"""
@@ -98,26 +97,26 @@ public class Feature(
       null, 
       "routeguide/RouteGuideProto.proto"
     ) {
-      public override fun encodedSize(`value`: Feature): Int {
+      override fun encodedSize(`value`: Feature): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         size += Point.ADAPTER.encodedSizeWithTag(2, value.location)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: Feature): Unit {
+      override fun encode(writer: ProtoWriter, `value`: Feature) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         Point.ADAPTER.encodeWithTag(writer, 2, value.location)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: Feature): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: Feature) {
         writer.writeBytes(value.unknownFields)
         Point.ADAPTER.encodeWithTag(writer, 2, value.location)
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
       }
 
-      public override fun decode(reader: ProtoReader): Feature {
+      override fun decode(reader: ProtoReader): Feature {
         var name: String? = null
         var location: Point? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -134,7 +133,7 @@ public class Feature(
         )
       }
 
-      public override fun redact(`value`: Feature): Feature = value.copy(
+      override fun redact(`value`: Feature): Feature = value.copy(
         location = value.location?.let(Point.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

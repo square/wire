@@ -16,7 +16,6 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.Map
 import kotlin.jvm.JvmField
 import kotlin.lazy
@@ -144,7 +143,7 @@ public class MapTypes(
   public val map_uint64_uint64: Map<Long, Long> = immutableCopyOf("map_uint64_uint64",
       map_uint64_uint64)
 
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.map_string_string = map_string_string
     builder.map_int32_int32 = map_int32_int32
@@ -161,7 +160,7 @@ public class MapTypes(
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MapTypes) return false
     if (unknownFields != other.unknownFields) return false
@@ -179,7 +178,7 @@ public class MapTypes(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -199,7 +198,7 @@ public class MapTypes(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (map_string_string.isNotEmpty()) result += """map_string_string=$map_string_string"""
     if (map_int32_int32.isNotEmpty()) result += """map_int32_int32=$map_int32_int32"""
@@ -324,7 +323,7 @@ public class MapTypes(
       return this
     }
 
-    public override fun build(): MapTypes = MapTypes(
+    override fun build(): MapTypes = MapTypes(
       map_string_string = map_string_string,
       map_int32_int32 = map_int32_int32,
       map_sint32_sint32 = map_sint32_sint32,
@@ -383,7 +382,7 @@ public class MapTypes(
       private val map_uint64_uint64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.UINT64, ProtoAdapter.UINT64) }
 
-      public override fun encodedSize(`value`: MapTypes): Int {
+      override fun encodedSize(`value`: MapTypes): Int {
         var size = value.unknownFields.size
         size += map_string_stringAdapter.encodedSizeWithTag(1, value.map_string_string)
         size += map_int32_int32Adapter.encodedSizeWithTag(2, value.map_int32_int32)
@@ -399,7 +398,7 @@ public class MapTypes(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: MapTypes): Unit {
+      override fun encode(writer: ProtoWriter, `value`: MapTypes) {
         map_string_stringAdapter.encodeWithTag(writer, 1, value.map_string_string)
         map_int32_int32Adapter.encodeWithTag(writer, 2, value.map_int32_int32)
         map_sint32_sint32Adapter.encodeWithTag(writer, 3, value.map_sint32_sint32)
@@ -414,7 +413,7 @@ public class MapTypes(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: MapTypes): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: MapTypes) {
         writer.writeBytes(value.unknownFields)
         map_uint64_uint64Adapter.encodeWithTag(writer, 11, value.map_uint64_uint64)
         map_fixed64_fixed64Adapter.encodeWithTag(writer, 10, value.map_fixed64_fixed64)
@@ -429,7 +428,7 @@ public class MapTypes(
         map_string_stringAdapter.encodeWithTag(writer, 1, value.map_string_string)
       }
 
-      public override fun decode(reader: ProtoReader): MapTypes {
+      override fun decode(reader: ProtoReader): MapTypes {
         val map_string_string = mutableMapOf<String, String>()
         val map_int32_int32 = mutableMapOf<Int, Int>()
         val map_sint32_sint32 = mutableMapOf<Int, Int>()
@@ -473,7 +472,7 @@ public class MapTypes(
         )
       }
 
-      public override fun redact(`value`: MapTypes): MapTypes = value.copy(
+      override fun redact(`value`: MapTypes): MapTypes = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

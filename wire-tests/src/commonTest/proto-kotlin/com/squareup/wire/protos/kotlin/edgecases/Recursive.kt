@@ -19,7 +19,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -41,10 +40,10 @@ public class Recursive(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Recursive) return false
     if (unknownFields != other.unknownFields) return false
@@ -53,7 +52,7 @@ public class Recursive(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -64,7 +63,7 @@ public class Recursive(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (value_ != null) result += """value_=$value_"""
     if (recursive != null) result += """recursive=$recursive"""
@@ -87,26 +86,26 @@ public class Recursive(
       null, 
       "edge_cases.proto"
     ) {
-      public override fun encodedSize(`value`: Recursive): Int {
+      override fun encodedSize(`value`: Recursive): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.value_)
         size += Recursive.ADAPTER.encodedSizeWithTag(2, value.recursive)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: Recursive): Unit {
+      override fun encode(writer: ProtoWriter, `value`: Recursive) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value_)
         Recursive.ADAPTER.encodeWithTag(writer, 2, value.recursive)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: Recursive): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: Recursive) {
         writer.writeBytes(value.unknownFields)
         Recursive.ADAPTER.encodeWithTag(writer, 2, value.recursive)
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value_)
       }
 
-      public override fun decode(reader: ProtoReader): Recursive {
+      override fun decode(reader: ProtoReader): Recursive {
         var value_: Int? = null
         var recursive: Recursive? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -123,7 +122,7 @@ public class Recursive(
         )
       }
 
-      public override fun redact(`value`: Recursive): Recursive = value.copy(
+      override fun redact(`value`: Recursive): Recursive = value.copy(
         recursive = value.recursive?.let(Recursive.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

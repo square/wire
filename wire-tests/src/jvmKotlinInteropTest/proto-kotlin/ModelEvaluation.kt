@@ -17,7 +17,6 @@ import kotlin.Double
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.Map
 import kotlin.jvm.JvmField
 import kotlin.lazy
@@ -62,7 +61,7 @@ public class ModelEvaluation(
   @JvmField
   public val models: Map<String, ModelEvaluation> = immutableCopyOf("models", models)
 
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.name = name
     builder.score = score
@@ -71,7 +70,7 @@ public class ModelEvaluation(
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ModelEvaluation) return false
     if (unknownFields != other.unknownFields) return false
@@ -81,7 +80,7 @@ public class ModelEvaluation(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -93,7 +92,7 @@ public class ModelEvaluation(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (name != null) result += """name=${sanitize(name)}"""
     if (score != null) result += """score=$score"""
@@ -133,7 +132,7 @@ public class ModelEvaluation(
       return this
     }
 
-    public override fun build(): ModelEvaluation = ModelEvaluation(
+    override fun build(): ModelEvaluation = ModelEvaluation(
       name = name,
       score = score,
       models = models,
@@ -154,7 +153,7 @@ public class ModelEvaluation(
       private val modelsAdapter: ProtoAdapter<Map<String, ModelEvaluation>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER) }
 
-      public override fun encodedSize(`value`: ModelEvaluation): Int {
+      override fun encodedSize(`value`: ModelEvaluation): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         size += ProtoAdapter.DOUBLE.encodedSizeWithTag(2, value.score)
@@ -162,21 +161,21 @@ public class ModelEvaluation(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: ModelEvaluation): Unit {
+      override fun encode(writer: ProtoWriter, `value`: ModelEvaluation) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         ProtoAdapter.DOUBLE.encodeWithTag(writer, 2, value.score)
         modelsAdapter.encodeWithTag(writer, 3, value.models)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: ModelEvaluation): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: ModelEvaluation) {
         writer.writeBytes(value.unknownFields)
         modelsAdapter.encodeWithTag(writer, 3, value.models)
         ProtoAdapter.DOUBLE.encodeWithTag(writer, 2, value.score)
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
       }
 
-      public override fun decode(reader: ProtoReader): ModelEvaluation {
+      override fun decode(reader: ProtoReader): ModelEvaluation {
         var name: String? = null
         var score: Double? = null
         val models = mutableMapOf<String, ModelEvaluation>()
@@ -196,7 +195,7 @@ public class ModelEvaluation(
         )
       }
 
-      public override fun redact(`value`: ModelEvaluation): ModelEvaluation = value.copy(
+      override fun redact(`value`: ModelEvaluation): ModelEvaluation = value.copy(
         models = value.models.redactElements(ModelEvaluation.ADAPTER),
         unknownFields = ByteString.EMPTY
       )

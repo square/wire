@@ -19,7 +19,6 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -42,7 +41,7 @@ public class UsesAny(
   @JvmField
   public val many_anys: List<AnyMessage> = immutableCopyOf("many_anys", many_anys)
 
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.just_one = just_one
     builder.many_anys = many_anys
@@ -50,7 +49,7 @@ public class UsesAny(
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is UsesAny) return false
     if (unknownFields != other.unknownFields) return false
@@ -59,7 +58,7 @@ public class UsesAny(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -70,7 +69,7 @@ public class UsesAny(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (just_one != null) result += """just_one=$just_one"""
     if (many_anys.isNotEmpty()) result += """many_anys=$many_anys"""
@@ -101,7 +100,7 @@ public class UsesAny(
       return this
     }
 
-    public override fun build(): UsesAny = UsesAny(
+    override fun build(): UsesAny = UsesAny(
       just_one = just_one,
       many_anys = many_anys,
       unknownFields = buildUnknownFields()
@@ -118,26 +117,26 @@ public class UsesAny(
       null, 
       "uses_any.proto"
     ) {
-      public override fun encodedSize(`value`: UsesAny): Int {
+      override fun encodedSize(`value`: UsesAny): Int {
         var size = value.unknownFields.size
         size += AnyMessage.ADAPTER.encodedSizeWithTag(1, value.just_one)
         size += AnyMessage.ADAPTER.asRepeated().encodedSizeWithTag(2, value.many_anys)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: UsesAny): Unit {
+      override fun encode(writer: ProtoWriter, `value`: UsesAny) {
         AnyMessage.ADAPTER.encodeWithTag(writer, 1, value.just_one)
         AnyMessage.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.many_anys)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: UsesAny): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: UsesAny) {
         writer.writeBytes(value.unknownFields)
         AnyMessage.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.many_anys)
         AnyMessage.ADAPTER.encodeWithTag(writer, 1, value.just_one)
       }
 
-      public override fun decode(reader: ProtoReader): UsesAny {
+      override fun decode(reader: ProtoReader): UsesAny {
         var just_one: AnyMessage? = null
         val many_anys = mutableListOf<AnyMessage>()
         val unknownFields = reader.forEachTag { tag ->
@@ -154,7 +153,7 @@ public class UsesAny(
         )
       }
 
-      public override fun redact(`value`: UsesAny): UsesAny = value.copy(
+      override fun redact(`value`: UsesAny): UsesAny = value.copy(
         just_one = value.just_one?.let(AnyMessage.ADAPTER::redact),
         many_anys = value.many_anys.redactElements(AnyMessage.ADAPTER),
         unknownFields = ByteString.EMPTY

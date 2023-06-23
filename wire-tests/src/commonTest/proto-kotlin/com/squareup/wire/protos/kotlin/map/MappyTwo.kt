@@ -9,7 +9,6 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
-import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
@@ -24,7 +23,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.Map
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
@@ -70,10 +68,10 @@ public class MappyTwo(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MappyTwo) return false
     if (unknownFields != other.unknownFields) return false
@@ -84,7 +82,7 @@ public class MappyTwo(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -97,7 +95,7 @@ public class MappyTwo(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (string_enums.isNotEmpty()) result += """string_enums=$string_enums"""
     if (int_things.isNotEmpty()) result += """int_things=$int_things"""
@@ -136,7 +134,7 @@ public class MappyTwo(
       private val int_things_twoAdapter: ProtoAdapter<Map<Int, Thing>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.SINT32, Thing.ADAPTER) }
 
-      public override fun encodedSize(`value`: MappyTwo): Int {
+      override fun encodedSize(`value`: MappyTwo): Int {
         var size = value.unknownFields.size
         size += string_enumsAdapter.encodedSizeWithTag(1, value.string_enums)
         size += int_thingsAdapter.encodedSizeWithTag(2, value.int_things)
@@ -145,7 +143,7 @@ public class MappyTwo(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: MappyTwo): Unit {
+      override fun encode(writer: ProtoWriter, `value`: MappyTwo) {
         string_enumsAdapter.encodeWithTag(writer, 1, value.string_enums)
         int_thingsAdapter.encodeWithTag(writer, 2, value.int_things)
         string_intsAdapter.encodeWithTag(writer, 3, value.string_ints)
@@ -153,7 +151,7 @@ public class MappyTwo(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: MappyTwo): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: MappyTwo) {
         writer.writeBytes(value.unknownFields)
         int_things_twoAdapter.encodeWithTag(writer, 4, value.int_things_two)
         string_intsAdapter.encodeWithTag(writer, 3, value.string_ints)
@@ -161,7 +159,7 @@ public class MappyTwo(
         string_enumsAdapter.encodeWithTag(writer, 1, value.string_enums)
       }
 
-      public override fun decode(reader: ProtoReader): MappyTwo {
+      override fun decode(reader: ProtoReader): MappyTwo {
         val string_enums = mutableMapOf<String, ValueEnum>()
         val int_things = mutableMapOf<Long, Thing>()
         val string_ints = mutableMapOf<String, Long>()
@@ -184,7 +182,7 @@ public class MappyTwo(
         )
       }
 
-      public override fun redact(`value`: MappyTwo): MappyTwo = value.copy(
+      override fun redact(`value`: MappyTwo): MappyTwo = value.copy(
         int_things = value.int_things.redactElements(Thing.ADAPTER),
         int_things_two = value.int_things_two.redactElements(Thing.ADAPTER),
         unknownFields = ByteString.EMPTY
@@ -195,7 +193,7 @@ public class MappyTwo(
   }
 
   public enum class ValueEnum(
-    public override val `value`: Int,
+    override val `value`: Int,
   ) : WireEnum {
     DEFAULT(0),
     FOO(1),
@@ -209,7 +207,7 @@ public class MappyTwo(
         PROTO_2, 
         ValueEnum.DEFAULT
       ) {
-        public override fun fromValue(`value`: Int): ValueEnum? = ValueEnum.fromValue(value)
+        override fun fromValue(`value`: Int): ValueEnum? = ValueEnum.fromValue(value)
       }
 
       @JvmStatic

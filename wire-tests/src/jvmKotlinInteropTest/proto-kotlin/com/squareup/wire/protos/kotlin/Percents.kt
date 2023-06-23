@@ -16,7 +16,6 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -32,14 +31,14 @@ public class Percents(
   public val text: String? = null,
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Percents, Percents.Builder>(ADAPTER, unknownFields) {
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.text = text
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Percents) return false
     if (unknownFields != other.unknownFields) return false
@@ -47,7 +46,7 @@ public class Percents(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -57,7 +56,7 @@ public class Percents(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (text != null) result += """text=${sanitize(text)}"""
     return result.joinToString(prefix = "Percents{", separator = ", ", postfix = "}")
@@ -78,7 +77,7 @@ public class Percents(
       return this
     }
 
-    public override fun build(): Percents = Percents(
+    override fun build(): Percents = Percents(
       text = text,
       unknownFields = buildUnknownFields()
     )
@@ -94,23 +93,23 @@ public class Percents(
       null, 
       "percents_in_kdoc.proto"
     ) {
-      public override fun encodedSize(`value`: Percents): Int {
+      override fun encodedSize(`value`: Percents): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.text)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: Percents): Unit {
+      override fun encode(writer: ProtoWriter, `value`: Percents) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: Percents): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: Percents) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
       }
 
-      public override fun decode(reader: ProtoReader): Percents {
+      override fun decode(reader: ProtoReader): Percents {
         var text: String? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -124,7 +123,7 @@ public class Percents(
         )
       }
 
-      public override fun redact(`value`: Percents): Percents = value.copy(
+      override fun redact(`value`: Percents): Percents = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

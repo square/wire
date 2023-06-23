@@ -21,7 +21,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -53,10 +52,10 @@ public class RedactedRepeated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedRepeated) return false
     if (unknownFields != other.unknownFields) return false
@@ -65,7 +64,7 @@ public class RedactedRepeated(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -76,7 +75,7 @@ public class RedactedRepeated(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (a.isNotEmpty()) result += """a=██"""
     if (b.isNotEmpty()) result += """b=$b"""
@@ -99,26 +98,26 @@ public class RedactedRepeated(
       null, 
       "redacted_test.proto"
     ) {
-      public override fun encodedSize(`value`: RedactedRepeated): Int {
+      override fun encodedSize(`value`: RedactedRepeated): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a)
         size += RedactedFields.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: RedactedRepeated): Unit {
+      override fun encode(writer: ProtoWriter, `value`: RedactedRepeated) {
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a)
         RedactedFields.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: RedactedRepeated): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: RedactedRepeated) {
         writer.writeBytes(value.unknownFields)
         RedactedFields.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a)
       }
 
-      public override fun decode(reader: ProtoReader): RedactedRepeated {
+      override fun decode(reader: ProtoReader): RedactedRepeated {
         val a = mutableListOf<String>()
         val b = mutableListOf<RedactedFields>()
         val unknownFields = reader.forEachTag { tag ->
@@ -135,7 +134,7 @@ public class RedactedRepeated(
         )
       }
 
-      public override fun redact(`value`: RedactedRepeated): RedactedRepeated = value.copy(
+      override fun redact(`value`: RedactedRepeated): RedactedRepeated = value.copy(
         a = emptyList(),
         b = value.b.redactElements(RedactedFields.ADAPTER),
         unknownFields = ByteString.EMPTY

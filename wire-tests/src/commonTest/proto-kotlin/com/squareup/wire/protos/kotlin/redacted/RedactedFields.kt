@@ -20,7 +20,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -55,10 +54,10 @@ public class RedactedFields(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedFields) return false
     if (unknownFields != other.unknownFields) return false
@@ -69,7 +68,7 @@ public class RedactedFields(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -82,7 +81,7 @@ public class RedactedFields(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (a != null) result += """a=██"""
     if (b != null) result += """b=${sanitize(b)}"""
@@ -109,7 +108,7 @@ public class RedactedFields(
       null, 
       "redacted_test.proto"
     ) {
-      public override fun encodedSize(`value`: RedactedFields): Int {
+      override fun encodedSize(`value`: RedactedFields): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.b)
@@ -118,7 +117,7 @@ public class RedactedFields(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: RedactedFields): Unit {
+      override fun encode(writer: ProtoWriter, `value`: RedactedFields) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.c)
@@ -126,7 +125,7 @@ public class RedactedFields(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: RedactedFields): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: RedactedFields) {
         writer.writeBytes(value.unknownFields)
         RedactedExtension.ADAPTER.encodeWithTag(writer, 10, value.extension)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.c)
@@ -134,7 +133,7 @@ public class RedactedFields(
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
       }
 
-      public override fun decode(reader: ProtoReader): RedactedFields {
+      override fun decode(reader: ProtoReader): RedactedFields {
         var a: String? = null
         var b: String? = null
         var c: String? = null
@@ -157,7 +156,7 @@ public class RedactedFields(
         )
       }
 
-      public override fun redact(`value`: RedactedFields): RedactedFields = value.copy(
+      override fun redact(`value`: RedactedFields): RedactedFields = value.copy(
         a = null,
         extension = value.extension?.let(RedactedExtension.ADAPTER::redact),
         unknownFields = ByteString.EMPTY

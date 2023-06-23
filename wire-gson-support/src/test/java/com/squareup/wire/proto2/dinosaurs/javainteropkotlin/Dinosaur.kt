@@ -20,7 +20,6 @@ import kotlin.Double
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -67,7 +66,7 @@ public class Dinosaur(
   @JvmField
   public val picture_urls: List<String> = immutableCopyOf("picture_urls", picture_urls)
 
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.name = name
     builder.picture_urls = picture_urls
@@ -78,7 +77,7 @@ public class Dinosaur(
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Dinosaur) return false
     if (unknownFields != other.unknownFields) return false
@@ -90,7 +89,7 @@ public class Dinosaur(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -104,7 +103,7 @@ public class Dinosaur(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (name != null) result += """name=${sanitize(name)}"""
     if (picture_urls.isNotEmpty()) result += """picture_urls=${sanitize(picture_urls)}"""
@@ -171,7 +170,7 @@ public class Dinosaur(
       return this
     }
 
-    public override fun build(): Dinosaur = Dinosaur(
+    override fun build(): Dinosaur = Dinosaur(
       name = name,
       picture_urls = picture_urls,
       length_meters = length_meters,
@@ -191,7 +190,7 @@ public class Dinosaur(
       null, 
       "dinosaur_java_interop_kotlin.proto"
     ) {
-      public override fun encodedSize(`value`: Dinosaur): Int {
+      override fun encodedSize(`value`: Dinosaur): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(2, value.picture_urls)
@@ -201,7 +200,7 @@ public class Dinosaur(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: Dinosaur): Unit {
+      override fun encode(writer: ProtoWriter, `value`: Dinosaur) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 2, value.picture_urls)
         ProtoAdapter.DOUBLE.encodeWithTag(writer, 3, value.length_meters)
@@ -210,7 +209,7 @@ public class Dinosaur(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: Dinosaur): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: Dinosaur) {
         writer.writeBytes(value.unknownFields)
         Period.ADAPTER.encodeWithTag(writer, 5, value.period)
         ProtoAdapter.DOUBLE.encodeWithTag(writer, 4, value.mass_kilograms)
@@ -219,7 +218,7 @@ public class Dinosaur(
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
       }
 
-      public override fun decode(reader: ProtoReader): Dinosaur {
+      override fun decode(reader: ProtoReader): Dinosaur {
         var name: String? = null
         val picture_urls = mutableListOf<String>()
         var length_meters: Double? = null
@@ -249,7 +248,7 @@ public class Dinosaur(
         )
       }
 
-      public override fun redact(`value`: Dinosaur): Dinosaur = value.copy(
+      override fun redact(`value`: Dinosaur): Dinosaur = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

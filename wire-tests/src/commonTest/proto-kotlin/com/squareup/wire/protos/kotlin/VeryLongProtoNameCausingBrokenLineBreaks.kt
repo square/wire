@@ -20,7 +20,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -39,10 +38,10 @@ public class VeryLongProtoNameCausingBrokenLineBreaks(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is VeryLongProtoNameCausingBrokenLineBreaks) return false
     if (unknownFields != other.unknownFields) return false
@@ -50,7 +49,7 @@ public class VeryLongProtoNameCausingBrokenLineBreaks(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -60,7 +59,7 @@ public class VeryLongProtoNameCausingBrokenLineBreaks(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (foo != null) result += """foo=${sanitize(foo)}"""
     return result.joinToString(prefix = "VeryLongProtoNameCausingBrokenLineBreaks{", separator =
@@ -82,25 +81,24 @@ public class VeryLongProtoNameCausingBrokenLineBreaks(
       null, 
       "to_string.proto"
     ) {
-      public override fun encodedSize(`value`: VeryLongProtoNameCausingBrokenLineBreaks): Int {
+      override fun encodedSize(`value`: VeryLongProtoNameCausingBrokenLineBreaks): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter,
-          `value`: VeryLongProtoNameCausingBrokenLineBreaks): Unit {
+      override fun encode(writer: ProtoWriter, `value`: VeryLongProtoNameCausingBrokenLineBreaks) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter,
-          `value`: VeryLongProtoNameCausingBrokenLineBreaks): Unit {
+      override fun encode(writer: ReverseProtoWriter,
+          `value`: VeryLongProtoNameCausingBrokenLineBreaks) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
       }
 
-      public override fun decode(reader: ProtoReader): VeryLongProtoNameCausingBrokenLineBreaks {
+      override fun decode(reader: ProtoReader): VeryLongProtoNameCausingBrokenLineBreaks {
         var foo: String? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -114,7 +112,7 @@ public class VeryLongProtoNameCausingBrokenLineBreaks(
         )
       }
 
-      public override fun redact(`value`: VeryLongProtoNameCausingBrokenLineBreaks):
+      override fun redact(`value`: VeryLongProtoNameCausingBrokenLineBreaks):
           VeryLongProtoNameCausingBrokenLineBreaks = value.copy(
         unknownFields = ByteString.EMPTY
       )

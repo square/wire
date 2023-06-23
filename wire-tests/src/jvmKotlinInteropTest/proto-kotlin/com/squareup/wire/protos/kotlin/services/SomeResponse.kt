@@ -18,7 +18,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -29,19 +28,19 @@ public class SomeResponse(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is SomeResponse) return false
     if (unknownFields != other.unknownFields) return false
     return true
   }
 
-  public override fun hashCode(): Int = unknownFields.hashCode()
+  override fun hashCode(): Int = unknownFields.hashCode()
 
-  public override fun toString(): String = "SomeResponse{}"
+  override fun toString(): String = "SomeResponse{}"
 
   public fun copy(unknownFields: ByteString = this.unknownFields): SomeResponse =
       SomeResponse(unknownFields)
@@ -56,27 +55,27 @@ public class SomeResponse(
       null, 
       "service_kotlin.proto"
     ) {
-      public override fun encodedSize(`value`: SomeResponse): Int {
+      override fun encodedSize(`value`: SomeResponse): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: SomeResponse): Unit {
+      override fun encode(writer: ProtoWriter, `value`: SomeResponse) {
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: SomeResponse): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: SomeResponse) {
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun decode(reader: ProtoReader): SomeResponse {
+      override fun decode(reader: ProtoReader): SomeResponse {
         val unknownFields = reader.forEachTag(reader::readUnknownField)
         return SomeResponse(
           unknownFields = unknownFields
         )
       }
 
-      public override fun redact(`value`: SomeResponse): SomeResponse = value.copy(
+      override fun redact(`value`: SomeResponse): SomeResponse = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

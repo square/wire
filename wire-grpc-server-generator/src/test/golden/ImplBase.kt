@@ -27,7 +27,7 @@ public class RouteGuideWireGrpc {
     public open fun RouteChat(response: StreamObserver<RouteNote>): StreamObserver<RouteNote> =
         throw UnsupportedOperationException()
 
-    public override fun bindService(): ServerServiceDefinition =
+    override fun bindService(): ServerServiceDefinition =
         ServerServiceDefinition.builder(getServiceDescriptor()).addMethod(
               getGetFeatureMethod(),
               asyncUnaryCall(this@RouteGuideImplBase::GetFeature)
@@ -43,49 +43,47 @@ public class RouteGuideWireGrpc {
             ).build()
 
     public class PointMarshaller : WireMethodMarshaller<Point> {
-      public override fun stream(`value`: Point): InputStream =
-          Point.ADAPTER.encode(value).inputStream()
+      override fun stream(`value`: Point): InputStream = Point.ADAPTER.encode(value).inputStream()
 
-      public override fun marshalledClass(): Class<Point> = Point::class.java
+      override fun marshalledClass(): Class<Point> = Point::class.java
 
-      public override fun parse(stream: InputStream): Point = Point.ADAPTER.decode(stream)
+      override fun parse(stream: InputStream): Point = Point.ADAPTER.decode(stream)
     }
 
     public class FeatureMarshaller : WireMethodMarshaller<Feature> {
-      public override fun stream(`value`: Feature): InputStream =
+      override fun stream(`value`: Feature): InputStream =
           Feature.ADAPTER.encode(value).inputStream()
 
-      public override fun marshalledClass(): Class<Feature> = Feature::class.java
+      override fun marshalledClass(): Class<Feature> = Feature::class.java
 
-      public override fun parse(stream: InputStream): Feature = Feature.ADAPTER.decode(stream)
+      override fun parse(stream: InputStream): Feature = Feature.ADAPTER.decode(stream)
     }
 
     public class RectangleMarshaller : WireMethodMarshaller<Rectangle> {
-      public override fun stream(`value`: Rectangle): InputStream =
+      override fun stream(`value`: Rectangle): InputStream =
           Rectangle.ADAPTER.encode(value).inputStream()
 
-      public override fun marshalledClass(): Class<Rectangle> = Rectangle::class.java
+      override fun marshalledClass(): Class<Rectangle> = Rectangle::class.java
 
-      public override fun parse(stream: InputStream): Rectangle = Rectangle.ADAPTER.decode(stream)
+      override fun parse(stream: InputStream): Rectangle = Rectangle.ADAPTER.decode(stream)
     }
 
     public class RouteSummaryMarshaller : WireMethodMarshaller<RouteSummary> {
-      public override fun stream(`value`: RouteSummary): InputStream =
+      override fun stream(`value`: RouteSummary): InputStream =
           RouteSummary.ADAPTER.encode(value).inputStream()
 
-      public override fun marshalledClass(): Class<RouteSummary> = RouteSummary::class.java
+      override fun marshalledClass(): Class<RouteSummary> = RouteSummary::class.java
 
-      public override fun parse(stream: InputStream): RouteSummary =
-          RouteSummary.ADAPTER.decode(stream)
+      override fun parse(stream: InputStream): RouteSummary = RouteSummary.ADAPTER.decode(stream)
     }
 
     public class RouteNoteMarshaller : WireMethodMarshaller<RouteNote> {
-      public override fun stream(`value`: RouteNote): InputStream =
+      override fun stream(`value`: RouteNote): InputStream =
           RouteNote.ADAPTER.encode(value).inputStream()
 
-      public override fun marshalledClass(): Class<RouteNote> = RouteNote::class.java
+      override fun marshalledClass(): Class<RouteNote> = RouteNote::class.java
 
-      public override fun parse(stream: InputStream): RouteNote = RouteNote.ADAPTER.decode(stream)
+      override fun parse(stream: InputStream): RouteNote = RouteNote.ADAPTER.decode(stream)
     }
   }
 }

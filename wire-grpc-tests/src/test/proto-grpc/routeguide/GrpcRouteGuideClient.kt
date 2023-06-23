@@ -21,7 +21,7 @@ public class GrpcRouteGuideClient(
    * A feature with an empty name is returned if there's no feature at the given
    * position.
    */
-  public override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
+  override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
       path = "/routeguide.RouteGuide/GetFeature",
       requestAdapter = Point.ADAPTER,
       responseAdapter = Feature.ADAPTER
@@ -35,7 +35,7 @@ public class GrpcRouteGuideClient(
    * repeated field), as the rectangle may cover a large area and contain a
    * huge number of features.
    */
-  public override fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature> =
+  override fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature> =
       client.newStreamingCall(GrpcMethod(
       path = "/routeguide.RouteGuide/ListFeatures",
       requestAdapter = Rectangle.ADAPTER,
@@ -48,7 +48,7 @@ public class GrpcRouteGuideClient(
    * Accepts a stream of Points on a route being traversed, returning a
    * RouteSummary when traversal is completed.
    */
-  public override fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary> =
+  override fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary> =
       client.newStreamingCall(GrpcMethod(
       path = "/routeguide.RouteGuide/RecordRoute",
       requestAdapter = Point.ADAPTER,
@@ -61,7 +61,7 @@ public class GrpcRouteGuideClient(
    * Accepts a stream of RouteNotes sent while a route is being traversed,
    * while receiving other RouteNotes (e.g. from other users).
    */
-  public override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
+  override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
       client.newStreamingCall(GrpcMethod(
       path = "/routeguide.RouteGuide/RouteChat",
       requestAdapter = RouteNote.ADAPTER,

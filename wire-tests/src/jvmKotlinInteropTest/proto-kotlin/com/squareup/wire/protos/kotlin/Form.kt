@@ -9,7 +9,6 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
-import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.sanitize
@@ -32,7 +31,7 @@ public class Form(
   public val decision: OneOf<Decision<*>, *>? = null,
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Form, Form.Builder>(ADAPTER, unknownFields) {
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.choice = choice
     builder.decision = decision
@@ -40,7 +39,7 @@ public class Form(
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Form) return false
     if (unknownFields != other.unknownFields) return false
@@ -49,7 +48,7 @@ public class Form(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -60,7 +59,7 @@ public class Form(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (choice != null) result += """choice=$choice"""
     if (decision != null) result += """decision=██"""
@@ -90,7 +89,7 @@ public class Form(
       return this
     }
 
-    public override fun build(): Form = Form(
+    override fun build(): Form = Form(
       choice = choice,
       decision = decision,
       unknownFields = buildUnknownFields()
@@ -102,7 +101,7 @@ public class Form(
     adapter: ProtoAdapter<T>,
     declaredName: String,
   ) : OneOf.Key<T>(tag, adapter, declaredName) {
-    public fun create(`value`: T) = OneOf(this, value)
+    public fun create(`value`: T): OneOf<Choice<T>, T> = OneOf(this, value)
 
     public fun decode(reader: ProtoReader): OneOf<Choice<T>, T> = create(adapter.decode(reader))
   }
@@ -112,7 +111,7 @@ public class Form(
     adapter: ProtoAdapter<T>,
     declaredName: String,
   ) : OneOf.Key<T>(tag, adapter, declaredName) {
-    public fun create(`value`: T) = OneOf(this, value)
+    public fun create(`value`: T): OneOf<Decision<T>, T> = OneOf(this, value)
 
     public fun decode(reader: ProtoReader): OneOf<Decision<T>, T> = create(adapter.decode(reader))
   }
@@ -127,26 +126,26 @@ public class Form(
       null, 
       "form.proto"
     ) {
-      public override fun encodedSize(`value`: Form): Int {
+      override fun encodedSize(`value`: Form): Int {
         var size = value.unknownFields.size
         if (value.choice != null) size += value.choice.encodedSizeWithTag()
         if (value.decision != null) size += value.decision.encodedSizeWithTag()
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: Form): Unit {
+      override fun encode(writer: ProtoWriter, `value`: Form) {
         if (value.choice != null) value.choice.encodeWithTag(writer)
         if (value.decision != null) value.decision.encodeWithTag(writer)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: Form): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: Form) {
         writer.writeBytes(value.unknownFields)
         if (value.decision != null) value.decision.encodeWithTag(writer)
         if (value.choice != null) value.choice.encodeWithTag(writer)
       }
 
-      public override fun decode(reader: ProtoReader): Form {
+      override fun decode(reader: ProtoReader): Form {
         var choice: OneOf<Choice<*>, *>? = null
         var decision: OneOf<Decision<*>, *>? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -175,7 +174,7 @@ public class Form(
         )
       }
 
-      public override fun redact(`value`: Form): Form = value.copy(
+      override fun redact(`value`: Form): Form = value.copy(
         decision = null,
         unknownFields = ByteString.EMPTY
       )
@@ -263,28 +262,28 @@ public class Form(
   public class ButtonElement(
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<ButtonElement, ButtonElement.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is ButtonElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    public override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields.hashCode()
 
-    public override fun toString(): String = "ButtonElement{}"
+    override fun toString(): String = "ButtonElement{}"
 
     public fun copy(unknownFields: ByteString = this.unknownFields): ButtonElement =
         ButtonElement(unknownFields)
 
     public class Builder : Message.Builder<ButtonElement, Builder>() {
-      public override fun build(): ButtonElement = ButtonElement(
+      override fun build(): ButtonElement = ButtonElement(
         unknownFields = buildUnknownFields()
       )
     }
@@ -299,27 +298,27 @@ public class Form(
         null, 
         "form.proto"
       ) {
-        public override fun encodedSize(`value`: ButtonElement): Int {
+        override fun encodedSize(`value`: ButtonElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: ButtonElement): Unit {
+        override fun encode(writer: ProtoWriter, `value`: ButtonElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: ButtonElement): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: ButtonElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun decode(reader: ProtoReader): ButtonElement {
+        override fun decode(reader: ProtoReader): ButtonElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return ButtonElement(
             unknownFields = unknownFields
           )
         }
 
-        public override fun redact(`value`: ButtonElement): ButtonElement = value.copy(
+        override fun redact(`value`: ButtonElement): ButtonElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -331,28 +330,28 @@ public class Form(
   public class LocalImageElement(
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<LocalImageElement, LocalImageElement.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is LocalImageElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    public override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields.hashCode()
 
-    public override fun toString(): String = "LocalImageElement{}"
+    override fun toString(): String = "LocalImageElement{}"
 
     public fun copy(unknownFields: ByteString = this.unknownFields): LocalImageElement =
         LocalImageElement(unknownFields)
 
     public class Builder : Message.Builder<LocalImageElement, Builder>() {
-      public override fun build(): LocalImageElement = LocalImageElement(
+      override fun build(): LocalImageElement = LocalImageElement(
         unknownFields = buildUnknownFields()
       )
     }
@@ -368,27 +367,27 @@ public class Form(
         null, 
         "form.proto"
       ) {
-        public override fun encodedSize(`value`: LocalImageElement): Int {
+        override fun encodedSize(`value`: LocalImageElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: LocalImageElement): Unit {
+        override fun encode(writer: ProtoWriter, `value`: LocalImageElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: LocalImageElement): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: LocalImageElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun decode(reader: ProtoReader): LocalImageElement {
+        override fun decode(reader: ProtoReader): LocalImageElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return LocalImageElement(
             unknownFields = unknownFields
           )
         }
 
-        public override fun redact(`value`: LocalImageElement): LocalImageElement = value.copy(
+        override fun redact(`value`: LocalImageElement): LocalImageElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -400,28 +399,28 @@ public class Form(
   public class RemoteImageElement(
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<RemoteImageElement, RemoteImageElement.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is RemoteImageElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    public override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields.hashCode()
 
-    public override fun toString(): String = "RemoteImageElement{}"
+    override fun toString(): String = "RemoteImageElement{}"
 
     public fun copy(unknownFields: ByteString = this.unknownFields): RemoteImageElement =
         RemoteImageElement(unknownFields)
 
     public class Builder : Message.Builder<RemoteImageElement, Builder>() {
-      public override fun build(): RemoteImageElement = RemoteImageElement(
+      override fun build(): RemoteImageElement = RemoteImageElement(
         unknownFields = buildUnknownFields()
       )
     }
@@ -437,27 +436,27 @@ public class Form(
         null, 
         "form.proto"
       ) {
-        public override fun encodedSize(`value`: RemoteImageElement): Int {
+        override fun encodedSize(`value`: RemoteImageElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: RemoteImageElement): Unit {
+        override fun encode(writer: ProtoWriter, `value`: RemoteImageElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: RemoteImageElement): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: RemoteImageElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun decode(reader: ProtoReader): RemoteImageElement {
+        override fun decode(reader: ProtoReader): RemoteImageElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return RemoteImageElement(
             unknownFields = unknownFields
           )
         }
 
-        public override fun redact(`value`: RemoteImageElement): RemoteImageElement = value.copy(
+        override fun redact(`value`: RemoteImageElement): RemoteImageElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -469,28 +468,28 @@ public class Form(
   public class MoneyElement(
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<MoneyElement, MoneyElement.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is MoneyElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    public override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields.hashCode()
 
-    public override fun toString(): String = "MoneyElement{}"
+    override fun toString(): String = "MoneyElement{}"
 
     public fun copy(unknownFields: ByteString = this.unknownFields): MoneyElement =
         MoneyElement(unknownFields)
 
     public class Builder : Message.Builder<MoneyElement, Builder>() {
-      public override fun build(): MoneyElement = MoneyElement(
+      override fun build(): MoneyElement = MoneyElement(
         unknownFields = buildUnknownFields()
       )
     }
@@ -505,27 +504,27 @@ public class Form(
         null, 
         "form.proto"
       ) {
-        public override fun encodedSize(`value`: MoneyElement): Int {
+        override fun encodedSize(`value`: MoneyElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: MoneyElement): Unit {
+        override fun encode(writer: ProtoWriter, `value`: MoneyElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: MoneyElement): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: MoneyElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun decode(reader: ProtoReader): MoneyElement {
+        override fun decode(reader: ProtoReader): MoneyElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return MoneyElement(
             unknownFields = unknownFields
           )
         }
 
-        public override fun redact(`value`: MoneyElement): MoneyElement = value.copy(
+        override fun redact(`value`: MoneyElement): MoneyElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -537,28 +536,28 @@ public class Form(
   public class SpacerElement(
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<SpacerElement, SpacerElement.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is SpacerElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    public override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields.hashCode()
 
-    public override fun toString(): String = "SpacerElement{}"
+    override fun toString(): String = "SpacerElement{}"
 
     public fun copy(unknownFields: ByteString = this.unknownFields): SpacerElement =
         SpacerElement(unknownFields)
 
     public class Builder : Message.Builder<SpacerElement, Builder>() {
-      public override fun build(): SpacerElement = SpacerElement(
+      override fun build(): SpacerElement = SpacerElement(
         unknownFields = buildUnknownFields()
       )
     }
@@ -573,27 +572,27 @@ public class Form(
         null, 
         "form.proto"
       ) {
-        public override fun encodedSize(`value`: SpacerElement): Int {
+        override fun encodedSize(`value`: SpacerElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: SpacerElement): Unit {
+        override fun encode(writer: ProtoWriter, `value`: SpacerElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: SpacerElement): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: SpacerElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun decode(reader: ProtoReader): SpacerElement {
+        override fun decode(reader: ProtoReader): SpacerElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return SpacerElement(
             unknownFields = unknownFields
           )
         }
 
-        public override fun redact(`value`: SpacerElement): SpacerElement = value.copy(
+        override fun redact(`value`: SpacerElement): SpacerElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -611,14 +610,14 @@ public class Form(
     public val text: String? = null,
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<TextElement, TextElement.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.text = text
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is TextElement) return false
       if (unknownFields != other.unknownFields) return false
@@ -626,7 +625,7 @@ public class Form(
       return true
     }
 
-    public override fun hashCode(): Int {
+    override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
@@ -636,7 +635,7 @@ public class Form(
       return result
     }
 
-    public override fun toString(): String {
+    override fun toString(): String {
       val result = mutableListOf<String>()
       if (text != null) result += """text=${sanitize(text)}"""
       return result.joinToString(prefix = "TextElement{", separator = ", ", postfix = "}")
@@ -654,7 +653,7 @@ public class Form(
         return this
       }
 
-      public override fun build(): TextElement = TextElement(
+      override fun build(): TextElement = TextElement(
         text = text,
         unknownFields = buildUnknownFields()
       )
@@ -670,23 +669,23 @@ public class Form(
         null, 
         "form.proto"
       ) {
-        public override fun encodedSize(`value`: TextElement): Int {
+        override fun encodedSize(`value`: TextElement): Int {
           var size = value.unknownFields.size
           size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.text)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: TextElement): Unit {
+        override fun encode(writer: ProtoWriter, `value`: TextElement) {
           ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: TextElement): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: TextElement) {
           writer.writeBytes(value.unknownFields)
           ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
         }
 
-        public override fun decode(reader: ProtoReader): TextElement {
+        override fun decode(reader: ProtoReader): TextElement {
           var text: String? = null
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
@@ -700,7 +699,7 @@ public class Form(
           )
         }
 
-        public override fun redact(`value`: TextElement): TextElement = value.copy(
+        override fun redact(`value`: TextElement): TextElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -712,28 +711,28 @@ public class Form(
   public class CustomizedCardElement(
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<CustomizedCardElement, CustomizedCardElement.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is CustomizedCardElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    public override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields.hashCode()
 
-    public override fun toString(): String = "CustomizedCardElement{}"
+    override fun toString(): String = "CustomizedCardElement{}"
 
     public fun copy(unknownFields: ByteString = this.unknownFields): CustomizedCardElement =
         CustomizedCardElement(unknownFields)
 
     public class Builder : Message.Builder<CustomizedCardElement, Builder>() {
-      public override fun build(): CustomizedCardElement = CustomizedCardElement(
+      override fun build(): CustomizedCardElement = CustomizedCardElement(
         unknownFields = buildUnknownFields()
       )
     }
@@ -749,29 +748,27 @@ public class Form(
         null, 
         "form.proto"
       ) {
-        public override fun encodedSize(`value`: CustomizedCardElement): Int {
+        override fun encodedSize(`value`: CustomizedCardElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: CustomizedCardElement): Unit {
+        override fun encode(writer: ProtoWriter, `value`: CustomizedCardElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: CustomizedCardElement):
-            Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: CustomizedCardElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun decode(reader: ProtoReader): CustomizedCardElement {
+        override fun decode(reader: ProtoReader): CustomizedCardElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return CustomizedCardElement(
             unknownFields = unknownFields
           )
         }
 
-        public override fun redact(`value`: CustomizedCardElement): CustomizedCardElement =
-            value.copy(
+        override fun redact(`value`: CustomizedCardElement): CustomizedCardElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -783,28 +780,28 @@ public class Form(
   public class AddressElement(
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<AddressElement, AddressElement.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is AddressElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    public override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields.hashCode()
 
-    public override fun toString(): String = "AddressElement{}"
+    override fun toString(): String = "AddressElement{}"
 
     public fun copy(unknownFields: ByteString = this.unknownFields): AddressElement =
         AddressElement(unknownFields)
 
     public class Builder : Message.Builder<AddressElement, Builder>() {
-      public override fun build(): AddressElement = AddressElement(
+      override fun build(): AddressElement = AddressElement(
         unknownFields = buildUnknownFields()
       )
     }
@@ -819,27 +816,27 @@ public class Form(
         null, 
         "form.proto"
       ) {
-        public override fun encodedSize(`value`: AddressElement): Int {
+        override fun encodedSize(`value`: AddressElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: AddressElement): Unit {
+        override fun encode(writer: ProtoWriter, `value`: AddressElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: AddressElement): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: AddressElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun decode(reader: ProtoReader): AddressElement {
+        override fun decode(reader: ProtoReader): AddressElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return AddressElement(
             unknownFields = unknownFields
           )
         }
 
-        public override fun redact(`value`: AddressElement): AddressElement = value.copy(
+        override fun redact(`value`: AddressElement): AddressElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -851,28 +848,28 @@ public class Form(
   public class TextInputElement(
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<TextInputElement, TextInputElement.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is TextInputElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    public override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields.hashCode()
 
-    public override fun toString(): String = "TextInputElement{}"
+    override fun toString(): String = "TextInputElement{}"
 
     public fun copy(unknownFields: ByteString = this.unknownFields): TextInputElement =
         TextInputElement(unknownFields)
 
     public class Builder : Message.Builder<TextInputElement, Builder>() {
-      public override fun build(): TextInputElement = TextInputElement(
+      override fun build(): TextInputElement = TextInputElement(
         unknownFields = buildUnknownFields()
       )
     }
@@ -887,27 +884,27 @@ public class Form(
         null, 
         "form.proto"
       ) {
-        public override fun encodedSize(`value`: TextInputElement): Int {
+        override fun encodedSize(`value`: TextInputElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: TextInputElement): Unit {
+        override fun encode(writer: ProtoWriter, `value`: TextInputElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: TextInputElement): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: TextInputElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun decode(reader: ProtoReader): TextInputElement {
+        override fun decode(reader: ProtoReader): TextInputElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return TextInputElement(
             unknownFields = unknownFields
           )
         }
 
-        public override fun redact(`value`: TextInputElement): TextInputElement = value.copy(
+        override fun redact(`value`: TextInputElement): TextInputElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -919,28 +916,28 @@ public class Form(
   public class OptionPickerElement(
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<OptionPickerElement, OptionPickerElement.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is OptionPickerElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    public override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields.hashCode()
 
-    public override fun toString(): String = "OptionPickerElement{}"
+    override fun toString(): String = "OptionPickerElement{}"
 
     public fun copy(unknownFields: ByteString = this.unknownFields): OptionPickerElement =
         OptionPickerElement(unknownFields)
 
     public class Builder : Message.Builder<OptionPickerElement, Builder>() {
-      public override fun build(): OptionPickerElement = OptionPickerElement(
+      override fun build(): OptionPickerElement = OptionPickerElement(
         unknownFields = buildUnknownFields()
       )
     }
@@ -956,27 +953,27 @@ public class Form(
         null, 
         "form.proto"
       ) {
-        public override fun encodedSize(`value`: OptionPickerElement): Int {
+        override fun encodedSize(`value`: OptionPickerElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: OptionPickerElement): Unit {
+        override fun encode(writer: ProtoWriter, `value`: OptionPickerElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: OptionPickerElement): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: OptionPickerElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun decode(reader: ProtoReader): OptionPickerElement {
+        override fun decode(reader: ProtoReader): OptionPickerElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return OptionPickerElement(
             unknownFields = unknownFields
           )
         }
 
-        public override fun redact(`value`: OptionPickerElement): OptionPickerElement = value.copy(
+        override fun redact(`value`: OptionPickerElement): OptionPickerElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -988,28 +985,28 @@ public class Form(
   public class DetailRowElement(
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<DetailRowElement, DetailRowElement.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is DetailRowElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    public override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields.hashCode()
 
-    public override fun toString(): String = "DetailRowElement{}"
+    override fun toString(): String = "DetailRowElement{}"
 
     public fun copy(unknownFields: ByteString = this.unknownFields): DetailRowElement =
         DetailRowElement(unknownFields)
 
     public class Builder : Message.Builder<DetailRowElement, Builder>() {
-      public override fun build(): DetailRowElement = DetailRowElement(
+      override fun build(): DetailRowElement = DetailRowElement(
         unknownFields = buildUnknownFields()
       )
     }
@@ -1024,27 +1021,27 @@ public class Form(
         null, 
         "form.proto"
       ) {
-        public override fun encodedSize(`value`: DetailRowElement): Int {
+        override fun encodedSize(`value`: DetailRowElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: DetailRowElement): Unit {
+        override fun encode(writer: ProtoWriter, `value`: DetailRowElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: DetailRowElement): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: DetailRowElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun decode(reader: ProtoReader): DetailRowElement {
+        override fun decode(reader: ProtoReader): DetailRowElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return DetailRowElement(
             unknownFields = unknownFields
           )
         }
 
-        public override fun redact(`value`: DetailRowElement): DetailRowElement = value.copy(
+        override fun redact(`value`: DetailRowElement): DetailRowElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -1057,28 +1054,28 @@ public class Form(
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<CurrencyConversionFlagsElement, CurrencyConversionFlagsElement.Builder>(ADAPTER,
       unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is CurrencyConversionFlagsElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    public override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields.hashCode()
 
-    public override fun toString(): String = "CurrencyConversionFlagsElement{}"
+    override fun toString(): String = "CurrencyConversionFlagsElement{}"
 
     public fun copy(unknownFields: ByteString = this.unknownFields): CurrencyConversionFlagsElement
         = CurrencyConversionFlagsElement(unknownFields)
 
     public class Builder : Message.Builder<CurrencyConversionFlagsElement, Builder>() {
-      public override fun build(): CurrencyConversionFlagsElement = CurrencyConversionFlagsElement(
+      override fun build(): CurrencyConversionFlagsElement = CurrencyConversionFlagsElement(
         unknownFields = buildUnknownFields()
       )
     }
@@ -1094,30 +1091,28 @@ public class Form(
         null, 
         "form.proto"
       ) {
-        public override fun encodedSize(`value`: CurrencyConversionFlagsElement): Int {
+        override fun encodedSize(`value`: CurrencyConversionFlagsElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: CurrencyConversionFlagsElement):
-            Unit {
+        override fun encode(writer: ProtoWriter, `value`: CurrencyConversionFlagsElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter,
-            `value`: CurrencyConversionFlagsElement): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: CurrencyConversionFlagsElement) {
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun decode(reader: ProtoReader): CurrencyConversionFlagsElement {
+        override fun decode(reader: ProtoReader): CurrencyConversionFlagsElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return CurrencyConversionFlagsElement(
             unknownFields = unknownFields
           )
         }
 
-        public override fun redact(`value`: CurrencyConversionFlagsElement):
-            CurrencyConversionFlagsElement = value.copy(
+        override fun redact(`value`: CurrencyConversionFlagsElement): CurrencyConversionFlagsElement
+            = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }

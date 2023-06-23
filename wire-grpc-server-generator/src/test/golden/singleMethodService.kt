@@ -11,10 +11,7 @@ import io.grpc.ServerServiceDefinition
 import io.grpc.ServiceDescriptor
 import io.grpc.ServiceDescriptor.newBuilder
 import io.grpc.stub.AbstractStub
-import io.grpc.stub.ClientCalls
 import io.grpc.stub.ClientCalls.blockingUnaryCall
-import io.grpc.stub.ServerCalls
-import io.grpc.stub.ServerCalls.asyncUnaryCall
 import io.grpc.stub.StreamObserver
 import java.io.InputStream
 import java.lang.Class
@@ -26,6 +23,8 @@ import kotlin.Unit
 import kotlin.collections.Map
 import kotlin.collections.Set
 import kotlin.jvm.Volatile
+import io.grpc.stub.ClientCalls.asyncUnaryCall as clientCallsAsyncUnaryCall
+import io.grpc.stub.ServerCalls.asyncUnaryCall as serverCallsAsyncUnaryCall
 
 public object FooServiceWireGrpc {
   public val SERVICE_NAME: String = "foo.FooService"
@@ -139,31 +138,31 @@ public object FooServiceWireGrpc {
     public open fun Call2(request: Request, response: StreamObserver<Response>): Unit = throw
         UnsupportedOperationException()
 
-    public override fun bindService(): ServerServiceDefinition =
+    override fun bindService(): ServerServiceDefinition =
         ServerServiceDefinition.builder(getServiceDescriptor()).addMethod(
               getCall1Method(),
-              asyncUnaryCall(this@FooServiceImplBase::Call1)
+              serverCallsAsyncUnaryCall(this@FooServiceImplBase::Call1)
             ).addMethod(
               getCall2Method(),
-              asyncUnaryCall(this@FooServiceImplBase::Call2)
+              serverCallsAsyncUnaryCall(this@FooServiceImplBase::Call2)
             ).build()
 
     public class RequestMarshaller : WireMethodMarshaller<Request> {
-      public override fun stream(`value`: Request): InputStream =
+      override fun stream(`value`: Request): InputStream =
           Request.ADAPTER.encode(value).inputStream()
 
-      public override fun marshalledClass(): Class<Request> = Request::class.java
+      override fun marshalledClass(): Class<Request> = Request::class.java
 
-      public override fun parse(stream: InputStream): Request = Request.ADAPTER.decode(stream)
+      override fun parse(stream: InputStream): Request = Request.ADAPTER.decode(stream)
     }
 
     public class ResponseMarshaller : WireMethodMarshaller<Response> {
-      public override fun stream(`value`: Response): InputStream =
+      override fun stream(`value`: Response): InputStream =
           Response.ADAPTER.encode(value).inputStream()
 
-      public override fun marshalledClass(): Class<Response> = Response::class.java
+      override fun marshalledClass(): Class<Response> = Response::class.java
 
-      public override fun parse(stream: InputStream): Response = Response.ADAPTER.decode(stream)
+      override fun parse(stream: InputStream): Response = Response.ADAPTER.decode(stream)
     }
   }
 
@@ -172,12 +171,12 @@ public object FooServiceWireGrpc {
     private val Call1: () -> FooServiceCall1BlockingServer,
     private val Call2: () -> FooServiceCall2BlockingServer,
   ) : FooServiceImplBase() {
-    public override fun Call1(request: Request, response: StreamObserver<Response>): Unit {
+    override fun Call1(request: Request, response: StreamObserver<Response>) {
       response.onNext(Call1().Call1(request))
       response.onCompleted()
     }
 
-    public override fun Call2(request: Request, response: StreamObserver<Response>): Unit {
+    override fun Call2(request: Request, response: StreamObserver<Response>) {
       response.onNext(Call2().Call2(request))
       response.onCompleted()
     }
@@ -188,15 +187,15 @@ public object FooServiceWireGrpc {
 
     internal constructor(channel: Channel, callOptions: CallOptions) : super(channel, callOptions)
 
-    public override fun build(channel: Channel, callOptions: CallOptions) = FooServiceStub(channel,
-        callOptions)
+    override fun build(channel: Channel, callOptions: CallOptions): FooServiceStub =
+        FooServiceStub(channel, callOptions)
 
-    public fun Call1(request: Request, response: StreamObserver<Response>): Unit {
-      ClientCalls.asyncUnaryCall(channel.newCall(getCall1Method(), callOptions), request, response)
+    public fun Call1(request: Request, response: StreamObserver<Response>) {
+      clientCallsAsyncUnaryCall(channel.newCall(getCall1Method(), callOptions), request, response)
     }
 
-    public fun Call2(request: Request, response: StreamObserver<Response>): Unit {
-      ClientCalls.asyncUnaryCall(channel.newCall(getCall2Method(), callOptions), request, response)
+    public fun Call2(request: Request, response: StreamObserver<Response>) {
+      clientCallsAsyncUnaryCall(channel.newCall(getCall2Method(), callOptions), request, response)
     }
   }
 
@@ -205,8 +204,8 @@ public object FooServiceWireGrpc {
 
     internal constructor(channel: Channel, callOptions: CallOptions) : super(channel, callOptions)
 
-    public override fun build(channel: Channel, callOptions: CallOptions) = FooServiceStub(channel,
-        callOptions)
+    override fun build(channel: Channel, callOptions: CallOptions): FooServiceStub =
+        FooServiceStub(channel, callOptions)
 
     public fun Call1(request: Request): Response = blockingUnaryCall(channel, getCall1Method(),
         callOptions, request)

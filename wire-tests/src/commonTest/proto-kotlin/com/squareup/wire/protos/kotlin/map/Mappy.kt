@@ -21,7 +21,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.Map
 import kotlin.jvm.JvmField
 import kotlin.lazy
@@ -42,10 +41,10 @@ public class Mappy(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Mappy) return false
     if (unknownFields != other.unknownFields) return false
@@ -53,7 +52,7 @@ public class Mappy(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -63,7 +62,7 @@ public class Mappy(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (things.isNotEmpty()) result += """things=$things"""
     return result.joinToString(prefix = "Mappy{", separator = ", ", postfix = "}")
@@ -85,23 +84,23 @@ public class Mappy(
       private val thingsAdapter: ProtoAdapter<Map<String, Thing>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER) }
 
-      public override fun encodedSize(`value`: Mappy): Int {
+      override fun encodedSize(`value`: Mappy): Int {
         var size = value.unknownFields.size
         size += thingsAdapter.encodedSizeWithTag(1, value.things)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: Mappy): Unit {
+      override fun encode(writer: ProtoWriter, `value`: Mappy) {
         thingsAdapter.encodeWithTag(writer, 1, value.things)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: Mappy): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: Mappy) {
         writer.writeBytes(value.unknownFields)
         thingsAdapter.encodeWithTag(writer, 1, value.things)
       }
 
-      public override fun decode(reader: ProtoReader): Mappy {
+      override fun decode(reader: ProtoReader): Mappy {
         val things = mutableMapOf<String, Thing>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -115,7 +114,7 @@ public class Mappy(
         )
       }
 
-      public override fun redact(`value`: Mappy): Mappy = value.copy(
+      override fun redact(`value`: Mappy): Mappy = value.copy(
         things = value.things.redactElements(Thing.ADAPTER),
         unknownFields = ByteString.EMPTY
       )

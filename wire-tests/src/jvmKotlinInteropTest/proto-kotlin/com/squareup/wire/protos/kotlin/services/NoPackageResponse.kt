@@ -18,7 +18,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -29,19 +28,19 @@ public class NoPackageResponse(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NoPackageResponse) return false
     if (unknownFields != other.unknownFields) return false
     return true
   }
 
-  public override fun hashCode(): Int = unknownFields.hashCode()
+  override fun hashCode(): Int = unknownFields.hashCode()
 
-  public override fun toString(): String = "NoPackageResponse{}"
+  override fun toString(): String = "NoPackageResponse{}"
 
   public fun copy(unknownFields: ByteString = this.unknownFields): NoPackageResponse =
       NoPackageResponse(unknownFields)
@@ -56,27 +55,27 @@ public class NoPackageResponse(
       null, 
       "service_without_package.proto"
     ) {
-      public override fun encodedSize(`value`: NoPackageResponse): Int {
+      override fun encodedSize(`value`: NoPackageResponse): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: NoPackageResponse): Unit {
+      override fun encode(writer: ProtoWriter, `value`: NoPackageResponse) {
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: NoPackageResponse): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: NoPackageResponse) {
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun decode(reader: ProtoReader): NoPackageResponse {
+      override fun decode(reader: ProtoReader): NoPackageResponse {
         val unknownFields = reader.forEachTag(reader::readUnknownField)
         return NoPackageResponse(
           unknownFields = unknownFields
         )
       }
 
-      public override fun redact(`value`: NoPackageResponse): NoPackageResponse = value.copy(
+      override fun redact(`value`: NoPackageResponse): NoPackageResponse = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

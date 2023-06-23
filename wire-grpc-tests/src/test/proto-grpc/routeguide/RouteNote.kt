@@ -20,7 +20,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -50,10 +49,10 @@ public class RouteNote(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RouteNote) return false
     if (unknownFields != other.unknownFields) return false
@@ -62,7 +61,7 @@ public class RouteNote(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -73,7 +72,7 @@ public class RouteNote(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (location != null) result += """location=$location"""
     if (message != null) result += """message=${sanitize(message)}"""
@@ -96,26 +95,26 @@ public class RouteNote(
       null, 
       "routeguide/RouteGuideProto.proto"
     ) {
-      public override fun encodedSize(`value`: RouteNote): Int {
+      override fun encodedSize(`value`: RouteNote): Int {
         var size = value.unknownFields.size
         size += Point.ADAPTER.encodedSizeWithTag(1, value.location)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.message)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: RouteNote): Unit {
+      override fun encode(writer: ProtoWriter, `value`: RouteNote) {
         Point.ADAPTER.encodeWithTag(writer, 1, value.location)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.message)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: RouteNote): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: RouteNote) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.message)
         Point.ADAPTER.encodeWithTag(writer, 1, value.location)
       }
 
-      public override fun decode(reader: ProtoReader): RouteNote {
+      override fun decode(reader: ProtoReader): RouteNote {
         var location: Point? = null
         var message: String? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -132,7 +131,7 @@ public class RouteNote(
         )
       }
 
-      public override fun redact(`value`: RouteNote): RouteNote = value.copy(
+      override fun redact(`value`: RouteNote): RouteNote = value.copy(
         location = value.location?.let(Point.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

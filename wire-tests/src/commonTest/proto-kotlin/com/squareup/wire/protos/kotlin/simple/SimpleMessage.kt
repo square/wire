@@ -9,7 +9,6 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
-import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
@@ -27,7 +26,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
@@ -143,10 +141,10 @@ public class SimpleMessage(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other_: Any?): Boolean {
+  override fun equals(other_: Any?): Boolean {
     if (other_ === this) return true
     if (other_ !is SimpleMessage) return false
     if (unknownFields != other_.unknownFields) return false
@@ -165,7 +163,7 @@ public class SimpleMessage(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result_ = super.hashCode
     if (result_ == 0) {
       result_ = unknownFields.hashCode()
@@ -186,7 +184,7 @@ public class SimpleMessage(
     return result_
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result_ = mutableListOf<String>()
     if (optional_int32 != null) result_ += """optional_int32=$optional_int32"""
     if (optional_nested_msg != null) result_ += """optional_nested_msg=$optional_nested_msg"""
@@ -242,7 +240,7 @@ public class SimpleMessage(
       null, 
       "simple_message.proto"
     ) {
-      public override fun encodedSize(`value`: SimpleMessage): Int {
+      override fun encodedSize(`value`: SimpleMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.optional_int32)
         size += NestedMessage.ADAPTER.encodedSizeWithTag(2, value.optional_nested_msg)
@@ -259,7 +257,7 @@ public class SimpleMessage(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: SimpleMessage): Unit {
+      override fun encode(writer: ProtoWriter, `value`: SimpleMessage) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.optional_int32)
         NestedMessage.ADAPTER.encodeWithTag(writer, 2, value.optional_nested_msg)
         ExternalMessage.ADAPTER.encodeWithTag(writer, 3, value.optional_external_msg)
@@ -275,7 +273,7 @@ public class SimpleMessage(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: SimpleMessage): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: SimpleMessage) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.STRING.encodeWithTag(writer, 12, value.o)
         ProtoAdapter.STRING.encodeWithTag(writer, 11, value.other)
@@ -291,7 +289,7 @@ public class SimpleMessage(
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.optional_int32)
       }
 
-      public override fun decode(reader: ProtoReader): SimpleMessage {
+      override fun decode(reader: ProtoReader): SimpleMessage {
         var optional_int32: Int? = null
         var optional_nested_msg: NestedMessage? = null
         var optional_external_msg: ExternalMessage? = null
@@ -351,7 +349,7 @@ public class SimpleMessage(
         )
       }
 
-      public override fun redact(`value`: SimpleMessage): SimpleMessage = value.copy(
+      override fun redact(`value`: SimpleMessage): SimpleMessage = value.copy(
         optional_nested_msg = value.optional_nested_msg?.let(NestedMessage.ADAPTER::redact),
         optional_external_msg = value.optional_external_msg?.let(ExternalMessage.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
@@ -376,10 +374,10 @@ public class SimpleMessage(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN,
     )
-    public override fun newBuilder(): Nothing = throw
+    override fun newBuilder(): Nothing = throw
         AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NestedMessage) return false
       if (unknownFields != other.unknownFields) return false
@@ -387,7 +385,7 @@ public class SimpleMessage(
       return true
     }
 
-    public override fun hashCode(): Int {
+    override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
@@ -397,7 +395,7 @@ public class SimpleMessage(
       return result
     }
 
-    public override fun toString(): String {
+    override fun toString(): String {
       val result = mutableListOf<String>()
       if (bb != null) result += """bb=$bb"""
       return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
@@ -416,23 +414,23 @@ public class SimpleMessage(
         null, 
         "simple_message.proto"
       ) {
-        public override fun encodedSize(`value`: NestedMessage): Int {
+        override fun encodedSize(`value`: NestedMessage): Int {
           var size = value.unknownFields.size
           size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.bb)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: NestedMessage): Unit {
+        override fun encode(writer: ProtoWriter, `value`: NestedMessage) {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.bb)
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage) {
           writer.writeBytes(value.unknownFields)
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.bb)
         }
 
-        public override fun decode(reader: ProtoReader): NestedMessage {
+        override fun decode(reader: ProtoReader): NestedMessage {
           var bb: Int? = null
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
@@ -446,7 +444,7 @@ public class SimpleMessage(
           )
         }
 
-        public override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
+        override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -456,7 +454,7 @@ public class SimpleMessage(
   }
 
   public enum class NestedEnum(
-    public override val `value`: Int,
+    override val `value`: Int,
   ) : WireEnum {
     FOO(1),
     BAR(2),
@@ -472,7 +470,7 @@ public class SimpleMessage(
         PROTO_2, 
         null
       ) {
-        public override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
+        override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
 
       @JvmStatic

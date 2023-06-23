@@ -21,7 +21,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -68,10 +67,10 @@ public class OneOfMessage(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneOfMessage) return false
     if (unknownFields != other.unknownFields) return false
@@ -81,7 +80,7 @@ public class OneOfMessage(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -93,7 +92,7 @@ public class OneOfMessage(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (foo != null) result += """foo=$foo"""
     if (bar != null) result += """bar=${sanitize(bar)}"""
@@ -118,7 +117,7 @@ public class OneOfMessage(
       null, 
       "one_of.proto"
     ) {
-      public override fun encodedSize(`value`: OneOfMessage): Int {
+      override fun encodedSize(`value`: OneOfMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo)
         size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar)
@@ -126,21 +125,21 @@ public class OneOfMessage(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: OneOfMessage): Unit {
+      override fun encode(writer: ProtoWriter, `value`: OneOfMessage) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar)
         ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: OneOfMessage): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: OneOfMessage) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar)
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
       }
 
-      public override fun decode(reader: ProtoReader): OneOfMessage {
+      override fun decode(reader: ProtoReader): OneOfMessage {
         var foo: Int? = null
         var bar: String? = null
         var baz: String? = null
@@ -160,7 +159,7 @@ public class OneOfMessage(
         )
       }
 
-      public override fun redact(`value`: OneOfMessage): OneOfMessage = value.copy(
+      override fun redact(`value`: OneOfMessage): OneOfMessage = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

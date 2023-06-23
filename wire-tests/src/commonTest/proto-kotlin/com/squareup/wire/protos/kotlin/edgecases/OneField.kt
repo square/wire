@@ -19,7 +19,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -35,10 +34,10 @@ public class OneField(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneField) return false
     if (unknownFields != other.unknownFields) return false
@@ -46,7 +45,7 @@ public class OneField(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -56,7 +55,7 @@ public class OneField(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (opt_int32 != null) result += """opt_int32=$opt_int32"""
     return result.joinToString(prefix = "OneField{", separator = ", ", postfix = "}")
@@ -75,23 +74,23 @@ public class OneField(
       null, 
       "edge_cases.proto"
     ) {
-      public override fun encodedSize(`value`: OneField): Int {
+      override fun encodedSize(`value`: OneField): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: OneField): Unit {
+      override fun encode(writer: ProtoWriter, `value`: OneField) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: OneField): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: OneField) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32)
       }
 
-      public override fun decode(reader: ProtoReader): OneField {
+      override fun decode(reader: ProtoReader): OneField {
         var opt_int32: Int? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -105,7 +104,7 @@ public class OneField(
         )
       }
 
-      public override fun redact(`value`: OneField): OneField = value.copy(
+      override fun redact(`value`: OneField): OneField = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

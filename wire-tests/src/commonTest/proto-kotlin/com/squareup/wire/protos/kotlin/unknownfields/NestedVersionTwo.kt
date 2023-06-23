@@ -21,7 +21,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -66,10 +65,10 @@ public class NestedVersionTwo(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NestedVersionTwo) return false
     if (unknownFields != other.unknownFields) return false
@@ -82,7 +81,7 @@ public class NestedVersionTwo(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -97,7 +96,7 @@ public class NestedVersionTwo(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (i != null) result += """i=$i"""
     if (v2_i != null) result += """v2_i=$v2_i"""
@@ -128,7 +127,7 @@ public class NestedVersionTwo(
       null, 
       "unknown_fields.proto"
     ) {
-      public override fun encodedSize(`value`: NestedVersionTwo): Int {
+      override fun encodedSize(`value`: NestedVersionTwo): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.v2_i)
@@ -139,7 +138,7 @@ public class NestedVersionTwo(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: NestedVersionTwo): Unit {
+      override fun encode(writer: ProtoWriter, `value`: NestedVersionTwo) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.v2_i)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.v2_s)
@@ -149,7 +148,7 @@ public class NestedVersionTwo(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: NestedVersionTwo): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: NestedVersionTwo) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.v2_rs)
         ProtoAdapter.FIXED64.encodeWithTag(writer, 5, value.v2_f64)
@@ -159,7 +158,7 @@ public class NestedVersionTwo(
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
       }
 
-      public override fun decode(reader: ProtoReader): NestedVersionTwo {
+      override fun decode(reader: ProtoReader): NestedVersionTwo {
         var i: Int? = null
         var v2_i: Int? = null
         var v2_s: String? = null
@@ -188,7 +187,7 @@ public class NestedVersionTwo(
         )
       }
 
-      public override fun redact(`value`: NestedVersionTwo): NestedVersionTwo = value.copy(
+      override fun redact(`value`: NestedVersionTwo): NestedVersionTwo = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

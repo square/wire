@@ -16,17 +16,18 @@
 package com.squareup.wire.kotlin
 
 import com.google.common.truth.Truth.assertThat
+import com.google.common.truth.Truth.assertWithMessage
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.buildSchema
 import com.squareup.wire.kotlin.KotlinGenerator.Companion.sanitizeKdoc
 import com.squareup.wire.schema.PruningRules
 import com.squareup.wire.schema.addFromTest
+import okio.Path.Companion.toPath
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
-import okio.Path.Companion.toPath
 
 class KotlinGeneratorTest {
   @Test fun basic() {
@@ -52,16 +53,16 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Person").replace("\n", "")
-    assertTrue(code.contains("class Person"))
-    assertTrue(code.contains("object : ProtoAdapter<PhoneNumber>("))
-    assertTrue(code.contains("FieldEncoding.LENGTH_DELIMITED"))
-    assertTrue(code.contains("PhoneNumber::class"))
-    assertTrue(code.contains("override fun encode(writer: ProtoWriter, `value`: Person)"))
+    assertThat(code).contains("class Person")
+    assertThat(code).contains("object : ProtoAdapter<PhoneNumber>(")
+    assertThat(code).contains("FieldEncoding.LENGTH_DELIMITED")
+    assertThat(code).contains("PhoneNumber::class")
+    assertThat(code).contains("override fun encode(writer: ProtoWriter, `value`: Person)")
     assertTrue(
-      code.contains("enum class PhoneType(    public override val `value`: Int,  ) : WireEnum")
+      code.contains("enum class PhoneType(    override val `value`: Int,  ) : WireEnum")
     )
-    assertTrue(code.contains("fun fromValue(`value`: Int): PhoneType?"))
-    assertTrue(code.contains("WORK(1),"))
+    assertThat(code).contains("fun fromValue(`value`: Int): PhoneType?")
+    assertThat(code).contains("WORK(1),")
   }
 
   @Test fun defaultValues() {
@@ -90,22 +91,25 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
-    assertTrue(code.contains("const val DEFAULT_A: Int = 10"))
-    assertTrue(code.contains("const val DEFAULT_B: Int = 32"))
-    assertTrue(code.contains("const val DEFAULT_C: Long = 11L"))
-    assertTrue(code.contains("const val DEFAULT_D: Long = 33L"))
-    assertTrue(code.contains("const val DEFAULT_E: Float = 806f"))
-    assertTrue(code.contains("const val DEFAULT_F: Double = -0.0"))
-    assertTrue(code.contains("const val DEFAULT_G: Double = 0.0"))
-    assertTrue(code.contains("const val DEFAULT_H: Double = -1.0"))
-    assertTrue(code.contains("const val DEFAULT_I: Double = 1.0E10"))
-    assertTrue(code.contains("const val DEFAULT_J: Double = -0.01"))
-    assertTrue(code.contains("const val DEFAULT_K: Double = -1.23E45"))
-    assertTrue(code.contains("const val DEFAULT_L: Double = 255.0"))
-    assertTrue(code.contains("const val DEFAULT_M: Double = Double.POSITIVE_INFINITY"))
-    assertTrue(code.contains("const val DEFAULT_N: Double = Double.NEGATIVE_INFINITY"))
-    assertTrue(code.contains("const val DEFAULT_O: Double = Double.NaN"))
-    assertTrue(code.contains("const val DEFAULT_P: Double = Double.NaN"))
+    assertThat(code).contains("const val DEFAULT_A: Int = 10")
+    assertThat(code).contains("const val DEFAULT_B: Int = 32")
+    assertThat(code).contains("const val DEFAULT_C: Long = 11L")
+    assertThat(code).contains("const val DEFAULT_D: Long = 33L")
+    assertThat(code).contains("const val DEFAULT_E: Float = 806f")
+    assertThat(code).contains("const val DEFAULT_F: Double = -0.0")
+    assertThat(code).contains("const val DEFAULT_G: Double = 0.0")
+    assertThat(code).contains("const val DEFAULT_H: Double = -1.0")
+    assertThat(code).contains("const val DEFAULT_I: Double = 10_000_000_000.0")
+    assertThat(code).contains("const val DEFAULT_J: Double = -0.01")
+    assertThat(code).contains(
+      "public const val DEFAULT_K: Double\n" +
+        "        = -1_230_000_000_000_000_000_000_000_000_000_000_000_000_000_000.0"
+    )
+    assertThat(code).contains("const val DEFAULT_L: Double = 255.0")
+    assertThat(code).contains("const val DEFAULT_M: Double = Double.POSITIVE_INFINITY")
+    assertThat(code).contains("const val DEFAULT_N: Double = Double.NEGATIVE_INFINITY")
+    assertThat(code).contains("const val DEFAULT_O: Double = Double.NaN")
+    assertThat(code).contains("const val DEFAULT_P: Double = Double.NaN")
   }
 
   @Test fun nameAllocatorIsUsed() {
@@ -121,14 +125,14 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
-    assertTrue(code.contains("val when_: Float"))
-    assertTrue(code.contains("val ADAPTER_: Int"))
-    assertTrue(code.contains("val adapter_: Long?"))
-    assertTrue(code.contains("var size = value.unknownFields.size"))
-    assertTrue(code.contains("size += ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.when_)"))
-    assertTrue(code.contains("ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.when_)"))
-    assertTrue(code.contains("ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.when_)"))
-    assertTrue(code.contains("1 -> when_ = ProtoAdapter.FLOAT.decode(reader)"))
+    assertThat(code).contains("val when_: Float")
+    assertThat(code).contains("val ADAPTER_: Int")
+    assertThat(code).contains("val adapter_: Long?")
+    assertThat(code).contains("var size = value.unknownFields.size")
+    assertThat(code).contains("size += ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.when_)")
+    assertThat(code).contains("ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.when_)")
+    assertThat(code).contains("ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.when_)")
+    assertThat(code).contains("1 -> when_ = ProtoAdapter.FLOAT.decode(reader)")
   }
 
   @Test fun enclosing() {
@@ -149,8 +153,8 @@ class KotlinGeneratorTest {
     val kotlinGenerator = KotlinGenerator.invoke(pruned)
     val typeSpec = kotlinGenerator.generateType(pruned.getType("A")!!)
     val code = FileSpec.get("", typeSpec).toString()
-    assertTrue(code.contains("class A private constructor() {"))
-    assertTrue(code.contains("class B(.*) : Message<B, Nothing>".toRegex(DOT_MATCHES_ALL)))
+    assertThat(code).contains("class A private constructor() {")
+    assertWithMessage(code).that(code.contains("class B(.*) : Message<B, Nothing>".toRegex(DOT_MATCHES_ALL))).isTrue()
   }
 
   @Test fun requestResponse() {
@@ -186,7 +190,7 @@ class KotlinGeneratorTest {
           |  /**
           |   * Returns the \[Feature\] for a \[Point\].
           |   */
-          |  public override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
+          |  override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/GetFeature",
           |      requestAdapter = Point.ADAPTER,
           |      responseAdapter = Feature.ADAPTER
@@ -327,7 +331,6 @@ class KotlinGeneratorTest {
         import com.squareup.wire.MessageSink
         import com.squareup.wire.Service
         import com.squareup.wire.WireRpc
-        import kotlin.Unit
 
         /**
          * RouteGuide service interface.
@@ -342,7 +345,7 @@ class KotlinGeneratorTest {
             responseAdapter = "routeguide.Feature#ADAPTER",
             sourceFile = "routeguide.proto",
           )
-          public fun ListFeatures(request: Rectangle, response: MessageSink<Feature>): Unit
+          public fun ListFeatures(request: Rectangle, response: MessageSink<Feature>)
         }
 
     """.trimIndent()
@@ -382,7 +385,6 @@ class KotlinGeneratorTest {
         import com.squareup.wire.MessageSource
         import com.squareup.wire.Service
         import com.squareup.wire.WireRpc
-        import kotlin.Unit
 
         /**
          * RouteGuide service interface.
@@ -397,7 +399,7 @@ class KotlinGeneratorTest {
             responseAdapter = "routeguide.RouteNote#ADAPTER",
             sourceFile = "routeguide.proto",
           )
-          public fun RouteChat(request: MessageSource<RouteNote>, response: MessageSink<RouteNote>): Unit
+          public fun RouteChat(request: MessageSource<RouteNote>, response: MessageSink<RouteNote>)
         }
 
     """.trimIndent()
@@ -517,7 +519,7 @@ class KotlinGeneratorTest {
           |  /**
           |   * Returns the \[Feature\] for a \[Point\].
           |   */
-          |  public override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
+          |  override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
           |      path = "/RouteGuide/GetFeature",
           |      requestAdapter = Point.ADAPTER,
           |      responseAdapter = Feature.ADAPTER
@@ -580,7 +582,7 @@ class KotlinGeneratorTest {
           |  /**
           |   * Returns the \[Feature\] at the given \[Point\].
           |   */
-          |  public override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
+          |  override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
           |      path = "/routeguide.grpc.RouteGuide/GetFeature",
           |      requestAdapter = Point.ADAPTER,
           |      responseAdapter = Feature.ADAPTER
@@ -645,7 +647,7 @@ class KotlinGeneratorTest {
           |  /**
           |   * Records a route made up of the provided \[Point\]s.
           |   */
-          |  public override fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary> =
+          |  override fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary> =
           |      client.newStreamingCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/RecordRoute",
           |      requestAdapter = Point.ADAPTER,
@@ -711,7 +713,7 @@ class KotlinGeneratorTest {
           |  /**
           |   * List the features available in the area defined by \[Rectangle\].
           |   */
-          |  public override fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature> =
+          |  override fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature> =
           |      client.newStreamingCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/ListFeatures",
           |      requestAdapter = Rectangle.ADAPTER,
@@ -781,7 +783,7 @@ class KotlinGeneratorTest {
           /**
            * Chat with someone using a \[RouteNote\].
            */
-          public override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
+          override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
               client.newStreamingCall(GrpcMethod(
               path = "/routeguide.RouteGuide/RouteChat",
               requestAdapter = RouteNote.ADAPTER,
@@ -798,7 +800,6 @@ class KotlinGeneratorTest {
         import com.squareup.wire.MessageSource
         import com.squareup.wire.Service
         import com.squareup.wire.WireRpc
-        import kotlin.Unit
 
         /**
          * RouteGuide service interface.
@@ -813,7 +814,7 @@ class KotlinGeneratorTest {
             responseAdapter = "routeguide.RouteNote#ADAPTER",
             sourceFile = "routeguide.proto",
           )
-          public fun RouteChat(request: MessageSource<RouteNote>, response: MessageSink<RouteNote>): Unit
+          public fun RouteChat(request: MessageSource<RouteNote>, response: MessageSink<RouteNote>)
         }
 
     """.trimIndent()
@@ -852,7 +853,7 @@ class KotlinGeneratorTest {
            /**
             * Chat with someone using a \[RouteNote\].
             */
-           public override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
+           override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
                client.newStreamingCall(GrpcMethod(
                path = "/routeguide.RouteGuide/RouteChat",
                requestAdapter = RouteNote.ADAPTER,
@@ -867,7 +868,6 @@ class KotlinGeneratorTest {
 
          import com.squareup.wire.Service
          import com.squareup.wire.WireRpc
-         import kotlin.Unit
          import kotlinx.coroutines.channels.ReceiveChannel
          import kotlinx.coroutines.channels.SendChannel
 
@@ -884,8 +884,7 @@ class KotlinGeneratorTest {
              responseAdapter = "routeguide.RouteNote#ADAPTER",
              sourceFile = "routeguide.proto",
            )
-           public suspend fun RouteChat(request: ReceiveChannel<RouteNote>,
-               response: SendChannel<RouteNote>): Unit
+           public suspend fun RouteChat(request: ReceiveChannel<RouteNote>, response: SendChannel<RouteNote>)
          }
 
     """.trimIndent()
@@ -979,7 +978,7 @@ class KotlinGeneratorTest {
           |  /**
           |   * Returns the \[Feature\] for a \[Point\].
           |   */
-          |  public override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
+          |  override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/GetFeature",
           |      requestAdapter = Point.ADAPTER,
           |      responseAdapter = Feature.ADAPTER
@@ -988,7 +987,7 @@ class KotlinGeneratorTest {
           |  /**
           |   * Chat with someone using a \[RouteNote\].
           |   */
-          |  public override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
+          |  override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
           |      client.newStreamingCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/RouteChat",
           |      requestAdapter = RouteNote.ADAPTER,
@@ -1062,7 +1061,7 @@ class KotlinGeneratorTest {
           |public class GrpcRouteGuideGetFeatureClient(
           |  private val client: GrpcClient,
           |) : RouteGuideGetFeatureClient {
-          |  public override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
+          |  override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/GetFeature",
           |      requestAdapter = Point.ADAPTER,
           |      responseAdapter = Feature.ADAPTER
@@ -1095,7 +1094,7 @@ class KotlinGeneratorTest {
           |public class GrpcRouteGuideRouteChatClient(
           |  private val client: GrpcClient,
           |) : RouteGuideRouteChatClient {
-          |  public override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
+          |  override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
           |      client.newStreamingCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/RouteChat",
           |      requestAdapter = RouteNote.ADAPTER,
@@ -1210,10 +1209,10 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
-    assertTrue(code.contains("val unknownFields = reader.forEachTag { tag_ ->"))
-    assertTrue(code.contains("when (tag_)"))
-    assertTrue(code.contains("1 -> tag = ProtoAdapter.FLOAT.decode(reader)"))
-    assertTrue(code.contains("else -> reader.readUnknownField(tag_)"))
+    assertThat(code).contains("val unknownFields = reader.forEachTag { tag_ ->")
+    assertThat(code).contains("when (tag_)")
+    assertThat(code).contains("1 -> tag = ProtoAdapter.FLOAT.decode(reader)")
+    assertThat(code).contains("else -> reader.readUnknownField(tag_)")
   }
 
   @Test fun someFieldNameIsKeyword() {
@@ -1227,7 +1226,7 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
-    assertTrue(code.contains("throw missingRequiredFields(var_, \"var\")"))
+    assertThat(code).contains("throw missingRequiredFields(var_, \"var\")")
   }
 
   @Test fun generateTypeUsesPackageNameOnFieldAndClassNameClash() {
@@ -1289,7 +1288,7 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.Message")
-    assertTrue(code.contains("import com.squareup.wire.AnyMessage"))
+    assertThat(code).contains("import com.squareup.wire.AnyMessage")
   }
 
   @Test fun wildCommentsAreEscaped() {
@@ -1315,16 +1314,16 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Person").replace("\n", "")
-    assertTrue(code.contains("class Person"))
-    assertTrue(code.contains("object : ProtoAdapter<PhoneNumber>("))
-    assertTrue(code.contains("FieldEncoding.LENGTH_DELIMITED"))
-    assertTrue(code.contains("PhoneNumber::class"))
-    assertTrue(code.contains("override fun encode(writer: ProtoWriter, `value`: Person)"))
+    assertThat(code).contains("class Person")
+    assertThat(code).contains("object : ProtoAdapter<PhoneNumber>(")
+    assertThat(code).contains("FieldEncoding.LENGTH_DELIMITED")
+    assertThat(code).contains("PhoneNumber::class")
+    assertThat(code).contains("override fun encode(writer: ProtoWriter, `value`: Person)")
     assertTrue(
-      code.contains("enum class PhoneType(    public override val `value`: Int,  ) : WireEnum")
+      code.contains("enum class PhoneType(    override val `value`: Int,  ) : WireEnum")
     )
-    assertTrue(code.contains("fun fromValue(`value`: Int): PhoneType?"))
-    assertTrue(code.contains("WORK(1),"))
+    assertThat(code).contains("fun fromValue(`value`: Int): PhoneType?")
+    assertThat(code).contains("WORK(1),")
   }
 
   @Test fun sanitizeStringOnPrinting() {
@@ -1351,13 +1350,13 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Person")
-    assertTrue(code.contains("import com.squareup.wire.`internal`.sanitize"))
-    assertTrue(code.contains("result += \"\"\"name=\${sanitize(name)}\"\"\""))
-    assertTrue(code.contains("result += \"\"\"id=\$id\"\"\""))
-    assertTrue(code.contains("result += \"\"\"phone=\$phone\"\"\""))
-    assertTrue(code.contains("result += \"\"\"aliases=\${sanitize(aliases)}\"\"\""))
-    assertTrue(code.contains("result += \"\"\"number=\${sanitize(number)}\"\"\""))
-    assertTrue(code.contains("result += \"\"\"type=\$type\"\"\""))
+    assertThat(code).contains("import com.squareup.wire.`internal`.sanitize")
+    assertThat(code).contains("result += \"\"\"name=\${sanitize(name)}\"\"\"")
+    assertThat(code).contains("result += \"\"\"id=\$id\"\"\"")
+    assertThat(code).contains("result += \"\"\"phone=\$phone\"\"\"")
+    assertThat(code).contains("result += \"\"\"aliases=\${sanitize(aliases)}\"\"\"")
+    assertThat(code).contains("result += \"\"\"number=\${sanitize(number)}\"\"\"")
+    assertThat(code).contains("result += \"\"\"type=\$type\"\"\"")
   }
 
   @Test fun sanitizeJavadocStripsTrailingWhitespace() {
@@ -1393,10 +1392,10 @@ class KotlinGeneratorTest {
           |        other.$longMember)
           """.trimMargin()
 
-    assertTrue(code.contains("return false"))
-    assertTrue(code.contains("return $longType("))
-    assertTrue(code.contains(expectedEqualsConditionImplementation))
-    assertTrue(code.contains("$longMember =\n"))
+    assertThat(code).contains("return false")
+    assertThat(code).contains("return $longType(")
+    assertThat(code).contains(expectedEqualsConditionImplementation)
+    assertThat(code).contains("$longMember =\n")
   }
 
   @Test fun constructorForProto3() {
@@ -1429,13 +1428,13 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.LabelMessage")
-    assertTrue(code.contains("""val text: String = "","""))
-    assertTrue(code.contains("""val author: Author? = null,"""))
-    assertTrue(code.contains("""val enum_: Enum = Enum.UNKNOWN,"""))
-    assertTrue(code.contains("""val foo: Int? = null,"""))
-    assertTrue(code.contains("""val bar: String? = null,"""))
-    assertTrue(code.contains("""val baz: Baz? = null,"""))
-    assertTrue(code.contains("""val count: Long = 0"""))
+    assertThat(code).contains("""val text: String = "",""")
+    assertThat(code).contains("""val author: Author? = null,""")
+    assertThat(code).contains("""val enum_: Enum = Enum.UNKNOWN,""")
+    assertThat(code).contains("""val foo: Int? = null,""")
+    assertThat(code).contains("""val bar: String? = null,""")
+    assertThat(code).contains("""val baz: Baz? = null,""")
+    assertThat(code).contains("""val count: Long = 0""")
   }
 
   @Test fun wirePackageTakesPrecedenceOverJavaPackage() {
@@ -1456,8 +1455,8 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
-    assertTrue(code.contains("package wire_package"))
-    assertTrue(code.contains("class Person"))
+    assertThat(code).contains("package wire_package")
+    assertThat(code).contains("class Person")
   }
 
   @Test fun wirePackageTakesPrecedenceOverProtoPackage() {
@@ -1477,8 +1476,8 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
-    assertTrue(code.contains("package wire_package"))
-    assertTrue(code.contains("class Person"))
+    assertThat(code).contains("package wire_package")
+    assertThat(code).contains("class Person")
   }
 
   @Test fun wirePackageUsedInImport() {
@@ -1509,8 +1508,8 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("city_package.Home")
-    assertTrue(code.contains("package city_package"))
-    assertTrue(code.contains("import wire_package.Person"))
+    assertThat(code).contains("package city_package")
+    assertThat(code).contains("import wire_package.Person")
   }
 
   @Test fun useArrayUsesTheCorrectType() {
@@ -1600,7 +1599,7 @@ class KotlinGeneratorTest {
         |  /**
         |   * Returns the \[Feature\] for a \[Point\].
         |   */
-        |  public override fun GetFeature(): GrpcCall<String, Properties> = client.newCall(GrpcMethod(
+        |  override fun GetFeature(): GrpcCall<String, Properties> = client.newCall(GrpcMethod(
         |      path = "/routeguide.RouteGuide/GetFeature",
         |      requestAdapter = StringPointAdapter.INSTANCE,
         |      responseAdapter = PropertiesFeatureAdapter.ADAPTER
@@ -1683,7 +1682,7 @@ class KotlinGeneratorTest {
     )
     assertThat(kotlin).contains(
       """
-        |      public override fun encodedSize(`value`: Feature): Int {
+        |      override fun encodedSize(`value`: Feature): Int {
         |        var size = value.unknownFields.size
         |        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         |        size += StringPointAdapter.INSTANCE.encodedSizeWithTag(2, value.location)
@@ -1693,7 +1692,7 @@ class KotlinGeneratorTest {
     )
     assertThat(kotlin).contains(
       """
-        |      public override fun encode(writer: ProtoWriter, `value`: Feature): Unit {
+        |      override fun encode(writer: ProtoWriter, `value`: Feature) {
         |        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         |        StringPointAdapter.INSTANCE.encodeWithTag(writer, 2, value.location)
         |        writer.writeBytes(value.unknownFields)
@@ -1702,7 +1701,7 @@ class KotlinGeneratorTest {
     )
     assertThat(kotlin).contains(
       """
-        |      public override fun decode(reader: ProtoReader): Feature {
+        |      override fun decode(reader: ProtoReader): Feature {
         |        var name: String? = null
         |        var location: String? = null
         |        val unknownFields = reader.forEachTag { tag ->
@@ -1849,7 +1848,7 @@ class KotlinGeneratorTest {
     assertThat(code).contains("""public val secret_data: SecretData? = null,""")
     assertThat(code).contains(
       """
-      |      public override fun redact(`value`: RedactedFields): RedactedFields = value.copy(
+      |      override fun redact(`value`: RedactedFields): RedactedFields = value.copy(
       |        a = "",
       |        b = 0,
       |        c = null,
@@ -2074,7 +2073,7 @@ class KotlinGeneratorTest {
     assertThat(code).contains(
       """
        |public enum class ConflictingEnumConstants(
-       |  public override val `value`: Int,
+       |  override val `value`: Int,
        |) : WireEnum {
        |  hello(0),
        |  @WireEnumConstant(declaredName = "name")

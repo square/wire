@@ -16,7 +16,6 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -44,7 +43,7 @@ public class RedactedOneOf(
     }
   }
 
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.b = b
     builder.c = c
@@ -52,7 +51,7 @@ public class RedactedOneOf(
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedOneOf) return false
     if (unknownFields != other.unknownFields) return false
@@ -61,7 +60,7 @@ public class RedactedOneOf(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -72,7 +71,7 @@ public class RedactedOneOf(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (b != null) result += """b=$b"""
     if (c != null) result += """c=██"""
@@ -104,7 +103,7 @@ public class RedactedOneOf(
       return this
     }
 
-    public override fun build(): RedactedOneOf = RedactedOneOf(
+    override fun build(): RedactedOneOf = RedactedOneOf(
       b = b,
       c = c,
       unknownFields = buildUnknownFields()
@@ -121,26 +120,26 @@ public class RedactedOneOf(
       null, 
       "redacted_one_of.proto"
     ) {
-      public override fun encodedSize(`value`: RedactedOneOf): Int {
+      override fun encodedSize(`value`: RedactedOneOf): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.b)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.c)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: RedactedOneOf): Unit {
+      override fun encode(writer: ProtoWriter, `value`: RedactedOneOf) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.b)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: RedactedOneOf): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: RedactedOneOf) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c)
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.b)
       }
 
-      public override fun decode(reader: ProtoReader): RedactedOneOf {
+      override fun decode(reader: ProtoReader): RedactedOneOf {
         var b: Int? = null
         var c: String? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -157,7 +156,7 @@ public class RedactedOneOf(
         )
       }
 
-      public override fun redact(`value`: RedactedOneOf): RedactedOneOf = value.copy(
+      override fun redact(`value`: RedactedOneOf): RedactedOneOf = value.copy(
         c = null,
         unknownFields = ByteString.EMPTY
       )

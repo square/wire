@@ -17,7 +17,6 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -41,7 +40,7 @@ public class EmbeddedMessage(
   public val inner_repeated_number: List<Int> = immutableCopyOf("inner_repeated_number",
       inner_repeated_number)
 
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.inner_repeated_number = inner_repeated_number
     builder.inner_number_after = inner_number_after
@@ -49,7 +48,7 @@ public class EmbeddedMessage(
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is EmbeddedMessage) return false
     if (unknownFields != other.unknownFields) return false
@@ -58,7 +57,7 @@ public class EmbeddedMessage(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -69,7 +68,7 @@ public class EmbeddedMessage(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (inner_repeated_number.isNotEmpty()) result +=
         """inner_repeated_number=$inner_repeated_number"""
@@ -101,7 +100,7 @@ public class EmbeddedMessage(
       return this
     }
 
-    public override fun build(): EmbeddedMessage = EmbeddedMessage(
+    override fun build(): EmbeddedMessage = EmbeddedMessage(
       inner_repeated_number = inner_repeated_number,
       inner_number_after = inner_number_after,
       unknownFields = buildUnknownFields()
@@ -118,26 +117,26 @@ public class EmbeddedMessage(
       null, 
       "packed_encoding.proto"
     ) {
-      public override fun encodedSize(`value`: EmbeddedMessage): Int {
+      override fun encodedSize(`value`: EmbeddedMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.inner_repeated_number)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.inner_number_after)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: EmbeddedMessage): Unit {
+      override fun encode(writer: ProtoWriter, `value`: EmbeddedMessage) {
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.inner_repeated_number)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.inner_number_after)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: EmbeddedMessage): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: EmbeddedMessage) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.inner_number_after)
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.inner_repeated_number)
       }
 
-      public override fun decode(reader: ProtoReader): EmbeddedMessage {
+      override fun decode(reader: ProtoReader): EmbeddedMessage {
         var inner_repeated_number: MutableList<Int>? = null
         var inner_number_after: Int? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -163,7 +162,7 @@ public class EmbeddedMessage(
         )
       }
 
-      public override fun redact(`value`: EmbeddedMessage): EmbeddedMessage = value.copy(
+      override fun redact(`value`: EmbeddedMessage): EmbeddedMessage = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
