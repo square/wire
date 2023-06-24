@@ -21,7 +21,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.jvm.JvmField
@@ -249,7 +248,7 @@ public class AllStructs(
     }
   }
 
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.struct = struct
     builder.list = list
@@ -274,7 +273,7 @@ public class AllStructs(
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is AllStructs) return false
     if (unknownFields != other.unknownFields) return false
@@ -300,7 +299,7 @@ public class AllStructs(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -328,7 +327,7 @@ public class AllStructs(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (struct != null) result += """struct=$struct"""
     if (list != null) result += """list=$list"""
@@ -537,7 +536,7 @@ public class AllStructs(
       return this
     }
 
-    public override fun build(): AllStructs = AllStructs(
+    override fun build(): AllStructs = AllStructs(
       struct = struct,
       list = list,
       null_value = null_value,
@@ -583,7 +582,7 @@ public class AllStructs(
       private val map_int32_null_valueAdapter: ProtoAdapter<Map<Int, Nothing?>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_NULL) }
 
-      public override fun encodedSize(`value`: AllStructs): Int {
+      override fun encodedSize(`value`: AllStructs): Int {
         var size = value.unknownFields.size
         if (value.struct != null) size += ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(1,
             value.struct)
@@ -615,7 +614,7 @@ public class AllStructs(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: AllStructs): Unit {
+      override fun encode(writer: ProtoWriter, `value`: AllStructs) {
         if (value.struct != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 1, value.struct)
         if (value.list != null) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 2, value.list)
         if (value.null_value != null) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 3,
@@ -639,7 +638,7 @@ public class AllStructs(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: AllStructs): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: AllStructs) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 202, value.oneof_list)
         ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 201, value.oneof_struct)
@@ -663,7 +662,7 @@ public class AllStructs(
         if (value.struct != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 1, value.struct)
       }
 
-      public override fun decode(reader: ProtoReader): AllStructs {
+      override fun decode(reader: ProtoReader): AllStructs {
         var struct: Map<String, *>? = null
         var list: List<*>? = null
         var null_value: Nothing? = null
@@ -739,7 +738,7 @@ public class AllStructs(
         )
       }
 
-      public override fun redact(`value`: AllStructs): AllStructs = value.copy(
+      override fun redact(`value`: AllStructs): AllStructs = value.copy(
         struct = value.struct?.let(ProtoAdapter.STRUCT_MAP::redact),
         list = value.list?.let(ProtoAdapter.STRUCT_LIST::redact),
         value_a = value.value_a?.let(ProtoAdapter.STRUCT_VALUE::redact),

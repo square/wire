@@ -9,7 +9,6 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
-import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import kotlin.Any
@@ -17,7 +16,6 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -25,28 +23,28 @@ import okio.ByteString
 public class MessageWithStatus(
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MessageWithStatus, MessageWithStatus.Builder>(ADAPTER, unknownFields) {
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageWithStatus) return false
     if (unknownFields != other.unknownFields) return false
     return true
   }
 
-  public override fun hashCode(): Int = unknownFields.hashCode()
+  override fun hashCode(): Int = unknownFields.hashCode()
 
-  public override fun toString(): String = "MessageWithStatus{}"
+  override fun toString(): String = "MessageWithStatus{}"
 
   public fun copy(unknownFields: ByteString = this.unknownFields): MessageWithStatus =
       MessageWithStatus(unknownFields)
 
   public class Builder : Message.Builder<MessageWithStatus, Builder>() {
-    public override fun build(): MessageWithStatus = MessageWithStatus(
+    override fun build(): MessageWithStatus = MessageWithStatus(
       unknownFields = buildUnknownFields()
     )
   }
@@ -61,27 +59,27 @@ public class MessageWithStatus(
       null, 
       "same_name_enum.proto"
     ) {
-      public override fun encodedSize(`value`: MessageWithStatus): Int {
+      override fun encodedSize(`value`: MessageWithStatus): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: MessageWithStatus): Unit {
+      override fun encode(writer: ProtoWriter, `value`: MessageWithStatus) {
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: MessageWithStatus): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: MessageWithStatus) {
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun decode(reader: ProtoReader): MessageWithStatus {
+      override fun decode(reader: ProtoReader): MessageWithStatus {
         val unknownFields = reader.forEachTag(reader::readUnknownField)
         return MessageWithStatus(
           unknownFields = unknownFields
         )
       }
 
-      public override fun redact(`value`: MessageWithStatus): MessageWithStatus = value.copy(
+      override fun redact(`value`: MessageWithStatus): MessageWithStatus = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -90,7 +88,7 @@ public class MessageWithStatus(
   }
 
   public enum class Status(
-    public override val `value`: Int,
+    override val `value`: Int,
   ) : WireEnum {
     A(1),
     ;
@@ -102,7 +100,7 @@ public class MessageWithStatus(
         PROTO_2, 
         null
       ) {
-        public override fun fromValue(`value`: Int): Status? = Status.fromValue(value)
+        override fun fromValue(`value`: Int): Status? = Status.fromValue(value)
       }
 
       @JvmStatic

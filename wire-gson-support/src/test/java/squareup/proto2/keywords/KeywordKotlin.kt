@@ -9,7 +9,6 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
-import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
@@ -23,7 +22,6 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.jvm.JvmField
@@ -78,7 +76,7 @@ public class KeywordKotlin(
   @JvmField
   public val enums: List<KeywordKotlinEnum> = immutableCopyOf("enums", enums)
 
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.object_ = object_
     builder.when_ = when_
@@ -89,7 +87,7 @@ public class KeywordKotlin(
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is KeywordKotlin) return false
     if (unknownFields != other.unknownFields) return false
@@ -101,7 +99,7 @@ public class KeywordKotlin(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -115,7 +113,7 @@ public class KeywordKotlin(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (object_ != null) result += """object_=${sanitize(object_)}"""
     result += """when_=$when_"""
@@ -177,7 +175,7 @@ public class KeywordKotlin(
       return this
     }
 
-    public override fun build(): KeywordKotlin = KeywordKotlin(
+    override fun build(): KeywordKotlin = KeywordKotlin(
       object_ = object_,
       when_ = when_ ?: throw missingRequiredFields(when_, "when_"),
       fun_ = fun_,
@@ -200,7 +198,7 @@ public class KeywordKotlin(
       private val funAdapter: ProtoAdapter<Map<String, String>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
 
-      public override fun encodedSize(`value`: KeywordKotlin): Int {
+      override fun encodedSize(`value`: KeywordKotlin): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.object_)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.when_)
@@ -210,7 +208,7 @@ public class KeywordKotlin(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: KeywordKotlin): Unit {
+      override fun encode(writer: ProtoWriter, `value`: KeywordKotlin) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.object_)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.when_)
         funAdapter.encodeWithTag(writer, 3, value.fun_)
@@ -219,7 +217,7 @@ public class KeywordKotlin(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: KeywordKotlin): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: KeywordKotlin) {
         writer.writeBytes(value.unknownFields)
         KeywordKotlinEnum.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.enums)
         ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 4, value.return_)
@@ -228,7 +226,7 @@ public class KeywordKotlin(
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.object_)
       }
 
-      public override fun decode(reader: ProtoReader): KeywordKotlin {
+      override fun decode(reader: ProtoReader): KeywordKotlin {
         var object_: String? = null
         var when_: Int? = null
         val fun_ = mutableMapOf<String, String>()
@@ -258,7 +256,7 @@ public class KeywordKotlin(
         )
       }
 
-      public override fun redact(`value`: KeywordKotlin): KeywordKotlin = value.copy(
+      override fun redact(`value`: KeywordKotlin): KeywordKotlin = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -267,7 +265,7 @@ public class KeywordKotlin(
   }
 
   public enum class KeywordKotlinEnum(
-    public override val `value`: Int,
+    override val `value`: Int,
   ) : WireEnum {
     @WireEnumConstant(declaredName = "object")
     object_(0),
@@ -292,7 +290,7 @@ public class KeywordKotlin(
         PROTO_2, 
         KeywordKotlinEnum.object_
       ) {
-        public override fun fromValue(`value`: Int): KeywordKotlinEnum? =
+        override fun fromValue(`value`: Int): KeywordKotlinEnum? =
             KeywordKotlinEnum.fromValue(value)
       }
 

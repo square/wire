@@ -9,7 +9,6 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
-import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
@@ -25,7 +24,6 @@ import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.`annotation`.AnnotationRetention
 import kotlin.`annotation`.AnnotationTarget
 import kotlin.`annotation`.Retention
@@ -134,7 +132,7 @@ public class FooBar(
   @JvmField
   public val rep: List<FooBarBazEnum> = immutableCopyOf("rep", rep)
 
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.foo = foo
     builder.bar = bar
@@ -150,7 +148,7 @@ public class FooBar(
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FooBar) return false
     if (unknownFields != other.unknownFields) return false
@@ -167,7 +165,7 @@ public class FooBar(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -186,7 +184,7 @@ public class FooBar(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (foo != null) result += """foo=$foo"""
     if (bar != null) result += """bar=${sanitize(bar)}"""
@@ -299,7 +297,7 @@ public class FooBar(
       return this
     }
 
-    public override fun build(): FooBar = FooBar(
+    override fun build(): FooBar = FooBar(
       foo = foo,
       bar = bar,
       baz = baz,
@@ -324,7 +322,7 @@ public class FooBar(
       null, 
       "custom_options.proto"
     ) {
-      public override fun encodedSize(`value`: FooBar): Int {
+      override fun encodedSize(`value`: FooBar): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.bar)
@@ -339,7 +337,7 @@ public class FooBar(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: FooBar): Unit {
+      override fun encode(writer: ProtoWriter, `value`: FooBar) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.bar)
         Nested.ADAPTER.encodeWithTag(writer, 3, value.baz)
@@ -353,7 +351,7 @@ public class FooBar(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: FooBar): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: FooBar) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.STRING.encodeWithTag(writer, 150, value.more_string)
         FooBarBazEnum.ADAPTER.asRepeated().encodeWithTag(writer, 102, value.rep)
@@ -367,7 +365,7 @@ public class FooBar(
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
       }
 
-      public override fun decode(reader: ProtoReader): FooBar {
+      override fun decode(reader: ProtoReader): FooBar {
         var foo: Int? = null
         var bar: String? = null
         var baz: Nested? = null
@@ -416,7 +414,7 @@ public class FooBar(
         )
       }
 
-      public override fun redact(`value`: FooBar): FooBar = value.copy(
+      override fun redact(`value`: FooBar): FooBar = value.copy(
         baz = value.baz?.let(Nested.ADAPTER::redact),
         nested = emptyList(),
         unknownFields = ByteString.EMPTY
@@ -436,14 +434,14 @@ public class FooBar(
     public val value_: FooBarBazEnum? = null,
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<Nested, Nested.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.value_ = value_
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is Nested) return false
       if (unknownFields != other.unknownFields) return false
@@ -451,7 +449,7 @@ public class FooBar(
       return true
     }
 
-    public override fun hashCode(): Int {
+    override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
@@ -461,7 +459,7 @@ public class FooBar(
       return result
     }
 
-    public override fun toString(): String {
+    override fun toString(): String {
       val result = mutableListOf<String>()
       if (value_ != null) result += """value_=$value_"""
       return result.joinToString(prefix = "Nested{", separator = ", ", postfix = "}")
@@ -479,7 +477,7 @@ public class FooBar(
         return this
       }
 
-      public override fun build(): Nested = Nested(
+      override fun build(): Nested = Nested(
         value_ = value_,
         unknownFields = buildUnknownFields()
       )
@@ -495,23 +493,23 @@ public class FooBar(
         null, 
         "custom_options.proto"
       ) {
-        public override fun encodedSize(`value`: Nested): Int {
+        override fun encodedSize(`value`: Nested): Int {
           var size = value.unknownFields.size
           size += FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value_)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: Nested): Unit {
+        override fun encode(writer: ProtoWriter, `value`: Nested) {
           FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value_)
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: Nested): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: Nested) {
           writer.writeBytes(value.unknownFields)
           FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value_)
         }
 
-        public override fun decode(reader: ProtoReader): Nested {
+        override fun decode(reader: ProtoReader): Nested {
           var value_: FooBarBazEnum? = null
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
@@ -529,7 +527,7 @@ public class FooBar(
           )
         }
 
-        public override fun redact(`value`: Nested): Nested = value.copy(
+        override fun redact(`value`: Nested): Nested = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -550,14 +548,14 @@ public class FooBar(
     @JvmField
     public val serial: List<Int> = immutableCopyOf("serial", serial)
 
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.serial = serial
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is More) return false
       if (unknownFields != other.unknownFields) return false
@@ -565,7 +563,7 @@ public class FooBar(
       return true
     }
 
-    public override fun hashCode(): Int {
+    override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
@@ -575,7 +573,7 @@ public class FooBar(
       return result
     }
 
-    public override fun toString(): String {
+    override fun toString(): String {
       val result = mutableListOf<String>()
       if (serial.isNotEmpty()) result += """serial=$serial"""
       return result.joinToString(prefix = "More{", separator = ", ", postfix = "}")
@@ -594,7 +592,7 @@ public class FooBar(
         return this
       }
 
-      public override fun build(): More = More(
+      override fun build(): More = More(
         serial = serial,
         unknownFields = buildUnknownFields()
       )
@@ -610,23 +608,23 @@ public class FooBar(
         null, 
         "custom_options.proto"
       ) {
-        public override fun encodedSize(`value`: More): Int {
+        override fun encodedSize(`value`: More): Int {
           var size = value.unknownFields.size
           size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1, value.serial)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: More): Unit {
+        override fun encode(writer: ProtoWriter, `value`: More) {
           ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1, value.serial)
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: More): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: More) {
           writer.writeBytes(value.unknownFields)
           ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1, value.serial)
         }
 
-        public override fun decode(reader: ProtoReader): More {
+        override fun decode(reader: ProtoReader): More {
           val serial = mutableListOf<Int>()
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
@@ -640,7 +638,7 @@ public class FooBar(
           )
         }
 
-        public override fun redact(`value`: More): More = value.copy(
+        override fun redact(`value`: More): More = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -652,7 +650,7 @@ public class FooBar(
   @EnumOptionOption(true)
   @FoobarStringOption("foobar")
   public enum class FooBarBazEnum(
-    public override val `value`: Int,
+    override val `value`: Int,
   ) : WireEnum {
     @EnumValueOptionOption(17)
     FOO(1),
@@ -677,7 +675,7 @@ public class FooBar(
         PROTO_2, 
         null
       ) {
-        public override fun fromValue(`value`: Int): FooBarBazEnum? = FooBarBazEnum.fromValue(value)
+        override fun fromValue(`value`: Int): FooBarBazEnum? = FooBarBazEnum.fromValue(value)
       }
 
       @JvmStatic

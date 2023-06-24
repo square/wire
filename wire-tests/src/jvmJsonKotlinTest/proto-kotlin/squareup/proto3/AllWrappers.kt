@@ -20,7 +20,6 @@ import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.jvm.JvmField
@@ -283,7 +282,7 @@ public class AllWrappers(
   public val map_int32_bytes_value: Map<Int, ByteString?> = immutableCopyOf("map_int32_bytes_value",
       map_int32_bytes_value)
 
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.double_value = double_value
     builder.float_value = float_value
@@ -316,7 +315,7 @@ public class AllWrappers(
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is AllWrappers) return false
     if (unknownFields != other.unknownFields) return false
@@ -350,7 +349,7 @@ public class AllWrappers(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -386,7 +385,7 @@ public class AllWrappers(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (double_value != null) result += """double_value=$double_value"""
     if (float_value != null) result += """float_value=$float_value"""
@@ -689,7 +688,7 @@ public class AllWrappers(
       return this
     }
 
-    public override fun build(): AllWrappers = AllWrappers(
+    override fun build(): AllWrappers = AllWrappers(
       double_value = double_value,
       float_value = float_value,
       int64_value = int64_value,
@@ -758,7 +757,7 @@ public class AllWrappers(
       private val map_int32_bytes_valueAdapter: ProtoAdapter<Map<Int, ByteString?>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.BYTES_VALUE) }
 
-      public override fun encodedSize(`value`: AllWrappers): Int {
+      override fun encodedSize(`value`: AllWrappers): Int {
         var size = value.unknownFields.size
         if (value.double_value != null) size += ProtoAdapter.DOUBLE_VALUE.encodedSizeWithTag(1,
             value.double_value)
@@ -803,7 +802,7 @@ public class AllWrappers(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: AllWrappers): Unit {
+      override fun encode(writer: ProtoWriter, `value`: AllWrappers) {
         if (value.double_value != null) ProtoAdapter.DOUBLE_VALUE.encodeWithTag(writer, 1,
             value.double_value)
         if (value.float_value != null) ProtoAdapter.FLOAT_VALUE.encodeWithTag(writer, 2,
@@ -843,7 +842,7 @@ public class AllWrappers(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: AllWrappers): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: AllWrappers) {
         writer.writeBytes(value.unknownFields)
         map_int32_bytes_valueAdapter.encodeWithTag(writer, 309, value.map_int32_bytes_value)
         map_int32_string_valueAdapter.encodeWithTag(writer, 308, value.map_int32_string_value)
@@ -883,7 +882,7 @@ public class AllWrappers(
             value.double_value)
       }
 
-      public override fun decode(reader: ProtoReader): AllWrappers {
+      override fun decode(reader: ProtoReader): AllWrappers {
         var double_value: Double? = null
         var float_value: Float? = null
         var int64_value: Long? = null
@@ -975,7 +974,7 @@ public class AllWrappers(
         )
       }
 
-      public override fun redact(`value`: AllWrappers): AllWrappers = value.copy(
+      override fun redact(`value`: AllWrappers): AllWrappers = value.copy(
         double_value = value.double_value?.let(ProtoAdapter.DOUBLE_VALUE::redact),
         float_value = value.float_value?.let(ProtoAdapter.FLOAT_VALUE::redact),
         int64_value = value.int64_value?.let(ProtoAdapter.INT64_VALUE::redact),

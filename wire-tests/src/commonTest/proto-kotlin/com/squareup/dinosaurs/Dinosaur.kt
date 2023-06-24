@@ -23,7 +23,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -69,10 +68,10 @@ public class Dinosaur(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Dinosaur) return false
     if (unknownFields != other.unknownFields) return false
@@ -84,7 +83,7 @@ public class Dinosaur(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -98,7 +97,7 @@ public class Dinosaur(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (name != null) result += """name=${sanitize(name)}"""
     if (picture_urls.isNotEmpty()) result += """picture_urls=${sanitize(picture_urls)}"""
@@ -127,7 +126,7 @@ public class Dinosaur(
       null, 
       "squareup/dinosaurs/dinosaur.proto"
     ) {
-      public override fun encodedSize(`value`: Dinosaur): Int {
+      override fun encodedSize(`value`: Dinosaur): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(2, value.picture_urls)
@@ -137,7 +136,7 @@ public class Dinosaur(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: Dinosaur): Unit {
+      override fun encode(writer: ProtoWriter, `value`: Dinosaur) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 2, value.picture_urls)
         ProtoAdapter.DOUBLE.encodeWithTag(writer, 3, value.length_meters)
@@ -146,7 +145,7 @@ public class Dinosaur(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: Dinosaur): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: Dinosaur) {
         writer.writeBytes(value.unknownFields)
         Period.ADAPTER.encodeWithTag(writer, 5, value.period)
         ProtoAdapter.DOUBLE.encodeWithTag(writer, 4, value.mass_kilograms)
@@ -155,7 +154,7 @@ public class Dinosaur(
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
       }
 
-      public override fun decode(reader: ProtoReader): Dinosaur {
+      override fun decode(reader: ProtoReader): Dinosaur {
         var name: String? = null
         val picture_urls = mutableListOf<String>()
         var length_meters: Double? = null
@@ -185,7 +184,7 @@ public class Dinosaur(
         )
       }
 
-      public override fun redact(`value`: Dinosaur): Dinosaur = value.copy(
+      override fun redact(`value`: Dinosaur): Dinosaur = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

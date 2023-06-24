@@ -11,7 +11,7 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 
 public enum class Period(
-  public override val `value`: Int,
+  override val `value`: Int,
 ) : WireEnum {
   /**
    * 145.5 million years ago — 66.0 million years ago.
@@ -34,7 +34,7 @@ public enum class Period(
       PROTO_2, 
       null
     ) {
-      public override fun fromValue(`value`: Int): Period? = Period.fromValue(value)
+      override fun fromValue(`value`: Int): Period? = Period.fromValue(value)
     }
 
     @JvmStatic

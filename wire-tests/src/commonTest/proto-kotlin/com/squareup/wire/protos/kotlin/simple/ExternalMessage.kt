@@ -21,7 +21,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -81,10 +80,10 @@ public class ExternalMessage(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ExternalMessage) return false
     if (unknownFields != other.unknownFields) return false
@@ -97,7 +96,7 @@ public class ExternalMessage(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -112,7 +111,7 @@ public class ExternalMessage(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (f != null) result += """f=$f"""
     if (fooext.isNotEmpty()) result += """fooext=$fooext"""
@@ -146,7 +145,7 @@ public class ExternalMessage(
       null, 
       "external_message.proto"
     ) {
-      public override fun encodedSize(`value`: ExternalMessage): Int {
+      override fun encodedSize(`value`: ExternalMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.f)
         size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(125, value.fooext)
@@ -158,7 +157,7 @@ public class ExternalMessage(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: ExternalMessage): Unit {
+      override fun encode(writer: ProtoWriter, `value`: ExternalMessage) {
         ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.f)
         ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 125, value.fooext)
         ProtoAdapter.INT32.encodeWithTag(writer, 126, value.barext)
@@ -168,7 +167,7 @@ public class ExternalMessage(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: ExternalMessage): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: ExternalMessage) {
         writer.writeBytes(value.unknownFields)
         SimpleMessage.NestedEnum.ADAPTER.encodeWithTag(writer, 129, value.nested_enum_ext)
         SimpleMessage.NestedMessage.ADAPTER.encodeWithTag(writer, 128, value.nested_message_ext)
@@ -178,7 +177,7 @@ public class ExternalMessage(
         ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.f)
       }
 
-      public override fun decode(reader: ProtoReader): ExternalMessage {
+      override fun decode(reader: ProtoReader): ExternalMessage {
         var f: Float? = null
         val fooext = mutableListOf<Int>()
         var barext: Int? = null
@@ -211,7 +210,7 @@ public class ExternalMessage(
         )
       }
 
-      public override fun redact(`value`: ExternalMessage): ExternalMessage = value.copy(
+      override fun redact(`value`: ExternalMessage): ExternalMessage = value.copy(
         nested_message_ext =
             value.nested_message_ext?.let(SimpleMessage.NestedMessage.ADAPTER::redact),
         unknownFields = ByteString.EMPTY

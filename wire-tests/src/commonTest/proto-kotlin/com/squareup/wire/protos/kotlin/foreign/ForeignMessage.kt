@@ -19,7 +19,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -43,10 +42,10 @@ public class ForeignMessage(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ForeignMessage) return false
     if (unknownFields != other.unknownFields) return false
@@ -55,7 +54,7 @@ public class ForeignMessage(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -66,7 +65,7 @@ public class ForeignMessage(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (i != null) result += """i=$i"""
     if (j != null) result += """j=$j"""
@@ -89,26 +88,26 @@ public class ForeignMessage(
       null, 
       "foreign.proto"
     ) {
-      public override fun encodedSize(`value`: ForeignMessage): Int {
+      override fun encodedSize(`value`: ForeignMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
         size += ProtoAdapter.INT32.encodedSizeWithTag(100, value.j)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: ForeignMessage): Unit {
+      override fun encode(writer: ProtoWriter, `value`: ForeignMessage) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
         ProtoAdapter.INT32.encodeWithTag(writer, 100, value.j)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: ForeignMessage): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: ForeignMessage) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.INT32.encodeWithTag(writer, 100, value.j)
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
       }
 
-      public override fun decode(reader: ProtoReader): ForeignMessage {
+      override fun decode(reader: ProtoReader): ForeignMessage {
         var i: Int? = null
         var j: Int? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -125,7 +124,7 @@ public class ForeignMessage(
         )
       }
 
-      public override fun redact(`value`: ForeignMessage): ForeignMessage = value.copy(
+      override fun redact(`value`: ForeignMessage): ForeignMessage = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

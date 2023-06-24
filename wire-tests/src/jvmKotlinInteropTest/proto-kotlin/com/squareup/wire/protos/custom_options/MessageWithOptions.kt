@@ -15,7 +15,6 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -34,28 +33,28 @@ import okio.ByteString
 public class MessageWithOptions(
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MessageWithOptions, MessageWithOptions.Builder>(ADAPTER, unknownFields) {
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageWithOptions) return false
     if (unknownFields != other.unknownFields) return false
     return true
   }
 
-  public override fun hashCode(): Int = unknownFields.hashCode()
+  override fun hashCode(): Int = unknownFields.hashCode()
 
-  public override fun toString(): String = "MessageWithOptions{}"
+  override fun toString(): String = "MessageWithOptions{}"
 
   public fun copy(unknownFields: ByteString = this.unknownFields): MessageWithOptions =
       MessageWithOptions(unknownFields)
 
   public class Builder : Message.Builder<MessageWithOptions, Builder>() {
-    public override fun build(): MessageWithOptions = MessageWithOptions(
+    override fun build(): MessageWithOptions = MessageWithOptions(
       unknownFields = buildUnknownFields()
     )
   }
@@ -71,27 +70,27 @@ public class MessageWithOptions(
       null, 
       "custom_options.proto"
     ) {
-      public override fun encodedSize(`value`: MessageWithOptions): Int {
+      override fun encodedSize(`value`: MessageWithOptions): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: MessageWithOptions): Unit {
+      override fun encode(writer: ProtoWriter, `value`: MessageWithOptions) {
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: MessageWithOptions): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: MessageWithOptions) {
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun decode(reader: ProtoReader): MessageWithOptions {
+      override fun decode(reader: ProtoReader): MessageWithOptions {
         val unknownFields = reader.forEachTag(reader::readUnknownField)
         return MessageWithOptions(
           unknownFields = unknownFields
         )
       }
 
-      public override fun redact(`value`: MessageWithOptions): MessageWithOptions = value.copy(
+      override fun redact(`value`: MessageWithOptions): MessageWithOptions = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

@@ -26,14 +26,14 @@ public class BoxedOneOfs(
   public val value_: OneOf<Value<*>, *>? = null,
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<BoxedOneOfs, BoxedOneOfs.Builder>(ADAPTER, unknownFields) {
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.value_ = value_
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is BoxedOneOfs) return false
     if (unknownFields != other.unknownFields) return false
@@ -41,7 +41,7 @@ public class BoxedOneOfs(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -51,7 +51,7 @@ public class BoxedOneOfs(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (value_ != null) result += """value_=$value_"""
     return result.joinToString(prefix = "BoxedOneOfs{", separator = ", ", postfix = "}")
@@ -69,7 +69,7 @@ public class BoxedOneOfs(
       return this
     }
 
-    public override fun build(): BoxedOneOfs = BoxedOneOfs(
+    override fun build(): BoxedOneOfs = BoxedOneOfs(
       value_ = value_,
       unknownFields = buildUnknownFields()
     )
@@ -80,7 +80,7 @@ public class BoxedOneOfs(
     adapter: ProtoAdapter<T>,
     declaredName: String,
   ) : OneOf.Key<T>(tag, adapter, declaredName) {
-    public fun create(`value`: T) = OneOf(this, value)
+    public fun create(`value`: T): OneOf<Value<T>, T> = OneOf(this, value)
 
     public fun decode(reader: ProtoReader): OneOf<Value<T>, T> = create(adapter.decode(reader))
   }
@@ -95,23 +95,23 @@ public class BoxedOneOfs(
       null, 
       "squareup/wire/boxed_oneof.proto"
     ) {
-      public override fun encodedSize(`value`: BoxedOneOfs): Int {
+      override fun encodedSize(`value`: BoxedOneOfs): Int {
         var size = value.unknownFields.size
         if (value.value_ != null) size += value.value_.encodedSizeWithTag()
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: BoxedOneOfs): Unit {
+      override fun encode(writer: ProtoWriter, `value`: BoxedOneOfs) {
         if (value.value_ != null) value.value_.encodeWithTag(writer)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: BoxedOneOfs): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: BoxedOneOfs) {
         writer.writeBytes(value.unknownFields)
         if (value.value_ != null) value.value_.encodeWithTag(writer)
       }
 
-      public override fun decode(reader: ProtoReader): BoxedOneOfs {
+      override fun decode(reader: ProtoReader): BoxedOneOfs {
         var value_: OneOf<Value<*>, *>? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -132,7 +132,7 @@ public class BoxedOneOfs(
         )
       }
 
-      public override fun redact(`value`: BoxedOneOfs): BoxedOneOfs = value.copy(
+      override fun redact(`value`: BoxedOneOfs): BoxedOneOfs = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

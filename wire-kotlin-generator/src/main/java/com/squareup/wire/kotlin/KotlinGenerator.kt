@@ -2479,7 +2479,7 @@ class KotlinGenerator private constructor(
    *   adapter: ProtoAdapter<T>,
    *   declaredName: String
    * ) : OneOf.Key<T>(tag, adapter, declaredName) {
-   *   public fun create(value: T) = OneOf(this, value)
+   *   public fun create(value: T): OneOf<Option<T>, T> = OneOf(this, value)
    *
    *   public fun decode(reader: ProtoReader): OneOf<Option<T>, T> = create(adapter.decode(reader))
    * }
@@ -2511,6 +2511,12 @@ class KotlinGenerator private constructor(
         FunSpec.builder("create")
           .addParameter("value", typeVariable)
           .addStatement("return %T(this, %L)", com.squareup.wire.OneOf::class, "value")
+          .returns(
+            com.squareup.wire.OneOf::class.asClassName().parameterizedBy(
+              boxClassName.parameterizedBy(typeVariable),
+              typeVariable
+            )
+          )
           .build()
       )
       .addFunction(

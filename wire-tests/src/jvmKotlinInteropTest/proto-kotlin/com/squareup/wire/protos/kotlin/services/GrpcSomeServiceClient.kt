@@ -9,7 +9,7 @@ import com.squareup.wire.GrpcMethod
 public class GrpcSomeServiceClient(
   private val client: GrpcClient,
 ) : SomeServiceClient {
-  public override fun SomeMethod(): GrpcCall<SomeRequest, SomeResponse> = client.newCall(GrpcMethod(
+  override fun SomeMethod(): GrpcCall<SomeRequest, SomeResponse> = client.newCall(GrpcMethod(
       path = "/squareup.protos.kotlin.SomeService/SomeMethod",
       requestAdapter = SomeRequest.ADAPTER,
       responseAdapter = SomeResponse.ADAPTER

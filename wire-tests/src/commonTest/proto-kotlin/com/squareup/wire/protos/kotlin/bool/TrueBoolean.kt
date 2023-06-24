@@ -19,7 +19,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -35,10 +34,10 @@ public class TrueBoolean(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is TrueBoolean) return false
     if (unknownFields != other.unknownFields) return false
@@ -46,7 +45,7 @@ public class TrueBoolean(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -56,7 +55,7 @@ public class TrueBoolean(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (isTrue != null) result += """isTrue=$isTrue"""
     return result.joinToString(prefix = "TrueBoolean{", separator = ", ", postfix = "}")
@@ -75,23 +74,23 @@ public class TrueBoolean(
       null, 
       "bool.proto"
     ) {
-      public override fun encodedSize(`value`: TrueBoolean): Int {
+      override fun encodedSize(`value`: TrueBoolean): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.BOOL.encodedSizeWithTag(1, value.isTrue)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: TrueBoolean): Unit {
+      override fun encode(writer: ProtoWriter, `value`: TrueBoolean) {
         ProtoAdapter.BOOL.encodeWithTag(writer, 1, value.isTrue)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: TrueBoolean): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: TrueBoolean) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.BOOL.encodeWithTag(writer, 1, value.isTrue)
       }
 
-      public override fun decode(reader: ProtoReader): TrueBoolean {
+      override fun decode(reader: ProtoReader): TrueBoolean {
         var isTrue: Boolean? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -105,7 +104,7 @@ public class TrueBoolean(
         )
       }
 
-      public override fun redact(`value`: TrueBoolean): TrueBoolean = value.copy(
+      override fun redact(`value`: TrueBoolean): TrueBoolean = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

@@ -18,7 +18,6 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -35,14 +34,14 @@ public class Pizza(
   @JvmField
   public val toppings: List<String> = immutableCopyOf("toppings", toppings)
 
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.toppings = toppings
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Pizza) return false
     if (unknownFields != other.unknownFields) return false
@@ -50,7 +49,7 @@ public class Pizza(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -60,7 +59,7 @@ public class Pizza(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (toppings.isNotEmpty()) result += """toppings=${sanitize(toppings)}"""
     return result.joinToString(prefix = "Pizza{", separator = ", ", postfix = "}")
@@ -79,7 +78,7 @@ public class Pizza(
       return this
     }
 
-    public override fun build(): Pizza = Pizza(
+    override fun build(): Pizza = Pizza(
       toppings = toppings,
       unknownFields = buildUnknownFields()
     )
@@ -95,23 +94,23 @@ public class Pizza(
       null, 
       "pizza.proto"
     ) {
-      public override fun encodedSize(`value`: Pizza): Int {
+      override fun encodedSize(`value`: Pizza): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.toppings)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: Pizza): Unit {
+      override fun encode(writer: ProtoWriter, `value`: Pizza) {
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.toppings)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: Pizza): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: Pizza) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.toppings)
       }
 
-      public override fun decode(reader: ProtoReader): Pizza {
+      override fun decode(reader: ProtoReader): Pizza {
         val toppings = mutableListOf<String>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -125,7 +124,7 @@ public class Pizza(
         )
       }
 
-      public override fun redact(`value`: Pizza): Pizza = value.copy(
+      override fun redact(`value`: Pizza): Pizza = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

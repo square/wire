@@ -9,7 +9,6 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
-import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
@@ -25,7 +24,6 @@ import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.jvm.JvmField
@@ -662,7 +660,7 @@ public class AllTypes(
     }
   }
 
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.my_int32 = my_int32
     builder.my_uint32 = my_uint32
@@ -738,7 +736,7 @@ public class AllTypes(
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is AllTypes) return false
     if (unknownFields != other.unknownFields) return false
@@ -815,7 +813,7 @@ public class AllTypes(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -894,7 +892,7 @@ public class AllTypes(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     result += """my_int32=$my_int32"""
     result += """my_uint32=$my_uint32"""
@@ -1651,7 +1649,7 @@ public class AllTypes(
       return this
     }
 
-    public override fun build(): AllTypes = AllTypes(
+    override fun build(): AllTypes = AllTypes(
       my_int32 = my_int32,
       my_uint32 = my_uint32,
       my_sint32 = my_sint32,
@@ -1748,7 +1746,7 @@ public class AllTypes(
       private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
 
-      public override fun encodedSize(`value`: AllTypes): Int {
+      override fun encodedSize(`value`: AllTypes): Int {
         var size = value.unknownFields.size
         if (value.my_int32 != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.my_int32)
         if (value.my_uint32 != 0) size += ProtoAdapter.UINT32.encodedSizeWithTag(2, value.my_uint32)
@@ -1835,7 +1833,7 @@ public class AllTypes(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: AllTypes): Unit {
+      override fun encode(writer: ProtoWriter, `value`: AllTypes) {
         if (value.my_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
         if (value.my_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
         if (value.my_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
@@ -1915,7 +1913,7 @@ public class AllTypes(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: AllTypes): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: AllTypes) {
         writer.writeBytes(value.unknownFields)
         NestedMessage.ADAPTER.encodeWithTag(writer, 603, value.oneof_nested_message)
         ProtoAdapter.INT32.encodeWithTag(writer, 602, value.oneof_int32)
@@ -1995,7 +1993,7 @@ public class AllTypes(
         if (value.my_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
       }
 
-      public override fun decode(reader: ProtoReader): AllTypes {
+      override fun decode(reader: ProtoReader): AllTypes {
         var my_int32: Int = 0
         var my_uint32: Int = 0
         var my_sint32: Int = 0
@@ -2345,7 +2343,7 @@ public class AllTypes(
         )
       }
 
-      public override fun redact(`value`: AllTypes): AllTypes = value.copy(
+      override fun redact(`value`: AllTypes): AllTypes = value.copy(
         nested_message = value.nested_message?.let(NestedMessage.ADAPTER::redact),
         rep_nested_message = value.rep_nested_message.redactElements(NestedMessage.ADAPTER),
         map_string_message = value.map_string_message.redactElements(NestedMessage.ADAPTER),
@@ -2358,7 +2356,7 @@ public class AllTypes(
   }
 
   public enum class NestedEnum(
-    public override val `value`: Int,
+    override val `value`: Int,
   ) : WireEnum {
     UNKNOWN(0),
     A(1),
@@ -2371,7 +2369,7 @@ public class AllTypes(
         PROTO_3, 
         NestedEnum.UNKNOWN
       ) {
-        public override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
+        override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
 
       @JvmStatic
@@ -2393,14 +2391,14 @@ public class AllTypes(
     public val a: Int = 0,
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<NestedMessage, NestedMessage.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.a = a
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NestedMessage) return false
       if (unknownFields != other.unknownFields) return false
@@ -2408,7 +2406,7 @@ public class AllTypes(
       return true
     }
 
-    public override fun hashCode(): Int {
+    override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
@@ -2418,7 +2416,7 @@ public class AllTypes(
       return result
     }
 
-    public override fun toString(): String {
+    override fun toString(): String {
       val result = mutableListOf<String>()
       result += """a=$a"""
       return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
@@ -2436,7 +2434,7 @@ public class AllTypes(
         return this
       }
 
-      public override fun build(): NestedMessage = NestedMessage(
+      override fun build(): NestedMessage = NestedMessage(
         a = a,
         unknownFields = buildUnknownFields()
       )
@@ -2452,23 +2450,23 @@ public class AllTypes(
         null, 
         "all_types_proto3_test_proto3_optional.proto"
       ) {
-        public override fun encodedSize(`value`: NestedMessage): Int {
+        override fun encodedSize(`value`: NestedMessage): Int {
           var size = value.unknownFields.size
           if (value.a != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: NestedMessage): Unit {
+        override fun encode(writer: ProtoWriter, `value`: NestedMessage) {
           if (value.a != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage) {
           writer.writeBytes(value.unknownFields)
           if (value.a != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
         }
 
-        public override fun decode(reader: ProtoReader): NestedMessage {
+        override fun decode(reader: ProtoReader): NestedMessage {
           var a: Int = 0
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
@@ -2482,7 +2480,7 @@ public class AllTypes(
           )
         }
 
-        public override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
+        override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }

@@ -8,7 +8,6 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
-import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
@@ -16,7 +15,6 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -29,14 +27,14 @@ public class SomeMessage internal constructor(
   public val opt_int32: Int? = null,
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<SomeMessage, SomeMessage.Builder>(ADAPTER, unknownFields) {
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.opt_int32 = opt_int32
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is SomeMessage) return false
     if (unknownFields != other.unknownFields) return false
@@ -44,7 +42,7 @@ public class SomeMessage internal constructor(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -54,7 +52,7 @@ public class SomeMessage internal constructor(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (opt_int32 != null) result += """opt_int32=$opt_int32"""
     return result.joinToString(prefix = "SomeMessage{", separator = ", ", postfix = "}")
@@ -72,7 +70,7 @@ public class SomeMessage internal constructor(
       return this
     }
 
-    public override fun build(): SomeMessage = SomeMessage(
+    override fun build(): SomeMessage = SomeMessage(
       opt_int32 = opt_int32,
       unknownFields = buildUnknownFields()
     )
@@ -88,23 +86,23 @@ public class SomeMessage internal constructor(
       null, 
       "squareup/wire/some_message.proto"
     ) {
-      public override fun encodedSize(`value`: SomeMessage): Int {
+      override fun encodedSize(`value`: SomeMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: SomeMessage): Unit {
+      override fun encode(writer: ProtoWriter, `value`: SomeMessage) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: SomeMessage): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: SomeMessage) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32)
       }
 
-      public override fun decode(reader: ProtoReader): SomeMessage {
+      override fun decode(reader: ProtoReader): SomeMessage {
         var opt_int32: Int? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -118,7 +116,7 @@ public class SomeMessage internal constructor(
         )
       }
 
-      public override fun redact(`value`: SomeMessage): SomeMessage = value.copy(
+      override fun redact(`value`: SomeMessage): SomeMessage = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -135,14 +133,14 @@ public class SomeMessage internal constructor(
     public val a: Int? = null,
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<NestedMessage, NestedMessage.Builder>(ADAPTER, unknownFields) {
-    public override fun newBuilder(): Builder {
+    override fun newBuilder(): Builder {
       val builder = Builder()
       builder.a = a
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NestedMessage) return false
       if (unknownFields != other.unknownFields) return false
@@ -150,7 +148,7 @@ public class SomeMessage internal constructor(
       return true
     }
 
-    public override fun hashCode(): Int {
+    override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
@@ -160,7 +158,7 @@ public class SomeMessage internal constructor(
       return result
     }
 
-    public override fun toString(): String {
+    override fun toString(): String {
       val result = mutableListOf<String>()
       if (a != null) result += """a=$a"""
       return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
@@ -178,7 +176,7 @@ public class SomeMessage internal constructor(
         return this
       }
 
-      public override fun build(): NestedMessage = NestedMessage(
+      override fun build(): NestedMessage = NestedMessage(
         a = a,
         unknownFields = buildUnknownFields()
       )
@@ -194,23 +192,23 @@ public class SomeMessage internal constructor(
         null, 
         "squareup/wire/some_message.proto"
       ) {
-        public override fun encodedSize(`value`: NestedMessage): Int {
+        override fun encodedSize(`value`: NestedMessage): Int {
           var size = value.unknownFields.size
           size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: NestedMessage): Unit {
+        override fun encode(writer: ProtoWriter, `value`: NestedMessage) {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage) {
           writer.writeBytes(value.unknownFields)
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
         }
 
-        public override fun decode(reader: ProtoReader): NestedMessage {
+        override fun decode(reader: ProtoReader): NestedMessage {
           var a: Int? = null
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
@@ -224,7 +222,7 @@ public class SomeMessage internal constructor(
           )
         }
 
-        public override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
+        override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }

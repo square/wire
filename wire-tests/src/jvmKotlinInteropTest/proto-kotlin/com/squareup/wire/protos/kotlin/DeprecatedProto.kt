@@ -17,7 +17,6 @@ import kotlin.Deprecated
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -31,14 +30,14 @@ public class DeprecatedProto(
   public val foo: String? = null,
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<DeprecatedProto, DeprecatedProto.Builder>(ADAPTER, unknownFields) {
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.foo = foo
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is DeprecatedProto) return false
     if (unknownFields != other.unknownFields) return false
@@ -46,7 +45,7 @@ public class DeprecatedProto(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -56,7 +55,7 @@ public class DeprecatedProto(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (foo != null) result += """foo=${sanitize(foo)}"""
     return result.joinToString(prefix = "DeprecatedProto{", separator = ", ", postfix = "}")
@@ -75,7 +74,7 @@ public class DeprecatedProto(
       return this
     }
 
-    public override fun build(): DeprecatedProto = DeprecatedProto(
+    override fun build(): DeprecatedProto = DeprecatedProto(
       foo = foo,
       unknownFields = buildUnknownFields()
     )
@@ -91,23 +90,23 @@ public class DeprecatedProto(
       null, 
       "deprecated.proto"
     ) {
-      public override fun encodedSize(`value`: DeprecatedProto): Int {
+      override fun encodedSize(`value`: DeprecatedProto): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: DeprecatedProto): Unit {
+      override fun encode(writer: ProtoWriter, `value`: DeprecatedProto) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: DeprecatedProto): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: DeprecatedProto) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
       }
 
-      public override fun decode(reader: ProtoReader): DeprecatedProto {
+      override fun decode(reader: ProtoReader): DeprecatedProto {
         var foo: String? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -121,7 +120,7 @@ public class DeprecatedProto(
         )
       }
 
-      public override fun redact(`value`: DeprecatedProto): DeprecatedProto = value.copy(
+      override fun redact(`value`: DeprecatedProto): DeprecatedProto = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

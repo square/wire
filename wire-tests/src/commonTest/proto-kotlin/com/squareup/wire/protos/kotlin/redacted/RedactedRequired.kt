@@ -20,7 +20,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.UnsupportedOperationException
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -39,10 +38,10 @@ public class RedactedRequired(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedRequired) return false
     if (unknownFields != other.unknownFields) return false
@@ -50,7 +49,7 @@ public class RedactedRequired(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -60,7 +59,7 @@ public class RedactedRequired(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     result += """a=██"""
     return result.joinToString(prefix = "RedactedRequired{", separator = ", ", postfix = "}")
@@ -79,23 +78,23 @@ public class RedactedRequired(
       null, 
       "redacted_test.proto"
     ) {
-      public override fun encodedSize(`value`: RedactedRequired): Int {
+      override fun encodedSize(`value`: RedactedRequired): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: RedactedRequired): Unit {
+      override fun encode(writer: ProtoWriter, `value`: RedactedRequired) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: RedactedRequired): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: RedactedRequired) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
       }
 
-      public override fun decode(reader: ProtoReader): RedactedRequired {
+      override fun decode(reader: ProtoReader): RedactedRequired {
         var a: String? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -109,7 +108,7 @@ public class RedactedRequired(
         )
       }
 
-      public override fun redact(`value`: RedactedRequired): RedactedRequired = throw
+      override fun redact(`value`: RedactedRequired): RedactedRequired = throw
           UnsupportedOperationException("Field 'a' is required and cannot be redacted.")
     }
 

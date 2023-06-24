@@ -12,7 +12,6 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
-import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
@@ -877,10 +876,10 @@ public class AllTypes(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is AllTypes) return false
     if (unknownFields != other.unknownFields) return false
@@ -988,7 +987,7 @@ public class AllTypes(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -1098,7 +1097,7 @@ public class AllTypes(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     result += """proto3_kotlin_int32=$proto3_kotlin_int32"""
     result += """proto3_kotlin_uint32=$proto3_kotlin_uint32"""
@@ -1374,7 +1373,7 @@ public class AllTypes(
       private val map_int32_timestampAdapter: ProtoAdapter<Map<Int, Instant>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INSTANT) }
 
-      public override fun encodedSize(`value`: AllTypes): Int {
+      override fun encodedSize(`value`: AllTypes): Int {
         var size = value.unknownFields.size
         if (value.proto3_kotlin_int32 != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1,
             value.proto3_kotlin_int32)
@@ -1503,7 +1502,7 @@ public class AllTypes(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: AllTypes): Unit {
+      override fun encode(writer: ProtoWriter, `value`: AllTypes) {
         if (value.proto3_kotlin_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1,
             value.proto3_kotlin_int32)
         if (value.proto3_kotlin_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2,
@@ -1627,7 +1626,7 @@ public class AllTypes(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: AllTypes): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: AllTypes) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.INSTANT.encodeWithTag(writer, 625, value.oneof_timestamp)
         ProtoAdapter.EMPTY.encodeWithTag(writer, 624, value.oneof_empty)
@@ -1751,7 +1750,7 @@ public class AllTypes(
             value.proto3_kotlin_int32)
       }
 
-      public override fun decode(reader: ProtoReader): AllTypes {
+      override fun decode(reader: ProtoReader): AllTypes {
         var proto3_kotlin_int32: Int = 0
         var proto3_kotlin_uint32: Int = 0
         var proto3_kotlin_sint32: Int = 0
@@ -2206,7 +2205,7 @@ public class AllTypes(
         )
       }
 
-      public override fun redact(`value`: AllTypes): AllTypes = value.copy(
+      override fun redact(`value`: AllTypes): AllTypes = value.copy(
         nested_message = value.nested_message?.let(NestedMessage.ADAPTER::redact),
         any = value.any?.let(AnyMessage.ADAPTER::redact),
         duration = value.duration?.let(ProtoAdapter.DURATION::redact),
@@ -2246,7 +2245,7 @@ public class AllTypes(
   }
 
   public enum class NestedEnum(
-    public override val `value`: Int,
+    override val `value`: Int,
   ) : WireEnum {
     UNKNOWN(0),
     A(1),
@@ -2259,7 +2258,7 @@ public class AllTypes(
         PROTO_3, 
         NestedEnum.UNKNOWN
       ) {
-        public override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
+        override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
 
       @JvmStatic
@@ -2284,10 +2283,10 @@ public class AllTypes(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN,
     )
-    public override fun newBuilder(): Nothing = throw
+    override fun newBuilder(): Nothing = throw
         AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NestedMessage) return false
       if (unknownFields != other.unknownFields) return false
@@ -2295,7 +2294,7 @@ public class AllTypes(
       return true
     }
 
-    public override fun hashCode(): Int {
+    override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
@@ -2305,7 +2304,7 @@ public class AllTypes(
       return result
     }
 
-    public override fun toString(): String {
+    override fun toString(): String {
       val result = mutableListOf<String>()
       result += """a=$a"""
       return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
@@ -2324,23 +2323,23 @@ public class AllTypes(
         null, 
         "all_types.proto"
       ) {
-        public override fun encodedSize(`value`: NestedMessage): Int {
+        override fun encodedSize(`value`: NestedMessage): Int {
           var size = value.unknownFields.size
           if (value.a != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, `value`: NestedMessage): Unit {
+        override fun encode(writer: ProtoWriter, `value`: NestedMessage) {
           if (value.a != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
           writer.writeBytes(value.unknownFields)
         }
 
-        public override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage): Unit {
+        override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage) {
           writer.writeBytes(value.unknownFields)
           if (value.a != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
         }
 
-        public override fun decode(reader: ProtoReader): NestedMessage {
+        override fun decode(reader: ProtoReader): NestedMessage {
           var a: Int = 0
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
@@ -2354,7 +2353,7 @@ public class AllTypes(
           )
         }
 
-        public override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
+        override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }

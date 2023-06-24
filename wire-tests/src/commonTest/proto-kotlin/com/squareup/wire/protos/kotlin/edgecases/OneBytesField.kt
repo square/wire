@@ -19,7 +19,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -35,10 +34,10 @@ public class OneBytesField(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneBytesField) return false
     if (unknownFields != other.unknownFields) return false
@@ -46,7 +45,7 @@ public class OneBytesField(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -56,7 +55,7 @@ public class OneBytesField(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (opt_bytes != null) result += """opt_bytes=$opt_bytes"""
     return result.joinToString(prefix = "OneBytesField{", separator = ", ", postfix = "}")
@@ -75,23 +74,23 @@ public class OneBytesField(
       null, 
       "edge_cases.proto"
     ) {
-      public override fun encodedSize(`value`: OneBytesField): Int {
+      override fun encodedSize(`value`: OneBytesField): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.BYTES.encodedSizeWithTag(1, value.opt_bytes)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: OneBytesField): Unit {
+      override fun encode(writer: ProtoWriter, `value`: OneBytesField) {
         ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.opt_bytes)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: OneBytesField): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: OneBytesField) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.opt_bytes)
       }
 
-      public override fun decode(reader: ProtoReader): OneBytesField {
+      override fun decode(reader: ProtoReader): OneBytesField {
         var opt_bytes: ByteString? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -105,7 +104,7 @@ public class OneBytesField(
         )
       }
 
-      public override fun redact(`value`: OneBytesField): OneBytesField = value.copy(
+      override fun redact(`value`: OneBytesField): OneBytesField = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

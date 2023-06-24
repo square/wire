@@ -13,13 +13,8 @@ import io.grpc.ServerServiceDefinition
 import io.grpc.ServiceDescriptor
 import io.grpc.ServiceDescriptor.newBuilder
 import io.grpc.stub.AbstractStub
-import io.grpc.stub.ClientCalls
 import io.grpc.stub.ClientCalls.blockingServerStreamingCall
 import io.grpc.stub.ClientCalls.blockingUnaryCall
-import io.grpc.stub.ServerCalls.asyncBidiStreamingCall
-import io.grpc.stub.ServerCalls.asyncClientStreamingCall
-import io.grpc.stub.ServerCalls.asyncServerStreamingCall
-import io.grpc.stub.ServerCalls.asyncUnaryCall
 import io.grpc.stub.StreamObserver
 import java.io.InputStream
 import java.lang.Class
@@ -32,6 +27,14 @@ import kotlin.collections.Iterator
 import kotlin.collections.Map
 import kotlin.collections.Set
 import kotlin.jvm.Volatile
+import io.grpc.stub.ClientCalls.asyncBidiStreamingCall as clientCallsAsyncBidiStreamingCall
+import io.grpc.stub.ClientCalls.asyncClientStreamingCall as clientCallsAsyncClientStreamingCall
+import io.grpc.stub.ClientCalls.asyncServerStreamingCall as clientCallsAsyncServerStreamingCall
+import io.grpc.stub.ClientCalls.asyncUnaryCall as clientCallsAsyncUnaryCall
+import io.grpc.stub.ServerCalls.asyncBidiStreamingCall as serverCallsAsyncBidiStreamingCall
+import io.grpc.stub.ServerCalls.asyncClientStreamingCall as serverCallsAsyncClientStreamingCall
+import io.grpc.stub.ServerCalls.asyncServerStreamingCall as serverCallsAsyncServerStreamingCall
+import io.grpc.stub.ServerCalls.asyncUnaryCall as serverCallsAsyncUnaryCall
 
 public object RouteGuideWireGrpc {
   public val SERVICE_NAME: String = "routeguide.RouteGuide"
@@ -214,65 +217,63 @@ public object RouteGuideWireGrpc {
     public open fun RouteChat(response: StreamObserver<RouteNote>): StreamObserver<RouteNote> =
         throw UnsupportedOperationException()
 
-    public override fun bindService(): ServerServiceDefinition =
+    override fun bindService(): ServerServiceDefinition =
         ServerServiceDefinition.builder(getServiceDescriptor()).addMethod(
               getGetFeatureMethod(),
-              asyncUnaryCall(this@RouteGuideImplBase::GetFeature)
+              serverCallsAsyncUnaryCall(this@RouteGuideImplBase::GetFeature)
             ).addMethod(
               getListFeaturesMethod(),
-              asyncServerStreamingCall(this@RouteGuideImplBase::ListFeatures)
+              serverCallsAsyncServerStreamingCall(this@RouteGuideImplBase::ListFeatures)
             ).addMethod(
               getRecordRouteMethod(),
-              asyncClientStreamingCall(this@RouteGuideImplBase::RecordRoute)
+              serverCallsAsyncClientStreamingCall(this@RouteGuideImplBase::RecordRoute)
             ).addMethod(
               getRouteChatMethod(),
-              asyncBidiStreamingCall(this@RouteGuideImplBase::RouteChat)
+              serverCallsAsyncBidiStreamingCall(this@RouteGuideImplBase::RouteChat)
             ).build()
 
     public class PointMarshaller : WireMethodMarshaller<Point> {
-      public override fun stream(`value`: Point): InputStream =
-          Point.ADAPTER.encode(value).inputStream()
+      override fun stream(`value`: Point): InputStream = Point.ADAPTER.encode(value).inputStream()
 
-      public override fun marshalledClass(): Class<Point> = Point::class.java
+      override fun marshalledClass(): Class<Point> = Point::class.java
 
-      public override fun parse(stream: InputStream): Point = Point.ADAPTER.decode(stream)
+      override fun parse(stream: InputStream): Point = Point.ADAPTER.decode(stream)
     }
 
     public class FeatureMarshaller : WireMethodMarshaller<Feature> {
-      public override fun stream(`value`: Feature): InputStream =
+      override fun stream(`value`: Feature): InputStream =
           Feature.ADAPTER.encode(value).inputStream()
 
-      public override fun marshalledClass(): Class<Feature> = Feature::class.java
+      override fun marshalledClass(): Class<Feature> = Feature::class.java
 
-      public override fun parse(stream: InputStream): Feature = Feature.ADAPTER.decode(stream)
+      override fun parse(stream: InputStream): Feature = Feature.ADAPTER.decode(stream)
     }
 
     public class RectangleMarshaller : WireMethodMarshaller<Rectangle> {
-      public override fun stream(`value`: Rectangle): InputStream =
+      override fun stream(`value`: Rectangle): InputStream =
           Rectangle.ADAPTER.encode(value).inputStream()
 
-      public override fun marshalledClass(): Class<Rectangle> = Rectangle::class.java
+      override fun marshalledClass(): Class<Rectangle> = Rectangle::class.java
 
-      public override fun parse(stream: InputStream): Rectangle = Rectangle.ADAPTER.decode(stream)
+      override fun parse(stream: InputStream): Rectangle = Rectangle.ADAPTER.decode(stream)
     }
 
     public class RouteSummaryMarshaller : WireMethodMarshaller<RouteSummary> {
-      public override fun stream(`value`: RouteSummary): InputStream =
+      override fun stream(`value`: RouteSummary): InputStream =
           RouteSummary.ADAPTER.encode(value).inputStream()
 
-      public override fun marshalledClass(): Class<RouteSummary> = RouteSummary::class.java
+      override fun marshalledClass(): Class<RouteSummary> = RouteSummary::class.java
 
-      public override fun parse(stream: InputStream): RouteSummary =
-          RouteSummary.ADAPTER.decode(stream)
+      override fun parse(stream: InputStream): RouteSummary = RouteSummary.ADAPTER.decode(stream)
     }
 
     public class RouteNoteMarshaller : WireMethodMarshaller<RouteNote> {
-      public override fun stream(`value`: RouteNote): InputStream =
+      override fun stream(`value`: RouteNote): InputStream =
           RouteNote.ADAPTER.encode(value).inputStream()
 
-      public override fun marshalledClass(): Class<RouteNote> = RouteNote::class.java
+      override fun marshalledClass(): Class<RouteNote> = RouteNote::class.java
 
-      public override fun parse(stream: InputStream): RouteNote = RouteNote.ADAPTER.decode(stream)
+      override fun parse(stream: InputStream): RouteNote = RouteNote.ADAPTER.decode(stream)
     }
   }
 
@@ -283,16 +284,16 @@ public object RouteGuideWireGrpc {
     private val RecordRoute: () -> RouteGuideRecordRouteBlockingServer,
     private val RouteChat: () -> RouteGuideRouteChatBlockingServer,
   ) : RouteGuideImplBase() {
-    public override fun GetFeature(request: Point, response: StreamObserver<Feature>): Unit {
+    override fun GetFeature(request: Point, response: StreamObserver<Feature>) {
       response.onNext(GetFeature().GetFeature(request))
       response.onCompleted()
     }
 
-    public override fun ListFeatures(request: Rectangle, response: StreamObserver<Feature>): Unit {
+    override fun ListFeatures(request: Rectangle, response: StreamObserver<Feature>) {
       ListFeatures().ListFeatures(request, MessageSinkAdapter(response))
     }
 
-    public override fun RecordRoute(response: StreamObserver<RouteSummary>): StreamObserver<Point> {
+    override fun RecordRoute(response: StreamObserver<RouteSummary>): StreamObserver<Point> {
       val requestStream = MessageSourceAdapter<Point>()
       streamExecutor.submit {
         response.onNext(RecordRoute().RecordRoute(requestStream))
@@ -301,7 +302,7 @@ public object RouteGuideWireGrpc {
       return requestStream
     }
 
-    public override fun RouteChat(response: StreamObserver<RouteNote>): StreamObserver<RouteNote> {
+    override fun RouteChat(response: StreamObserver<RouteNote>): StreamObserver<RouteNote> {
       val requestStream = MessageSourceAdapter<RouteNote>()
       streamExecutor.submit {
         RouteChat().RouteChat(requestStream, MessageSinkAdapter(response))
@@ -315,25 +316,25 @@ public object RouteGuideWireGrpc {
 
     internal constructor(channel: Channel, callOptions: CallOptions) : super(channel, callOptions)
 
-    public override fun build(channel: Channel, callOptions: CallOptions) = RouteGuideStub(channel,
-        callOptions)
+    override fun build(channel: Channel, callOptions: CallOptions): RouteGuideStub =
+        RouteGuideStub(channel, callOptions)
 
-    public fun GetFeature(request: Point, response: StreamObserver<Feature>): Unit {
-      ClientCalls.asyncUnaryCall(channel.newCall(getGetFeatureMethod(), callOptions), request,
+    public fun GetFeature(request: Point, response: StreamObserver<Feature>) {
+      clientCallsAsyncUnaryCall(channel.newCall(getGetFeatureMethod(), callOptions), request,
           response)
     }
 
-    public fun ListFeatures(request: Rectangle, response: StreamObserver<Feature>): Unit {
-      ClientCalls.asyncServerStreamingCall(channel.newCall(getListFeaturesMethod(), callOptions),
+    public fun ListFeatures(request: Rectangle, response: StreamObserver<Feature>) {
+      clientCallsAsyncServerStreamingCall(channel.newCall(getListFeaturesMethod(), callOptions),
           request, response)
     }
 
     public fun RecordRoute(response: StreamObserver<RouteSummary>): StreamObserver<Point> =
-        ClientCalls.asyncClientStreamingCall(channel.newCall(getRecordRouteMethod(), callOptions),
+        clientCallsAsyncClientStreamingCall(channel.newCall(getRecordRouteMethod(), callOptions),
         response)
 
     public fun RouteChat(response: StreamObserver<RouteNote>): StreamObserver<RouteNote> =
-        ClientCalls.asyncBidiStreamingCall(channel.newCall(getRouteChatMethod(), callOptions),
+        clientCallsAsyncBidiStreamingCall(channel.newCall(getRouteChatMethod(), callOptions),
         response)
   }
 
@@ -342,8 +343,8 @@ public object RouteGuideWireGrpc {
 
     internal constructor(channel: Channel, callOptions: CallOptions) : super(channel, callOptions)
 
-    public override fun build(channel: Channel, callOptions: CallOptions) = RouteGuideStub(channel,
-        callOptions)
+    override fun build(channel: Channel, callOptions: CallOptions): RouteGuideStub =
+        RouteGuideStub(channel, callOptions)
 
     public fun GetFeature(request: Point): Feature = blockingUnaryCall(channel,
         getGetFeatureMethod(), callOptions, request)

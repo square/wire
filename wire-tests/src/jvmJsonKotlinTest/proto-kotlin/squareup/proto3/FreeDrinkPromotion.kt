@@ -9,7 +9,6 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
-import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
@@ -18,7 +17,6 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -33,14 +31,14 @@ public class FreeDrinkPromotion(
   public val drink: Drink = Drink.UNKNOWN,
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<FreeDrinkPromotion, FreeDrinkPromotion.Builder>(ADAPTER, unknownFields) {
-  public override fun newBuilder(): Builder {
+  override fun newBuilder(): Builder {
     val builder = Builder()
     builder.drink = drink
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FreeDrinkPromotion) return false
     if (unknownFields != other.unknownFields) return false
@@ -48,7 +46,7 @@ public class FreeDrinkPromotion(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -58,7 +56,7 @@ public class FreeDrinkPromotion(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     result += """drink=$drink"""
     return result.joinToString(prefix = "FreeDrinkPromotion{", separator = ", ", postfix = "}")
@@ -76,7 +74,7 @@ public class FreeDrinkPromotion(
       return this
     }
 
-    public override fun build(): FreeDrinkPromotion = FreeDrinkPromotion(
+    override fun build(): FreeDrinkPromotion = FreeDrinkPromotion(
       drink = drink,
       unknownFields = buildUnknownFields()
     )
@@ -93,23 +91,23 @@ public class FreeDrinkPromotion(
       null, 
       "pizza.proto"
     ) {
-      public override fun encodedSize(`value`: FreeDrinkPromotion): Int {
+      override fun encodedSize(`value`: FreeDrinkPromotion): Int {
         var size = value.unknownFields.size
         if (value.drink != Drink.UNKNOWN) size += Drink.ADAPTER.encodedSizeWithTag(1, value.drink)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: FreeDrinkPromotion): Unit {
+      override fun encode(writer: ProtoWriter, `value`: FreeDrinkPromotion) {
         if (value.drink != Drink.UNKNOWN) Drink.ADAPTER.encodeWithTag(writer, 1, value.drink)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: FreeDrinkPromotion): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: FreeDrinkPromotion) {
         writer.writeBytes(value.unknownFields)
         if (value.drink != Drink.UNKNOWN) Drink.ADAPTER.encodeWithTag(writer, 1, value.drink)
       }
 
-      public override fun decode(reader: ProtoReader): FreeDrinkPromotion {
+      override fun decode(reader: ProtoReader): FreeDrinkPromotion {
         var drink: Drink = Drink.UNKNOWN
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -127,7 +125,7 @@ public class FreeDrinkPromotion(
         )
       }
 
-      public override fun redact(`value`: FreeDrinkPromotion): FreeDrinkPromotion = value.copy(
+      override fun redact(`value`: FreeDrinkPromotion): FreeDrinkPromotion = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -136,7 +134,7 @@ public class FreeDrinkPromotion(
   }
 
   public enum class Drink(
-    public override val `value`: Int,
+    override val `value`: Int,
   ) : WireEnum {
     UNKNOWN(0),
     PEPSI(1),
@@ -151,7 +149,7 @@ public class FreeDrinkPromotion(
         PROTO_3, 
         Drink.UNKNOWN
       ) {
-        public override fun fromValue(`value`: Int): Drink? = Drink.fromValue(value)
+        override fun fromValue(`value`: Int): Drink? = Drink.fromValue(value)
       }
 
       @JvmStatic

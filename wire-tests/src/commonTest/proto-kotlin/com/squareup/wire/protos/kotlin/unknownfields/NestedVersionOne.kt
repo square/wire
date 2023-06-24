@@ -19,7 +19,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -35,10 +34,10 @@ public class NestedVersionOne(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NestedVersionOne) return false
     if (unknownFields != other.unknownFields) return false
@@ -46,7 +45,7 @@ public class NestedVersionOne(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -56,7 +55,7 @@ public class NestedVersionOne(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (i != null) result += """i=$i"""
     return result.joinToString(prefix = "NestedVersionOne{", separator = ", ", postfix = "}")
@@ -75,23 +74,23 @@ public class NestedVersionOne(
       null, 
       "unknown_fields.proto"
     ) {
-      public override fun encodedSize(`value`: NestedVersionOne): Int {
+      override fun encodedSize(`value`: NestedVersionOne): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: NestedVersionOne): Unit {
+      override fun encode(writer: ProtoWriter, `value`: NestedVersionOne) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: NestedVersionOne): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: NestedVersionOne) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
       }
 
-      public override fun decode(reader: ProtoReader): NestedVersionOne {
+      override fun decode(reader: ProtoReader): NestedVersionOne {
         var i: Int? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -105,7 +104,7 @@ public class NestedVersionOne(
         )
       }
 
-      public override fun redact(`value`: NestedVersionOne): NestedVersionOne = value.copy(
+      override fun redact(`value`: NestedVersionOne): NestedVersionOne = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

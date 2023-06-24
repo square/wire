@@ -8,7 +8,6 @@ import io.grpc.stub.ClientCalls.asyncClientStreamingCall
 import io.grpc.stub.ClientCalls.asyncServerStreamingCall
 import io.grpc.stub.ClientCalls.asyncUnaryCall
 import io.grpc.stub.StreamObserver
-import kotlin.Unit
 
 public class RouteGuideWireGrpc {
   public fun newStub(channel: Channel): RouteGuideStub = RouteGuideStub(channel)
@@ -18,14 +17,14 @@ public class RouteGuideWireGrpc {
 
     internal constructor(channel: Channel, callOptions: CallOptions) : super(channel, callOptions)
 
-    public override fun build(channel: Channel, callOptions: CallOptions) = RouteGuideStub(channel,
-        callOptions)
+    override fun build(channel: Channel, callOptions: CallOptions): RouteGuideStub =
+        RouteGuideStub(channel, callOptions)
 
-    public fun GetFeature(request: Point, response: StreamObserver<Feature>): Unit {
+    public fun GetFeature(request: Point, response: StreamObserver<Feature>) {
       asyncUnaryCall(channel.newCall(getGetFeatureMethod(), callOptions), request, response)
     }
 
-    public fun ListFeatures(request: Rectangle, response: StreamObserver<Feature>): Unit {
+    public fun ListFeatures(request: Rectangle, response: StreamObserver<Feature>) {
       asyncServerStreamingCall(channel.newCall(getListFeaturesMethod(), callOptions), request,
           response)
     }

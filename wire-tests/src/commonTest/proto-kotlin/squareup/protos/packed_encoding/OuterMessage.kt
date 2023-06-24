@@ -19,7 +19,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -40,10 +39,10 @@ public class OuterMessage(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OuterMessage) return false
     if (unknownFields != other.unknownFields) return false
@@ -52,7 +51,7 @@ public class OuterMessage(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -63,7 +62,7 @@ public class OuterMessage(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (outer_number_before != null) result += """outer_number_before=$outer_number_before"""
     if (embedded_message != null) result += """embedded_message=$embedded_message"""
@@ -86,26 +85,26 @@ public class OuterMessage(
       null, 
       "packed_encoding.proto"
     ) {
-      public override fun encodedSize(`value`: OuterMessage): Int {
+      override fun encodedSize(`value`: OuterMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.outer_number_before)
         size += EmbeddedMessage.ADAPTER.encodedSizeWithTag(2, value.embedded_message)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: OuterMessage): Unit {
+      override fun encode(writer: ProtoWriter, `value`: OuterMessage) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.outer_number_before)
         EmbeddedMessage.ADAPTER.encodeWithTag(writer, 2, value.embedded_message)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: OuterMessage): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: OuterMessage) {
         writer.writeBytes(value.unknownFields)
         EmbeddedMessage.ADAPTER.encodeWithTag(writer, 2, value.embedded_message)
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.outer_number_before)
       }
 
-      public override fun decode(reader: ProtoReader): OuterMessage {
+      override fun decode(reader: ProtoReader): OuterMessage {
         var outer_number_before: Int? = null
         var embedded_message: EmbeddedMessage? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -122,7 +121,7 @@ public class OuterMessage(
         )
       }
 
-      public override fun redact(`value`: OuterMessage): OuterMessage = value.copy(
+      override fun redact(`value`: OuterMessage): OuterMessage = value.copy(
         embedded_message = value.embedded_message?.let(EmbeddedMessage.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

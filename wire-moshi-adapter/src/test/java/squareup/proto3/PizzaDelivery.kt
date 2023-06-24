@@ -26,7 +26,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.jvm.JvmField
@@ -88,10 +87,10 @@ public class PizzaDelivery(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is PizzaDelivery) return false
     if (unknownFields != other.unknownFields) return false
@@ -105,7 +104,7 @@ public class PizzaDelivery(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -121,7 +120,7 @@ public class PizzaDelivery(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     result += """phone_number=${sanitize(phone_number)}"""
     result += """address=${sanitize(address)}"""
@@ -156,7 +155,7 @@ public class PizzaDelivery(
       null, 
       "pizza.proto"
     ) {
-      public override fun encodedSize(`value`: PizzaDelivery): Int {
+      override fun encodedSize(`value`: PizzaDelivery): Int {
         var size = value.unknownFields.size
         if (value.phone_number != "") size += ProtoAdapter.STRING.encodedSizeWithTag(1,
             value.phone_number)
@@ -173,7 +172,7 @@ public class PizzaDelivery(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: PizzaDelivery): Unit {
+      override fun encode(writer: ProtoWriter, `value`: PizzaDelivery) {
         if (value.phone_number != "") ProtoAdapter.STRING.encodeWithTag(writer, 1,
             value.phone_number)
         if (value.address != "") ProtoAdapter.STRING.encodeWithTag(writer, 2, value.address)
@@ -187,7 +186,7 @@ public class PizzaDelivery(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: PizzaDelivery): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: PizzaDelivery) {
         writer.writeBytes(value.unknownFields)
         if (value.ordered_at != null) ProtoAdapter.INSTANT.encodeWithTag(writer, 7,
             value.ordered_at)
@@ -201,7 +200,7 @@ public class PizzaDelivery(
             value.phone_number)
       }
 
-      public override fun decode(reader: ProtoReader): PizzaDelivery {
+      override fun decode(reader: ProtoReader): PizzaDelivery {
         var phone_number: String = ""
         var address: String = ""
         val pizzas = mutableListOf<Pizza>()
@@ -233,7 +232,7 @@ public class PizzaDelivery(
         )
       }
 
-      public override fun redact(`value`: PizzaDelivery): PizzaDelivery = value.copy(
+      override fun redact(`value`: PizzaDelivery): PizzaDelivery = value.copy(
         pizzas = value.pizzas.redactElements(Pizza.ADAPTER),
         promotion = value.promotion?.let(AnyMessage.ADAPTER::redact),
         delivered_within_or_free =

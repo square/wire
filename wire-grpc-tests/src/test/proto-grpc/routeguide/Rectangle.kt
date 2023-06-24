@@ -19,7 +19,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -50,10 +49,10 @@ public class Rectangle(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Rectangle) return false
     if (unknownFields != other.unknownFields) return false
@@ -62,7 +61,7 @@ public class Rectangle(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -73,7 +72,7 @@ public class Rectangle(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (lo != null) result += """lo=$lo"""
     if (hi != null) result += """hi=$hi"""
@@ -96,26 +95,26 @@ public class Rectangle(
       null, 
       "routeguide/RouteGuideProto.proto"
     ) {
-      public override fun encodedSize(`value`: Rectangle): Int {
+      override fun encodedSize(`value`: Rectangle): Int {
         var size = value.unknownFields.size
         size += Point.ADAPTER.encodedSizeWithTag(1, value.lo)
         size += Point.ADAPTER.encodedSizeWithTag(2, value.hi)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: Rectangle): Unit {
+      override fun encode(writer: ProtoWriter, `value`: Rectangle) {
         Point.ADAPTER.encodeWithTag(writer, 1, value.lo)
         Point.ADAPTER.encodeWithTag(writer, 2, value.hi)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: Rectangle): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: Rectangle) {
         writer.writeBytes(value.unknownFields)
         Point.ADAPTER.encodeWithTag(writer, 2, value.hi)
         Point.ADAPTER.encodeWithTag(writer, 1, value.lo)
       }
 
-      public override fun decode(reader: ProtoReader): Rectangle {
+      override fun decode(reader: ProtoReader): Rectangle {
         var lo: Point? = null
         var hi: Point? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -132,7 +131,7 @@ public class Rectangle(
         )
       }
 
-      public override fun redact(`value`: Rectangle): Rectangle = value.copy(
+      override fun redact(`value`: Rectangle): Rectangle = value.copy(
         lo = value.lo?.let(Point.ADAPTER::redact),
         hi = value.hi?.let(Point.ADAPTER::redact),
         unknownFields = ByteString.EMPTY

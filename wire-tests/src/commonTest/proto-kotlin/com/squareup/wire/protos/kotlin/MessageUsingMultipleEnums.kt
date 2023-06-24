@@ -19,7 +19,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -43,10 +42,10 @@ public class MessageUsingMultipleEnums(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageUsingMultipleEnums) return false
     if (unknownFields != other.unknownFields) return false
@@ -55,7 +54,7 @@ public class MessageUsingMultipleEnums(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -66,7 +65,7 @@ public class MessageUsingMultipleEnums(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (a != null) result += """a=$a"""
     if (b != null) result += """b=$b"""
@@ -91,27 +90,26 @@ public class MessageUsingMultipleEnums(
       null, 
       "same_name_enum.proto"
     ) {
-      public override fun encodedSize(`value`: MessageUsingMultipleEnums): Int {
+      override fun encodedSize(`value`: MessageUsingMultipleEnums): Int {
         var size = value.unknownFields.size
         size += MessageWithStatus.Status.ADAPTER.encodedSizeWithTag(1, value.a)
         size += OtherMessageWithStatus.Status.ADAPTER.encodedSizeWithTag(2, value.b)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: MessageUsingMultipleEnums): Unit {
+      override fun encode(writer: ProtoWriter, `value`: MessageUsingMultipleEnums) {
         MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)
         OtherMessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 2, value.b)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: MessageUsingMultipleEnums):
-          Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: MessageUsingMultipleEnums) {
         writer.writeBytes(value.unknownFields)
         OtherMessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 2, value.b)
         MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)
       }
 
-      public override fun decode(reader: ProtoReader): MessageUsingMultipleEnums {
+      override fun decode(reader: ProtoReader): MessageUsingMultipleEnums {
         var a: MessageWithStatus.Status? = null
         var b: OtherMessageWithStatus.Status? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -136,7 +134,7 @@ public class MessageUsingMultipleEnums(
         )
       }
 
-      public override fun redact(`value`: MessageUsingMultipleEnums): MessageUsingMultipleEnums =
+      override fun redact(`value`: MessageUsingMultipleEnums): MessageUsingMultipleEnums =
           value.copy(
         unknownFields = ByteString.EMPTY
       )

@@ -20,7 +20,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -41,10 +40,10 @@ public class NotRedacted(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NotRedacted) return false
     if (unknownFields != other.unknownFields) return false
@@ -53,7 +52,7 @@ public class NotRedacted(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -64,7 +63,7 @@ public class NotRedacted(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (a != null) result += """a=${sanitize(a)}"""
     if (b != null) result += """b=${sanitize(b)}"""
@@ -87,26 +86,26 @@ public class NotRedacted(
       null, 
       "redacted_test.proto"
     ) {
-      public override fun encodedSize(`value`: NotRedacted): Int {
+      override fun encodedSize(`value`: NotRedacted): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.b)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: NotRedacted): Unit {
+      override fun encode(writer: ProtoWriter, `value`: NotRedacted) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: NotRedacted): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: NotRedacted) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b)
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
       }
 
-      public override fun decode(reader: ProtoReader): NotRedacted {
+      override fun decode(reader: ProtoReader): NotRedacted {
         var a: String? = null
         var b: String? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -123,7 +122,7 @@ public class NotRedacted(
         )
       }
 
-      public override fun redact(`value`: NotRedacted): NotRedacted = value.copy(
+      override fun redact(`value`: NotRedacted): NotRedacted = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

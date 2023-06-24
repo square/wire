@@ -19,7 +19,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -35,10 +34,10 @@ public class RedactedCycleA(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedCycleA) return false
     if (unknownFields != other.unknownFields) return false
@@ -46,7 +45,7 @@ public class RedactedCycleA(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -56,7 +55,7 @@ public class RedactedCycleA(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (b != null) result += """b=$b"""
     return result.joinToString(prefix = "RedactedCycleA{", separator = ", ", postfix = "}")
@@ -75,23 +74,23 @@ public class RedactedCycleA(
       null, 
       "redacted_test.proto"
     ) {
-      public override fun encodedSize(`value`: RedactedCycleA): Int {
+      override fun encodedSize(`value`: RedactedCycleA): Int {
         var size = value.unknownFields.size
         size += RedactedCycleB.ADAPTER.encodedSizeWithTag(1, value.b)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: RedactedCycleA): Unit {
+      override fun encode(writer: ProtoWriter, `value`: RedactedCycleA) {
         RedactedCycleB.ADAPTER.encodeWithTag(writer, 1, value.b)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: RedactedCycleA): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: RedactedCycleA) {
         writer.writeBytes(value.unknownFields)
         RedactedCycleB.ADAPTER.encodeWithTag(writer, 1, value.b)
       }
 
-      public override fun decode(reader: ProtoReader): RedactedCycleA {
+      override fun decode(reader: ProtoReader): RedactedCycleA {
         var b: RedactedCycleB? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -105,7 +104,7 @@ public class RedactedCycleA(
         )
       }
 
-      public override fun redact(`value`: RedactedCycleA): RedactedCycleA = value.copy(
+      override fun redact(`value`: RedactedCycleA): RedactedCycleA = value.copy(
         b = value.b?.let(RedactedCycleB.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

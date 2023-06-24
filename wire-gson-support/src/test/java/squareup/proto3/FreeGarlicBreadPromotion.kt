@@ -19,7 +19,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -37,10 +36,10 @@ public class FreeGarlicBreadPromotion(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FreeGarlicBreadPromotion) return false
     if (unknownFields != other.unknownFields) return false
@@ -48,7 +47,7 @@ public class FreeGarlicBreadPromotion(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -58,7 +57,7 @@ public class FreeGarlicBreadPromotion(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     result += """is_extra_cheesey=$is_extra_cheesey"""
     return result.joinToString(prefix = "FreeGarlicBreadPromotion{", separator = ", ", postfix =
@@ -80,27 +79,26 @@ public class FreeGarlicBreadPromotion(
       null, 
       "pizza.proto"
     ) {
-      public override fun encodedSize(`value`: FreeGarlicBreadPromotion): Int {
+      override fun encodedSize(`value`: FreeGarlicBreadPromotion): Int {
         var size = value.unknownFields.size
         if (value.is_extra_cheesey != false) size += ProtoAdapter.BOOL.encodedSizeWithTag(1,
             value.is_extra_cheesey)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: FreeGarlicBreadPromotion): Unit {
+      override fun encode(writer: ProtoWriter, `value`: FreeGarlicBreadPromotion) {
         if (value.is_extra_cheesey != false) ProtoAdapter.BOOL.encodeWithTag(writer, 1,
             value.is_extra_cheesey)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: FreeGarlicBreadPromotion):
-          Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: FreeGarlicBreadPromotion) {
         writer.writeBytes(value.unknownFields)
         if (value.is_extra_cheesey != false) ProtoAdapter.BOOL.encodeWithTag(writer, 1,
             value.is_extra_cheesey)
       }
 
-      public override fun decode(reader: ProtoReader): FreeGarlicBreadPromotion {
+      override fun decode(reader: ProtoReader): FreeGarlicBreadPromotion {
         var is_extra_cheesey: Boolean = false
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -114,8 +112,7 @@ public class FreeGarlicBreadPromotion(
         )
       }
 
-      public override fun redact(`value`: FreeGarlicBreadPromotion): FreeGarlicBreadPromotion =
-          value.copy(
+      override fun redact(`value`: FreeGarlicBreadPromotion): FreeGarlicBreadPromotion = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

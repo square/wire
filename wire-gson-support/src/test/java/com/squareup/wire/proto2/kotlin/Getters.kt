@@ -19,7 +19,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -73,10 +72,10 @@ public class Getters(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Getters) return false
     if (unknownFields != other.unknownFields) return false
@@ -88,7 +87,7 @@ public class Getters(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -102,7 +101,7 @@ public class Getters(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (isa != null) result += """isa=$isa"""
     if (isA != null) result += """isA=$isA"""
@@ -131,7 +130,7 @@ public class Getters(
       null, 
       "getters_kotlin.proto"
     ) {
-      public override fun encodedSize(`value`: Getters): Int {
+      override fun encodedSize(`value`: Getters): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.isa)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.isA)
@@ -141,7 +140,7 @@ public class Getters(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: Getters): Unit {
+      override fun encode(writer: ProtoWriter, `value`: Getters) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.isa)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.isA)
         ProtoAdapter.INT32.encodeWithTag(writer, 3, value.is_a)
@@ -150,7 +149,7 @@ public class Getters(
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: Getters): Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: Getters) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.isb)
         ProtoAdapter.INT32.encodeWithTag(writer, 4, value.is32)
@@ -159,7 +158,7 @@ public class Getters(
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.isa)
       }
 
-      public override fun decode(reader: ProtoReader): Getters {
+      override fun decode(reader: ProtoReader): Getters {
         var isa: Int? = null
         var isA: Int? = null
         var is_a: Int? = null
@@ -185,7 +184,7 @@ public class Getters(
         )
       }
 
-      public override fun redact(`value`: Getters): Getters = value.copy(
+      override fun redact(`value`: Getters): Getters = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

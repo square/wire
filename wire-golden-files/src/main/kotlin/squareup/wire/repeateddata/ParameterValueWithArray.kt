@@ -21,7 +21,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -42,10 +41,10 @@ public class ParameterValueWithArray(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  public override fun newBuilder(): Nothing = throw
+  override fun newBuilder(): Nothing = throw
       AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
-  public override fun equals(other: Any?): Boolean {
+  override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ParameterValueWithArray) return false
     if (unknownFields != other.unknownFields) return false
@@ -53,7 +52,7 @@ public class ParameterValueWithArray(
     return true
   }
 
-  public override fun hashCode(): Int {
+  override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -63,7 +62,7 @@ public class ParameterValueWithArray(
     return result
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     val result = mutableListOf<String>()
     if (data_.isNotEmpty()) result += """data_=$data_"""
     return result.joinToString(prefix = "ParameterValueWithArray{", separator = ", ", postfix = "}")
@@ -83,24 +82,23 @@ public class ParameterValueWithArray(
       null, 
       "squareup/wire/repeated_data.proto"
     ) {
-      public override fun encodedSize(`value`: ParameterValueWithArray): Int {
+      override fun encodedSize(`value`: ParameterValueWithArray): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1, value.data_)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, `value`: ParameterValueWithArray): Unit {
+      override fun encode(writer: ProtoWriter, `value`: ParameterValueWithArray) {
         ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1, value.data_)
         writer.writeBytes(value.unknownFields)
       }
 
-      public override fun encode(writer: ReverseProtoWriter, `value`: ParameterValueWithArray):
-          Unit {
+      override fun encode(writer: ReverseProtoWriter, `value`: ParameterValueWithArray) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1, value.data_)
       }
 
-      public override fun decode(reader: ProtoReader): ParameterValueWithArray {
+      override fun decode(reader: ProtoReader): ParameterValueWithArray {
         var data_: MutableList<Float>? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -123,8 +121,7 @@ public class ParameterValueWithArray(
         )
       }
 
-      public override fun redact(`value`: ParameterValueWithArray): ParameterValueWithArray =
-          value.copy(
+      override fun redact(`value`: ParameterValueWithArray): ParameterValueWithArray = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

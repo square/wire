@@ -11,7 +11,7 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 
 public enum class ForeignEnum(
-  public override val `value`: Int,
+  override val `value`: Int,
 ) : WireEnum {
   BAV(0),
   BAX(1),
@@ -24,7 +24,7 @@ public enum class ForeignEnum(
       PROTO_2, 
       ForeignEnum.BAV
     ) {
-      public override fun fromValue(`value`: Int): ForeignEnum? = ForeignEnum.fromValue(value)
+      override fun fromValue(`value`: Int): ForeignEnum? = ForeignEnum.fromValue(value)
     }
 
     @JvmStatic
