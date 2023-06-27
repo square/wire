@@ -133,7 +133,7 @@ public struct AllTypes {
             storage.opt_string = newValue
         }
     }
-    public var opt_bytes: Data? {
+    public var opt_bytes: Foundation.Data? {
         get {
             storage.opt_bytes
         }
@@ -286,7 +286,7 @@ public struct AllTypes {
             storage.req_string = newValue
         }
     }
-    public var req_bytes: Data {
+    public var req_bytes: Foundation.Data {
         get {
             storage.req_bytes
         }
@@ -439,7 +439,7 @@ public struct AllTypes {
             storage.rep_string = newValue
         }
     }
-    public var rep_bytes: [Data] {
+    public var rep_bytes: [Foundation.Data] {
         get {
             storage.rep_bytes
         }
@@ -718,7 +718,7 @@ public struct AllTypes {
             storage.default_string = newValue
         }
     }
-    public var default_bytes: Data? {
+    public var default_bytes: Foundation.Data? {
         get {
             storage.default_bytes
         }
@@ -1006,7 +1006,7 @@ public struct AllTypes {
             storage.ext_opt_string = newValue
         }
     }
-    public var ext_opt_bytes: Data? {
+    public var ext_opt_bytes: Foundation.Data? {
         get {
             storage.ext_opt_bytes
         }
@@ -1159,7 +1159,7 @@ public struct AllTypes {
             storage.ext_rep_string = newValue
         }
     }
-    public var ext_rep_bytes: [Data] {
+    public var ext_rep_bytes: [Foundation.Data] {
         get {
             storage.ext_rep_bytes
         }
@@ -1584,7 +1584,7 @@ fileprivate struct _AllTypes {
     public var opt_float: Float?
     public var opt_double: Double?
     public var opt_string: String?
-    public var opt_bytes: Data?
+    public var opt_bytes: Foundation.Data?
     public var opt_nested_enum: AllTypes.NestedEnum?
     public var opt_nested_message: AllTypes.NestedMessage?
     public var req_int32: Int32
@@ -1601,7 +1601,7 @@ fileprivate struct _AllTypes {
     public var req_float: Float
     public var req_double: Double
     public var req_string: String
-    public var req_bytes: Data
+    public var req_bytes: Foundation.Data
     public var req_nested_enum: AllTypes.NestedEnum
     public var req_nested_message: AllTypes.NestedMessage
     public var rep_int32: [Int32]
@@ -1618,7 +1618,7 @@ fileprivate struct _AllTypes {
     public var rep_float: [Float]
     public var rep_double: [Double]
     public var rep_string: [String]
-    public var rep_bytes: [Data]
+    public var rep_bytes: [Foundation.Data]
     public var rep_nested_enum: [AllTypes.NestedEnum]
     public var rep_nested_message: [AllTypes.NestedMessage]
     public var pack_int32: [Int32]
@@ -1635,21 +1635,37 @@ fileprivate struct _AllTypes {
     public var pack_float: [Float]
     public var pack_double: [Double]
     public var pack_nested_enum: [AllTypes.NestedEnum]
+    @Defaulted(defaultValue: Swift.Int32.max)
     public var default_int32: Int32?
+    @Defaulted(defaultValue: Swift.UInt32.max)
     public var default_uint32: UInt32?
+    @Defaulted(defaultValue: Swift.Int32.min)
     public var default_sint32: Int32?
+    @Defaulted(defaultValue: Swift.UInt32.max)
     public var default_fixed32: UInt32?
+    @Defaulted(defaultValue: Swift.Int32.min)
     public var default_sfixed32: Int32?
+    @Defaulted(defaultValue: Swift.Int64.max)
     public var default_int64: Int64?
+    @Defaulted(defaultValue: Swift.UInt64.max)
     public var default_uint64: UInt64?
+    @Defaulted(defaultValue: Swift.Int64.min)
     public var default_sint64: Int64?
+    @Defaulted(defaultValue: Swift.UInt64.max)
     public var default_fixed64: UInt64?
+    @Defaulted(defaultValue: Swift.Int64.min)
     public var default_sfixed64: Int64?
+    @Defaulted(defaultValue: true)
     public var default_bool: Bool?
+    @Defaulted(defaultValue: 123.456e7)
     public var default_float: Float?
+    @Defaulted(defaultValue: 1.23456E80)
     public var default_double: Double?
+    @Defaulted(defaultValue: "\"çok\\u0007\\b\\u000c\\n\\r\\t\\u000b\\u0001\\u0001\\u0001\\u000f\\u000f~\\u0001\\u0001\\u0011\\u0001\\u0001\\u0011güzel\"")
     public var default_string: String?
-    public var default_bytes: Data?
+    @Defaulted(defaultValue: Foundation.Data(base64Encoded: "529rBwgMCg0JCwEBAQ8PfgEBEQEBEWf8emVs")!)
+    public var default_bytes: Foundation.Data?
+    @Defaulted(defaultValue: AllTypes.NestedEnum.A)
     public var default_nested_enum: AllTypes.NestedEnum?
     public var map_int32_int32: [Int32 : Int32]
     public var map_string_string: [String : String]
@@ -1681,7 +1697,7 @@ fileprivate struct _AllTypes {
     public var ext_opt_float: Float?
     public var ext_opt_double: Double?
     public var ext_opt_string: String?
-    public var ext_opt_bytes: Data?
+    public var ext_opt_bytes: Foundation.Data?
     public var ext_opt_nested_enum: AllTypes.NestedEnum?
     public var ext_opt_nested_message: AllTypes.NestedMessage?
     public var ext_rep_int32: [Int32]
@@ -1698,7 +1714,7 @@ fileprivate struct _AllTypes {
     public var ext_rep_float: [Float]
     public var ext_rep_double: [Double]
     public var ext_rep_string: [String]
-    public var ext_rep_bytes: [Data]
+    public var ext_rep_bytes: [Foundation.Data]
     public var ext_rep_nested_enum: [AllTypes.NestedEnum]
     public var ext_rep_nested_message: [AllTypes.NestedMessage]
     public var ext_pack_int32: [Int32]
@@ -1715,7 +1731,7 @@ fileprivate struct _AllTypes {
     public var ext_pack_float: [Float]
     public var ext_pack_double: [Double]
     public var ext_pack_nested_enum: [AllTypes.NestedEnum]
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init(
         opt_int32: Int32?,
@@ -1732,7 +1748,7 @@ fileprivate struct _AllTypes {
         opt_float: Float?,
         opt_double: Double?,
         opt_string: String?,
-        opt_bytes: Data?,
+        opt_bytes: Foundation.Data?,
         opt_nested_enum: AllTypes.NestedEnum?,
         opt_nested_message: AllTypes.NestedMessage?,
         req_int32: Int32,
@@ -1749,7 +1765,7 @@ fileprivate struct _AllTypes {
         req_float: Float,
         req_double: Double,
         req_string: String,
-        req_bytes: Data,
+        req_bytes: Foundation.Data,
         req_nested_enum: AllTypes.NestedEnum,
         req_nested_message: AllTypes.NestedMessage,
         rep_int32: [Int32],
@@ -1766,7 +1782,7 @@ fileprivate struct _AllTypes {
         rep_float: [Float],
         rep_double: [Double],
         rep_string: [String],
-        rep_bytes: [Data],
+        rep_bytes: [Foundation.Data],
         rep_nested_enum: [AllTypes.NestedEnum],
         rep_nested_message: [AllTypes.NestedMessage],
         pack_int32: [Int32],
@@ -1797,7 +1813,7 @@ fileprivate struct _AllTypes {
         default_float: Float?,
         default_double: Double?,
         default_string: String?,
-        default_bytes: Data?,
+        default_bytes: Foundation.Data?,
         default_nested_enum: AllTypes.NestedEnum?,
         map_int32_int32: [Int32 : Int32],
         map_string_string: [String : String],
@@ -1829,7 +1845,7 @@ fileprivate struct _AllTypes {
         ext_opt_float: Float?,
         ext_opt_double: Double?,
         ext_opt_string: String?,
-        ext_opt_bytes: Data?,
+        ext_opt_bytes: Foundation.Data?,
         ext_opt_nested_enum: AllTypes.NestedEnum?,
         ext_opt_nested_message: AllTypes.NestedMessage?,
         ext_rep_int32: [Int32],
@@ -1846,7 +1862,7 @@ fileprivate struct _AllTypes {
         ext_rep_float: [Float],
         ext_rep_double: [Double],
         ext_rep_string: [String],
-        ext_rep_bytes: [Data],
+        ext_rep_bytes: [Foundation.Data],
         ext_rep_nested_enum: [AllTypes.NestedEnum],
         ext_rep_nested_message: [AllTypes.NestedMessage],
         ext_pack_int32: [Int32],
@@ -1929,22 +1945,22 @@ fileprivate struct _AllTypes {
         self.pack_float = pack_float
         self.pack_double = pack_double
         self.pack_nested_enum = pack_nested_enum
-        self.default_int32 = default_int32
-        self.default_uint32 = default_uint32
-        self.default_sint32 = default_sint32
-        self.default_fixed32 = default_fixed32
-        self.default_sfixed32 = default_sfixed32
-        self.default_int64 = default_int64
-        self.default_uint64 = default_uint64
-        self.default_sint64 = default_sint64
-        self.default_fixed64 = default_fixed64
-        self.default_sfixed64 = default_sfixed64
-        self.default_bool = default_bool
-        self.default_float = default_float
-        self.default_double = default_double
-        self.default_string = default_string
-        self.default_bytes = default_bytes
-        self.default_nested_enum = default_nested_enum
+        _default_int32.wrappedValue = default_int32
+        _default_uint32.wrappedValue = default_uint32
+        _default_sint32.wrappedValue = default_sint32
+        _default_fixed32.wrappedValue = default_fixed32
+        _default_sfixed32.wrappedValue = default_sfixed32
+        _default_int64.wrappedValue = default_int64
+        _default_uint64.wrappedValue = default_uint64
+        _default_sint64.wrappedValue = default_sint64
+        _default_fixed64.wrappedValue = default_fixed64
+        _default_sfixed64.wrappedValue = default_sfixed64
+        _default_bool.wrappedValue = default_bool
+        _default_float.wrappedValue = default_float
+        _default_double.wrappedValue = default_double
+        _default_string.wrappedValue = default_string
+        _default_bytes.wrappedValue = default_bytes
+        _default_nested_enum.wrappedValue = default_nested_enum
         self.map_int32_int32 = map_int32_int32
         self.map_string_string = map_string_string
         self.map_string_message = map_string_message
@@ -2484,22 +2500,22 @@ extension _AllTypes : Proto2Codable {
         self.pack_float = pack_float
         self.pack_double = pack_double
         self.pack_nested_enum = pack_nested_enum
-        self.default_int32 = default_int32
-        self.default_uint32 = default_uint32
-        self.default_sint32 = default_sint32
-        self.default_fixed32 = default_fixed32
-        self.default_sfixed32 = default_sfixed32
-        self.default_int64 = default_int64
-        self.default_uint64 = default_uint64
-        self.default_sint64 = default_sint64
-        self.default_fixed64 = default_fixed64
-        self.default_sfixed64 = default_sfixed64
-        self.default_bool = default_bool
-        self.default_float = default_float
-        self.default_double = default_double
-        self.default_string = default_string
-        self.default_bytes = default_bytes
-        self.default_nested_enum = default_nested_enum
+        _default_int32.wrappedValue = default_int32
+        _default_uint32.wrappedValue = default_uint32
+        _default_sint32.wrappedValue = default_sint32
+        _default_fixed32.wrappedValue = default_fixed32
+        _default_sfixed32.wrappedValue = default_sfixed32
+        _default_int64.wrappedValue = default_int64
+        _default_uint64.wrappedValue = default_uint64
+        _default_sint64.wrappedValue = default_sint64
+        _default_fixed64.wrappedValue = default_fixed64
+        _default_sfixed64.wrappedValue = default_sfixed64
+        _default_bool.wrappedValue = default_bool
+        _default_float.wrappedValue = default_float
+        _default_double.wrappedValue = default_double
+        _default_string.wrappedValue = default_string
+        _default_bytes.wrappedValue = default_bytes
+        _default_nested_enum.wrappedValue = default_nested_enum
         self.map_int32_int32 = map_int32_int32
         self.map_string_string = map_string_string
         self.map_string_message = map_string_message
@@ -2803,22 +2819,22 @@ extension _AllTypes : Codable {
         self.pack_float = try container.decodeProtoArray(Swift.Float.self, firstOfKeys: "packFloat", "pack_float")
         self.pack_double = try container.decodeProtoArray(Swift.Double.self, firstOfKeys: "packDouble", "pack_double")
         self.pack_nested_enum = try container.decodeProtoArray(AllTypes.NestedEnum.self, firstOfKeys: "packNestedEnum", "pack_nested_enum")
-        self.default_int32 = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "defaultInt32", "default_int32")
-        self.default_uint32 = try container.decodeIfPresent(Swift.UInt32.self, firstOfKeys: "defaultUint32", "default_uint32")
-        self.default_sint32 = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "defaultSint32", "default_sint32")
-        self.default_fixed32 = try container.decodeIfPresent(Swift.UInt32.self, firstOfKeys: "defaultFixed32", "default_fixed32")
-        self.default_sfixed32 = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "defaultSfixed32", "default_sfixed32")
-        self.default_int64 = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "defaultInt64", "default_int64")
-        self.default_uint64 = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, firstOfKeys: "defaultUint64", "default_uint64")
-        self.default_sint64 = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "defaultSint64", "default_sint64")
-        self.default_fixed64 = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, firstOfKeys: "defaultFixed64", "default_fixed64")
-        self.default_sfixed64 = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "defaultSfixed64", "default_sfixed64")
-        self.default_bool = try container.decodeIfPresent(Swift.Bool.self, firstOfKeys: "defaultBool", "default_bool")
-        self.default_float = try container.decodeIfPresent(Swift.Float.self, firstOfKeys: "defaultFloat", "default_float")
-        self.default_double = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "defaultDouble", "default_double")
-        self.default_string = try container.decodeIfPresent(Swift.String.self, firstOfKeys: "defaultString", "default_string")
-        self.default_bytes = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, firstOfKeys: "defaultBytes", "default_bytes")
-        self.default_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, firstOfKeys: "defaultNestedEnum", "default_nested_enum")
+        _default_int32.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "defaultInt32", "default_int32")
+        _default_uint32.wrappedValue = try container.decodeIfPresent(Swift.UInt32.self, firstOfKeys: "defaultUint32", "default_uint32")
+        _default_sint32.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "defaultSint32", "default_sint32")
+        _default_fixed32.wrappedValue = try container.decodeIfPresent(Swift.UInt32.self, firstOfKeys: "defaultFixed32", "default_fixed32")
+        _default_sfixed32.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "defaultSfixed32", "default_sfixed32")
+        _default_int64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "defaultInt64", "default_int64")
+        _default_uint64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, firstOfKeys: "defaultUint64", "default_uint64")
+        _default_sint64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "defaultSint64", "default_sint64")
+        _default_fixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, firstOfKeys: "defaultFixed64", "default_fixed64")
+        _default_sfixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "defaultSfixed64", "default_sfixed64")
+        _default_bool.wrappedValue = try container.decodeIfPresent(Swift.Bool.self, firstOfKeys: "defaultBool", "default_bool")
+        _default_float.wrappedValue = try container.decodeIfPresent(Swift.Float.self, firstOfKeys: "defaultFloat", "default_float")
+        _default_double.wrappedValue = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "defaultDouble", "default_double")
+        _default_string.wrappedValue = try container.decodeIfPresent(Swift.String.self, firstOfKeys: "defaultString", "default_string")
+        _default_bytes.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, firstOfKeys: "defaultBytes", "default_bytes")
+        _default_nested_enum.wrappedValue = try container.decodeIfPresent(AllTypes.NestedEnum.self, firstOfKeys: "defaultNestedEnum", "default_nested_enum")
         self.map_int32_int32 = try container.decodeProtoMap([Swift.Int32 : Swift.Int32].self, firstOfKeys: "mapInt32Int32", "map_int32_int32")
         self.map_string_string = try container.decodeProtoMap([Swift.String : Swift.String].self, firstOfKeys: "mapStringString", "map_string_string")
         self.map_string_message = try container.decodeProtoMap([Swift.String : AllTypes.NestedMessage].self, firstOfKeys: "mapStringMessage", "map_string_message")

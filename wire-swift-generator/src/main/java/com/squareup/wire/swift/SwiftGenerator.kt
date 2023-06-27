@@ -13,6 +13,8 @@ import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Type
 import com.squareup.wire.schema.internal.DagChecker
+import com.squareup.wire.schema.internal.optionValueToInt
+import com.squareup.wire.schema.internal.optionValueToLong
 import io.outfoxx.swiftpoet.ARRAY
 import io.outfoxx.swiftpoet.AttributeSpec
 import io.outfoxx.swiftpoet.BOOL
@@ -50,6 +52,7 @@ import io.outfoxx.swiftpoet.UINT64
 import io.outfoxx.swiftpoet.joinToCode
 import io.outfoxx.swiftpoet.parameterizedBy
 import java.util.Locale.US
+import okio.ByteString.Companion.encode
 
 class SwiftGenerator private constructor(
   val schema: Schema,
@@ -67,6 +70,7 @@ class SwiftGenerator private constructor(
   private val indirect = DeclaredTypeName.typeName("Wire.Indirect")
   private val redactable = DeclaredTypeName.typeName("Wire.Redactable")
   private val redactedKey = DeclaredTypeName.typeName("Wire.RedactedKey")
+  private val defaulted = DeclaredTypeName.typeName("Wire.Defaulted")
 
   private val stringLiteralCodingKeys = DeclaredTypeName.typeName("Wire.StringLiteralCodingKeys")
 
@@ -593,7 +597,11 @@ class SwiftGenerator private constructor(
                 CodeBlock.of("%N", field.name)
               }
             }
-            addStatement("self.%N = %L", field.name, initializer)
+            addStatement(
+              if (field.default != null) "_%N.wrappedValue = %L" else { "self.%N = %L" },
+              field.name,
+              initializer,
+            )
           }
           type.oneOfs.forEach { oneOf ->
             addStatement("self.%1N = %1N", oneOf.name)
@@ -756,8 +764,9 @@ class SwiftGenerator private constructor(
                     .map { CodeBlock.of("%S", it) }
                     .joinToCode()
 
+                  val prefix = if (field.default != null) { "_%1N.wrappedValue" } else { "self.%1N" }
                   addStatement(
-                    "self.%1N = try container.$decode($typeArg%2T.self, $forKeys: $keys)",
+                    "$prefix = try container.$decode($typeArg%2T.self, $forKeys: $keys)",
                     field.name,
                     typeName
                   )
@@ -944,7 +953,10 @@ class SwiftGenerator private constructor(
         .addParameters(type, oneOfEnumNames, includeDefaults)
         .apply {
           type.fields.forEach { field ->
-            addStatement("self.%1N = %1N", field.name)
+            addStatement(
+              if (field.default != null) "_%1N.wrappedValue = %1N" else { "self.%1N = %1N" },
+              field.name,
+            )
           }
           type.oneOfs.forEach { oneOf ->
             addStatement("self.%1N = %1N", oneOf.name)
@@ -970,6 +982,13 @@ class SwiftGenerator private constructor(
       if (isIndirect(type, field)) {
         property.addAttribute(AttributeSpec.builder(indirect).build())
       }
+      val default = field.default
+      if (default != null) {
+        val typeName = type.typeName
+        val fieldName = field.name
+        val defaultValue = defaultFieldInitializer(field.type!!, default)
+        property.addAttribute(AttributeSpec.builder(defaulted).addArgument("defaultValue: $defaultValue").build())
+      }
 
       addProperty(property.build())
     }
@@ -993,6 +1012,76 @@ class SwiftGenerator private constructor(
         .initializer(".init()")
         .build()
     )
+  }
+
+  private fun defaultFieldInitializer(
+    protoType: ProtoType,
+    defaultValue: Any,
+  ): CodeBlock {
+    val typeName = protoType.typeName
+    return when {
+      typeName == BOOL -> CodeBlock.of("%L", defaultValue)
+      typeName == INT -> defaultValue.toIntFieldInitializer()
+      typeName == INT32 -> defaultValue.toInt32FieldInitializer()
+      typeName == INT64 -> defaultValue.toInt64FieldInitializer()
+      typeName == UINT32 -> defaultValue.toUInt32FieldInitializer()
+      typeName == UINT64 -> defaultValue.toUInt64FieldInitializer()
+      typeName == FLOAT -> defaultValue.toFloatFieldInitializer()
+      typeName == DOUBLE -> defaultValue.toDoubleFieldInitializer()
+      typeName == STRING -> CodeBlock.of("%S", stringLiteralWithQuotes2(defaultValue.toString()))
+      typeName == DATA -> CodeBlock.of(
+        "Foundation.Data(base64Encoded: %S)!",
+        defaultValue.toString().encode(charset = Charsets.ISO_8859_1).base64(),
+      )
+      protoType.isEnum -> CodeBlock.of("%T.%L", typeName, defaultValue)
+      else -> throw IllegalStateException("$protoType is not an allowed scalar type")
+    }
+  }
+
+  private fun Any.toIntFieldInitializer(): CodeBlock = when (val int = optionValueToInt(this)) {
+    Int.MIN_VALUE -> CodeBlock.of("%T.min", INT)
+    Int.MAX_VALUE -> CodeBlock.of("%T.max", INT)
+    else -> CodeBlock.of("%L", int)
+  }
+
+  private fun Any.toInt32FieldInitializer(): CodeBlock = when (val int = optionValueToInt(this)) {
+    Int.MIN_VALUE -> CodeBlock.of("%T.min", INT32)
+    Int.MAX_VALUE -> CodeBlock.of("%T.max", INT32)
+    else -> CodeBlock.of("%L", int)
+  }
+
+  private fun Any.toInt64FieldInitializer(): CodeBlock = when (val long = optionValueToLong(this)) {
+    Long.MIN_VALUE -> CodeBlock.of("%T.min", INT64)
+    Long.MAX_VALUE -> CodeBlock.of("%T.max", INT64)
+    else -> CodeBlock.of("%L", long)
+  }
+
+  private fun Any.toUInt32FieldInitializer(): CodeBlock = when (val int = optionValueToInt(this)) {
+    0 -> CodeBlock.of("%T.min", UINT32)
+    -1 -> CodeBlock.of("%T.max", UINT32)
+    else -> CodeBlock.of("%L", int)
+  }
+
+  private fun Any.toUInt64FieldInitializer(): CodeBlock = when (val long = optionValueToLong(this)) {
+    0L -> CodeBlock.of("%T.min", UINT64)
+    -1L -> CodeBlock.of("%T.max", UINT64)
+    else -> CodeBlock.of("%L", long)
+  }
+
+  private fun Any.toFloatFieldInitializer(): CodeBlock = when (this) {
+    "inf" -> CodeBlock.of("Float.infinity")
+    "-inf" -> CodeBlock.of("-Float.infinity")
+    "nan" -> CodeBlock.of("Float.nan")
+    "-nan" -> CodeBlock.of("Float.nan * -1")
+    else -> CodeBlock.of("%L", this.toString())
+  }
+
+  private fun Any.toDoubleFieldInitializer(): CodeBlock = when (this) {
+    "inf" -> CodeBlock.of("Double.infinity")
+    "-inf" -> CodeBlock.of("-Double.infinity")
+    "nan" -> CodeBlock.of("Double.nan")
+    "-nan" -> CodeBlock.of("Double.nan * -1")
+    else -> CodeBlock.of("%L", this.toString().toDouble())
   }
 
   private fun TypeSpec.Builder.generateMessageStoragePropertyDelegates(
@@ -1400,4 +1489,49 @@ class SwiftGenerator private constructor(
       return indirections
     }
   }
+
+  //region Temporary SwiftPoet bug fix see: https://github.com/outfoxx/swiftpoet/pull/86
+
+  private val Char.isIsoControl: Boolean
+    get() {
+      return this in '\u0000'..'\u001F' || this in '\u007F'..'\u009F'
+    }
+
+  // see https://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6
+  private fun characterLiteralWithoutSingleQuotes(c: Char) = when {
+    c == '\b' -> "\\b" // \u0008: backspace (BS)
+    c == '\t' -> "\\t" // \u0009: horizontal tab (HT)
+    c == '\n' -> "\\n" // \u000a: linefeed (LF)
+    c == '\r' -> "\\r" // \u000d: carriage return (CR)
+    c == '\"' -> "\"" // \u0022: double quote (")
+    c == '\'' -> "\\'" // \u0027: single quote (')
+    c == '\\' -> "\\\\" // \u005c: backslash (\)
+    c.isIsoControl -> String.format("\\u%04x", c.code)
+    else -> Character.toString(c)
+  }
+
+  private fun stringLiteralWithQuotes2(value: String): String {
+    val result = StringBuilder(value.length + 32)
+    result.append('"')
+    for (i in 0 until value.length) {
+      val c = value[i]
+      // Trivial case: single quote must not be escaped.
+      if (c == '\'') {
+        result.append("'")
+        continue
+      }
+      // Trivial case: double quotes must be escaped.
+      if (c == '\"') {
+        result.append("\\\"")
+        continue
+      }
+      // Default case: just let character literal do its work.
+      result.append(characterLiteralWithoutSingleQuotes(c))
+      // Need to append indent after linefeed?
+    }
+    result.append('"')
+    return result.toString()
+  }
+
+  //endregion
 }
