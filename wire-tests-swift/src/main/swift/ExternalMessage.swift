@@ -5,11 +5,12 @@ import Wire
 
 public struct ExternalMessage {
 
+    @Defaulted(defaultValue: 20)
     public var f: Float?
     public var unknownFields: Foundation.Data = .init()
 
     public init(f: Float? = nil) {
-        self.f = f
+        _f.wrappedValue = f
     }
 
 }
@@ -51,7 +52,7 @@ extension ExternalMessage : Proto2Codable {
         }
         self.unknownFields = try reader.endMessage(token: token)
 
-        self.f = f
+        _f.wrappedValue = f
     }
 
     public func encode(to writer: Wire.ProtoWriter) throws {
@@ -66,7 +67,7 @@ extension ExternalMessage : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.f = try container.decodeIfPresent(Swift.Float.self, forKey: "f")
+        _f.wrappedValue = try container.decodeIfPresent(Swift.Float.self, forKey: "f")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {

@@ -72,12 +72,13 @@ public struct Person {
         /**
          * The type of phone stored here.
          */
+        @Defaulted(defaultValue: Person.PhoneType.HOME)
         public var type: Person.PhoneType?
         public var unknownFields: Foundation.Data = .init()
 
         public init(number: String, type: Person.PhoneType? = nil) {
             self.number = number
-            self.type = type
+            _type.wrappedValue = type
         }
 
     }
@@ -129,7 +130,7 @@ extension Person.PhoneNumber : Proto2Codable {
         self.unknownFields = try reader.endMessage(token: token)
 
         self.number = try Person.PhoneNumber.checkIfMissing(number, "number")
-        self.type = type
+        _type.wrappedValue = type
     }
 
     public func encode(to writer: Wire.ProtoWriter) throws {
@@ -146,7 +147,7 @@ extension Person.PhoneNumber : Codable {
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         self.number = try container.decode(Swift.String.self, forKey: "number")
-        self.type = try container.decodeIfPresent(Person.PhoneType.self, forKey: "type")
+        _type.wrappedValue = try container.decodeIfPresent(Person.PhoneType.self, forKey: "type")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {
