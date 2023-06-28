@@ -7,7 +7,7 @@ public struct OuterMessage {
 
     public var outer_number_before: Int32?
     public var embedded_message: EmbeddedMessage?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Wire.UnknownFields = .init()
 
     public init(outer_number_before: Int32? = nil, embedded_message: EmbeddedMessage? = nil) {
         self.outer_number_before = outer_number_before

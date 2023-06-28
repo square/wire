@@ -7,7 +7,7 @@ public struct EmbeddedMessage {
 
     public var inner_repeated_number: [Int32]
     public var inner_number_after: Int32?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Wire.UnknownFields = .init()
 
     public init(inner_repeated_number: [Int32] = [], inner_number_after: Int32? = nil) {
         self.inner_repeated_number = inner_repeated_number

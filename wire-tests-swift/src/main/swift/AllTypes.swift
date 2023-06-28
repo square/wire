@@ -254,7 +254,7 @@ public struct AllTypes {
     public struct NestedMessage {
 
         public var a: Int32?
-        public var unknownFields: Data = .init()
+        public var unknownFields: Wire.UnknownFields = .init()
 
         public init(a: Int32? = nil) {
             self.a = a
@@ -497,7 +497,7 @@ extension AllTypes {
         public var ext_pack_float: [Swift.Float]
         public var ext_pack_double: [Swift.Double]
         public var ext_pack_nested_enum: [AllTypes.NestedEnum]
-        public var unknownFields: Foundation.Data = .init()
+        public var unknownFields: Wire.UnknownFields = .init()
 
         public init(
             opt_int32: Swift.Int32?,

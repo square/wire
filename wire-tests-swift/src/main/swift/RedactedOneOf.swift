@@ -6,7 +6,7 @@ import Wire
 public struct RedactedOneOf {
 
     public var a: A?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Wire.UnknownFields = .init()
 
     public init(a: A? = nil) {
         self.a = a

@@ -7,7 +7,7 @@ public struct Form {
 
     public var choice: Choice?
     public var decision: Decision?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Wire.UnknownFields = .init()
 
     public init(choice: Choice? = nil, decision: Decision? = nil) {
         self.choice = choice
@@ -77,7 +77,7 @@ public struct Form {
 
     public struct ButtonElement {
 
-        public var unknownFields: Data = .init()
+        public var unknownFields: Wire.UnknownFields = .init()
 
         public init() {
         }
@@ -86,7 +86,7 @@ public struct Form {
 
     public struct LocalImageElement {
 
-        public var unknownFields: Data = .init()
+        public var unknownFields: Wire.UnknownFields = .init()
 
         public init() {
         }
@@ -95,7 +95,7 @@ public struct Form {
 
     public struct RemoteImageElement {
 
-        public var unknownFields: Data = .init()
+        public var unknownFields: Wire.UnknownFields = .init()
 
         public init() {
         }
@@ -104,7 +104,7 @@ public struct Form {
 
     public struct MoneyElement {
 
-        public var unknownFields: Data = .init()
+        public var unknownFields: Wire.UnknownFields = .init()
 
         public init() {
         }
@@ -113,7 +113,7 @@ public struct Form {
 
     public struct SpacerElement {
 
-        public var unknownFields: Data = .init()
+        public var unknownFields: Wire.UnknownFields = .init()
 
         public init() {
         }
@@ -123,7 +123,7 @@ public struct Form {
     public struct TextElement {
 
         public var text: String?
-        public var unknownFields: Data = .init()
+        public var unknownFields: Wire.UnknownFields = .init()
 
         public init(text: String? = nil) {
             self.text = text
@@ -133,7 +133,7 @@ public struct Form {
 
     public struct CustomizedCardElement {
 
-        public var unknownFields: Data = .init()
+        public var unknownFields: Wire.UnknownFields = .init()
 
         public init() {
         }
@@ -142,7 +142,7 @@ public struct Form {
 
     public struct AddressElement {
 
-        public var unknownFields: Data = .init()
+        public var unknownFields: Wire.UnknownFields = .init()
 
         public init() {
         }
@@ -151,7 +151,7 @@ public struct Form {
 
     public struct TextInputElement {
 
-        public var unknownFields: Data = .init()
+        public var unknownFields: Wire.UnknownFields = .init()
 
         public init() {
         }
@@ -160,7 +160,7 @@ public struct Form {
 
     public struct OptionPickerElement {
 
-        public var unknownFields: Data = .init()
+        public var unknownFields: Wire.UnknownFields = .init()
 
         public init() {
         }
@@ -169,7 +169,7 @@ public struct Form {
 
     public struct DetailRowElement {
 
-        public var unknownFields: Data = .init()
+        public var unknownFields: Wire.UnknownFields = .init()
 
         public init() {
         }
@@ -178,7 +178,7 @@ public struct Form {
 
     public struct CurrencyConversionFlagsElement {
 
-        public var unknownFields: Data = .init()
+        public var unknownFields: Wire.UnknownFields = .init()
 
         public init() {
         }

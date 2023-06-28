@@ -9,7 +9,7 @@ public struct Percents {
      * e.g. "No limits, free to send and just 2.75% to receive".
      */
     public var text: String?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Wire.UnknownFields = .init()
 
     public init(text: String? = nil) {
         self.text = text

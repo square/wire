@@ -5,7 +5,7 @@ import Wire
 
 public struct MessageWithOptions {
 
-    public var unknownFields: Data = .init()
+    public var unknownFields: Wire.UnknownFields = .init()
 
     public init() {
     }

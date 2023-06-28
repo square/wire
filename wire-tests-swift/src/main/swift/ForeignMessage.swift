@@ -6,7 +6,7 @@ import Wire
 public struct ForeignMessage {
 
     public var i: Int32?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Wire.UnknownFields = .init()
 
     public init(i: Int32? = nil) {
         self.i = i

@@ -6,7 +6,7 @@ import Wire
 public struct OptionalEnumUser {
 
     public var optional_enum: OptionalEnumUser.OptionalEnum?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Wire.UnknownFields = .init()
 
     public init(optional_enum: OptionalEnumUser.OptionalEnum? = nil) {
         self.optional_enum = optional_enum

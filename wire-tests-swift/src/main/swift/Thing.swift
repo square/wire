@@ -6,7 +6,7 @@ import Wire
 public struct Thing {
 
     public var name: String?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Wire.UnknownFields = .init()
 
     public init(name: String? = nil) {
         self.name = name

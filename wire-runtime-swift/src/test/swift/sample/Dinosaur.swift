@@ -16,7 +16,7 @@ public struct Dinosaur {
     public var length_meters: Double?
     public var mass_kilograms: Double?
     public var period: Period?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Wire.UnknownFields = .init()
 
     public init(
         name: String? = nil,

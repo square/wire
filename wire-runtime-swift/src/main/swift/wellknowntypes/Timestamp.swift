@@ -72,7 +72,7 @@ public struct Timestamp {
      * inclusive.
      */
     public var nanos: Int32
-    public var unknownFields: Data = .init()
+    public var unknownFields: Wire.UnknownFields = .init()
 
     public init(seconds: Int64, nanos: Int32) {
         self.seconds = seconds

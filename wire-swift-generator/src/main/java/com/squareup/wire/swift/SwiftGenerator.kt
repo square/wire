@@ -82,6 +82,8 @@ class SwiftGenerator private constructor(
   private val encoder = DeclaredTypeName.typeName("Swift.Encoder")
   private val writableKeyPath = DeclaredTypeName.typeName("Swift.WritableKeyPath")
 
+  private val unknownFields = DeclaredTypeName.typeName("Wire.UnknownFields", true)
+
   private val deprecated = AttributeSpec.builder("available").addArguments("*", "deprecated").build()
 
   private val ProtoType.typeName
@@ -1007,7 +1009,7 @@ class SwiftGenerator private constructor(
     }
 
     addProperty(
-      PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
+      PropertySpec.varBuilder("unknownFields", unknownFields, PUBLIC)
         .initializer(".init()")
         .build()
     )

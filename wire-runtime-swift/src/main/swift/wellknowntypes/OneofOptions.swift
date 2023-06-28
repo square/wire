@@ -4,7 +4,7 @@ import Foundation
 
 public struct OneofOptions {
 
-    public var unknownFields: Data = .init()
+    public var unknownFields: Wire.UnknownFields = .init()
 
     public init() {
     }

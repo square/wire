@@ -13,7 +13,7 @@ public struct VersionTwo {
     public var v2_rs: [String]
     public var obj: NestedVersionTwo?
     public var en: EnumVersionTwo?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Wire.UnknownFields = .init()
 
     public init(
         i: Int32? = nil,

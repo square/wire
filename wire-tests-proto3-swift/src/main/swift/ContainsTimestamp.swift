@@ -6,7 +6,7 @@ import Wire
 public struct ContainsTimestamp {
 
     public var timestamp: Timestamp?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Wire.UnknownFields = .init()
 
     public init(timestamp: Timestamp? = nil) {
         self.timestamp = timestamp
