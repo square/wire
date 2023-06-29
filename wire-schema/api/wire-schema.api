@@ -815,6 +815,11 @@ public final class com/squareup/wire/schema/SchemaHandler$Context {
 
 public abstract interface class com/squareup/wire/schema/SchemaHandler$Factory : java/io/Serializable {
 	public abstract fun create ()Lcom/squareup/wire/schema/SchemaHandler;
+	public abstract fun create (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;)Lcom/squareup/wire/schema/SchemaHandler;
+}
+
+public final class com/squareup/wire/schema/SchemaHandler$Factory$DefaultImpls {
+	public static fun create (Lcom/squareup/wire/schema/SchemaHandler$Factory;Ljava/util/List;Ljava/util/List;ZLjava/lang/String;)Lcom/squareup/wire/schema/SchemaHandler;
 }
 
 public final class com/squareup/wire/schema/SchemaHandler$Module {
