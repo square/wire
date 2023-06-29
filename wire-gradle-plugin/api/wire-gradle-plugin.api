@@ -3,11 +3,13 @@ public class com/squareup/wire/gradle/CustomOutput : com/squareup/wire/gradle/Wi
 	public final fun getExcludes ()Ljava/util/List;
 	public final fun getExclusive ()Z
 	public final fun getIncludes ()Ljava/util/List;
+	public final fun getOptions ()Ljava/util/Map;
 	public final fun getSchemaHandlerFactory ()Lcom/squareup/wire/schema/SchemaHandler$Factory;
 	public final fun getSchemaHandlerFactoryClass ()Ljava/lang/String;
 	public final fun setExcludes (Ljava/util/List;)V
 	public final fun setExclusive (Z)V
 	public final fun setIncludes (Ljava/util/List;)V
+	public final fun setOptions (Ljava/util/Map;)V
 	public final fun setSchemaHandlerFactory (Lcom/squareup/wire/schema/SchemaHandler$Factory;)V
 	public final fun setSchemaHandlerFactoryClass (Ljava/lang/String;)V
 	public fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/CustomTarget;
