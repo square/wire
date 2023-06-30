@@ -112,7 +112,7 @@ import okio.Path.Companion.toPath
  * Instead of switching everything over at once you can use multiple targets to switch over
  * incrementally. Targets consume their types; subsequent targets get whatever types are left over.
  */
-data class WireRun(
+class WireRun(
   /**
    * Source `.proto` files for this task to generate from.
    */
