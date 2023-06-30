@@ -184,7 +184,7 @@ class WireRun(
    */
   val permitPackageCycles: Boolean = false,
 
-  val visitors: List<Visitor> = listOf(),
+  val eventListeners: List<EventListener> = listOf(),
 ) {
   data class Module(
     val dependencies: Set<String> = emptySet(),
@@ -213,7 +213,7 @@ class WireRun(
   }
 
   internal fun execute(fs: FileSystem, logger: WireLogger, schemaLoader: SchemaLoader) {
-    visitors.forEach(Visitor::start)
+    eventListeners.forEach { it.runStart(wireRun = this) }
 
     checkForModuleCycles()
 
@@ -221,12 +221,12 @@ class WireRun(
     schemaLoader.initRoots(sourcePath, protoPath)
 
     // Validate the schema and resolve references
-    visitors.forEach(Visitor::loadSchemaStart)
+    eventListeners.forEach(EventListener::loadSchemaStart)
     val fullSchema = schemaLoader.loadSchema()
-    visitors.forEach { it.loadSchemaEnd(fullSchema) }
+    eventListeners.forEach { it.loadSchemaSuccess(fullSchema) }
 
     // Refactor the schema.
-    val schema = refactorSchema(fullSchema, logger, visitors)
+    val schema = refactorSchema(fullSchema, logger, eventListeners)
 
     val targetsExclusiveLast = targets.sortedBy { it.exclusive }
     val sourcePathPaths = (schemaLoader.sourcePathFiles.map { it.location.path } + moves.map { it.targetPath }).toSet()
@@ -249,7 +249,7 @@ class WireRun(
       mapOf(null to Partition(schema))
     }
 
-    visitors.forEach(Visitor::schemaHandlersStart)
+    eventListeners.forEach(EventListener::schemaHandlersStart)
     for ((moduleName, partition) in partitions) {
       val claimedDefinitions = ClaimedDefinitions().apply { claim(ProtoType.ANY) }
 
@@ -280,19 +280,23 @@ class WireRun(
           profileLoader = schemaLoader,
         )
 
-        visitors.forEach {
-          it.schemaHandlerStart(handler::class.qualifiedName!!, targetToEmittingRules.getValue(target))
+        eventListeners.forEach {
+          it.schemaHandlerStart(handler, targetToEmittingRules.getValue(target))
         }
         handler.handle(partition.schema, context)
-        visitors.forEach {
+        eventListeners.forEach {
           // TODO(Benoit) Pass the definitions claimed by this target?
-          it.schemaHandlerEnd(handler::class.qualifiedName!!, targetToEmittingRules.getValue(target))
+          it.schemaHandlerEnd(handler, targetToEmittingRules.getValue(target))
         }
       }
     }
-    visitors.forEach(Visitor::schemaHandlersEnd)
+    eventListeners.forEach(EventListener::schemaHandlersEnd)
 
-    errorCollector.throwIfNonEmpty()
+    val errors = errorCollector.errors
+    if (errors.isNotEmpty()) {
+      eventListeners.forEach { it.runFailed(errorCollector.errors) }
+      throw SchemaException(errors)
+    }
 
     for (emittingRules in targetToEmittingRules.values) {
       if (emittingRules.unusedIncludes().isNotEmpty()) {
@@ -304,12 +308,11 @@ class WireRun(
       }
     }
 
-    visitors.forEach(Visitor::validate)
-    visitors.forEach(Visitor::end)
+    eventListeners.forEach { it.runSuccess(wireRun = this) }
   }
 
   /** Returns a transformed schema with unwanted elements removed and moves applied. */
-  private fun refactorSchema(schema: Schema, logger: WireLogger, visitors: List<Visitor>): Schema {
+  private fun refactorSchema(schema: Schema, logger: WireLogger, eventListeners: List<EventListener>): Schema {
     if (treeShakingRoots == listOf("*") &&
       treeShakingRubbish.isEmpty() &&
       sinceVersion == null &&
@@ -327,9 +330,9 @@ class WireRun(
       .only(onlyVersion)
       .build()
 
-    visitors.forEach { it.treeShakeStart(schema, pruningRules) }
+    eventListeners.forEach { it.treeShakeStart(schema, pruningRules) }
     val prunedSchema = schema.prune(pruningRules)
-    visitors.forEach { it.treeShakeEnd(prunedSchema, pruningRules) }
+    eventListeners.forEach { it.treeShakeEnd(prunedSchema, pruningRules) }
 
     if (pruningRules.unusedRoots().isNotEmpty()) {
       logger.unusedRoots(pruningRules.unusedRoots())
@@ -338,9 +341,9 @@ class WireRun(
       logger.unusedPrunes(pruningRules.unusedPrunes())
     }
 
-    visitors.forEach { it.moveTypesStart(prunedSchema, moves) }
+    eventListeners.forEach { it.moveTypesStart(prunedSchema, moves) }
     val movedSchema = TypeMover(prunedSchema, moves).move()
-    visitors.forEach { it.moveTypesEnd(movedSchema, moves) }
+    eventListeners.forEach { it.moveTypesEnd(movedSchema, moves) }
     return movedSchema
   }
 }
