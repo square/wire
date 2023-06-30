@@ -20,16 +20,17 @@ package com.squareup.wire.schema
  * where they occurred within the schema.
  */
 class ErrorCollector {
-  private val errors: MutableList<String>
+  private val errorsBuilder: MutableList<String>
+  val errors: List<String> get() = errorsBuilder.toList()
   private val contextStack: List<Any>
 
   constructor() {
-    this.errors = mutableListOf()
+    this.errorsBuilder = mutableListOf()
     this.contextStack = listOf()
   }
 
   private constructor(enclosing: ErrorCollector, contextStack: List<Any>) {
-    this.errors = enclosing.errors
+    this.errorsBuilder = enclosing.errorsBuilder
     this.contextStack = contextStack
   }
 
@@ -70,12 +71,12 @@ class ErrorCollector {
         }
       }
     }
-    errors += error.toString()
+    errorsBuilder += error.toString()
   }
 
   fun throwIfNonEmpty() {
-    if (errors.isNotEmpty()) {
-      throw SchemaException(errors)
+    if (errorsBuilder.isNotEmpty()) {
+      throw SchemaException(errorsBuilder)
     }
   }
 }

@@ -230,10 +230,11 @@ class SchemaEncoderTest {
         .addMessageType(
           DescriptorProto.newBuilder()
             .setName("TestMessage")
-            .addEnumType(EnumDescriptorProto.newBuilder()
-              .setName("Nested")
-              .addValue(0, EnumValueDescriptorProto.newBuilder().setName("NESTED_UNDEFINED").setNumber(0))
-              .addValue(1, EnumValueDescriptorProto.newBuilder().setName("NESTED_DEFINED").setNumber(1))
+            .addEnumType(
+              EnumDescriptorProto.newBuilder()
+                .setName("Nested")
+                .addValue(0, EnumValueDescriptorProto.newBuilder().setName("NESTED_UNDEFINED").setNumber(0))
+                .addValue(1, EnumValueDescriptorProto.newBuilder().setName("NESTED_DEFINED").setNumber(1))
             )
             .build()
         )
