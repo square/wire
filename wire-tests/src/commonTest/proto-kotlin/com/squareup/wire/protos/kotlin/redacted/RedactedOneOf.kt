@@ -28,6 +28,7 @@ public class RedactedOneOf(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     oneofName = "a",
+    schemaIndex = 0,
   )
   public val b: Int? = null,
   @field:WireField(
@@ -35,6 +36,7 @@ public class RedactedOneOf(
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     redacted = true,
     oneofName = "a",
+    schemaIndex = 1,
   )
   public val c: String? = null,
   unknownFields: ByteString = ByteString.EMPTY,

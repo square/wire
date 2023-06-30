@@ -28,6 +28,7 @@ public class BuyOneGetOnePromotion(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY,
+    schemaIndex = 0,
   )
   public val coupon: String = "",
   unknownFields: ByteString = ByteString.EMPTY,

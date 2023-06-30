@@ -30,6 +30,7 @@ public class UsesAny(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
+    schemaIndex = 0,
   )
   public val just_one: AnyMessage? = null,
   many_anys: List<AnyMessage> = emptyList(),
@@ -39,6 +40,7 @@ public class UsesAny(
     tag = 2,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
     label = WireField.Label.REPEATED,
+    schemaIndex = 1,
   )
   public val many_anys: List<AnyMessage> = immutableCopyOf("many_anys", many_anys)
 

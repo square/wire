@@ -26,6 +26,7 @@ public class OneBytesField(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
+    schemaIndex = 0,
   )
   public val opt_bytes: ByteString? = null,
   unknownFields: ByteString = ByteString.EMPTY,

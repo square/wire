@@ -26,6 +26,7 @@ public class EmbeddedMessage(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 1,
   )
   @JvmField
   public val inner_number_after: Int? = null,
@@ -35,6 +36,7 @@ public class EmbeddedMessage(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.PACKED,
+    schemaIndex = 0,
   )
   @JvmField
   public val inner_repeated_number: List<Int> = immutableCopyOf("inner_repeated_number",

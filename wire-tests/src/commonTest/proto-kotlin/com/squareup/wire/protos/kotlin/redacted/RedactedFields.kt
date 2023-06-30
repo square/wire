@@ -28,16 +28,19 @@ public class RedactedFields(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     redacted = true,
+    schemaIndex = 0,
   )
   public val a: String? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 1,
   )
   public val b: String? = null,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 2,
   )
   public val c: String? = null,
   /**
@@ -46,6 +49,7 @@ public class RedactedFields(
   @field:WireField(
     tag = 10,
     adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedExtension#ADAPTER",
+    schemaIndex = 3,
   )
   public val extension: RedactedExtension? = null,
   unknownFields: ByteString = ByteString.EMPTY,

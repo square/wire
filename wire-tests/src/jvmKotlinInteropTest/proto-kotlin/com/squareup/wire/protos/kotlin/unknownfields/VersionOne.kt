@@ -22,18 +22,21 @@ public class VersionOne(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 0,
   )
   @JvmField
   public val i: Int? = null,
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.protos.kotlin.unknownfields.NestedVersionOne#ADAPTER",
+    schemaIndex = 1,
   )
   @JvmField
   public val obj: NestedVersionOne? = null,
   @field:WireField(
     tag = 8,
     adapter = "com.squareup.wire.protos.kotlin.unknownfields.EnumVersionOne#ADAPTER",
+    schemaIndex = 2,
   )
   @JvmField
   public val en: EnumVersionOne? = null,

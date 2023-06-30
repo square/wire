@@ -35,6 +35,7 @@ public class RedactedRepeated(
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
     redacted = true,
+    schemaIndex = 0,
   )
   public val a: List<String> = immutableCopyOf("a", a)
 
@@ -45,6 +46,7 @@ public class RedactedRepeated(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedFields#ADAPTER",
     label = WireField.Label.REPEATED,
+    schemaIndex = 1,
   )
   public val b: List<RedactedFields> = immutableCopyOf("b", b)
 

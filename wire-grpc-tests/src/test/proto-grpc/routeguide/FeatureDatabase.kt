@@ -36,6 +36,7 @@ public class FeatureDatabase(
     tag = 1,
     adapter = "routeguide.Feature#ADAPTER",
     label = WireField.Label.REPEATED,
+    schemaIndex = 0,
   )
   public val feature: List<Feature> = immutableCopyOf("feature", feature)
 

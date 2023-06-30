@@ -160,648 +160,563 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   @WireField(
       tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      schemaIndex = 0
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer opt_int32;
 
   @WireField(
       tag = 2,
-      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-      schemaIndex = 1
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32"
   )
   public final Integer opt_uint32;
 
   @WireField(
       tag = 3,
-      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-      schemaIndex = 2
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32"
   )
   public final Integer opt_sint32;
 
   @WireField(
       tag = 4,
-      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-      schemaIndex = 3
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
   )
   public final Integer opt_fixed32;
 
   @WireField(
       tag = 5,
-      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-      schemaIndex = 4
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
   )
   public final Integer opt_sfixed32;
 
   @WireField(
       tag = 6,
-      adapter = "com.squareup.wire.ProtoAdapter#INT64",
-      schemaIndex = 5
+      adapter = "com.squareup.wire.ProtoAdapter#INT64"
   )
   public final Long opt_int64;
 
   @WireField(
       tag = 7,
-      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-      schemaIndex = 6
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
   public final Long opt_uint64;
 
   @WireField(
       tag = 8,
-      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-      schemaIndex = 7
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64"
   )
   public final Long opt_sint64;
 
   @WireField(
       tag = 9,
-      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-      schemaIndex = 8
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
   )
   public final Long opt_fixed64;
 
   @WireField(
       tag = 10,
-      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-      schemaIndex = 9
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
   )
   public final Long opt_sfixed64;
 
   @WireField(
       tag = 11,
-      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-      schemaIndex = 10
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public final Boolean opt_bool;
 
   @WireField(
       tag = 12,
-      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-      schemaIndex = 11
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   public final Float opt_float;
 
   @WireField(
       tag = 13,
-      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-      schemaIndex = 12
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   public final Double opt_double;
 
   @WireField(
       tag = 14,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      schemaIndex = 13
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String opt_string;
 
   @WireField(
       tag = 15,
-      adapter = "com.squareup.wire.ProtoAdapter#BYTES",
-      schemaIndex = 14
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
   )
   public final ByteString opt_bytes;
 
   @WireField(
       tag = 16,
-      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedEnum#ADAPTER",
-      schemaIndex = 15
+      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedEnum#ADAPTER"
   )
   public final NestedEnum opt_nested_enum;
 
   @WireField(
       tag = 17,
-      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedMessage#ADAPTER",
-      schemaIndex = 16
+      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedMessage#ADAPTER"
   )
   public final NestedMessage opt_nested_message;
 
   @WireField(
       tag = 101,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 17
+      label = WireField.Label.REQUIRED
   )
   public final Integer req_int32;
 
   @WireField(
       tag = 102,
       adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 18
+      label = WireField.Label.REQUIRED
   )
   public final Integer req_uint32;
 
   @WireField(
       tag = 103,
       adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 19
+      label = WireField.Label.REQUIRED
   )
   public final Integer req_sint32;
 
   @WireField(
       tag = 104,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 20
+      label = WireField.Label.REQUIRED
   )
   public final Integer req_fixed32;
 
   @WireField(
       tag = 105,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 21
+      label = WireField.Label.REQUIRED
   )
   public final Integer req_sfixed32;
 
   @WireField(
       tag = 106,
       adapter = "com.squareup.wire.ProtoAdapter#INT64",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 22
+      label = WireField.Label.REQUIRED
   )
   public final Long req_int64;
 
   @WireField(
       tag = 107,
       adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 23
+      label = WireField.Label.REQUIRED
   )
   public final Long req_uint64;
 
   @WireField(
       tag = 108,
       adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 24
+      label = WireField.Label.REQUIRED
   )
   public final Long req_sint64;
 
   @WireField(
       tag = 109,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 25
+      label = WireField.Label.REQUIRED
   )
   public final Long req_fixed64;
 
   @WireField(
       tag = 110,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 26
+      label = WireField.Label.REQUIRED
   )
   public final Long req_sfixed64;
 
   @WireField(
       tag = 111,
       adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 27
+      label = WireField.Label.REQUIRED
   )
   public final Boolean req_bool;
 
   @WireField(
       tag = 112,
       adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 28
+      label = WireField.Label.REQUIRED
   )
   public final Float req_float;
 
   @WireField(
       tag = 113,
       adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 29
+      label = WireField.Label.REQUIRED
   )
   public final Double req_double;
 
   @WireField(
       tag = 114,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 30
+      label = WireField.Label.REQUIRED
   )
   public final String req_string;
 
   @WireField(
       tag = 115,
       adapter = "com.squareup.wire.ProtoAdapter#BYTES",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 31
+      label = WireField.Label.REQUIRED
   )
   public final ByteString req_bytes;
 
   @WireField(
       tag = 116,
       adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedEnum#ADAPTER",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 32
+      label = WireField.Label.REQUIRED
   )
   public final NestedEnum req_nested_enum;
 
   @WireField(
       tag = 117,
       adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedMessage#ADAPTER",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 33
+      label = WireField.Label.REQUIRED
   )
   public final NestedMessage req_nested_message;
 
   @WireField(
       tag = 201,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 34
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_int32;
 
   @WireField(
       tag = 202,
       adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 35
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_uint32;
 
   @WireField(
       tag = 203,
       adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 36
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_sint32;
 
   @WireField(
       tag = 204,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 37
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_fixed32;
 
   @WireField(
       tag = 205,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 38
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_sfixed32;
 
   @WireField(
       tag = 206,
       adapter = "com.squareup.wire.ProtoAdapter#INT64",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 39
+      label = WireField.Label.REPEATED
   )
   public final List<Long> rep_int64;
 
   @WireField(
       tag = 207,
       adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 40
+      label = WireField.Label.REPEATED
   )
   public final List<Long> rep_uint64;
 
   @WireField(
       tag = 208,
       adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 41
+      label = WireField.Label.REPEATED
   )
   public final List<Long> rep_sint64;
 
   @WireField(
       tag = 209,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 42
+      label = WireField.Label.REPEATED
   )
   public final List<Long> rep_fixed64;
 
   @WireField(
       tag = 210,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 43
+      label = WireField.Label.REPEATED
   )
   public final List<Long> rep_sfixed64;
 
   @WireField(
       tag = 211,
       adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 44
+      label = WireField.Label.REPEATED
   )
   public final List<Boolean> rep_bool;
 
   @WireField(
       tag = 212,
       adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 45
+      label = WireField.Label.REPEATED
   )
   public final List<Float> rep_float;
 
   @WireField(
       tag = 213,
       adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 46
+      label = WireField.Label.REPEATED
   )
   public final List<Double> rep_double;
 
   @WireField(
       tag = 214,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 47
+      label = WireField.Label.REPEATED
   )
   public final List<String> rep_string;
 
   @WireField(
       tag = 215,
       adapter = "com.squareup.wire.ProtoAdapter#BYTES",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 48
+      label = WireField.Label.REPEATED
   )
   public final List<ByteString> rep_bytes;
 
   @WireField(
       tag = 216,
       adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedEnum#ADAPTER",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 49
+      label = WireField.Label.REPEATED
   )
   public final List<NestedEnum> rep_nested_enum;
 
   @WireField(
       tag = 217,
       adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedMessage#ADAPTER",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 50
+      label = WireField.Label.REPEATED
   )
   public final List<NestedMessage> rep_nested_message;
 
   @WireField(
       tag = 301,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.PACKED,
-      schemaIndex = 51
+      label = WireField.Label.PACKED
   )
   public final List<Integer> pack_int32;
 
   @WireField(
       tag = 302,
       adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-      label = WireField.Label.PACKED,
-      schemaIndex = 52
+      label = WireField.Label.PACKED
   )
   public final List<Integer> pack_uint32;
 
   @WireField(
       tag = 303,
       adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-      label = WireField.Label.PACKED,
-      schemaIndex = 53
+      label = WireField.Label.PACKED
   )
   public final List<Integer> pack_sint32;
 
   @WireField(
       tag = 304,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-      label = WireField.Label.PACKED,
-      schemaIndex = 54
+      label = WireField.Label.PACKED
   )
   public final List<Integer> pack_fixed32;
 
   @WireField(
       tag = 305,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-      label = WireField.Label.PACKED,
-      schemaIndex = 55
+      label = WireField.Label.PACKED
   )
   public final List<Integer> pack_sfixed32;
 
   @WireField(
       tag = 306,
       adapter = "com.squareup.wire.ProtoAdapter#INT64",
-      label = WireField.Label.PACKED,
-      schemaIndex = 56
+      label = WireField.Label.PACKED
   )
   public final List<Long> pack_int64;
 
   @WireField(
       tag = 307,
       adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-      label = WireField.Label.PACKED,
-      schemaIndex = 57
+      label = WireField.Label.PACKED
   )
   public final List<Long> pack_uint64;
 
   @WireField(
       tag = 308,
       adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-      label = WireField.Label.PACKED,
-      schemaIndex = 58
+      label = WireField.Label.PACKED
   )
   public final List<Long> pack_sint64;
 
   @WireField(
       tag = 309,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-      label = WireField.Label.PACKED,
-      schemaIndex = 59
+      label = WireField.Label.PACKED
   )
   public final List<Long> pack_fixed64;
 
   @WireField(
       tag = 310,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-      label = WireField.Label.PACKED,
-      schemaIndex = 60
+      label = WireField.Label.PACKED
   )
   public final List<Long> pack_sfixed64;
 
   @WireField(
       tag = 311,
       adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-      label = WireField.Label.PACKED,
-      schemaIndex = 61
+      label = WireField.Label.PACKED
   )
   public final List<Boolean> pack_bool;
 
   @WireField(
       tag = 312,
       adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-      label = WireField.Label.PACKED,
-      schemaIndex = 62
+      label = WireField.Label.PACKED
   )
   public final List<Float> pack_float;
 
   @WireField(
       tag = 313,
       adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-      label = WireField.Label.PACKED,
-      schemaIndex = 63
+      label = WireField.Label.PACKED
   )
   public final List<Double> pack_double;
 
   @WireField(
       tag = 316,
       adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedEnum#ADAPTER",
-      label = WireField.Label.PACKED,
-      schemaIndex = 64
+      label = WireField.Label.PACKED
   )
   public final List<NestedEnum> pack_nested_enum;
 
   @WireField(
       tag = 401,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      schemaIndex = 65
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer default_int32;
 
   @WireField(
       tag = 402,
-      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-      schemaIndex = 66
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32"
   )
   public final Integer default_uint32;
 
   @WireField(
       tag = 403,
-      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-      schemaIndex = 67
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32"
   )
   public final Integer default_sint32;
 
   @WireField(
       tag = 404,
-      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-      schemaIndex = 68
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
   )
   public final Integer default_fixed32;
 
   @WireField(
       tag = 405,
-      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-      schemaIndex = 69
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
   )
   public final Integer default_sfixed32;
 
   @WireField(
       tag = 406,
-      adapter = "com.squareup.wire.ProtoAdapter#INT64",
-      schemaIndex = 70
+      adapter = "com.squareup.wire.ProtoAdapter#INT64"
   )
   public final Long default_int64;
 
   @WireField(
       tag = 407,
-      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-      schemaIndex = 71
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
   public final Long default_uint64;
 
   @WireField(
       tag = 408,
-      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-      schemaIndex = 72
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64"
   )
   public final Long default_sint64;
 
   @WireField(
       tag = 409,
-      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-      schemaIndex = 73
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
   )
   public final Long default_fixed64;
 
   @WireField(
       tag = 410,
-      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-      schemaIndex = 74
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
   )
   public final Long default_sfixed64;
 
   @WireField(
       tag = 411,
-      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-      schemaIndex = 75
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public final Boolean default_bool;
 
   @WireField(
       tag = 412,
-      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-      schemaIndex = 76
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   public final Float default_float;
 
   @WireField(
       tag = 413,
-      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-      schemaIndex = 77
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   public final Double default_double;
 
   @WireField(
       tag = 414,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      schemaIndex = 78
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String default_string;
 
   @WireField(
       tag = 415,
-      adapter = "com.squareup.wire.ProtoAdapter#BYTES",
-      schemaIndex = 79
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
   )
   public final ByteString default_bytes;
 
   @WireField(
       tag = 416,
-      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedEnum#ADAPTER",
-      schemaIndex = 80
+      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedEnum#ADAPTER"
   )
   public final NestedEnum default_nested_enum;
 
   @WireField(
       tag = 501,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-      adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      schemaIndex = 81
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Map<Integer, Integer> map_int32_int32;
 
   @WireField(
       tag = 502,
       keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-      adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      schemaIndex = 82
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final Map<String, String> map_string_string;
 
   @WireField(
       tag = 503,
       keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedMessage#ADAPTER",
-      schemaIndex = 83
+      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedMessage#ADAPTER"
   )
   public final Map<String, NestedMessage> map_string_message;
 
   @WireField(
       tag = 504,
       keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedEnum#ADAPTER",
-      schemaIndex = 84
+      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedEnum#ADAPTER"
   )
   public final Map<String, NestedEnum> map_string_enum;
 
@@ -810,8 +725,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1001,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      schemaIndex = 85
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer ext_opt_int32;
 
@@ -820,8 +734,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1002,
-      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-      schemaIndex = 86
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32"
   )
   public final Integer ext_opt_uint32;
 
@@ -830,8 +743,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1003,
-      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-      schemaIndex = 87
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32"
   )
   public final Integer ext_opt_sint32;
 
@@ -840,8 +752,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1004,
-      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-      schemaIndex = 88
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
   )
   public final Integer ext_opt_fixed32;
 
@@ -850,8 +761,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1005,
-      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-      schemaIndex = 89
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
   )
   public final Integer ext_opt_sfixed32;
 
@@ -860,8 +770,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1006,
-      adapter = "com.squareup.wire.ProtoAdapter#INT64",
-      schemaIndex = 90
+      adapter = "com.squareup.wire.ProtoAdapter#INT64"
   )
   public final Long ext_opt_int64;
 
@@ -870,8 +779,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1007,
-      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-      schemaIndex = 91
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
   public final Long ext_opt_uint64;
 
@@ -880,8 +788,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1008,
-      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-      schemaIndex = 92
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64"
   )
   public final Long ext_opt_sint64;
 
@@ -890,8 +797,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1009,
-      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-      schemaIndex = 93
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
   )
   public final Long ext_opt_fixed64;
 
@@ -900,8 +806,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1010,
-      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-      schemaIndex = 94
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
   )
   public final Long ext_opt_sfixed64;
 
@@ -910,8 +815,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1011,
-      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-      schemaIndex = 95
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public final Boolean ext_opt_bool;
 
@@ -920,8 +824,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1012,
-      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-      schemaIndex = 96
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   public final Float ext_opt_float;
 
@@ -930,8 +833,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1013,
-      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-      schemaIndex = 97
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   public final Double ext_opt_double;
 
@@ -940,8 +842,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1014,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      schemaIndex = 98
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String ext_opt_string;
 
@@ -950,8 +851,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1015,
-      adapter = "com.squareup.wire.ProtoAdapter#BYTES",
-      schemaIndex = 99
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
   )
   public final ByteString ext_opt_bytes;
 
@@ -960,8 +860,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1016,
-      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedEnum#ADAPTER",
-      schemaIndex = 100
+      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedEnum#ADAPTER"
   )
   public final NestedEnum ext_opt_nested_enum;
 
@@ -970,8 +869,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 1017,
-      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedMessage#ADAPTER",
-      schemaIndex = 101
+      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedMessage#ADAPTER"
   )
   public final NestedMessage ext_opt_nested_message;
 
@@ -981,8 +879,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1101,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 102
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> ext_rep_int32;
 
@@ -992,8 +889,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1102,
       adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 103
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> ext_rep_uint32;
 
@@ -1003,8 +899,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1103,
       adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 104
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> ext_rep_sint32;
 
@@ -1014,8 +909,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1104,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 105
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> ext_rep_fixed32;
 
@@ -1025,8 +919,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1105,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 106
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> ext_rep_sfixed32;
 
@@ -1036,8 +929,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1106,
       adapter = "com.squareup.wire.ProtoAdapter#INT64",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 107
+      label = WireField.Label.REPEATED
   )
   public final List<Long> ext_rep_int64;
 
@@ -1047,8 +939,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1107,
       adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 108
+      label = WireField.Label.REPEATED
   )
   public final List<Long> ext_rep_uint64;
 
@@ -1058,8 +949,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1108,
       adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 109
+      label = WireField.Label.REPEATED
   )
   public final List<Long> ext_rep_sint64;
 
@@ -1069,8 +959,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1109,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 110
+      label = WireField.Label.REPEATED
   )
   public final List<Long> ext_rep_fixed64;
 
@@ -1080,8 +969,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1110,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 111
+      label = WireField.Label.REPEATED
   )
   public final List<Long> ext_rep_sfixed64;
 
@@ -1091,8 +979,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1111,
       adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 112
+      label = WireField.Label.REPEATED
   )
   public final List<Boolean> ext_rep_bool;
 
@@ -1102,8 +989,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1112,
       adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 113
+      label = WireField.Label.REPEATED
   )
   public final List<Float> ext_rep_float;
 
@@ -1113,8 +999,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1113,
       adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 114
+      label = WireField.Label.REPEATED
   )
   public final List<Double> ext_rep_double;
 
@@ -1124,8 +1009,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1114,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 115
+      label = WireField.Label.REPEATED
   )
   public final List<String> ext_rep_string;
 
@@ -1135,8 +1019,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1115,
       adapter = "com.squareup.wire.ProtoAdapter#BYTES",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 116
+      label = WireField.Label.REPEATED
   )
   public final List<ByteString> ext_rep_bytes;
 
@@ -1146,8 +1029,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1116,
       adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedEnum#ADAPTER",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 117
+      label = WireField.Label.REPEATED
   )
   public final List<NestedEnum> ext_rep_nested_enum;
 
@@ -1157,8 +1039,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1117,
       adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedMessage#ADAPTER",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 118
+      label = WireField.Label.REPEATED
   )
   public final List<NestedMessage> ext_rep_nested_message;
 
@@ -1168,8 +1049,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1201,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.PACKED,
-      schemaIndex = 119
+      label = WireField.Label.PACKED
   )
   public final List<Integer> ext_pack_int32;
 
@@ -1179,8 +1059,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1202,
       adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-      label = WireField.Label.PACKED,
-      schemaIndex = 120
+      label = WireField.Label.PACKED
   )
   public final List<Integer> ext_pack_uint32;
 
@@ -1190,8 +1069,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1203,
       adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-      label = WireField.Label.PACKED,
-      schemaIndex = 121
+      label = WireField.Label.PACKED
   )
   public final List<Integer> ext_pack_sint32;
 
@@ -1201,8 +1079,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1204,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-      label = WireField.Label.PACKED,
-      schemaIndex = 122
+      label = WireField.Label.PACKED
   )
   public final List<Integer> ext_pack_fixed32;
 
@@ -1212,8 +1089,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1205,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-      label = WireField.Label.PACKED,
-      schemaIndex = 123
+      label = WireField.Label.PACKED
   )
   public final List<Integer> ext_pack_sfixed32;
 
@@ -1223,8 +1099,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1206,
       adapter = "com.squareup.wire.ProtoAdapter#INT64",
-      label = WireField.Label.PACKED,
-      schemaIndex = 124
+      label = WireField.Label.PACKED
   )
   public final List<Long> ext_pack_int64;
 
@@ -1234,8 +1109,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1207,
       adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-      label = WireField.Label.PACKED,
-      schemaIndex = 125
+      label = WireField.Label.PACKED
   )
   public final List<Long> ext_pack_uint64;
 
@@ -1245,8 +1119,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1208,
       adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-      label = WireField.Label.PACKED,
-      schemaIndex = 126
+      label = WireField.Label.PACKED
   )
   public final List<Long> ext_pack_sint64;
 
@@ -1256,8 +1129,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1209,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-      label = WireField.Label.PACKED,
-      schemaIndex = 127
+      label = WireField.Label.PACKED
   )
   public final List<Long> ext_pack_fixed64;
 
@@ -1267,8 +1139,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1210,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-      label = WireField.Label.PACKED,
-      schemaIndex = 128
+      label = WireField.Label.PACKED
   )
   public final List<Long> ext_pack_sfixed64;
 
@@ -1278,8 +1149,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1211,
       adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-      label = WireField.Label.PACKED,
-      schemaIndex = 129
+      label = WireField.Label.PACKED
   )
   public final List<Boolean> ext_pack_bool;
 
@@ -1289,8 +1159,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1212,
       adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-      label = WireField.Label.PACKED,
-      schemaIndex = 130
+      label = WireField.Label.PACKED
   )
   public final List<Float> ext_pack_float;
 
@@ -1300,8 +1169,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1213,
       adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-      label = WireField.Label.PACKED,
-      schemaIndex = 131
+      label = WireField.Label.PACKED
   )
   public final List<Double> ext_pack_double;
 
@@ -1311,32 +1179,28 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 1216,
       adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedEnum#ADAPTER",
-      label = WireField.Label.PACKED,
-      schemaIndex = 132
+      label = WireField.Label.PACKED
   )
   public final List<NestedEnum> ext_pack_nested_enum;
 
   @WireField(
       tag = 601,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      oneofName = "choice",
-      schemaIndex = 133
+      oneofName = "choice"
   )
   public final String oneof_string;
 
   @WireField(
       tag = 602,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      oneofName = "choice",
-      schemaIndex = 134
+      oneofName = "choice"
   )
   public final Integer oneof_int32;
 
   @WireField(
       tag = 603,
       adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedMessage#ADAPTER",
-      oneofName = "choice",
-      schemaIndex = 135
+      oneofName = "choice"
   )
   public final NestedMessage oneof_nested_message;
 

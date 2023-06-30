@@ -29,11 +29,13 @@ public class MessageUsingMultipleEnums(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.MessageWithStatus${'$'}Status#ADAPTER",
+    schemaIndex = 0,
   )
   public val a: MessageWithStatus.Status? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.OtherMessageWithStatus${'$'}Status#ADAPTER",
+    schemaIndex = 1,
   )
   public val b: OtherMessageWithStatus.Status? = null,
   unknownFields: ByteString = ByteString.EMPTY,

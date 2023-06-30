@@ -26,30 +26,35 @@ public class VersionTwo(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 0,
   )
   @JvmField
   public val i: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 1,
   )
   @JvmField
   public val v2_i: Int? = null,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 2,
   )
   @JvmField
   public val v2_s: String? = null,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+    schemaIndex = 3,
   )
   @JvmField
   public val v2_f32: Int? = null,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+    schemaIndex = 4,
   )
   @JvmField
   public val v2_f64: Long? = null,
@@ -57,12 +62,14 @@ public class VersionTwo(
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.protos.kotlin.unknownfields.NestedVersionTwo#ADAPTER",
+    schemaIndex = 6,
   )
   @JvmField
   public val obj: NestedVersionTwo? = null,
   @field:WireField(
     tag = 8,
     adapter = "com.squareup.wire.protos.kotlin.unknownfields.EnumVersionTwo#ADAPTER",
+    schemaIndex = 7,
   )
   @JvmField
   public val en: EnumVersionTwo? = null,
@@ -72,6 +79,7 @@ public class VersionTwo(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
+    schemaIndex = 5,
   )
   @JvmField
   public val v2_rs: List<String> = immutableCopyOf("v2_rs", v2_rs)

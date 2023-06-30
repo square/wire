@@ -35,6 +35,7 @@ public class OneOfMessage(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     oneofName = "choice",
+    schemaIndex = 0,
   )
   public val foo: Int? = null,
   /**
@@ -44,6 +45,7 @@ public class OneOfMessage(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     oneofName = "choice",
+    schemaIndex = 1,
   )
   public val bar: String? = null,
   /**
@@ -53,6 +55,7 @@ public class OneOfMessage(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     oneofName = "choice",
+    schemaIndex = 2,
   )
   public val baz: String? = null,
   unknownFields: ByteString = ByteString.EMPTY,

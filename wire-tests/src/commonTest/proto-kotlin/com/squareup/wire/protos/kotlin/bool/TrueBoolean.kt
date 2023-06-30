@@ -26,6 +26,7 @@ public class TrueBoolean(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+    schemaIndex = 0,
   )
   public val isTrue: Boolean? = null,
   unknownFields: ByteString = ByteString.EMPTY,

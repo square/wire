@@ -22,6 +22,7 @@ public class NestedVersionOne(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 0,
   )
   @JvmField
   public val i: Int? = null,

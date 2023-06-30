@@ -22,6 +22,7 @@ public class SomeMessage internal constructor(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 0,
   )
   @JvmField
   public val opt_int32: Int? = null,
@@ -128,6 +129,7 @@ public class SomeMessage internal constructor(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      schemaIndex = 0,
     )
     @JvmField
     public val a: Int? = null,

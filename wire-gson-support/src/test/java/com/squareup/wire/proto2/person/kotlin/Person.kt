@@ -43,6 +43,7 @@ public class Person(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REQUIRED,
+    schemaIndex = 0,
   )
   public val name: String,
   /**
@@ -52,6 +53,7 @@ public class Person(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REQUIRED,
+    schemaIndex = 1,
   )
   public val id: Int,
   /**
@@ -60,6 +62,7 @@ public class Person(
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 2,
   )
   public val email: String? = null,
   phone: List<PhoneNumber> = emptyList(),
@@ -72,6 +75,7 @@ public class Person(
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+    schemaIndex = 6,
   )
   public val is_canadian: Boolean? = null,
   unknownFields: ByteString = ByteString.EMPTY,
@@ -83,6 +87,7 @@ public class Person(
     tag = 4,
     adapter = "com.squareup.wire.proto2.person.kotlin.Person${'$'}PhoneNumber#ADAPTER",
     label = WireField.Label.REPEATED,
+    schemaIndex = 3,
   )
   public val phone: List<PhoneNumber> = immutableCopyOf("phone", phone)
 
@@ -90,6 +95,7 @@ public class Person(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.PACKED,
+    schemaIndex = 4,
   )
   public val favorite_numbers: List<Int> = immutableCopyOf("favorite_numbers", favorite_numbers)
 
@@ -97,6 +103,7 @@ public class Person(
     tag = 6,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 5,
   )
   public val area_numbers: Map<Int, String> = immutableCopyOf("area_numbers", area_numbers)
 
@@ -300,6 +307,7 @@ public class Person(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.REQUIRED,
+      schemaIndex = 0,
     )
     public val number: String,
     /**
@@ -308,6 +316,7 @@ public class Person(
     @field:WireField(
       tag = 2,
       adapter = "com.squareup.wire.proto2.person.kotlin.Person${'$'}PhoneType#ADAPTER",
+      schemaIndex = 1,
     )
     public val type: PhoneType? = null,
     unknownFields: ByteString = ByteString.EMPTY,

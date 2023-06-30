@@ -30,6 +30,7 @@ public class Repeated(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.repeated.Thing#ADAPTER",
     label = WireField.Label.REPEATED,
+    schemaIndex = 0,
   )
   @JvmField
   public val things: List<Thing> = immutableCopyOf("things", things)

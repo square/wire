@@ -22,6 +22,7 @@ public class ForeignMessage(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 0,
   )
   @JvmField
   public val i: Int? = null,
@@ -31,6 +32,7 @@ public class ForeignMessage(
   @field:WireField(
     tag = 100,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 1,
   )
   @JvmField
   public val j: Int? = null,

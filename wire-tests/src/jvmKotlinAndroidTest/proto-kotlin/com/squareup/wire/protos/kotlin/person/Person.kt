@@ -257,6 +257,7 @@ public class Person(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.REQUIRED,
+      schemaIndex = 0,
     )
     public val number: String,
     /**
@@ -265,6 +266,7 @@ public class Person(
     @field:WireField(
       tag = 2,
       adapter = "com.squareup.wire.protos.kotlin.person.Person${'$'}PhoneType#ADAPTER",
+      schemaIndex = 1,
     )
     public val type: PhoneType? = null,
     unknownFields: ByteString = ByteString.EMPTY,

@@ -29,6 +29,7 @@ public class OptionalEnumUser(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.OptionalEnumUser${'$'}OptionalEnum#ADAPTER",
+    schemaIndex = 0,
   )
   public val optional_enum: OptionalEnum? = null,
   unknownFields: ByteString = ByteString.EMPTY,

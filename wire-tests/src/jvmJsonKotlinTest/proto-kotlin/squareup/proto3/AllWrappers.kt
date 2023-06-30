@@ -31,6 +31,7 @@ public class AllWrappers(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE_VALUE",
     jsonName = "doubleValue",
+    schemaIndex = 0,
   )
   @JvmField
   public val double_value: Double? = null,
@@ -38,6 +39,7 @@ public class AllWrappers(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT_VALUE",
     jsonName = "floatValue",
+    schemaIndex = 1,
   )
   @JvmField
   public val float_value: Float? = null,
@@ -45,6 +47,7 @@ public class AllWrappers(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#INT64_VALUE",
     jsonName = "int64Value",
+    schemaIndex = 2,
   )
   @JvmField
   public val int64_value: Long? = null,
@@ -52,6 +55,7 @@ public class AllWrappers(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64_VALUE",
     jsonName = "uint64Value",
+    schemaIndex = 3,
   )
   @JvmField
   public val uint64_value: Long? = null,
@@ -59,6 +63,7 @@ public class AllWrappers(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#INT32_VALUE",
     jsonName = "int32Value",
+    schemaIndex = 4,
   )
   @JvmField
   public val int32_value: Int? = null,
@@ -66,6 +71,7 @@ public class AllWrappers(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32_VALUE",
     jsonName = "uint32Value",
+    schemaIndex = 5,
   )
   @JvmField
   public val uint32_value: Int? = null,
@@ -73,6 +79,7 @@ public class AllWrappers(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL_VALUE",
     jsonName = "boolValue",
+    schemaIndex = 6,
   )
   @JvmField
   public val bool_value: Boolean? = null,
@@ -80,6 +87,7 @@ public class AllWrappers(
     tag = 8,
     adapter = "com.squareup.wire.ProtoAdapter#STRING_VALUE",
     jsonName = "stringValue",
+    schemaIndex = 7,
   )
   @JvmField
   public val string_value: String? = null,
@@ -87,6 +95,7 @@ public class AllWrappers(
     tag = 9,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES_VALUE",
     jsonName = "bytesValue",
+    schemaIndex = 8,
   )
   @JvmField
   public val bytes_value: ByteString? = null,
@@ -115,6 +124,7 @@ public class AllWrappers(
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE_VALUE",
     label = WireField.Label.REPEATED,
     jsonName = "repDoubleValue",
+    schemaIndex = 9,
   )
   @JvmField
   public val rep_double_value: List<Double?> = immutableCopyOf("rep_double_value", rep_double_value)
@@ -124,6 +134,7 @@ public class AllWrappers(
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT_VALUE",
     label = WireField.Label.REPEATED,
     jsonName = "repFloatValue",
+    schemaIndex = 10,
   )
   @JvmField
   public val rep_float_value: List<Float?> = immutableCopyOf("rep_float_value", rep_float_value)
@@ -133,6 +144,7 @@ public class AllWrappers(
     adapter = "com.squareup.wire.ProtoAdapter#INT64_VALUE",
     label = WireField.Label.REPEATED,
     jsonName = "repInt64Value",
+    schemaIndex = 11,
   )
   @JvmField
   public val rep_int64_value: List<Long?> = immutableCopyOf("rep_int64_value", rep_int64_value)
@@ -142,6 +154,7 @@ public class AllWrappers(
     adapter = "com.squareup.wire.ProtoAdapter#UINT64_VALUE",
     label = WireField.Label.REPEATED,
     jsonName = "repUint64Value",
+    schemaIndex = 12,
   )
   @JvmField
   public val rep_uint64_value: List<Long?> = immutableCopyOf("rep_uint64_value", rep_uint64_value)
@@ -151,6 +164,7 @@ public class AllWrappers(
     adapter = "com.squareup.wire.ProtoAdapter#INT32_VALUE",
     label = WireField.Label.REPEATED,
     jsonName = "repInt32Value",
+    schemaIndex = 13,
   )
   @JvmField
   public val rep_int32_value: List<Int?> = immutableCopyOf("rep_int32_value", rep_int32_value)
@@ -160,6 +174,7 @@ public class AllWrappers(
     adapter = "com.squareup.wire.ProtoAdapter#UINT32_VALUE",
     label = WireField.Label.REPEATED,
     jsonName = "repUint32Value",
+    schemaIndex = 14,
   )
   @JvmField
   public val rep_uint32_value: List<Int?> = immutableCopyOf("rep_uint32_value", rep_uint32_value)
@@ -169,6 +184,7 @@ public class AllWrappers(
     adapter = "com.squareup.wire.ProtoAdapter#BOOL_VALUE",
     label = WireField.Label.REPEATED,
     jsonName = "repBoolValue",
+    schemaIndex = 15,
   )
   @JvmField
   public val rep_bool_value: List<Boolean?> = immutableCopyOf("rep_bool_value", rep_bool_value)
@@ -178,6 +194,7 @@ public class AllWrappers(
     adapter = "com.squareup.wire.ProtoAdapter#STRING_VALUE",
     label = WireField.Label.REPEATED,
     jsonName = "repStringValue",
+    schemaIndex = 16,
   )
   @JvmField
   public val rep_string_value: List<String?> = immutableCopyOf("rep_string_value", rep_string_value)
@@ -187,6 +204,7 @@ public class AllWrappers(
     adapter = "com.squareup.wire.ProtoAdapter#BYTES_VALUE",
     label = WireField.Label.REPEATED,
     jsonName = "repBytesValue",
+    schemaIndex = 17,
   )
   @JvmField
   public val rep_bytes_value: List<ByteString?> = immutableCopyOf("rep_bytes_value",
@@ -197,6 +215,7 @@ public class AllWrappers(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE_VALUE",
     jsonName = "mapInt32DoubleValue",
+    schemaIndex = 18,
   )
   @JvmField
   public val map_int32_double_value: Map<Int, Double?> = immutableCopyOf("map_int32_double_value",
@@ -207,6 +226,7 @@ public class AllWrappers(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT_VALUE",
     jsonName = "mapInt32FloatValue",
+    schemaIndex = 19,
   )
   @JvmField
   public val map_int32_float_value: Map<Int, Float?> = immutableCopyOf("map_int32_float_value",
@@ -217,6 +237,7 @@ public class AllWrappers(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INT64_VALUE",
     jsonName = "mapInt32Int64Value",
+    schemaIndex = 20,
   )
   @JvmField
   public val map_int32_int64_value: Map<Int, Long?> = immutableCopyOf("map_int32_int64_value",
@@ -227,6 +248,7 @@ public class AllWrappers(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#UINT64_VALUE",
     jsonName = "mapInt32Uint64Value",
+    schemaIndex = 21,
   )
   @JvmField
   public val map_int32_uint64_value: Map<Int, Long?> = immutableCopyOf("map_int32_uint64_value",
@@ -237,6 +259,7 @@ public class AllWrappers(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INT32_VALUE",
     jsonName = "mapInt32Int32Value",
+    schemaIndex = 22,
   )
   @JvmField
   public val map_int32_int32_value: Map<Int, Int?> = immutableCopyOf("map_int32_int32_value",
@@ -247,6 +270,7 @@ public class AllWrappers(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#UINT32_VALUE",
     jsonName = "mapInt32Uint32Value",
+    schemaIndex = 23,
   )
   @JvmField
   public val map_int32_uint32_value: Map<Int, Int?> = immutableCopyOf("map_int32_uint32_value",
@@ -257,6 +281,7 @@ public class AllWrappers(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#BOOL_VALUE",
     jsonName = "mapInt32BoolValue",
+    schemaIndex = 24,
   )
   @JvmField
   public val map_int32_bool_value: Map<Int, Boolean?> = immutableCopyOf("map_int32_bool_value",
@@ -267,6 +292,7 @@ public class AllWrappers(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRING_VALUE",
     jsonName = "mapInt32StringValue",
+    schemaIndex = 25,
   )
   @JvmField
   public val map_int32_string_value: Map<Int, String?> = immutableCopyOf("map_int32_string_value",
@@ -277,6 +303,7 @@ public class AllWrappers(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#BYTES_VALUE",
     jsonName = "mapInt32BytesValue",
+    schemaIndex = 26,
   )
   @JvmField
   public val map_int32_bytes_value: Map<Int, ByteString?> = immutableCopyOf("map_int32_bytes_value",

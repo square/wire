@@ -33,6 +33,7 @@ public class RouteNote(
   @field:WireField(
     tag = 1,
     adapter = "routeguide.Point#ADAPTER",
+    schemaIndex = 0,
   )
   public val location: Point? = null,
   /**
@@ -41,6 +42,7 @@ public class RouteNote(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 1,
   )
   public val message: String? = null,
   unknownFields: ByteString = ByteString.EMPTY,

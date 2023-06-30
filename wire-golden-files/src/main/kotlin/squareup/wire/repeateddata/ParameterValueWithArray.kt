@@ -34,6 +34,7 @@ public class ParameterValueWithArray(
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.PACKED,
     declaredName = "data",
+    schemaIndex = 0,
   )
   public val data_: List<Float> = immutableCopyOf("data_", data_)
 

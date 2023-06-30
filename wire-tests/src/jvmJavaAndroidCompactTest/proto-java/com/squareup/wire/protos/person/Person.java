@@ -36,8 +36,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   @WireField(
       tag = 2,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 0
+      label = WireField.Label.REQUIRED
   )
   public final Integer id;
 
@@ -47,8 +46,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REQUIRED,
-      schemaIndex = 1
+      label = WireField.Label.REQUIRED
   )
   public final String name;
 
@@ -57,8 +55,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
    */
   @WireField(
       tag = 3,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      schemaIndex = 2
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String email;
 
@@ -68,16 +65,14 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   @WireField(
       tag = 4,
       adapter = "com.squareup.wire.protos.person.Person$PhoneNumber#ADAPTER",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 3
+      label = WireField.Label.REPEATED
   )
   public final List<PhoneNumber> phone;
 
   @WireField(
       tag = 5,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REPEATED,
-      schemaIndex = 4
+      label = WireField.Label.REPEATED
   )
   public final List<String> aliases;
 

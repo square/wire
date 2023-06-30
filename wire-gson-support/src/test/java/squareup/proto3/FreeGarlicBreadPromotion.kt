@@ -28,6 +28,7 @@ public class FreeGarlicBreadPromotion(
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "isExtraCheesey",
+    schemaIndex = 0,
   )
   public val is_extra_cheesey: Boolean = false,
   unknownFields: ByteString = ByteString.EMPTY,

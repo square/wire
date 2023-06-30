@@ -38,6 +38,7 @@ public class Person(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REQUIRED,
+    schemaIndex = 0,
   )
   @JvmField
   public val name: String,
@@ -48,6 +49,7 @@ public class Person(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REQUIRED,
+    schemaIndex = 1,
   )
   @JvmField
   public val id: Int,
@@ -57,6 +59,7 @@ public class Person(
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 2,
   )
   @JvmField
   public val email: String? = null,
@@ -70,6 +73,7 @@ public class Person(
     tag = 4,
     adapter = "com.squareup.wire.proto2.person.javainteropkotlin.Person${'$'}PhoneNumber#ADAPTER",
     label = WireField.Label.REPEATED,
+    schemaIndex = 3,
   )
   @JvmField
   public val phone: List<PhoneNumber> = immutableCopyOf("phone", phone)
@@ -289,6 +293,7 @@ public class Person(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.REQUIRED,
+      schemaIndex = 0,
     )
     @JvmField
     public val number: String,
@@ -298,6 +303,7 @@ public class Person(
     @field:WireField(
       tag = 2,
       adapter = "com.squareup.wire.proto2.person.javainteropkotlin.Person${'$'}PhoneType#ADAPTER",
+      schemaIndex = 1,
     )
     @JvmField
     public val type: PhoneType? = null,

@@ -33,6 +33,7 @@ public class Rectangle(
   @field:WireField(
     tag = 1,
     adapter = "routeguide.Point#ADAPTER",
+    schemaIndex = 0,
   )
   public val lo: Point? = null,
   /**
@@ -41,6 +42,7 @@ public class Rectangle(
   @field:WireField(
     tag = 2,
     adapter = "routeguide.Point#ADAPTER",
+    schemaIndex = 1,
   )
   public val hi: Point? = null,
   unknownFields: ByteString = ByteString.EMPTY,

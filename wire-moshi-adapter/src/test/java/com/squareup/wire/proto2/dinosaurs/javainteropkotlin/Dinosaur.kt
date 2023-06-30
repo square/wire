@@ -31,6 +31,7 @@ public class Dinosaur(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 0,
   )
   @JvmField
   public val name: String? = null,
@@ -38,18 +39,21 @@ public class Dinosaur(
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    schemaIndex = 2,
   )
   @JvmField
   public val length_meters: Double? = null,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    schemaIndex = 3,
   )
   @JvmField
   public val mass_kilograms: Double? = null,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.proto2.geology.javainteropkotlin.Period#ADAPTER",
+    schemaIndex = 4,
   )
   @JvmField
   public val period: Period? = null,
@@ -62,6 +66,7 @@ public class Dinosaur(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
+    schemaIndex = 1,
   )
   @JvmField
   public val picture_urls: List<String> = immutableCopyOf("picture_urls", picture_urls)

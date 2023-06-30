@@ -27,11 +27,13 @@ public class Recursive(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     declaredName = "value",
+    schemaIndex = 0,
   )
   public val value_: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.edgecases.Recursive#ADAPTER",
+    schemaIndex = 1,
   )
   public val recursive: Recursive? = null,
   unknownFields: ByteString = ByteString.EMPTY,

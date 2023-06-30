@@ -27,6 +27,7 @@ public class Thing(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 0,
   )
   public val name: String? = null,
   unknownFields: ByteString = ByteString.EMPTY,

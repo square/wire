@@ -34,6 +34,7 @@ public class KeywordKotlin(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     declaredName = "object",
+    schemaIndex = 0,
   )
   @JvmField
   public val object_: String? = null,
@@ -42,6 +43,7 @@ public class KeywordKotlin(
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REQUIRED,
     declaredName = "when",
+    schemaIndex = 1,
   )
   @JvmField
   public val when_: Int,
@@ -55,6 +57,7 @@ public class KeywordKotlin(
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     declaredName = "fun",
+    schemaIndex = 2,
   )
   @JvmField
   public val fun_: Map<String, String> = immutableCopyOf("fun_", fun_)
@@ -64,6 +67,7 @@ public class KeywordKotlin(
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.REPEATED,
     declaredName = "return",
+    schemaIndex = 3,
   )
   @JvmField
   public val return_: List<Boolean> = immutableCopyOf("return_", return_)
@@ -72,6 +76,7 @@ public class KeywordKotlin(
     tag = 5,
     adapter = "squareup.proto2.keywords.KeywordKotlin${'$'}KeywordKotlinEnum#ADAPTER",
     label = WireField.Label.REPEATED,
+    schemaIndex = 4,
   )
   @JvmField
   public val enums: List<KeywordKotlinEnum> = immutableCopyOf("enums", enums)

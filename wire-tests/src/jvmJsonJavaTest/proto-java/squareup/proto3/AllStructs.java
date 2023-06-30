@@ -24,16 +24,14 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-      label = WireField.Label.OMIT_IDENTITY,
-      schemaIndex = 0
+      label = WireField.Label.OMIT_IDENTITY
   )
   public final Map<String, ?> struct;
 
   @WireField(
       tag = 2,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-      label = WireField.Label.OMIT_IDENTITY,
-      schemaIndex = 1
+      label = WireField.Label.OMIT_IDENTITY
   )
   public final List<?> list;
 
@@ -41,8 +39,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 3,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "nullValue",
-      schemaIndex = 2
+      jsonName = "nullValue"
   )
   public final Void null_value;
 
@@ -50,8 +47,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 4,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "valueA",
-      schemaIndex = 3
+      jsonName = "valueA"
   )
   public final Object value_a;
 
@@ -59,8 +55,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 5,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "valueB",
-      schemaIndex = 4
+      jsonName = "valueB"
   )
   public final Object value_b;
 
@@ -68,8 +63,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 6,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "valueC",
-      schemaIndex = 5
+      jsonName = "valueC"
   )
   public final Object value_c;
 
@@ -77,8 +71,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 7,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "valueD",
-      schemaIndex = 6
+      jsonName = "valueD"
   )
   public final Object value_d;
 
@@ -86,8 +79,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 8,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "valueE",
-      schemaIndex = 7
+      jsonName = "valueE"
   )
   public final Object value_e;
 
@@ -95,8 +87,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 9,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "valueF",
-      schemaIndex = 8
+      jsonName = "valueF"
   )
   public final Object value_f;
 
@@ -104,8 +95,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 101,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
       label = WireField.Label.REPEATED,
-      jsonName = "repStruct",
-      schemaIndex = 9
+      jsonName = "repStruct"
   )
   public final List<Map<String, ?>> rep_struct;
 
@@ -113,8 +103,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 102,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
       label = WireField.Label.REPEATED,
-      jsonName = "repList",
-      schemaIndex = 10
+      jsonName = "repList"
   )
   public final List<List<?>> rep_list;
 
@@ -122,8 +111,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 103,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
       label = WireField.Label.REPEATED,
-      jsonName = "repValueA",
-      schemaIndex = 11
+      jsonName = "repValueA"
   )
   public final List<Object> rep_value_a;
 
@@ -131,8 +119,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 104,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
       label = WireField.Label.REPEATED,
-      jsonName = "repNullValue",
-      schemaIndex = 12
+      jsonName = "repNullValue"
   )
   public final List<Void> rep_null_value;
 
@@ -140,8 +127,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 301,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-      jsonName = "mapInt32Struct",
-      schemaIndex = 13
+      jsonName = "mapInt32Struct"
   )
   public final Map<Integer, Map<String, ?>> map_int32_struct;
 
@@ -149,8 +135,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 302,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-      jsonName = "mapInt32List",
-      schemaIndex = 14
+      jsonName = "mapInt32List"
   )
   public final Map<Integer, List<?>> map_int32_list;
 
@@ -158,8 +143,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 303,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-      jsonName = "mapInt32ValueA",
-      schemaIndex = 15
+      jsonName = "mapInt32ValueA"
   )
   public final Map<Integer, Object> map_int32_value_a;
 
@@ -167,8 +151,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 304,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
-      jsonName = "mapInt32NullValue",
-      schemaIndex = 16
+      jsonName = "mapInt32NullValue"
   )
   public final Map<Integer, Void> map_int32_null_value;
 
@@ -176,8 +159,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 201,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
       jsonName = "oneofStruct",
-      oneofName = "choice",
-      schemaIndex = 17
+      oneofName = "choice"
   )
   public final Map<String, ?> oneof_struct;
 
@@ -185,8 +167,7 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
       tag = 202,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
       jsonName = "oneofList",
-      oneofName = "choice",
-      schemaIndex = 18
+      oneofName = "choice"
   )
   public final List<?> oneof_list;
 

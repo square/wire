@@ -26,6 +26,7 @@ public class RedactedCycleA(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedCycleB#ADAPTER",
+    schemaIndex = 0,
   )
   public val b: RedactedCycleB? = null,
   unknownFields: ByteString = ByteString.EMPTY,
