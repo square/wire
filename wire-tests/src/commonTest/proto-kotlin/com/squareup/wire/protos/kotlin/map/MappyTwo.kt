@@ -40,6 +40,7 @@ public class MappyTwo(
     tag = 1,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.protos.kotlin.map.MappyTwo${'$'}ValueEnum#ADAPTER",
+    schemaIndex = 0,
   )
   public val string_enums: Map<String, ValueEnum> = immutableCopyOf("string_enums", string_enums)
 
@@ -47,6 +48,7 @@ public class MappyTwo(
     tag = 2,
     keyAdapter = "com.squareup.wire.ProtoAdapter#SINT64",
     adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER",
+    schemaIndex = 1,
   )
   public val int_things: Map<Long, Thing> = immutableCopyOf("int_things", int_things)
 
@@ -54,6 +56,7 @@ public class MappyTwo(
     tag = 3,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+    schemaIndex = 2,
   )
   public val string_ints: Map<String, Long> = immutableCopyOf("string_ints", string_ints)
 
@@ -61,6 +64,7 @@ public class MappyTwo(
     tag = 4,
     keyAdapter = "com.squareup.wire.ProtoAdapter#SINT32",
     adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER",
+    schemaIndex = 3,
   )
   public val int_things_two: Map<Int, Thing> = immutableCopyOf("int_things_two", int_things_two)
 

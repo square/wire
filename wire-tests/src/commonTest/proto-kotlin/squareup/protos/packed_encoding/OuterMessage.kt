@@ -26,11 +26,13 @@ public class OuterMessage(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 0,
   )
   public val outer_number_before: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "squareup.protos.packed_encoding.EmbeddedMessage#ADAPTER",
+    schemaIndex = 1,
   )
   public val embedded_message: EmbeddedMessage? = null,
   unknownFields: ByteString = ByteString.EMPTY,

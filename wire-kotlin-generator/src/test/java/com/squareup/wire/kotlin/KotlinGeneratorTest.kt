@@ -1676,6 +1676,7 @@ class KotlinGeneratorTest {
         |  @field:WireField(
         |    tag = 2,
         |    adapter = "com.example.StringPointAdapter#INSTANCE",
+        |    schemaIndex = 1,
         |  )
         |  public val location: String? = null,
         """.trimMargin()
@@ -1790,6 +1791,7 @@ class KotlinGeneratorTest {
          |  @field:WireField(
          |    tag = 1,
          |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+         |    schemaIndex = 0,
          |  )
          |  public val name: String? = null,
          """.trimMargin()

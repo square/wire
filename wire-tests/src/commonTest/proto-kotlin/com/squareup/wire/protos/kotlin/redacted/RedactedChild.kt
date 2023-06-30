@@ -27,16 +27,19 @@ public class RedactedChild(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 0,
   )
   public val a: String? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedFields#ADAPTER",
+    schemaIndex = 1,
   )
   public val b: RedactedFields? = null,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.protos.kotlin.redacted.NotRedacted#ADAPTER",
+    schemaIndex = 2,
   )
   public val c: NotRedacted? = null,
   unknownFields: ByteString = ByteString.EMPTY,

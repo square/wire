@@ -30,6 +30,7 @@ public class Pizza(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
+    schemaIndex = 0,
   )
   @JvmField
   public val toppings: List<String> = immutableCopyOf("toppings", toppings)

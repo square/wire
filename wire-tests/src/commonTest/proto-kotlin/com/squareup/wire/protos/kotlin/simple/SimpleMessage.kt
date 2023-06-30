@@ -41,6 +41,7 @@ public class SimpleMessage(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 0,
   )
   public val optional_int32: Int? = null,
   /**
@@ -50,6 +51,7 @@ public class SimpleMessage(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER",
+    schemaIndex = 1,
   )
   public val optional_nested_msg: NestedMessage? = null,
   /**
@@ -58,11 +60,13 @@ public class SimpleMessage(
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.protos.kotlin.simple.ExternalMessage#ADAPTER",
+    schemaIndex = 2,
   )
   public val optional_external_msg: ExternalMessage? = null,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER",
+    schemaIndex = 3,
   )
   public val default_nested_enum: NestedEnum? = null,
   /**
@@ -72,6 +76,7 @@ public class SimpleMessage(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REQUIRED,
+    schemaIndex = 4,
   )
   public val required_int32: Int,
   repeated_double: List<Double> = emptyList(),
@@ -81,6 +86,7 @@ public class SimpleMessage(
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.protos.kotlin.foreign.ForeignEnum#ADAPTER",
+    schemaIndex = 6,
   )
   public val default_foreign_enum: ForeignEnum? = null,
   /**
@@ -89,6 +95,7 @@ public class SimpleMessage(
   @field:WireField(
     tag = 8,
     adapter = "com.squareup.wire.protos.kotlin.foreign.ForeignEnum#ADAPTER",
+    schemaIndex = 7,
   )
   public val no_default_foreign_enum: ForeignEnum? = null,
   /**
@@ -98,6 +105,7 @@ public class SimpleMessage(
     tag = 9,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     declaredName = "package",
+    schemaIndex = 8,
   )
   public val package_: String? = null,
   /**
@@ -106,6 +114,7 @@ public class SimpleMessage(
   @field:WireField(
     tag = 10,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 9,
   )
   public val result: String? = null,
   /**
@@ -114,6 +123,7 @@ public class SimpleMessage(
   @field:WireField(
     tag = 11,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 10,
   )
   public val other: String? = null,
   /**
@@ -122,6 +132,7 @@ public class SimpleMessage(
   @field:WireField(
     tag = 12,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 11,
   )
   public val o: String? = null,
   unknownFields: ByteString = ByteString.EMPTY,
@@ -134,6 +145,7 @@ public class SimpleMessage(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.REPEATED,
+    schemaIndex = 5,
   )
   public val repeated_double: List<Double> = immutableCopyOf("repeated_double", repeated_double)
 
@@ -366,6 +378,7 @@ public class SimpleMessage(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      schemaIndex = 0,
     )
     public val bb: Int? = null,
     unknownFields: ByteString = ByteString.EMPTY,

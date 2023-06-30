@@ -38,6 +38,7 @@ public class FooBar(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 0,
   )
   @JvmField
   public val foo: Int? = null,
@@ -45,6 +46,7 @@ public class FooBar(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 1,
   )
   @JvmField
   public val bar: String? = null,
@@ -52,6 +54,7 @@ public class FooBar(
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}Nested#ADAPTER",
+    schemaIndex = 2,
   )
   @JvmField
   public val baz: Nested? = null,
@@ -71,6 +74,7 @@ public class FooBar(
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+    schemaIndex = 3,
   )
   @JvmField
   public val qux: Long? = null,
@@ -78,6 +82,7 @@ public class FooBar(
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    schemaIndex = 5,
   )
   @JvmField
   public val daisy: Double? = null,
@@ -88,6 +93,7 @@ public class FooBar(
   @field:WireField(
     tag = 150,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 7,
   )
   @JvmField
   public val more_string: String? = null,
@@ -97,6 +103,7 @@ public class FooBar(
   @field:WireField(
     tag = 101,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER",
+    schemaIndex = 8,
   )
   @JvmField
   public val ext: FooBarBazEnum? = null,
@@ -108,6 +115,7 @@ public class FooBar(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.REPEATED,
+    schemaIndex = 4,
   )
   @JvmField
   public val fred: List<Float> = immutableCopyOf("fred", fred)
@@ -117,6 +125,7 @@ public class FooBar(
     adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER",
     label = WireField.Label.REPEATED,
     redacted = true,
+    schemaIndex = 6,
   )
   @JvmField
   public val nested: List<FooBar> = immutableCopyOf("nested", nested)
@@ -128,6 +137,7 @@ public class FooBar(
     tag = 102,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER",
     label = WireField.Label.REPEATED,
+    schemaIndex = 9,
   )
   @JvmField
   public val rep: List<FooBarBazEnum> = immutableCopyOf("rep", rep)
@@ -429,6 +439,7 @@ public class FooBar(
       tag = 1,
       adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER",
       declaredName = "value",
+      schemaIndex = 0,
     )
     @JvmField
     public val value_: FooBarBazEnum? = null,
@@ -544,6 +555,7 @@ public class FooBar(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.REPEATED,
+      schemaIndex = 0,
     )
     @JvmField
     public val serial: List<Int> = immutableCopyOf("serial", serial)

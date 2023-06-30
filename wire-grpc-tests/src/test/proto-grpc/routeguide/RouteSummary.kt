@@ -36,6 +36,7 @@ public class RouteSummary(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 0,
   )
   public val point_count: Int? = null,
   /**
@@ -44,6 +45,7 @@ public class RouteSummary(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 1,
   )
   public val feature_count: Int? = null,
   /**
@@ -52,6 +54,7 @@ public class RouteSummary(
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 2,
   )
   public val distance: Int? = null,
   /**
@@ -60,6 +63,7 @@ public class RouteSummary(
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 3,
   )
   public val elapsed_time: Int? = null,
   unknownFields: ByteString = ByteString.EMPTY,

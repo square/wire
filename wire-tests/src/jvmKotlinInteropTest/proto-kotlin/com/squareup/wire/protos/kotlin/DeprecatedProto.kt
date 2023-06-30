@@ -25,6 +25,7 @@ public class DeprecatedProto(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 0,
   )
   @JvmField
   public val foo: String? = null,

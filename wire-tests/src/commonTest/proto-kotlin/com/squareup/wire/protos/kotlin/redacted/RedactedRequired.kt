@@ -30,6 +30,7 @@ public class RedactedRequired(
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REQUIRED,
     redacted = true,
+    schemaIndex = 0,
   )
   public val a: String,
   unknownFields: ByteString = ByteString.EMPTY,

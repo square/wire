@@ -34,22 +34,26 @@ public class Dinosaur(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 0,
   )
   public val name: String? = null,
   picture_urls: List<String> = emptyList(),
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    schemaIndex = 2,
   )
   public val length_meters: Double? = null,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    schemaIndex = 3,
   )
   public val mass_kilograms: Double? = null,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.proto2.geology.kotlin.Period#ADAPTER",
+    schemaIndex = 4,
   )
   public val period: Period? = null,
   unknownFields: ByteString = ByteString.EMPTY,
@@ -61,6 +65,7 @@ public class Dinosaur(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
+    schemaIndex = 1,
   )
   public val picture_urls: List<String> = immutableCopyOf("picture_urls", picture_urls)
 

@@ -30,6 +30,7 @@ public class FreeDrinkPromotion(
     tag = 1,
     adapter = "squareup.proto3.FreeDrinkPromotion${'$'}Drink#ADAPTER",
     label = WireField.Label.OMIT_IDENTITY,
+    schemaIndex = 0,
   )
   public val drink: Drink = Drink.UNKNOWN,
   unknownFields: ByteString = ByteString.EMPTY,

@@ -32,6 +32,7 @@ public class Getters(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 0,
   )
   public val isa: Int? = null,
   /**
@@ -40,6 +41,7 @@ public class Getters(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 1,
   )
   public val isA: Int? = null,
   /**
@@ -48,6 +50,7 @@ public class Getters(
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 2,
   )
   public val is_a: Int? = null,
   /**
@@ -56,6 +59,7 @@ public class Getters(
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 3,
   )
   public val is32: Int? = null,
   /**
@@ -64,6 +68,7 @@ public class Getters(
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+    schemaIndex = 4,
   )
   public val isb: Boolean? = null,
   unknownFields: ByteString = ByteString.EMPTY,

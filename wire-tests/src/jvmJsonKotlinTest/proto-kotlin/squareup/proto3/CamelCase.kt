@@ -30,6 +30,7 @@ public class CamelCase(
     adapter = "squareup.proto3.CamelCase${'$'}NestedCamelCase#ADAPTER",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "nestedMessage",
+    schemaIndex = 0,
   )
   @JvmField
   public val nested__message: NestedCamelCase? = null,
@@ -39,6 +40,7 @@ public class CamelCase(
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "IDitItMyWAy",
+    schemaIndex = 2,
   )
   @JvmField
   public val IDitIt_my_wAy: String = "",
@@ -50,6 +52,7 @@ public class CamelCase(
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.PACKED,
     jsonName = "RepInt32",
+    schemaIndex = 1,
   )
   @JvmField
   public val _Rep_int32: List<Int> = immutableCopyOf("_Rep_int32", _Rep_int32)
@@ -59,6 +62,7 @@ public class CamelCase(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     jsonName = "mapInt32Int32",
+    schemaIndex = 3,
   )
   @JvmField
   public val map_int32_Int32: Map<Int, Int> = immutableCopyOf("map_int32_Int32", map_int32_Int32)
@@ -249,6 +253,7 @@ public class CamelCase(
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "oneInt32",
+      schemaIndex = 0,
     )
     @JvmField
     public val one_int32: Int = 0,

@@ -26,6 +26,7 @@ public class FreeDrinkPromotion(
     tag = 1,
     adapter = "squareup.proto3.FreeDrinkPromotion${'$'}Drink#ADAPTER",
     label = WireField.Label.OMIT_IDENTITY,
+    schemaIndex = 0,
   )
   @JvmField
   public val drink: Drink = Drink.UNKNOWN,

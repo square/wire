@@ -24,6 +24,7 @@ public class RedactedOneOf(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     oneofName = "a",
+    schemaIndex = 0,
   )
   @JvmField
   public val b: Int? = null,
@@ -32,6 +33,7 @@ public class RedactedOneOf(
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     redacted = true,
     oneofName = "a",
+    schemaIndex = 1,
   )
   @JvmField
   public val c: String? = null,

@@ -26,6 +26,7 @@ public class OneField(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 0,
   )
   public val opt_int32: Int? = null,
   unknownFields: ByteString = ByteString.EMPTY,

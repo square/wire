@@ -34,6 +34,7 @@ public class PizzaDelivery(
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "phoneNumber",
+    schemaIndex = 0,
   )
   @JvmField
   public val phone_number: String = "",
@@ -41,6 +42,7 @@ public class PizzaDelivery(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY,
+    schemaIndex = 1,
   )
   @JvmField
   public val address: String = "",
@@ -49,6 +51,7 @@ public class PizzaDelivery(
     tag = 4,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
     label = WireField.Label.OMIT_IDENTITY,
+    schemaIndex = 3,
   )
   @JvmField
   public val promotion: AnyMessage? = null,
@@ -57,6 +60,7 @@ public class PizzaDelivery(
     adapter = "com.squareup.wire.ProtoAdapter#DURATION",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "deliveredWithinOrFree",
+    schemaIndex = 4,
   )
   @JvmField
   public val delivered_within_or_free: Duration? = null,
@@ -66,6 +70,7 @@ public class PizzaDelivery(
     adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "orderedAt",
+    schemaIndex = 6,
   )
   @JvmField
   public val ordered_at: Instant? = null,
@@ -75,6 +80,7 @@ public class PizzaDelivery(
     tag = 3,
     adapter = "squareup.proto3.Pizza#ADAPTER",
     label = WireField.Label.REPEATED,
+    schemaIndex = 2,
   )
   @JvmField
   public val pizzas: List<Pizza> = immutableCopyOf("pizzas", pizzas)
@@ -83,6 +89,7 @@ public class PizzaDelivery(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
     label = WireField.Label.OMIT_IDENTITY,
+    schemaIndex = 5,
   )
   @JvmField
   public val loyalty: Map<String, *>? = immutableCopyOfStruct("loyalty", loyalty)

@@ -28,11 +28,13 @@ public class RedactedExtension(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     redacted = true,
+    schemaIndex = 0,
   )
   public val d: String? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 1,
   )
   public val e: String? = null,
   unknownFields: ByteString = ByteString.EMPTY,

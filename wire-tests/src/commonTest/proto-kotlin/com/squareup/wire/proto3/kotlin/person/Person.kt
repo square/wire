@@ -41,6 +41,7 @@ public class Person(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY,
+    schemaIndex = 0,
   )
   public val name: String = "",
   /**
@@ -50,6 +51,7 @@ public class Person(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.OMIT_IDENTITY,
+    schemaIndex = 1,
   )
   public val id: Int = 0,
   /**
@@ -59,6 +61,7 @@ public class Person(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY,
+    schemaIndex = 2,
   )
   public val email: String = "",
   phones: List<PhoneNumber> = emptyList(),
@@ -67,12 +70,14 @@ public class Person(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     oneofName = "choice",
+    schemaIndex = 5,
   )
   public val foo: Int? = null,
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     oneofName = "choice",
+    schemaIndex = 6,
   )
   public val bar: String? = null,
   unknownFields: ByteString = ByteString.EMPTY,
@@ -84,6 +89,7 @@ public class Person(
     tag = 4,
     adapter = "com.squareup.wire.proto3.kotlin.person.Person${'$'}PhoneNumber#ADAPTER",
     label = WireField.Label.REPEATED,
+    schemaIndex = 3,
   )
   public val phones: List<PhoneNumber> = immutableCopyOf("phones", phones)
 
@@ -91,6 +97,7 @@ public class Person(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
+    schemaIndex = 4,
   )
   public val aliases: List<String> = immutableCopyOf("aliases", aliases)
 
@@ -287,6 +294,7 @@ public class Person(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.OMIT_IDENTITY,
+      schemaIndex = 0,
     )
     public val number: String = "",
     /**
@@ -296,6 +304,7 @@ public class Person(
       tag = 2,
       adapter = "com.squareup.wire.proto3.kotlin.person.Person${'$'}PhoneType#ADAPTER",
       label = WireField.Label.OMIT_IDENTITY,
+      schemaIndex = 1,
     )
     public val type: PhoneType = PhoneType.MOBILE,
     unknownFields: ByteString = ByteString.EMPTY,

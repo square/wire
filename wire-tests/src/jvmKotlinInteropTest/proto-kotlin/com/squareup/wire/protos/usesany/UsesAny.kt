@@ -27,6 +27,7 @@ public class UsesAny(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
+    schemaIndex = 0,
   )
   @JvmField
   public val just_one: AnyMessage? = null,
@@ -37,6 +38,7 @@ public class UsesAny(
     tag = 2,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
     label = WireField.Label.REPEATED,
+    schemaIndex = 1,
   )
   @JvmField
   public val many_anys: List<AnyMessage> = immutableCopyOf("many_anys", many_anys)

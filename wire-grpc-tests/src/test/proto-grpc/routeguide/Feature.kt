@@ -35,6 +35,7 @@ public class Feature(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 0,
   )
   public val name: String? = null,
   /**
@@ -43,6 +44,7 @@ public class Feature(
   @field:WireField(
     tag = 2,
     adapter = "routeguide.Point#ADAPTER",
+    schemaIndex = 1,
   )
   public val location: Point? = null,
   unknownFields: ByteString = ByteString.EMPTY,

@@ -465,16 +465,14 @@ public final class JavaGeneratorTest {
     assertThat(javaOutput).contains(""
       + "  @WireField(\n"
       + "      tag = 2,\n"
-      + "      adapter = \"com.squareup.wire.ProtoAdapter#STRING\",\n"
-      + "      schemaIndex = 0\n"
+      + "      adapter = \"com.squareup.wire.ProtoAdapter#STRING\"\n"
       + "  )\n"
       + "  @Nullable\n"
       + "  public final String two;");
     assertThat(javaOutput).contains(""
       + "  @WireField(\n"
       + "      tag = 1,\n"
-      + "      adapter = \"com.squareup.wire.ProtoAdapter#STRING\",\n"
-      + "      schemaIndex = 1\n"
+      + "      adapter = \"com.squareup.wire.ProtoAdapter#STRING\"\n"
       + "  )\n"
       + "  @Nullable\n"
       + "  public final String one;");

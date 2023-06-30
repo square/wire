@@ -31,6 +31,7 @@ public class OneOfMessage(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     oneofName = "choice",
+    schemaIndex = 0,
   )
   @JvmField
   public val foo: Int? = null,
@@ -41,6 +42,7 @@ public class OneOfMessage(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     oneofName = "choice",
+    schemaIndex = 1,
   )
   @JvmField
   public val bar: String? = null,
@@ -51,6 +53,7 @@ public class OneOfMessage(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     oneofName = "choice",
+    schemaIndex = 2,
   )
   @JvmField
   public val baz: String? = null,

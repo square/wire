@@ -41,12 +41,14 @@ public class ModelEvaluation(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    schemaIndex = 0,
   )
   @JvmField
   public val name: String? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    schemaIndex = 1,
   )
   @JvmField
   public val score: Double? = null,
@@ -57,6 +59,7 @@ public class ModelEvaluation(
     tag = 3,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "ModelEvaluation#ADAPTER",
+    schemaIndex = 2,
   )
   @JvmField
   public val models: Map<String, ModelEvaluation> = immutableCopyOf("models", models)

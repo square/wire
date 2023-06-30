@@ -26,6 +26,7 @@ public class ExternalMessage(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+    schemaIndex = 0,
   )
   @JvmField
   public val f: Float? = null,
@@ -36,6 +37,7 @@ public class ExternalMessage(
   @field:WireField(
     tag = 126,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 2,
   )
   @JvmField
   public val barext: Int? = null,
@@ -45,6 +47,7 @@ public class ExternalMessage(
   @field:WireField(
     tag = 127,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 3,
   )
   @JvmField
   public val bazext: Int? = null,
@@ -54,6 +57,7 @@ public class ExternalMessage(
   @field:WireField(
     tag = 128,
     adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER",
+    schemaIndex = 4,
   )
   @JvmField
   public val nested_message_ext: SimpleMessage.NestedMessage? = null,
@@ -63,6 +67,7 @@ public class ExternalMessage(
   @field:WireField(
     tag = 129,
     adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER",
+    schemaIndex = 5,
   )
   @JvmField
   public val nested_enum_ext: SimpleMessage.NestedEnum? = null,
@@ -75,6 +80,7 @@ public class ExternalMessage(
     tag = 125,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REPEATED,
+    schemaIndex = 1,
   )
   @JvmField
   public val fooext: List<Int> = immutableCopyOf("fooext", fooext)

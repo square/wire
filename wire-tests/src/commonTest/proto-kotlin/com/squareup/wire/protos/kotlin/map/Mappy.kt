@@ -34,6 +34,7 @@ public class Mappy(
     tag = 1,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER",
+    schemaIndex = 0,
   )
   public val things: Map<String, Thing> = immutableCopyOf("things", things)
 

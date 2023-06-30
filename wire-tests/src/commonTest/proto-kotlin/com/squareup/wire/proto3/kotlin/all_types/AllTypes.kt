@@ -46,6 +46,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "int32",
+    schemaIndex = 0,
   )
   public val proto3_kotlin_int32: Int = 0,
   @field:WireField(
@@ -53,6 +54,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "uint32",
+    schemaIndex = 1,
   )
   public val proto3_kotlin_uint32: Int = 0,
   @field:WireField(
@@ -60,6 +62,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "sint32",
+    schemaIndex = 2,
   )
   public val proto3_kotlin_sint32: Int = 0,
   @field:WireField(
@@ -67,6 +70,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "fixed32",
+    schemaIndex = 3,
   )
   public val proto3_kotlin_fixed32: Int = 0,
   @field:WireField(
@@ -74,6 +78,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "sfixed32",
+    schemaIndex = 4,
   )
   public val proto3_kotlin_sfixed32: Int = 0,
   @field:WireField(
@@ -81,6 +86,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "int64",
+    schemaIndex = 5,
   )
   public val proto3_kotlin_int64: Long = 0L,
   @field:WireField(
@@ -88,6 +94,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "uint64",
+    schemaIndex = 6,
   )
   public val proto3_kotlin_uint64: Long = 0L,
   @field:WireField(
@@ -95,6 +102,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "sint64",
+    schemaIndex = 7,
   )
   public val proto3_kotlin_sint64: Long = 0L,
   @field:WireField(
@@ -102,6 +110,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "fixed64",
+    schemaIndex = 8,
   )
   public val proto3_kotlin_fixed64: Long = 0L,
   @field:WireField(
@@ -109,6 +118,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "sfixed64",
+    schemaIndex = 9,
   )
   public val proto3_kotlin_sfixed64: Long = 0L,
   @field:WireField(
@@ -116,6 +126,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "bool",
+    schemaIndex = 10,
   )
   public val proto3_kotlin_bool: Boolean = false,
   @field:WireField(
@@ -123,6 +134,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "float",
+    schemaIndex = 11,
   )
   public val proto3_kotlin_float: Float = 0f,
   @field:WireField(
@@ -130,6 +142,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "double",
+    schemaIndex = 12,
   )
   public val proto3_kotlin_double: Double = 0.0,
   @field:WireField(
@@ -137,6 +150,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "string",
+    schemaIndex = 13,
   )
   public val proto3_kotlin_string: String = "",
   @field:WireField(
@@ -144,6 +158,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "bytes",
+    schemaIndex = 14,
   )
   public val proto3_kotlin_bytes: ByteString = ByteString.EMPTY,
   @field:WireField(
@@ -151,6 +166,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedEnum#ADAPTER",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "nestedEnum",
+    schemaIndex = 15,
   )
   public val nested_enum: NestedEnum = NestedEnum.UNKNOWN,
   @field:WireField(
@@ -158,18 +174,21 @@ public class AllTypes(
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedMessage#ADAPTER",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "nestedMessage",
+    schemaIndex = 16,
   )
   public val nested_message: NestedMessage? = null,
   @field:WireField(
     tag = 18,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
     label = WireField.Label.OMIT_IDENTITY,
+    schemaIndex = 17,
   )
   public val any: AnyMessage? = null,
   @field:WireField(
     tag = 19,
     adapter = "com.squareup.wire.ProtoAdapter#DURATION",
     label = WireField.Label.OMIT_IDENTITY,
+    schemaIndex = 18,
   )
   public val duration: Duration? = null,
   struct: Map<String, *>? = null,
@@ -180,102 +199,119 @@ public class AllTypes(
     tag = 24,
     adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
     label = WireField.Label.OMIT_IDENTITY,
+    schemaIndex = 23,
   )
   public val empty: Unit? = null,
   @field:WireField(
     tag = 25,
     adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
     label = WireField.Label.OMIT_IDENTITY,
+    schemaIndex = 24,
   )
   public val timestamp: Instant? = null,
   @field:WireField(
     tag = 101,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     jsonName = "optInt32",
+    schemaIndex = 25,
   )
   public val opt_int32: Int? = null,
   @field:WireField(
     tag = 102,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     jsonName = "optUint32",
+    schemaIndex = 26,
   )
   public val opt_uint32: Int? = null,
   @field:WireField(
     tag = 103,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     jsonName = "optSint32",
+    schemaIndex = 27,
   )
   public val opt_sint32: Int? = null,
   @field:WireField(
     tag = 104,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     jsonName = "optFixed32",
+    schemaIndex = 28,
   )
   public val opt_fixed32: Int? = null,
   @field:WireField(
     tag = 105,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     jsonName = "optSfixed32",
+    schemaIndex = 29,
   )
   public val opt_sfixed32: Int? = null,
   @field:WireField(
     tag = 106,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     jsonName = "optInt64",
+    schemaIndex = 30,
   )
   public val opt_int64: Long? = null,
   @field:WireField(
     tag = 107,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     jsonName = "optUint64",
+    schemaIndex = 31,
   )
   public val opt_uint64: Long? = null,
   @field:WireField(
     tag = 108,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     jsonName = "optSint64",
+    schemaIndex = 32,
   )
   public val opt_sint64: Long? = null,
   @field:WireField(
     tag = 109,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     jsonName = "optFixed64",
+    schemaIndex = 33,
   )
   public val opt_fixed64: Long? = null,
   @field:WireField(
     tag = 110,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     jsonName = "optSfixed64",
+    schemaIndex = 34,
   )
   public val opt_sfixed64: Long? = null,
   @field:WireField(
     tag = 111,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     jsonName = "optBool",
+    schemaIndex = 35,
   )
   public val opt_bool: Boolean? = null,
   @field:WireField(
     tag = 112,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     jsonName = "optFloat",
+    schemaIndex = 36,
   )
   public val opt_float: Float? = null,
   @field:WireField(
     tag = 113,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     jsonName = "optDouble",
+    schemaIndex = 37,
   )
   public val opt_double: Double? = null,
   @field:WireField(
     tag = 114,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     jsonName = "optString",
+    schemaIndex = 38,
   )
   public val opt_string: String? = null,
   @field:WireField(
     tag = 115,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
     jsonName = "optBytes",
+    schemaIndex = 39,
   )
   public val opt_bytes: ByteString? = null,
   rep_int32: List<Int> = emptyList(),
@@ -335,6 +371,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     jsonName = "oneofString",
     oneofName = "choice",
+    schemaIndex = 92,
   )
   public val oneof_string: String? = null,
   @field:WireField(
@@ -342,6 +379,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     jsonName = "oneofInt32",
     oneofName = "choice",
+    schemaIndex = 93,
   )
   public val oneof_int32: Int? = null,
   @field:WireField(
@@ -349,6 +387,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedMessage#ADAPTER",
     jsonName = "oneofNestedMessage",
     oneofName = "choice",
+    schemaIndex = 94,
   )
   public val oneof_nested_message: NestedMessage? = null,
   @field:WireField(
@@ -356,6 +395,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
     jsonName = "oneofAny",
     oneofName = "choice",
+    schemaIndex = 95,
   )
   public val oneof_any: AnyMessage? = null,
   @field:WireField(
@@ -363,6 +403,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#DURATION",
     jsonName = "oneofDuration",
     oneofName = "choice",
+    schemaIndex = 96,
   )
   public val oneof_duration: Duration? = null,
   oneof_struct: Map<String, *>? = null,
@@ -376,6 +417,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
     jsonName = "oneofEmpty",
     oneofName = "choice",
+    schemaIndex = 99,
   )
   public val oneof_empty: Unit? = null,
   @field:WireField(
@@ -383,6 +425,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
     jsonName = "oneofTimestamp",
     oneofName = "choice",
+    schemaIndex = 100,
   )
   public val oneof_timestamp: Instant? = null,
   unknownFields: ByteString = ByteString.EMPTY,
@@ -391,6 +434,7 @@ public class AllTypes(
     tag = 20,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
     label = WireField.Label.OMIT_IDENTITY,
+    schemaIndex = 19,
   )
   public val struct: Map<String, *>? = immutableCopyOfStruct("struct", struct)
 
@@ -399,6 +443,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "listValue",
+    schemaIndex = 20,
   )
   public val list_value: List<*>? = immutableCopyOfStruct("list_value", list_value)
 
@@ -407,6 +452,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
     label = WireField.Label.OMIT_IDENTITY,
     declaredName = "value",
+    schemaIndex = 21,
   )
   public val value_: Any? = immutableCopyOfStruct("value_", value_)
 
@@ -415,6 +461,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "nullValue",
+    schemaIndex = 22,
   )
   public val null_value: Nothing? = immutableCopyOfStruct("null_value", null_value)
 
@@ -423,6 +470,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REPEATED,
     jsonName = "repInt32",
+    schemaIndex = 40,
   )
   public val rep_int32: List<Int> = immutableCopyOf("rep_int32", rep_int32)
 
@@ -431,6 +479,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.REPEATED,
     jsonName = "repUint32",
+    schemaIndex = 41,
   )
   public val rep_uint32: List<Int> = immutableCopyOf("rep_uint32", rep_uint32)
 
@@ -439,6 +488,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.REPEATED,
     jsonName = "repSint32",
+    schemaIndex = 42,
   )
   public val rep_sint32: List<Int> = immutableCopyOf("rep_sint32", rep_sint32)
 
@@ -447,6 +497,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.REPEATED,
     jsonName = "repFixed32",
+    schemaIndex = 43,
   )
   public val rep_fixed32: List<Int> = immutableCopyOf("rep_fixed32", rep_fixed32)
 
@@ -455,6 +506,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.REPEATED,
     jsonName = "repSfixed32",
+    schemaIndex = 44,
   )
   public val rep_sfixed32: List<Int> = immutableCopyOf("rep_sfixed32", rep_sfixed32)
 
@@ -463,6 +515,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.REPEATED,
     jsonName = "repInt64",
+    schemaIndex = 45,
   )
   public val rep_int64: List<Long> = immutableCopyOf("rep_int64", rep_int64)
 
@@ -471,6 +524,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.REPEATED,
     jsonName = "repUint64",
+    schemaIndex = 46,
   )
   public val rep_uint64: List<Long> = immutableCopyOf("rep_uint64", rep_uint64)
 
@@ -479,6 +533,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.REPEATED,
     jsonName = "repSint64",
+    schemaIndex = 47,
   )
   public val rep_sint64: List<Long> = immutableCopyOf("rep_sint64", rep_sint64)
 
@@ -487,6 +542,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.REPEATED,
     jsonName = "repFixed64",
+    schemaIndex = 48,
   )
   public val rep_fixed64: List<Long> = immutableCopyOf("rep_fixed64", rep_fixed64)
 
@@ -495,6 +551,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.REPEATED,
     jsonName = "repSfixed64",
+    schemaIndex = 49,
   )
   public val rep_sfixed64: List<Long> = immutableCopyOf("rep_sfixed64", rep_sfixed64)
 
@@ -503,6 +560,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.REPEATED,
     jsonName = "repBool",
+    schemaIndex = 50,
   )
   public val rep_bool: List<Boolean> = immutableCopyOf("rep_bool", rep_bool)
 
@@ -511,6 +569,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.REPEATED,
     jsonName = "repFloat",
+    schemaIndex = 51,
   )
   public val rep_float: List<Float> = immutableCopyOf("rep_float", rep_float)
 
@@ -519,6 +578,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.REPEATED,
     jsonName = "repDouble",
+    schemaIndex = 52,
   )
   public val rep_double: List<Double> = immutableCopyOf("rep_double", rep_double)
 
@@ -527,6 +587,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
     jsonName = "repString",
+    schemaIndex = 53,
   )
   public val rep_string: List<String> = immutableCopyOf("rep_string", rep_string)
 
@@ -535,6 +596,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
     label = WireField.Label.REPEATED,
     jsonName = "repBytes",
+    schemaIndex = 54,
   )
   public val rep_bytes: List<ByteString> = immutableCopyOf("rep_bytes", rep_bytes)
 
@@ -543,6 +605,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedEnum#ADAPTER",
     label = WireField.Label.REPEATED,
     jsonName = "repNestedEnum",
+    schemaIndex = 55,
   )
   public val rep_nested_enum: List<NestedEnum> = immutableCopyOf("rep_nested_enum", rep_nested_enum)
 
@@ -551,6 +614,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedMessage#ADAPTER",
     label = WireField.Label.REPEATED,
     jsonName = "repNestedMessage",
+    schemaIndex = 56,
   )
   public val rep_nested_message: List<NestedMessage> = immutableCopyOf("rep_nested_message",
       rep_nested_message)
@@ -560,6 +624,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
     label = WireField.Label.REPEATED,
     jsonName = "repAny",
+    schemaIndex = 57,
   )
   public val rep_any: List<AnyMessage> = immutableCopyOf("rep_any", rep_any)
 
@@ -568,6 +633,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#DURATION",
     label = WireField.Label.REPEATED,
     jsonName = "repDuration",
+    schemaIndex = 58,
   )
   public val rep_duration: List<Duration> = immutableCopyOf("rep_duration", rep_duration)
 
@@ -576,6 +642,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
     label = WireField.Label.REPEATED,
     jsonName = "repStruct",
+    schemaIndex = 59,
   )
   public val rep_struct: List<Map<String, *>?> = immutableCopyOfStruct("rep_struct", rep_struct)
 
@@ -584,6 +651,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
     label = WireField.Label.REPEATED,
     jsonName = "repListValue",
+    schemaIndex = 60,
   )
   public val rep_list_value: List<List<*>?> = immutableCopyOfStruct("rep_list_value",
       rep_list_value)
@@ -593,6 +661,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
     label = WireField.Label.REPEATED,
     jsonName = "repValue",
+    schemaIndex = 61,
   )
   public val rep_value: List<Any?> = immutableCopyOfStruct("rep_value", rep_value)
 
@@ -601,6 +670,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
     label = WireField.Label.REPEATED,
     jsonName = "repNullValue",
+    schemaIndex = 62,
   )
   public val rep_null_value: List<Nothing?> = immutableCopyOfStruct("rep_null_value",
       rep_null_value)
@@ -610,6 +680,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
     label = WireField.Label.REPEATED,
     jsonName = "repEmpty",
+    schemaIndex = 63,
   )
   public val rep_empty: List<Unit> = immutableCopyOf("rep_empty", rep_empty)
 
@@ -618,6 +689,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
     label = WireField.Label.REPEATED,
     jsonName = "repTimestamp",
+    schemaIndex = 64,
   )
   public val rep_timestamp: List<Instant> = immutableCopyOf("rep_timestamp", rep_timestamp)
 
@@ -626,6 +698,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.PACKED,
     jsonName = "packInt32",
+    schemaIndex = 65,
   )
   public val pack_int32: List<Int> = immutableCopyOf("pack_int32", pack_int32)
 
@@ -634,6 +707,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.PACKED,
     jsonName = "packUint32",
+    schemaIndex = 66,
   )
   public val pack_uint32: List<Int> = immutableCopyOf("pack_uint32", pack_uint32)
 
@@ -642,6 +716,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.PACKED,
     jsonName = "packSint32",
+    schemaIndex = 67,
   )
   public val pack_sint32: List<Int> = immutableCopyOf("pack_sint32", pack_sint32)
 
@@ -650,6 +725,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.PACKED,
     jsonName = "packFixed32",
+    schemaIndex = 68,
   )
   public val pack_fixed32: List<Int> = immutableCopyOf("pack_fixed32", pack_fixed32)
 
@@ -658,6 +734,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.PACKED,
     jsonName = "packSfixed32",
+    schemaIndex = 69,
   )
   public val pack_sfixed32: List<Int> = immutableCopyOf("pack_sfixed32", pack_sfixed32)
 
@@ -666,6 +743,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.PACKED,
     jsonName = "packInt64",
+    schemaIndex = 70,
   )
   public val pack_int64: List<Long> = immutableCopyOf("pack_int64", pack_int64)
 
@@ -674,6 +752,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.PACKED,
     jsonName = "packUint64",
+    schemaIndex = 71,
   )
   public val pack_uint64: List<Long> = immutableCopyOf("pack_uint64", pack_uint64)
 
@@ -682,6 +761,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.PACKED,
     jsonName = "packSint64",
+    schemaIndex = 72,
   )
   public val pack_sint64: List<Long> = immutableCopyOf("pack_sint64", pack_sint64)
 
@@ -690,6 +770,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.PACKED,
     jsonName = "packFixed64",
+    schemaIndex = 73,
   )
   public val pack_fixed64: List<Long> = immutableCopyOf("pack_fixed64", pack_fixed64)
 
@@ -698,6 +779,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.PACKED,
     jsonName = "packSfixed64",
+    schemaIndex = 74,
   )
   public val pack_sfixed64: List<Long> = immutableCopyOf("pack_sfixed64", pack_sfixed64)
 
@@ -706,6 +788,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.PACKED,
     jsonName = "packBool",
+    schemaIndex = 75,
   )
   public val pack_bool: List<Boolean> = immutableCopyOf("pack_bool", pack_bool)
 
@@ -714,6 +797,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.PACKED,
     jsonName = "packFloat",
+    schemaIndex = 76,
   )
   public val pack_float: List<Float> = immutableCopyOf("pack_float", pack_float)
 
@@ -722,6 +806,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.PACKED,
     jsonName = "packDouble",
+    schemaIndex = 77,
   )
   public val pack_double: List<Double> = immutableCopyOf("pack_double", pack_double)
 
@@ -730,6 +815,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedEnum#ADAPTER",
     label = WireField.Label.PACKED,
     jsonName = "packNestedEnum",
+    schemaIndex = 78,
   )
   public val pack_nested_enum: List<NestedEnum> = immutableCopyOf("pack_nested_enum",
       pack_nested_enum)
@@ -739,6 +825,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
     label = WireField.Label.PACKED,
     jsonName = "packNullValue",
+    schemaIndex = 79,
   )
   public val pack_null_value: List<Nothing?> = immutableCopyOfStruct("pack_null_value",
       pack_null_value)
@@ -748,6 +835,7 @@ public class AllTypes(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     jsonName = "mapInt32Int32",
+    schemaIndex = 80,
   )
   public val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32", map_int32_int32)
 
@@ -756,6 +844,7 @@ public class AllTypes(
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     jsonName = "mapStringString",
+    schemaIndex = 81,
   )
   public val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
       map_string_string)
@@ -765,6 +854,7 @@ public class AllTypes(
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedMessage#ADAPTER",
     jsonName = "mapStringMessage",
+    schemaIndex = 82,
   )
   public val map_string_message: Map<String, NestedMessage> = immutableCopyOf("map_string_message",
       map_string_message)
@@ -774,6 +864,7 @@ public class AllTypes(
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedEnum#ADAPTER",
     jsonName = "mapStringEnum",
+    schemaIndex = 83,
   )
   public val map_string_enum: Map<String, NestedEnum> = immutableCopyOf("map_string_enum",
       map_string_enum)
@@ -783,6 +874,7 @@ public class AllTypes(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
     jsonName = "mapInt32Any",
+    schemaIndex = 84,
   )
   public val map_int32_any: Map<Int, AnyMessage> = immutableCopyOf("map_int32_any", map_int32_any)
 
@@ -791,6 +883,7 @@ public class AllTypes(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#DURATION",
     jsonName = "mapInt32Duration",
+    schemaIndex = 85,
   )
   public val map_int32_duration: Map<Int, Duration> = immutableCopyOf("map_int32_duration",
       map_int32_duration)
@@ -800,6 +893,7 @@ public class AllTypes(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
     jsonName = "mapInt32Struct",
+    schemaIndex = 86,
   )
   public val map_int32_struct: Map<Int, Map<String, *>?> =
       immutableCopyOfMapWithStructValues("map_int32_struct", map_int32_struct)
@@ -809,6 +903,7 @@ public class AllTypes(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
     jsonName = "mapInt32ListValue",
+    schemaIndex = 87,
   )
   public val map_int32_list_value: Map<Int, List<*>?> =
       immutableCopyOfMapWithStructValues("map_int32_list_value", map_int32_list_value)
@@ -818,6 +913,7 @@ public class AllTypes(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
     jsonName = "mapInt32Value",
+    schemaIndex = 88,
   )
   public val map_int32_value: Map<Int, Any?> = immutableCopyOfMapWithStructValues("map_int32_value",
       map_int32_value)
@@ -827,6 +923,7 @@ public class AllTypes(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
     jsonName = "mapInt32NullValue",
+    schemaIndex = 89,
   )
   public val map_int32_null_value: Map<Int, Nothing?> =
       immutableCopyOfMapWithStructValues("map_int32_null_value", map_int32_null_value)
@@ -836,6 +933,7 @@ public class AllTypes(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
     jsonName = "mapInt32Empty",
+    schemaIndex = 90,
   )
   public val map_int32_empty: Map<Int, Unit> = immutableCopyOf("map_int32_empty", map_int32_empty)
 
@@ -844,6 +942,7 @@ public class AllTypes(
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
     jsonName = "mapInt32Timestamp",
+    schemaIndex = 91,
   )
   public val map_int32_timestamp: Map<Int, Instant> = immutableCopyOf("map_int32_timestamp",
       map_int32_timestamp)
@@ -853,6 +952,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
     jsonName = "oneofStruct",
     oneofName = "choice",
+    schemaIndex = 97,
   )
   public val oneof_struct: Map<String, *>? = immutableCopyOfStruct("oneof_struct", oneof_struct)
 
@@ -861,6 +961,7 @@ public class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
     jsonName = "oneofListValue",
     oneofName = "choice",
+    schemaIndex = 98,
   )
   public val oneof_list_value: List<*>? = immutableCopyOfStruct("oneof_list_value",
       oneof_list_value)
@@ -2275,6 +2376,7 @@ public class AllTypes(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.OMIT_IDENTITY,
+      schemaIndex = 0,
     )
     public val a: Int = 0,
     unknownFields: ByteString = ByteString.EMPTY,
