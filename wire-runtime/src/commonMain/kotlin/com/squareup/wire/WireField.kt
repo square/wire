@@ -65,7 +65,7 @@ annotation class WireField(
   /**
    * This is the order that this field was declared in the `.proto` schema.
    *
-   * It is -1 if their tags are declared in ascending order.
+   * It is -1 if the order does not matter for JSON serialization.
    */
   val schemaIndex: Int = -1,
 ) {

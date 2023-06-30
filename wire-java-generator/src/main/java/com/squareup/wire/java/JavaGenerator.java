@@ -53,7 +53,6 @@ import com.squareup.wire.schema.EnumConstant;
 import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.Extend;
 import com.squareup.wire.schema.Field;
-import com.squareup.wire.schema.internal.NameFactory;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.OneOf;
 import com.squareup.wire.schema.Options;
@@ -64,6 +63,7 @@ import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.Service;
 import com.squareup.wire.schema.Type;
+import com.squareup.wire.schema.internal.NameFactory;
 import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -81,9 +81,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-
 import okio.ByteString;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -701,13 +699,6 @@ public final class JavaGenerator {
         .initializer("$LL", 0L)
         .build());
 
-    int schemaIndex = 0;
-    List<Integer> fieldsAndOneOfFieldTags = type.getFieldsAndOneOfFields().stream()
-      .map(Field::getTag)
-      .collect(Collectors.toList());
-    List<Integer> sortedFieldsAndOneOfFieldTags = fieldsAndOneOfFieldTags.stream().sorted().collect(
-      Collectors.toList());
-    boolean printSchemaIndex = !fieldsAndOneOfFieldTags.equals(sortedFieldsAndOneOfFieldTags);
     for (Field field : type.getFieldsAndOneOfFields()) {
       TypeName fieldJavaType = fieldType(field);
       Field.EncodeMode encodeMode = field.getEncodeMode();
@@ -729,7 +720,7 @@ public final class JavaGenerator {
         fieldBuilder.addAnnotation(annotation);
       }
       fieldBuilder.addAnnotation(
-        wireFieldAnnotation(nameAllocator, field, type, printSchemaIndex ? schemaIndex++ : null)
+        wireFieldAnnotation(nameAllocator, field, type)
       );
       if (field.isExtension()) {
         fieldBuilder.addJavadoc("Extension source: $L\n", field.getLocation().withPathOnly());
@@ -1362,7 +1353,7 @@ public final class JavaGenerator {
   // )
   //
   private AnnotationSpec wireFieldAnnotation(NameAllocator nameAllocator, Field field,
-      MessageType message, @Nullable Integer schemaIndex) {
+      MessageType message) {
     AnnotationSpec.Builder result = AnnotationSpec.builder(WireField.class);
 
     NameAllocator localNameAllocator = nameAllocator.clone();
@@ -1430,10 +1421,6 @@ public final class JavaGenerator {
         throw new IllegalArgumentException("No oneof found for field: " + field.getQualifiedName());
       }
       result.addMember("oneofName", "$S", oneofName);
-    }
-
-    if (schemaIndex != null) {
-      result.addMember("schemaIndex", String.valueOf(schemaIndex));
     }
 
     return result.build();

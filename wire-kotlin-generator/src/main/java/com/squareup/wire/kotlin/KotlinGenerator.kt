@@ -1073,10 +1073,7 @@ class KotlinGenerator private constructor(
   ): List<Pair<ParameterSpec, PropertySpec>> {
     val result = mutableListOf<Pair<ParameterSpec, PropertySpec>>()
 
-    var index = 0
-    val fieldsAndOneOfFieldTags = message.fieldsAndOneOfFields.map { it.tag }
-    val printSchemaIndex = fieldsAndOneOfFieldTags != fieldsAndOneOfFieldTags.sorted()
-
+    var schemaIndex = 0
     for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
       when (fieldOrOneOf) {
         is Field -> result.add(
@@ -1084,7 +1081,7 @@ class KotlinGenerator private constructor(
             message = message,
             field = fieldOrOneOf,
             nameAllocator = nameAllocator,
-            schemaIndex = if (printSchemaIndex) index++ else null,
+            schemaIndex = schemaIndex++,
           )
         )
         is OneOf -> result.add(
