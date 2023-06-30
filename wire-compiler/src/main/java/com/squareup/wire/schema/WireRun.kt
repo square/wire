@@ -184,6 +184,8 @@ data class WireRun(
    * If true, no validation will be executed to check package cycles.
    */
   val permitPackageCycles: Boolean = false,
+
+  val visitors: List<Visitor> = listOf(),
 ) {
   data class Module(
     val dependencies: Set<String> = emptySet(),
@@ -191,6 +193,8 @@ data class WireRun(
   )
 
   init {
+    visitors.forEach(Visitor::start)
+
     val dagChecker = DagChecker(modules.keys) { moduleName ->
       modules.getValue(moduleName).dependencies
     }
@@ -216,10 +220,12 @@ data class WireRun(
     schemaLoader.initRoots(sourcePath, protoPath)
 
     // Validate the schema and resolve references
+    visitors.forEach(Visitor::loadSchemaStart)
     val fullSchema = schemaLoader.loadSchema()
+    visitors.forEach { it.loadSchemaEnd(fullSchema) }
 
     // Refactor the schema.
-    val schema = refactorSchema(fullSchema, logger)
+    val schema = refactorSchema(fullSchema, logger, visitors)
 
     val targetsExclusiveLast = targets.sortedBy { it.exclusive }
     val sourcePathPaths = (schemaLoader.sourcePathFiles.map { it.location.path } + moves.map { it.targetPath }).toSet()
@@ -242,6 +248,7 @@ data class WireRun(
       mapOf(null to Partition(schema))
     }
 
+    visitors.forEach(Visitor::schemaHandlersStart)
     for ((moduleName, partition) in partitions) {
       val claimedDefinitions = ClaimedDefinitions().apply { claim(ProtoType.ANY) }
 
@@ -271,9 +278,18 @@ data class WireRun(
           module = module,
           profileLoader = schemaLoader,
         )
+
+        visitors.forEach {
+          it.schemaHandlerStart(handler::class.qualifiedName!!, targetToEmittingRules.getValue(target))
+        }
         handler.handle(partition.schema, context)
+        visitors.forEach {
+          // TODO(Benoit) Pass the definitions claimed by this target?
+          it.schemaHandlerEnd(handler::class.qualifiedName!!, targetToEmittingRules.getValue(target))
+        }
       }
     }
+    visitors.forEach(Visitor::schemaHandlersEnd)
 
     errorCollector.throwIfNonEmpty()
 
@@ -286,10 +302,13 @@ data class WireRun(
         logger.unusedExcludesInTarget(emittingRules.unusedExcludes())
       }
     }
+
+    visitors.forEach(Visitor::validate)
+    visitors.forEach(Visitor::end)
   }
 
   /** Returns a transformed schema with unwanted elements removed and moves applied. */
-  private fun refactorSchema(schema: Schema, logger: WireLogger): Schema {
+  private fun refactorSchema(schema: Schema, logger: WireLogger, visitors: List<Visitor>): Schema {
     if (treeShakingRoots == listOf("*") &&
       treeShakingRubbish.isEmpty() &&
       sinceVersion == null &&
@@ -307,7 +326,9 @@ data class WireRun(
       .only(onlyVersion)
       .build()
 
+    visitors.forEach { it.treeShakeStart(schema, pruningRules) }
     val prunedSchema = schema.prune(pruningRules)
+    visitors.forEach { it.treeShakeEnd(prunedSchema, pruningRules) }
 
     if (pruningRules.unusedRoots().isNotEmpty()) {
       logger.unusedRoots(pruningRules.unusedRoots())
@@ -316,6 +337,9 @@ data class WireRun(
       logger.unusedPrunes(pruningRules.unusedPrunes())
     }
 
-    return TypeMover(prunedSchema, moves).move()
+    visitors.forEach { it.moveTypesStart(prunedSchema, moves) }
+    val movedSchema = TypeMover(prunedSchema, moves).move()
+    visitors.forEach { it.moveTypesEnd(movedSchema, moves) }
+    return movedSchema
   }
 }

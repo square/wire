@@ -923,6 +923,27 @@ public final class com/squareup/wire/schema/Type$Companion {
 	public final fun toElements (Ljava/util/List;)Ljava/util/List;
 }
 
+public abstract class com/squareup/wire/schema/Visitor {
+	public fun <init> ()V
+	public fun end ()V
+	public fun loadSchemaEnd (Lcom/squareup/wire/schema/Schema;)V
+	public fun loadSchemaStart ()V
+	public fun moveTypesEnd (Lcom/squareup/wire/schema/Schema;Ljava/util/List;)V
+	public fun moveTypesStart (Lcom/squareup/wire/schema/Schema;Ljava/util/List;)V
+	public fun schemaHandlerEnd (Ljava/lang/String;Lcom/squareup/wire/schema/EmittingRules;)V
+	public fun schemaHandlerStart (Ljava/lang/String;Lcom/squareup/wire/schema/EmittingRules;)V
+	public fun schemaHandlersEnd ()V
+	public fun schemaHandlersStart ()V
+	public fun start ()V
+	public fun treeShakeEnd (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/PruningRules;)V
+	public fun treeShakeStart (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/PruningRules;)V
+	public fun validate ()V
+}
+
+public abstract interface class com/squareup/wire/schema/Visitor$Factory {
+	public abstract fun create ()Lcom/squareup/wire/schema/Visitor;
+}
+
 public final class com/squareup/wire/schema/internal/DagChecker {
 	public fun <init> (Ljava/lang/Iterable;Lkotlin/jvm/functions/Function1;)V
 	public final fun check ()Ljava/util/Set;
