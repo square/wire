@@ -17,6 +17,7 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.StringWireLogger
 import com.squareup.wire.WireLogger
+import com.squareup.wire.WireLogger.Companion.NONE
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.WireRun.Module
@@ -25,6 +26,7 @@ import com.squareup.wire.testing.containsRelativePaths
 import com.squareup.wire.testing.findFiles
 import com.squareup.wire.testing.readUtf8
 import okio.Buffer
+import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
@@ -889,7 +891,7 @@ class WireRunTest {
           "two" to Module(dependencies = setOf("three")),
           "three" to Module(dependencies = setOf("one"))
         )
-      )
+      ).execute(FileSystem.SYSTEM, NONE)
       fail()
     } catch (e: IllegalArgumentException) {
       assertThat(e).hasMessage(

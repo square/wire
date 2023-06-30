@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.wire.ConsoleWireLogger
 import com.squareup.wire.WireLogger
 import com.squareup.wire.schema.PartitionedSchema.Partition
 import com.squareup.wire.schema.internal.DagChecker
@@ -192,9 +191,7 @@ class WireRun(
     val pruningRules: PruningRules? = null
   )
 
-  init {
-    visitors.forEach(Visitor::start)
-
+  private fun checkForModuleCycles() {
     val dagChecker = DagChecker(modules.keys) { moduleName ->
       modules.getValue(moduleName).dependencies
     }
@@ -211,11 +208,15 @@ class WireRun(
     }
   }
 
-  fun execute(fs: FileSystem = FileSystem.SYSTEM, logger: WireLogger = ConsoleWireLogger()) {
+  fun execute(fs: FileSystem, logger: WireLogger) {
     return execute(fs, logger, SchemaLoader(fs))
   }
 
-  private fun execute(fs: FileSystem, logger: WireLogger, schemaLoader: SchemaLoader) {
+  internal fun execute(fs: FileSystem, logger: WireLogger, schemaLoader: SchemaLoader) {
+    visitors.forEach(Visitor::start)
+
+    checkForModuleCycles()
+
     schemaLoader.permitPackageCycles = permitPackageCycles
     schemaLoader.initRoots(sourcePath, protoPath)
 

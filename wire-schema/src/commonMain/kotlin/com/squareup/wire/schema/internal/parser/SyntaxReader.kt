@@ -152,7 +152,7 @@ class SyntaxReader(
         val word = readWord(allowLeadingDigit).also {
           expect(readChar() == ')') { "expected ')'" }
         }
-        if (retainWrap) "(${word})" else word
+        if (retainWrap) "($word)" else word
       }
 
       '[' -> {
@@ -160,7 +160,7 @@ class SyntaxReader(
         val word = readWord(allowLeadingDigit).also {
           expect(readChar() == ']') { "expected ']'" }
         }
-        if (retainWrap) "[${word}]" else word
+        if (retainWrap) "[$word]" else word
       }
 
       else -> readWord(allowLeadingDigit)
