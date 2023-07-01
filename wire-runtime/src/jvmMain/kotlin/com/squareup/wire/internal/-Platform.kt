@@ -21,6 +21,8 @@ actual typealias Serializable = java.io.Serializable
 
 actual typealias Throws = kotlin.jvm.Throws
 
+actual typealias JvmDefaultWithCompatibility = kotlin.jvm.JvmDefaultWithCompatibility
+
 actual typealias ObjectStreamException = java.io.ObjectStreamException
 
 actual typealias ProtocolException = java.net.ProtocolException
