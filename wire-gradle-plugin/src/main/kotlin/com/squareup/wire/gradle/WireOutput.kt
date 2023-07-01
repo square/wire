@@ -127,6 +127,10 @@ open class CustomOutput @Inject constructor() : WireOutput() {
   var includes: List<String>? = null
   var excludes: List<String>? = null
   var exclusive: Boolean = true
+  /**
+   * Black boxed payload which a caller can set for the custom [SchemaHandler.Factory] to receive.
+   */
+  var options: Map<String, String>? = null
 
   /** Assign the schema handler factory instance. */
   var schemaHandlerFactory: SchemaHandler.Factory? = null
@@ -146,6 +150,7 @@ open class CustomOutput @Inject constructor() : WireOutput() {
       excludes = excludes ?: listOf(),
       exclusive = exclusive,
       outDirectory = outputDirectory,
+      options = options ?: mapOf(),
       schemaHandlerFactory = schemaHandlerFactory ?: newSchemaHandler(schemaHandlerFactoryClass!!),
     )
   }

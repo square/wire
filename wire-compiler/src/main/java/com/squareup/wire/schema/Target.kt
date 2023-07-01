@@ -306,6 +306,7 @@ data class CustomTarget(
   override val excludes: List<String> = listOf(),
   override val exclusive: Boolean = true,
   override val outDirectory: String,
+  val options: Map<String, String> = mapOf(),
   val schemaHandlerFactory: SchemaHandler.Factory,
 ) : Target() {
   override fun copyTarget(
@@ -328,6 +329,7 @@ data class CustomTarget(
       excludes = excludes,
       exclusive = exclusive,
       outDirectory = outDirectory,
+      options = options,
     )
   }
 }

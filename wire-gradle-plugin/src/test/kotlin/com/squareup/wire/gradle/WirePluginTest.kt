@@ -970,7 +970,10 @@ class WirePluginTest {
 
     val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
     assertThat(result.output)
-      .contains("custom handler is running!! *, , true")
+      .contains("custom handler is running!! " +
+        "squareup.dinosaurs.Dinosaur, " +
+        "squareup.geology.Period, true, " +
+        "a=one, b=two, c=three")
   }
 
   @Test

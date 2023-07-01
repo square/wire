@@ -198,6 +198,7 @@ abstract class SchemaHandler {
       excludes: List<String>,
       exclusive: Boolean,
       outDirectory: String,
+      options: Map<String, String>,
     ): SchemaHandler {
       return create()
     }
