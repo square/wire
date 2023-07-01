@@ -81,7 +81,7 @@ class OptionReader(internal val reader: SyntaxReader) {
       var parenthesized = false
       var name = subName
       if (name.startsWith("(")) {
-        name = name.substring(1, subName.length-1)
+        name = name.substring(1, subName.length - 1)
         parenthesized = true
       }
       value = OptionElement.create(name, kind, value, parenthesized)

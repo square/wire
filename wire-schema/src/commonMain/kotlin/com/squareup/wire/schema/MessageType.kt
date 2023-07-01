@@ -253,7 +253,7 @@ data class MessageType(
         "${messageElement.groups[0].location}: 'group' is not supported"
       }
       // Namespaces for all child elements include this message's name.
-      val childNamespaces = when{
+      val childNamespaces = when {
         namespaces.isEmpty() -> listOf("", messageElement.name) // first element must be package name
         else -> namespaces.plus(messageElement.name)
       }

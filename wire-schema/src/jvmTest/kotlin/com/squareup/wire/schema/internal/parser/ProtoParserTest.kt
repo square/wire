@@ -1591,7 +1591,7 @@ class ProtoParserTest {
           location = location.at(1, 1),
           name = "Bar",
           extendDeclarations = listOf(
-              ExtendElement(
+            ExtendElement(
               location = location.at(2, 3),
               name = "example.Foo",
               fields = listOf(

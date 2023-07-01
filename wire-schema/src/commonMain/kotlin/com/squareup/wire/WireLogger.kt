@@ -93,4 +93,15 @@ interface WireLogger {
    */
   // TODO(Benoit) We could pass the target name or something which makes it identifiable.
   fun unusedExcludesInTarget(unusedExcludes: Set<String>)
+
+  companion object {
+    val NONE = object : WireLogger {
+      override fun artifactHandled(outputPath: Path, qualifiedName: String, targetName: String) {}
+      override fun artifactSkipped(type: ProtoType, targetName: String) {}
+      override fun unusedRoots(unusedRoots: Set<String>) {}
+      override fun unusedPrunes(unusedPrunes: Set<String>) {}
+      override fun unusedIncludesInTarget(unusedIncludes: Set<String>) {}
+      override fun unusedExcludesInTarget(unusedExcludes: Set<String>) {}
+    }
+  }
 }

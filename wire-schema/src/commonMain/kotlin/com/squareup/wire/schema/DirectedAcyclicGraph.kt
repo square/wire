@@ -15,8 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import java.util.ArrayDeque
-
 internal class DirectedAcyclicGraph<N>(
   private val nodes: Iterable<N>,
   private val edges: (N) -> Iterable<N>

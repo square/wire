@@ -23,56 +23,7 @@ import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.swift.SwiftGenerator
 import okio.Path
 import java.io.IOException
-import java.io.Serializable
 import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
-
-sealed class Target : Serializable {
-  /**
-   * Proto types to include generated sources for. Types listed here will be generated for this
-   * target and not for subsequent targets in the task.
-   *
-   * This list should contain package names (suffixed with `.*`) and type names only. It should
-   * not contain member names.
-   */
-  abstract val includes: List<String>
-
-  /**
-   * Proto types to excluded generated sources for. Types listed here will not be generated for this
-   * target.
-   *
-   * This list should contain package names (suffixed with `.*`) and type names only. It should
-   * not contain member names.
-   */
-  abstract val excludes: List<String>
-
-  /**
-   * True if types emitted for this target should not also be emitted for other targets. Use this
-   * to cause multiple outputs to be emitted for the same input type.
-   */
-  abstract val exclusive: Boolean
-
-  /**
-   * Directory where this target will write its output.
-   *
-   * In Gradle, when this class is serialized, this is relative to the project to improve build
-   * cacheability. Callers must use [copyTarget] to resolve it to real path prior to use.
-   */
-  abstract val outDirectory: String
-
-  /**
-   * Returns a new Target object that is a copy of this one, but with the given fields updated.
-   */
-  // TODO(Benoit) We're only ever copying outDirectory, maybe we can remove other fields and rename
-  //  the method?
-  abstract fun copyTarget(
-    includes: List<String> = this.includes,
-    excludes: List<String> = this.excludes,
-    exclusive: Boolean = this.exclusive,
-    outDirectory: String = this.outDirectory,
-  ): Target
-
-  abstract fun newHandler(): SchemaHandler
-}
 
 /** Generate `.java` sources. */
 data class JavaTarget(

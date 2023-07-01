@@ -25,7 +25,6 @@ import com.squareup.wire.schema.Options
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Schema
-import com.squareup.wire.schema.Type
 import java.lang.NullPointerException
 import java.lang.annotation.ElementType
 import java.math.BigInteger
@@ -74,8 +73,9 @@ fun eligibleAsAnnotationMember(schema: Schema, field: Field): Boolean {
   }
 
   val qualifiedName = field.qualifiedName
-  if (qualifiedName.startsWith("google.protobuf.")
-      || qualifiedName.startsWith("wire.")) {
+  if (qualifiedName.startsWith("google.protobuf.") ||
+    qualifiedName.startsWith("wire.")
+  ) {
     return false // Don't emit annotations for packed, since, etc.
   }
 
