@@ -1,6 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinCompile;
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
   dependencies {
@@ -52,6 +52,13 @@ allprojects {
         else -> return@all
       }
       configuration.dependencies.add(project.dependencies.platform(bom))
+    }
+  }
+
+  tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+      jvmTarget = "1.8"
+      freeCompilerArgs += "-Xjvm-default=all"
     }
   }
 }

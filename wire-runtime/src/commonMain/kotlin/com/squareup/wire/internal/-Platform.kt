@@ -25,6 +25,10 @@ expect interface Serializable
 @OptIn(ExperimentalMultiplatform::class)
 expect annotation class Throws(vararg val exceptionClasses: KClass<out Throwable>)
 
+@OptionalExpectation
+@OptIn(ExperimentalMultiplatform::class)
+expect annotation class JvmDefaultWithCompatibility()
+
 expect abstract class ObjectStreamException : IOException
 
 expect class ProtocolException(host: String) : IOException
