@@ -21,6 +21,8 @@ import com.squareup.wire.WireLogger.Companion.NONE
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.WireRun.Module
+import com.squareup.wire.schema.internal.TypeMover
+import com.squareup.wire.schema.internal.TypeMover.Move
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.containsRelativePaths
 import com.squareup.wire.testing.findFiles
@@ -33,8 +35,6 @@ import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
 import kotlin.test.assertFailsWith
 
 class WireRunTest {
@@ -249,6 +249,164 @@ class WireRunTest {
       .contains("class Blue")
     assertThat(fs.readUtf8("generated/java/squareup/colors/Red.java"))
       .contains("public final class Red extends Message")
+  }
+
+  @Test
+  fun noSuchClassEventListener() {
+    assertThat(
+      assertFailsWith<IllegalArgumentException> {
+        newEventListenerFactory("foo").create()
+      }
+    ).hasMessage("Couldn't find EventListenerClass 'foo'")
+  }
+
+  @Test
+  fun noPublicConstructorEventListener() {
+    assertThat(
+      assertFailsWith<IllegalArgumentException> {
+        newEventListenerFactory("java.lang.Void").create()
+      }
+    ).hasMessage("No public constructor on java.lang.Void")
+  }
+
+  @Test
+  fun classDoesNotImplementEventListenerInterface() {
+    assertThat(
+      assertFailsWith<IllegalArgumentException> {
+        newEventListenerFactory("java.lang.Object").create()
+      }
+    ).hasMessage("java.lang.Object does not implement EventListener.Factory")
+  }
+
+  @Test
+  fun myEventListenerSuccess() {
+    val listenerA = MyEventListener()
+    val listenerB = MyEventListener()
+    val listeners = listOf(listenerA, listenerB)
+
+    writeBlueProto()
+    writeRedProto()
+    writeTriangleProto()
+    val wireRun = WireRun(
+      treeShakingRubbish = listOf("not.existing"),
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      protoPath = listOf(Location.get("polygons/src/main/proto")),
+      targets = listOf(
+        KotlinTarget(
+          outDirectory = "generated/kt",
+          includes = listOf("squareup.colors.Blue")
+        ),
+        KotlinTarget(
+          outDirectory = "generated/kt"
+        )
+      ),
+      eventListeners = listeners,
+    )
+    wireRun.execute(fs, logger)
+
+    listeners.forEach { listener ->
+      assertThat(listener.takeLog()).isEqualTo("runStart")
+      assertThat(listener.takeLog()).isEqualTo("loadSchemaStart")
+      assertThat(listener.takeLog()).isEqualTo("loadSchemaSuccess")
+      assertThat(listener.takeLog()).isEqualTo("treeShakeStart")
+      assertThat(listener.takeLog()).isEqualTo("treeShakeEnd")
+      assertThat(listener.takeLog()).isEqualTo("moveTypesStart")
+      assertThat(listener.takeLog()).isEqualTo("moveTypesEnd")
+      assertThat(listener.takeLog()).isEqualTo("schemaHandlersStart")
+      assertThat(listener.takeLog()).isEqualTo("schemaHandlerStart")
+      assertThat(listener.takeLog()).isEqualTo("schemaHandlerEnd")
+      assertThat(listener.takeLog()).isEqualTo("schemaHandlerStart")
+      assertThat(listener.takeLog()).isEqualTo("schemaHandlerEnd")
+      assertThat(listener.takeLog()).isEqualTo("schemaHandlersEnd")
+      assertThat(listener.takeLog()).isEqualTo("runSuccess")
+      listener.assertAllLogsAreConsumed()
+    }
+  }
+
+  class MyEventListener : EventListener() {
+    private val logs = ArrayDeque<String>()
+
+    fun takeLog() = logs.removeFirst()
+
+    fun assertAllLogsAreConsumed() {
+      if (logs.isNotEmpty()) {
+        throw AssertionError("Unconsumed logs: ${logs.joinToString(", ")}")
+      }
+    }
+
+    override fun runStart(wireRun: WireRun) {
+      logs.add("runStart")
+    }
+
+    override fun runSuccess(wireRun: WireRun) {
+      logs.add("runSuccess")
+    }
+
+    override fun runFailed(errors: List<String>) {
+      logs.add("runFailed")
+    }
+
+    override fun loadSchemaStart() {
+      logs.add("loadSchemaStart")
+    }
+
+    override fun loadSchemaSuccess(schema: Schema) {
+      logs.add("loadSchemaSuccess")
+    }
+
+    override fun treeShakeStart(
+      schema: Schema,
+      pruningRules: PruningRules,
+    ) {
+      logs.add("treeShakeStart")
+    }
+
+    override fun treeShakeEnd(
+      refactoredSchema: Schema,
+      pruningRules: PruningRules,
+    ) {
+      logs.add("treeShakeEnd")
+    }
+
+    override fun moveTypesStart(
+      schema: Schema,
+      moves: List<Move>,
+    ) {
+      logs.add("moveTypesStart")
+    }
+
+    override fun moveTypesEnd(
+      refactoredSchema: Schema,
+      moves: List<Move>,
+    ) {
+      logs.add("moveTypesEnd")
+    }
+
+    override fun schemaHandlersStart() {
+      logs.add("schemaHandlersStart")
+    }
+
+    override fun schemaHandlersEnd() {
+      logs.add("schemaHandlersEnd")
+    }
+
+    override fun schemaHandlerStart(
+      schemaHandler: SchemaHandler,
+      emittingRules: EmittingRules,
+    ) {
+      logs.add("schemaHandlerStart")
+    }
+
+    override fun schemaHandlerEnd(
+      schemaHandler: SchemaHandler,
+      emittingRules: EmittingRules,
+    ) {
+      logs.add("schemaHandlerEnd")
+    }
+
+    class Factory : EventListener.Factory {
+      override fun create(): EventListener = MyEventListener()
+    }
   }
 
   @Test
@@ -720,16 +878,6 @@ class WireRunTest {
     )
   }
 
-  private fun <T> reserialize(value: T): T {
-    val buffer = Buffer()
-    ObjectOutputStream(buffer.outputStream()).use {
-      it.writeObject(value)
-    }
-    return ObjectInputStream(buffer.inputStream()).use {
-      it.readObject() as T
-    }
-  }
-
   private fun callCustomHandler(schemaHandlerFactory: SchemaHandler.Factory) {
     writeTriangleProto()
     val schemaLoader = SchemaLoader(fs)
@@ -974,7 +1122,7 @@ class WireRunTest {
           "two" to Module(dependencies = setOf("three")),
           "three" to Module(dependencies = setOf("one"))
         )
-      ).execute(FileSystem.SYSTEM, NONE)
+      ).execute(fs, NONE)
       fail()
     } catch (e: IllegalArgumentException) {
       assertThat(e).hasMessage(

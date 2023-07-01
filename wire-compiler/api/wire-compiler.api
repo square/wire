@@ -19,6 +19,7 @@ public final class com/squareup/wire/WireCompiler {
 	public final fun getEmitAppliedOptions ()Z
 	public final fun getEmitCompact ()Z
 	public final fun getEmitDeclaredOptions ()Z
+	public final fun getEventListenerFactoryClasses ()Ljava/util/List;
 	public final fun getFs ()Lokio/FileSystem;
 	public final fun getJavaInterop ()Z
 	public final fun getJavaOut ()Ljava/lang/String;

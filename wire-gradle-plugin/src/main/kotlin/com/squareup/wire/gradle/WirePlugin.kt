@@ -23,6 +23,7 @@ import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.Source
 import com.squareup.wire.gradle.kotlin.sourceRoots
 import com.squareup.wire.schema.KotlinTarget
+import com.squareup.wire.schema.newEventListenerFactory
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
@@ -232,6 +233,9 @@ class WirePlugin : Plugin<Project> {
 
         task.projectDirProperty.set(project.layout.projectDirectory)
         task.buildDirProperty.set(project.layout.buildDirectory)
+
+        val factories = extension.eventListenerFactories + extension.eventListenerFactoryClasses().map(::newEventListenerFactory)
+        task.eventListenerFactories.set(factories)
 
         for (projectDependency in projectDependencies) {
           task.dependsOn(projectDependency)

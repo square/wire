@@ -106,6 +106,10 @@ public class com/squareup/wire/gradle/ProtoOutput : com/squareup/wire/gradle/Wir
 public class com/squareup/wire/gradle/WireExtension {
 	public fun <init> (Lorg/gradle/api/Project;)V
 	public final fun custom (Lorg/gradle/api/Action;)V
+	public final fun eventListenerFactories ()Ljava/util/Set;
+	public final fun eventListenerFactory (Lcom/squareup/wire/schema/EventListener$Factory;)V
+	public final fun eventListenerFactoryClass (Ljava/lang/String;)V
+	public final fun eventListenerFactoryClasses ()Ljava/util/Set;
 	public final fun getDryRun ()Z
 	public final fun getOutputs ()Ljava/util/List;
 	public final fun getProtoJars ()Ljava/util/Set;
@@ -188,6 +192,7 @@ public abstract class com/squareup/wire/gradle/WireTask : org/gradle/api/tasks/S
 	public final fun generateWireFiles ()V
 	public abstract fun getBuildDirProperty ()Lorg/gradle/api/file/DirectoryProperty;
 	public final fun getDryRun ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEventListenerFactories ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getInputFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	public abstract fun getMoves ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getOnlyVersion ()Lorg/gradle/api/provider/Property;

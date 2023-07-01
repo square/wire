@@ -1,0 +1,76 @@
+import com.squareup.wire.schema.EmittingRules
+import com.squareup.wire.schema.PruningRules
+import com.squareup.wire.schema.Schema
+import com.squareup.wire.schema.EventListener
+import com.squareup.wire.schema.SchemaHandler
+import com.squareup.wire.schema.WireRun
+import com.squareup.wire.schema.internal.TypeMover
+import org.slf4j.LoggerFactory
+import org.slf4j.Logger
+
+plugins {
+  id 'application'
+  id 'org.jetbrains.kotlin.jvm'
+  id 'com.squareup.wire'
+}
+
+class MyEventListenerFactory implements EventListener.Factory {
+  @Override public EventListener create() {
+    return new EventListener() {
+      private Logger delegate = LoggerFactory.getLogger("MyEventListenerFactory")
+
+      @Override public void runStart(WireRun wireRun) {
+        delegate.info("runStart");
+      }
+      @Override public void runSuccess(WireRun wireRun) {
+        delegate.info("runSuccess");
+      }
+      @Override public void runFailed(List<String> errors) {
+        delegate.info("runFailed");
+      }
+      @Override public void loadSchemaStart() {
+        delegate.info("loadSchemaStart");
+      }
+      @Override public void loadSchemaSuccess(Schema schema) {
+        delegate.info("loadSchemaSuccess");
+      }
+      @Override public void treeShakeStart(Schema schema, PruningRules pruningRules) {
+        delegate.info("treeShakeStart");
+      }
+      @Override
+      public void treeShakeEnd(Schema refactoredSchema, PruningRules pruningRules) {
+        delegate.info("treeShakeEnd");
+      }
+      @Override
+      public void moveTypesStart(Schema schema, List<TypeMover.Move> moves) {
+        delegate.info("moveTypesStart");
+      }
+      @Override
+      public void moveTypesEnd(Schema refactoredSchema, List<TypeMover.Move> moves) {
+        delegate.info("moveTypesEnd");
+      }
+      @Override public void schemaHandlersStart() {
+        delegate.info("schemaHandlersStart");
+      }
+      @Override public void schemaHandlersEnd() {
+        delegate.info("schemaHandlersEnd");
+      }
+      @Override public void schemaHandlerStart(SchemaHandler schemaHandler,
+          EmittingRules emittingRules) {
+        delegate.info("schemaHandlerStart");
+      }
+      @Override public void schemaHandlerEnd(SchemaHandler schemaHandler,
+          EmittingRules emittingRules) {
+        delegate.info("schemaHandlerEnd");
+      }
+    }
+  }
+}
+
+wire {
+  sourcePath 'src/main/proto'
+
+  eventListenerFactory(new MyEventListenerFactory())
+
+  kotlin {}
+}
