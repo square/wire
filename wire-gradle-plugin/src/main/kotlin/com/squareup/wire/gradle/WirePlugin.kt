@@ -22,7 +22,6 @@ import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.Source
 import com.squareup.wire.gradle.kotlin.sourceRoots
-import com.squareup.wire.schema.KotlinTarget
 import com.squareup.wire.schema.newEventListenerFactory
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -145,20 +144,13 @@ class WirePlugin : Plugin<Project> {
         (protoSourceInput.dependencies + protoPathInput.dependencies).filterIsInstance<ProjectDependency>()
 
       val targets = outputs.map { output ->
-        var target = output.toTarget(
+        output.toTarget(
           if (output.out == null) {
             project.relativePath(source.outputDir(project))
           } else {
             output.out!!
           }
         )
-        if (target is KotlinTarget) {
-          val isMultiplatformOrJs =
-            project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform") ||
-              project.plugins.hasPlugin("org.jetbrains.kotlin.js")
-          target = target.copy(jvmOnly = !isMultiplatformOrJs)
-        }
-        return@map target
       }
       val generatedSourcesDirectories: Set<File> =
         targets

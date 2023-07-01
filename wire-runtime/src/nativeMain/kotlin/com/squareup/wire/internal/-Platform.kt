@@ -19,6 +19,10 @@ import okio.IOException
 
 actual interface Serializable
 
+actual annotation class JvmField
+
+actual annotation class JvmStatic
+
 actual abstract class ObjectStreamException : IOException()
 
 actual class ProtocolException actual constructor(host: String) : IOException(host)
