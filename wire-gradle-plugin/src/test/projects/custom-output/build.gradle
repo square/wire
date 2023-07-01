@@ -1,4 +1,5 @@
 import com.squareup.wire.schema.SchemaHandler
+import org.jetbrains.annotations.NotNull
 
 plugins {
   id 'application'
@@ -7,7 +8,14 @@ plugins {
 
 class MyCustomHandlerFactory implements SchemaHandler.Factory {
   @Override public SchemaHandler create() {
-    throw new RuntimeException("custom handler is running!!");
+    throw new RuntimeException("boom");
+  }
+
+  @Override
+  SchemaHandler create(@NotNull List<String> list, @NotNull List<String> list1, boolean b,
+      @NotNull String s) {
+    throw new RuntimeException("custom handler is running!! " +
+        list.join(", ") + ", " + list1.join(", ") + ", " + b);
   }
 }
 

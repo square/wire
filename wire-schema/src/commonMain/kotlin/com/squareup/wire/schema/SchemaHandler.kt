@@ -190,6 +190,16 @@ abstract class SchemaHandler {
 
   /** Implementations of this interface must have a no-arguments public constructor. */
   interface Factory : Serializable {
+    @Deprecated("Wire does not call this method anymore. Implement the other 'create' method to receive the payload associated with the schema handler.")
     fun create(): SchemaHandler
+
+    fun create(
+      includes: List<String>,
+      excludes: List<String>,
+      exclusive: Boolean,
+      outDirectory: String,
+    ): SchemaHandler {
+      return create()
+    }
   }
 }

@@ -323,7 +323,12 @@ data class CustomTarget(
   }
 
   override fun newHandler(): SchemaHandler {
-    return schemaHandlerFactory.create()
+    return schemaHandlerFactory.create(
+      includes = includes,
+      excludes = excludes,
+      exclusive = exclusive,
+      outDirectory = outDirectory,
+    )
   }
 }
 
