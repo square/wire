@@ -18,7 +18,9 @@ internal fun buildClassMap(schema: Schema, service: Service): Map<ProtoType, Cla
         types.flatMap { getNestedTypes(javaPackage(schema), null, listOf(it)) }
       servicesToName + typesToName
     }
-    .toMap()
+    .toMap() + mapOf(
+      ProtoType.EMPTY to ClassName("kotlin", "Unit"),
+    )
 
 private fun getNestedTypes(
   kotlinPackage: String,

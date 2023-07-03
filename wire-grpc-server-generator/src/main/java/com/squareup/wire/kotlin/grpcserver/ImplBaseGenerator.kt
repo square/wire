@@ -26,6 +26,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.UNIT
 import com.squareup.kotlinpoet.asClassName
+import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
 import java.io.InputStream
@@ -150,7 +151,7 @@ object ImplBaseGenerator {
                 .addModifiers(KModifier.OVERRIDE)
                 .addParameter(ParameterSpec(name = "value", type = className))
                 .returns(InputStream::class)
-                .addCode(CodeBlock.of("return %T.ADAPTER.encode(value).inputStream()", className))
+                .addCode(streamCodeFor(it!!, className))
                 .build()
             )
             .addFunction(
@@ -165,7 +166,7 @@ object ImplBaseGenerator {
                 .addModifiers(KModifier.OVERRIDE)
                 .addParameter("stream", InputStream::class)
                 .returns(className)
-                .addCode(CodeBlock.of("return %T.ADAPTER.decode(stream)", className))
+                .addCode(parseCodeFor(it!!, className))
                 .build()
             )
             .build()
@@ -173,6 +174,35 @@ object ImplBaseGenerator {
       }
 
     return builder
+  }
+
+  private fun adapterObject(protoType: ProtoType): String =
+    when (protoType) {
+      ProtoType.EMPTY -> "com.squareup.wire.ProtoAdapter.EMPTY"
+      ProtoType.DURATION -> "com.squareup.wire.ProtoAdapter.DURATION"
+      ProtoType.TIMESTAMP -> "com.squareup.wire.ProtoAdapter.INSTANT"
+      ProtoType.STRUCT_MAP -> "com.squareup.wire.ProtoAdapter.STRUCT_MAP"
+      ProtoType.STRUCT_LIST -> "com.squareup.wire.ProtoAdapter.STRUCT_LIST"
+      ProtoType.STRUCT_NULL -> "com.squareup.wire.ProtoAdapter.STRUCT_NULL"
+      ProtoType.STRUCT_VALUE -> "com.squareup.wire.ProtoAdapter.STRUCT_VALUE"
+      ProtoType.BOOL_VALUE -> "com.squareup.wire.ProtoAdapter.BOOL_VALUE"
+      ProtoType.BYTES_VALUE -> "com.squareup.wire.ProtoAdapter.BYTES_VALUE"
+      ProtoType.DOUBLE_VALUE -> "com.squareup.wire.ProtoAdapter.DOUBLE_VALUE"
+      ProtoType.FLOAT_VALUE -> "com.squareup.wire.ProtoAdapter.FLOAT_VALUE"
+      ProtoType.INT32_VALUE -> "com.squareup.wire.ProtoAdapter.INT32_VALUE"
+      ProtoType.INT64_VALUE -> "com.squareup.wire.ProtoAdapter.INT64_VALUE"
+      ProtoType.STRING_VALUE -> "com.squareup.wire.ProtoAdapter.STRING_VALUE"
+      ProtoType.UINT32_VALUE -> "com.squareup.wire.ProtoAdapter.UINT32_VALUE"
+      ProtoType.UINT64_VALUE -> "com.squareup.wire.ProtoAdapter.UINT64_VALUE"
+      else -> "%T.ADAPTER"
+    }
+
+  private fun streamCodeFor(protoType: ProtoType, className: ClassName): CodeBlock {
+    return CodeBlock.of("return ${adapterObject(protoType)}.encode(value).inputStream()", className)
+  }
+
+  private fun parseCodeFor(protoType: ProtoType, className: ClassName): CodeBlock {
+    return CodeBlock.of("return ${adapterObject(protoType)}.decode(stream)", className)
   }
 
   private fun bindServiceCodeBlock(service: Service, options: KotlinGrpcGenerator.Companion.Options): CodeBlock {
