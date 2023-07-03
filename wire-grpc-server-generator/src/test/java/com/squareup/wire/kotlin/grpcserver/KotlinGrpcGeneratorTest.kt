@@ -15,19 +15,12 @@
  */
 package com.squareup.wire.kotlin.grpcserver
 
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.buildSchema
+import com.squareup.wire.kotlin.grpcserver.GoldenTestUtils.assertFileEquals
 import com.squareup.wire.schema.addLocal
 import okio.Path.Companion.toPath
-import okio.buffer
-import okio.source
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.io.File
-import javax.script.ScriptEngineManager
-import okio.sink
 
 internal class KotlinGrpcGeneratorTest {
   @Test
@@ -41,10 +34,9 @@ internal class KotlinGrpcGeneratorTest {
       singleMethodServices = true,
       suspendingCalls = false
     ).generateGrpcServer(service, schema.protoFile(path), schema)
-    val output = FileSpec.get("routeguide", typeSpec)
 
-    assertThat(output.toString())
-      .isEqualTo(File("src/test/golden/RouteGuideWireGrpc.kt").source().buffer().readUtf8())
+    val output = FileSpec.get("routeguide", typeSpec)
+    assertFileEquals("RouteGuideWireGrpc.kt", output)
   }
 
   private val twoMethodSchema = """
@@ -72,10 +64,9 @@ internal class KotlinGrpcGeneratorTest {
       singleMethodServices = false,
       suspendingCalls = false
     ).generateGrpcServer(service, schema.protoFile(path), schema)
-    val output = FileSpec.get("com.foo.bar", typeSpec)
 
-    assertThat(output.toString())
-      .isEqualTo(File("src/test/golden/nonSingleMethodService.kt").source().buffer().readUtf8())
+    val output = FileSpec.get("com.foo.bar", typeSpec)
+    assertFileEquals("nonSingleMethodService.kt", output)
   }
 
   @Test
@@ -88,10 +79,9 @@ internal class KotlinGrpcGeneratorTest {
       singleMethodServices = true,
       suspendingCalls = false
     ).generateGrpcServer(service, schema.protoFile(path), schema)
-    val output = FileSpec.get("com.foo.bar", typeSpec)
 
-    assertThat(output.toString())
-      .isEqualTo(File("src/test/golden/singleMethodService.kt").source().buffer().readUtf8())
+    val output = FileSpec.get("com.foo.bar", typeSpec)
+    assertFileEquals("singleMethodService.kt", output)
   }
 
   @Test
@@ -111,9 +101,8 @@ internal class KotlinGrpcGeneratorTest {
       singleMethodServices = false,
       suspendingCalls = true
     ).generateGrpcServer(service, schema.protoFile(path), schema)
-    val output = FileSpec.get("", typeSpec)
 
-    assertThat(output.toString())
-      .isEqualTo(File("src/test/golden/unitService.kt").source().buffer().readUtf8())
+    val output = FileSpec.get("", typeSpec)
+    assertFileEquals("unitService.kt", output)
   }
 }

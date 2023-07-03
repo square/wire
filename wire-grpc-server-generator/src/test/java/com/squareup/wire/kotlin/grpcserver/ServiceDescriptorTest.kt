@@ -18,13 +18,10 @@ package com.squareup.wire.kotlin.grpcserver
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.buildSchema
+import com.squareup.wire.kotlin.grpcserver.GoldenTestUtils.assertFileEquals
 import com.squareup.wire.schema.addLocal
 import okio.Path.Companion.toPath
-import okio.buffer
-import okio.source
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.io.File
 
 class ServiceDescriptorTest {
   @Test
@@ -42,8 +39,7 @@ class ServiceDescriptorTest {
           .build()
       )
       .build()
-      .toString()
 
-    assertThat(code).isEqualTo(File("src/test/golden/ServiceDescriptor.kt").source().buffer().readUtf8())
+    assertFileEquals("ServiceDescriptor.kt", code)
   }
 }
