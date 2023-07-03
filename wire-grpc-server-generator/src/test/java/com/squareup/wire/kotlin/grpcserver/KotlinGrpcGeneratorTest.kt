@@ -93,4 +93,27 @@ internal class KotlinGrpcGeneratorTest {
     assertThat(output.toString())
       .isEqualTo(File("src/test/golden/singleMethodService.kt").source().buffer().readUtf8())
   }
+
+  @Test
+  fun `correctly generates adapters for Unit return values`() {
+    val path = "service.proto".toPath()
+    val schema = buildSchema { add(path, """
+      syntax = "proto3";
+      import "google/protobuf/empty.proto";
+
+      service MyService {
+        rpc doSomething(google.protobuf.Empty) returns (google.protobuf.Empty);
+      }
+    """.trimIndent()) }
+    val service = schema.getService("MyService")
+    val (_, typeSpec) = KotlinGrpcGenerator(
+      buildClassMap(schema, service!!),
+      singleMethodServices = false,
+      suspendingCalls = true
+    ).generateGrpcServer(service, schema.protoFile(path), schema)
+    val output = FileSpec.get("", typeSpec)
+
+    assertThat(output.toString())
+      .isEqualTo(File("src/test/golden/unitService.kt").source().buffer().readUtf8())
+  }
 }
