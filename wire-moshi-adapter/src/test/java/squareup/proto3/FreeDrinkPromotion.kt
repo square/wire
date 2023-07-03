@@ -12,6 +12,8 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
+import com.squareup.wire.`internal`.JvmField
+import com.squareup.wire.`internal`.JvmStatic
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -21,8 +23,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.jvm.JvmField
-import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 public class FreeDrinkPromotion(

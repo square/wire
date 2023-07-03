@@ -6,10 +6,10 @@ import com.squareup.wire.EnumAdapter
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
+import com.squareup.wire.`internal`.JvmField
+import com.squareup.wire.`internal`.JvmStatic
 import kotlin.Deprecated
 import kotlin.Int
-import kotlin.jvm.JvmField
-import kotlin.jvm.JvmStatic
 
 public enum class DeprecatedEnum(
   override val `value`: Int,
