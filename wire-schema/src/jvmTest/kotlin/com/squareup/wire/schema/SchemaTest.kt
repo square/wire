@@ -19,6 +19,7 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
+import com.squareup.wire.schema.Options.Companion.ONEOF_OPTIONS
 import com.squareup.wire.schema.internal.isValidTag
 import com.squareup.wire.schema.internal.parser.OptionElement
 import okio.Path.Companion.toPath
@@ -2065,6 +2066,10 @@ class SchemaTest {
     assertThat(fieldOptions.extensionField("my_oneof_option")!!.type).isEqualTo(
       ProtoType.get("string"),
     )
+    val choiceOneOf = (schema.getType("Message") as MessageType).oneOfs[0]
+    assertThat(choiceOneOf.name).isEqualTo("choice")
+    assertThat(choiceOneOf.options.get(ProtoMember.get(ONEOF_OPTIONS, "my_oneof_option")))
+      .isEqualTo("Well done")
   }
 
   @Test

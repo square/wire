@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.schema.Options.Companion.ONEOF_OPTIONS
 import com.squareup.wire.schema.internal.parser.OneOfElement
 import kotlin.jvm.JvmStatic
 
@@ -22,6 +23,8 @@ data class OneOf(
   val name: String,
   val documentation: String,
   val fields: List<Field>,
+  val location: Location,
+  val options: Options,
 ) {
   fun link(linker: Linker) {
     for (field in fields) {
@@ -33,13 +36,15 @@ data class OneOf(
     for (field in fields) {
       field.linkOptions(linker, syntaxRules, validate)
     }
+    options.link(linker, location, validate)
   }
 
   fun retainAll(schema: Schema, markSet: MarkSet, enclosingType: ProtoType): OneOf? {
     val retainedFields = Field.retainAll(schema, markSet, enclosingType, fields)
     return when {
       retainedFields.isEmpty() -> null
-      else -> OneOf(name, documentation, retainedFields)
+      else ->
+        OneOf(name, documentation, retainedFields, location, options.retainAll(schema, markSet))
     }
   }
 
@@ -47,7 +52,7 @@ data class OneOf(
     val retainedFields = Field.retainLinked(fields)
     return when {
       retainedFields.isEmpty() -> null
-      else -> OneOf(name, documentation, retainedFields)
+      else -> OneOf(name, documentation, retainedFields, location, options.retainLinked())
     }
   }
 
@@ -56,16 +61,18 @@ data class OneOf(
     fun fromElements(
       namespaces: List<String>,
       elements: List<OneOfElement>,
-    ) = elements.map {
-      if (it.groups.isNotEmpty()) {
-        val (_, location) = it.groups[0]
+    ) = elements.map { element ->
+      if (element.groups.isNotEmpty()) {
+        val (_, location) = element.groups[0]
         throw IllegalStateException("$location: 'group' is not supported")
       }
 
       return@map OneOf(
-        name = it.name,
-        documentation = it.documentation,
-        fields = Field.fromElements(namespaces, it.fields, false, oneOf = true),
+        name = element.name,
+        documentation = element.documentation,
+        fields = Field.fromElements(namespaces, element.fields, extension = false, oneOf = true),
+        location = element.location,
+        options = Options(ONEOF_OPTIONS, element.options),
       )
     }
 
@@ -77,6 +84,8 @@ data class OneOf(
           documentation = it.documentation,
           fields = Field.toElements(it.fields),
           groups = emptyList(),
+          location = it.location,
+          options = it.options.elements,
         )
       }
   }

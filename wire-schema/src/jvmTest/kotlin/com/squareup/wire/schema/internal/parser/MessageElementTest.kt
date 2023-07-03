@@ -282,6 +282,7 @@ class MessageElementTest {
       name = "Message",
       oneOfs = listOf(
         OneOfElement(
+          location = location,
           name = "hi",
           fields = listOf(
             FieldElement(
@@ -312,6 +313,7 @@ class MessageElementTest {
       name = "Message",
       oneOfs = listOf(
         OneOfElement(
+          location = location,
           name = "hi",
           fields = listOf(
             FieldElement(
@@ -368,6 +370,7 @@ class MessageElementTest {
   @Test
   fun addMultipleOneOfs() {
     val hi = OneOfElement(
+      location = location,
       name = "hi",
       fields = listOf(
         FieldElement(
@@ -379,6 +382,7 @@ class MessageElementTest {
       ),
     )
     val hey = OneOfElement(
+      location = location,
       name = "hey",
       fields = listOf(
         FieldElement(
@@ -494,6 +498,7 @@ class MessageElementTest {
     )
 
     val oneOf1 = OneOfElement(
+      location = location,
       name = "thingy",
       fields = listOf(oneOf1Field1, oneOf1Field2),
     )
@@ -511,6 +516,7 @@ class MessageElementTest {
       tag = 4,
     )
     val oneOf2 = OneOfElement(
+      location = location,
       name = "thinger",
       fields = listOf(oneOf2Field),
     )
@@ -696,6 +702,7 @@ class MessageElementTest {
         |
     """.trimMargin()
     val oneOf = OneOfElement(
+      location = location,
       name = "page_info",
       fields = listOf(
         FieldElement(
