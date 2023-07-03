@@ -23,7 +23,7 @@ import okhttp3.Protocol.H2_PRIOR_KNOWLEDGE
 import okhttp3.Protocol.HTTP_2
 import kotlin.reflect.KClass
 
-actual class GrpcClient private constructor(
+actual abstract class GrpcClient private constructor(
   internal val client: Call.Factory,
   internal val baseUrl: GrpcHttpUrl,
   internal val minMessageToCompress: Long
@@ -54,15 +54,9 @@ actual class GrpcClient private constructor(
     return Class.forName(implementationName)
   }
 
-  actual fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
-    return RealGrpcCall(this, method)
-  }
+  actual abstract fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R>
 
-  actual fun <S : Any, R : Any> newStreamingCall(
-    method: GrpcMethod<S, R>
-  ): GrpcStreamingCall<S, R> {
-    return RealGrpcStreamingCall(this, method)
-  }
+  actual abstract fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R>
 
   fun newBuilder(): Builder {
     return Builder()
@@ -135,10 +129,18 @@ actual class GrpcClient private constructor(
       this.minMessageToCompress = bytes
     }
 
-    fun build(): GrpcClient = GrpcClient(
+    fun build(): GrpcClient = object : GrpcClient(
       client = client ?: throw IllegalArgumentException("client is not set"),
       baseUrl = baseUrl ?: throw IllegalArgumentException("baseUrl is not set"),
       minMessageToCompress = minMessageToCompress
-    )
+    ) {
+      override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
+        return RealGrpcCall(this, method)
+      }
+
+      override fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> {
+        return RealGrpcStreamingCall(this, method)
+      }
+    }
   }
 }
