@@ -263,6 +263,25 @@ class WirePluginTest {
   }
 
   @Test
+  fun rejectUnused() {
+    val fixtureRoot = File("src/test/projects/reject-unused")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+
+    assertThat(result.task(":generateMainProtos")!!.outcome).isEqualTo(TaskOutcome.FAILED)
+    assertThat(result.output)
+      .contains(
+        """
+        |Unused element(s) in roots:
+        |  squareup.dinosaurs.Dinosaur#height
+        |  squareup.dinosaurs.Crustacean
+        |Unused element(s) in prunes:
+        |  squareup.mammals.Human
+        """.trimMargin()
+      )
+  }
+
+  @Test
   fun sourceTreeMultipleSrcDirs() {
     val fixtureRoot = File("src/test/projects/sourcetree-many-srcdirs")
 
@@ -970,10 +989,12 @@ class WirePluginTest {
 
     val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
     assertThat(result.output)
-      .contains("custom handler is running!! " +
-        "squareup.dinosaurs.Dinosaur, " +
-        "squareup.geology.Period, true, " +
-        "a=one, b=two, c=three")
+      .contains(
+        "custom handler is running!! " +
+          "squareup.dinosaurs.Dinosaur, " +
+          "squareup.geology.Period, true, " +
+          "a=one, b=two, c=three"
+      )
   }
 
   @Test
