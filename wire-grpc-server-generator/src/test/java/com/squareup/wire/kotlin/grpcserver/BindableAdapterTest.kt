@@ -20,6 +20,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.buildSchema
 import com.squareup.wire.kotlin.grpcserver.BindableAdapterGenerator.addBindableAdapter
 import com.squareup.wire.schema.addLocal
+import com.squareup.wire.kotlin.grpcserver.GoldenTestUtils.assertFileEquals
 import java.io.File
 import kotlin.test.assertEquals
 import okio.Path.Companion.toPath
@@ -49,11 +50,8 @@ class BindableAdapterTest {
           .build()
       )
       .build()
-      .toString()
 
-    println(code)
-    Assertions.assertThat(code)
-      .isEqualTo(File("src/test/golden/BindableAdapter.kt").source().buffer().readUtf8())
+    assertFileEquals("BindableAdapter.kt", code)
   }
 
   @Test
