@@ -132,8 +132,21 @@ open class WireExtension(project: Project) {
   var protoLibrary = false
 
   /**
-   * True to not write generated types to disk, but emit the names of the source files that would otherwise be
-   * generated.
+   * If true, Wire will fail if not all [roots] and [prunes] are used when tree-shaking the schema.
+   * This can help discover incorrect configurations early and avoid misexpectations about the
+   * built schema.
+   * See [treeShakingRoots][com.squareup.wire.schema.WireRun.treeShakingRoots] and
+   * [treeShakingRubbish][com.squareup.wire.schema.WireRun.treeShakingRubbish].
+   *
+   * If false, unused [roots] and [prunes] will be printed as warnings.
+   */
+  @get:Input
+  @get:Optional
+  var rejectUnusedRootsOrPrunes = false
+
+  /**
+   * True to not write generated types to disk, but emit the names of the source files that would
+   * otherwise be generated.
    */
   @get:Input
   @get:Optional

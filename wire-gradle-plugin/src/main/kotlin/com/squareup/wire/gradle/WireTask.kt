@@ -104,6 +104,10 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
   val dryRun: Property<Boolean> = objects.property(Boolean::class.java)
     .convention(false)
 
+  @get:Input
+  val rejectUnusedRootsOrPrunes: Property<Boolean> = objects.property(Boolean::class.java)
+    .convention(false)
+
   @TaskAction
   fun generateWireFiles() {
     val includes = mutableListOf<String>()
@@ -158,7 +162,8 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
       targets = allTargets.map { target ->
         target.copyTarget(outDirectory = projectDir.file(target.outDirectory).asFile.path)
       },
-      permitPackageCycles = permitPackageCycles.get()
+      permitPackageCycles = permitPackageCycles.get(),
+      rejectUnusedRootsOrPrunes = rejectUnusedRootsOrPrunes.get(),
     )
 
     val buildDir = buildDirProperty.get()

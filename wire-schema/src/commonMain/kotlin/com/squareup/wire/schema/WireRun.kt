@@ -185,10 +185,19 @@ class WireRun(
   val permitPackageCycles: Boolean = false,
 
   val eventListeners: List<EventListener> = listOf(),
+
+  /**
+   * If true, Wire will fail if not all [treeShakingRoots] and [treeShakingRubbish] are used when
+   * tree-shaking the schema. This can help discover incorrect configurations early and avoid
+   * misexpectations about the built schema.
+   *
+   * If false, unused [treeShakingRoots] and [treeShakingRubbish] will be printed as warnings.
+   */
+  val rejectUnusedRootsOrPrunes: Boolean = false,
 ) {
   data class Module(
     val dependencies: Set<String> = emptySet(),
-    val pruningRules: PruningRules? = null
+    val pruningRules: PruningRules? = null,
   )
 
   private fun checkForModuleCycles() {
@@ -226,7 +235,12 @@ class WireRun(
     eventListeners.forEach { it.loadSchemaSuccess(fullSchema) }
 
     // Refactor the schema.
-    val schema = refactorSchema(fullSchema, logger, eventListeners)
+    val schema = refactorSchema(
+      schema = fullSchema,
+      logger = logger,
+      eventListeners = eventListeners,
+      rejectUnusedRootsOrPrunes = rejectUnusedRootsOrPrunes,
+    )
 
     val targetsExclusiveLast = targets.sortedBy { it.exclusive }
     val sourcePathPaths = (schemaLoader.sourcePathFiles.map { it.location.path } + moves.map { it.targetPath }).toSet()
@@ -312,7 +326,12 @@ class WireRun(
   }
 
   /** Returns a transformed schema with unwanted elements removed and moves applied. */
-  private fun refactorSchema(schema: Schema, logger: WireLogger, eventListeners: List<EventListener>): Schema {
+  private fun refactorSchema(
+    schema: Schema,
+    logger: WireLogger,
+    eventListeners: List<EventListener>,
+    rejectUnusedRootsOrPrunes: Boolean,
+  ): Schema {
     if (treeShakingRoots == listOf("*") &&
       treeShakingRubbish.isEmpty() &&
       sinceVersion == null &&
@@ -334,11 +353,34 @@ class WireRun(
     val prunedSchema = schema.prune(pruningRules)
     eventListeners.forEach { it.treeShakeEnd(prunedSchema, pruningRules) }
 
-    if (pruningRules.unusedRoots().isNotEmpty()) {
-      logger.unusedRoots(pruningRules.unusedRoots())
-    }
-    if (pruningRules.unusedPrunes().isNotEmpty()) {
-      logger.unusedPrunes(pruningRules.unusedPrunes())
+    val hasUnusedRoots = pruningRules.unusedRoots().isNotEmpty()
+    val hasUnusedPrunes = pruningRules.unusedPrunes().isNotEmpty()
+    if (hasUnusedRoots || hasUnusedPrunes) {
+      if (rejectUnusedRootsOrPrunes) {
+        throw IllegalStateException(
+          buildList {
+            if (hasUnusedRoots)
+              add(
+                """Unused element(s) in roots:
+                  |  ${pruningRules.unusedRoots().joinToString(separator = "\n  ")}
+                  """.trimMargin()
+              )
+            if (hasUnusedPrunes)
+              add(
+                """Unused element(s) in prunes:
+                  |  ${pruningRules.unusedPrunes().joinToString(separator = "\n  ")}
+                  """.trimMargin()
+              )
+          }.joinToString(separator = "\n")
+        )
+      } else {
+        if (hasUnusedRoots) {
+          logger.unusedRoots(pruningRules.unusedRoots())
+        }
+        if (hasUnusedPrunes) {
+          logger.unusedPrunes(pruningRules.unusedPrunes())
+        }
+      }
     }
 
     eventListeners.forEach { it.moveTypesStart(prunedSchema, moves) }

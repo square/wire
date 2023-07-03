@@ -112,6 +112,7 @@ public class com/squareup/wire/gradle/WireExtension {
 	public final fun getProtoLibrary ()Z
 	public final fun getProtoPaths ()Ljava/util/Set;
 	public final fun getProtoTrees ()Ljava/util/Set;
+	public final fun getRejectUnusedRootsOrPrunes ()Z
 	public final fun getRules ()Ljava/lang/String;
 	public final fun getSourceJars ()Ljava/util/Set;
 	public final fun getSourcePaths ()Ljava/util/Set;
@@ -132,6 +133,7 @@ public class com/squareup/wire/gradle/WireExtension {
 	public final fun roots ()Ljava/util/Set;
 	public final fun setDryRun (Z)V
 	public final fun setProtoLibrary (Z)V
+	public final fun setRejectUnusedRootsOrPrunes (Z)V
 	public final fun setRules (Ljava/lang/String;)V
 	public final fun sinceVersion ()Ljava/lang/String;
 	public final fun sinceVersion (Ljava/lang/String;)V
@@ -194,6 +196,7 @@ public abstract class com/squareup/wire/gradle/WireTask : org/gradle/api/tasks/S
 	public final fun getPluginVersion ()Lorg/gradle/api/provider/Property;
 	public abstract fun getProjectDirProperty ()Lorg/gradle/api/file/DirectoryProperty;
 	public abstract fun getPrunes ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getRejectUnusedRootsOrPrunes ()Lorg/gradle/api/provider/Property;
 	public abstract fun getRoots ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getRules ()Lorg/gradle/api/provider/Property;
 	public abstract fun getSinceVersion ()Lorg/gradle/api/provider/Property;

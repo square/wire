@@ -6,8 +6,11 @@ plugins {
 
 wire {
   // Keeps 'Dinosaur#name' and 'squareup.geology.Period' as roots of the object graph
-  root 'squareup.dinosaurs.Dinosaur#name'
-  root 'squareup.dinosaurs.Dinosaur#length_meters'
+  root 'squareup.dinosaurs.Dinosaur#height'
+  root 'squareup.dinosaurs.Crustacean'
+  prune 'squareup.mammals.Human'
+
+  rejectUnusedRootsOrPrunes = true
 
   kotlin {}
 }

@@ -374,6 +374,89 @@ class WireRunTest {
   }
 
   @Test
+  fun unusedTreeShakingRoots() {
+    writeBlueProto()
+    writeRedProto()
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      protoPath = listOf(Location.get("polygons/src/main/proto")),
+      treeShakingRoots = listOf(
+        "squareup.colors.Blue",
+        "squareup.colors.Purple",
+        "squareup.colors.Color#name",
+      ),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+      rejectUnusedRootsOrPrunes = true,
+    )
+    try {
+      wireRun.execute(fs, logger)
+      fail()
+    } catch (expected: IllegalStateException) {
+      assertThat(expected).hasMessage(
+        "Unused element(s) in roots:\n" +
+          "  squareup.colors.Purple\n" +
+          "  squareup.colors.Color#name"
+      )
+    }
+  }
+
+  @Test
+  fun unusedTreeShakingPrunes() {
+    writeBlueProto()
+    writeRedProto()
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      protoPath = listOf(Location.get("polygons/src/main/proto")),
+      treeShakingRoots = listOf("squareup.colors.Blue"),
+      treeShakingRubbish = listOf("squareup.colors.Purple", "squareup.colors.Color#name"),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+      rejectUnusedRootsOrPrunes = true,
+    )
+    try {
+      wireRun.execute(fs, logger)
+      fail()
+    } catch (expected: IllegalStateException) {
+      assertThat(expected).hasMessage(
+        "Unused element(s) in prunes:\n" +
+          "  squareup.colors.Purple\n" +
+          "  squareup.colors.Color#name"
+      )
+    }
+  }
+
+  @Test
+  fun unusedTreeShakingRootsAndPrunes() {
+    writeBlueProto()
+    writeRedProto()
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      protoPath = listOf(Location.get("polygons/src/main/proto")),
+      treeShakingRoots = listOf("squareup.colors.Blue", "squareup.colors.Green"),
+      treeShakingRubbish = listOf("squareup.colors.Purple", "squareup.colors.Color#name"),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+      rejectUnusedRootsOrPrunes = true,
+    )
+    try {
+      wireRun.execute(fs, logger)
+      fail()
+    } catch (expected: IllegalStateException) {
+      assertThat(expected).hasMessage(
+        "Unused element(s) in roots:\n" +
+          "  squareup.colors.Green\n" +
+          "Unused element(s) in prunes:\n" +
+          "  squareup.colors.Purple\n" +
+          "  squareup.colors.Color#name"
+      )
+    }
+  }
+
+  @Test
   fun treeShakingRubbish() {
     writeBlueProto()
     writeRedProto()
