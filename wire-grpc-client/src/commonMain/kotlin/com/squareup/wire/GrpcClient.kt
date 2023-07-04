@@ -15,7 +15,7 @@
  */
 package com.squareup.wire
 
-expect class GrpcClient {
-  fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R>
-  fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R>
+expect abstract class GrpcClient {
+  abstract fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R>
+  abstract fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R>
 }

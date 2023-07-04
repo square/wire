@@ -23,12 +23,12 @@ public final class com/squareup/wire/GrpcCalls {
 	public static final fun grpcStreamingCall (Lkotlin/jvm/functions/Function3;)Lcom/squareup/wire/GrpcStreamingCall;
 }
 
-public final class com/squareup/wire/GrpcClient {
+public abstract class com/squareup/wire/GrpcClient {
 	public synthetic fun <init> (Lokhttp3/Call$Factory;Lokhttp3/HttpUrl;JLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun create (Lkotlin/reflect/KClass;)Lcom/squareup/wire/Service;
 	public final fun newBuilder ()Lcom/squareup/wire/GrpcClient$Builder;
-	public final fun newCall (Lcom/squareup/wire/GrpcMethod;)Lcom/squareup/wire/GrpcCall;
-	public final fun newStreamingCall (Lcom/squareup/wire/GrpcMethod;)Lcom/squareup/wire/GrpcStreamingCall;
+	public abstract fun newCall (Lcom/squareup/wire/GrpcMethod;)Lcom/squareup/wire/GrpcCall;
+	public abstract fun newStreamingCall (Lcom/squareup/wire/GrpcMethod;)Lcom/squareup/wire/GrpcStreamingCall;
 }
 
 public final class com/squareup/wire/GrpcClient$Builder {

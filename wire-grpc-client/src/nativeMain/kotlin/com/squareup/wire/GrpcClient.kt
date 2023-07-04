@@ -15,14 +15,7 @@
  */
 package com.squareup.wire
 
-actual class GrpcClient {
-  actual fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
-    throw UnsupportedOperationException("wire-grpc-client doesn't support Native yet.")
-  }
-
-  actual fun <S : Any, R : Any> newStreamingCall(
-    method: GrpcMethod<S, R>
-  ): GrpcStreamingCall<S, R> {
-    throw UnsupportedOperationException("wire-grpc-client doesn't support Native yet.")
-  }
+actual abstract class GrpcClient {
+  actual abstract fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R>
+  actual abstract fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R>
 }
