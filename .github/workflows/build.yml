@@ -74,9 +74,7 @@ jobs:
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
       - name: Install Chrome
-        run: |
-          brew update
-          brew install google-chrome
+        uses: browser-actions/setup-chrome@latest
 
       - name: Test
         run: |
