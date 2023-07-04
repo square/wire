@@ -131,12 +131,6 @@ data class KotlinTarget(
    * instantiable via their builders, regardless of the value of [javaInterop].
    */
   val buildersOnly: Boolean = false,
-
-  /**
-   * If false, none of the JVM specific annotations, under `kotlin.jvm.*` will be set on the
-   * generated code. This is useful if you are generating code for Kotlin Multiplatform.
-   */
-  val jvmOnly: Boolean = true,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
     return KotlinSchemaHandler(
@@ -152,7 +146,6 @@ data class KotlinTarget(
       grpcServerCompatible = grpcServerCompatible,
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
-      jvmOnly = jvmOnly,
     )
   }
 

@@ -50,8 +50,6 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.joinToCode
-import com.squareup.kotlinpoet.jvm.jvmField
-import com.squareup.kotlinpoet.jvm.jvmStatic
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.GrpcCall
@@ -132,7 +130,6 @@ class KotlinGenerator private constructor(
   private val nameSuffix: String?,
   private val buildersOnly: Boolean,
   private val singleMethodServices: Boolean,
-  private val jvmOnly: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -916,8 +913,8 @@ class KotlinGenerator private constructor(
             .mutable(true)
             .initializer(fieldOrOneOf.identityValue)
 
-          if (javaInterOp && jvmOnly) {
-            propertyBuilder.addAnnotation(JvmField::class)
+          if (javaInterOp) {
+            propertyBuilder.jvmField()
           }
 
           builder.addProperty(propertyBuilder.build())
@@ -930,8 +927,8 @@ class KotlinGenerator private constructor(
             .mutable(true)
             .initializer(CodeBlock.of("null"))
 
-          if (javaInterOp && jvmOnly) {
-            propertyBuilder.addAnnotation(JvmField::class)
+          if (javaInterOp) {
+            propertyBuilder.jvmField()
           }
 
           builder.addProperty(propertyBuilder.build())
@@ -1157,8 +1154,8 @@ class KotlinGenerator private constructor(
           addAnnotation(annotation)
         }
         addAnnotation(wireFieldAnnotation(message, field, schemaIndex))
-        if (javaInterOp && jvmOnly) {
-          addAnnotation(JvmField::class)
+        if (javaInterOp) {
+          jvmField()
         }
         if (field.documentation.isNotBlank()) {
           addKdoc("%L\n", field.documentation.sanitizeKdoc())
@@ -1184,8 +1181,8 @@ class KotlinGenerator private constructor(
     val propertySpec = PropertySpec.builder(fieldName, fieldClass)
       .initializer(CodeBlock.of("%N", fieldName))
       .apply {
-        if (javaInterOp && jvmOnly) {
-          addAnnotation(JvmField::class)
+        if (javaInterOp) {
+          jvmField()
         }
         if (oneOf.documentation.isNotBlank()) {
           addKdoc("%L\n", oneOf.documentation.sanitizeKdoc())
@@ -1365,7 +1362,7 @@ class KotlinGenerator private constructor(
             if (field.type!!.isScalar && field.type != ProtoType.BYTES) {
               addModifiers(CONST)
             } else {
-              if (jvmOnly) jvmField()
+              jvmField()
             }
           }
           .initializer(fieldValue)
@@ -1525,9 +1522,7 @@ class KotlinGenerator private constructor(
 
     companionObjBuilder.addProperty(
       PropertySpec.builder(adapterName, adapterType)
-        .apply {
-          if (jvmOnly) jvmField()
-        }
+        .jvmField()
         .initializer("%L", adapterObject.build())
         .build()
     )
@@ -2141,7 +2136,7 @@ class KotlinGenerator private constructor(
     val parentClassName = typeToKotlinName.getValue(message.type)
     val valueName = "value"
     val fromValue = FunSpec.builder("fromValue")
-      .apply { if (jvmOnly) jvmStatic() }
+      .addAnnotation(ClassName("com.squareup.wire.internal", "JvmStatic"))
       .addParameter(valueName, Int::class)
       .returns(parentClassName.copy(nullable = true))
       .apply {
@@ -2197,9 +2192,7 @@ class KotlinGenerator private constructor(
       .build()
 
     return PropertySpec.builder(adapterName, adapterType)
-      .apply {
-        if (jvmOnly) jvmField()
-      }
+      .jvmField()
       .initializer("%L", adapterObject)
       .build()
   }
@@ -2222,9 +2215,7 @@ class KotlinGenerator private constructor(
 
     companionObjBuilder.addProperty(
       PropertySpec.builder(creatorName, creatorTypeName)
-        .apply {
-          if (jvmOnly) jvmField()
-        }
+        .jvmField()
         .initializer("%T.newCreator(ADAPTER)", ANDROID_MESSAGE)
         .build()
     )
@@ -2559,9 +2550,7 @@ class KotlinGenerator private constructor(
         keysFieldName,
         Set::class.asClassName().parameterizedBy(boxClassName.parameterizedBy(STAR))
       )
-      .apply {
-        if (jvmOnly) addAnnotation(JvmStatic::class)
-      }
+      .addAnnotation(ClassName("com.squareup.wire.internal", "JvmStatic"))
       .initializer(
         CodeBlock.of(
           """setOf(${keyFieldNames.map { "%L" }.joinToString(", ")})""",
@@ -2727,7 +2716,6 @@ class KotlinGenerator private constructor(
       nameSuffix: String? = null,
       buildersOnly: Boolean = false,
       singleMethodServices: Boolean = false,
-      jvmOnly: Boolean = true,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -2775,7 +2763,6 @@ class KotlinGenerator private constructor(
         nameSuffix = nameSuffix,
         buildersOnly = buildersOnly,
         singleMethodServices = singleMethodServices,
-        jvmOnly = jvmOnly,
       )
     }
 
@@ -2835,3 +2822,6 @@ class KotlinGenerator private constructor(
     private const val DOUBLE_FULL_BLOCK = "\u2588\u2588"
   }
 }
+
+private fun PropertySpec.Builder.jvmField(): PropertySpec.Builder = addAnnotation(
+  ClassName("com.squareup.wire.internal", "JvmField"))

@@ -57,12 +57,6 @@ class KotlinSchemaHandler(
    * instantiable via their builders, regardless of the value of [javaInterop].
    */
   private val buildersOnly: Boolean = false,
-
-  /**
-   * If false, none of the JVM specific annotations, under `kotlin.jvm.*` will be set on the
-   * generated code. This is useful if you are generating code for Kotlin Multiplatform.
-   */
-  private val jvmOnly: Boolean = true,
 ) : SchemaHandler() {
   private lateinit var kotlinGenerator: KotlinGenerator
 
@@ -83,7 +77,6 @@ class KotlinSchemaHandler(
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
       singleMethodServices = singleMethodServices,
-      jvmOnly = jvmOnly,
     )
     context.fileSystem.createDirectories(context.outDirectory)
     super.handle(schema, context)

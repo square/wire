@@ -19,6 +19,12 @@ import okio.IOException
 
 actual interface Serializable
 
+/** This annotation is an empty placeholder. */
+actual annotation class JvmField
+
+/** This annotation is an empty placeholder. */
+actual annotation class JvmStatic
+
 actual abstract class ObjectStreamException : IOException()
 
 actual class ProtocolException actual constructor(host: String) : IOException(host)

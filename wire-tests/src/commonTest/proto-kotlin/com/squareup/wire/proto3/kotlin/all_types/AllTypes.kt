@@ -15,6 +15,8 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
+import com.squareup.wire.`internal`.JvmField
+import com.squareup.wire.`internal`.JvmStatic
 import com.squareup.wire.`internal`.countNonNull
 import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.immutableCopyOfMapWithStructValues
@@ -35,8 +37,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.jvm.JvmField
-import kotlin.jvm.JvmStatic
 import kotlin.lazy
 import okio.ByteString
 

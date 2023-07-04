@@ -23,6 +23,10 @@ actual typealias Throws = kotlin.jvm.Throws
 
 actual typealias JvmDefaultWithCompatibility = kotlin.jvm.JvmDefaultWithCompatibility
 
+actual typealias JvmField = kotlin.jvm.JvmField
+
+actual typealias JvmStatic = kotlin.jvm.JvmStatic
+
 actual typealias ObjectStreamException = java.io.ObjectStreamException
 
 actual typealias ProtocolException = java.net.ProtocolException

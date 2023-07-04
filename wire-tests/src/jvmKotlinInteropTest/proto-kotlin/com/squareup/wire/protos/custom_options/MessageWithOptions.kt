@@ -9,13 +9,13 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.protos.kotlin.foreign.ForeignEnum
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 @MyMessageOptionTwoOption(91011.0f)

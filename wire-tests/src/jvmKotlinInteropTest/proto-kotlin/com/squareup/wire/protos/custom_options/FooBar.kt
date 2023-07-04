@@ -12,6 +12,8 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
+import com.squareup.wire.`internal`.JvmField
+import com.squareup.wire.`internal`.JvmStatic
 import com.squareup.wire.`internal`.checkElementsNotNull
 import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.sanitize
@@ -29,8 +31,6 @@ import kotlin.`annotation`.AnnotationTarget
 import kotlin.`annotation`.Retention
 import kotlin.`annotation`.Target
 import kotlin.collections.List
-import kotlin.jvm.JvmField
-import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 public class FooBar(

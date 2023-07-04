@@ -10,6 +10,8 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.`internal`.JvmField
+import com.squareup.wire.`internal`.JvmStatic
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -17,8 +19,6 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.Set
-import kotlin.jvm.JvmField
-import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 public class BoxedOneOfs(

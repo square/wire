@@ -13,6 +13,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
+import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.checkElementsNotNull
 import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.immutableCopyOfStruct
@@ -25,7 +26,6 @@ import kotlin.Long
 import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 public class PizzaDelivery(

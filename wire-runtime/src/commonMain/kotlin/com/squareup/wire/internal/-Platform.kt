@@ -29,6 +29,10 @@ expect annotation class Throws(vararg val exceptionClasses: KClass<out Throwable
 @OptIn(ExperimentalMultiplatform::class)
 expect annotation class JvmDefaultWithCompatibility()
 
+expect annotation class JvmField()
+
+expect annotation class JvmStatic()
+
 expect abstract class ObjectStreamException : IOException
 
 expect class ProtocolException(host: String) : IOException
