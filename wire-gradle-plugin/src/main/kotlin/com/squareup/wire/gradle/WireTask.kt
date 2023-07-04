@@ -18,6 +18,7 @@ package com.squareup.wire.gradle
 import com.squareup.wire.DryRunFileSystem
 import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.internal.GradleWireLogger
+import com.squareup.wire.schema.EventListener
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
@@ -108,6 +109,9 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
   val rejectUnusedRootsOrPrunes: Property<Boolean> = objects.property(Boolean::class.java)
     .convention(false)
 
+  @get:Input
+  abstract val eventListenerFactories: ListProperty<EventListener.Factory>
+
   @TaskAction
   fun generateWireFiles() {
     val includes = mutableListOf<String>()
@@ -164,6 +168,7 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
       },
       permitPackageCycles = permitPackageCycles.get(),
       rejectUnusedRootsOrPrunes = rejectUnusedRootsOrPrunes.get(),
+      eventListeners = eventListenerFactories.get().map(EventListener.Factory::create),
     )
 
     val buildDir = buildDirProperty.get()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Square Inc.
+ * Copyright (C) 2023 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.internal.Serializable
 import com.squareup.wire.schema.internal.TypeMover
 
 /**
@@ -101,7 +102,7 @@ abstract class EventListener {
     emittingRules: EmittingRules,
   ) {}
 
-  fun interface Factory {
+  fun interface Factory : Serializable {
     /**
      * Creates an instance of the [EventListener] for one Wire execution. The returned [EventListener] instance will be used during
      * the lifecycle of the Wire's task.

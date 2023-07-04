@@ -224,6 +224,35 @@ class WirePluginTest {
   }
 
   @Test
+  fun listener() {
+    val fixtureRoot = File("src/test/projects/listener")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    assertThat(result.output)
+      .contains("runStart")
+      .contains("loadSchemaStart")
+      .contains("loadSchemaSuccess")
+      .contains("treeShakeStart")
+      .contains("treeShakeEnd")
+      .contains("moveTypesStart")
+      .contains("moveTypesEnd")
+      .contains("schemaHandlersStart")
+      .contains("schemaHandlerStart")
+      .contains("schemaHandlerEnd")
+      .contains("schemaHandlersEnd")
+      .contains("runSuccess")
+  }
+
+  @Test
+  fun listenerNoSuchClass() {
+    val fixtureRoot = File("src/test/projects/listener-no-such-class")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    assertThat(result.output)
+      .contains("Couldn't find EventListenerClass 'NoSuchClass'")
+  }
+
+  @Test
   fun sourcePathMavenCoordinatesSingleFile() {
     val fixtureRoot = File("src/test/projects/sourcepath-maven-single-file")
 

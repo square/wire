@@ -205,8 +205,12 @@ public abstract class com/squareup/wire/schema/EventListener {
 	public fun treeShakeStart (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/PruningRules;)V
 }
 
-public abstract interface class com/squareup/wire/schema/EventListener$Factory {
+public abstract interface class com/squareup/wire/schema/EventListener$Factory : java/io/Serializable {
 	public abstract fun create ()Lcom/squareup/wire/schema/EventListener;
+}
+
+public final class com/squareup/wire/schema/EventListenersKt {
+	public static final fun newEventListenerFactory (Ljava/lang/String;)Lcom/squareup/wire/schema/EventListener$Factory;
 }
 
 public final class com/squareup/wire/schema/Extend {

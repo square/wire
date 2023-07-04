@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.gradle
 
+import com.squareup.wire.schema.EventListener
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
@@ -39,6 +40,8 @@ open class WireExtension(project: Project) {
   internal val roots = mutableSetOf<String>()
   internal val prunes = mutableSetOf<String>()
   internal val moves = mutableListOf<Move>()
+  internal val eventListenerFactories = mutableSetOf<EventListener.Factory>()
+  internal val eventListenerFactoryClasses = mutableSetOf<String>()
   internal var onlyVersion: String? = null
   internal var sinceVersion: String? = null
   internal var untilVersion: String? = null
@@ -178,6 +181,22 @@ open class WireExtension(project: Project) {
    */
   fun sourcePath(action: Action<ProtoRootSet>) {
     populateRootSets(action, sourceTrees, sourceJars, "source-tree")
+  }
+
+  @Input
+  fun eventListenerFactories() = eventListenerFactories.toSet()
+
+  /** Add a [EventListener.Factory]. */
+  fun eventListenerFactory(eventListenerFactory: EventListener.Factory) {
+    this.eventListenerFactories.add(eventListenerFactory)
+  }
+
+  @Input
+  fun eventListenerFactoryClasses() = eventListenerFactoryClasses.toSet()
+
+  /** Add a [EventListener.Factory] by name. The referred class must have a no-arguments constructor. */
+  fun eventListenerFactoryClass(eventListenerFactoryClass: String) {
+    this.eventListenerFactoryClasses.add(eventListenerFactoryClass)
   }
 
   @InputFiles
