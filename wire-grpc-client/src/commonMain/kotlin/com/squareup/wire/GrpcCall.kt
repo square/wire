@@ -15,7 +15,7 @@
  */
 package com.squareup.wire
 
-import kotlinx.coroutines.CancellationException
+import kotlin.coroutines.cancellation.CancellationException
 import okio.IOException
 import okio.Timeout
 
