@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.AnyMessage
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.FieldEncoding.VARINT
 import com.squareup.wire.ProtoAdapter
@@ -52,7 +53,24 @@ internal class SchemaProtoAdapterFactory(
     ProtoType.SINT64 to ProtoAdapter.SINT64,
     ProtoType.STRING to ProtoAdapter.STRING,
     ProtoType.UINT32 to ProtoAdapter.UINT32,
-    ProtoType.UINT64 to ProtoAdapter.UINT64
+    ProtoType.UINT64 to ProtoAdapter.UINT64,
+    ProtoType.ANY to AnyMessage.ADAPTER,
+    ProtoType.DURATION to ProtoAdapter.DURATION,
+    ProtoType.TIMESTAMP to ProtoAdapter.INSTANT,
+    ProtoType.EMPTY to ProtoAdapter.EMPTY,
+    ProtoType.STRUCT_MAP to ProtoAdapter.STRUCT_MAP,
+    ProtoType.STRUCT_VALUE to ProtoAdapter.STRUCT_VALUE,
+    ProtoType.STRUCT_NULL to ProtoAdapter.STRUCT_NULL,
+    ProtoType.STRUCT_LIST to ProtoAdapter.STRUCT_LIST,
+    ProtoType.DOUBLE_VALUE to ProtoAdapter.DOUBLE_VALUE,
+    ProtoType.FLOAT_VALUE to ProtoAdapter.FLOAT_VALUE,
+    ProtoType.INT64_VALUE to ProtoAdapter.INT64_VALUE,
+    ProtoType.UINT64_VALUE to ProtoAdapter.UINT64_VALUE,
+    ProtoType.INT32_VALUE to ProtoAdapter.INT32_VALUE,
+    ProtoType.UINT32_VALUE to ProtoAdapter.UINT32_VALUE,
+    ProtoType.BOOL_VALUE to ProtoAdapter.BOOL_VALUE,
+    ProtoType.STRING_VALUE to ProtoAdapter.STRING_VALUE,
+    ProtoType.BYTES_VALUE to ProtoAdapter.BYTES_VALUE,
   )
 
   operator fun get(protoType: ProtoType): ProtoAdapter<Any> {
