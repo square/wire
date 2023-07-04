@@ -25,7 +25,7 @@ final class ProtoEncoderTests: XCTestCase {
         let encoder = ProtoEncoder()
         let data = try encoder.encode(object)
 
-        XCTAssertEqual(data, Data())
+        XCTAssertEqual(data, Foundation.Data())
     }
 
     func testEncodeEmptyProtoMessageWithIdentityValues() throws {
@@ -33,7 +33,7 @@ final class ProtoEncoderTests: XCTestCase {
         let encoder = ProtoEncoder()
         let data = try encoder.encode(object)
 
-        XCTAssertEqual(data, Data())
+        XCTAssertEqual(data, Foundation.Data())
     }
 
     func testEncodeEmptyJSONMessage() throws {

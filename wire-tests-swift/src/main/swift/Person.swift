@@ -25,7 +25,7 @@ public struct Person {
      */
     public var phone: [Person.PhoneNumber]
     public var aliases: [String]
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init(
         id: Int32,
@@ -73,7 +73,7 @@ public struct Person {
          * The type of phone stored here.
          */
         public var type: Person.PhoneType?
-        public var unknownFields: Data = .init()
+        public var unknownFields: Foundation.Data = .init()
 
         public init(number: String, type: Person.PhoneType? = nil) {
             self.number = number

@@ -215,7 +215,7 @@ final class ProtoWriterTests: XCTestCase {
 
     func testEncodeData() throws {
         let writer = ProtoWriter()
-        let data = Data(hexEncoded: "001122334455")
+        let data = Foundation.Data(hexEncoded: "001122334455")
         try writer.encode(tag: 1, value: data)
 
         assertBufferEqual(writer, """
@@ -227,17 +227,23 @@ final class ProtoWriterTests: XCTestCase {
 
     func testEncodeMessage() throws {
         let writer = ProtoWriter()
-        let message = Person(name: "Luke", id: 5)
+        let data = Data(json_data: "12")
+        let message = Person(name: "Luke", id: 5, data: data)
         try writer.encode(tag: 1, value: message)
 
         assertBufferEqual(writer, """
             0A       // (Tag 1 | Length Delimited)
-            08       // Length 8
+            0E       // Length 10 for Person
               0A       // (Tag 1 | Length Delimited)
               04       // Length 4 for name
-              4C756B65 // Value "Luke"
+              4C756B65 // UTF-8 Value "Luke"
               10       // (Tag 2 | Varint)
               05       // Value 5
+              3A       // (Tag 7 | Data)
+                04       // Length 4 for Data
+                0A       // (Tag 1 | Length Delimited)
+                02       // Length 2 for json_data
+                3132     // UTF-8 Value '12'
         """)
     }
 
@@ -285,7 +291,7 @@ final class ProtoWriterTests: XCTestCase {
 
     func testEncodeBytesValue() throws {
         let writer = ProtoWriter()
-        try writer.encode(tag: 1, value: Data(hexEncoded: "001122334455")!, boxed: true)
+        try writer.encode(tag: 1, value: Foundation.Data(hexEncoded: "001122334455")!, boxed: true)
 
         assertBufferEqual(writer, """
             0A           // (Tag 1 | Length Delimited)
@@ -298,7 +304,7 @@ final class ProtoWriterTests: XCTestCase {
 
     func testEncodeNilBytesValue() throws {
         let writer = ProtoWriter()
-        try writer.encode(tag: 1, value: nil as Data?, boxed: true)
+        try writer.encode(tag: 1, value: nil as Foundation.Data?, boxed: true)
 
         assertBufferEqual(writer, "")
     }
@@ -545,13 +551,14 @@ final class ProtoWriterTests: XCTestCase {
 
     func testEncodePackedRepeatedProto2Default() throws {
         let writer = ProtoWriter()
-        let person = Person(name: "name", id: 1, email: "email", ids: [1, 2, 3])
+        let data = Data(json_data: "12")
+        let person = Person(name: "name", id: 1, email: "email", ids: [1, 2, 3], data: data)
         try writer.encode(tag: 1, value: person)
 
         // Proto2 should used "packed: false" by default.
         assertBufferEqual(writer, """
             0A           // (Tag 1 | Length Delimited)
-            15           // Length 21 for Person message
+            1B           // Length 27 for Person message
             0A           // (Tag 1 | Length Delimited)
             04           // Length 4 for name
             6E616D65     // "name" data
@@ -567,6 +574,11 @@ final class ProtoWriterTests: XCTestCase {
             02           // repeated id 2
             30           // (Tag 6 | Varint)
             03           // repeated id 3
+            3A           // (tag 7 | Data)
+              04           // Length 4 for Data
+              0A           // (Tag 1 | Length Delimited)
+              02           // Length 2 for json_data
+              3132         // UTF-8 Value '12'
         """)
     }
 
@@ -785,10 +797,10 @@ final class ProtoWriterTests: XCTestCase {
 
     func testWriteUnknownFields() throws {
         let writer = ProtoWriter()
-        let data = Data(hexEncoded: "001122334455")!
+        let data = Foundation.Data(hexEncoded: "001122334455")!
         try writer.writeUnknownFields(data)
 
-        XCTAssertEqual(Data(writer.buffer, copyBytes: true), data)
+        XCTAssertEqual(Foundation.Data(writer.buffer, copyBytes: true), data)
     }
 
     // MARK: - Tests - Writing Primitives
@@ -843,9 +855,14 @@ final class ProtoWriterTests: XCTestCase {
         file: StaticString = #file,
         line: UInt = #line
     ) {
+        print(Foundation.Data(writer.buffer, copyBytes: true).hexEncodedString())
+        print(hexString)
+        let actual = Foundation.Data(writer.buffer, copyBytes: true)
+        let expected = Foundation.Data(hexEncoded: hexString)!
         XCTAssertEqual(
-            Data(writer.buffer, copyBytes: true),
-            Data(hexEncoded: hexString)!,
+            actual,
+            expected,
+            "\(actual.hexEncodedString()) is not equal to \(expected.hexEncodedString())",
             file: file,
             line: line
         )

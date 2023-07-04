@@ -10,7 +10,7 @@ public struct MessageUsingMultipleEnums {
 
     public var a: MessageWithStatus.Status?
     public var b: OtherMessageWithStatus.Status?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init(a: MessageWithStatus.Status? = nil, b: OtherMessageWithStatus.Status? = nil) {
         self.a = a

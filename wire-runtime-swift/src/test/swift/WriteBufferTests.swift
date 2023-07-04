@@ -21,7 +21,7 @@ final class WriteBufferTests: XCTestCase {
 
     func testInsertAtBeginning() {
         let buffer = WriteBuffer()
-        buffer.append(Data(hexEncoded: "2233")!)
+        buffer.append(Foundation.Data(hexEncoded: "2233")!)
 
         buffer.insert(count: 2, at: 0)
 
@@ -30,34 +30,34 @@ final class WriteBufferTests: XCTestCase {
         buffer.set(0x00, at: 0)
         buffer.set(0x11, at: 1)
 
-        XCTAssertEqual(Data(buffer, copyBytes: true), Data(hexEncoded: "00112233"))
+        XCTAssertEqual(Foundation.Data(buffer, copyBytes: true), Foundation.Data(hexEncoded: "00112233"))
     }
 
     func testRemoveAtBeginning() {
         let buffer = WriteBuffer()
-        buffer.append(Data(hexEncoded: "0011")!)
+        buffer.append(Foundation.Data(hexEncoded: "0011")!)
 
         buffer.remove(count: 2, at: 0)
 
-        XCTAssertEqual(Data(buffer, copyBytes: true), Data())
+        XCTAssertEqual(Foundation.Data(buffer, copyBytes: true), Foundation.Data())
     }
 
     func testRemoveAtMiddle() {
         let buffer = WriteBuffer()
-        buffer.append(Data(hexEncoded: "001122")!)
+        buffer.append(Foundation.Data(hexEncoded: "001122")!)
 
         buffer.remove(count: 1, at: 1)
 
-        XCTAssertEqual(Data(buffer, copyBytes: true), Data(hexEncoded: "0022"))
+        XCTAssertEqual(Foundation.Data(buffer, copyBytes: true), Foundation.Data(hexEncoded: "0022"))
     }
 
     func testRemoveAtEnd() {
         let buffer = WriteBuffer()
-        buffer.append(Data(hexEncoded: "001122")!)
+        buffer.append(Foundation.Data(hexEncoded: "001122")!)
 
         buffer.remove(count: 1, at: 2)
 
-        XCTAssertEqual(Data(buffer, copyBytes: true), Data(hexEncoded: "0011"))
+        XCTAssertEqual(Foundation.Data(buffer, copyBytes: true), Foundation.Data(hexEncoded: "0011"))
     }
 
 }

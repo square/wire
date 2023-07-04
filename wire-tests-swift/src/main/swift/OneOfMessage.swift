@@ -12,7 +12,7 @@ public struct OneOfMessage {
      * Must have a foo or a bar or a baz.
      */
     public var choice: Choice?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init(choice: Choice? = nil) {
         self.choice = choice

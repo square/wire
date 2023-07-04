@@ -8,7 +8,7 @@ public struct VersionOne {
     public var i: Int32?
     public var obj: NestedVersionOne?
     public var en: EnumVersionOne?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
     public init(
         i: Int32? = nil,

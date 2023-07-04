@@ -16,7 +16,7 @@
 
 import Foundation
 
-extension Data {
+extension Foundation.Data {
 
     init?(hexEncoded string: String) {
         // Allow underscores, spaces, newlines, and comments for improved readability of the hex constants.
@@ -29,7 +29,7 @@ extension Data {
             .replacingOccurrences(of: " ", with: "")
 
         let len = string.count / 2
-        var data = Data(capacity: len)
+        var data = Foundation.Data(capacity: len)
         for i in 0..<len {
             let j = string.index(string.startIndex, offsetBy: i*2)
             let k = string.index(j, offsetBy: 2)
