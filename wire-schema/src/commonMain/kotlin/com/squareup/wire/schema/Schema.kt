@@ -98,9 +98,10 @@ class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
   /**
    * Returns a wire adapter for the message or enum type named [typeName]. The returned type
    * adapter doesn't have model classes to encode and decode from, so instead it uses scalar types
-   * ([String], [ByteString][okio.ByteString], [Integer], etc.),
-   * [maps][Map], and [lists][List]. It can both encode and decode
-   * these objects. Map keys are field names.
+   * ([String], [ByteString][okio.ByteString], [Integer], etc.), [maps][Map], [lists][List], and
+   * corresponding classes to proto3 types (e.g. [Instant][com.squareup.wire.Instant] for
+   * `google.prptobuf.Timestamp`.) It can both encode and decode these objects. Map keys are field
+   * names.
    *
    * @param includeUnknown true to include values for unknown tags in the returned model. Map keys
    * for such values is the unknown value's tag name as a string. Unknown values are decoded to
