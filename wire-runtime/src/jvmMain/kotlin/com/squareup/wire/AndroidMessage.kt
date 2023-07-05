@@ -42,6 +42,8 @@ abstract class AndroidMessage<M : Message<M, B>, B : Message.Builder<M, B>> prot
   }
 
   companion object {
+    private const val serialVersionUID = 0L
+
     /** Creates a new [Parcelable.Creator] using `adapter` for serialization. */
     @JvmStatic fun <E> newCreator(adapter: ProtoAdapter<E>): Parcelable.Creator<E> {
       return ProtoAdapterCreator(adapter)
