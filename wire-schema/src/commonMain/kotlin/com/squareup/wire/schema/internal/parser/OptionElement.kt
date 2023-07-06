@@ -61,11 +61,13 @@ data class OptionElement(
       }
       MAP -> {
         append("$formattedName = {\n")
+        @Suppress("UNCHECKED_CAST")
         formatOptionMap(this, value as Map<String, *>)
         append('}')
       }
       LIST -> {
         append("$formattedName = ")
+        @Suppress("UNCHECKED_CAST")
         appendOptions(value as List<OptionElement>)
       }
     }
@@ -101,6 +103,7 @@ data class OptionElement(
       }
       is Map<*, *> -> {
         append("{\n")
+        @Suppress("UNCHECKED_CAST")
         formatOptionMap(this, value as Map<String, *>)
         append('}')
       }

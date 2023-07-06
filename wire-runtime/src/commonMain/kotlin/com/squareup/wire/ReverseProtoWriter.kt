@@ -223,6 +223,7 @@ class ReverseProtoWriter {
     require(varint32Size)
     arrayLimit -= varint32Size
     var offset = arrayLimit
+    @Suppress("NAME_SHADOWING")
     var value = value
     while (value and 0x7f.inv() != 0) {
       array[offset++] = ((value and 0x7f) or 0x80).toByte()
@@ -237,6 +238,7 @@ class ReverseProtoWriter {
     require(varint64Size)
     arrayLimit -= varint64Size
     var offset = arrayLimit
+    @Suppress("NAME_SHADOWING")
     var value = value
     while (value and 0x7fL.inv() != 0L) {
       array[offset++] = ((value and 0x7f) or 0x80).toByte()
