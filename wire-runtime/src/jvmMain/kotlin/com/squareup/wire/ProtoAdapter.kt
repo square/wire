@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("LeakingThis")
+
 package com.squareup.wire
 
 import com.squareup.wire.internal.createRuntimeMessageAdapter
@@ -251,6 +253,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     /** Returns the adapter for `type`. */
     @JvmStatic fun <M> get(type: Class<M>): ProtoAdapter<M> {
       try {
+        @Suppress("UNCHECKED_CAST")
         return type.getField("ADAPTER").get(null) as ProtoAdapter<M>
       } catch (e: IllegalAccessException) {
         throw IllegalArgumentException("failed to access ${type.name}#ADAPTER", e)
@@ -332,11 +335,13 @@ actual abstract class ProtoAdapter<E> actual constructor(
     @JvmField actual val DURATION: ProtoAdapter<Duration> = try {
       commonDuration()
     } catch (_: NoClassDefFoundError) {
+      @Suppress("UNCHECKED_CAST")
       UnsupportedTypeProtoAdapter() as ProtoAdapter<Duration>
     }
     @JvmField actual val INSTANT: ProtoAdapter<Instant> = try {
       commonInstant()
     } catch (_: NoClassDefFoundError) {
+      @Suppress("UNCHECKED_CAST")
       UnsupportedTypeProtoAdapter() as ProtoAdapter<Instant>
     }
 

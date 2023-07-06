@@ -5,7 +5,7 @@ plugins {
 }
 
 application {
-  mainClassName = "com.squareup.wire.whiteboard.MiskGrpcServerKt"
+  mainClass.set("com.squareup.wire.whiteboard.MiskGrpcServerKt")
 }
 
 wire {

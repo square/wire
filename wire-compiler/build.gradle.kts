@@ -18,7 +18,7 @@ if (project.rootProject.name == "wire") {
 }
 
 application {
-  mainClassName = "com.squareup.wire.WireCompiler"
+  mainClass.set("com.squareup.wire.WireCompiler")
 }
 
 dependencies {

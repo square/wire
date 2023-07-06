@@ -32,6 +32,7 @@ data class Extend(
   fun member(field: Field): ProtoMember = ProtoMember.get(type!!, field)
 
   fun link(linker: Linker) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
     type = linker.resolveMessageType(name)
     val type = linker.get(type!!)
@@ -44,6 +45,7 @@ data class Extend(
   }
 
   fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
     for (field in fields) {
       field.linkOptions(linker, syntaxRules, validate)
@@ -51,6 +53,7 @@ data class Extend(
   }
 
   fun validate(linker: Linker, syntaxRules: SyntaxRules) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
     linker.validateImportForType(location, type!!)
 
