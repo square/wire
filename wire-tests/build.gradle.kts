@@ -150,9 +150,6 @@ kotlin {
         it.dependsOn(darwinTest)
       }
     }
-    all {
-      languageSettings.optIn("kotlin.Experimental")
-    }
   }
 }
 

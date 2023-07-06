@@ -53,7 +53,7 @@ class OptionReader(internal val reader: SyntaxReader) {
     var name = reader.readName() // Option name.
     if (isExtension) name = "[$name]"
 
-    var subNames = mutableListOf<String>()
+    val subNames = mutableListOf<String>()
     var c: Char
     while (true) {
       c = reader.readChar()
@@ -79,6 +79,7 @@ class OptionReader(internal val reader: SyntaxReader) {
     var value = kindAndValue.value
     subNames.reversed().forEach { subName ->
       var parenthesized = false
+      @Suppress("NAME_SHADOWING")
       var name = subName
       if (name.startsWith("(")) {
         name = name.substring(1, subName.length - 1)
@@ -135,6 +136,7 @@ class OptionReader(internal val reader: SyntaxReader) {
       }
 
       if (value is OptionElement) {
+        @Suppress("UNCHECKED_CAST")
         var nested = result[name] as? MutableMap<String, Any>
         if (nested == null) {
           nested = LinkedHashMap()
@@ -144,6 +146,7 @@ class OptionReader(internal val reader: SyntaxReader) {
       } else {
         // Add the value(s) to any previous values with the same key
         val previous = result[name]
+        @Suppress("UNCHECKED_CAST")
         when (previous) {
           null -> result[name] = value
           is List<*> -> // Add to previous List
@@ -168,6 +171,7 @@ class OptionReader(internal val reader: SyntaxReader) {
     value: Any
   ) {
     if (value is List<*>) {
+      @Suppress("UNCHECKED_CAST")
       list.addAll(value as Collection<Any>)
     } else {
       list.add(value)

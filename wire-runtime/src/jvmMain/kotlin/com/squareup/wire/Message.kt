@@ -58,28 +58,34 @@ protected actual constructor(
   /** Returns this message with any unknown fields removed. */
   fun withoutUnknownFields(): M = newBuilder().clearUnknownFields().build()
 
+  @Suppress("UNCHECKED_CAST")
   override fun toString(): String = adapter.toString(this as M)
 
+  @Suppress("UNCHECKED_CAST")
   @Throws(ObjectStreamException::class)
   protected fun writeReplace(): Any = MessageSerializedForm(encode(), javaClass as Class<M>)
 
   /** Encode this message and write it to `stream`. */
   @Throws(IOException::class)
   actual fun encode(sink: BufferedSink) {
+    @Suppress("UNCHECKED_CAST")
     adapter.encode(sink, this as M)
   }
 
   /** Encode this message as a `byte[]`.  */
+  @Suppress("UNCHECKED_CAST")
   actual fun encode(): ByteArray = adapter.encode(this as M)
 
   /** Encode this message as a `ByteString`. */
   actual fun encodeByteString(): ByteString {
+    @Suppress("UNCHECKED_CAST")
     return adapter.encodeByteString(this as M)
   }
 
   /** Encode this message and write it to `stream`.  */
   @Throws(IOException::class)
   fun encode(stream: OutputStream) {
+    @Suppress("UNCHECKED_CAST")
     adapter.encode(stream, this as M)
   }
 
@@ -104,6 +110,7 @@ protected actual constructor(
       value: Any?
     ): Builder<M, B> = apply {
       prepareForNewUnknownFields()
+      @Suppress("UNCHECKED_CAST")
       val protoAdapter = fieldEncoding.rawProtoAdapter() as ProtoAdapter<Any>
       protoAdapter.encodeWithTag(unknownFieldsWriter!!, tag, value)
     }
@@ -141,6 +148,7 @@ protected actual constructor(
   }
 
   companion object {
+    @Suppress("ConstPropertyName")
     private const val serialVersionUID = 0L
   }
 }

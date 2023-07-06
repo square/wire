@@ -37,17 +37,20 @@ data class Rpc(
     private set
 
   fun link(linker: Linker) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
     requestType = linker.resolveMessageType(requestTypeElement)
     responseType = linker.resolveMessageType(responseTypeElement)
   }
 
   fun linkOptions(linker: Linker, validate: Boolean) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
     options.link(linker, location, validate)
   }
 
   fun validate(linker: Linker) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
     linker.validateImportForType(location, requestType!!)
     linker.validateImportForType(location, responseType!!)

@@ -202,6 +202,7 @@ abstract class SchemaHandler {
       outDirectory: String,
       options: Map<String, String>,
     ): SchemaHandler {
+      @Suppress("DEPRECATION")
       return create()
     }
   }

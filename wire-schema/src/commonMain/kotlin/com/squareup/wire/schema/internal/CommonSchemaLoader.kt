@@ -242,6 +242,7 @@ internal class CommonSchemaLoader : Loader, ProfileLoader {
 
   /** Returns the type to import for `type`.  */
   private fun importedType(type: ProtoType): ProtoType? {
+    @Suppress("NAME_SHADOWING")
     var type = type
     // Map key type is always scalar.
     if (type.isMap) type = type.valueType!!

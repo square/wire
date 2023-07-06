@@ -126,6 +126,7 @@ data class Field(
   }
 
   fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
     options.link(linker, location, validate)
     deprecated = options.get(DEPRECATED)
@@ -140,6 +141,7 @@ data class Field(
   }
 
   fun validate(linker: Linker, syntaxRules: SyntaxRules) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
     if (isPacked && !isPackable(linker, type!!)) {
       linker.errors += "packed=true not permitted on $type"

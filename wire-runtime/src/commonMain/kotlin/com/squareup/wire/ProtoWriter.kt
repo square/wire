@@ -92,6 +92,7 @@ class ProtoWriter(private val sink: BufferedSink) {
    */
   @Throws(IOException::class)
   fun writeVarint32(value: Int) {
+    @Suppress("NAME_SHADOWING")
     var value = value
     while (value and 0x7f.inv() != 0) {
       sink.writeByte((value and 0x7f) or 0x80)
@@ -103,6 +104,7 @@ class ProtoWriter(private val sink: BufferedSink) {
   /** Encode and write a varint.  */
   @Throws(IOException::class)
   fun writeVarint64(value: Long) {
+    @Suppress("NAME_SHADOWING")
     var value = value
     while (value and 0x7fL.inv() != 0L) {
       sink.writeByte((value.toInt() and 0x7f) or 0x80)

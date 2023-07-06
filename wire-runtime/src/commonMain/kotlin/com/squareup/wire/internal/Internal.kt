@@ -15,6 +15,7 @@
  */
 @file:JvmName("Internal")
 @file:JvmMultifileClass
+@file:Suppress("FunctionName")
 
 package com.squareup.wire.internal
 
@@ -36,7 +37,7 @@ fun <K, V> newMutableMap(): MutableMap<K, V> = LinkedHashMap()
   message = "Please regenerate code using wire-compiler version 3.0.0 or higher.",
   replaceWith = ReplaceWith("com.squareup.internal.Internal.copyOf(list)")
 )
-fun <T> copyOf(name: String, list: List<T>?): MutableList<T> = copyOf(list!!)
+fun <T> copyOf(@Suppress("UNUSED_PARAMETER") name: String, list: List<T>?): MutableList<T> = copyOf(list!!)
 
 fun <T> copyOf(list: List<T>): MutableList<T> {
   return if (list === emptyList<T>() || list is ImmutableList<*>) {
@@ -50,11 +51,12 @@ fun <T> copyOf(list: List<T>): MutableList<T> {
   message = "Please regenerate code using wire-compiler version 3.0.0 or higher.",
   replaceWith = ReplaceWith("com.squareup.internal.Internal.copyOf(map)")
 )
-fun <K, V> copyOf(name: String, map: Map<K, V>?): MutableMap<K, V> = copyOf(map!!)
+fun <K, V> copyOf(@Suppress("UNUSED_PARAMETER") name: String, map: Map<K, V>?): MutableMap<K, V> = copyOf(map!!)
 
 fun <K, V> copyOf(map: Map<K, V>): MutableMap<K, V> = LinkedHashMap(map)
 
 fun <T> immutableCopyOf(name: String, list: List<T>): List<T> {
+  @Suppress("NAME_SHADOWING")
   var list = list
   if (list is MutableOnWriteList<*>) {
     list = (list as MutableOnWriteList<T>).mutableList
@@ -65,6 +67,7 @@ fun <T> immutableCopyOf(name: String, list: List<T>): List<T> {
   val result = ImmutableList(list)
   // Check after the list has been copied to defend against races.
   require(null !in result) { "$name.contains(null)" }
+  @Suppress("UNCHECKED_CAST")
   return result as List<T>
 }
 
@@ -86,6 +89,7 @@ fun <K, V> immutableCopyOfMapWithStructValues(name: String, map: Map<K, V>): Map
     require(k != null) { "$name.containsKey(null)" }
     copy[k] = immutableCopyOfStruct(name, v)
   }
+  @Suppress("UNCHECKED_CAST")
   return copy.toUnmodifiableMap() as Map<K, V>
 }
 
@@ -101,6 +105,7 @@ fun <T> immutableCopyOfStruct(name: String, value: T): T {
       for (element in value) {
         copy += immutableCopyOfStruct(name, element)
       }
+      @Suppress("UNCHECKED_CAST")
       copy.toUnmodifiableList() as T
     }
     is Map<*, *> -> {
@@ -108,6 +113,7 @@ fun <T> immutableCopyOfStruct(name: String, value: T): T {
       for ((k, v) in value) {
         copy[immutableCopyOfStruct(name, k)] = immutableCopyOfStruct(name, v)
       }
+      @Suppress("UNCHECKED_CAST")
       copy.toUnmodifiableMap() as T
     }
     else -> {
@@ -130,6 +136,7 @@ fun <K, V> Map<K, V>.redactElements(adapter: ProtoAdapter<V>): Map<K, V> {
   return mapValues { (_, value) -> adapter.redact(value) }
 }
 
+@Suppress("SuspiciousEqualsCombination")
 fun equals(a: Any?, b: Any?): Boolean = a === b || (a != null && a == b)
 
 /**
@@ -140,7 +147,7 @@ fun equals(a: Any?, b: Any?): Boolean = a === b || (a != null && a == b)
 fun missingRequiredFields(vararg args: Any?): IllegalStateException {
   var plural = ""
   val fields = buildString {
-    for (i in 0 until args.size step 2) {
+    for (i in args.indices step 2) {
       if (args[i] == null) {
         if (isNotEmpty()) {
           plural = "s" // Found more than one missing field
@@ -155,7 +162,7 @@ fun missingRequiredFields(vararg args: Any?): IllegalStateException {
 
 /** Throw [NullPointerException] if any of `list`'s items is null. */
 fun checkElementsNotNull(list: List<*>) {
-  for (i in 0 until list.size) {
+  for (i in list.indices) {
     if (list[i] == null) {
       throw NullPointerException("Element at index $i is null")
     }

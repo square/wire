@@ -371,6 +371,7 @@ class Linker {
    * Validate that the tags of [fields] are unique and in range, that proto3 message cannot
    * reference proto2 enums.
    */
+  @Suppress("NAME_SHADOWING")
   fun validateFields(
     fields: Iterable<Field>,
     reserveds: List<Reserved>,
@@ -395,12 +396,12 @@ class Linker {
         }
       }
 
-      tagToField.getOrPut(tag, { mutableSetOf() }).add(field)
-      nameToField.getOrPut(field.qualifiedName, { mutableSetOf() }).add(field)
+      tagToField.getOrPut(tag) { mutableSetOf() }.add(field)
+      nameToField.getOrPut(field.qualifiedName) { mutableSetOf() }.add(field)
       // We allow JSON collisions for extensions.
       if (!field.isExtension) {
         jsonNameToField
-          .getOrPut(syntaxRules.jsonName(field.name, field.declaredJsonName), { mutableSetOf() })
+          .getOrPut(syntaxRules.jsonName(field.name, field.declaredJsonName)) { mutableSetOf() }
           .add(field)
       }
 
@@ -462,7 +463,7 @@ class Linker {
     for (type in nestedTypes) {
       if (type is EnumType) {
         for (enumConstant in type.constants) {
-          nameToType.getOrPut(enumConstant.name, { mutableSetOf() }).also { it += type }
+          nameToType.getOrPut(enumConstant.name) { mutableSetOf() }.also { it += type }
         }
       }
     }
