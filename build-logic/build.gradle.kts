@@ -42,19 +42,6 @@ allprojects {
     }
   }
 
-  // Prefer to get dependency versions from BOMs.
-  configurations.all {
-    val configuration = this
-    configuration.dependencies.all {
-      val bom = when (group) {
-        "com.squareup.okio" -> libs.okio.bom.get()
-        "com.squareup.okhttp3" -> libs.okhttp.bom.get()
-        else -> return@all
-      }
-      configuration.dependencies.add(project.dependencies.platform(bom))
-    }
-  }
-
   tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
       jvmTarget = "1.8"
