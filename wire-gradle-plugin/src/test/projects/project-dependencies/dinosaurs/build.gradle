@@ -3,13 +3,17 @@ plugins {
   id 'org.jetbrains.kotlin.jvm'
 }
 
-dependencies {
-  protoPath project(":geology")
-}
+//dependencies {
+//  protoPath project(":geology")
+//}
 
 wire {
   sourcePath {
     srcDir 'src/main/proto'
+  }
+
+  sourcePath {
+    srcProject ':geology'
   }
 
   sourcePath {

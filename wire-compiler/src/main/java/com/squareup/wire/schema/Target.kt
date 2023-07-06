@@ -23,6 +23,8 @@ import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.swift.SwiftGenerator
 import okio.Path
 import java.io.IOException
+import java.io.ObjectStreamClass
+import java.io.Serializable
 import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
 /** Generate `.java` sources. */
@@ -308,12 +310,16 @@ data class CustomTarget(
     exclusive: Boolean,
     outDirectory: String
   ): Target {
-    return this.copy(
-      includes = includes,
-      excludes = excludes,
-      exclusive = exclusive,
-      outDirectory = outDirectory,
-    )
+    try {
+      return this.copy(
+        includes = includes,
+        excludes = excludes,
+        exclusive = exclusive,
+        outDirectory = outDirectory,
+      )
+    } catch (e: NullPointerException) {
+      throw IllegalStateException("Target's handler is $schemaHandlerFactory")
+    }
   }
 
   override fun newHandler(): SchemaHandler {
@@ -324,6 +330,10 @@ data class CustomTarget(
       outDirectory = outDirectory,
       options = options,
     )
+  }
+
+  companion object {
+    private const val serialVersionUID = 0L
   }
 }
 

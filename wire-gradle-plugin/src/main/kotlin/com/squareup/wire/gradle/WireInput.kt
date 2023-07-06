@@ -96,7 +96,10 @@ internal class WireInput(var configuration: Configuration) {
             dependency.mayBeProject -> {
               // Keys can be either `path` or `configuration`.
               // Example: "[path: ':someProj', configuration: 'someConf']"
-              return project.dependencies.project(mapOf("path" to dependency))
+              return project.dependencies.project(mapOf(
+                "path" to dependency,
+                "configuration" to configuration.name.substringBeforeLast("Copy"),
+              ))
             }
             else -> throw IllegalArgumentException(
               """

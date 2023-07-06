@@ -2,7 +2,6 @@ import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
-// apply(plugin = "org.jetbrains.kotlin.multiplatform")
 plugins {
   kotlin("multiplatform")
   id("com.github.gmazzo.buildconfig")

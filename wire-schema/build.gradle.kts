@@ -1,6 +1,7 @@
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.tasks.JavadocJar
 
 plugins {
   kotlin("multiplatform")
@@ -69,11 +70,15 @@ kotlin {
   }
 }
 
-
 if (project.rootProject.name == "wire") {
   configure<MavenPublishBaseExtension> {
     configure(
       KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
     )
   }
+}
+
+// Workaround for https://github.com/Kotlin/dokka/issues/1833
+tasks.withType<JavadocJar>().configureEach {
+  dependsOn(project.tasks.getByPath(":wire-runtime:dokkaGfm"))
 }

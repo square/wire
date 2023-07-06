@@ -32,6 +32,7 @@ allprojects {
   repositories {
     mavenCentral()
     google()
+    gradlePluginPortal()
   }
 
   plugins.withId("java") {
@@ -42,23 +43,20 @@ allprojects {
     }
   }
 
-  // Prefer to get dependency versions from BOMs.
-  configurations.all {
-    val configuration = this
-    configuration.dependencies.all {
-      val bom = when (group) {
-        "com.squareup.okio" -> libs.okio.bom.get()
-        "com.squareup.okhttp3" -> libs.okhttp.bom.get()
-        else -> return@all
-      }
-      configuration.dependencies.add(project.dependencies.platform(bom))
+  tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+      jvmTarget = "11"
+      // Disable optimized callable references. See https://youtrack.jetbrains.com/issue/KT-37435
+      freeCompilerArgs += "-Xno-optimized-callable-references"
+      freeCompilerArgs += "-Xjvm-default=all"
+      // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
+      freeCompilerArgs += "-progressive"
     }
   }
 
-  tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-      jvmTarget = "1.8"
-      freeCompilerArgs += "-Xjvm-default=all"
-    }
+  tasks.withType<JavaCompile>().configureEach {
+    sourceCompatibility = JavaVersion.VERSION_11.toString()
+    targetCompatibility = JavaVersion.VERSION_11.toString()
+    options.encoding = Charsets.UTF_8.toString()
   }
 }

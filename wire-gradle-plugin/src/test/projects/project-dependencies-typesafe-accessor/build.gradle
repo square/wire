@@ -1,8 +1,0 @@
-allprojects {
-  repositories {
-    maven {
-      url "file://${project.rootProject.projectDir}/../../../../../build/localMaven"
-    }
-    mavenCentral()
-  }
-}

@@ -1,9 +1,23 @@
 import com.squareup.wire.schema.SchemaHandler
 import org.jetbrains.annotations.NotNull
 
+buildscript {
+  repositories {
+    maven {
+      url "file://${projectDir.absolutePath}/../../../../../build/localMaven"
+    }
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("com.squareup.wire:wire-schema:${VERSION_NAME}")
+  }
+}
+
 plugins {
-  id 'application'
-  id 'com.squareup.wire'
+  id("java-library")
+  id("org.jetbrains.kotlin.jvm")
+  id('com.squareup.wire')
 }
 
 class MyCustomHandlerFactory implements SchemaHandler.Factory {
@@ -11,13 +25,15 @@ class MyCustomHandlerFactory implements SchemaHandler.Factory {
     throw new RuntimeException("boom");
   }
 
-  @Override
-  SchemaHandler create(@NotNull List<String> includes, @NotNull List<String> excludes,
+  @NotNull @Override
+  public SchemaHandler create(@NotNull List<String> includes, @NotNull List<String> excludes,
       boolean exclusive, @NotNull String outDirectory, @NotNull Map<String, String> options) {
     throw new RuntimeException("custom handler is running!! " +
         includes.join(", ") + ", " + excludes.join(", ") + ", " + exclusive + ", " +
         options.entrySet().toArray().join(", "));
   }
+
+  static final long serialVersionUID = 0L;
 }
 
 wire {
@@ -28,5 +44,11 @@ wire {
     excludes = ['squareup.geology.Period']
     options = [a: "one", b: "two", c: "three"]
     schemaHandlerFactory = new MyCustomHandlerFactory()
+  }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile).configureEach {
+  compilerOptions {
+    jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
   }
 }

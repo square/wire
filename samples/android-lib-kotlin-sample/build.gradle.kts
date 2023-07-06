@@ -16,6 +16,8 @@ android {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
   }
+
+  namespace = "com.squareup.wire.android.lib.kotlin"
 }
 
 wire {

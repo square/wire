@@ -22,6 +22,8 @@ import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.Source
 import com.squareup.wire.gradle.kotlin.sourceRoots
+import com.squareup.wire.schema.CustomTarget
+import com.squareup.wire.schema.SchemaHandler
 import com.squareup.wire.schema.newEventListenerFactory
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -35,6 +37,7 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
+import org.jetbrains.kotlin.gradle.plugin.sources.android.findKotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
@@ -226,7 +229,8 @@ class WirePlugin : Plugin<Project> {
         task.projectDirProperty.set(project.layout.projectDirectory)
         task.buildDirProperty.set(project.layout.buildDirectory)
 
-        val factories = extension.eventListenerFactories + extension.eventListenerFactoryClasses().map(::newEventListenerFactory)
+        val factories = extension.eventListenerFactories +
+          extension.eventListenerFactoryClasses().map(::newEventListenerFactory)
         task.eventListenerFactories.set(factories)
 
         for (projectDependency in projectDependencies) {
@@ -281,34 +285,30 @@ class WirePlugin : Plugin<Project> {
         val sourceSets =
           project.extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets
         val sourceSet = (sourceSets.getByName("commonMain") as DefaultKotlinSourceSet)
-        project.configurations.getByName(sourceSet.apiConfigurationName).dependencies.add(
-          runtimeDependency
-        )
+        project.dependencies.add(sourceSet.apiConfigurationName, runtimeDependency)
       }
 
       isJsOnly -> {
         val sourceSets =
           project.extensions.getByType(KotlinJsProjectExtension::class.java).sourceSets
         val sourceSet = (sourceSets.getByName("main") as DefaultKotlinSourceSet)
-        project.configurations.getByName(sourceSet.apiConfigurationName).dependencies.add(
-          runtimeDependency
-        )
+        project.dependencies.add(sourceSet.apiConfigurationName, runtimeDependency)
       }
 
       else -> {
         try {
-          project.configurations.getByName("api").dependencies.add(runtimeDependency)
+          project.dependencies.add("api", runtimeDependency)
         } catch (_: UnknownConfigurationException) {
           // No `api` configuration on Java applications.
-          project.configurations.getByName("implementation").dependencies.add(runtimeDependency)
+          project.dependencies.add("implementation", runtimeDependency)
         }
       }
     }
   }
 
-  private fun wireRuntimeDependency(isInternalBuild: Boolean): Dependency {
+  private fun wireRuntimeDependency(isInternalBuild: Boolean): Any {
     return if (isInternalBuild) {
-      project.dependencies.project(mapOf("path" to ":wire-runtime"))
+      project.project(":wire-runtime")
     } else {
       project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION")
     }
