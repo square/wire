@@ -35,6 +35,7 @@ class EnumJsonFormatter<E : WireEnum>(
     val mutableValueToString = mutableMapOf<E, String>()
 
     // E is a subtype of Enum<*>, but we don't know that statically.
+    @Suppress("UNCHECKED_CAST")
     val enumType = adapter.type!!.java as Class<E>
     for (constant in enumType.enumConstants) {
       val name = (constant as Enum<*>).name

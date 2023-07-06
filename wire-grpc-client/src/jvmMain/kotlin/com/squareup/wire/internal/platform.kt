@@ -22,7 +22,9 @@ import java.lang.reflect.Method
 
 actual typealias Call = okhttp3.Call
 
+@Suppress("NOTHING_TO_INLINE")
 internal actual inline fun Sink.asGzip(): Sink = gzip()
+@Suppress("NOTHING_TO_INLINE")
 internal actual inline fun Source.asGzip(): Source = gzip()
 
 internal actual fun Throwable.addSuppressed(other: Throwable) {

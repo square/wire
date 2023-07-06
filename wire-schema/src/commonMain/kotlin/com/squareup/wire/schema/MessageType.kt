@@ -115,6 +115,7 @@ data class MessageType(
   }
 
   override fun linkMembers(linker: Linker) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
     for (field in declaredFields) {
       field.link(linker)
@@ -125,6 +126,7 @@ data class MessageType(
   }
 
   override fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
     for (nestedType in nestedTypes) {
       nestedType.linkOptions(linker, syntaxRules, validate)
@@ -141,6 +143,7 @@ data class MessageType(
   }
 
   override fun validate(linker: Linker, syntaxRules: SyntaxRules) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
     linker.validateFields(fieldsAndOneOfFields, reserveds, syntaxRules)
     linker.validateEnumConstantNameUniqueness(nestedTypes)

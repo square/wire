@@ -198,6 +198,7 @@ class Options(
       is List<*> -> {
         val result = mutableListOf<Any>()
         for (element in value) {
+          @Suppress("UNCHECKED_CAST")
           result.addAll(canonicalizeValue(linker, context, isRepeated, element!!) as List<Any>)
         }
         return coerceValueForField(context, result, isRepeated)
@@ -248,6 +249,7 @@ class Options(
     b: List<LinkedOptionEntry>
   ): List<LinkedOptionEntry> {
     val aMap: Map<ProtoMember, Any?> = a.toMap()
+    @Suppress("UNCHECKED_CAST")
     val bMap: Map<ProtoMember, Any> = b.toMap() as Map<ProtoMember, Any>
 
     val valuesMap: MutableMap<ProtoMember, Any?> = LinkedHashMap(aMap)
@@ -366,7 +368,7 @@ class Options(
             map[protoMember] = value
           }
         }
-        if (map.isNotEmpty()) map else null
+        map.ifEmpty { null }
       }
 
       o is List<*> -> {
@@ -377,7 +379,7 @@ class Options(
             list.add(retainedValue) // This retained value is non-empty.
           }
         }
-        if (list.isNotEmpty()) list else null
+        list.ifEmpty { null }
       }
 
       !markSet.contains(type!!) -> null // Prune this type.
@@ -411,7 +413,7 @@ class Options(
      * original path split on dots such that the first element is in the set. For the above example
      * it would return the array `[a.b.c, d]`.
      *
-     * Typically the input path is a package name like `a.b`, followed by a dot and a sequence of
+     * Typically, the input path is a package name like `a.b`, followed by a dot and a sequence of
      * field names. The first field name is an extension field; subsequent field names make a path
      * within that extension.
      *
@@ -444,6 +446,6 @@ class Options(
   }
 
   private fun List<LinkedOptionEntry>.toMap(): Map<ProtoMember, Any?> {
-    return map { it.protoMember to it.value }.toMap()
+    return associate { it.protoMember to it.value }
   }
 }
