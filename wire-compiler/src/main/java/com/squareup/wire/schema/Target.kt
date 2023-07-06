@@ -369,7 +369,19 @@ private class ClassNameSchemaHandlerFactory(
       return result
     }
 
+  @Deprecated("Wire does not call this method anymore. Implement the other 'create' method to receive the payload associated with the schema handler.")
   override fun create(): SchemaHandler {
+    @Suppress("DEPRECATION")
     return delegate.create()
+  }
+
+  override fun create(
+    includes: List<String>,
+    excludes: List<String>,
+    exclusive: Boolean,
+    outDirectory: String,
+    options: Map<String, String>
+  ): SchemaHandler {
+    return delegate.create(includes, excludes, exclusive, outDirectory, options)
   }
 }

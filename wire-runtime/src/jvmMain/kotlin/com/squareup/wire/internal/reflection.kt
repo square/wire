@@ -36,8 +36,10 @@ fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
   val builderType = getBuilderType(messageType)
   val newBuilderInstance: () -> B = {
     if (builderType.isAssignableFrom(KotlinConstructorBuilder::class.java)) {
+      @Suppress("UNCHECKED_CAST")
       KotlinConstructorBuilder(messageType) as B
     } else {
+      @Suppress("DEPRECATION")
       builderType.newInstance()
     }
   }
@@ -81,6 +83,7 @@ private fun <M : Message<M, B>, B : Message.Builder<M, B>> getKeys(
   val messageClass = messageField.declaringClass
   val keysField = messageClass.getDeclaredField(boxedOneOfKeysFieldName(messageField.name))
   keysField.isAccessible = true
+  @Suppress("UNCHECKED_CAST")
   return keysField.get(null) as Set<OneOf.Key<*>>
 }
 
@@ -99,6 +102,7 @@ fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
   )
 }
 
+@Suppress("UNCHECKED_CAST")
 private fun <M : Message<M, B>, B : Message.Builder<M, B>> getBuilderType(
   messageType: Class<M>
 ): Class<B> {

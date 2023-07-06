@@ -20,6 +20,11 @@ jobs:
           - 12
           - 14
           - 15
+          - 16
+          - 17
+          - 18
+          - 19
+          #- 20
 
     steps:
       - name: Checkout
@@ -61,7 +66,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: 14
+          java-version: 19
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -98,7 +103,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: 14
+          java-version: 19
 
       - name: Check test files
         run: |
@@ -167,7 +172,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: 14
+          java-version: 19
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1

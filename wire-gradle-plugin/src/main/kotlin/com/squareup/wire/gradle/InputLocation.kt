@@ -29,6 +29,7 @@ class InputLocation private constructor(
       val basePath = base.toPath()
       // On Windows, a dependency could live on another drive. If that's a case,
       // `project.relativePath` will throw so we don't try to optimize its reference.
+      @Suppress("NAME_SHADOWING")
       val base = if (basePath.isAbsolute && project.buildDir.toOkioPath().root != basePath.root) {
         base
       } else {

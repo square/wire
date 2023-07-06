@@ -48,7 +48,7 @@ dependencies {
 }
 
 val generateReflectionProtos by tasks.creating(JavaExec::class) {
-  main = "com.squareup.wire.WireCompiler"
+  mainClass.set("com.squareup.wire.WireCompiler")
   classpath = generateReflectionProtosClasspath
   args(
     "--proto_path=$projectDir/src/main/resources",

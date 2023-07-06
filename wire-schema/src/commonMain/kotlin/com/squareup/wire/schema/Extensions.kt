@@ -25,6 +25,7 @@ data class Extensions(
   val values: List<Any>
 ) {
   fun validate(linker: Linker) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
     val outOfRangeTags = mutableListOf<String>()
     values.forEach { value ->

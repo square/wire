@@ -57,6 +57,7 @@ data class EnumType(
   override fun linkMembers(linker: Linker) {}
 
   override fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
     options.link(linker, location, validate = validate)
     for (constant in constants) {
@@ -67,6 +68,7 @@ data class EnumType(
   }
 
   override fun validate(linker: Linker, syntaxRules: SyntaxRules) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
 
     if ("true" != allowAlias) {
@@ -107,7 +109,7 @@ data class EnumType(
             "Ambiguous constant names (if you are using allow_alias, use the same value for " +
               "these constants):"
           )
-          constants.forEach { it ->
+          constants.forEach {
             append("\n  ${it.name}:${it.tag} (${it.location})")
           }
         }

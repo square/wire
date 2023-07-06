@@ -463,6 +463,7 @@ class SchemaEncoder(
       ProtoType.UINT32 -> (value as String).toUInt().toInt()
       ProtoType.UINT64 -> (value as String).toULong().toLong()
       else -> {
+        @Suppress("UNCHECKED_CAST")
         when (schema.getType(type)) {
           is MessageType -> toJsonMap(value as Map<ProtoMember, Any>)
           is EnumType -> value as String

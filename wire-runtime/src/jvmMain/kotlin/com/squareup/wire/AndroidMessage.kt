@@ -37,6 +37,7 @@ abstract class AndroidMessage<M : Message<M, B>, B : Message.Builder<M, B>> prot
   ) : Parcelable.Creator<M> {
     override fun createFromParcel(input: Parcel): M = adapter.decode(input.createByteArray())
 
+    @Suppress("UNCHECKED_CAST")
     override fun newArray(size: Int): Array<M> =
       newInstance(adapter.type?.javaObjectType, size) as Array<M>
   }

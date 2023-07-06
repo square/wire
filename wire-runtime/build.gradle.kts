@@ -48,9 +48,6 @@ kotlin {
     tvosSimulatorArm64()
   }
   sourceSets {
-    all {
-      languageSettings.optIn("kotlin.Experimental")
-    }
     val commonMain by getting {
       dependencies {
         api(libs.okio.core)
