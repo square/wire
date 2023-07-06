@@ -39,7 +39,7 @@ class Linker {
     loader: Loader,
     errors: ErrorCollector,
     permitPackageCycles: Boolean,
-    loadExhaustively: Boolean
+    loadExhaustively: Boolean,
   ) {
     this.loader = loader
     this.fileLinkers = mutableMapOf()
@@ -53,7 +53,10 @@ class Linker {
     this.loadExhaustively = loadExhaustively
   }
 
-  private constructor(enclosing: Linker, additionalContext: Any) {
+  private constructor(
+    enclosing: Linker,
+    additionalContext: Any,
+  ) {
     this.loader = enclosing.loader
     this.fileLinkers = enclosing.fileLinkers
     this.fileOptionsQueue = enclosing.fileOptionsQueue
@@ -196,7 +199,10 @@ class Linker {
     return resolveType(name, true)
   }
 
-  private fun resolveType(name: String, messageOnly: Boolean): ProtoType {
+  private fun resolveType(
+    name: String,
+    messageOnly: Boolean,
+  ): ProtoType {
     val type = get(name)
 
     if (type.isScalar) {
@@ -239,7 +245,10 @@ class Linker {
     return resolved.type
   }
 
-  fun <T> resolve(name: String, map: Map<String, T>): T? {
+  fun <T> resolve(
+    name: String,
+    map: Map<String, T>,
+  ): T? {
     if (name.startsWith(".")) {
       // If name starts with a '.', the rest of it is fully qualified.
       val result = map[name.substring(1)]
@@ -268,6 +277,7 @@ class Linker {
         is Type -> {
           return context.type.toString()
         }
+
         is ProtoFile -> {
           val packageName = context.packageName
           return packageName ?: ""
@@ -304,7 +314,10 @@ class Linker {
   }
 
   /** Adds [type]. */
-  fun addType(protoType: ProtoType, type: Type) {
+  fun addType(
+    protoType: ProtoType,
+    type: Type,
+  ) {
     protoTypeNames[protoType.toString()] = type
   }
 
@@ -347,7 +360,7 @@ class Linker {
   /** Returns the field named [field] on the message type of [protoType]. */
   fun dereference(
     protoType: ProtoType,
-    field: String
+    field: String,
   ): Field? {
     @Suppress("NAME_SHADOWING") var field = field
     if (field.startsWith("[") && field.endsWith("]")) {
@@ -375,7 +388,7 @@ class Linker {
   fun validateFields(
     fields: Iterable<Field>,
     reserveds: List<Reserved>,
-    syntaxRules: SyntaxRules
+    syntaxRules: SyntaxRules,
   ) {
     val tagToField = linkedMapOf<Int, MutableSet<Field>>()
     val nameToField = linkedMapOf<String, MutableSet<Field>>()
@@ -451,13 +464,34 @@ class Linker {
     val filesByPackageName: Map<String?, List<FileLinker>> =
       fileLinkers.values.groupBy { it.protoFile.packageName }
 
-    // Enum constants must be unique within each package.
     for (fileLinkers in filesByPackageName.values) {
+      validateTypeUniqueness(fileLinkers)
+
+      // Enum constants must be unique within each package.
       val types = fileLinkers.flatMap { it.protoFile.types }
       withContext(fileLinkers[0].protoFile).validateEnumConstantNameUniqueness(types)
     }
   }
 
+  private fun validateTypeUniqueness(fileLinkers: List<FileLinker>) {
+    val conflictingTypes = fileLinkers
+      .flatMap { linker -> linker.protoFile.types.map { it.type to it.location } }
+      .groupBy { (type, typeLocation) -> type to typeLocation.toString() }
+      .values.filter { it.size > 1 }
+
+    for (typesAndLocations in conflictingTypes) {
+      val type = typesAndLocations.first().first
+      val error = buildString {
+        append("same type '$type' from the same file loaded from different paths:")
+        typesAndLocations.forEachIndexed { index, (_, typeLocation) ->
+          append("\n  ${index + 1}. base:${typeLocation.base}, path:${typeLocation.copy(base = "")}")
+        }
+      }
+      errors += error
+    }
+  }
+
+  @Suppress("MoveLambdaOutsideParentheses")
   fun validateEnumConstantNameUniqueness(nestedTypes: Iterable<Type>) {
     val nameToType = mutableMapOf<String, MutableSet<EnumType>>()
     for (type in nestedTypes) {
@@ -486,7 +520,7 @@ class Linker {
 
   fun validateImportForType(
     location: Location,
-    type: ProtoType
+    type: ProtoType,
   ) {
     @Suppress("NAME_SHADOWING") var type = type
 
@@ -505,7 +539,7 @@ class Linker {
 
   fun validateImportForPath(
     location: Location,
-    requiredImport: String
+    requiredImport: String,
   ) {
     val path = location.path
     val fileLinker = getFileLinker(path)

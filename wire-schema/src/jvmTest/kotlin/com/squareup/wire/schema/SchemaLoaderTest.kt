@@ -356,6 +356,31 @@ class SchemaLoaderTest {
   }
 
   @Test
+  fun nameCollisions() {
+    val content = """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |message Blue {}
+      """.trimMargin()
+
+    fs.add("colors/squareup/colors/a.proto", content)
+
+    val loader = CommonSchemaLoader(fs)
+    loader.initRoots(sourcePath = listOf(Location.get("colors"), Location.get("colors/squareup")))
+
+    val exception = assertFailsWith<SchemaException> {
+      loader.loadSchema()
+    }
+    assertThat(exception).hasMessage(
+      """
+        |same type 'squareup.colors.Blue' from the same file loaded from different paths:
+        |  1. base:colors, path:squareup/colors/a.proto:3:1
+        |  2. base:colors/squareup, path:colors/a.proto:3:1
+        """.trimMargin()
+    )
+  }
+
+  @Test
   fun symlinkFile() {
     if (!fs.allowSymlinks) return
 
