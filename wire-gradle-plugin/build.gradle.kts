@@ -2,6 +2,8 @@ import com.gradle.publish.PluginBundleExtension
 import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 // This module is included in two projects:
 // - In the root project where it's released as one of our artifacts
@@ -98,4 +100,15 @@ buildConfig {
 
   packageName("com.squareup.wire")
   buildConfigField("String", "VERSION", "\"${project.version}\"")
+}
+
+tasks.withType<JavaCompile>().configureEach {
+  sourceCompatibility = JavaVersion.VERSION_11.toString()
+  targetCompatibility = JavaVersion.VERSION_11.toString()
+}
+
+tasks.withType<KotlinJvmCompile>().configureEach {
+  compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_11)
+  }
 }
