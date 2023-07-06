@@ -32,6 +32,7 @@ data class EnumConstant(
     EnumConstantElement(location, name, tag, documentation, options.elements)
 
   internal fun linkOptions(linker: Linker, validate: Boolean) {
+    @Suppress("NAME_SHADOWING")
     val linker = linker.withContext(this)
     options.link(linker, location, validate)
   }

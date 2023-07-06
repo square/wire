@@ -40,14 +40,19 @@ protected actual constructor(
 
   /** Encode this message and write it to `stream`. */
   actual fun encode(sink: BufferedSink) {
+    @Suppress("UNCHECKED_CAST")
     adapter.encode(sink, this as M)
   }
 
   /** Encode this message as a `byte[]`. */
-  actual fun encode(): ByteArray = adapter.encode(this as M)
+  actual fun encode(): ByteArray {
+    @Suppress("UNCHECKED_CAST")
+    return adapter.encode(this as M)
+  }
 
   /** Encode this message as a `ByteString`. */
   actual fun encodeByteString(): ByteString {
+    @Suppress("UNCHECKED_CAST")
     return adapter.encodeByteString(this as M)
   }
 
@@ -72,6 +77,7 @@ protected actual constructor(
       value: Any?
     ): Builder<M, B> = apply {
       prepareForNewUnknownFields()
+      @Suppress("UNCHECKED_CAST") 
       val protoAdapter = fieldEncoding.rawProtoAdapter() as ProtoAdapter<Any>
       protoAdapter.encodeWithTag(unknownFieldsWriter!!, tag, value)
     }

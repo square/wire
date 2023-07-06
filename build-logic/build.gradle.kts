@@ -44,8 +44,18 @@ allprojects {
 
   tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
-      jvmTarget = "1.8"
+      jvmTarget = "11"
+      // Disable optimized callable references. See https://youtrack.jetbrains.com/issue/KT-37435
+      freeCompilerArgs += "-Xno-optimized-callable-references"
       freeCompilerArgs += "-Xjvm-default=all"
+      // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
+      freeCompilerArgs += "-progressive"
     }
+  }
+
+  tasks.withType<JavaCompile>().configureEach {
+    sourceCompatibility = JavaVersion.VERSION_11.toString()
+    targetCompatibility = JavaVersion.VERSION_11.toString()
+    options.encoding = Charsets.UTF_8.toString()
   }
 }

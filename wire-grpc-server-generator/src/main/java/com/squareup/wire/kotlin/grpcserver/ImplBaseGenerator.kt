@@ -151,7 +151,7 @@ object ImplBaseGenerator {
                 .addModifiers(KModifier.OVERRIDE)
                 .addParameter(ParameterSpec(name = "value", type = className))
                 .returns(InputStream::class)
-                .addCode(streamCodeFor(it!!, className))
+                .addCode(streamCodeFor(it, className))
                 .build()
             )
             .addFunction(
@@ -166,7 +166,7 @@ object ImplBaseGenerator {
                 .addModifiers(KModifier.OVERRIDE)
                 .addParameter("stream", InputStream::class)
                 .returns(className)
-                .addCode(parseCodeFor(it!!, className))
+                .addCode(parseCodeFor(it, className))
                 .build()
             )
             .build()

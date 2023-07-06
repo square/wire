@@ -65,6 +65,7 @@ fun <S : Any, R : Any> GrpcCall(function: (S) -> R): GrpcCall<S, R> {
     override var requestMetadata: Map<String, String> = mapOf()
     override val responseMetadata: Map<String, String>? = null
 
+    @Suppress("UNCHECKED_CAST")
     override val method: GrpcMethod<S, R>
       get() = GrpcMethod(
         path = "/wire/AnonymousEndpoint",
@@ -147,6 +148,7 @@ fun <S : Any, R : Any> GrpcStreamingCall(
   function: suspend (ReceiveChannel<S>, SendChannel<R>) -> Unit
 ): GrpcStreamingCall<S, R> {
   return object : GrpcStreamingCall<S, R> {
+    @Suppress("UNCHECKED_CAST")
     override val method: GrpcMethod<S, R>
       get() = GrpcMethod(
         path = "/wire/AnonymousEndpoint",
@@ -174,6 +176,12 @@ fun <S : Any, R : Any> GrpcStreamingCall(
 
     override fun isExecuted() = executed.get()
 
+    @Deprecated(
+      "Provide a scope, preferably not GlobalScope",
+      replaceWith = ReplaceWith("executeIn(GlobalScope)", "kotlinx.coroutines.GlobalScope"),
+      level = DeprecationLevel.WARNING,
+    )
+    @Suppress("OPT_IN_USAGE")
     override fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>> = executeIn(GlobalScope)
 
     override fun executeIn(scope: CoroutineScope): Pair<SendChannel<S>, ReceiveChannel<R>> {
@@ -196,7 +204,9 @@ fun <S : Any, R : Any> GrpcStreamingCall(
       return requestChannel to responseChannel
     }
 
+    @Suppress("OPT_IN_USAGE")
     override fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>> {
+      // TODO(Benoit) Could we use a better scope here?
       executeIn(GlobalScope)
       return requestChannel.toMessageSink() to responseChannel.toMessageSource()
     }

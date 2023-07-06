@@ -91,6 +91,7 @@ fun String.withPlatformSlashes(): String {
  * may contain. This is useful to write one assertion which can be run on both macOS and Windows.
  */
 fun IterableAssert<String>.containsRelativePaths(vararg values: String): IterableAssert<String> {
+  @Suppress("NAME_SHADOWING")
   val values = values.map { it.withPlatformSlashes() }
   return containsExactlyInAnyOrder(*values.toTypedArray())
 }
@@ -100,6 +101,7 @@ fun IterableAssert<String>.containsRelativePaths(vararg values: String): Iterabl
  * may contain. This is useful to write one assertion which can be run on both macOS and Windows.
  */
 fun ListAssert<String>.containsRelativePaths(vararg values: String): ListAssert<String> {
+  @Suppress("NAME_SHADOWING")
   val values = values.map { it.withPlatformSlashes() }
   return containsExactlyInAnyOrder(*values.toTypedArray())
 }

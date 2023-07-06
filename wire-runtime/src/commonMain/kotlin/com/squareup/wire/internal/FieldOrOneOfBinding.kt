@@ -56,6 +56,7 @@ abstract class FieldOrOneOfBinding<M, B> {
    */
   abstract val writeIdentityValues: Boolean
 
+  @Suppress("UNCHECKED_CAST")
   val adapter: ProtoAdapter<Any> by lazy {
     // Delegate adapters are created lazily; otherwise we could stack overflow!
     if (isMap) {

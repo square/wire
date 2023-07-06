@@ -41,6 +41,7 @@ internal class BlockingMessageSource<R : Any>(
   private val queue = LinkedBlockingDeque<Any>(1)
 
   override fun read(): R? {
+    @Suppress("UNCHECKED_CAST")
     return when (val result = queue.take()) {
       is Complete -> {
         queue.put(result) // Replace it.

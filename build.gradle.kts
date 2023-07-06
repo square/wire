@@ -87,6 +87,8 @@ subprojects {
       // Disable optimized callable references. See https://youtrack.jetbrains.com/issue/KT-37435
       freeCompilerArgs += "-Xno-optimized-callable-references"
       freeCompilerArgs += "-Xjvm-default=all"
+      // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
+      freeCompilerArgs += "-progressive"
     }
   }
 

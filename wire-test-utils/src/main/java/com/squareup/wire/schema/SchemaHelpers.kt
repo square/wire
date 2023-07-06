@@ -23,10 +23,9 @@ import okio.source
 import java.io.File
 
 fun Schema.protoAdapter(
-  messageTypeName: String,
-  includeUnknown: Boolean = true
+  messageTypeName: String
 ): ProtoAdapter<Any> {
-  return protoAdapter(messageTypeName, includeUnknown = includeUnknown)
+  return protoAdapter(messageTypeName, includeUnknown = true)
 }
 
 /** This will read the content of [path] and add it to the [SchemaBuilder]. */

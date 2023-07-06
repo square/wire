@@ -12,7 +12,7 @@ kotlin {
       defaultSourceSet {
         kotlin.srcDir("src/jvmKotlinInteropTest/proto-kotlin")
         dependencies {
-          implementation(compilations["main"].compileDependencyFiles)
+          implementation(projects.wireRuntime)
           implementation(libs.kotlin.test.junit)
           implementation(libs.assertj)
           implementation(libs.kotlin.reflect)
@@ -24,13 +24,16 @@ kotlin {
       }
       val jvmTest by tasks.getting {
         dependsOn(jvmKotlinInteropTest)
+        dependencies {
+          implementation(projects.wireGrpcClient)
+        }
       }
     }
     val kotlinAndroidTest by compilations.creating {
       defaultSourceSet {
         kotlin.srcDir("src/jvmKotlinAndroidTest/proto-kotlin")
         dependencies {
-          implementation(compilations["main"].compileDependencyFiles)
+          implementation(projects.wireRuntime)
           compileOnly(libs.android)
           implementation(libs.kotlin.test.junit)
           implementation(libs.assertj)
@@ -146,9 +149,6 @@ kotlin {
       for (it in listOf(iosX64Test, iosArm64Test, macosX64Test, macosArm64Test, tvosX64Test, tvosArm64Test)) {
         it.dependsOn(darwinTest)
       }
-    }
-    all {
-      languageSettings.optIn("kotlin.Experimental")
     }
   }
 }

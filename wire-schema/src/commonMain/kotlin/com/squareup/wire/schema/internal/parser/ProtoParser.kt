@@ -365,6 +365,7 @@ class ProtoParser internal constructor(
     val jsonName = stripJsonName(options)
     reader.require(';')
 
+    @Suppress("NAME_SHADOWING")
     val documentation = reader.tryAppendTrailingDocumentation(documentation)
 
     return FieldElement(
@@ -507,6 +508,7 @@ class ProtoParser internal constructor(
       "'reserved' must have at least one field name or tag"
     }
 
+    @Suppress("NAME_SHADOWING")
     val documentation = reader.tryAppendTrailingDocumentation(documentation)
 
     return ReservedElement(
@@ -562,6 +564,7 @@ class ProtoParser internal constructor(
     val options = OptionReader(reader).readOptions()
     reader.require(';')
 
+    @Suppress("NAME_SHADOWING")
     val documentation = reader.tryAppendTrailingDocumentation(documentation)
 
     return EnumConstantElement(
