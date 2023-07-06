@@ -77,14 +77,6 @@ kotlin {
       }
     }
   }
-  targets.all {
-    compilations.all {
-      kotlinOptions {
-        freeCompilerArgs += "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"
-        freeCompilerArgs += "-Xexperimental=com.squareup.wire.WireGrpcExperimental"
-      }
-    }
-  }
 }
 
 // TODO(egorand): Remove when https://github.com/srs/gradle-node-plugin/issues/301 is fixed

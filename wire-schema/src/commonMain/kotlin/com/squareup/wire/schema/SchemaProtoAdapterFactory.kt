@@ -77,6 +77,7 @@ internal class SchemaProtoAdapterFactory(
     if (protoType.isMap) throw UnsupportedOperationException("map types not supported")
     val result = adapterMap[protoType]
     if (result != null) {
+      @Suppress("UNCHECKED_CAST")
       return result as ProtoAdapter<Any>
     }
     val type = requireNotNull(schema.getType(protoType)) { "unknown type: $protoType" }
@@ -101,6 +102,7 @@ internal class SchemaProtoAdapterFactory(
       val messageAdapter = RuntimeMessageAdapter(messageBinding)
       deferredAdapter.delegate = messageAdapter
       adapterMap[protoType] = messageAdapter
+      @Suppress("UNCHECKED_CAST")
       return messageAdapter as ProtoAdapter<Any>
     }
     throw IllegalArgumentException("unexpected type: $protoType")
@@ -132,35 +134,44 @@ internal class SchemaProtoAdapterFactory(
     private val enumType: EnumType
   ) : ProtoAdapter<Any>(VARINT, Any::class, null, enumType.syntax) {
     override fun encodedSize(value: Any): Int {
-      if (value is String) {
-        val constant = enumType.constant(value)!!
-        return INT32.encodedSize(constant.tag)
-      } else if (value is Int) {
-        return INT32.encodedSize(value)
-      } else {
-        throw IllegalArgumentException("unexpected " + enumType.type + ": " + value)
+      return when (value) {
+        is String -> {
+          INT32.encodedSize(enumType.constant(value)!!.tag)
+        }
+        is Int -> {
+          INT32.encodedSize(value)
+        }
+        else -> {
+          throw IllegalArgumentException("unexpected " + enumType.type + ": " + value)
+        }
       }
     }
 
     override fun encode(writer: ProtoWriter, value: Any) {
-      if (value is String) {
-        val constant = enumType.constant(value)
-        writer.writeVarint32(constant!!.tag)
-      } else if (value is Int) {
-        writer.writeVarint32(value)
-      } else {
-        throw IllegalArgumentException("unexpected " + enumType.type + ": " + value)
+      when (value) {
+        is String -> {
+          writer.writeVarint32(enumType.constant(value)!!.tag)
+        }
+        is Int -> {
+          writer.writeVarint32(value)
+        }
+        else -> {
+          throw IllegalArgumentException("unexpected " + enumType.type + ": " + value)
+        }
       }
     }
 
     override fun encode(writer: ReverseProtoWriter, value: Any) {
-      if (value is String) {
-        val constant = enumType.constant(value)
-        writer.writeVarint32(constant!!.tag)
-      } else if (value is Int) {
-        writer.writeVarint32(value)
-      } else {
-        throw IllegalArgumentException("unexpected " + enumType.type + ": " + value)
+      when (value) {
+        is String -> {
+          writer.writeVarint32(enumType.constant(value)!!.tag)
+        }
+        is Int -> {
+          writer.writeVarint32(value)
+        }
+        else -> {
+          throw IllegalArgumentException("unexpected " + enumType.type + ": " + value)
+        }
       }
     }
 
@@ -205,6 +216,7 @@ internal class SchemaProtoAdapterFactory(
     ) {
       if (!includeUnknown || value == null) return
       val name = tag.toString()
+      @Suppress("UNCHECKED_CAST")
       val values = builder.getOrPut(name) { mutableListOf<Any>() } as MutableList<Any>
       values.add(value)
     }
@@ -243,6 +255,7 @@ internal class SchemaProtoAdapterFactory(
     override val singleAdapter: ProtoAdapter<*>
       get() = get(this.field.type!!)
 
+    @Suppress("UNCHECKED_CAST")
     override fun value(builder: MutableMap<String, Any>, value: Any) {
       if (isMap) {
         val map = builder.getOrPut(field.name) { mutableMapOf<String, Any>() }

@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-  mainClassName = "com.squareup.dinosaurs.Sample"
+  mainClass.set("com.squareup.dinosaurs.Sample")
 }
 
 dependencies {

@@ -56,6 +56,7 @@ internal class OneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>> intern
   override val keyAdapter
     get() = error("not a map")
 
+  @Suppress("UNCHECKED_CAST")
   override val singleAdapter
     get() = key.adapter as ProtoAdapter<Any>
 
@@ -64,6 +65,7 @@ internal class OneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>> intern
   }
 
   override fun set(builder: B, value: Any?) {
+    @Suppress("UNCHECKED_CAST")
     builderField.set(builder, OneOf(key as OneOf.Key<Any>, value!!))
   }
 

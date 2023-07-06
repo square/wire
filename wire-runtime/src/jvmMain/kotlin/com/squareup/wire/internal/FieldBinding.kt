@@ -56,7 +56,7 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
     get() = keyAdapterString.isNotEmpty()
 
   override val isMessage: Boolean
-    get() = Message::class.java.isAssignableFrom(singleAdapter.type?.javaObjectType)
+    get() = Message::class.java.isAssignableFrom(singleAdapter.type?.javaObjectType!!)
 
   private fun getBuilderSetter(builderType: Class<*>, wireField: WireField): (B, Any?) -> Unit {
     return when {
@@ -123,8 +123,10 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   override fun value(builder: B, value: Any) {
     when {
       label.isRepeated -> {
+        @Suppress("UNCHECKED_CAST")
         when (val list = getFromBuilder(builder)) {
           is MutableList<*> -> (list as MutableList<Any>).add(value)
+          // TODO(Benoit) Doesn't seem reachable, maybe remove?
           is List<*> -> {
             val mutableList = list.toMutableList()
             mutableList.add(value)
@@ -137,8 +139,10 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
         }
       }
       keyAdapterString.isNotEmpty() -> {
+        @Suppress("UNCHECKED_CAST")
         when (val map = getFromBuilder(builder)) {
           is MutableMap<*, *> -> map.putAll(value as Map<Nothing, Nothing>)
+          // TODO(Benoit) Doesn't seem reachable, maybe remove?
           is Map<*, *> -> {
             val mutableMap = map.toMutableMap()
             mutableMap.putAll(value as Map<out Any?, Any?>)

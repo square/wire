@@ -53,19 +53,6 @@ allprojects {
     mavenCentral()
     google()
   }
-
-  // Prefer to get dependency versions from BOMs.
-  configurations.all {
-    val configuration = this
-    configuration.dependencies.all {
-      val bom = when (group) {
-        "com.squareup.okio" -> libs.okio.bom.get()
-        "com.squareup.okhttp3" -> libs.okhttp.bom.get()
-        else -> return@all
-      }
-      configuration.dependencies.add(project.dependencies.platform(bom))
-    }
-  }
 }
 
 subprojects {
@@ -100,6 +87,8 @@ subprojects {
       // Disable optimized callable references. See https://youtrack.jetbrains.com/issue/KT-37435
       freeCompilerArgs += "-Xno-optimized-callable-references"
       freeCompilerArgs += "-Xjvm-default=all"
+      // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
+      freeCompilerArgs += "-progressive"
     }
   }
 
@@ -138,19 +127,6 @@ subprojects {
 }
 
 allprojects {
-  // Prefer to get dependency versions from BOMs.
-  configurations.all {
-    val configuration = this
-    configuration.dependencies.all {
-      val bom = when (group) {
-        "com.squareup.okio" -> libs.okio.bom.get()
-        "com.squareup.okhttp3" -> libs.okhttp.bom.get()
-        else -> return@all
-      }
-      configuration.dependencies.add(project.dependencies.platform(bom))
-    }
-  }
-
   tasks.withType<Jar>().configureEach {
     if (name == "jar") {
       manifest {
