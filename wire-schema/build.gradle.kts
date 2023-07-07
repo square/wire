@@ -81,7 +81,7 @@ if (project.rootProject.name == "wire") {
   configure<SpotlessExtension> {
     kotlin {
       targetExclude(
-        // Apache 2-licensed files from Apache.
+        // Apache 2-licensed file from Apache.
         "src/jvmTest/kotlin/com/squareup/wire/schema/MavenVersionsTest.kt",
       )
     }

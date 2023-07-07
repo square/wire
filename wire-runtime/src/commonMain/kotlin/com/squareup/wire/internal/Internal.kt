@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ fun <K, V> newMutableMap(): MutableMap<K, V> = LinkedHashMap()
 
 @Deprecated(
   message = "Please regenerate code using wire-compiler version 3.0.0 or higher.",
-  replaceWith = ReplaceWith("com.squareup.internal.Internal.copyOf(list)")
+  replaceWith = ReplaceWith("com.squareup.internal.Internal.copyOf(list)"),
 )
 fun <T> copyOf(@Suppress("UNUSED_PARAMETER") name: String, list: List<T>?): MutableList<T> = copyOf(list!!)
 
@@ -49,7 +49,7 @@ fun <T> copyOf(list: List<T>): MutableList<T> {
 
 @Deprecated(
   message = "Please regenerate code using wire-compiler version 3.0.0 or higher.",
-  replaceWith = ReplaceWith("com.squareup.internal.Internal.copyOf(map)")
+  replaceWith = ReplaceWith("com.squareup.internal.Internal.copyOf(map)"),
 )
 fun <K, V> copyOf(@Suppress("UNUSED_PARAMETER") name: String, map: Map<K, V>?): MutableMap<K, V> = copyOf(map!!)
 
@@ -119,7 +119,7 @@ fun <T> immutableCopyOfStruct(name: String, value: T): T {
     else -> {
       throw IllegalArgumentException(
         "struct value $name must be a JSON type " +
-          "(null, Boolean, Double, String, List, or Map) but was ${value.typeName}: $value"
+          "(null, Boolean, Double, String, List, or Map) but was ${value.typeName}: $value",
       )
     }
   }

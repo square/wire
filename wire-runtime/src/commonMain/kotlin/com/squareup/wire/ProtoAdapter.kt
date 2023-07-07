@@ -1,11 +1,11 @@
 /*
- * Copyright 2015 Square Inc.
+ * Copyright (C) 2015 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,15 +26,15 @@ import com.squareup.wire.ProtoWriter.Companion.tagSize
 import com.squareup.wire.ProtoWriter.Companion.varint32Size
 import com.squareup.wire.ProtoWriter.Companion.varint64Size
 import com.squareup.wire.internal.Throws
+import kotlin.jvm.JvmField
+import kotlin.jvm.JvmStatic
+import kotlin.reflect.KClass
 import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
 import okio.ByteString
 import okio.IOException
 import okio.utf8Size
-import kotlin.jvm.JvmField
-import kotlin.jvm.JvmStatic
-import kotlin.reflect.KClass
 
 expect abstract class ProtoAdapter<E>(
   fieldEncoding: FieldEncoding,
@@ -170,7 +170,7 @@ expect abstract class ProtoAdapter<E>(
 
   class EnumConstantNotFoundException(
     value: Int,
-    type: KClass<*>?
+    type: KClass<*>?,
   ) : IllegalArgumentException {
     @JvmField
     val value: Int
@@ -187,55 +187,97 @@ expect abstract class ProtoAdapter<E>(
     @JvmStatic
     fun <K, V> newMapAdapter(
       keyAdapter: ProtoAdapter<K>,
-      valueAdapter: ProtoAdapter<V>
+      valueAdapter: ProtoAdapter<V>,
     ): ProtoAdapter<Map<K, V>>
 
     @JvmField val BOOL: ProtoAdapter<Boolean>
+
     @JvmField val INT32: ProtoAdapter<Int>
+
     @JvmField val INT32_ARRAY: ProtoAdapter<IntArray>
+
     @JvmField val UINT32: ProtoAdapter<Int>
+
     @JvmField val UINT32_ARRAY: ProtoAdapter<IntArray>
+
     @JvmField val SINT32: ProtoAdapter<Int>
+
     @JvmField val SINT32_ARRAY: ProtoAdapter<IntArray>
+
     @JvmField val FIXED32: ProtoAdapter<Int>
+
     @JvmField val FIXED32_ARRAY: ProtoAdapter<IntArray>
+
     @JvmField val SFIXED32: ProtoAdapter<Int>
+
     @JvmField val SFIXED32_ARRAY: ProtoAdapter<IntArray>
+
     @JvmField val INT64: ProtoAdapter<Long>
+
     @JvmField val INT64_ARRAY: ProtoAdapter<LongArray>
+
     /**
      * Like INT64, but negative longs are interpreted as large positive values, and encoded that way
      * in JSON.
      */
     @JvmField val UINT64: ProtoAdapter<Long>
+
     @JvmField val UINT64_ARRAY: ProtoAdapter<LongArray>
+
     @JvmField val SINT64: ProtoAdapter<Long>
+
     @JvmField val SINT64_ARRAY: ProtoAdapter<LongArray>
+
     @JvmField val FIXED64: ProtoAdapter<Long>
+
     @JvmField val FIXED64_ARRAY: ProtoAdapter<LongArray>
+
     @JvmField val SFIXED64: ProtoAdapter<Long>
+
     @JvmField val SFIXED64_ARRAY: ProtoAdapter<LongArray>
+
     @JvmField val FLOAT: ProtoAdapter<Float>
+
     @JvmField val FLOAT_ARRAY: ProtoAdapter<FloatArray>
+
     @JvmField val DOUBLE: ProtoAdapter<Double>
+
     @JvmField val DOUBLE_ARRAY: ProtoAdapter<DoubleArray>
+
     @JvmField val BYTES: ProtoAdapter<ByteString>
+
     @JvmField val STRING: ProtoAdapter<String>
+
     @JvmField val DURATION: ProtoAdapter<Duration>
+
     @JvmField val INSTANT: ProtoAdapter<Instant>
+
     @JvmField val EMPTY: ProtoAdapter<Unit>
+
     @JvmField val STRUCT_MAP: ProtoAdapter<Map<String, *>?>
+
     @JvmField val STRUCT_LIST: ProtoAdapter<List<*>?>
+
     @JvmField val STRUCT_NULL: ProtoAdapter<Nothing?>
+
     @JvmField val STRUCT_VALUE: ProtoAdapter<Any?>
+
     @JvmField val DOUBLE_VALUE: ProtoAdapter<Double?>
+
     @JvmField val FLOAT_VALUE: ProtoAdapter<Float?>
+
     @JvmField val INT64_VALUE: ProtoAdapter<Long?>
+
     @JvmField val UINT64_VALUE: ProtoAdapter<Long?>
+
     @JvmField val INT32_VALUE: ProtoAdapter<Int?>
+
     @JvmField val UINT32_VALUE: ProtoAdapter<Int?>
+
     @JvmField val BOOL_VALUE: ProtoAdapter<Boolean?>
+
     @JvmField val STRING_VALUE: ProtoAdapter<String?>
+
     @JvmField val BYTES_VALUE: ProtoAdapter<ByteString?>
   }
 }
@@ -253,7 +295,7 @@ internal inline fun <E> ProtoAdapter<E>.commonEncodedSizeWithTag(tag: Int, value
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun <E> ProtoAdapter<E>.delegateEncode(
   writer: ReverseProtoWriter,
-  value: E
+  value: E,
 ) {
   writer.writeForward { forwardWriter ->
     encode(forwardWriter, value)
@@ -264,7 +306,7 @@ internal inline fun <E> ProtoAdapter<E>.delegateEncode(
 internal inline fun <E> ProtoAdapter<E>.commonEncodeWithTag(
   writer: ProtoWriter,
   tag: Int,
-  value: E?
+  value: E?,
 ) {
   if (value == null) return
   writer.writeTag(tag, fieldEncoding)
@@ -278,7 +320,7 @@ internal inline fun <E> ProtoAdapter<E>.commonEncodeWithTag(
 internal inline fun <E> ProtoAdapter<E>.commonEncodeWithTag(
   writer: ReverseProtoWriter,
   tag: Int,
-  value: E?
+  value: E?,
 ) {
   if (value == null) return
   if (fieldEncoding == LENGTH_DELIMITED) {
@@ -357,13 +399,13 @@ internal inline fun <E> ProtoAdapter<E>.commonCreatePacked(): ProtoAdapter<List<
 }
 
 internal class PackedProtoAdapter<E>(
-  private val originalAdapter: ProtoAdapter<E>
+  private val originalAdapter: ProtoAdapter<E>,
 ) : ProtoAdapter<List<E>>(
   LENGTH_DELIMITED,
   List::class,
   null,
   originalAdapter.syntax,
-  listOf<E>()
+  listOf<E>(),
 ) {
   @Throws(IOException::class)
   override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: List<E>?) {
@@ -417,13 +459,13 @@ internal inline fun <E> ProtoAdapter<E>.commonCreateRepeated(): ProtoAdapter<Lis
 }
 
 internal class RepeatedProtoAdapter<E>(
-  private val originalAdapter: ProtoAdapter<E>
+  private val originalAdapter: ProtoAdapter<E>,
 ) : ProtoAdapter<List<E>>(
   originalAdapter.fieldEncoding,
   List::class,
   null,
   originalAdapter.syntax,
-  listOf<E>()
+  listOf<E>(),
 ) {
   override fun encodedSize(value: List<E>): Int {
     throw UnsupportedOperationException("Repeated values can only be sized with a tag.")
@@ -692,13 +734,13 @@ internal class IntArrayProtoAdapter(
 
 internal class MapProtoAdapter<K, V> internal constructor(
   keyAdapter: ProtoAdapter<K>,
-  valueAdapter: ProtoAdapter<V>
+  valueAdapter: ProtoAdapter<V>,
 ) : ProtoAdapter<Map<K, V>>(
   LENGTH_DELIMITED,
   Map::class,
   null,
   valueAdapter.syntax,
-  mapOf<K, V>()
+  mapOf<K, V>(),
 ) {
   private val entryAdapter = MapEntryProtoAdapter(keyAdapter, valueAdapter)
 
@@ -766,12 +808,12 @@ internal class MapProtoAdapter<K, V> internal constructor(
 
 private class MapEntryProtoAdapter<K, V> internal constructor(
   internal val keyAdapter: ProtoAdapter<K>,
-  internal val valueAdapter: ProtoAdapter<V>
+  internal val valueAdapter: ProtoAdapter<V>,
 ) : ProtoAdapter<Map.Entry<K, V>>(
   LENGTH_DELIMITED,
   Map.Entry::class,
   null,
-  valueAdapter.syntax
+  valueAdapter.syntax,
 ) {
 
   override fun encodedSize(value: Map.Entry<K, V>): Int {
@@ -807,7 +849,7 @@ private const val FIXED_64_SIZE = 8
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun <K, V> commonNewMapAdapter(
   keyAdapter: ProtoAdapter<K>,
-  valueAdapter: ProtoAdapter<V>
+  valueAdapter: ProtoAdapter<V>,
 ): ProtoAdapter<Map<K, V>> {
   return MapProtoAdapter(keyAdapter, valueAdapter)
 }
@@ -817,7 +859,7 @@ internal fun commonBool(): ProtoAdapter<Boolean> = object : ProtoAdapter<Boolean
   Boolean::class,
   null,
   Syntax.PROTO_2,
-  false
+  false,
 ) {
   override fun encodedSize(value: Boolean): Int = FIXED_BOOL_SIZE
 
@@ -1052,7 +1094,7 @@ internal class FloatProtoAdapter : ProtoAdapter<Float>(
   Float::class,
   null,
   Syntax.PROTO_2,
-  0.0f
+  0.0f,
 ) {
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Float) {
@@ -1082,7 +1124,7 @@ internal class DoubleProtoAdapter : ProtoAdapter<Double>(
   Double::class,
   null,
   Syntax.PROTO_2,
-  0.0
+  0.0,
 ) {
   override fun encodedSize(value: Double): Int = FIXED_64_SIZE
 
@@ -1109,7 +1151,7 @@ internal fun commonString(): ProtoAdapter<String> = object : ProtoAdapter<String
   String::class,
   null,
   Syntax.PROTO_2,
-  ""
+  "",
 ) {
   override fun encodedSize(value: String): Int = value.utf8Size().toInt()
 
@@ -1134,7 +1176,7 @@ internal fun commonBytes(): ProtoAdapter<ByteString> = object : ProtoAdapter<Byt
   ByteString::class,
   null,
   Syntax.PROTO_2,
-  ByteString.EMPTY
+  ByteString.EMPTY,
 ) {
   override fun encodedSize(value: ByteString): Int = value.size
 
@@ -1158,7 +1200,7 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
   LENGTH_DELIMITED,
   Duration::class,
   "type.googleapis.com/google.protobuf.Duration",
-  Syntax.PROTO_3
+  Syntax.PROTO_3,
 ) {
   override fun encodedSize(value: Duration): Int {
     var result = 0
@@ -1227,7 +1269,7 @@ internal fun commonInstant(): ProtoAdapter<Instant> = object : ProtoAdapter<Inst
   LENGTH_DELIMITED,
   Instant::class,
   "type.googleapis.com/google.protobuf.Timestamp",
-  Syntax.PROTO_3
+  Syntax.PROTO_3,
 ) {
   override fun encodedSize(value: Instant): Int {
     var result = 0
@@ -1272,7 +1314,7 @@ internal fun commonEmpty(): ProtoAdapter<Unit> = object : ProtoAdapter<Unit>(
   LENGTH_DELIMITED,
   Unit::class,
   "type.googleapis.com/google.protobuf.Empty",
-  Syntax.PROTO_3
+  Syntax.PROTO_3,
 ) {
   override fun encodedSize(value: Unit): Int = 0
 
@@ -1291,7 +1333,7 @@ internal fun commonStructMap(): ProtoAdapter<Map<String, *>?> = object : ProtoAd
   LENGTH_DELIMITED,
   Map::class,
   "type.googleapis.com/google.protobuf.Struct",
-  Syntax.PROTO_3
+  Syntax.PROTO_3,
 ) {
   override fun encodedSize(value: Map<String, *>?): Int {
     if (value == null) return 0
@@ -1318,7 +1360,7 @@ internal fun commonStructMap(): ProtoAdapter<Map<String, *>?> = object : ProtoAd
 
   override fun encode(
     writer: ReverseProtoWriter,
-    value: Map<String, *>?
+    value: Map<String, *>?,
   ) {
     if (value == null) return
 
@@ -1357,7 +1399,7 @@ internal fun commonStructList(): ProtoAdapter<List<*>?> = object : ProtoAdapter<
   LENGTH_DELIMITED,
   Map::class,
   "type.googleapis.com/google.protobuf.ListValue",
-  Syntax.PROTO_3
+  Syntax.PROTO_3,
 ) {
   override fun encodedSize(value: List<*>?): Int {
     if (value == null) return 0
@@ -1399,7 +1441,7 @@ internal fun commonStructNull(): ProtoAdapter<Nothing?> = object : ProtoAdapter<
   VARINT,
   Nothing::class,
   "type.googleapis.com/google.protobuf.NullValue",
-  Syntax.PROTO_3
+  Syntax.PROTO_3,
 ) {
   override fun encodedSize(value: Nothing?): Int = varint32Size(0)
 
@@ -1439,7 +1481,7 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
   LENGTH_DELIMITED,
   Any::class,
   "type.googleapis.com/google.protobuf.Value",
-  Syntax.PROTO_3
+  Syntax.PROTO_3,
 ) {
   override fun encodedSize(value: Any?): Int {
     @Suppress("UNCHECKED_CAST") // Assume map keys are strings.
