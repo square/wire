@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2023 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.squareup.wire.schema.internal
 
 import com.google.protobuf.DescriptorProtos
@@ -50,7 +65,8 @@ class SchemaEncoderTest {
         |    option (fraternity) = [ALPHA, BETA, ALPHA];
         |  }
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
 
@@ -69,25 +85,25 @@ class SchemaEncoderTest {
               EnumValueDescriptorProto.newBuilder()
                 .setName("ALPHA")
                 .setNumber(1)
-                .build()
+                .build(),
             )
             .addValue(
               EnumValueDescriptorProto.newBuilder()
                 .setName("BETA")
                 .setNumber(2)
-                .build()
+                .build(),
             )
-            .build()
+            .build(),
         )
         .addMessageType(
           DescriptorProto.newBuilder()
             .setName("HandleRequest")
-            .build()
+            .build(),
         )
         .addMessageType(
           DescriptorProto.newBuilder()
             .setName("HandleResponse")
-            .build()
+            .build(),
         )
         .addService(
           ServiceDescriptorProto.newBuilder()
@@ -105,13 +121,13 @@ class SchemaEncoderTest {
                           22000,
                           UnknownFieldSet.Field.newBuilder()
                             .addFixed64(java.lang.Double.doubleToLongBits(2.1))
-                            .build()
+                            .build(),
                         )
                         .addField(
                           22001,
                           UnknownFieldSet.Field.newBuilder()
                             .addVarint(2L)
-                            .build()
+                            .build(),
                         )
                         .addField(
                           22002,
@@ -119,14 +135,14 @@ class SchemaEncoderTest {
                             .addVarint(1L)
                             .addVarint(2L)
                             .addVarint(1L)
-                            .build()
+                            .build(),
                         )
-                        .build()
+                        .build(),
                     )
-                    .build()
+                    .build(),
                 )
-                .build()
-            )
+                .build(),
+            ),
         )
         .addExtension(
           FieldDescriptorProto.newBuilder()
@@ -135,7 +151,7 @@ class SchemaEncoderTest {
             .setNumber(22000)
             .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
             .setType(FieldDescriptorProto.Type.TYPE_DOUBLE)
-            .build()
+            .build(),
         )
         .addExtension(
           FieldDescriptorProto.newBuilder()
@@ -145,7 +161,7 @@ class SchemaEncoderTest {
             .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
             .setType(FieldDescriptorProto.Type.TYPE_ENUM)
             .setTypeName(".GreekLetter")
-            .build()
+            .build(),
         )
         .addExtension(
           FieldDescriptorProto.newBuilder()
@@ -155,9 +171,9 @@ class SchemaEncoderTest {
             .setLabel(FieldDescriptorProto.Label.LABEL_REPEATED)
             .setType(FieldDescriptorProto.Type.TYPE_ENUM)
             .setTypeName(".GreekLetter")
-            .build()
+            .build(),
         )
-        .build()
+        .build(),
     )
   }
 
@@ -171,7 +187,8 @@ class SchemaEncoderTest {
         |message TestMessage {
         |  extensions 5, 1000 to max;
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
 
@@ -189,17 +206,17 @@ class SchemaEncoderTest {
               ExtensionRange.newBuilder()
                 .setStart(5)
                 .setEnd(6)
-                .build()
+                .build(),
             )
             .addExtensionRange(
               ExtensionRange.newBuilder()
                 .setStart(1000)
                 .setEnd(MAX_TAG_VALUE + 1)
-                .build()
+                .build(),
             )
-            .build()
+            .build(),
         )
-        .build()
+        .build(),
     )
   }
 
@@ -216,7 +233,8 @@ class SchemaEncoderTest {
             |    NESTED_DEFINED = 1;
             |  }
             |}
-            |""".trimMargin()
+            |
+        """.trimMargin(),
       )
     }
 
@@ -234,11 +252,11 @@ class SchemaEncoderTest {
               EnumDescriptorProto.newBuilder()
                 .setName("Nested")
                 .addValue(0, EnumValueDescriptorProto.newBuilder().setName("NESTED_UNDEFINED").setNumber(0))
-                .addValue(1, EnumValueDescriptorProto.newBuilder().setName("NESTED_DEFINED").setNumber(1))
+                .addValue(1, EnumValueDescriptorProto.newBuilder().setName("NESTED_DEFINED").setNumber(1)),
             )
-            .build()
+            .build(),
         )
-        .build()
+        .build(),
     )
   }
 
@@ -257,7 +275,8 @@ class SchemaEncoderTest {
         |    string three = 3;
         |  }
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
     val handleServiceProto = schema.protoFile("test.proto")!!
@@ -278,7 +297,7 @@ class SchemaEncoderTest {
                 .setName("two")
                 .setNumber(2)
                 .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
-                .build()
+                .build(),
             )
             .addField(
               FieldDescriptorProto.newBuilder()
@@ -287,7 +306,7 @@ class SchemaEncoderTest {
                 .setNumber(1)
                 .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
                 .setOneofIndex(0)
-                .build()
+                .build(),
             )
             .addField(
               FieldDescriptorProto.newBuilder()
@@ -296,16 +315,16 @@ class SchemaEncoderTest {
                 .setNumber(3)
                 .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
                 .setOneofIndex(0)
-                .build()
+                .build(),
             )
             .addOneofDecl(
               DescriptorProtos.OneofDescriptorProto.newBuilder()
                 .setName("a_oneof")
-                .build()
+                .build(),
             )
-            .build()
+            .build(),
         )
-        .build()
+        .build(),
     )
   }
 }

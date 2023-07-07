@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ interface SyntaxRules {
     protoType: ProtoType,
     label: Field.Label?,
     isPacked: Boolean,
-    isOneOf: Boolean
+    isOneOf: Boolean,
   ): Field.EncodeMode
 
   fun jsonName(name: String, declaredJsonName: String?): String
@@ -42,44 +42,49 @@ interface SyntaxRules {
       return when (syntax) {
         PROTO_3 -> PROTO_3_SYNTAX_RULES
         PROTO_2,
-        null -> PROTO_2_SYNTAX_RULES
+        null,
+        -> PROTO_2_SYNTAX_RULES
       }
     }
 
     internal val PROTO_2_SYNTAX_RULES = object : SyntaxRules {
       override fun validateDefaultValue(
         hasDefaultValue: Boolean,
-        errors: ErrorCollector
+        errors: ErrorCollector,
       ) = Unit
 
       override fun validateExtension(protoType: ProtoType, errors: ErrorCollector) = Unit
 
       override fun validateEnumConstants(
         constants: List<EnumConstant>,
-        errors: ErrorCollector
+        errors: ErrorCollector,
       ) = Unit
 
       override fun validateTypeReference(type: Type?, errors: ErrorCollector) = Unit
 
       override fun isPackedByDefault(
         type: ProtoType,
-        label: Field.Label?
+        label: Field.Label?,
       ): Boolean = false
 
       override fun getEncodeMode(
         protoType: ProtoType,
         label: Field.Label?,
         isPacked: Boolean,
-        isOneOf: Boolean
+        isOneOf: Boolean,
       ): Field.EncodeMode {
         return when (label) {
           Field.Label.REPEATED ->
-            if (isPacked) Field.EncodeMode.PACKED
-            else Field.EncodeMode.REPEATED
+            if (isPacked) {
+              Field.EncodeMode.PACKED
+            } else {
+              Field.EncodeMode.REPEATED
+            }
           Field.Label.OPTIONAL -> Field.EncodeMode.NULL_IF_ABSENT
           Field.Label.REQUIRED -> Field.EncodeMode.REQUIRED
           Field.Label.ONE_OF,
-          null -> if (protoType.isMap) Field.EncodeMode.MAP else Field.EncodeMode.NULL_IF_ABSENT
+          null,
+          -> if (protoType.isMap) Field.EncodeMode.MAP else Field.EncodeMode.NULL_IF_ABSENT
         }
       }
 
@@ -117,7 +122,7 @@ interface SyntaxRules {
 
       override fun isPackedByDefault(
         type: ProtoType,
-        label: Field.Label?
+        label: Field.Label?,
       ): Boolean {
         return label == Field.Label.REPEATED && type in ProtoType.NUMERIC_SCALAR_TYPES
       }
@@ -126,7 +131,7 @@ interface SyntaxRules {
         protoType: ProtoType,
         label: Field.Label?,
         isPacked: Boolean,
-        isOneOf: Boolean
+        isOneOf: Boolean,
       ): Field.EncodeMode {
         if (label == Field.Label.REPEATED) {
           return if (isPacked) {

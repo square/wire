@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ class TypeMoverTest {
             |  optional Roast roast = 1;
             |  optional bool decaf = 2;
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
       add(
         "cafe/roast.proto".toPath(),
@@ -65,13 +65,13 @@ class TypeMoverTest {
             |  MEDIUM = 1;
             |  DARK = 2;
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }
 
     val newSchema = TypeMover(
       oldSchema,
-      listOf(TypeMover.Move(ProtoType.get("cafe", "EspressoShot"), "cafe/espresso.proto"))
+      listOf(TypeMover.Move(ProtoType.get("cafe", "EspressoShot"), "cafe/espresso.proto")),
     ).move()
 
     assertThat(newSchema.protoFile("cafe/cafe.proto")!!.toSchema()).isEqualTo(
@@ -90,7 +90,8 @@ class TypeMoverTest {
         |
         |  repeated EspressoShot shots = 2;
         |}
-        |""".trimMargin()
+        |
+      """.trimMargin(),
     )
     assertThat(newSchema.protoFile("cafe/espresso.proto")!!.toSchema()).isEqualTo(
       """
@@ -108,7 +109,8 @@ class TypeMoverTest {
         |
         |  optional bool decaf = 2;
         |}
-        |""".trimMargin()
+        |
+      """.trimMargin(),
     )
   }
 
@@ -132,7 +134,7 @@ class TypeMoverTest {
             |  optional Roast roast = 1;
             |  optional bool decaf = 2;
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
       add(
         "cafe/roast.proto".toPath(),
@@ -145,13 +147,13 @@ class TypeMoverTest {
             |  MEDIUM = 1;
             |  DARK = 2;
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }
 
     val newSchema = TypeMover(
       oldSchema,
-      listOf(TypeMover.Move(ProtoType.get("cafe", "EspressoShot"), "cafe/roast.proto"))
+      listOf(TypeMover.Move(ProtoType.get("cafe", "EspressoShot"), "cafe/roast.proto")),
     ).move()
 
     assertThat(newSchema.protoFile("cafe/cafe.proto")!!.toSchema()).isEqualTo(
@@ -170,7 +172,8 @@ class TypeMoverTest {
         |
         |  repeated EspressoShot shots = 2;
         |}
-        |""".trimMargin()
+        |
+      """.trimMargin(),
     )
     assertThat(newSchema.protoFile("cafe/roast.proto")!!.toSchema()).isEqualTo(
       """
@@ -191,7 +194,8 @@ class TypeMoverTest {
         |
         |  optional bool decaf = 2;
         |}
-        |""".trimMargin()
+        |
+      """.trimMargin(),
     )
   }
 
@@ -213,7 +217,7 @@ class TypeMoverTest {
             |
             |message C {
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }
 
@@ -222,8 +226,8 @@ class TypeMoverTest {
       moves = listOf(
         TypeMover.Move(ProtoType.get("A"), "a.proto"),
         TypeMover.Move(ProtoType.get("B"), "b.proto"),
-        TypeMover.Move(ProtoType.get("C"), "c.proto")
-      )
+        TypeMover.Move(ProtoType.get("C"), "c.proto"),
+      ),
     ).move()
 
     assertThat(newSchema.protoFile("abc.proto")!!.toSchema()).isEqualTo(
@@ -232,7 +236,8 @@ class TypeMoverTest {
         |// Source: abc.proto
         |
         |syntax = "proto2";
-        |""".trimMargin()
+        |
+      """.trimMargin(),
     )
 
     assertThat(newSchema.protoFile("a.proto")!!.toSchema()).isEqualTo(
@@ -250,7 +255,8 @@ class TypeMoverTest {
         |
         |  optional C c = 2;
         |}
-        |""".trimMargin()
+        |
+      """.trimMargin(),
     )
 
     assertThat(newSchema.protoFile("b.proto")!!.toSchema()).isEqualTo(
@@ -265,7 +271,8 @@ class TypeMoverTest {
         |message B {
         |  optional C c = 1;
         |}
-        |""".trimMargin()
+        |
+      """.trimMargin(),
     )
 
     assertThat(newSchema.protoFile("c.proto")!!.toSchema()).isEqualTo(
@@ -276,7 +283,8 @@ class TypeMoverTest {
         |syntax = "proto2";
         |
         |message C {}
-        |""".trimMargin()
+        |
+      """.trimMargin(),
     )
   }
 
@@ -296,7 +304,7 @@ class TypeMoverTest {
             |service C {
             |  rpc Go (A) returns (B);
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }
 
@@ -304,8 +312,8 @@ class TypeMoverTest {
       oldSchema = oldSchema,
       moves = listOf(
         TypeMover.Move(ProtoType.get("A"), "a.proto"),
-        TypeMover.Move(ProtoType.get("B"), "b.proto")
-      )
+        TypeMover.Move(ProtoType.get("B"), "b.proto"),
+      ),
     ).move()
 
     assertThat(newSchema.protoFile("abc.proto")!!.toSchema()).isEqualTo(
@@ -321,7 +329,8 @@ class TypeMoverTest {
         |service C {
         |  rpc Go (A) returns (B);
         |}
-        |""".trimMargin()
+        |
+      """.trimMargin(),
     )
   }
 
@@ -337,7 +346,7 @@ class TypeMoverTest {
             |message A {
             |  optional B b = 1;
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
       add(
         "b.proto".toPath(),
@@ -346,7 +355,7 @@ class TypeMoverTest {
             |
             |message B {
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }
 
@@ -354,8 +363,8 @@ class TypeMoverTest {
       oldSchema = oldSchema,
       moves = listOf(
         TypeMover.Move(ProtoType.get("A"), "b.proto"),
-        TypeMover.Move(ProtoType.get("B"), "a.proto")
-      )
+        TypeMover.Move(ProtoType.get("B"), "a.proto"),
+      ),
     ).move()
 
     assertThat(newSchema.protoFile("b.proto")!!.toSchema()).isEqualTo(
@@ -370,7 +379,8 @@ class TypeMoverTest {
         |message A {
         |  optional B b = 1;
         |}
-        |""".trimMargin()
+        |
+      """.trimMargin(),
     )
     assertThat(newSchema.protoFile("a.proto")!!.toSchema()).isEqualTo(
       """
@@ -380,7 +390,8 @@ class TypeMoverTest {
         |syntax = "proto2";
         |
         |message B {}
-        |""".trimMargin()
+        |
+      """.trimMargin(),
     )
   }
 
@@ -395,21 +406,22 @@ class TypeMoverTest {
             |
             |message A {
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
       add(
         "b.proto".toPath(),
         """
             |syntax = "proto2";
-            |""".trimMargin()
+            |
+        """.trimMargin(),
       )
     }
 
     val newSchema = TypeMover(
       oldSchema = oldSchema,
       moves = listOf(
-        TypeMover.Move(ProtoType.get("A"), "c.proto")
-      )
+        TypeMover.Move(ProtoType.get("A"), "c.proto"),
+      ),
     ).move()
 
     assertThat(newSchema.protoFile("a.proto")!!.toSchema()).isEqualTo(
@@ -420,7 +432,8 @@ class TypeMoverTest {
         |syntax = "proto2";
         |
         |import "b.proto";
-        |""".trimMargin()
+        |
+      """.trimMargin(),
     )
   }
 
@@ -433,7 +446,7 @@ class TypeMoverTest {
             |
             |message A {
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }
 
@@ -441,8 +454,8 @@ class TypeMoverTest {
       TypeMover(
         oldSchema = oldSchema,
         moves = listOf(
-          TypeMover.Move(ProtoType.get("B"), "b.proto")
-        )
+          TypeMover.Move(ProtoType.get("B"), "b.proto"),
+        ),
       ).move()
       fail()
     } catch (expected: IllegalArgumentException) {

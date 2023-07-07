@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,14 +23,14 @@ internal class PartitionedSchema(
   /** Module name to partition info. The iteration order of this map is the generation order. */
   val partitions: Map<String, Partition>,
   val warnings: List<String>,
-  val errors: List<String>
+  val errors: List<String>,
 ) {
   class Partition(
     val schema: Schema,
     /** The types that this partition will generate. */
     val types: Set<ProtoType> = schema.types,
     /** These are the types depended upon by [types] associated with their module name. */
-    val transitiveUpstreamTypes: Map<ProtoType, String> = emptyMap()
+    val transitiveUpstreamTypes: Map<ProtoType, String> = emptyMap(),
   )
 }
 
@@ -57,7 +57,7 @@ internal fun Schema.partition(modules: Map<String, Module>): PartitionedSchema {
           |$moduleName sees $duplicate in ${sourceModules.joinToString()}.
           |  In order to avoid confusion and incompatibility, either make one of these modules
           |  depend on the other or move this type up into a common dependency.
-          """.trimMargin()
+        """.trimMargin()
       }
     }
 
@@ -105,7 +105,7 @@ internal fun Schema.partition(modules: Map<String, Module>): PartitionedSchema {
                 |$duplicate is generated twice in peer modules $currentName and $otherName.
                 |  Consider moving this type into a common dependency of both modules.
                 |  To suppress this warning, explicitly add the type to the roots of both modules.
-                """.trimMargin()
+              """.trimMargin()
             }
           }
         }

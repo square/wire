@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ data class Rpc(
   private val responseTypeElement: String,
   val requestStreaming: Boolean,
   val responseStreaming: Boolean,
-  val options: Options
+  val options: Options,
 ) {
   // Null until this RPC is linked.
   var requestType: ProtoType? = null
@@ -66,7 +66,7 @@ data class Rpc(
       responseTypeElement = responseTypeElement,
       requestStreaming = requestStreaming,
       responseStreaming = responseStreaming,
-      options = options.retainAll(schema, markSet)
+      options = options.retainAll(schema, markSet),
     )
     result.requestType = requestType
     result.responseType = responseType
@@ -85,7 +85,7 @@ data class Rpc(
           responseTypeElement = element.responseType,
           requestStreaming = element.requestStreaming,
           responseStreaming = element.responseStreaming,
-          options = Options(Options.METHOD_OPTIONS, element.options)
+          options = Options(Options.METHOD_OPTIONS, element.options),
         )
       }
     }
@@ -101,7 +101,7 @@ data class Rpc(
           responseType = rpc.responseTypeElement,
           requestStreaming = rpc.requestStreaming,
           responseStreaming = rpc.responseStreaming,
-          options = rpc.options.elements
+          options = rpc.options.elements,
         )
       }
     }

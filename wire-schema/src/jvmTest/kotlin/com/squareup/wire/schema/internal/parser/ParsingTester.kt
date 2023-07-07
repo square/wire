@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,11 +16,11 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
-import okio.buffer
-import okio.source
 import java.io.File
 import java.util.ArrayDeque
 import java.util.Collections
+import okio.buffer
+import okio.source
 
 /** Recursively traverse a directory and attempt to parse all of its proto files.  */
 object ParsingTester {

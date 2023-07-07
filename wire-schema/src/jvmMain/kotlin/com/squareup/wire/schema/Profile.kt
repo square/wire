@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,16 +17,16 @@ package com.squareup.wire.schema
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
-import com.squareup.wire.schema.internal.ProfileFileElement
 import com.squareup.kotlinpoet.ClassName as KClassName
 import com.squareup.kotlinpoet.TypeName as KTypeName
+import com.squareup.wire.schema.internal.ProfileFileElement
 
 /**
  * Describes how to map `.proto` to `.java`. A single repository of `.proto` files
  * may have multiple profiles; for example a project may target both Android and Java.
  */
 actual class Profile actual constructor(
-  private val profileFiles: List<ProfileFileElement>
+  private val profileFiles: List<ProfileFileElement>,
 ) {
   fun javaTarget(type: ProtoType): TypeName? {
     val typeConfig = typeConfig(type)

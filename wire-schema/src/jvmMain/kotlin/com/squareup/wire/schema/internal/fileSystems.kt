@@ -1,11 +1,11 @@
 /*
- * Copyright (C) 2022 Block, Inc.
+ * Copyright (C) 2022 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,11 +15,11 @@
  */
 package com.squareup.wire.schema.internal
 
-import okio.BufferedSource
-import okio.ByteString.Companion.decodeHex
 import java.nio.charset.Charset
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
+import okio.BufferedSource
+import okio.ByteString.Companion.decodeHex
 
 internal fun FileSystem.toOkioFileSystem(): okio.FileSystem {
   return when {
@@ -33,7 +33,7 @@ private val UNICODE_BOMS = okio.Options.of(
   "feff".decodeHex(), // UTF-16BE
   "fffe".decodeHex(), // UTF-16LE
   "0000ffff".decodeHex(), // UTF-32BE
-  "ffff0000".decodeHex() // UTF-32LE
+  "ffff0000".decodeHex(), // UTF-32LE
 )
 
 internal fun BufferedSource.readBomAsCharset(default: Charset = Charsets.UTF_8): Charset {

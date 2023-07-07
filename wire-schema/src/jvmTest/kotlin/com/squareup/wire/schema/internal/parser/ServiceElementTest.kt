@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ class ServiceElementTest {
   fun emptyToSchema() {
     val service = ServiceElement(
       location = location,
-      name = "Service"
+      name = "Service",
     )
     val expected = "service Service {}\n"
     assertThat(service.toSchema()).isEqualTo(expected)
@@ -43,15 +43,16 @@ class ServiceElementTest {
           location = location,
           name = "Name",
           requestType = "RequestType",
-          responseType = "ResponseType"
-        )
-      )
+          responseType = "ResponseType",
+        ),
+      ),
     )
     val expected = """
         |service Service {
         |  rpc Name (RequestType) returns (ResponseType);
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(service.toSchema()).isEqualTo(expected)
   }
 
@@ -61,18 +62,18 @@ class ServiceElementTest {
       location = location,
       name = "FirstName",
       requestType = "RequestType",
-      responseType = "ResponseType"
+      responseType = "ResponseType",
     )
     val lastName = RpcElement(
       location = location,
       name = "LastName",
       requestType = "RequestType",
-      responseType = "ResponseType"
+      responseType = "ResponseType",
     )
     val service = ServiceElement(
       location = location,
       name = "Service",
-      rpcs = listOf(firstName, lastName)
+      rpcs = listOf(firstName, lastName),
     )
     assertThat(service.rpcs).hasSize(2)
   }
@@ -88,9 +89,9 @@ class ServiceElementTest {
           location = location,
           name = "Name",
           requestType = "RequestType",
-          responseType = "ResponseType"
-        )
-      )
+          responseType = "ResponseType",
+        ),
+      ),
     )
     val expected = """
         |service Service {
@@ -98,7 +99,8 @@ class ServiceElementTest {
         |
         |  rpc Name (RequestType) returns (ResponseType);
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(service.toSchema()).isEqualTo(expected)
   }
 
@@ -115,9 +117,9 @@ class ServiceElementTest {
           location = location,
           name = "Name",
           requestType = "RequestType",
-          responseType = "ResponseType"
-        )
-      )
+          responseType = "ResponseType",
+        ),
+      ),
     )
     assertThat(service.options).hasSize(2)
   }
@@ -133,16 +135,17 @@ class ServiceElementTest {
           location = location,
           name = "Name",
           requestType = "RequestType",
-          responseType = "ResponseType"
-        )
-      )
+          responseType = "ResponseType",
+        ),
+      ),
     )
     val expected = """
         |// Hello
         |service Service {
         |  rpc Name (RequestType) returns (ResponseType);
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(service.toSchema()).isEqualTo(expected)
   }
 
@@ -152,19 +155,20 @@ class ServiceElementTest {
       location = location,
       name = "Name",
       requestType = "RequestType",
-      responseType = "ResponseType"
+      responseType = "ResponseType",
     )
     val service = ServiceElement(
       location = location,
       name = "Service",
-      rpcs = listOf(rpc, rpc)
+      rpcs = listOf(rpc, rpc),
     )
     val expected = """
         |service Service {
         |  rpc Name (RequestType) returns (ResponseType);
         |  rpc Name (RequestType) returns (ResponseType);
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
 
     assertThat(service.toSchema()).isEqualTo(expected)
   }
@@ -175,7 +179,7 @@ class ServiceElementTest {
       location = location,
       name = "Name",
       requestType = "RequestType",
-      responseType = "ResponseType"
+      responseType = "ResponseType",
     )
     val expected = "rpc Name (RequestType) returns (ResponseType);\n"
     assertThat(rpc.toSchema()).isEqualTo(expected)
@@ -188,12 +192,13 @@ class ServiceElementTest {
       name = "Name",
       documentation = "Hello",
       requestType = "RequestType",
-      responseType = "ResponseType"
+      responseType = "ResponseType",
     )
     val expected = """
         |// Hello
         |rpc Name (RequestType) returns (ResponseType);
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(rpc.toSchema()).isEqualTo(expected)
   }
 
@@ -204,14 +209,15 @@ class ServiceElementTest {
       name = "Name",
       requestType = "RequestType",
       responseType = "ResponseType",
-      options = listOf(OptionElement.create("foo", Kind.STRING, "bar"))
+      options = listOf(OptionElement.create("foo", Kind.STRING, "bar")),
     )
 
     val expected = """
         |rpc Name (RequestType) returns (ResponseType) {
         |  option foo = "bar";
         |};
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(rpc.toSchema()).isEqualTo(expected)
   }
 
@@ -222,7 +228,7 @@ class ServiceElementTest {
       name = "Name",
       requestType = "RequestType",
       responseType = "ResponseType",
-      requestStreaming = true
+      requestStreaming = true,
     )
     val expected = "rpc Name (stream RequestType) returns (ResponseType);\n"
     assertThat(rpc.toSchema()).isEqualTo(expected)
@@ -235,7 +241,7 @@ class ServiceElementTest {
       name = "Name",
       requestType = "RequestType",
       responseType = "ResponseType",
-      responseStreaming = true
+      responseStreaming = true,
     )
     val expected = "rpc Name (RequestType) returns (stream ResponseType);\n"
     assertThat(rpc.toSchema()).isEqualTo(expected)

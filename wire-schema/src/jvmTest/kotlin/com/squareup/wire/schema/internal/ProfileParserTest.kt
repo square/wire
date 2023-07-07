@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@ import org.junit.Test
 
 class ProfileParserTest {
   private var location = Location.get("android.wire")
+
   @Test
   fun parseType() {
     val proto =
@@ -52,7 +53,7 @@ class ProfileParserTest {
           documentation = "Roar!",
           type = "squareup.dinosaurs.Dinosaur",
           target = "com.squareup.dino.Dinosaur",
-          adapter = "com.squareup.dino.Dinosaurs#DINO_ADAPTER"
+          adapter = "com.squareup.dino.Dinosaurs#DINO_ADAPTER",
         ),
 
         TypeConfigElement(
@@ -60,13 +61,15 @@ class ProfileParserTest {
           type = "squareup.geology.Period",
           with = listOf(
             OptionElement.create(
-              "custom_type", OptionElement.Kind.STRING, "duration"
-            )
+              "custom_type",
+              OptionElement.Kind.STRING,
+              "duration",
+            ),
           ),
           target = "java.time.Period",
-          adapter = "com.squareup.time.Time#PERIOD_ADAPTER"
-        )
-      )
+          adapter = "com.squareup.time.Time#PERIOD_ADAPTER",
+        ),
+      ),
     )
 
     val parser = ProfileParser(location, proto)
@@ -130,7 +133,8 @@ class ProfileParserTest {
       |  with custom_type = "duration";
       |  target java.time.Period using com.squareup.time.Time#PERIOD_ADAPTER;
       |}
-      |""".trimMargin()
+      |
+      """.trimMargin()
     val parser = ProfileParser(location, proto)
     assertThat(parser.read().toSchema()).isEqualTo(proto)
   }

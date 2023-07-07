@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -106,14 +106,14 @@ class DagCheckerTest {
     val nodes = listOf("a", "b", "c", "d", "e", "f", "g", "h")
     val edges = listOf(
       "ae", "ba", "cb", "cd", "dc", "eb",
-      "fb", "fe", "fg", "gc", "gf", "hd", "hg", "hh"
+      "fb", "fe", "fg", "gc", "gf", "hd", "hg", "hh",
     )
     val cycleFinder = DagChecker(nodes) { it.targets(edges) }
     assertThat(cycleFinder.check()).containsExactly(
       listOf("a", "e", "b"),
       listOf("c", "d"),
       listOf("f", "g"),
-      listOf("h")
+      listOf("h"),
     )
   }
 
@@ -133,7 +133,7 @@ class DagCheckerTest {
     val edges = listOf(
       "ad", "ba", "cb",
       "de", "dg", "eb", "ef", "fi",
-      "he", "ih"
+      "he", "ih",
     )
     val cycleFinder = DagChecker(nodes) { it.targets(edges) }
     assertThat(cycleFinder.check()).containsExactly(listOf("a", "d", "e", "b", "f", "i", "h"))

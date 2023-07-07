@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ import okio.Path.Companion.toPath
 
 // TODO internal and friend for wire-java-generator: https://youtrack.jetbrains.com/issue/KT-34102
 fun StringBuilder.appendDocumentation(
-  documentation: String
+  documentation: String,
 ) {
   if (documentation.isEmpty()) {
     return
@@ -46,7 +46,7 @@ fun StringBuilder.appendDocumentation(
 }
 
 internal fun StringBuilder.appendOptions(
-  options: List<OptionElement>
+  options: List<OptionElement>,
 ) {
   val count = options.size
   if (count == 1) {
@@ -65,7 +65,7 @@ internal fun StringBuilder.appendOptions(
 
 // TODO internal and friend for wire-java-generator: https://youtrack.jetbrains.com/issue/KT-34102
 fun StringBuilder.appendIndented(
-  value: String
+  value: String,
 ) {
   var lines = value.split("\n")
   if (lines.count() > 1 && lines.last().isEmpty()) {
@@ -117,10 +117,10 @@ fun Schema.withStubs(typesToStub: Set<ProtoType>): Schema {
         },
         services = protoFile.services.map { service ->
           if (service.type in typesToStub) service.asStub() else service
-        }
+        },
       )
       return@map result
-    }
+    },
   )
 }
 
@@ -133,16 +133,16 @@ private fun Type.asStub(): Type = when {
     declaredFields = emptyList(),
     extensionFields = mutableListOf(),
     nestedTypes = nestedTypes.map { it.asStub() },
-    options = Options(Options.MESSAGE_OPTIONS, emptyList())
+    options = Options(Options.MESSAGE_OPTIONS, emptyList()),
   )
 
   this is EnumType -> copy(
     constants = emptyList(),
-    options = Options(Options.ENUM_OPTIONS, emptyList())
+    options = Options(Options.ENUM_OPTIONS, emptyList()),
   )
 
   this is EnclosingType -> copy(
-    nestedTypes = nestedTypes.map { it.asStub() }
+    nestedTypes = nestedTypes.map { it.asStub() },
   )
 
   else -> throw AssertionError("Unknown type $type")
@@ -151,7 +151,7 @@ private fun Type.asStub(): Type = when {
 /** Return a copy of this service with all possible type references removed. */
 private fun Service.asStub() = copy(
   rpcs = emptyList(),
-  options = Options(Options.SERVICE_OPTIONS, emptyList())
+  options = Options(Options.SERVICE_OPTIONS, emptyList()),
 )
 
 fun Path.withUnixSlashes(): Path {

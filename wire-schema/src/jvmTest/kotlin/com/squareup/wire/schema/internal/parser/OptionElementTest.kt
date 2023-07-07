@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,23 +46,25 @@ class OptionElementTest {
       LIST,
       listOf(
         OptionElement.create("ping", STRING, "pong", true),
-        OptionElement.create("kit", STRING, "kat")
+        OptionElement.create("kit", STRING, "kat"),
       ),
-      true
+      true,
     )
     val expected = """
         |(foo) = [
         |  (ping) = "pong",
         |  kit = "kat"
         |]
-        """.trimMargin()
+    """.trimMargin()
     assertThat(option.toSchema()).isEqualTo(expected)
   }
 
   @Test
   fun mapToSchema() {
     val option = OptionElement.create(
-      "foo", MAP, mapOf("ping" to "pong", "kit" to listOf("kat", "kot"))
+      "foo",
+      MAP,
+      mapOf("ping" to "pong", "kit" to listOf("kat", "kot")),
     )
     val expected = """
         |foo = {
@@ -72,7 +74,7 @@ class OptionElementTest {
         |    "kot"
         |  ]
         |}
-        """.trimMargin()
+    """.trimMargin()
     assertThat(option.toSchema()).isEqualTo(expected)
   }
 

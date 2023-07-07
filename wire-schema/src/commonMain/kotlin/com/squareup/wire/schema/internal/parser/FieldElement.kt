@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ data class FieldElement(
   val jsonName: String? = null,
   val tag: Int = 0,
   val documentation: String = "",
-  val options: List<OptionElement> = emptyList()
+  val options: List<OptionElement> = emptyList(),
 ) {
   fun toSchema() = buildString {
     appendDocumentation(documentation)
@@ -64,8 +64,11 @@ data class FieldElement(
       }
 
     options =
-      if (jsonName == null) options
-      else options + OptionElement.create("json_name", OptionElement.Kind.STRING, jsonName)
+      if (jsonName == null) {
+        options
+      } else {
+        options + OptionElement.create("json_name", OptionElement.Kind.STRING, jsonName)
+      }
 
     return options
   }
@@ -87,7 +90,8 @@ data class FieldElement(
       "sint32",
       "sint64",
       "uint32",
-      "uint64" -> OptionElement.Kind.NUMBER
+      "uint64",
+      -> OptionElement.Kind.NUMBER
       else -> OptionElement.Kind.ENUM
     }
   }

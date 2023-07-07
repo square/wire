@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 Square Inc.
+ * Copyright (C) 2018 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -359,19 +359,21 @@ class WireRun(
       if (rejectUnusedRootsOrPrunes) {
         throw IllegalStateException(
           buildList {
-            if (hasUnusedRoots)
+            if (hasUnusedRoots) {
               add(
                 """Unused element(s) in roots:
                   |  ${pruningRules.unusedRoots().joinToString(separator = "\n  ")}
-                  """.trimMargin()
+                """.trimMargin(),
               )
-            if (hasUnusedPrunes)
+            }
+            if (hasUnusedPrunes) {
               add(
                 """Unused element(s) in prunes:
                   |  ${pruningRules.unusedPrunes().joinToString(separator = "\n  ")}
-                  """.trimMargin()
+                """.trimMargin(),
               )
-          }.joinToString(separator = "\n")
+            }
+          }.joinToString(separator = "\n"),
         )
       } else {
         if (hasUnusedRoots) {

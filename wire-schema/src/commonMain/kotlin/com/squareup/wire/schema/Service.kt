@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ data class Service(
   @get:JvmName("rpcs") // For binary compatibility.
   val rpcs: List<Rpc>,
   @get:JvmName("options") // For binary compatibility.
-  val options: Options
+  val options: Options,
 ) {
   /** Returns the RPC named `name`, or null if this service has no such method.  */
   fun rpc(name: String): Rpc? {
@@ -70,7 +70,7 @@ data class Service(
 
   private fun validateRpcUniqueness(
     linker: Linker,
-    rpcs: List<Rpc>
+    rpcs: List<Rpc>,
   ) {
     val nameToRpc = linkedMapOf<String, MutableSet<Rpc>>()
     for (rpc in rpcs) {
@@ -91,7 +91,7 @@ data class Service(
 
   fun retainAll(
     schema: Schema,
-    markSet: MarkSet
+    markSet: MarkSet,
   ): Service? {
     // If this service is not retained, prune it.
     if (!markSet.contains(type)) {
@@ -107,28 +107,36 @@ data class Service(
     }
 
     return Service(
-      type, location, documentation, name, retainedRpcs,
-      options.retainAll(schema, markSet)
+      type,
+      location,
+      documentation,
+      name,
+      retainedRpcs,
+      options.retainAll(schema, markSet),
     )
   }
 
   companion object {
     internal fun fromElement(
       protoType: ProtoType,
-      element: ServiceElement
+      element: ServiceElement,
     ): Service {
       val rpcs = fromElements(element.rpcs)
       val options = Options(Options.SERVICE_OPTIONS, element.options)
 
       return Service(
-        protoType, element.location, element.documentation, element.name, rpcs,
-        options
+        protoType,
+        element.location,
+        element.documentation,
+        element.name,
+        rpcs,
+        options,
       )
     }
 
     @JvmStatic internal fun fromElements(
       packageName: String?,
-      elements: List<ServiceElement>
+      elements: List<ServiceElement>,
     ): List<Service> {
       return elements.map { service ->
         val protoType = get(packageName, service.name)
@@ -143,7 +151,7 @@ data class Service(
           service.name,
           service.documentation,
           Rpc.toElements(service.rpcs),
-          service.options.elements
+          service.options.elements,
         )
       }
     }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ import com.squareup.kotlinpoet.ClassName as KClassName
 data class AdapterConstant(
   @JvmField val javaClassName: ClassName,
   @JvmField val kotlinClassName: KClassName,
-  @JvmField val memberName: String
+  @JvmField val memberName: String,
 ) {
   companion object {
     operator fun invoke(adapter: String): AdapterConstant {
@@ -35,7 +35,7 @@ data class AdapterConstant(
       return AdapterConstant(
         javaClassName = ClassName.bestGuess(names[0]),
         kotlinClassName = KClassName.bestGuess(names[0]),
-        memberName = names[1]
+        memberName = names[1],
       )
     }
   }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,7 +73,7 @@ internal data class SemVer(val version: String) : Comparable<SemVer> {
 
         val result = compareSegment(
           a.substring(aPos, aLimit),
-          b.substring(bPos, bLimit)
+          b.substring(bPos, bLimit),
         )
 
         if (result != 0) return result
@@ -129,7 +129,7 @@ internal data class SemVer(val version: String) : Comparable<SemVer> {
   private fun String.find(
     chars: CharArray,
     startIndex: Int = 0,
-    endIndex: Int = length
+    endIndex: Int = length,
   ): Int {
     val result = indexOfAny(chars, startIndex = startIndex)
     if (result != -1 && result < endIndex) return result
@@ -139,8 +139,10 @@ internal data class SemVer(val version: String) : Comparable<SemVer> {
   companion object {
     /** Characters that signal the end of the release section. */
     private val RELEASE_TERMINATORS = charArrayOf('+', '-')
+
     /** Characters that signal the end of the pre-release section. */
     private val PRERELEASE_TERMINATORS = charArrayOf('+')
+
     /** Characters that separate segments within a section. */
     private val SEPARATORS = charArrayOf('.', '-')
 

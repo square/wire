@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,8 @@ class ProtoFileElementTest {
     val expected = """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: file.proto
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
   }
 
@@ -41,14 +42,15 @@ class ProtoFileElementTest {
   fun emptyWithPackageToSchema() {
     val file = ProtoFileElement(
       location = location,
-      packageName = "example.simple"
+      packageName = "example.simple",
     )
     val expected = """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: file.proto
         |
         |package example.simple;
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
   }
 
@@ -56,18 +58,19 @@ class ProtoFileElementTest {
   fun simpleToSchema() {
     val element = MessageElement(
       location = location,
-      name = "Message"
+      name = "Message",
     )
     val file = ProtoFileElement(
       location = location,
-      types = listOf(element)
+      types = listOf(element),
     )
     val expected = """
         |// Proto schema formatted by Wire, do not edit.
         |// Source: file.proto
         |
         |message Message {}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
   }
 
@@ -75,12 +78,12 @@ class ProtoFileElementTest {
   fun simpleWithImportsToSchema() {
     val element = MessageElement(
       location = location,
-      name = "Message"
+      name = "Message",
     )
     val file = ProtoFileElement(
       location = location,
       imports = listOf("example.other"),
-      types = listOf(element)
+      types = listOf(element),
     )
     val expected = """
         |// Proto schema formatted by Wire, do not edit.
@@ -89,7 +92,8 @@ class ProtoFileElementTest {
         |import "example.other";
         |
         |message Message {}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
   }
 
@@ -97,12 +101,12 @@ class ProtoFileElementTest {
   fun addMultipleDependencies() {
     val element = MessageElement(
       location = location,
-      name = "Message"
+      name = "Message",
     )
     val file = ProtoFileElement(
       location = location,
       imports = listOf("example.other", "example.another"),
-      types = listOf(element)
+      types = listOf(element),
     )
     assertThat(file.imports).hasSize(2)
   }
@@ -111,12 +115,12 @@ class ProtoFileElementTest {
   fun simpleWithPublicImportsToSchema() {
     val element = MessageElement(
       location = location,
-      name = "Message"
+      name = "Message",
     )
     val file = ProtoFileElement(
       location = location,
       publicImports = listOf("example.other"),
-      types = listOf(element)
+      types = listOf(element),
     )
     val expected = """
         |// Proto schema formatted by Wire, do not edit.
@@ -125,7 +129,8 @@ class ProtoFileElementTest {
         |import public "example.other";
         |
         |message Message {}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
   }
 
@@ -133,12 +138,12 @@ class ProtoFileElementTest {
   fun addMultiplePublicDependencies() {
     val element = MessageElement(
       location = location,
-      name = "Message"
+      name = "Message",
     )
     val file = ProtoFileElement(
       location = location,
       publicImports = listOf("example.other", "example.another"),
-      types = listOf(element)
+      types = listOf(element),
     )
     assertThat(file.publicImports).hasSize(2)
   }
@@ -147,13 +152,13 @@ class ProtoFileElementTest {
   fun simpleWithBothImportsToSchema() {
     val element = MessageElement(
       location = location,
-      name = "Message"
+      name = "Message",
     )
     val file = ProtoFileElement(
       location = location,
       imports = listOf("example.thing"),
       publicImports = listOf("example.other"),
-      types = listOf(element)
+      types = listOf(element),
     )
     val expected = """
         |// Proto schema formatted by Wire, do not edit.
@@ -163,7 +168,8 @@ class ProtoFileElementTest {
         |import public "example.other";
         |
         |message Message {}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
   }
 
@@ -171,16 +177,16 @@ class ProtoFileElementTest {
   fun simpleWithServicesToSchema() {
     val element = MessageElement(
       location = location,
-      name = "Message"
+      name = "Message",
     )
     val service = ServiceElement(
       location = location,
-      name = "Service"
+      name = "Service",
     )
     val file = ProtoFileElement(
       location = location,
       types = listOf(element),
-      services = listOf(service)
+      services = listOf(service),
     )
     val expected = """
         |// Proto schema formatted by Wire, do not edit.
@@ -189,7 +195,8 @@ class ProtoFileElementTest {
         |message Message {}
         |
         |service Service {}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
   }
 
@@ -197,15 +204,15 @@ class ProtoFileElementTest {
   fun addMultipleServices() {
     val service1 = ServiceElement(
       location = location,
-      name = "Service1"
+      name = "Service1",
     )
     val service2 = ServiceElement(
       location = location,
-      name = "Service2"
+      name = "Service2",
     )
     val file = ProtoFileElement(
       location = location,
-      services = listOf(service1, service2)
+      services = listOf(service1, service2),
     )
     assertThat(file.services).hasSize(2)
   }
@@ -214,13 +221,13 @@ class ProtoFileElementTest {
   fun simpleWithOptionsToSchema() {
     val element = MessageElement(
       location = location,
-      name = "Message"
+      name = "Message",
     )
     val option = OptionElement.create("kit", Kind.STRING, "kat")
     val file = ProtoFileElement(
       location = location,
       options = listOf(option),
-      types = listOf(element)
+      types = listOf(element),
     )
     val expected = """
         |// Proto schema formatted by Wire, do not edit.
@@ -229,7 +236,8 @@ class ProtoFileElementTest {
         |option kit = "kat";
         |
         |message Message {}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
   }
 
@@ -237,14 +245,14 @@ class ProtoFileElementTest {
   fun addMultipleOptions() {
     val element = MessageElement(
       location = location,
-      name = "Message"
+      name = "Message",
     )
     val kitKat = OptionElement.create("kit", Kind.STRING, "kat")
     val fooBar = OptionElement.create("foo", Kind.STRING, "bar")
     val file = ProtoFileElement(
       location = location,
       options = listOf(kitKat, fooBar),
-      types = listOf(element)
+      types = listOf(element),
     )
     assertThat(file.options).hasSize(2)
   }
@@ -254,7 +262,7 @@ class ProtoFileElementTest {
     val file = ProtoFileElement(
       location = location,
       extendDeclarations = listOf(ExtendElement(location = location.at(5, 1), name = "Extend")),
-      types = listOf(MessageElement(location = location, name = "Message"))
+      types = listOf(MessageElement(location = location, name = "Message")),
     )
     val expected = """
         |// Proto schema formatted by Wire, do not edit.
@@ -263,7 +271,8 @@ class ProtoFileElementTest {
         |message Message {}
         |
         |extend Extend {}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
   }
 
@@ -273,7 +282,7 @@ class ProtoFileElementTest {
     val extend2 = ExtendElement(location = location, name = "Extend2")
     val file = ProtoFileElement(
       location = location,
-      extendDeclarations = listOf(extend1, extend2)
+      extendDeclarations = listOf(extend1, extend2),
     )
     assertThat(file.extendDeclarations).hasSize(2)
   }
@@ -288,11 +297,11 @@ class ProtoFileElementTest {
     val option2 = OptionElement.create("foo", Kind.STRING, "bar")
     val service1 = ServiceElement(
       location = location.at(20, 1),
-      name = "Service1"
+      name = "Service1",
     )
     val service2 = ServiceElement(
       location = location.at(22, 1),
-      name = "Service2"
+      name = "Service2",
     )
     val file = ProtoFileElement(
       location = location,
@@ -302,7 +311,7 @@ class ProtoFileElementTest {
       types = listOf(element1, element2),
       services = listOf(service1, service2),
       extendDeclarations = listOf(extend1, extend2),
-      options = listOf(option1, option2)
+      options = listOf(option1, option2),
     )
     val expected = """
         |// Proto schema formatted by Wire, do not edit.
@@ -327,7 +336,8 @@ class ProtoFileElementTest {
         |service Service1 {}
         |
         |service Service2 {}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
 
     // Re-parse the expected string into a ProtoFile and ensure they're equal.
@@ -341,7 +351,7 @@ class ProtoFileElementTest {
     val file = ProtoFileElement(
       location = location,
       syntax = PROTO_2,
-      types = listOf(element)
+      types = listOf(element),
     )
     val expected = """
         |// Proto schema formatted by Wire, do not edit.
@@ -350,7 +360,8 @@ class ProtoFileElementTest {
         |syntax = "proto2";
         |
         |message Message {}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
   }
 
@@ -362,7 +373,7 @@ class ProtoFileElementTest {
       type = "string",
       name = "name",
       tag = 1,
-      defaultValue = "defaultValue"
+      defaultValue = "defaultValue",
     )
     val message =
       MessageElement(location = location.at(11, 1), name = "Message", fields = listOf(field))
@@ -372,7 +383,7 @@ class ProtoFileElementTest {
       packageName = "example.simple",
       imports = listOf("example.thing"),
       publicImports = listOf("example.other"),
-      types = listOf(message)
+      types = listOf(message),
     )
     val expected = """
         |// Proto schema formatted by Wire, do not edit.
@@ -388,7 +399,8 @@ class ProtoFileElementTest {
         |message Message {
         |  required string name = 1 [default = "defaultValue"];
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
 
     // Re-parse the expected string into a ProtoFile and ensure they're equal.
@@ -403,7 +415,7 @@ class ProtoFileElementTest {
       label = Field.Label.REPEATED,
       type = "int32",
       name = "numeric_without_packed_option",
-      tag = 1
+      tag = 1,
     )
     val fieldNumericPackedTrue = FieldElement(
       location = location.at(11, 3),
@@ -411,7 +423,7 @@ class ProtoFileElementTest {
       type = "int32",
       name = "numeric_packed_true",
       tag = 2,
-      options = listOf(PACKED_OPTION_ELEMENT)
+      options = listOf(PACKED_OPTION_ELEMENT),
     )
     val fieldNumericPackedFalse = FieldElement(
       location = location.at(13, 3),
@@ -419,14 +431,14 @@ class ProtoFileElementTest {
       type = "int32",
       name = "numeric_packed_false",
       tag = 3,
-      options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false"))
+      options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false")),
     )
     val fieldString = FieldElement(
       location = location.at(15, 3),
       label = Field.Label.REPEATED,
       type = "string",
       name = "string_without_packed_option",
-      tag = 4
+      tag = 4,
     )
     val fieldStringPackedTrue = FieldElement(
       location = location.at(17, 3),
@@ -434,7 +446,7 @@ class ProtoFileElementTest {
       type = "string",
       name = "string_packed_true",
       tag = 5,
-      options = listOf(PACKED_OPTION_ELEMENT)
+      options = listOf(PACKED_OPTION_ELEMENT),
     )
     val fieldStringPackedFalse = FieldElement(
       location = location.at(19, 3),
@@ -442,16 +454,20 @@ class ProtoFileElementTest {
       type = "string",
       name = "string_packed_false",
       tag = 6,
-      options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false"))
+      options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false")),
     )
 
     val message = MessageElement(
       location = location.at(8, 1),
       name = "Message",
       fields = listOf(
-        fieldNumeric, fieldNumericPackedTrue, fieldNumericPackedFalse, fieldString,
-        fieldStringPackedTrue, fieldStringPackedFalse
-      )
+        fieldNumeric,
+        fieldNumericPackedTrue,
+        fieldNumericPackedFalse,
+        fieldString,
+        fieldStringPackedTrue,
+        fieldStringPackedFalse,
+      ),
     )
     val file = ProtoFileElement(
       syntax = PROTO_2,
@@ -459,7 +475,7 @@ class ProtoFileElementTest {
       packageName = "example.simple",
       imports = emptyList(),
       publicImports = emptyList(),
-      types = listOf(message)
+      types = listOf(message),
     )
     val expected = """
         |// Proto schema formatted by Wire, do not edit.
@@ -482,7 +498,8 @@ class ProtoFileElementTest {
         |
         |  repeated string string_packed_false = 6 [packed = false];
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
 
     // Re-parse the expected string into a ProtoFile and ensure they're equal.
@@ -497,7 +514,7 @@ class ProtoFileElementTest {
       label = Field.Label.REPEATED,
       type = "int32",
       name = "numeric_without_packed_option",
-      tag = 1
+      tag = 1,
     )
     val fieldNumericPackedTrue = FieldElement(
       location = location.at(11, 3),
@@ -505,7 +522,7 @@ class ProtoFileElementTest {
       type = "int32",
       name = "numeric_packed_true",
       tag = 2,
-      options = listOf(PACKED_OPTION_ELEMENT)
+      options = listOf(PACKED_OPTION_ELEMENT),
     )
     val fieldNumericPackedFalse = FieldElement(
       location = location.at(13, 3),
@@ -513,14 +530,14 @@ class ProtoFileElementTest {
       type = "int32",
       name = "numeric_packed_false",
       tag = 3,
-      options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false"))
+      options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false")),
     )
     val fieldString = FieldElement(
       location = location.at(15, 3),
       label = Field.Label.REPEATED,
       type = "string",
       name = "string_without_packed_option",
-      tag = 4
+      tag = 4,
     )
     val fieldStringPackedTrue = FieldElement(
       location = location.at(17, 3),
@@ -528,7 +545,7 @@ class ProtoFileElementTest {
       type = "string",
       name = "string_packed_true",
       tag = 5,
-      options = listOf(PACKED_OPTION_ELEMENT)
+      options = listOf(PACKED_OPTION_ELEMENT),
     )
     val fieldStringPackedFalse = FieldElement(
       location = location.at(19, 3),
@@ -536,16 +553,20 @@ class ProtoFileElementTest {
       type = "string",
       name = "string_packed_false",
       tag = 6,
-      options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false"))
+      options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false")),
     )
 
     val message = MessageElement(
       location = location.at(8, 1),
       name = "Message",
       fields = listOf(
-        fieldNumeric, fieldNumericPackedTrue, fieldNumericPackedFalse, fieldString,
-        fieldStringPackedTrue, fieldStringPackedFalse
-      )
+        fieldNumeric,
+        fieldNumericPackedTrue,
+        fieldNumericPackedFalse,
+        fieldString,
+        fieldStringPackedTrue,
+        fieldStringPackedFalse,
+      ),
     )
     val file = ProtoFileElement(
       syntax = PROTO_3,
@@ -553,7 +574,7 @@ class ProtoFileElementTest {
       packageName = "example.simple",
       imports = emptyList(),
       publicImports = emptyList(),
-      types = listOf(message)
+      types = listOf(message),
     )
     val expected = """
         |// Proto schema formatted by Wire, do not edit.
@@ -576,7 +597,8 @@ class ProtoFileElementTest {
         |
         |  repeated string string_packed_false = 6 [packed = false];
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
 
     // Re-parse the expected string into a ProtoFile and ensure they're equal.

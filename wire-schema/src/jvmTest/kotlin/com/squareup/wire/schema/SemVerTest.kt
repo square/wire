@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ internal class SemVerTest {
       "1.3.2",
       "1.3.3",
       "2.0.0",
-      "3.0.0"
+      "3.0.0",
     )
   }
 
@@ -46,7 +46,7 @@ internal class SemVerTest {
       "1.500.0",
       "1.505.0",
       "1.1000.0",
-      "1.1005.0"
+      "1.1005.0",
     )
   }
 
@@ -61,7 +61,7 @@ internal class SemVerTest {
       "1.a15.0",
       "1.a5.0",
       "1.a500.0",
-      "1.a505.0"
+      "1.a505.0",
     )
   }
 
@@ -77,7 +77,7 @@ internal class SemVerTest {
       "2.0-a.b",
       "2.0",
       "2.0.a",
-      "2.0.a.b"
+      "2.0.a.b",
     )
   }
 
@@ -90,7 +90,7 @@ internal class SemVerTest {
       "1.0.0-rc-2",
       "1.0.0-rc-10",
       "1.0.0-rc-20",
-      "1.0.0"
+      "1.0.0",
     )
   }
 
@@ -113,28 +113,28 @@ internal class SemVerTest {
     assertSorted(
       "1.9.0",
       "1.10.0",
-      "1.11.0"
+      "1.11.0",
     )
     assertSorted(
       "1.0.0-0.3.7",
       "1.0.0-alpha",
       "1.0.0-alpha.1",
-      "1.0.0-x.7.z.92"
+      "1.0.0-x.7.z.92",
     )
     assertSorted(
       "1.0.0-alpha+001",
       "1.0.0-beta+exp.sha.5114f85",
-      "1.0.0+20130313144700"
+      "1.0.0+20130313144700",
     )
     assertSorted(
       "1.0.0",
       "2.0.0",
       "2.1.0",
-      "2.1.1"
+      "2.1.1",
     )
     assertSorted(
       "1.0.0-alpha",
-      "1.0.0"
+      "1.0.0",
     )
     assertSorted(
       "1.0.0-alpha",
@@ -144,7 +144,7 @@ internal class SemVerTest {
       "1.0.0-beta.2",
       "1.0.0-beta.11",
       "1.0.0-rc.1",
-      "1.0.0"
+      "1.0.0",
     )
   }
 
@@ -152,7 +152,7 @@ internal class SemVerTest {
   fun wideNumbers() {
     assertSorted(
       "10000000000000000000.0",
-      "10000000000000000000.1"
+      "10000000000000000000.1",
     )
   }
 

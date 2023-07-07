@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,7 +54,7 @@ data class Field(
 
   val isOneOf: Boolean,
 
-  val declaredJsonName: String?
+  val declaredJsonName: String?,
 ) {
   // Null until this field is linked.
   var type: ProtoType? = null
@@ -184,7 +184,9 @@ data class Field(
 
     if (!markSet.contains(protoMember) &&
       !(GOOGLE_PROTOBUF_OPTION_TYPES.contains(enclosingType) && !isExtension)
-    ) return null
+    ) {
+      return null
+    }
 
     return withOptions(options.retainAll(schema, markSet))
   }
@@ -221,7 +223,7 @@ data class Field(
     REPEATED,
 
     /** Indicates the field is a member of a `oneof` block.  */
-    ONE_OF
+    ONE_OF,
   }
 
   enum class EncodeMode {
@@ -253,7 +255,7 @@ data class Field(
       namespaces: List<String>,
       fieldElements: List<FieldElement>,
       extension: Boolean,
-      oneOf: Boolean
+      oneOf: Boolean,
     ) = fieldElements.map {
       Field(
         namespaces = namespaces,
@@ -282,7 +284,7 @@ data class Field(
         jsonName = it.declaredJsonName,
         tag = it.tag,
         documentation = it.documentation,
-        options = it.options.elements
+        options = it.options.elements,
       )
     }
 
@@ -296,7 +298,7 @@ data class Field(
       schema: Schema,
       markSet: MarkSet,
       enclosingType: ProtoType,
-      fields: Collection<Field>
+      fields: Collection<Field>,
     ) = fields.mapNotNull { it.retainAll(schema, markSet, enclosingType) }
   }
 }

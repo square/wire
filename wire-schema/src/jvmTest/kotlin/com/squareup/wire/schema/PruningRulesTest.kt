@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,9 +15,9 @@
  */
 package com.squareup.wire.schema
 
+import kotlin.test.fail
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import kotlin.test.fail
 
 class PruningRulesTest {
   @Test
@@ -189,8 +189,9 @@ class PruningRulesTest {
       .addRoot("c.IncludedMember#member")
       .build()
     assertThat(set.unusedRoots()).containsExactly(
-      "a.*", "b.IncludedType",
-      "c.IncludedMember#member"
+      "a.*",
+      "b.IncludedType",
+      "c.IncludedMember#member",
     )
 
     set.isRoot(ProtoType.get("a.*"))
@@ -211,8 +212,9 @@ class PruningRulesTest {
       .prune("c.ExcludedMember#member")
       .build()
     assertThat(set.unusedPrunes()).containsExactly(
-      "a.*", "b.ExcludedType",
-      "c.ExcludedMember#member"
+      "a.*",
+      "b.ExcludedType",
+      "c.ExcludedMember#member",
     )
 
     set.isRoot(ProtoType.get("a.*"))
@@ -299,6 +301,6 @@ class PruningRulesTest {
   internal enum class Policy {
     INCLUDED,
     UNSPECIFIED,
-    EXCLUDED
+    EXCLUDED,
   }
 }

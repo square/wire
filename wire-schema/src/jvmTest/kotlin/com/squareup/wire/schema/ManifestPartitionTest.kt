@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,8 @@ class ManifestPartitionTest {
           |}
           |message C {
           |}
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
 
@@ -46,14 +47,14 @@ class ManifestPartitionTest {
         pruningRules = PruningRules.Builder()
           .addRoot("B")
           .prune("C")
-          .build()
+          .build(),
       ),
       "feature" to Module(
         dependencies = setOf("common"),
         pruningRules = PruningRules.Builder()
           .addRoot("A")
-          .build()
-      )
+          .build(),
+      ),
     )
 
     val partitionedSchema = schema.partition(modules)
@@ -85,7 +86,8 @@ class ManifestPartitionTest {
           |}
           |message C {
           |}
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
 
@@ -94,14 +96,14 @@ class ManifestPartitionTest {
         pruningRules = PruningRules.Builder()
           .addRoot("B")
           .prune("C")
-          .build()
+          .build(),
       ),
       "feature" to Module(
         dependencies = setOf("common"),
         pruningRules = PruningRules.Builder()
           .addRoot("A")
-          .build()
-      )
+          .build(),
+      ),
     )
 
     val partitionedSchema = schema.partition(modules)
@@ -135,7 +137,8 @@ class ManifestPartitionTest {
           |}
           |message C {
           |}
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
 
@@ -144,20 +147,20 @@ class ManifestPartitionTest {
         pruningRules = PruningRules.Builder()
           .addRoot("B")
           .prune("C")
-          .build()
+          .build(),
       ),
       "feature1" to Module(
         dependencies = setOf("common"),
         pruningRules = PruningRules.Builder()
           .addRoot("A")
-          .build()
+          .build(),
       ),
       "feature2" to Module(
         dependencies = setOf("common"),
         pruningRules = PruningRules.Builder()
           .addRoot("A")
-          .build()
-      )
+          .build(),
+      ),
     )
 
     val partitionedSchema = schema.partition(modules)
@@ -167,7 +170,7 @@ class ManifestPartitionTest {
       |C is generated twice in peer modules feature1 and feature2.
       |  Consider moving this type into a common dependency of both modules.
       |  To suppress this warning, explicitly add the type to the roots of both modules.
-    """.trimMargin()
+      """.trimMargin(),
     )
   }
 }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,7 +56,8 @@ class DynamicSerializationTest {
        |  google.protobuf.StringValue string_value_field = 15;
        |  google.protobuf.BytesValue bytes_value_field = 16;
        |}
-       |""".trimMargin(),
+       |
+        """.trimMargin(),
       )
     }
 
@@ -93,7 +94,8 @@ class DynamicSerializationTest {
        |message Message {
        |  map<string, int64> currencies = 1;
        |}
-       |""".trimMargin(),
+       |
+        """.trimMargin(),
       )
     }
 

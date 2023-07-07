@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ import okio.Path.Companion.toPath
 /** Basic parser for `.proto` schema declarations. */
 class ProtoParser internal constructor(
   private val location: Location,
-  data: CharArray
+  data: CharArray,
 ) {
   private val reader: SyntaxReader = SyntaxReader(data, location)
   private val publicImports = mutableListOf<String>()
@@ -62,7 +62,7 @@ class ProtoParser internal constructor(
           types = nestedTypes,
           services = services,
           extendDeclarations = extendsList,
-          options = options
+          options = options,
         )
       }
 
@@ -72,7 +72,7 @@ class ProtoParser internal constructor(
           if (duplicate != null) {
             error(
               "${declaration.name} (${declaration.location}) is already defined at " +
-                "${duplicate.location}"
+                "${duplicate.location}",
             )
           }
           nestedTypes.add(declaration)
@@ -82,7 +82,7 @@ class ProtoParser internal constructor(
           if (duplicate != null) {
             error(
               "${declaration.name} (${declaration.location}) is already defined at " +
-                "${duplicate.location}"
+                "${duplicate.location}",
             )
           }
           services.add(declaration)
@@ -176,7 +176,7 @@ class ProtoParser internal constructor(
   /** Reads a message declaration. */
   private fun readMessage(
     location: Location,
-    documentation: String
+    documentation: String,
   ): MessageElement {
     val name = reader.readName()
     val fields = mutableListOf<FieldElement>()
@@ -221,7 +221,7 @@ class ProtoParser internal constructor(
       oneOfs = oneOfs,
       extensions = extensions,
       groups = groups,
-      extendDeclarations = extendDeclarations
+      extendDeclarations = extendDeclarations,
     )
   }
 
@@ -245,7 +245,7 @@ class ProtoParser internal constructor(
       location = location,
       name = name,
       documentation = documentation,
-      fields = fields
+      fields = fields,
     )
   }
 
@@ -272,14 +272,14 @@ class ProtoParser internal constructor(
       name = name,
       documentation = documentation,
       rpcs = rpcs,
-      options = options
+      options = options,
     )
   }
 
   /** Reads an enumerated type declaration and returns it. */
   private fun readEnumElement(
     location: Location,
-    documentation: String
+    documentation: String,
   ): EnumElement {
     val name = reader.readName()
     val constants = mutableListOf<EnumConstantElement>()
@@ -328,7 +328,7 @@ class ProtoParser internal constructor(
         reader.expect(
           syntax == PROTO_3 ||
             (word == "map" && reader.peekChar() == '<'),
-          location
+          location,
         ) {
           "unexpected label: $word"
         }
@@ -352,7 +352,7 @@ class ProtoParser internal constructor(
     location: Location,
     documentation: String,
     label: Field.Label?,
-    type: String
+    type: String,
   ): FieldElement {
     val name = reader.readName(allowLeadingDigit = false)
     reader.require('=')
@@ -377,7 +377,7 @@ class ProtoParser internal constructor(
       jsonName = jsonName,
       tag = tag,
       documentation = documentation,
-      options = options.toList()
+      options = options.toList(),
     )
   }
 
@@ -442,7 +442,7 @@ class ProtoParser internal constructor(
   private fun readGroup(
     location: Location,
     documentation: String,
-    label: Field.Label?
+    label: Field.Label?,
   ): GroupElement {
     val name = reader.readWord()
     reader.require('=')
@@ -468,7 +468,7 @@ class ProtoParser internal constructor(
       name = name,
       tag = tag,
       documentation = documentation,
-      fields = fields
+      fields = fields,
     )
   }
 
@@ -514,14 +514,14 @@ class ProtoParser internal constructor(
     return ReservedElement(
       location = location,
       documentation = documentation,
-      values = values
+      values = values,
     )
   }
 
   /** Reads extensions like "extensions 101;" or "extensions 101 to max;". */
   private fun readExtensions(
     location: Location,
-    documentation: String
+    documentation: String,
   ): ExtensionsElement {
     val values = mutableListOf<Any>()
     loop@ while (true) {
@@ -548,7 +548,7 @@ class ProtoParser internal constructor(
     return ExtensionsElement(
       location = location,
       documentation = documentation,
-      values = values
+      values = values,
     )
   }
 
@@ -556,7 +556,7 @@ class ProtoParser internal constructor(
   private fun readEnumConstant(
     documentation: String,
     location: Location,
-    label: String
+    label: String,
   ): EnumConstantElement {
     reader.require('=')
     val tag = reader.readInt()
@@ -572,7 +572,7 @@ class ProtoParser internal constructor(
       name = label,
       tag = tag,
       documentation = documentation,
-      options = options
+      options = options,
     )
   }
 
@@ -621,7 +621,7 @@ class ProtoParser internal constructor(
       responseType = responseType,
       requestStreaming = requestStreaming,
       responseStreaming = responseStreaming,
-      options = options
+      options = options,
     )
   }
 
@@ -631,7 +631,8 @@ class ProtoParser internal constructor(
     ENUM,
     RPC,
     EXTEND,
-    SERVICE;
+    SERVICE,
+    ;
 
     fun permitsPackage() = this == FILE
 
