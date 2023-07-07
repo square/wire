@@ -22,11 +22,12 @@ protobufGradlePlugin = "0.8.18"
 
 [libraries]
 android = { module = "com.google.android:android", version.ref = "android" }
-androidx-annotations = { module = "androidx.annotation:annotation", version = "1.1.0" }
-androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.0.2" }
-androidx-compose = { module = "androidx.activity:activity-compose", version = "1.4.0" }
-androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version = "1.1.3" }
-androidx-ktx = { module = "androidx.core:core-ktx", version = "1.0.2" }
+androidMaterial = {module = "com.google.android.material:material", version = "1.9.0" }
+androidx-annotations = { module = "androidx.annotation:annotation", version = "1.6.0" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
+androidx-compose = { module = "androidx.activity:activity-compose", version = "1.7.2" }
+androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4" }
+androidx-ktx = { module = "androidx.core:core-ktx", version = "1.10.1" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 contour = { module = "app.cash.contour:contour", version = "1.1.0" }
 dokka-core = { module = "org.jetbrains.dokka:dokka-core", version.ref = "dokka" }
@@ -67,7 +68,7 @@ okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", versio
 # `plugins` is a keyword in version catalogs.
 # Check https://docs.gradle.org/current/userguide/platforms.html#sec:version-catalog-plugin
 #  if we ever wanna migrate to this.
-pluginz-android = { module = "com.android.tools.build:gradle", version = "7.1.2" }
+pluginz-android = { module = "com.android.tools.build:gradle", version = "7.4.2" }
 pluginz-binaryCompatibilityValidator = { module = "org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin", version = "0.13.0" }
 pluginz-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 pluginz-kotlinSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }

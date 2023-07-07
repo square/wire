@@ -4,20 +4,6 @@ plugins {
   id("com.squareup.wire")
 }
 
-android {
-  compileSdkVersion(30)
-
-  defaultConfig {
-    minSdkVersion(28)
-    targetSdkVersion(30)
-  }
-
-  compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-  }
-}
-
 wire {
   kotlin {
     android = true
@@ -34,4 +20,8 @@ buildscript {
     classpath(libs.pluginz.android)
     classpath("com.squareup.wire:wire-gradle-plugin")
   }
+}
+
+android {
+  namespace = "com.squareup.wire.android.lib.kotlin"
 }

@@ -3,23 +3,6 @@ plugins {
   id("com.squareup.wire")
 }
 
-android {
-  compileSdkVersion(30)
-
-  defaultConfig {
-    applicationId = "com.square.wire.java.sample.myapplication"
-    minSdkVersion(28)
-    targetSdkVersion(30)
-    versionCode = 1
-    versionName = "1.0"
-  }
-
-  compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-  }
-}
-
 wire {
   java {
     android = true
@@ -27,8 +10,8 @@ wire {
 }
 
 dependencies {
-  implementation("androidx.appcompat:appcompat:1.2.0")
-  implementation("androidx.constraintlayout:constraintlayout:2.0.4")
+  implementation(libs.androidx.appcompat)
+  implementation(libs.androidx.constraintLayout)
 }
 
 buildscript {
@@ -40,4 +23,8 @@ buildscript {
     classpath(libs.pluginz.android)
     classpath("com.squareup.wire:wire-gradle-plugin")
   }
+}
+
+android {
+  namespace = "com.squareup.wire.android.app.java"
 }

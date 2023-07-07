@@ -4,6 +4,8 @@ plugins {
 }
 
 wire {
+  protoLibrary = true
+
   kotlin {
     rpcCallStyle = "suspending"
     rpcRole = "client"

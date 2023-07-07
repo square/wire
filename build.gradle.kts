@@ -207,6 +207,25 @@ allprojects {
       }
     }
   }
+
+  plugins.withType<com.android.build.gradle.BasePlugin>().configureEach {
+    project.extensions.getByType<com.android.build.gradle.BaseExtension>().apply {
+      compileSdkVersion(33)
+      compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+      }
+      defaultConfig {
+        if (project.name.contains("app")) {
+          applicationId("$group.${project.name}".replace(oldChar = '-', newChar = '.'))
+        }
+        minSdk = 28
+        targetSdk = 33
+        versionCode = 1
+        versionName = "1.0"
+      }
+    }
+  }
 }
 
 subprojects {
