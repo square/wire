@@ -10,7 +10,7 @@ application {
 
 wire {
   sourcePath {
-    srcDir("$rootDir/samples/wire-grpc-sample/protos/src/main/proto")
+    srcProject(projects.samples.wireGrpcSample.protos)
   }
   kotlin {
     rpcCallStyle = "blocking"

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.squareup.wire.android.app.variants">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
   <application
       android:allowBackup="true"
@@ -9,7 +8,8 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:supportsRtl="true"
       android:theme="@style/Theme.MyVariantSample">
-    <activity android:name="com.squareup.wire.android.app.variants.MainActivity">
+    <activity android:name="com.squareup.wire.android.app.variants.MainActivity"
+        android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
