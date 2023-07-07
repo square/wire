@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Service
 import com.squareup.wire.internal.GrpcMessageSink
 import com.squareup.wire.internal.GrpcMessageSource
+import java.lang.reflect.Method
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Headers.Companion.headersOf
@@ -31,7 +32,6 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.RecordedRequest
 import okio.Buffer
 import okio.Timeout
-import java.lang.reflect.Method
 
 /**
  * Serves gRPC calls using MockWebServer over HTTP/2.
@@ -129,7 +129,7 @@ class GrpcDispatcher(
 
   private fun <S : Any, R : Any> dispatchGrpc(
     endpoint: Endpoint<S, R>,
-    recordedRequest: RecordedRequest
+    recordedRequest: RecordedRequest,
   ): MockResponse {
     // TODO(oldergod): recover gracefully if the parameters don't decode to the expected types.
 
@@ -152,19 +152,19 @@ class GrpcDispatcher(
 
   private fun <S : Any> decodeRequest(
     request: RecordedRequest,
-    protoAdapter: ProtoAdapter<S>
+    protoAdapter: ProtoAdapter<S>,
   ): S {
     val source = GrpcMessageSource(
       source = request.body,
       messageAdapter = protoAdapter,
-      grpcEncoding = request.headers["grpc-encoding"]
+      grpcEncoding = request.headers["grpc-encoding"],
     )
     return source.readExactlyOneAndClose()
   }
 
   private fun <R : Any> encodeResponse(
     response: R,
-    protoAdapter: ProtoAdapter<R>
+    protoAdapter: ProtoAdapter<R>,
   ): Buffer {
     val result = Buffer()
     GrpcMessageSink(
@@ -182,7 +182,7 @@ class GrpcDispatcher(
   private class Endpoint<S : Any, R : Any>(
     val grpcMethod: GrpcMethod<S, R>,
     val javaMethod: Method,
-    val service: Service
+    val service: Service,
   ) {
     @Suppress("UNCHECKED_CAST") // The GrpcCall type and GrpcMethod type always align.
     fun newGrpcCall(): GrpcCall<S, R> = javaMethod.invoke(service) as GrpcCall<S, R>

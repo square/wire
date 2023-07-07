@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,10 +37,10 @@ object ServiceDescriptorGenerator {
       PropertySpec.builder(
         name = "SERVICE_NAME",
         type = String::class,
-        modifiers = emptyList()
+        modifiers = emptyList(),
       )
         .initializer("\"${service.type}\"")
-        .build()
+        .build(),
     )
     .addProperty(
       PropertySpec.builder(
@@ -51,14 +51,14 @@ object ServiceDescriptorGenerator {
         .addAnnotation(Volatile::class)
         .initializer("null")
         .mutable(true)
-        .build()
+        .build(),
     )
     .apply { FileDescriptorGenerator.addDescriptorDataProperty(this, protoFile, schema) }
     .addFunction(
       FunSpec.builder("getServiceDescriptor")
         .returns(ClassName("io.grpc", "ServiceDescriptor").copy(nullable = true))
         .addCode(serviceDescriptorCodeBlock(service, protoFile))
-        .build()
+        .build(),
     )
 
   private fun serviceDescriptorCodeBlock(service: Service, protoFile: ProtoFile?): CodeBlock {
@@ -82,15 +82,17 @@ object ServiceDescriptorGenerator {
         "result = %M(SERVICE_NAME)",
         MemberName(
           enclosingClassName = ClassName("io.grpc", "ServiceDescriptor"),
-          simpleName = "newBuilder"
-        )
+          simpleName = "newBuilder",
+        ),
       )
     service.rpcs.forEach { builder.addStatement(".addMethod(get${it.name}Method())") }
-    if (protoFile != null){
-      builder.addStatement("""
+    if (protoFile != null) {
+      builder.addStatement(
+        """
         .setSchemaDescriptor(io.grpc.protobuf.ProtoFileDescriptorSupplier {
           fileDescriptor("${protoFile.location.path}", emptySet())
-        })""".trimIndent()
+        })
+        """.trimIndent(),
       )
     }
     builder

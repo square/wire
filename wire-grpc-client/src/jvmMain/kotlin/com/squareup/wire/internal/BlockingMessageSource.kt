@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,10 +19,10 @@ import com.squareup.wire.GrpcResponse
 import com.squareup.wire.MessageSource
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.use
+import java.util.concurrent.LinkedBlockingDeque
 import okhttp3.Call
 import okhttp3.Callback
 import okio.IOException
-import java.util.concurrent.LinkedBlockingDeque
 
 /**
  * This message source uses a [LinkedBlockingDeque] to connect a reading source with a writing
@@ -36,7 +36,7 @@ import java.util.concurrent.LinkedBlockingDeque
 internal class BlockingMessageSource<R : Any>(
   val grpcCall: RealGrpcStreamingCall<*, R>,
   val responseAdapter: ProtoAdapter<R>,
-  val call: Call
+  val call: Call,
 ) : MessageSource<R> {
   private val queue = LinkedBlockingDeque<Any>(1)
 

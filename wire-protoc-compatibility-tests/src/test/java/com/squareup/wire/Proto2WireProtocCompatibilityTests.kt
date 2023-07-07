@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,12 +66,12 @@ class Proto2WireProtocCompatibilityTests {
       no_default_nested_enum = SimpleMessageK.NestedEnum.BAR,
       repeated_double = listOf(1.0, 33.0),
       required_int32 = 46,
-      other = "hello"
+      other = "hello",
     )
 
     val googleMessage = SimpleMessageOuterClass.SimpleMessage.newBuilder()
       .setOptionalNestedMsg(
-        SimpleMessageOuterClass.SimpleMessage.NestedMessage.newBuilder().setBb(806).build()
+        SimpleMessageOuterClass.SimpleMessage.NestedMessage.newBuilder().setBb(806).build(),
       )
       .setNoDefaultNestedEnum(SimpleMessageOuterClass.SimpleMessage.NestedEnum.BAR)
       .addAllRepeatedDouble(listOf(1.0, 33.0))
@@ -172,7 +172,7 @@ class Proto2WireProtocCompatibilityTests {
       quilt = Quilt(
         fringe = listOf(QuiltColor.GREEN),
         cozy = true,
-      )
+      ),
     )
 
     // A sample value encoded by ts-proto.
@@ -183,7 +183,7 @@ class Proto2WireProtocCompatibilityTests {
         RepeatedEnum.Quilt.newBuilder()
           .addAllFringe(listOf(RepeatedEnum.QuiltColor.GREEN))
           .setCozy(true)
-          .build()
+          .build(),
       ).build()
 
     val wireMessageDecodedFromGoogleMessage =
@@ -286,7 +286,7 @@ class Proto2WireProtocCompatibilityTests {
       oneof_int32 = 0,
       ext_opt_bool = true,
       ext_rep_bool = list(true),
-      ext_pack_bool = list(true)
+      ext_pack_bool = list(true),
     )
 
     private val defaultAllTypesProtoc = AllTypesOuterClass.AllTypes.newBuilder()
@@ -307,7 +307,7 @@ class Proto2WireProtocCompatibilityTests {
       .setOptBytes(com.google.protobuf.ByteString.copyFrom(ByteString.of(123, 125).toByteArray()))
       .setOptNestedEnum(AllTypesOuterClass.AllTypes.NestedEnum.A)
       .setOptNestedMessage(
-        AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(999).build()
+        AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(999).build(),
       )
       .setReqInt32(111)
       .setReqUint32(112)
@@ -326,7 +326,7 @@ class Proto2WireProtocCompatibilityTests {
       .setReqBytes(com.google.protobuf.ByteString.copyFrom(ByteString.of(123, 125).toByteArray()))
       .setReqNestedEnum(AllTypesOuterClass.AllTypes.NestedEnum.A)
       .setReqNestedMessage(
-        AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(999).build()
+        AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(999).build(),
       )
       .addAllRepInt32(list(111))
       .addAllRepUint32(list(112))
@@ -343,13 +343,13 @@ class Proto2WireProtocCompatibilityTests {
       .addAllRepDouble(list(123.0))
       .addAllRepString(list("124"))
       .addAllRepBytes(
-        list(com.google.protobuf.ByteString.copyFrom(ByteString.of(123, 125).toByteArray()))
+        list(com.google.protobuf.ByteString.copyFrom(ByteString.of(123, 125).toByteArray())),
       )
       .addAllRepNestedEnum(list(AllTypesOuterClass.AllTypes.NestedEnum.A))
       .addAllRepNestedMessage(
         list(
-          AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(999).build()
-        )
+          AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(999).build(),
+        ),
       )
       .addAllPackInt32(list(111))
       .addAllPackUint32(list(112))
@@ -369,7 +369,7 @@ class Proto2WireProtocCompatibilityTests {
       .putMapStringString("key", "value")
       .putMapStringMessage(
         "message",
-        AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(1).build()
+        AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(1).build(),
       )
       .putMapStringEnum("enum", AllTypesOuterClass.AllTypes.NestedEnum.A)
       .setOneofInt32(0)
@@ -432,7 +432,7 @@ class Proto2WireProtocCompatibilityTests {
       map_string_enum = mapOf("" to AllTypesK.NestedEnum.UNKNOWN),
       ext_opt_bool = false,
       ext_rep_bool = list(false),
-      ext_pack_bool = list(false)
+      ext_pack_bool = list(false),
     )
 
     private val identityAllTypesProtoc = AllTypesOuterClass.AllTypes.newBuilder()
@@ -519,7 +519,7 @@ class Proto2WireProtocCompatibilityTests {
       .setExtension(extRepProto2Enum, list(EnumProto2.A))
       .setExtension(
         extRepProto2Message,
-        list(MessageProto2.newBuilder().setA(3).setB("Dwyane").build())
+        list(MessageProto2.newBuilder().setA(3).setB("Dwyane").build()),
       )
       .setExtension(extRepProto3Enum, list(EnumProto3.A))
       .setExtension(extRepProto3Message, list(MessageProto3.newBuilder().setA(1).build()))
@@ -552,7 +552,7 @@ class Proto2WireProtocCompatibilityTests {
       ext_rep_proto2_message = list(MessageProto2K(3, "Dwyane")),
       ext_rep_proto3_enum = list(EnumProto3K.A),
       ext_rep_proto3_message = list(MessageProto3K(1)),
-      oneof_proto3_enum = EnumProto3K.A
+      oneof_proto3_enum = EnumProto3K.A,
     )
 
     private val interopWireJ = InteropMessageJ.Builder()

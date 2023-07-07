@@ -1,11 +1,11 @@
 /*
- * Copyright 2022 Block Inc.
+ * Copyright (C) 2022 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +38,7 @@ class MarkdownHandlerTest {
                   |message Red {
                   |  optional string oval = 1;
                   |}
-                  """.trimMargin()
+        """.trimMargin(),
       )
       add(
         name = "squareup/colors/blue.proto".toPath(),
@@ -51,7 +51,7 @@ class MarkdownHandlerTest {
                   |  optional string circle = 1;
                   |  optional squareup.polygons.Triangle triangle = 2;
                   |}
-                  """.trimMargin()
+        """.trimMargin(),
       )
       add(
         name = "squareup/polygons/triangle.proto".toPath(),
@@ -66,7 +66,7 @@ class MarkdownHandlerTest {
                   |    RIGHTANGLED = 3;
                   |  }
                   |}
-                  """.trimMargin()
+        """.trimMargin(),
       )
     }
 
@@ -82,7 +82,7 @@ class MarkdownHandlerTest {
     assertThat(fileSystem.findFiles("generated"))
       .containsRelativePaths(
         "generated/markdown/squareup/colors/Blue.md",
-        "generated/markdown/squareup/colors/Red.md"
+        "generated/markdown/squareup/colors/Red.md",
       )
     assertThat(fileSystem.readUtf8("generated/markdown/squareup/colors/Blue.md"))
       .isEqualTo(
@@ -90,7 +90,8 @@ class MarkdownHandlerTest {
             |# Blue
             |
             |This is the color of the sky.
-            |""".trimMargin()
+            |
+        """.trimMargin(),
       )
     assertThat(fileSystem.readUtf8("generated/markdown/squareup/colors/Red.md"))
       .isEqualTo(
@@ -98,7 +99,8 @@ class MarkdownHandlerTest {
             |# Red
             |
             |This is the color of the sky when the sky is lava.
-            |""".trimMargin()
+            |
+        """.trimMargin(),
       )
   }
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@ import com.google.protobuf.Duration
 import okio.ByteString
 import org.junit.Ignore
 import org.junit.Test
-import squareup.proto3.java.interop.InteropTest.InteropWrappers
 import squareup.proto2.java.interop.InteropBoxOneOf as InteropBoxOneOfJ2
 import squareup.proto2.java.interop.InteropCamelCase as InteropCamelCaseJ2
 import squareup.proto2.java.interop.InteropDuration as InteropDurationJ2
@@ -43,6 +42,7 @@ import squareup.proto3.java.interop.InteropTest.InteropCamelCase as InteropCamel
 import squareup.proto3.java.interop.InteropTest.InteropDuration as InteropDurationP3
 import squareup.proto3.java.interop.InteropTest.InteropJsonName as InteropJsonNameP3
 import squareup.proto3.java.interop.InteropTest.InteropUint64 as InteropUint64P3
+import squareup.proto3.java.interop.InteropTest.InteropWrappers
 import squareup.proto3.java.interop.InteropUint64 as InteropUint64J3
 import squareup.proto3.java.interop.InteropWrappers as InteropWrappersJ3
 import squareup.proto3.kotlin.interop.InteropBoxOneOf as InteropBoxOneOfK3
@@ -62,7 +62,7 @@ class InteropTest {
           Duration.newBuilder()
             .setSeconds(99L)
             .setNanos(987_654_321)
-            .build()
+            .build(),
         )
         .build(),
       canonicalJson = """{"value":"99.987654321s"}""",
@@ -113,7 +113,7 @@ class InteropTest {
         .build(),
       canonicalJson = """{"value":"18446744073709551615"}""",
       wireAlternateJsons = listOf(
-        """{"value":"-1"}"""
+        """{"value":"-1"}""",
       ),
     )
     max.check(InteropUint64K3(-1L))
@@ -132,7 +132,7 @@ class InteropTest {
         """{"value":18446744073709551615}""",
       ),
       wireAlternateJsons = listOf(
-        """{"value":"-1"}"""
+        """{"value":"-1"}""",
       ),
     )
     max.check(InteropUint64K2(-1L))
@@ -179,7 +179,7 @@ class InteropTest {
       wireCanonicalJson = """{"hello_world":"1","a__b":"2","_Ccc_ddd":"3","EEee_ff_gGg":"4","a_b_c":"5","GHI":"6","K_L_M":"7","__T__U__V__":"8","_x_y_z_":"9"}""",
       alternateJsons = listOf(
         """{"helloWorld":"1","aB":"2","CccDdd":"3","EEeeFfGGg":"4","aBC":"5","GHI":"6","KLM":"7","TUV":"8","XYZ":"9"}""",
-      )
+      ),
     )
 
     checker.check(InteropCamelCaseK2("1", "2", "3", "4", "5", "6", "7", "8", "9"))
@@ -260,17 +260,18 @@ class InteropTest {
     checker.check(
       InteropBoxOneOfK2.Builder()
         .option(OneOf(InteropBoxOneOfK2.OPTION_A, "Hello"))
-        .build()
+        .build(),
     )
     checker.check(
       InteropBoxOneOfK3.Builder()
         .option(OneOf(InteropBoxOneOfK3.OPTION_A, "Hello"))
-        .build()
+        .build(),
     )
   }
 
   @Ignore("Needs to implement boxed oneofs in Java.")
-  @Test fun boxOneOfsJava() {
+  @Test
+  fun boxOneOfsJava() {
     val checker = InteropChecker(
       protocMessage = InteropBoxOneOfP3.newBuilder()
         .setA("Hello")
@@ -307,7 +308,7 @@ class InteropTest {
         .bool_value(false)
         .string_value("")
         .bytes_value(ByteString.EMPTY)
-        .build()
+        .build(),
     )
     checker.check(
       InteropWrappersK3.Builder()
@@ -320,7 +321,7 @@ class InteropTest {
         .bool_value(false)
         .string_value("")
         .bytes_value(ByteString.EMPTY)
-        .build()
+        .build(),
     )
   }
 
@@ -359,7 +360,7 @@ class InteropTest {
         .bool_value(true)
         .string_value("string")
         .bytes_value(ByteString.of(1))
-        .build()
+        .build(),
     )
     checker.check(
       InteropWrappersK3.Builder()
@@ -372,7 +373,7 @@ class InteropTest {
         .bool_value(true)
         .string_value("string")
         .bytes_value(ByteString.of(1))
-        .build()
+        .build(),
     )
   }
 }

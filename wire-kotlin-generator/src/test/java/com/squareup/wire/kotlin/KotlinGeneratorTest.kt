@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,12 +22,12 @@ import com.squareup.wire.buildSchema
 import com.squareup.wire.kotlin.KotlinGenerator.Companion.sanitizeKdoc
 import com.squareup.wire.schema.PruningRules
 import com.squareup.wire.schema.addFromTest
-import okio.Path.Companion.toPath
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
+import okio.Path.Companion.toPath
 
 class KotlinGeneratorTest {
   @Test fun basic() {
@@ -49,7 +49,8 @@ class KotlinGeneratorTest {
         |		optional PhoneType type = 2 [default = HOME];
         |	}
         |	repeated PhoneNumber phone = 4;
-        |}""".trimMargin()
+        |}
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Person").replace("\n", "")
@@ -59,7 +60,7 @@ class KotlinGeneratorTest {
     assertThat(code).contains("PhoneNumber::class")
     assertThat(code).contains("override fun encode(writer: ProtoWriter, `value`: Person)")
     assertTrue(
-      code.contains("enum class PhoneType(    override val `value`: Int,  ) : WireEnum")
+      code.contains("enum class PhoneType(    override val `value`: Int,  ) : WireEnum"),
     )
     assertThat(code).contains("fun fromValue(`value`: Int): PhoneType?")
     assertThat(code).contains("WORK(1),")
@@ -87,7 +88,8 @@ class KotlinGeneratorTest {
         |  optional double n = 14 [default = -inf];
         |  optional double o = 15 [default = nan];
         |  optional double p = 16 [default = -nan];
-        |}""".trimMargin()
+        |}
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
@@ -103,7 +105,7 @@ class KotlinGeneratorTest {
     assertThat(code).contains("const val DEFAULT_J: Double = -0.01")
     assertThat(code).contains(
       "public const val DEFAULT_K: Double\n" +
-        "        = -1_230_000_000_000_000_000_000_000_000_000_000_000_000_000_000.0"
+        "        = -1_230_000_000_000_000_000_000_000_000_000_000_000_000_000_000.0",
     )
     assertThat(code).contains("const val DEFAULT_L: Double = 255.0")
     assertThat(code).contains("const val DEFAULT_M: Double = Double.POSITIVE_INFINITY")
@@ -121,7 +123,8 @@ class KotlinGeneratorTest {
         |  required float when = 1;
         |  required int32 ADAPTER = 2;
         |  optional int64 adapter = 3;
-        |}""".trimMargin()
+        |}
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
@@ -144,7 +147,8 @@ class KotlinGeneratorTest {
           |  message B {
           |  }
           |  optional B b = 1;
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
     }
 
@@ -173,7 +177,8 @@ class KotlinGeneratorTest {
           |   */
           |  public fun GetFeature(): GrpcCall<Point, Feature>
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
     val expectedImplementation = """
           |package routeguide
           |
@@ -196,7 +201,8 @@ class KotlinGeneratorTest {
           |      responseAdapter = Feature.ADAPTER
           |  ))
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
 
     val schema = buildSchema {
       add(
@@ -211,12 +217,13 @@ class KotlinGeneratorTest {
           |}
           |$pointMessage
           |$featureMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
     assertEquals(
       listOf(expectedInterface, expectedImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide"),
     )
   }
 
@@ -259,15 +266,17 @@ class KotlinGeneratorTest {
           |}
           |$pointMessage
           |$featureMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
     assertEquals(
       listOf(expected),
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
-        rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER
-      )
+        rpcCallStyle = RpcCallStyle.BLOCKING,
+        rpcRole = RpcRole.SERVER,
+      ),
     )
   }
 
@@ -311,15 +320,17 @@ class KotlinGeneratorTest {
           |}
           |$pointMessage
           |$routeSummaryMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
     assertEquals(
       listOf(expected),
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
-        rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER
-      )
+        rpcCallStyle = RpcCallStyle.BLOCKING,
+        rpcRole = RpcRole.SERVER,
+      ),
     )
   }
 
@@ -364,15 +375,17 @@ class KotlinGeneratorTest {
           |$pointMessage
           |$rectangeMessage
           |$featureMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
     assertEquals(
       listOf(expected),
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
-        rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER
-      )
+        rpcCallStyle = RpcCallStyle.BLOCKING,
+        rpcRole = RpcRole.SERVER,
+      ),
     )
   }
 
@@ -420,15 +433,17 @@ class KotlinGeneratorTest {
           |$pointMessage
           |$rectangeMessage
           |$routeNoteMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
     assertEquals(
       listOf(expected),
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
-        rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER
-      )
+        rpcCallStyle = RpcCallStyle.BLOCKING,
+        rpcRole = RpcRole.SERVER,
+      ),
     )
   }
 
@@ -478,15 +493,17 @@ class KotlinGeneratorTest {
           |}
           |$pointMessage
           |$featureMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
     assertEquals(
       listOf(expected),
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
-        rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER
-      )
+        rpcCallStyle = RpcCallStyle.BLOCKING,
+        rpcRole = RpcRole.SERVER,
+      ),
     )
   }
 
@@ -504,7 +521,8 @@ class KotlinGeneratorTest {
           |   */
           |  public fun GetFeature(): GrpcCall<Point, Feature>
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
     val expectedImplementation = """
           |import com.squareup.wire.GrpcCall
           |import com.squareup.wire.GrpcClient
@@ -525,7 +543,8 @@ class KotlinGeneratorTest {
           |      responseAdapter = Feature.ADAPTER
           |  ))
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
 
     val schema = buildSchema {
       add(
@@ -540,12 +559,13 @@ class KotlinGeneratorTest {
           |}
           |$pointMessage
           |$featureMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
     assertEquals(
       listOf(expectedInterface, expectedImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("RouteGuide")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("RouteGuide"),
     )
   }
 
@@ -565,7 +585,8 @@ class KotlinGeneratorTest {
           |   */
           |  public fun GetFeature(): GrpcCall<Point, Feature>
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
     val expectedImplementation = """
           |package routeguide.grpc
           |
@@ -588,7 +609,8 @@ class KotlinGeneratorTest {
           |      responseAdapter = Feature.ADAPTER
           |  ))
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
 
     val schema = buildSchema {
       add(
@@ -605,12 +627,13 @@ class KotlinGeneratorTest {
           |}
           |$pointMessage
           |$featureMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
     assertEquals(
       listOf(expectedInterface, expectedImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.grpc.RouteGuide")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.grpc.RouteGuide"),
     )
   }
 
@@ -630,7 +653,8 @@ class KotlinGeneratorTest {
           |   */
           |  public fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary>
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
     val expectedImplementation = """
           |package routeguide
           |
@@ -654,7 +678,8 @@ class KotlinGeneratorTest {
           |      responseAdapter = RouteSummary.ADAPTER
           |  ))
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
 
     val schema = buildSchema {
       add(
@@ -671,12 +696,13 @@ class KotlinGeneratorTest {
           |}
           |$pointMessage
           |$routeSummaryMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
     assertEquals(
       listOf(expectedInterface, expectedImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide"),
     )
   }
 
@@ -696,7 +722,8 @@ class KotlinGeneratorTest {
           |   */
           |  public fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature>
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
     val expectedImplementation = """
           |package routeguide
           |
@@ -720,7 +747,8 @@ class KotlinGeneratorTest {
           |      responseAdapter = Feature.ADAPTER
           |  ))
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
 
     val schema = buildSchema {
       add(
@@ -738,12 +766,13 @@ class KotlinGeneratorTest {
           |$rectangeMessage
           |$pointMessage
           |$featureMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
     assertEquals(
       listOf(expectedInterface, expectedImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide"),
     )
   }
 
@@ -904,7 +933,8 @@ class KotlinGeneratorTest {
           |}
           |$pointMessage
           |$routeNoteMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
 
@@ -912,29 +942,33 @@ class KotlinGeneratorTest {
       listOf(blockingClientInterface, blockingClientImplementation),
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
-        rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.CLIENT
-      )
+        rpcCallStyle = RpcCallStyle.BLOCKING,
+        rpcRole = RpcRole.CLIENT,
+      ),
     )
     assertEquals(
       listOf(blockingServer),
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
-        rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER
-      )
+        rpcCallStyle = RpcCallStyle.BLOCKING,
+        rpcRole = RpcRole.SERVER,
+      ),
     )
     assertEquals(
       listOf(suspendingClientInterface, suspendingClientImplementation),
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
-        rpcCallStyle = RpcCallStyle.SUSPENDING, rpcRole = RpcRole.CLIENT
-      )
+        rpcCallStyle = RpcCallStyle.SUSPENDING,
+        rpcRole = RpcRole.CLIENT,
+      ),
     )
     assertEquals(
       listOf(suspendingServer),
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
-        rpcCallStyle = RpcCallStyle.SUSPENDING, rpcRole = RpcRole.SERVER
-      )
+        rpcCallStyle = RpcCallStyle.SUSPENDING,
+        rpcRole = RpcRole.SERVER,
+      ),
     )
   }
 
@@ -960,7 +994,8 @@ class KotlinGeneratorTest {
           |   */
           |  public fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
     val expectedImplementation = """
           |package routeguide
           |
@@ -994,7 +1029,8 @@ class KotlinGeneratorTest {
           |      responseAdapter = RouteNote.ADAPTER
           |  ))
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
 
     val schema = buildSchema {
       add(
@@ -1014,12 +1050,13 @@ class KotlinGeneratorTest {
           |$pointMessage
           |$featureMessage
           |$routeNoteMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
     assertEquals(
       listOf(expectedInterface, expectedImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide"),
     )
   }
 
@@ -1037,7 +1074,8 @@ class KotlinGeneratorTest {
           |$pointMessage
           |$featureMessage
           |$routeNoteMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
 
@@ -1050,7 +1088,8 @@ class KotlinGeneratorTest {
           |public interface RouteGuideGetFeatureClient : Service {
           |  public fun GetFeature(): GrpcCall<Point, Feature>
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
     val expectedGetFeatureImplementation = """
           |package routeguide
           |
@@ -1067,11 +1106,12 @@ class KotlinGeneratorTest {
           |      responseAdapter = Feature.ADAPTER
           |  ))
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
 
     assertEquals(
       listOf(expectedGetFeatureInterface, expectedGetFeatureImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide", "GetFeature")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide", "GetFeature"),
     )
 
     val expectedRouteChatInterface = """
@@ -1083,7 +1123,8 @@ class KotlinGeneratorTest {
           |public interface RouteGuideRouteChatClient : Service {
           |  public fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
     val expectedRouteChatImplementation = """
           |package routeguide
           |
@@ -1101,11 +1142,12 @@ class KotlinGeneratorTest {
           |      responseAdapter = RouteNote.ADAPTER
           |  ))
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
 
     assertEquals(
       listOf(expectedRouteChatInterface, expectedRouteChatImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide", "RouteChat")
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide", "RouteChat"),
     )
   }
 
@@ -1132,7 +1174,8 @@ class KotlinGeneratorTest {
           |  )
           |  public suspend fun GetFeature(request: Point): Feature
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
 
     //language=kotlin
     val blockingInterface = """
@@ -1156,7 +1199,8 @@ class KotlinGeneratorTest {
           |  )
           |  public fun GetFeature(request: Point): Feature
           |}
-          |""".trimMargin()
+          |
+    """.trimMargin()
 
     val schema = buildSchema {
       add(
@@ -1173,7 +1217,8 @@ class KotlinGeneratorTest {
           |}
           |$pointMessage
           |$featureMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
 
@@ -1184,7 +1229,7 @@ class KotlinGeneratorTest {
         rpcRole = RpcRole.SERVER,
         rpcCallStyle = RpcCallStyle.SUSPENDING,
         nameSuffix = "",
-      )
+      ),
     )
 
     assertEquals(
@@ -1194,7 +1239,7 @@ class KotlinGeneratorTest {
         rpcRole = RpcRole.SERVER,
         rpcCallStyle = RpcCallStyle.BLOCKING,
         nameSuffix = "Thing",
-      )
+      ),
     )
   }
 
@@ -1205,7 +1250,8 @@ class KotlinGeneratorTest {
         """
         |message Message {
         |  required float tag = 1;
-        |}""".trimMargin()
+        |}
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
@@ -1222,7 +1268,8 @@ class KotlinGeneratorTest {
         """
         |message Message {
         |  required float var  = 1;
-        |}""".trimMargin()
+        |}
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
@@ -1241,7 +1288,8 @@ class KotlinGeneratorTest {
         |}
         |message Person {
         |  optional Gender Gender = 1;
-        |}""".trimMargin()
+        |}
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.Person")
@@ -1268,7 +1316,8 @@ class KotlinGeneratorTest {
         |  }
         |  repeated B b = 1;
         |  optional AnotherStatus Status = 2;
-        |}""".trimMargin()
+        |}
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.A")
@@ -1284,7 +1333,8 @@ class KotlinGeneratorTest {
         |import "google/protobuf/any.proto";
         |message Message {
         |  optional google.protobuf.Any just_one = 1;
-        |}""".trimMargin()
+        |}
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.Message")
@@ -1310,7 +1360,8 @@ class KotlinGeneratorTest {
         |		optional PhoneType type = 2 [default = HOME];
         |	}
         |	repeated PhoneNumber phone = 4;
-        |}""".trimMargin()
+        |}
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Person").replace("\n", "")
@@ -1320,7 +1371,7 @@ class KotlinGeneratorTest {
     assertThat(code).contains("PhoneNumber::class")
     assertThat(code).contains("override fun encode(writer: ProtoWriter, `value`: Person)")
     assertTrue(
-      code.contains("enum class PhoneType(    override val `value`: Int,  ) : WireEnum")
+      code.contains("enum class PhoneType(    override val `value`: Int,  ) : WireEnum"),
     )
     assertThat(code).contains("fun fromValue(`value`: Int): PhoneType?")
     assertThat(code).contains("WORK(1),")
@@ -1346,7 +1397,8 @@ class KotlinGeneratorTest {
         |		WORK = 1;
         |		MOBILE = 2;
         |	}
-        |}""".trimMargin()
+        |}
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Person")
@@ -1382,7 +1434,8 @@ class KotlinGeneratorTest {
         """
         |message $longType {
         |  required string $longMember = 1;
-        |}""".trimMargin()
+        |}
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin(longType)
@@ -1390,7 +1443,7 @@ class KotlinGeneratorTest {
           |        ($longMember
           |        !=
           |        other.$longMember)
-          """.trimMargin()
+    """.trimMargin()
 
     assertThat(code).contains("return false")
     assertThat(code).contains("return $longType(")
@@ -1424,7 +1477,8 @@ class KotlinGeneratorTest {
         |  }
         |  message Baz {}
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.LabelMessage")
@@ -1451,7 +1505,8 @@ class KotlinGeneratorTest {
         |message Person {
         |	required string name = 1;
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
@@ -1472,7 +1527,8 @@ class KotlinGeneratorTest {
         |message Person {
         |	required string name = 1;
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
@@ -1493,7 +1549,8 @@ class KotlinGeneratorTest {
         |message Person {
         |	required string name = 1;
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
       add(
         "city_package/home.proto".toPath(),
@@ -1504,7 +1561,8 @@ class KotlinGeneratorTest {
         |message Home {
         |	repeated proto_package.Person person = 1;
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("city_package.Home")
@@ -1523,7 +1581,8 @@ class KotlinGeneratorTest {
         |message Person {
         |	repeated float info = 1 [packed = true, wire.use_array = true];
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
@@ -1549,7 +1608,7 @@ class KotlinGeneratorTest {
         |  // g [h.i.j] k
         |  CONSTANT = 0;
         |}
-      """.trimMargin()
+        """.trimMargin(),
       )
     }
     val messageCode = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
@@ -1578,7 +1637,8 @@ class KotlinGeneratorTest {
         |   */
         |  public fun GetFeature(): GrpcCall<String, Properties>
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     val expectedImplementation = """
         |package routeguide
         |
@@ -1605,7 +1665,8 @@ class KotlinGeneratorTest {
         |      responseAdapter = PropertiesFeatureAdapter.ADAPTER
         |  ))
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
 
     val schema = buildSchema {
       add(
@@ -1620,7 +1681,8 @@ class KotlinGeneratorTest {
           |}
           |$pointMessage
           |$featureMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
     assertEquals(
@@ -1639,9 +1701,10 @@ class KotlinGeneratorTest {
           |type routeguide.Feature {
           |  target java.util.Properties using com.example.PropertiesFeatureAdapter#ADAPTER;
           |}
-          |""".trimMargin()
+          |
+          """.trimMargin(),
         )
-        .generateGrpcKotlin("routeguide.RouteGuide", profileName = "java")
+        .generateGrpcKotlin("routeguide.RouteGuide", profileName = "java"),
     )
   }
 
@@ -1654,7 +1717,8 @@ class KotlinGeneratorTest {
           |
           |$pointMessage
           |$featureMessage
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
     }
 
@@ -1668,7 +1732,8 @@ class KotlinGeneratorTest {
           |type routeguide.Point {
           |  target kotlin.String using com.example.StringPointAdapter#INSTANCE;
           |}
-          |""".trimMargin()
+          |
+        """.trimMargin(),
       )
       .generateKotlin("routeguide.Feature", profileName = "java")
     assertThat(kotlin).contains(
@@ -1679,7 +1744,7 @@ class KotlinGeneratorTest {
         |    schemaIndex = 1,
         |  )
         |  public val location: String? = null,
-        """.trimMargin()
+      """.trimMargin(),
     )
     assertThat(kotlin).contains(
       """
@@ -1689,7 +1754,7 @@ class KotlinGeneratorTest {
         |        size += StringPointAdapter.INSTANCE.encodedSizeWithTag(2, value.location)
         |        return size
         |      }
-        """.trimMargin()
+      """.trimMargin(),
     )
     assertThat(kotlin).contains(
       """
@@ -1698,7 +1763,7 @@ class KotlinGeneratorTest {
         |        StringPointAdapter.INSTANCE.encodeWithTag(writer, 2, value.location)
         |        writer.writeBytes(value.unknownFields)
         |      }
-        """.trimMargin()
+      """.trimMargin(),
     )
     assertThat(kotlin).contains(
       """
@@ -1718,7 +1783,8 @@ class KotlinGeneratorTest {
         |          unknownFields = unknownFields
         |        )
         |      }
-        |""".trimMargin()
+        |
+      """.trimMargin(),
     )
   }
 
@@ -1735,14 +1801,15 @@ class KotlinGeneratorTest {
          |  SOUTH = 3;
          |  WEST = 4;
          |}
-         |""".trimMargin()
+         |
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Direction")
     assertThat(code).contains(
       """|@Deprecated(message = "Direction is deprecated")
          |public enum class Direction(
-         """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -1758,18 +1825,19 @@ class KotlinGeneratorTest {
         |  SOUTH = 3;
         |  WEST = 4;
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Direction")
     assertThat(code).contains(
       """|  @Deprecated(message = "EAST is deprecated")
          |  EAST(2),
-         """.trimMargin()
+      """.trimMargin(),
     )
     assertThat(code).contains(
       """|  2 -> @Suppress("DEPRECATION") EAST
-         """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -1782,7 +1850,8 @@ class KotlinGeneratorTest {
         |message Person {
         |  optional string name = 1 [deprecated = true];
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
@@ -1794,7 +1863,7 @@ class KotlinGeneratorTest {
          |    schemaIndex = 0,
          |  )
          |  public val name: String? = null,
-         """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -1808,14 +1877,15 @@ class KotlinGeneratorTest {
         |  option deprecated = true;
         |  optional string name = 1;
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
     assertThat(code).contains(
       """|@Deprecated(message = "Person is deprecated")
          |public class Person(
-         """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -1838,7 +1908,8 @@ class KotlinGeneratorTest {
         |}
         |
         |message SecretData {}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
       addFromTest("option_redacted.proto".toPath())
     }
@@ -1858,7 +1929,7 @@ class KotlinGeneratorTest {
       |        secret_data = null,
       |        unknownFields = ByteString.EMPTY
       |      )
-    """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -1877,7 +1948,8 @@ class KotlinGeneratorTest {
         |    optional string d = 8;
         |  }
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema)
@@ -1898,24 +1970,25 @@ class KotlinGeneratorTest {
         |message SomeMessage {
         |  optional string a = 1;
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
     assertThat(
       KotlinWithProfilesGenerator(schema)
-        .generateKotlin("SomeMessage", javaInterop = false)
+        .generateKotlin("SomeMessage", javaInterop = false),
     )
       .contains("Builders are deprecated and only available in a javaInterop build")
     assertThat(
       KotlinWithProfilesGenerator(schema)
-        .generateKotlin("SomeMessage", javaInterop = true)
+        .generateKotlin("SomeMessage", javaInterop = true),
     )
       .doesNotContain("Builders are deprecated and only available in a javaInterop build")
     // If `buildersOnly` is set to true, it takes precedence over `javaInterop` for it would
     // otherwise create non-instantiable types.
     assertThat(
       KotlinWithProfilesGenerator(schema)
-        .generateKotlin("SomeMessage", javaInterop = false, buildersOnly = true)
+        .generateKotlin("SomeMessage", javaInterop = false, buildersOnly = true),
     )
       .doesNotContain("Builders are deprecated and only available in a javaInterop build")
   }
@@ -1949,7 +2022,8 @@ class KotlinGeneratorTest {
         |}
         |
         |message SecretData {}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("SomeMessage", boxOneOfsMinSize = 3)
@@ -2015,7 +2089,7 @@ class KotlinGeneratorTest {
       |  )
       |  public val k: String? = null,
       |  unknownFields: ByteString = ByteString.EMPTY,
-      """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -2042,7 +2116,7 @@ class KotlinGeneratorTest {
         |message OtherText {
         |  string otherValue = 1;
         |}
-        """.trimMargin()
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("SomeText")
@@ -2068,7 +2142,7 @@ class KotlinGeneratorTest {
         |  ordinal = 2;
         |  open = 3;
         |}
-        """.trimMargin()
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("ConflictingEnumConstants")
@@ -2085,7 +2159,7 @@ class KotlinGeneratorTest {
        |  @WireEnumConstant(declaredName = "open")
        |  open_(3),
        |  ;
-       """.trimMargin()
+      """.trimMargin(),
     )
     assertThat(code).contains(
       """
@@ -2096,7 +2170,7 @@ class KotlinGeneratorTest {
        |      3 -> open_
        |      else -> null
        |    }
-       """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -2107,7 +2181,8 @@ class KotlinGeneratorTest {
         """
         |message Embedding {
         |	repeated float values = 1 [packed = true];
-        |}""".trimMargin()
+        |}
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Embedding")
@@ -2133,7 +2208,8 @@ class KotlinGeneratorTest {
         |message Person {
         |	required string name = 1;
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
       add(
         "employer_proto_package/employer.proto".toPath(),
@@ -2144,7 +2220,8 @@ class KotlinGeneratorTest {
         |message Employer {
         |	repeated person_proto_package.Person employees = 1;
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema)
@@ -2157,25 +2234,29 @@ class KotlinGeneratorTest {
           |message Point {
           |  optional int32 latitude = 1;
           |  optional int32 longitude = 2;
-          |}""".trimMargin()
+          |}
+    """.trimMargin()
 
     private val rectangeMessage = """
           |message Rectangle {
           |  optional Point lo = 1;
           |  optional Point hi = 2;
-          |}""".trimMargin()
+          |}
+    """.trimMargin()
 
     private val featureMessage = """
           |message Feature {
           |  optional string name = 1;
           |  optional Point location = 2;
-          |}""".trimMargin()
+          |}
+    """.trimMargin()
 
     private val routeNoteMessage = """
           |message RouteNote {
           |  optional Point location = 1;
           |  optional string message = 2;
-          |}""".trimMargin()
+          |}
+    """.trimMargin()
 
     private val routeSummaryMessage = """
           |message RouteSummary {
@@ -2183,6 +2264,7 @@ class KotlinGeneratorTest {
           |  optional int32 feature_count = 2;
           |  optional int32 distance = 3;
           |  optional int32 elapsed_time = 4;
-          |}""".trimMargin()
+          |}
+    """.trimMargin()
   }
 }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,8 @@ import com.squareup.wire.schema.EventListener
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
+import java.io.File
+import javax.inject.Inject
 import okio.FileSystem
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
@@ -40,8 +42,6 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
-import java.io.File
-import javax.inject.Inject
 
 @CacheableTask
 abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask() {

@@ -1,11 +1,11 @@
 /*
- * Copyright 2021 Square Inc.
+ * Copyright (C) 2021 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,42 +46,42 @@ class SchemaEncoderInteropTest {
   @Test fun `proto2 interop_test`() {
     checkFileSchemasMatch(
       wireProtoFile = schema.protoFile("squareup/proto2/kotlin/interop/interop_test.proto")!!,
-      protocProtoFile = InteropTestP2.getDescriptor().toProto()
+      protocProtoFile = InteropTestP2.getDescriptor().toProto(),
     )
   }
 
   @Test fun `proto3 interop_types`() {
     checkFileSchemasMatch(
       wireProtoFile = schema.protoFile("squareup/proto3/kotlin/interop/type/interop_types.proto")!!,
-      protocProtoFile = InteropTypesP2.getDescriptor().toProto()
+      protocProtoFile = InteropTypesP2.getDescriptor().toProto(),
     )
   }
 
   @Test fun `proto2 interop_service`() {
     checkFileSchemasMatch(
       wireProtoFile = schema.protoFile("squareup/proto2/kotlin/interop/interop_service.proto")!!,
-      protocProtoFile = InteropServiceOuterClassP2.getDescriptor().toProto()
+      protocProtoFile = InteropServiceOuterClassP2.getDescriptor().toProto(),
     )
   }
 
   @Test fun `proto2 all_types`() {
     checkFileSchemasMatch(
       wireProtoFile = schema.protoFile("squareup/proto2/kotlin/alltypes/all_types.proto")!!,
-      protocProtoFile = AllTypesOuterClassP2.getDescriptor().toProto()
+      protocProtoFile = AllTypesOuterClassP2.getDescriptor().toProto(),
     )
   }
 
   @Test fun `proto3 all_types`() {
     checkFileSchemasMatch(
       wireProtoFile = schema.protoFile("squareup/proto3/kotlin/alltypes/all_types_test_proto3_optional.proto")!!,
-      protocProtoFile = AllTypesOuterClassP3.getDescriptor().toProto()
+      protocProtoFile = AllTypesOuterClassP3.getDescriptor().toProto(),
     )
   }
 
   @Test fun `proto2 all_options`() {
     checkFileSchemaOptionsMatch(
       wireProtoFile = schema.protoFile("squareup/proto2/kotlin/alloptions/all_options.proto")!!,
-      protocProtoFile = AllOptionsP2.getDescriptor().toProto()
+      protocProtoFile = AllOptionsP2.getDescriptor().toProto(),
     )
   }
 
@@ -91,7 +91,7 @@ class SchemaEncoderInteropTest {
    */
   private fun checkFileSchemasMatch(
     wireProtoFile: ProtoFile,
-    protocProtoFile: FileDescriptorProto
+    protocProtoFile: FileDescriptorProto,
   ) {
     val wireBytes = SchemaEncoder(schema).encode(wireProtoFile)
     val wireDescriptor = FileDescriptorProto.parseFrom(wireBytes.toByteArray(), extensionRegistry)
@@ -107,7 +107,7 @@ class SchemaEncoderInteropTest {
    */
   private fun checkFileSchemaOptionsMatch(
     wireProtoFile: ProtoFile,
-    protocProtoFile: FileDescriptorProto
+    protocProtoFile: FileDescriptorProto,
   ) {
     val wireBytes = SchemaEncoder(schema).encode(wireProtoFile)
     val wireDescriptor = FileDescriptorProto.parseFrom(wireBytes.toByteArray(), extensionRegistry)

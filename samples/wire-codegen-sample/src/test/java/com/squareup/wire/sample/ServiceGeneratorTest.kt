@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,21 +21,22 @@ import com.squareup.wire.java.JavaGenerator
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.SchemaLoader
+import java.io.File
+import java.io.IOException
+import java.nio.file.FileSystems
 import okio.buffer
 import okio.sink
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import java.io.File
-import java.io.IOException
-import java.nio.file.FileSystems
 
 class ServiceGeneratorTest {
   @get:Rule
   var temporaryFolder = TemporaryFolder()
 
-  @Test @Throws(IOException::class)
+  @Test
+  @Throws(IOException::class)
   fun service() {
     val schema = schema(
       mapOf(
@@ -62,8 +63,9 @@ class ServiceGeneratorTest {
               |  rpc FirstRpc (SampleRequest) returns (SampleResponse);
               |  rpc OtherOne (SampleRequest) returns (SampleResponse);
               |}
-              |""".trimMargin()
-      )
+              |
+        """.trimMargin(),
+      ),
     )
     val service = schema.getService("squareup.wire.sample.SampleApi")
     val javaGenerator = JavaGenerator.get(schema)
@@ -85,7 +87,8 @@ class ServiceGeneratorTest {
               |
               |  SampleResponse OtherOne(SampleRequest request);
               |}
-              |""".trimMargin()
+              |
+        """.trimMargin(),
       )
   }
 

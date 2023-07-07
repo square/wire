@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 Square Inc.
+ * Copyright (C) 2018 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.squareup.wire;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -31,8 +33,6 @@ import squareup.proto2.keywords.KeywordJava.KeywordJavaEnum;
 import squareup.proto2.keywords.KeywordKotlin;
 import squareup.proto2.keywords.KeywordKotlin.KeywordKotlinEnum;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class MoshiTest {
   private static final String ALL_TYPES_IDENTITY_JSON;
 
@@ -40,10 +40,11 @@ public class MoshiTest {
     try {
       ALL_TYPES_IDENTITY_JSON =
           Okio.buffer(
-              Okio.source(
-                  new File("../wire-tests/src/commonTest/shared/json",
-                      "all_types_identity_proto2.json"))
-          ).readUtf8();
+                  Okio.source(
+                      new File(
+                          "../wire-tests/src/commonTest/shared/json",
+                          "all_types_identity_proto2.json")))
+              .readUtf8();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -87,12 +88,11 @@ public class MoshiTest {
         .req_nested_message(new AllTypes.NestedMessage.Builder().a(0).build());
   }
 
-  private final Moshi moshi = new Moshi.Builder()
-      .add(new WireJsonAdapterFactory())
-      .build();
+  private final Moshi moshi = new Moshi.Builder().add(new WireJsonAdapterFactory()).build();
 
   @SuppressWarnings("ConstantConditions")
-  @Test public void notIdentityOneOf() throws IOException {
+  @Test
+  public void notIdentityOneOf() throws IOException {
     JsonAdapter<AllTypes> allTypesAdapter = moshi.adapter(AllTypes.class);
 
     AllTypes allTypes = createIdentityBuilder().oneof_int32(0).build();
@@ -100,39 +100,43 @@ public class MoshiTest {
 
     AllTypes parsed = allTypesAdapter.fromJson(ALL_TYPES_IDENTITY_JSON);
     assertThat(parsed.oneof_int32).isNull();
-    String json = ALL_TYPES_IDENTITY_JSON
-        .substring(0, ALL_TYPES_IDENTITY_JSON.length() - 2) + ",\"oneof_int32\":0}";
+    String json =
+        ALL_TYPES_IDENTITY_JSON.substring(0, ALL_TYPES_IDENTITY_JSON.length() - 2)
+            + ",\"oneof_int32\":0}";
     parsed = allTypesAdapter.fromJson(json);
     assertThat(parsed.oneof_int32).isEqualTo(0);
   }
 
   @SuppressWarnings("ConstantConditions")
-  @Test public void nullRepeatedField() throws IOException {
-    RepeatedPackedAndMap parsed = moshi.adapter(RepeatedPackedAndMap.class)
-        .fromJson("{\"rep_int32\":null,\"pack_int32\":null,\"map_int32_int32\":null}");
+  @Test
+  public void nullRepeatedField() throws IOException {
+    RepeatedPackedAndMap parsed =
+        moshi
+            .adapter(RepeatedPackedAndMap.class)
+            .fromJson("{\"rep_int32\":null,\"pack_int32\":null,\"map_int32_int32\":null}");
     assertThat(parsed.rep_int32).isEmpty();
     assertThat(parsed.pack_int32).isEmpty();
     assertThat(parsed.map_int32_int32).isEmpty();
   }
 
-  @Test public void usedKeywordsInKotlin() throws IOException {
+  @Test
+  public void usedKeywordsInKotlin() throws IOException {
     JsonAdapter<KeywordKotlin> adapter = moshi.adapter(KeywordKotlin.class);
 
-    KeywordKotlin keyword = new KeywordKotlin.Builder()
-        .object_("object")
-        .when_(1)
-        .enums(
-            Arrays.asList(
-                KeywordKotlinEnum.object_,
-                KeywordKotlinEnum.when_,
-                KeywordKotlinEnum.fun_,
-                KeywordKotlinEnum.return_,
-                KeywordKotlinEnum.open_,
-                KeywordKotlinEnum.name_,
-                KeywordKotlinEnum.ordinal_
-            )
-        )
-        .build();
+    KeywordKotlin keyword =
+        new KeywordKotlin.Builder()
+            .object_("object")
+            .when_(1)
+            .enums(
+                Arrays.asList(
+                    KeywordKotlinEnum.object_,
+                    KeywordKotlinEnum.when_,
+                    KeywordKotlinEnum.fun_,
+                    KeywordKotlinEnum.return_,
+                    KeywordKotlinEnum.open_,
+                    KeywordKotlinEnum.name_,
+                    KeywordKotlinEnum.ordinal_))
+            .build();
     String json = adapter.toJson(keyword);
     JsonUtils.assertJsonEquals(
         "{\"object\":\"object\",\"when\":1, \"fun\":{}, \"return\":[], \"enums\":[\"object\", "
@@ -140,27 +144,28 @@ public class MoshiTest {
         json);
     assertThat(adapter.fromJson(json)).isEqualTo(keyword);
 
-    String generatedNamedJson = "{\"object_\":\"object\",\"when_\":1, \"fun_\":{}, \"return_\":[], "
-        + "\"enums\":[\"object_\", \"when_\", \"fun_\", \"return_\", \"open_\", \"name_\", "
-        + "\"ordinal_\"]}";
+    String generatedNamedJson =
+        "{\"object_\":\"object\",\"when_\":1, \"fun_\":{}, \"return_\":[], "
+            + "\"enums\":[\"object_\", \"when_\", \"fun_\", \"return_\", \"open_\", \"name_\", "
+            + "\"ordinal_\"]}";
     assertThat(adapter.fromJson(generatedNamedJson)).isEqualTo(keyword);
   }
 
-  @Test public void usedKeywordsInJava() throws IOException {
+  @Test
+  public void usedKeywordsInJava() throws IOException {
     JsonAdapter<KeywordJava> adapter = moshi.adapter(KeywordJava.class);
 
-    KeywordJava keyword = new KeywordJava.Builder()
-        .public_(true)
-        .final_("final")
-        .enums(
-            Arrays.asList(
-                KeywordJavaEnum.final_,
-                KeywordJavaEnum.public_,
-                KeywordJavaEnum.package_,
-                KeywordJavaEnum.return_
-            )
-        )
-        .build();
+    KeywordJava keyword =
+        new KeywordJava.Builder()
+            .public_(true)
+            .final_("final")
+            .enums(
+                Arrays.asList(
+                    KeywordJavaEnum.final_,
+                    KeywordJavaEnum.public_,
+                    KeywordJavaEnum.package_,
+                    KeywordJavaEnum.return_))
+            .build();
     String json = adapter.toJson(keyword);
     JsonUtils.assertJsonEquals(
         "{\"final\":\"final\", \"public\":true, \"package\":{}, \"return\":[], "
@@ -168,12 +173,14 @@ public class MoshiTest {
         json);
     assertThat(adapter.fromJson(json)).isEqualTo(keyword);
 
-    String generatedNamedJson = "{\"final_\":\"final\", \"public_\":true, \"package_\":{}, "
-        + "\"return_\":[], \"enums\":[\"final_\", \"public_\", \"package_\", \"return_\"]}";
+    String generatedNamedJson =
+        "{\"final_\":\"final\", \"public_\":true, \"package_\":{}, "
+            + "\"return_\":[], \"enums\":[\"final_\", \"public_\", \"package_\", \"return_\"]}";
     assertThat(adapter.fromJson(generatedNamedJson)).isEqualTo(keyword);
   }
 
-  @Test public void enumKeywordsAtRootInKotlin() throws IOException {
+  @Test
+  public void enumKeywordsAtRootInKotlin() throws IOException {
     JsonAdapter<KeywordKotlinEnum> adapter = moshi.adapter(KeywordKotlinEnum.class);
 
     KeywordKotlinEnum constant = KeywordKotlinEnum.object_;
@@ -185,7 +192,8 @@ public class MoshiTest {
     assertThat(adapter.fromJson(generatedNamedJson)).isEqualTo(constant);
   }
 
-  @Test public void enumKeywordsAtRootInJava() throws IOException {
+  @Test
+  public void enumKeywordsAtRootInJava() throws IOException {
     JsonAdapter<KeywordJavaEnum> adapter = moshi.adapter(KeywordJavaEnum.class);
 
     KeywordJavaEnum constant = KeywordJavaEnum.final_;

@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
 
 package com.squareup.wire
 
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -28,7 +29,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okio.IOException
 import okio.Timeout
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Returns a new instance of [GrpcCall] that can be used for a single call to
@@ -70,7 +70,7 @@ fun <S : Any, R : Any> GrpcCall(function: (S) -> R): GrpcCall<S, R> {
       get() = GrpcMethod(
         path = "/wire/AnonymousEndpoint",
         requestAdapter = ProtoAdapter.BYTES,
-        responseAdapter = ProtoAdapter.BYTES
+        responseAdapter = ProtoAdapter.BYTES,
       ) as GrpcMethod<S, R>
 
     override val timeout: Timeout = Timeout.NONE
@@ -145,7 +145,7 @@ fun <S : Any, R : Any> GrpcCall(function: (S) -> R): GrpcCall<S, R> {
  */
 @JvmName("grpcStreamingCall")
 fun <S : Any, R : Any> GrpcStreamingCall(
-  function: suspend (ReceiveChannel<S>, SendChannel<R>) -> Unit
+  function: suspend (ReceiveChannel<S>, SendChannel<R>) -> Unit,
 ): GrpcStreamingCall<S, R> {
   return object : GrpcStreamingCall<S, R> {
     @Suppress("UNCHECKED_CAST")
@@ -153,7 +153,7 @@ fun <S : Any, R : Any> GrpcStreamingCall(
       get() = GrpcMethod(
         path = "/wire/AnonymousEndpoint",
         requestAdapter = ProtoAdapter.BYTES,
-        responseAdapter = ProtoAdapter.BYTES
+        responseAdapter = ProtoAdapter.BYTES,
       ) as GrpcMethod<S, R>
 
     private var canceled = AtomicBoolean()

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 package com.squareup.wire.benchmarks;
+
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
+import static org.openjdk.jmh.annotations.Mode.SampleTime;
 
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.ReverseProtoWriter;
@@ -36,9 +39,6 @@ import org.openjdk.jmh.annotations.Warmup;
 import squareup.wire.benchmarks.EmailSearchResponse;
 import squareup.wire.benchmarks.EmailSearchResponseProto;
 
-import static java.util.concurrent.TimeUnit.MICROSECONDS;
-import static org.openjdk.jmh.annotations.Mode.SampleTime;
-
 @Fork(1)
 @Warmup(iterations = 5, time = 2)
 @Measurement(iterations = 5, time = 2)
@@ -49,45 +49,49 @@ public class SimpleMessageBenchmark {
   Buffer buffer = new Buffer();
   byte[] bytes;
 
-  @Setup public void setup() throws IOException {
+  @Setup
+  public void setup() throws IOException {
     // `medium_value.bytes` contains bytes for the message
     // [squareup.wire.benchmarks.EmailSearchResponse].
     File file = new File("src/main/resources/medium_value.bytes");
     try (Source fileSource = Okio.source(file);
-         BufferedSource bufferedFileSource = Okio.buffer(fileSource)) {
+        BufferedSource bufferedFileSource = Okio.buffer(fileSource)) {
       bytes = bufferedFileSource.readByteArray();
     }
   }
 
-  @Benchmark public void encodeWire3x() throws IOException {
+  @Benchmark
+  public void encodeWire3x() throws IOException {
     ProtoWriter writer = new ProtoWriter(buffer);
     EmailSearchResponse.ADAPTER.encode(writer, SampleData.newMediumValueWire());
     buffer.clear();
   }
 
-  @Benchmark public void encodeWire4x() throws IOException {
+  @Benchmark
+  public void encodeWire4x() throws IOException {
     ReverseProtoWriter writer = new ReverseProtoWriter();
     EmailSearchResponse.ADAPTER.encode(writer, SampleData.newMediumValueWire());
     writer.writeTo(buffer);
     buffer.clear();
   }
 
-  @Benchmark public void encodeProtobuf() throws IOException {
+  @Benchmark
+  public void encodeProtobuf() throws IOException {
     SampleData.newMediumValueProtobuf().writeTo(buffer.outputStream());
     buffer.clear();
   }
 
-  @Benchmark public void decodeWire() throws IOException {
+  @Benchmark
+  public void decodeWire() throws IOException {
     EmailSearchResponse.ADAPTER.decode(bytes);
   }
 
-  @Benchmark public void decodeProtobuf() throws IOException {
+  @Benchmark
+  public void decodeProtobuf() throws IOException {
     EmailSearchResponseProto.EmailSearchResponse.parseFrom(bytes);
   }
 
-  /**
-   * Run encode for 10 seconds to capture a profile.
-   */
+  /** Run encode for 10 seconds to capture a profile. */
   public static void main(String[] args) throws IOException {
     long now = System.nanoTime();
     long done = now + TimeUnit.SECONDS.toNanos(10L);

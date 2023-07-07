@@ -1,11 +1,11 @@
 /*
- * Copyright 2022 Block Inc.
+ * Copyright (C) 2022 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,11 +20,11 @@ import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.ErrorCollector
 import com.squareup.wire.schema.SchemaException
 import com.squareup.wire.schema.SchemaHandler
+import kotlin.test.assertFailsWith
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import kotlin.test.assertFailsWith
 
 class ErrorReportingSchemaHandlerTest {
   @Test fun errorsWhenStartsWithA() {
@@ -38,7 +38,7 @@ class ErrorReportingSchemaHandlerTest {
         |  optional string acrobatic = 1;
         |  optional string biofidus = 2;
         |}
-        """.trimMargin()
+        """.trimMargin(),
       )
       add(
         name = "b.proto".toPath(),
@@ -49,7 +49,7 @@ class ErrorReportingSchemaHandlerTest {
         |  optional string comment = 1;
         |  optional string dinosaur = 2;
         |}
-        """.trimMargin()
+        """.trimMargin(),
       )
     }
 

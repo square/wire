@@ -1,11 +1,11 @@
 /*
- * Copyright 2022 Block Inc.
+ * Copyright (C) 2022 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,11 +18,11 @@ package com.squareup.wire.recipes
 import com.squareup.wire.WireTestLogger
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.SchemaHandler
+import kotlin.test.assertEquals
 import okio.BufferedSource
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import org.junit.Test
-import kotlin.test.assertEquals
 
 class LogToFileHandlerTest {
   @Test fun loggingTypes() {
@@ -38,7 +38,7 @@ class LogToFileHandlerTest {
             |message Response {
             |  optional string result = 1;
             |}
-          """.trimMargin()
+        """.trimMargin(),
       )
       add(
         name = "test/service.proto".toPath(),
@@ -52,7 +52,7 @@ class LogToFileHandlerTest {
             |service MyService {
             |  rpc fetch(test.Request) returns(test.Response) {};
             |}
-          """.trimMargin()
+        """.trimMargin(),
       )
     }
 
@@ -69,7 +69,8 @@ class LogToFileHandlerTest {
         |Generating type: test.Request
         |Generating type: test.Response
         |Generating service: test.MyService
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertEquals(expected, content)
   }
 }

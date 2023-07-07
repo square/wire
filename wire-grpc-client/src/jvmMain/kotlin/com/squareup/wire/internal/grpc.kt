@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,8 @@ import com.squareup.wire.GrpcResponse
 import com.squareup.wire.GrpcStatus
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.use
+import java.io.Closeable
+import java.util.Base64
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
@@ -33,8 +35,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okio.BufferedSink
 import okio.IOException
-import java.io.Closeable
-import java.util.Base64
 
 internal val APPLICATION_GRPC_MEDIA_TYPE: MediaType = "application/grpc".toMediaType()
 
@@ -42,7 +42,7 @@ internal val APPLICATION_GRPC_MEDIA_TYPE: MediaType = "application/grpc".toMedia
 internal fun <S : Any> newRequestBody(
   minMessageToCompress: Long,
   requestAdapter: ProtoAdapter<S>,
-  onlyMessage: S
+  onlyMessage: S,
 ): RequestBody {
   return object : RequestBody() {
     override fun contentType() = APPLICATION_GRPC_MEDIA_TYPE
@@ -74,7 +74,7 @@ internal fun newDuplexRequestBody(): PipeDuplexRequestBody {
 internal fun <S : Any> PipeDuplexRequestBody.messageSink(
   minMessageToCompress: Long,
   requestAdapter: ProtoAdapter<S>,
-  callForCancel: Call
+  callForCancel: Call,
 ) = GrpcMessageSink(
   sink = createSink(),
   minMessageToCompress = minMessageToCompress,
@@ -86,7 +86,7 @@ internal fun <S : Any> PipeDuplexRequestBody.messageSink(
 /** Sends the response messages to the channel. */
 internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
   grpcCall: RealGrpcStreamingCall<*, R>,
-  responseAdapter: ProtoAdapter<R>
+  responseAdapter: ProtoAdapter<R>,
 ): Callback {
   return object : Callback {
     override fun onFailure(call: Call, e: IOException) {
@@ -141,7 +141,7 @@ internal suspend fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
   requestBody: PipeDuplexRequestBody,
   minMessageToCompress: Long,
   requestAdapter: ProtoAdapter<S>,
-  callForCancel: Call
+  callForCancel: Call,
 ) {
   val requestWriter = requestBody.messageSink(minMessageToCompress, requestAdapter, callForCancel)
   try {
@@ -168,7 +168,7 @@ internal suspend fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
 
 /** Reads messages from the response body. */
 internal fun <R : Any> GrpcResponse.messageSource(
-  protoAdapter: ProtoAdapter<R>
+  protoAdapter: ProtoAdapter<R>,
 ): GrpcMessageSource<R> {
   checkGrpcResponse()
   val grpcEncoding = header("grpc-encoding")
@@ -210,7 +210,7 @@ internal fun GrpcResponse.grpcResponseToException(suppressed: IOException? = nul
         throw IOException(
           "gRPC transport failure, invalid grpc-status-details-bin" +
             " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)",
-          e
+          e,
         )
       }
     }
@@ -222,7 +222,7 @@ internal fun GrpcResponse.grpcResponseToException(suppressed: IOException? = nul
     return IOException(
       "gRPC transport failure" +
         " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)",
-      transportException
+      transportException,
     )
   }
 

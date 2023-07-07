@@ -1,3 +1,4 @@
+import com.diffplug.gradle.spotless.SpotlessExtension
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
@@ -16,6 +17,21 @@ if (project.rootProject.name == "wire") {
     configure(
       KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
     )
+  }
+
+  configure<SpotlessExtension> {
+    kotlin {
+      targetExclude(
+        // Generated files.
+        "src/test/java/**/*.kt",
+      )
+    }
+    java {
+      targetExclude(
+        // Generated files.
+        "src/test/java/**/*.java",
+      )
+    }
   }
 }
 

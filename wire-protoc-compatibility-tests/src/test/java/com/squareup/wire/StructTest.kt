@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,9 +21,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.entry
 import org.junit.Assert.fail
 import org.junit.Test
-import squareup.proto3.kotlin.alltypes.AllStructsOuterClass
 import squareup.proto3.java.alltypes.AllStructs as AllStructsJ
 import squareup.proto3.kotlin.alltypes.AllStructs as AllStructsK
+import squareup.proto3.kotlin.alltypes.AllStructsOuterClass
 
 class StructTest {
   @Test fun nullValue() {
@@ -52,7 +52,7 @@ class StructTest {
       -0.0,
       0.0,
       Double.POSITIVE_INFINITY,
-      Double.NaN
+      Double.NaN,
     ).toListValue()
 
     val wireMessage = listOf(
@@ -60,7 +60,7 @@ class StructTest {
       -0.0,
       0.0,
       Double.POSITIVE_INFINITY,
-      Double.NaN
+      Double.NaN,
     )
 
     val googleMessageBytes = googleMessage.toByteArray()
@@ -135,7 +135,7 @@ class StructTest {
       "c" to true,
       "d" to "cash",
       "e" to listOf("g", "h"),
-      "f" to mapOf("i" to "j", "k" to "l")
+      "f" to mapOf("i" to "j", "k" to "l"),
     ).toStruct()
 
     val wireMessage = mapOf(
@@ -144,7 +144,7 @@ class StructTest {
       "c" to true,
       "d" to "cash",
       "e" to listOf("g", "h"),
-      "f" to mapOf("i" to "j", "k" to "l")
+      "f" to mapOf("i" to "j", "k" to "l"),
     )
 
     val googleMessageBytes = googleMessage.toByteArray()
@@ -224,7 +224,7 @@ class StructTest {
       true,
       "cash",
       listOf("a", "b"),
-      mapOf("c" to "d", "e" to "f")
+      mapOf("c" to "d", "e" to "f"),
     ).toListValue()
 
     val wireMessage = listOf(
@@ -233,7 +233,7 @@ class StructTest {
       true,
       "cash",
       listOf("a", "b"),
-      mapOf("c" to "d", "e" to "f")
+      mapOf("c" to "d", "e" to "f"),
     )
 
     val googleMessageBytes = googleMessage.toByteArray()
@@ -296,7 +296,7 @@ class StructTest {
       .build()
     val wireAllStructKotlin = AllStructsK(
       struct = emptyMap<String, Any?>(),
-      list = emptyList<Any?>()
+      list = emptyList<Any?>(),
     )
 
     val protocAllStructBytes = protocAllStruct.toByteArray()
@@ -336,7 +336,7 @@ class StructTest {
       value_b = 33.0,
       value_c = true,
       value_e = mapOf("a" to 1.0),
-      value_f = listOf("a", 3.0)
+      value_f = listOf("a", 3.0),
     )
 
     val protocAllStructBytes = protocAllStruct.toByteArray()
@@ -388,7 +388,7 @@ class StructTest {
       "c" to "j",
       "d" to 5.0,
       "e" to false,
-      "f" to null
+      "f" to null,
     )
 
     val allStructs = AllStructsJ.Builder()
@@ -407,7 +407,7 @@ class StructTest {
       entry("c", "j"),
       entry("d", 5.0),
       entry("e", false),
-      entry("f", null)
+      entry("f", null),
     )
   }
 
@@ -418,7 +418,7 @@ class StructTest {
       "c" to "j",
       "d" to 5.0,
       "e" to false,
-      "f" to null
+      "f" to null,
     )
 
     val allStructs = AllStructsK.Builder()
@@ -437,7 +437,7 @@ class StructTest {
       entry("c", "j"),
       entry("d", 5.0),
       entry("e", false),
-      entry("f", null)
+      entry("f", null),
     )
   }
 
@@ -449,7 +449,7 @@ class StructTest {
     } catch (e: IllegalArgumentException) {
       assertThat(e).hasMessage(
         "struct value struct must be a JSON type " +
-          "(null, Boolean, Double, String, List, or Map) but was class kotlin.Int: 1"
+          "(null, Boolean, Double, String, List, or Map) but was class kotlin.Int: 1",
       )
     }
   }

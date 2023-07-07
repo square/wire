@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,29 +27,17 @@ import com.google.protobuf.Timestamp
 import com.google.protobuf.Value
 import com.google.protobuf.util.JsonFormat
 import com.squareup.wire.json.assertJsonEquals
+import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtension as RequiredExtensionK
+import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtensionMessage as RequiredExtensionMessageK
+import java.io.File
 import okio.ByteString
 import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
-import squareup.proto2.kotlin.interop.type.InteropTypes.MessageProto2
-import squareup.proto3.kotlin.MapTypesOuterClass
-import squareup.proto3.kotlin.alltypes.All32OuterClass
-import squareup.proto3.kotlin.alltypes.All64OuterClass
-import squareup.proto3.kotlin.alltypes.AllTypesOuterClass
-import squareup.proto3.kotlin.alltypes.AllWrappersOuterClass
-import squareup.proto3.kotlin.alltypes.CamelCaseOuterClass
-import squareup.proto3.kotlin.extensions.WireMessageOuterClass
-import squareup.proto3.kotlin.interop.InteropMessageOuterClass
-import squareup.proto3.kotlin.interop.type.InteropTypes.EnumProto3
-import squareup.proto3.kotlin.interop.type.InteropTypes.MessageProto3
-import squareup.proto3.kotlin.pizza.PizzaOuterClass
-import squareup.proto3.wire.extensions.WireMessage
-import java.io.File
-import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtension as RequiredExtensionK
-import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtensionMessage as RequiredExtensionMessageK
 import squareup.proto2.java.interop.type.MessageProto2 as MessageProto2J
+import squareup.proto2.kotlin.interop.type.InteropTypes.MessageProto2
 import squareup.proto2.kotlin.interop.type.MessageProto2 as MessageProto2K
 import squareup.proto3.java.alltypes.AllTypes as AllTypesJ
 import squareup.proto3.java.alltypes.AllWrappers as AllWrappersJ
@@ -57,12 +45,24 @@ import squareup.proto3.java.interop.InteropMessage as InteropMessageJ
 import squareup.proto3.java.interop.type.EnumProto3 as EnumProto3J
 import squareup.proto3.java.interop.type.MessageProto3 as MessageProto3J
 import squareup.proto3.kotlin.MapTypes as MapTypesK
+import squareup.proto3.kotlin.MapTypesOuterClass
+import squareup.proto3.kotlin.alltypes.All32OuterClass
+import squareup.proto3.kotlin.alltypes.All64OuterClass
 import squareup.proto3.kotlin.alltypes.AllTypes as AllTypesK
+import squareup.proto3.kotlin.alltypes.AllTypesOuterClass
 import squareup.proto3.kotlin.alltypes.AllWrappers as AllWrappersK
+import squareup.proto3.kotlin.alltypes.AllWrappersOuterClass
+import squareup.proto3.kotlin.alltypes.CamelCaseOuterClass
+import squareup.proto3.kotlin.extensions.WireMessageOuterClass
 import squareup.proto3.kotlin.interop.InteropMessage as InteropMessageK
+import squareup.proto3.kotlin.interop.InteropMessageOuterClass
 import squareup.proto3.kotlin.interop.type.EnumProto3 as EnumProto3K
+import squareup.proto3.kotlin.interop.type.InteropTypes.EnumProto3
+import squareup.proto3.kotlin.interop.type.InteropTypes.MessageProto3
 import squareup.proto3.kotlin.interop.type.MessageProto3 as MessageProto3K
 import squareup.proto3.kotlin.pizza.PizzaDelivery as PizzaDeliveryK
+import squareup.proto3.kotlin.pizza.PizzaOuterClass
+import squareup.proto3.wire.extensions.WireMessage
 
 class Proto3WireProtocCompatibilityTests {
   // Note: this test mostly make sure we compile required extension without failing.
@@ -88,26 +88,26 @@ class Proto3WireProtocCompatibilityTests {
         Duration.newBuilder()
           .setSeconds(1_799)
           .setNanos(500_000_000)
-          .build()
+          .build(),
       )
       .addPizzas(
         PizzaOuterClass.Pizza.newBuilder()
           .addToppings("pineapple")
           .addToppings("onion")
-          .build()
+          .build(),
       )
       .setPromotion(
         Any.pack(
           PizzaOuterClass.BuyOneGetOnePromotion.newBuilder()
             .setCoupon("MAUI")
-            .build()
-        )
+            .build(),
+        ),
       )
       .setOrderedAt(
         Timestamp.newBuilder()
           .setSeconds(-631152000L) // 1950-01-01T00:00:00.250Z.
           .setNanos(250_000_000)
-          .build()
+          .build(),
       )
       .setLoyalty(emptyMap<String, Any>().toStruct())
       .build()
@@ -120,7 +120,7 @@ class Proto3WireProtocCompatibilityTests {
     // The shared proto schema don't have the same package.
     val json = PIZZA_DELIVERY_JSON.replace(
       "type.googleapis.com/squareup.proto3.BuyOneGetOnePromotion",
-      "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion"
+      "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion",
     )
 
     val jsonPrinter = JsonFormat.printer()
@@ -191,7 +191,7 @@ class Proto3WireProtocCompatibilityTests {
     val jsonPrinter = JsonFormat.printer()
     assertJsonEquals(
       EXPLICIT_IDENTITY_ALL_TYPES_JSON,
-      jsonPrinter.print(explicitIdentityAllTypesProtoc)
+      jsonPrinter.print(explicitIdentityAllTypesProtoc),
     )
   }
 
@@ -305,12 +305,12 @@ class Proto3WireProtocCompatibilityTests {
         Duration.newBuilder()
           .setSeconds(1_799)
           .setNanos(500_000_000)
-          .build()
+          .build(),
       )
       .build()
 
     val wireMessage = PizzaDeliveryK(
-      delivered_within_or_free = durationOfSeconds(1_799L, 500_000_000L)
+      delivered_within_or_free = durationOfSeconds(1_799L, 500_000_000L),
     )
 
     val googleMessageBytes = googleMessage.toByteArray()
@@ -324,12 +324,12 @@ class Proto3WireProtocCompatibilityTests {
         Timestamp.newBuilder()
           .setSeconds(-631152000000L) // 1950-01-01T00:00:00.250Z.
           .setNanos(250_000_000)
-          .build()
+          .build(),
       )
       .build()
 
     val wireMessage = PizzaDeliveryK(
-      ordered_at = ofEpochSecond(-631152000000L, 250_000_000L)
+      ordered_at = ofEpochSecond(-631152000000L, 250_000_000L),
     )
 
     val googleMessageBytes = googleMessage.toByteArray()
@@ -348,16 +348,16 @@ class Proto3WireProtocCompatibilityTests {
               ListValue.newBuilder()
                 .addValues(Value.newBuilder().setStringValue("Benoît").build())
                 .addValues(Value.newBuilder().setStringValue("Jesse").build())
-                .build()
+                .build(),
             )
-              .build()
+              .build(),
           )
-          .build()
+          .build(),
       )
       .build()
 
     val wireMessage = PizzaDeliveryK(
-      loyalty = mapOf("stamps" to 5.0, "members" to listOf("Benoît", "Jesse"))
+      loyalty = mapOf("stamps" to 5.0, "members" to listOf("Benoît", "Jesse")),
     )
 
     val googleMessageBytes = googleMessage.toByteArray()
@@ -470,62 +470,62 @@ class Proto3WireProtocCompatibilityTests {
       .putAllMapInt32Int32(
         mapOf(
           Int.MIN_VALUE to Int.MIN_VALUE + 1,
-          Int.MAX_VALUE to Int.MAX_VALUE - 1
-        )
+          Int.MAX_VALUE to Int.MAX_VALUE - 1,
+        ),
       )
       .putAllMapSint32Sint32(
         mapOf(
           Int.MIN_VALUE to Int.MIN_VALUE + 1,
-          Int.MAX_VALUE to Int.MAX_VALUE - 1
-        )
+          Int.MAX_VALUE to Int.MAX_VALUE - 1,
+        ),
       )
       .putAllMapSfixed32Sfixed32(
         mapOf(
           Int.MIN_VALUE to Int.MIN_VALUE + 1,
-          Int.MAX_VALUE to Int.MAX_VALUE - 1
-        )
+          Int.MAX_VALUE to Int.MAX_VALUE - 1,
+        ),
       )
       .putAllMapFixed32Fixed32(
         mapOf(
           Int.MIN_VALUE to Int.MIN_VALUE + 1,
-          Int.MAX_VALUE to Int.MAX_VALUE - 1
-        )
+          Int.MAX_VALUE to Int.MAX_VALUE - 1,
+        ),
       )
       .putAllMapUint32Uint32(
         mapOf(
           Int.MIN_VALUE to Int.MIN_VALUE + 1,
-          Int.MAX_VALUE to Int.MAX_VALUE - 1
-        )
+          Int.MAX_VALUE to Int.MAX_VALUE - 1,
+        ),
       )
       .putAllMapInt64Int64(
         mapOf(
           Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-          Long.MAX_VALUE to Long.MAX_VALUE - 1L
-        )
+          Long.MAX_VALUE to Long.MAX_VALUE - 1L,
+        ),
       )
       .putAllMapSfixed64Sfixed64(
         mapOf(
           Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-          Long.MAX_VALUE to Long.MAX_VALUE - 1L
-        )
+          Long.MAX_VALUE to Long.MAX_VALUE - 1L,
+        ),
       )
       .putAllMapSint64Sint64(
         mapOf(
           Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-          Long.MAX_VALUE to Long.MAX_VALUE - 1L
-        )
+          Long.MAX_VALUE to Long.MAX_VALUE - 1L,
+        ),
       )
       .putAllMapFixed64Fixed64(
         mapOf(
           Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-          Long.MAX_VALUE to Long.MAX_VALUE - 1L
-        )
+          Long.MAX_VALUE to Long.MAX_VALUE - 1L,
+        ),
       )
       .putAllMapUint64Uint64(
         mapOf(
           Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-          Long.MAX_VALUE to Long.MAX_VALUE - 1L
-        )
+          Long.MAX_VALUE to Long.MAX_VALUE - 1L,
+        ),
       )
       .build()
 
@@ -688,13 +688,13 @@ class Proto3WireProtocCompatibilityTests {
       .addAllRepDouble(list(123.0))
       .addAllRepString(list("124"))
       .addAllRepBytes(
-        list(com.google.protobuf.ByteString.copyFrom(ByteString.of(123, 125).toByteArray()))
+        list(com.google.protobuf.ByteString.copyFrom(ByteString.of(123, 125).toByteArray())),
       )
       .addAllRepNestedEnum(list(AllTypesOuterClass.AllTypes.NestedEnum.A))
       .addAllRepNestedMessage(
         list(
-          AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(999).build()
-        )
+          AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(999).build(),
+        ),
       )
       .addAllPackInt32(list(111))
       .addAllPackUint32(list(112))
@@ -714,7 +714,7 @@ class Proto3WireProtocCompatibilityTests {
       .putMapStringString("key", "value")
       .putMapStringMessage(
         "message",
-        AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(1).build()
+        AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(1).build(),
       )
       .putMapStringEnum("enum", AllTypesOuterClass.AllTypes.NestedEnum.A)
       .setOneofInt32(0)
@@ -788,7 +788,7 @@ class Proto3WireProtocCompatibilityTests {
       map_string_string = mapOf("key" to "value"),
       map_string_message = mapOf("message" to AllTypesK.NestedMessage(1)),
       map_string_enum = mapOf("enum" to AllTypesK.NestedEnum.A),
-      oneof_int32 = 0
+      oneof_int32 = 0,
     )
 
     private val defaultAllTypesWireJava = AllTypesJ.Builder()
@@ -919,7 +919,7 @@ class Proto3WireProtocCompatibilityTests {
       map_int32_uint32_value = mapOf(23 to -1),
       map_int32_bool_value = mapOf(23 to true),
       map_int32_string_value = mapOf(23 to "Bo knows wrappers"),
-      map_int32_bytes_value = mapOf(23 to ByteString.of(123, 125))
+      map_int32_bytes_value = mapOf(23 to ByteString.of(123, 125)),
     )
 
     private val defaultAllWrappersWireJava = AllWrappersJ.Builder()
@@ -1028,7 +1028,7 @@ class Proto3WireProtocCompatibilityTests {
       map_int32_int32 = mapOf(0 to 0),
       map_string_message = mapOf("" to AllTypesK.NestedMessage()),
       map_string_enum = mapOf("" to AllTypesK.NestedEnum.UNKNOWN),
-      oneof_int32 = 0
+      oneof_int32 = 0,
     )
 
     private val explicitIdentityAllTypesWireJava = AllTypesJ.Builder()
@@ -1119,7 +1119,7 @@ class Proto3WireProtocCompatibilityTests {
       .addAllRepDouble(emptyList())
       .addAllRepString(list(""))
       .addAllRepBytes(
-        list(com.google.protobuf.ByteString.copyFrom(ByteString.EMPTY.toByteArray()))
+        list(com.google.protobuf.ByteString.copyFrom(ByteString.EMPTY.toByteArray())),
       )
       .addAllRepNestedEnum(emptyList())
       .addAllRepNestedMessage(emptyList())
@@ -1138,8 +1138,8 @@ class Proto3WireProtocCompatibilityTests {
       .addAllPackDouble(list(0.0))
       .addAllPackNestedEnum(
         list(
-          AllTypesOuterClass.AllTypes.NestedEnum.UNKNOWN
-        )
+          AllTypesOuterClass.AllTypes.NestedEnum.UNKNOWN,
+        ),
       )
       .putMapInt32Int32(0, 0)
       .putMapStringMessage("", AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().build())
@@ -1172,7 +1172,7 @@ class Proto3WireProtocCompatibilityTests {
       map_string_proto2_message = mapOf("one" to MessageProto2K(23, "MJ")),
       map_string_proto3_enum = mapOf("two" to EnumProto3K.A),
       map_string_proto3_message = mapOf("three" to MessageProto3K(b = "three")),
-      oneof_proto3_message = MessageProto3K()
+      oneof_proto3_message = MessageProto3K(),
     )
 
     private val interopWireJ = InteropMessageJ.Builder()

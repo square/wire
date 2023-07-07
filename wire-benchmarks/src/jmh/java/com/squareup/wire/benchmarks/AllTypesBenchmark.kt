@@ -1,11 +1,11 @@
 /*
- * Copyright (C) 2022 Block, Inc.
+ * Copyright (C) 2022 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.WireJsonAdapterFactory
+import java.util.concurrent.TimeUnit
 import okio.Buffer
 import okio.BufferedSource
 import okio.FileSystem
@@ -33,7 +34,6 @@ import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.Setup
 import org.openjdk.jmh.annotations.State
 import org.openjdk.jmh.annotations.Warmup
-import java.util.concurrent.TimeUnit
 import squareup.wire.benchmarks.proto2.AllTypes as Proto2Wire
 import squareup.wire.benchmarks.proto2.AllTypesProto2.AllTypes as Proto2Protobuf
 import squareup.wire.benchmarks.proto3.AllTypes as Proto3Wire

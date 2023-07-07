@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,6 +27,8 @@ import io.grpc.ServerCall.Listener
 import io.grpc.ServerCallHandler
 import io.grpc.ServerInterceptor
 import io.grpc.stub.StreamObserver
+import java.util.ArrayDeque
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
@@ -43,8 +45,6 @@ import routeguide.RouteGuideProto.Point
 import routeguide.RouteGuideProto.Rectangle
 import routeguide.RouteGuideProto.RouteNote
 import routeguide.RouteGuideProto.RouteSummary
-import java.util.ArrayDeque
-import java.util.concurrent.TimeUnit
 
 /**
  * An assertive scriptable implementation of the [RouteGuideGrpc] gRPC service. Receiving and
@@ -71,8 +71,8 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
       Action.ReceiveMessage(
         RouteNote.newBuilder()
           .setMessage(message)
-          .build()
-      )
+          .build(),
+      ),
     )
   }
 
@@ -82,8 +82,8 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
         Point.newBuilder()
           .setLatitude(latitude)
           .setLongitude(longitude)
-          .build()
-      )
+          .build(),
+      ),
     )
   }
 
@@ -93,8 +93,8 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
         Rectangle.newBuilder()
           .setLo(Point.newBuilder().setLatitude(lo.latitude!!).setLongitude(lo.longitude!!).build())
           .setHi(Point.newBuilder().setLatitude(hi.latitude!!).setLongitude(hi.longitude!!).build())
-          .build()
-      )
+          .build(),
+      ),
     )
   }
 
@@ -103,8 +103,8 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
       Action.SendMessage(
         Feature.newBuilder()
           .setName(name)
-          .build()
-      )
+          .build(),
+      ),
     )
   }
 
@@ -113,8 +113,8 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
       Action.SendMessage(
         RouteNote.newBuilder()
           .setMessage(message)
-          .build()
-      )
+          .build(),
+      ),
     )
   }
 
@@ -123,8 +123,8 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
       Action.SendMessage(
         RouteSummary.newBuilder()
           .setPointCount(pointCount)
-          .build()
-      )
+          .build(),
+      ),
     )
   }
 
@@ -168,7 +168,7 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
         Action.ReceiveCall(
           path = "/routeguide.RouteGuide/GetFeature",
           requestHeaders = takeLastRequestHeaders(it),
-        )
+        ),
       )
     }
     assertNextActionAndProcessScript {
@@ -186,7 +186,7 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
         Action.ReceiveCall(
           path = "/routeguide.RouteGuide/RecordRoute",
           requestHeaders = takeLastRequestHeaders(it),
-        )
+        ),
       )
     }
     return createAssertingStreamObserver()
@@ -199,7 +199,7 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
         Action.ReceiveCall(
           path = "/routeguide.RouteGuide/ListFeatures",
           requestHeaders = takeLastRequestHeaders(it),
-        )
+        ),
       )
     }
     assertNextActionAndProcessScript {
@@ -217,7 +217,7 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
         Action.ReceiveCall(
           path = "/routeguide.RouteGuide/RouteChat",
           requestHeaders = takeLastRequestHeaders(it),
-        )
+        ),
       )
     }
     return createAssertingStreamObserver()
@@ -227,7 +227,7 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
   override fun <ReqT : Any?, RespT : Any?> interceptCall(
     call: ServerCall<ReqT, RespT>,
     requestHeaders: Metadata,
-    next: ServerCallHandler<ReqT, RespT>
+    next: ServerCallHandler<ReqT, RespT>,
   ): Listener<ReqT> {
     lastRequestHeaders = requestHeaders
     return next.startCall(
@@ -240,7 +240,7 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
           super.sendHeaders(responseHeaders)
         }
       },
-      requestHeaders
+      requestHeaders,
     )
   }
 
@@ -338,14 +338,14 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
   sealed class Action {
     data class ReceiveCall(
       val path: String,
-      val requestHeaders: Map<String, String> = mapOf()
+      val requestHeaders: Map<String, String> = mapOf(),
     ) : Action()
     data class ReceiveMessage(val message: com.google.protobuf.Message) : Action()
     object ReceiveError : Action()
     object ReceiveComplete : Action()
     data class SendMessage(
       val message: com.google.protobuf.Message,
-      val responseHeaders: Map<String, String> = mapOf()
+      val responseHeaders: Map<String, String> = mapOf(),
     ) : Action()
     data class SendError(val throwable: Throwable) : Action()
     object SendCompleted : Action()

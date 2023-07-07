@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,8 @@
 package com.squareup.wire
 
 import com.squareup.wire.mockwebserver.GrpcDispatcher
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -35,14 +37,15 @@ import routeguide.Rectangle
 import routeguide.RouteGuideClient
 import routeguide.RouteNote
 import routeguide.RouteSummary
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicReference
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
 class GrpcOnMockWebServerTest {
-  @JvmField @Rule val mockWebServer = MockWebServer()
-  @JvmField @Rule val timeout = Timeout(30, TimeUnit.SECONDS)
+  @JvmField @Rule
+  val mockWebServer = MockWebServer()
+
+  @JvmField @Rule
+  val timeout = Timeout(30, TimeUnit.SECONDS)
 
   private lateinit var okhttpClient: OkHttpClient
   private lateinit var grpcClient: GrpcClient
@@ -59,7 +62,7 @@ class GrpcOnMockWebServerTest {
   fun setUp() {
     mockWebServer.dispatcher = GrpcDispatcher(
       services = listOf(fakeRouteGuide),
-      delegate = mockWebServer.dispatcher
+      delegate = mockWebServer.dispatcher,
     )
     mockWebServer.protocols = listOf(Protocol.H2_PRIOR_KNOWLEDGE)
 

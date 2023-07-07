@@ -14,7 +14,6 @@ out/
 .gradle
 build
 generated
-gradle
 gradlew
 gradlew.bat
 

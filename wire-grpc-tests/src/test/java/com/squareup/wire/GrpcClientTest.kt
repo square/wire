@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,6 +26,10 @@ import com.squareup.wire.MockRouteGuideService.Action.SendMessage
 import io.grpc.Metadata
 import io.grpc.Status
 import io.grpc.StatusException
+import java.io.IOException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -39,6 +43,8 @@ import okhttp3.Interceptor
 import okhttp3.Interceptor.Chain
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.Protocol.H2_PRIOR_KNOWLEDGE
+import okhttp3.Protocol.HTTP_1_1
 import okhttp3.Protocol.HTTP_2
 import okhttp3.Request
 import okhttp3.Response
@@ -48,6 +54,7 @@ import okio.Buffer
 import okio.ByteString
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
+import org.junit.Assert.assertThrows
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Ignore
@@ -61,19 +68,15 @@ import routeguide.RouteGuideClient
 import routeguide.RouteGuideProto
 import routeguide.RouteNote
 import routeguide.RouteSummary
-import java.io.IOException
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicReference
-import okhttp3.Protocol.H2_PRIOR_KNOWLEDGE
-import okhttp3.Protocol.HTTP_1_1
-import org.junit.Assert.assertThrows
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
 class GrpcClientTest {
-  @JvmField @Rule val mockService = MockRouteGuideService()
-  @JvmField @Rule val timeout = Timeout(30, TimeUnit.SECONDS)
+  @JvmField @Rule
+  val mockService = MockRouteGuideService()
+
+  @JvmField @Rule
+  val timeout = Timeout(30, TimeUnit.SECONDS)
 
   private lateinit var okhttpClient: OkHttpClient
   private lateinit var grpcClient: GrpcClient
@@ -118,7 +121,7 @@ class GrpcClientTest {
     }
     assertThat(exception.message)
       .isEqualTo(
-        "OkHttpClient is not configured with a HTTP/2 protocol which is required for gRPC connections."
+        "OkHttpClient is not configured with a HTTP/2 protocol which is required for gRPC connections.",
       )
   }
 
@@ -214,7 +217,7 @@ class GrpcClientTest {
           feature = response
           latch.countDown()
         }
-      }
+      },
     )
 
     mockService.awaitSuccessBlocking()
@@ -886,7 +889,7 @@ class GrpcClientTest {
           feature = response
           latch.countDown()
         }
-      }
+      },
     )
     assertThat(grpcCall.isExecuted()).isTrue()
 
@@ -949,7 +952,7 @@ class GrpcClientTest {
         fail()
       } catch (expected: IOException) {
         assertThat(expected).hasMessage(
-          "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+          "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)",
         )
       }
     }
@@ -970,7 +973,7 @@ class GrpcClientTest {
       fail()
     } catch (expected: IOException) {
       assertThat(expected).hasMessage(
-        "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+        "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)",
       )
     }
   }
@@ -991,7 +994,7 @@ class GrpcClientTest {
       object : GrpcCall.Callback<Point, Feature> {
         override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
           assertThat(exception).hasMessage(
-            "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+            "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)",
           )
           latch.countDown()
         }
@@ -999,7 +1002,7 @@ class GrpcClientTest {
         override fun onSuccess(call: GrpcCall<Point, Feature>, response: Feature) {
           throw AssertionError()
         }
-      }
+      },
     )
 
     mockService.awaitSuccessBlocking()
@@ -1027,7 +1030,7 @@ class GrpcClientTest {
         fail()
       } catch (expected: IOException) {
         assertThat(expected).hasMessage(
-          "expected gRPC but was HTTP status=500, content-type=application/grpc"
+          "expected gRPC but was HTTP status=500, content-type=application/grpc",
         )
       }
     }
@@ -1054,7 +1057,7 @@ class GrpcClientTest {
         fail()
       } catch (expected: IOException) {
         assertThat(expected).hasMessage(
-          "expected gRPC but was HTTP status=200, content-type=text/plain"
+          "expected gRPC but was HTTP status=200, content-type=text/plain",
         )
       }
     }
@@ -1151,7 +1154,7 @@ class GrpcClientTest {
     } catch (expected: GrpcException) {
       assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
       assertThat(expected).hasMessage(
-        "grpc-status=13, grpc-status-name=INTERNAL, grpc-message=boom"
+        "grpc-status=13, grpc-status-name=INTERNAL, grpc-message=boom",
       )
     }
   }
@@ -1172,7 +1175,7 @@ class GrpcClientTest {
       fail()
     } catch (expected: IOException) {
       assertThat(expected).hasMessage(
-        "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+        "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)",
       )
       assertThat(expected.cause).hasMessage("stream was reset: CANCEL")
     }
@@ -1197,7 +1200,7 @@ class GrpcClientTest {
       // It's racy whether we receive trailers first or close the response stream first.
       assertThat(expected.message).isIn(
         "gRPC transport failure (HTTP status=200, grpc-status=0, grpc-message=null)",
-        "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+        "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)",
       )
       assertThat(expected.cause).hasMessage("expected 1 message but got multiple")
     }
@@ -1217,7 +1220,7 @@ class GrpcClientTest {
       fail()
     } catch (expected: IOException) {
       assertThat(expected).hasMessage(
-        "gRPC transport failure (HTTP status=200, grpc-status=0, grpc-message=null)"
+        "gRPC transport failure (HTTP status=200, grpc-status=0, grpc-message=null)",
       )
       assertThat(expected.cause).hasMessage("expected 1 message but got none")
     }
@@ -1338,7 +1341,7 @@ class GrpcClientTest {
       ReceiveCall(
         path = "/routeguide.RouteGuide/GetFeature",
         requestHeaders = mapOf("request-lucky-number" to "twenty-two"),
-      )
+      ),
     )
     mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
     mockService.enqueue(ReceiveComplete)
@@ -1347,8 +1350,8 @@ class GrpcClientTest {
         message = RouteGuideProto.Feature.newBuilder()
           .setName("tree at 5,6")
           .build(),
-        responseHeaders = mapOf("response-lucky-animal" to "horse")
-      )
+        responseHeaders = mapOf("response-lucky-animal" to "horse"),
+      ),
     )
     mockService.enqueue(SendCompleted)
 
@@ -1368,7 +1371,7 @@ class GrpcClientTest {
       ReceiveCall(
         path = "/routeguide.RouteGuide/GetFeature",
         requestHeaders = mapOf("request-lucky-number" to "twenty-two"),
-      )
+      ),
     )
     mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
     mockService.enqueue(ReceiveComplete)
@@ -1377,8 +1380,8 @@ class GrpcClientTest {
         message = RouteGuideProto.Feature.newBuilder()
           .setName("tree at 5,6")
           .build(),
-        responseHeaders = mapOf("response-lucky-animal" to "horse")
-      )
+        responseHeaders = mapOf("response-lucky-animal" to "horse"),
+      ),
     )
     mockService.enqueue(SendCompleted)
     // Cloned call.
@@ -1386,7 +1389,7 @@ class GrpcClientTest {
       ReceiveCall(
         path = "/routeguide.RouteGuide/GetFeature",
         requestHeaders = mapOf("request-lucky-number" to "twenty-two", "all-in" to "true"),
-      )
+      ),
     )
     mockService.enqueueReceivePoint(latitude = 15, longitude = 16)
     mockService.enqueue(ReceiveComplete)
@@ -1395,8 +1398,8 @@ class GrpcClientTest {
         message = RouteGuideProto.Feature.newBuilder()
           .setName("tree at 15,16")
           .build(),
-        responseHeaders = mapOf("response-lucky-animal" to "emu")
-      )
+        responseHeaders = mapOf("response-lucky-animal" to "emu"),
+      ),
     )
     mockService.enqueue(SendCompleted)
 
@@ -1425,7 +1428,7 @@ class GrpcClientTest {
       ReceiveCall(
         path = "/routeguide.RouteGuide/ListFeatures",
         requestHeaders = mapOf("request-lucky-number" to "twenty-two"),
-      )
+      ),
     )
     mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
     mockService.enqueue(ReceiveComplete)
@@ -1434,8 +1437,8 @@ class GrpcClientTest {
         message = RouteGuideProto.Feature.newBuilder()
           .setName("tree")
           .build(),
-        responseHeaders = mapOf("response-lucky-animal" to "horse")
-      )
+        responseHeaders = mapOf("response-lucky-animal" to "horse"),
+      ),
     )
     mockService.enqueueSendFeature(name = "house")
     mockService.enqueue(SendCompleted)
@@ -1459,7 +1462,7 @@ class GrpcClientTest {
       ReceiveCall(
         path = "/routeguide.RouteGuide/ListFeatures",
         requestHeaders = mapOf("request-lucky-number" to "twenty-two"),
-      )
+      ),
     )
     mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
     mockService.enqueue(ReceiveComplete)
@@ -1468,8 +1471,8 @@ class GrpcClientTest {
         message = RouteGuideProto.Feature.newBuilder()
           .setName("tree")
           .build(),
-        responseHeaders = mapOf("response-lucky-animal" to "horse")
-      )
+        responseHeaders = mapOf("response-lucky-animal" to "horse"),
+      ),
     )
     mockService.enqueueSendFeature(name = "house")
     mockService.enqueue(SendCompleted)
@@ -1478,7 +1481,7 @@ class GrpcClientTest {
       ReceiveCall(
         path = "/routeguide.RouteGuide/ListFeatures",
         requestHeaders = mapOf("request-lucky-number" to "twenty-two", "all-in" to "true"),
-      )
+      ),
     )
     mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(14, 15))
     mockService.enqueue(ReceiveComplete)
@@ -1487,8 +1490,8 @@ class GrpcClientTest {
         message = RouteGuideProto.Feature.newBuilder()
           .setName("forest")
           .build(),
-        responseHeaders = mapOf("response-lucky-animal" to "emu")
-      )
+        responseHeaders = mapOf("response-lucky-animal" to "emu"),
+      ),
     )
     mockService.enqueueSendFeature(name = "cabane")
     mockService.enqueue(SendCompleted)
@@ -1572,7 +1575,7 @@ class GrpcClientTest {
     val metadata = Metadata().apply {
       put(
         Metadata.Key.of("grpc-status-details-bin", Metadata.BINARY_BYTE_MARSHALLER),
-        RouteNote(message = "marco").encode()
+        RouteNote(message = "marco").encode(),
       )
     }
     mockService.enqueueSendError(Status.INTERNAL.withDescription("boom").asRuntimeException(metadata))
@@ -1634,15 +1637,15 @@ class GrpcClientTest {
   }
 
   class IncompatibleRouteGuideClient(
-    private val client: GrpcClient
+    private val client: GrpcClient,
   ) {
     fun RouteChat(): GrpcCall<RouteNote, RouteNote> =
       client.newCall(
         GrpcMethod(
           path = "/routeguide.RouteGuide/RouteChat",
           requestAdapter = RouteNote.ADAPTER,
-          responseAdapter = RouteNote.ADAPTER
-        )
+          responseAdapter = RouteNote.ADAPTER,
+        ),
       )
   }
 }

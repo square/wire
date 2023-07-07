@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,9 @@ package com.squareup.wire
 import com.google.protobuf.Empty
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import squareup.proto3.kotlin.alltypes.AllEmptyOuterClass
 import squareup.proto3.java.alltypes.AllEmpty as AllEmptyJ
 import squareup.proto3.kotlin.alltypes.AllEmpty as AllEmptyK
+import squareup.proto3.kotlin.alltypes.AllEmptyOuterClass
 
 class EmptyRoundTripTest {
   @Test fun empty() {
@@ -54,7 +54,7 @@ class EmptyRoundTripTest {
       empty = Unit,
       rep_empty = listOf(Unit, Unit),
       map_int32_empty = mapOf(1 to Unit),
-      oneof_empty = Unit
+      oneof_empty = Unit,
     )
 
     val googleMessageBytes = googleMessage.toByteArray()

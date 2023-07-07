@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,8 @@ import com.squareup.wire.GrpcMethod
 import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.MessageSink
 import com.squareup.wire.MessageSource
+import java.util.concurrent.TimeUnit
+import kotlin.DeprecationLevel.WARNING
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,14 +31,13 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
 import okio.Timeout
-import java.util.concurrent.TimeUnit
-import kotlin.DeprecationLevel.WARNING
 
 internal class RealGrpcStreamingCall<S : Any, R : Any>(
   private val grpcClient: GrpcClient,
-  override val method: GrpcMethod<S, R>
+  override val method: GrpcMethod<S, R>,
 ) : GrpcStreamingCall<S, R> {
   private val requestBody = newDuplexRequestBody()
+
   /** Non-null once this is executed. */
   private var call: Call? = null
   private var canceled = false
@@ -63,7 +64,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
   @Deprecated(
     "Provide a scope, preferably not GlobalScope",
     replaceWith = ReplaceWith("executeIn(GlobalScope)", "kotlinx.coroutines.GlobalScope"),
-    level = WARNING
+    level = WARNING,
   )
   @Suppress("OPT_IN_USAGE")
   override fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>> = executeIn(GlobalScope)
@@ -87,7 +88,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
         requestBody = requestBody,
         minMessageToCompress = grpcClient.minMessageToCompress,
         requestAdapter = method.requestAdapter,
-        callForCancel = call
+        callForCancel = call,
       )
     }
     call.enqueue(responseChannel.readFromResponseBodyCallback(this, method.responseAdapter))
@@ -101,7 +102,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
     val messageSink = requestBody.messageSink(
       minMessageToCompress = grpcClient.minMessageToCompress,
       requestAdapter = method.requestAdapter,
-      callForCancel = call
+      callForCancel = call,
     )
     call.enqueue(messageSource.readFromResponseBodyCallback())
 
@@ -115,8 +116,11 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
     val oldTimeout = this.timeout
     result.timeout.also { newTimeout ->
       newTimeout.timeout(oldTimeout.timeoutNanos(), TimeUnit.NANOSECONDS)
-      if (oldTimeout.hasDeadline()) newTimeout.deadlineNanoTime(oldTimeout.deadlineNanoTime())
-      else newTimeout.clearDeadline()
+      if (oldTimeout.hasDeadline()) {
+        newTimeout.deadlineNanoTime(oldTimeout.deadlineNanoTime())
+      } else {
+        newTimeout.clearDeadline()
+      }
     }
     result.requestMetadata += this.requestMetadata
     return result

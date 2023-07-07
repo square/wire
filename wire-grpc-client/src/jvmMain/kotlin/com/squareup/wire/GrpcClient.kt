@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,16 +17,16 @@ package com.squareup.wire
 
 import com.squareup.wire.internal.RealGrpcCall
 import com.squareup.wire.internal.RealGrpcStreamingCall
+import kotlin.reflect.KClass
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Protocol.H2_PRIOR_KNOWLEDGE
 import okhttp3.Protocol.HTTP_2
-import kotlin.reflect.KClass
 
 actual abstract class GrpcClient private constructor(
   internal val client: Call.Factory,
   internal val baseUrl: GrpcHttpUrl,
-  internal val minMessageToCompress: Long
+  internal val minMessageToCompress: Long,
 ) {
   /** Returns a [T] that makes gRPC calls using this client. */
   inline fun <reified T : Service> create(): T = create(T::class)
@@ -68,7 +68,7 @@ actual abstract class GrpcClient private constructor(
   internal fun newCall(
     method: GrpcMethod<*, *>,
     requestMetadata: Map<String, String>,
-    requestBody: GrpcRequestBody
+    requestBody: GrpcRequestBody,
   ): Call {
     return client.newCall(
       GrpcRequestBuilder()
@@ -86,7 +86,7 @@ actual abstract class GrpcClient private constructor(
         }
         .tag(GrpcMethod::class.java, method)
         .method("POST", requestBody)
-        .build()
+        .build(),
     )
   }
 
@@ -132,7 +132,7 @@ actual abstract class GrpcClient private constructor(
     fun build(): GrpcClient = object : GrpcClient(
       client = client ?: throw IllegalArgumentException("client is not set"),
       baseUrl = baseUrl ?: throw IllegalArgumentException("baseUrl is not set"),
-      minMessageToCompress = minMessageToCompress
+      minMessageToCompress = minMessageToCompress,
     ) {
       override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
         return RealGrpcCall(this, method)

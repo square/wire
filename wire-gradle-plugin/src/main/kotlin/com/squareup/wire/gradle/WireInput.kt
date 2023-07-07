@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,10 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.gradle.WireExtension.ProtoRootSet
+import java.io.EOFException
+import java.io.File
+import java.io.RandomAccessFile
+import java.net.URI
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
@@ -26,10 +30,6 @@ import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
-import java.io.EOFException
-import java.io.File
-import java.io.RandomAccessFile
-import java.net.URI
 
 /**
  * Builds Wire's inputs (expressed as [InputLocation] lists) from Gradle's objects (expressed as
@@ -108,12 +108,12 @@ internal class WireInput(var configuration: Configuration) {
               |    include 'relativePath'
               |  }
               |}
-              """.trimMargin()
+              """.trimMargin(),
             )
           }
         } else if (converted is URI && isURL(converted)) {
           throw IllegalArgumentException(
-            "Invalid path string: \"$dependency\". URL dependencies are not allowed."
+            "Invalid path string: \"$dependency\". URL dependencies are not allowed.",
           )
         } else {
           // Assume it's a possible external dependency and let Gradle sort it out later.
@@ -170,8 +170,8 @@ internal class WireInput(var configuration: Configuration) {
         InputLocation.get(
           project = project,
           base = srcDir.path,
-          path = relativeTo(srcDir).toString()
-        )
+          path = relativeTo(srcDir).toString(),
+        ),
       )
     } else if (isZip) {
       val filters = dependencyFilters.getOrDefault(dependency, listOf())
