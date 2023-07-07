@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +38,7 @@ class OptionsLinkingTest {
              |message A {
              |  optional string s = 1 [(formatting_options).language = "English"];
              |}
-            """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/formatting_options.proto",
@@ -52,7 +52,7 @@ class OptionsLinkingTest {
              |extend google.protobuf.FieldOptions {
              |  optional FormattingOptions formatting_options = 22001;
              |}
-            """.trimMargin()
+      """.trimMargin(),
     )
     val schema = loadAndLinkSchema()
 
@@ -60,9 +60,9 @@ class OptionsLinkingTest {
     assertThat(typeA.field("s")!!.options.map).isEqualTo(
       mapOf(
         formattingOptionsField to mapOf(
-          languageField to "English"
-        )
-      )
+          languageField to "English",
+        ),
+      ),
     )
   }
 
@@ -75,7 +75,7 @@ class OptionsLinkingTest {
              |message A {
              |  optional string s = 1 [(formatting_options).language = "English"];
              |}
-            """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "proto-path/formatting_options.proto",
@@ -89,7 +89,7 @@ class OptionsLinkingTest {
              |extend google.protobuf.FieldOptions {
              |  optional FormattingOptions formatting_options = 22001;
              |}
-            """.trimMargin()
+      """.trimMargin(),
     )
     val schema = loadAndLinkSchema()
 
@@ -97,9 +97,9 @@ class OptionsLinkingTest {
     assertThat(typeA.field("s")!!.options.map).isEqualTo(
       mapOf(
         formattingOptionsField to mapOf(
-          languageField to "English"
-        )
-      )
+          languageField to "English",
+        ),
+      ),
     )
   }
 
@@ -113,7 +113,7 @@ class OptionsLinkingTest {
              |  optional string s = 1 [(formatting_options).language.name = "English"];
              |  optional string t = 2 [(length).max = 80];
              |}
-            """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "proto-path/formatting_options.proto",
@@ -145,7 +145,7 @@ class OptionsLinkingTest {
              |  optional double min = 1;
              |  optional double max = 2;
              |}
-            """.trimMargin()
+      """.trimMargin(),
     )
     val schema = loadAndLinkSchema()
 
@@ -154,10 +154,10 @@ class OptionsLinkingTest {
       mapOf(
         formattingOptionsField to mapOf(
           languageField to mapOf(
-            nameField to "English"
-          )
-        )
-      )
+            nameField to "English",
+          ),
+        ),
+      ),
     )
 
     val typeLanguage = schema.getType("Language") as MessageType
@@ -177,7 +177,7 @@ class OptionsLinkingTest {
              |message A {
              |  optional string s = 2 [(length).max = 80];
              |}
-            """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "proto-path/extensions.proto",
@@ -188,7 +188,7 @@ class OptionsLinkingTest {
              |extend google.protobuf.FieldOptions {
              |  optional Range length = 22002;
              |}
-            """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "proto-path/range.proto",
@@ -198,7 +198,7 @@ class OptionsLinkingTest {
              |  optional double min = 1;
              |  optional double max = 2;
              |}
-            """.trimMargin()
+      """.trimMargin(),
     )
     val schema = loadAndLinkSchema()
 
@@ -215,7 +215,7 @@ class OptionsLinkingTest {
 
     loader.initRoots(
       sourcePath = listOf(Location.get("source-path")),
-      protoPath = protoPath
+      protoPath = protoPath,
     )
     return loader.loadSchema()
   }

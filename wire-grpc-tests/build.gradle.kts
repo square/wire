@@ -1,4 +1,3 @@
-import com.diffplug.gradle.spotless.SpotlessExtension
 import com.google.protobuf.gradle.generateProtoTasks
 import com.google.protobuf.gradle.id
 import com.google.protobuf.gradle.ofSourceSet
@@ -78,13 +77,5 @@ val test by tasks.getting(Test::class) {
   testLogging {
     events("passed", "skipped", "failed")
     exceptionFormat = TestExceptionFormat.FULL
-  }
-}
-
-configure<SpotlessExtension> {
-  kotlin {
-    targetExclude(
-      "src/test/proto-grpc/**/*.kt",
-    )
   }
 }

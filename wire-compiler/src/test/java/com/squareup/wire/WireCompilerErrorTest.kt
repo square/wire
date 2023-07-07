@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright (C) 2013 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,12 +16,12 @@
 package com.squareup.wire
 
 import com.squareup.wire.schema.SchemaException
+import kotlin.test.assertFailsWith
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import kotlin.test.assertFailsWith
 
 class WireCompilerErrorTest {
   private var fileSystem = FakeFileSystem().apply {
@@ -46,8 +46,11 @@ class WireCompilerErrorTest {
     }
 
     val compiler = WireCompiler.forArgs(
-      fileSystem, StringWireLogger(),
-      "--proto_path=/source", "--java_out=/target", *fileNames.toTypedArray()
+      fileSystem,
+      StringWireLogger(),
+      "--proto_path=/source",
+      "--java_out=/target",
+      *fileNames.toTypedArray(),
     )
     compiler.compile()
   }
@@ -60,11 +63,11 @@ class WireCompilerErrorTest {
         |message Simple {
         |  optional int32 f = 1;
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     val generatedSource = readFile("/target/com/squareup/protos/test/Simple.java")
     assertThat(generatedSource).contains(
-      "public final class Simple extends Message<Simple, Simple.Builder> {"
+      "public final class Simple extends Message<Simple, Simple.Builder> {",
     )
   }
 
@@ -77,7 +80,7 @@ class WireCompilerErrorTest {
           |message Simple {
           |  optional int32 f = 0;
           |}
-          """.trimMargin()
+        """.trimMargin(),
       )
     }
     assertThat(e).hasMessage(
@@ -85,7 +88,7 @@ class WireCompilerErrorTest {
           |tag is out of range: 0
           |  for field f (/source/test_1.proto:3:3)
           |  in message com.squareup.protos.test.Simple (/source/test_1.proto:2:1)
-          """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -99,7 +102,7 @@ class WireCompilerErrorTest {
           |  optional int32 f = 1;
           |  optional int32 g = 1;
           |}
-          """.trimMargin()
+        """.trimMargin(),
       )
     }
     assertThat(e).hasMessage(
@@ -108,7 +111,7 @@ class WireCompilerErrorTest {
           |  1. f (/source/test_1.proto:3:3)
           |  2. g (/source/test_1.proto:4:3)
           |  for message com.squareup.protos.test.Simple (/source/test_1.proto:2:1)
-          """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -129,7 +132,7 @@ class WireCompilerErrorTest {
           |    QUIX = 1;
           |  }
           |}
-          """.trimMargin()
+        """.trimMargin(),
       )
     }
     assertThat(e).hasMessage(
@@ -138,7 +141,7 @@ class WireCompilerErrorTest {
           |  1. com.squareup.protos.test.Foo.Bar.QUIX (/source/test_1.proto:4:5)
           |  2. com.squareup.protos.test.Foo.Bar2.QUIX (/source/test_1.proto:10:5)
           |  for message com.squareup.protos.test.Foo (/source/test_1.proto:2:1)
-          """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -153,7 +156,7 @@ class WireCompilerErrorTest {
           |  QUIX = 0;
           |  FOO = 1;
           |}
-          """.trimMargin(),
+        """.trimMargin(),
         """
           |package com.squareup.protos.test;
           |
@@ -161,7 +164,7 @@ class WireCompilerErrorTest {
           |  BAZ = 0;
           |  QUIX = 1;
           |}
-          """.trimMargin()
+        """.trimMargin(),
       )
     }
     assertThat(e).hasMessage(
@@ -170,7 +173,7 @@ class WireCompilerErrorTest {
         |  1. com.squareup.protos.test.Bar.QUIX (/source/test_1.proto:4:3)
         |  2. com.squareup.protos.test.Bar2.QUIX (/source/test_2.proto:5:3)
         |  for file /source/test_1.proto
-        """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -190,7 +193,7 @@ class WireCompilerErrorTest {
           |  BAZ = 0;
           |  QUIX = 1;
           |}
-          """.trimMargin()
+        """.trimMargin(),
       )
     }
     assertThat(e).hasMessage(
@@ -199,7 +202,7 @@ class WireCompilerErrorTest {
           |  1. com.squareup.protos.test.Bar.QUIX (/source/test_1.proto:4:3)
           |  2. com.squareup.protos.test.Bar2.QUIX (/source/test_1.proto:10:3)
           |  for file /source/test_1.proto
-          """.trimMargin()
+      """.trimMargin(),
     )
   }
 

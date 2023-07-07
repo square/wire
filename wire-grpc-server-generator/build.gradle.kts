@@ -42,12 +42,4 @@ if (project.rootProject.name == "wire") {
       KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
     )
   }
-
-  configure<SpotlessExtension> {
-    kotlin {
-      targetExclude(
-        "src/test/golden/*.kt",
-      )
-    }
-  }
 }

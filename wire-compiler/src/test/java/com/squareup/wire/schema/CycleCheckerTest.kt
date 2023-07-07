@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,11 +18,11 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.testing.add
+import kotlin.test.assertFailsWith
 import okio.Path
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import kotlin.test.assertFailsWith
 
 class CycleCheckerTest {
   private val fs = FakeFileSystem().apply {
@@ -38,7 +38,7 @@ class CycleCheckerTest {
         |import "ouroboros.proto";
         |message Snake {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
 
     val exception = assertFailsWith<SchemaException> {
@@ -49,7 +49,7 @@ class CycleCheckerTest {
         |imports form a cycle:
         |  ouroboros.proto:
         |    import "ouroboros.proto";
-        """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -62,7 +62,7 @@ class CycleCheckerTest {
         |import "rock.proto";
         |message Paper {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/rock.proto",
@@ -71,7 +71,7 @@ class CycleCheckerTest {
         |import "scissors.proto";
         |message Rock {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/scissors.proto",
@@ -80,7 +80,7 @@ class CycleCheckerTest {
         |import "paper.proto";
         |message Scissors {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
 
     val exception = assertFailsWith<SchemaException> {
@@ -95,7 +95,7 @@ class CycleCheckerTest {
         |    import "scissors.proto";
         |  scissors.proto:
         |    import "paper.proto";
-        """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -109,7 +109,7 @@ class CycleCheckerTest {
         |import "d.proto";
         |message A {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/b.proto",
@@ -118,7 +118,7 @@ class CycleCheckerTest {
         |import "c.proto";
         |message B {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/c.proto",
@@ -128,7 +128,7 @@ class CycleCheckerTest {
         |import "b.proto";
         |message C {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/d.proto",
@@ -136,7 +136,7 @@ class CycleCheckerTest {
         |syntax = "proto2";
         |message D {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
 
     val exception = assertFailsWith<SchemaException> {
@@ -152,7 +152,7 @@ class CycleCheckerTest {
         |  c.proto:
         |    import "a.proto";
         |    import "b.proto";
-        """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -170,7 +170,7 @@ class CycleCheckerTest {
         |  optional locations.Office office = 1;
         |  optional locations.Residence residence = 2;
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/locations/office.proto",
@@ -181,7 +181,7 @@ class CycleCheckerTest {
         |message Office {
         |  optional people.OfficeManager office_manager = 1;
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/locations/residence.proto",
@@ -190,7 +190,7 @@ class CycleCheckerTest {
         |package locations;
         |message Residence {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/people/office_manager.proto",
@@ -199,7 +199,7 @@ class CycleCheckerTest {
         |package people;
         |message OfficeManager {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
 
     val exception = assertFailsWith<SchemaException> {
@@ -215,7 +215,7 @@ class CycleCheckerTest {
         |    people/employee.proto:
         |      import "locations/office.proto";
         |      import "locations/residence.proto";
-        """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -232,7 +232,7 @@ class CycleCheckerTest {
         |syntax = "proto2";
         |import "b.proto";
         |option go_package = "a";
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/b.proto",
@@ -241,7 +241,7 @@ class CycleCheckerTest {
         |package b;
         |import "c.proto";
         |option go_package = "b";
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/c.proto",
@@ -249,7 +249,7 @@ class CycleCheckerTest {
         |syntax = "proto2";
         |import "d.proto";
         |option go_package = "c";
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/d.proto",
@@ -258,14 +258,14 @@ class CycleCheckerTest {
         |package d;
         |import "e.proto";
         |option go_package = "a";
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/e.proto",
       """
         |syntax = "proto2";
         |package b;
-        """.trimMargin()
+      """.trimMargin(),
     )
 
     val exception = assertFailsWith<SchemaException> {
@@ -285,7 +285,7 @@ class CycleCheckerTest {
         |  c imports a
         |    c.proto:
         |      import "d.proto";
-        """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -297,7 +297,7 @@ class CycleCheckerTest {
       """
         |syntax = "proto2";
         |import "b.proto";
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/b.proto",
@@ -305,13 +305,13 @@ class CycleCheckerTest {
         |syntax = "proto2";
         |package b;
         |import "c.proto";
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/c.proto",
       """
         |syntax = "proto2";
-        """.trimMargin()
+      """.trimMargin(),
     )
 
     val exception = assertFailsWith<SchemaException> {
@@ -326,7 +326,7 @@ class CycleCheckerTest {
         |  b imports <default>
         |    b.proto:
         |      import "c.proto";
-        """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -334,7 +334,7 @@ class CycleCheckerTest {
     val loader = SchemaLoader(fs)
     loader.initRoots(
       sourcePath = listOf(Location.get("source-path")),
-      protoPath = listOf()
+      protoPath = listOf(),
     )
     return loader.loadSchema()
   }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright (C) 2013 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,16 +24,16 @@ import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WIRE_RUNTIME_JAR
 import com.squareup.wire.schema.WireRun
 import com.squareup.wire.schema.isWireRuntimeProto
-import com.squareup.wire.schema.newSchemaHandler
 import com.squareup.wire.schema.newEventListenerFactory
+import com.squareup.wire.schema.newSchemaHandler
 import com.squareup.wire.schema.toOkioFileSystem
+import java.io.IOException
+import java.nio.file.FileSystem as NioFileSystem
 import okio.FileNotFoundException
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.openZip
-import java.io.IOException
-import java.nio.file.FileSystem as NioFileSystem
 
 /**
  * Command line interface to the Wire Java generator.
@@ -128,7 +128,7 @@ class WireCompiler internal constructor(
         androidAnnotations = emitAndroidAnnotations,
         compact = emitCompact,
         emitDeclaredOptions = emitDeclaredOptions,
-        emitAppliedOptions = emitAppliedOptions
+        emitAppliedOptions = emitAppliedOptions,
       )
     } else if (kotlinOut != null) {
       targets += KotlinTarget(
@@ -141,7 +141,7 @@ class WireCompiler internal constructor(
       )
     } else if (swiftOut != null) {
       targets += SwiftTarget(
-        outDirectory = swiftOut
+        outDirectory = swiftOut,
       )
     } else if (customOut != null || schemaHandlerFactoryClass != null) {
       if (customOut == null || schemaHandlerFactoryClass == null) {
@@ -149,7 +149,7 @@ class WireCompiler internal constructor(
       }
       targets += CustomTarget(
         outDirectory = customOut,
-        schemaHandlerFactory = newSchemaHandler(schemaHandlerFactoryClass)
+        schemaHandlerFactory = newSchemaHandler(schemaHandlerFactoryClass),
       )
     }
 
@@ -249,7 +249,7 @@ class WireCompiler internal constructor(
     fun forArgs(
       fileSystem: NioFileSystem,
       logger: WireLogger,
-      vararg args: String
+      vararg args: String,
     ): WireCompiler {
       return forArgs(fileSystem.toOkioFileSystem(), logger, *args)
     }
@@ -260,7 +260,7 @@ class WireCompiler internal constructor(
     fun forArgs(
       fileSystem: FileSystem = FileSystem.SYSTEM,
       logger: WireLogger = ConsoleWireLogger(),
-      vararg args: String
+      vararg args: String,
     ): WireCompiler {
       val sourceFileNames = mutableListOf<String>()
       val treeShakingRoots = mutableListOf<String>()
@@ -361,7 +361,7 @@ class WireCompiler internal constructor(
 
       if (javaOut == null && kotlinOut == null && swiftOut == null && customOut == null) {
         throw WireException(
-          "Nothing to do! Specify $JAVA_OUT_FLAG, $KOTLIN_OUT_FLAG, $SWIFT_OUT_FLAG, or $CUSTOM_OUT_FLAG"
+          "Nothing to do! Specify $JAVA_OUT_FLAG, $KOTLIN_OUT_FLAG, $SWIFT_OUT_FLAG, or $CUSTOM_OUT_FLAG",
         )
       }
 

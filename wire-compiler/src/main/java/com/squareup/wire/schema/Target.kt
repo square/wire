@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 Square Inc.
+ * Copyright (C) 2018 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,9 +21,9 @@ import com.squareup.wire.kotlin.KotlinSchemaHandler
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.swift.SwiftGenerator
-import okio.Path
-import java.io.IOException
 import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
+import java.io.IOException
+import okio.Path
 
 /** Generate `.java` sources. */
 data class JavaTarget(
@@ -70,7 +70,7 @@ data class JavaTarget(
     includes: List<String>,
     excludes: List<String>,
     exclusive: Boolean,
-    outDirectory: String
+    outDirectory: String,
   ): Target {
     return copy(
       includes = includes,
@@ -153,7 +153,7 @@ data class KotlinTarget(
     includes: List<String>,
     excludes: List<String>,
     exclusive: Boolean,
-    outDirectory: String
+    outDirectory: String,
   ): Target {
     return copy(
       includes = includes,
@@ -169,7 +169,7 @@ data class SwiftTarget(
   override val includes: List<String> = listOf("*"),
   override val excludes: List<String> = listOf(),
   override val exclusive: Boolean = true,
-  override val outDirectory: String
+  override val outDirectory: String,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
     return object : SchemaHandler() {
@@ -203,7 +203,8 @@ data class SwiftTarget(
           }
         } catch (e: IOException) {
           throw IOException(
-            "Error emitting ${swiftFile.moduleName}.${typeName.canonicalName} to $modulePath", e
+            "Error emitting ${swiftFile.moduleName}.${typeName.canonicalName} to $modulePath",
+            e,
           )
         }
 
@@ -219,7 +220,7 @@ data class SwiftTarget(
       override fun handle(
         extend: Extend,
         field: Field,
-        context: Context
+        context: Context,
       ): Path? = null
     }
   }
@@ -228,7 +229,7 @@ data class SwiftTarget(
     includes: List<String>,
     excludes: List<String>,
     exclusive: Boolean,
-    outDirectory: String
+    outDirectory: String,
   ): Target {
     return copy(
       includes = includes,
@@ -240,7 +241,7 @@ data class SwiftTarget(
 }
 
 data class ProtoTarget(
-  override val outDirectory: String
+  override val outDirectory: String,
 ) : Target() {
   override val includes: List<String> = listOf()
   override val excludes: List<String> = listOf()
@@ -286,7 +287,7 @@ data class ProtoTarget(
     includes: List<String>,
     excludes: List<String>,
     exclusive: Boolean,
-    outDirectory: String
+    outDirectory: String,
   ): Target {
     return copy(
       outDirectory = outDirectory,
@@ -306,7 +307,7 @@ data class CustomTarget(
     includes: List<String>,
     excludes: List<String>,
     exclusive: Boolean,
-    outDirectory: String
+    outDirectory: String,
   ): Target {
     return this.copy(
       includes = includes,
@@ -342,7 +343,7 @@ fun newSchemaHandler(schemaHandlerFactoryClass: String): SchemaHandler.Factory {
  * even if the delegate handler class is itself not serializable.
  */
 private class ClassNameSchemaHandlerFactory(
-  private val schemaHandlerFactoryClass: String
+  private val schemaHandlerFactoryClass: String,
 ) : SchemaHandler.Factory {
   @Transient private var cachedDelegate: SchemaHandler.Factory? = null
 
@@ -380,7 +381,7 @@ private class ClassNameSchemaHandlerFactory(
     excludes: List<String>,
     exclusive: Boolean,
     outDirectory: String,
-    options: Map<String, String>
+    options: Map<String, String>,
   ): SchemaHandler {
     return delegate.create(includes, excludes, exclusive, outDirectory, options)
   }
