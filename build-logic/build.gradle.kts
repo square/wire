@@ -22,6 +22,30 @@ buildscript {
   }
 }
 
+plugins {
+  `kotlin-dsl`
+  `java-gradle-plugin`
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  add("compileOnly", kotlin("gradle-plugin"))
+  add("compileOnly", kotlin("gradle-plugin-api"))
+  implementation(libs.pluginz.kotlin)
+}
+
+gradlePlugin {
+  plugins {
+    create("com.squareup.wire.build.logic") {
+      id = "com.squareup.wire.build.logic"
+      implementationClass = "BuildLogic"
+    }
+  }
+}
+
 rootProject.plugins.withType(NodeJsRootPlugin::class) {
   // 16+ required for Apple Silicon support
   // https://youtrack.jetbrains.com/issue/KT-49109#focus=Comments-27-5259190.0-0
