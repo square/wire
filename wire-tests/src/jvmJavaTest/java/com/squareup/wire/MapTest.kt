@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Square Inc.
+ * Copyright (C) 2016 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@ package com.squareup.wire
 import com.squareup.wire.internal.createRuntimeMessageAdapter
 import com.squareup.wire.map.Mappy
 import com.squareup.wire.map.Thing
+import java.io.IOException
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
 import org.assertj.core.api.Assertions.assertThat
@@ -26,12 +27,12 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameter
 import org.junit.runners.Parameterized.Parameters
-import java.io.IOException
 
 @RunWith(Parameterized::class)
 class MapTest {
   @Parameter(0)
   lateinit var name: String
+
   @Parameter(1)
   lateinit var adapter: ProtoAdapter<Mappy>
 
@@ -42,7 +43,8 @@ class MapTest {
     assertThat(adapter.encode(EMPTY)).isEmpty()
   }
 
-  @Test @Throws(IOException::class)
+  @Test
+  @Throws(IOException::class)
   fun deserialize() {
     assertThat(adapter.decode(BYTES)).isEqualTo(THREE)
 
@@ -65,13 +67,14 @@ class MapTest {
     fun parameters() = listOf(
       arrayOf("Generated", Mappy.ADAPTER),
       arrayOf(
-        "Runtime", createRuntimeMessageAdapter(
+        "Runtime",
+        createRuntimeMessageAdapter(
           Mappy::class.java,
           "square.github.io/wire/unknown",
           Syntax.PROTO_2,
           Mappy::class.java.classLoader,
-        )
-      )
+        ),
+      ),
     )
   }
 }

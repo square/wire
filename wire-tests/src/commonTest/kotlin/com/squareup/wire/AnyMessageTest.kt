@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,8 +18,6 @@ package com.squareup.wire
 import com.squareup.wire.protos.kotlin.edgecases.NoFields
 import com.squareup.wire.protos.kotlin.edgecases.OneField
 import com.squareup.wire.protos.usesany.UsesAny
-import okio.ByteString
-import okio.ByteString.Companion.decodeHex
 import kotlin.jvm.JvmField
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,6 +25,8 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
+import okio.ByteString
+import okio.ByteString.Companion.decodeHex
 
 class AnyMessageTest {
   @Test fun happyPath() {
@@ -37,8 +37,8 @@ class AnyMessageTest {
       just_one = AnyMessage.pack(three),
       many_anys = listOf(
         AnyMessage.pack(three),
-        AnyMessage.pack(four)
-      )
+        AnyMessage.pack(four),
+      ),
     )
 
     assertEquals(three, usesAny.just_one!!.unpack(OneField.ADAPTER))
@@ -64,8 +64,8 @@ class AnyMessageTest {
       just_one = AnyMessage.pack(three),
       many_anys = listOf(
         AnyMessage.pack(three),
-        AnyMessage.pack(four)
-      )
+        AnyMessage.pack(four),
+      ),
     )
 
     assertEquals(hex, usesAny.encodeByteString().hex())
@@ -86,7 +86,7 @@ class AnyMessageTest {
   @Test fun unpackWithWrongTypeUrlThrow() {
     val usesAny = UsesAny(
       just_one = AnyMessage.pack(OneField(opt_int32 = 3)),
-      many_anys = listOf()
+      many_anys = listOf(),
     )
 
     try {
@@ -96,7 +96,7 @@ class AnyMessageTest {
       assertEquals(
         "type mismatch: type.googleapis.com/squareup.protos.kotlin.edgecases.OneField " +
           "!= type.googleapis.com/squareup.protos.kotlin.edgecases.NoFields",
-        expected.message
+        expected.message,
       )
     }
   }
@@ -104,7 +104,7 @@ class AnyMessageTest {
   @Test fun unpackOrNullWithWrongTypeUrlReturnsNull() {
     val usesAny = UsesAny(
       just_one = AnyMessage.pack(OneField(opt_int32 = 3)),
-      many_anys = listOf()
+      many_anys = listOf(),
     )
 
     assertNull(usesAny.just_one!!.unpackOrNull(NoTypeUrlMessage.ADAPTER))
@@ -118,13 +118,13 @@ class AnyMessageTest {
       assertTrue(expected.message!!.startsWith("recompile class "), expected.message)
       assertTrue(
         expected.message!!.endsWith("NoTypeUrlMessage to use it with AnyMessage"),
-        expected.message
+        expected.message,
       )
     }
   }
 
   private class NoTypeUrlMessage(
-    unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<NoTypeUrlMessage, Nothing>(ADAPTER, unknownFields) {
     override fun newBuilder(): Nothing = throw AssertionError()
 
@@ -135,7 +135,7 @@ class AnyMessageTest {
         NoTypeUrlMessage::class,
         null, // TypeUrl.
         Syntax.PROTO_2,
-        null // Identity.
+        null, // Identity.
       ) {
         override fun encodedSize(value: NoTypeUrlMessage) = TODO()
         override fun encode(writer: ProtoWriter, value: NoTypeUrlMessage) = TODO()

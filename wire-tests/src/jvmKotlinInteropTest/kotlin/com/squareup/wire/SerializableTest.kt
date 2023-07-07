@@ -1,11 +1,11 @@
 /*
- * Copyright 2015 Square Inc.
+ * Copyright (C) 2015 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,13 +18,13 @@ package com.squareup.wire
 import com.squareup.wire.protos.kotlin.NoFields
 import com.squareup.wire.protos.kotlin.person.Person
 import com.squareup.wire.protos.kotlin.simple.SimpleMessage
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeBase64
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
 
 class SerializableTest {
   @Test fun simple() {
@@ -42,8 +42,8 @@ class SerializableTest {
           Person.PhoneNumber.Builder()
             .number("410-555-0909")
             .type(Person.PhoneType.MOBILE)
-            .build()
-        )
+            .build(),
+        ),
       )
       .build()
     assertThat(deserialize(serialize(person))).isEqualTo(person)

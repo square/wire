@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright (C) 2013 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,10 @@
  */
 package com.squareup.wire;
 
+import static com.squareup.wire.protos.alltypes.AllTypes.NestedEnum.A;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
+
 import com.squareup.wire.protos.alltypes.AllTypes;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,7 +27,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import kotlin.KotlinNullPointerException;
 import okio.Buffer;
 import okio.ByteString;
 import okio.ForwardingSource;
@@ -31,10 +34,6 @@ import okio.Okio;
 import okio.Source;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import static com.squareup.wire.protos.alltypes.AllTypes.NestedEnum.A;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 public class TestAllTypes {
 
@@ -394,7 +393,8 @@ public class TestAllTypes {
       super(delegate);
     }
 
-    @Override public long read(Buffer sink, long byteCount) throws IOException {
+    @Override
+    public long read(Buffer sink, long byteCount) throws IOException {
       long bytesToReturn = Math.min(byteCount, (pos % 4) + 1);
       pos += bytesToReturn;
       return super.read(sink, byteCount);
@@ -423,8 +423,7 @@ public class TestAllTypes {
 
   @Test
   public void testReadNonPacked() throws IOException {
-    AllTypes parsed = adapter.decode(
-        new Buffer().write(TestAllTypesData.nonPacked));
+    AllTypes parsed = adapter.decode(new Buffer().write(TestAllTypesData.nonPacked));
     assertThat(parsed).isEqualTo(allTypes);
   }
 
@@ -454,20 +453,23 @@ public class TestAllTypes {
       builder.build();
       fail();
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage(
-          "Required fields not set:\n  req_int32\n  req_sfixed64\n  req_bool");
+      assertThat(e).hasMessage("Required fields not set:\n  req_int32\n  req_sfixed64\n  req_bool");
     }
   }
 
   @Test
   public void testDefaults() throws Exception {
     assertThat(AllTypes.DEFAULT_DEFAULT_BOOL).isEqualTo((Object) true);
-    // original: "<c-cedilla>ok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11g<u umlaut>zel"
-    assertThat(AllTypes.DEFAULT_DEFAULT_STRING).isEqualTo( "çok\u0007\b\f\n\r\t\u000b\u0001\u0001"
-        + "\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel");
-    assertThat(new String(AllTypes.DEFAULT_DEFAULT_BYTES.toByteArray(), "ISO-8859-1")).isEqualTo(
-        "çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001"
-            + "\u0011güzel");
+    // original: "<c-cedilla>ok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11g<u
+    // umlaut>zel"
+    assertThat(AllTypes.DEFAULT_DEFAULT_STRING)
+        .isEqualTo(
+            "çok\u0007\b\f\n\r\t\u000b\u0001\u0001"
+                + "\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel");
+    assertThat(new String(AllTypes.DEFAULT_DEFAULT_BYTES.toByteArray(), "ISO-8859-1"))
+        .isEqualTo(
+            "çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001"
+                + "\u0011güzel");
   }
 
   @Test
@@ -479,7 +481,7 @@ public class TestAllTypes {
 
   @Test
   public void testSkipGroup() throws IOException {
-    byte[] data =  new byte[TestAllTypesData.expectedOutput.size() + 27];
+    byte[] data = new byte[TestAllTypesData.expectedOutput.size() + 27];
     System.arraycopy(TestAllTypesData.expectedOutput.toByteArray(), 0, data, 0, 17);
     int index = 17;
     data[index++] = (byte) 0xa3; // start group, tag = 20, type = 3
@@ -510,7 +512,11 @@ public class TestAllTypes {
     data[index++] = (byte) 0xa4; // end group, tag = 20, type = 4
     data[index++] = (byte) 0x01;
 
-    System.arraycopy(TestAllTypesData.expectedOutput.toByteArray(), 17, data, index,
+    System.arraycopy(
+        TestAllTypesData.expectedOutput.toByteArray(),
+        17,
+        data,
+        index,
         TestAllTypesData.expectedOutput.size() - 17);
 
     AllTypes parsed = adapter.decode(data);
@@ -531,7 +537,8 @@ public class TestAllTypes {
     assertThat(data[count + 3]).isEqualTo((byte) 0x01);
   }
 
-  @Test @Ignore("we no longer enforce this constraint")
+  @Test
+  @Ignore("we no longer enforce this constraint")
   public void testUnknownFieldsTypeMismatch() {
     AllTypes.Builder builder = getBuilder();
     builder.addUnknownField(10000, FieldEncoding.VARINT, 1);
@@ -540,8 +547,8 @@ public class TestAllTypes {
       builder.addUnknownField(10000, FieldEncoding.FIXED32, 2);
       fail();
     } catch (IllegalArgumentException expected) {
-      assertThat(expected).hasMessage(
-          "Wire type FIXED32 differs from previous type VARINT for tag 10000");
+      assertThat(expected)
+          .hasMessage("Wire type FIXED32 differs from previous type VARINT for tag 10000");
     }
   }
 
@@ -563,8 +570,10 @@ public class TestAllTypes {
       getBuilder().rep_nested_enum(null);
       fail();
     } catch (NullPointerException e) {
-      assertThat(e).hasMessage("Parameter specified as non-null is null: method "
-          + "com.squareup.wire.internal.Internal__InternalKt.checkElementsNotNull, parameter list");
+      assertThat(e)
+          .hasMessage(
+              "Parameter specified as non-null is null: method "
+                  + "com.squareup.wire.internal.Internal__InternalKt.checkElementsNotNull, parameter list");
     }
   }
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2015 Square Inc.
+ * Copyright (C) 2015 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,12 +17,12 @@ package com.squareup.wire
 
 import com.squareup.wire.proto3.kotlin.person.Person
 import com.squareup.wire.protos.kotlin.bool.TrueBoolean
-import okio.ByteString.Companion.decodeHex
-import squareup.protos.packed_encoding.EmbeddedMessage
-import squareup.protos.packed_encoding.OuterMessage
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
+import okio.ByteString.Companion.decodeHex
+import squareup.protos.packed_encoding.EmbeddedMessage
+import squareup.protos.packed_encoding.OuterMessage
 
 class ProtoAdapterTest {
   @Test fun repeatedHelpersCacheInstances() {
@@ -35,7 +35,7 @@ class ProtoAdapterTest {
   @Test fun embeddedEmptyPackedMessage() {
     val outerMessage = OuterMessage(
       outer_number_before = 2,
-      embedded_message = EmbeddedMessage(inner_number_after = 1)
+      embedded_message = EmbeddedMessage(inner_number_after = 1),
     )
     val outerMessagesAfterSerialisation = OuterMessage.ADAPTER
       .decode(OuterMessage.ADAPTER.encode(outerMessage))
@@ -45,7 +45,7 @@ class ProtoAdapterTest {
   @Test fun getFromClassProto3() {
     val person = Person(
       name = "Somebody",
-      phones = listOf(Person.PhoneNumber())
+      phones = listOf(Person.PhoneNumber()),
     )
     val hexByteString = "0a08536f6d65626f64792200"
     assertEquals(hexByteString, Person.ADAPTER.encodeByteString(person).hex())

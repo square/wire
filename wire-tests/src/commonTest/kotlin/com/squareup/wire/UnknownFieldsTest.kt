@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright (C) 2013 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,12 +20,12 @@ import com.squareup.wire.protos.kotlin.unknownfields.NestedVersionOne
 import com.squareup.wire.protos.kotlin.unknownfields.NestedVersionTwo
 import com.squareup.wire.protos.kotlin.unknownfields.VersionOne
 import com.squareup.wire.protos.kotlin.unknownfields.VersionTwo
-import okio.ByteString
-import okio.ByteString.Companion.decodeHex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
+import okio.ByteString
+import okio.ByteString.Companion.decodeHex
 
 class UnknownFieldsTest {
   private val v1Adapter = VersionOne.ADAPTER
@@ -40,7 +40,7 @@ class UnknownFieldsTest {
       v2_s = "222",
       v2_f32 = 67890,
       v2_f64 = 98765L,
-      v2_rs = listOf("1", "2")
+      v2_rs = listOf("1", "2"),
     )
 
     val v2 = VersionTwo(
@@ -50,7 +50,7 @@ class UnknownFieldsTest {
       v2_f32 = 67890,
       v2_f64 = 98765L,
       v2_rs = listOf("1", "2"),
-      obj = v2_obj
+      obj = v2_obj,
     )
     assertEquals(111, v2.i)
     assertEquals(v2.obj!!.copy(), v2.obj)
@@ -80,7 +80,7 @@ class UnknownFieldsTest {
     // Unknown fields can be removed for equals() and hashCode();
     val v1Known = v1.copy(
       obj = v1.obj.copy(unknownFields = ByteString.EMPTY),
-      unknownFields = ByteString.EMPTY
+      unknownFields = ByteString.EMPTY,
     )
     assertEquals(v1Simple, v1Known)
     assertEquals(v1Simple.hashCode(), v1Known.hashCode())
