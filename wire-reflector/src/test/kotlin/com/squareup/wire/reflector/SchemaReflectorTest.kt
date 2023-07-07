@@ -1,11 +1,11 @@
 /*
- * Copyright 2021 Square Inc.
+ * Copyright (C) 2021 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,14 +34,14 @@ internal class SchemaReflectorTest {
     }
     val request = ServerReflectionRequest(list_services = "*")
     assertThat(
-      SchemaReflector(schema, includeDependencies = true).process(request)
+      SchemaReflector(schema, includeDependencies = true).process(request),
     ).isEqualTo(
       ServerReflectionResponse(
         original_request = request,
         list_services_response = ListServiceResponse(
-          service = listOf(ServiceResponse(name = "routeguide.RouteGuide"))
-        )
-      )
+          service = listOf(ServiceResponse(name = "routeguide.RouteGuide")),
+        ),
+      ),
     )
   }
 
@@ -54,9 +54,9 @@ internal class SchemaReflectorTest {
     assertThat(
       SchemaReflector(schema, includeDependencies = true).process(
         ServerReflectionRequest(
-          file_by_filename = "src/test/proto/RouteGuideProto.proto"
-        )
-      )
+          file_by_filename = "src/test/proto/RouteGuideProto.proto",
+        ),
+      ),
     ).extracting { it.file_descriptor_response }.isNotNull
   }
 
@@ -69,9 +69,9 @@ internal class SchemaReflectorTest {
     assertThat(
       SchemaReflector(schema, includeDependencies = true).process(
         ServerReflectionRequest(
-          file_containing_symbol = "routeguide.RouteGuide"
-        )
-      )
+          file_containing_symbol = "routeguide.RouteGuide",
+        ),
+      ),
     ).extracting { it.file_descriptor_response }.isNotNull
   }
 
@@ -85,13 +85,15 @@ internal class SchemaReflectorTest {
         |message A {
         |  optional B b = 1;
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
       add(
         "b.proto".toPath(),
         """
         |message B { }
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
 
@@ -100,7 +102,7 @@ internal class SchemaReflectorTest {
     assertThat(
       response.file_descriptor_response!!.file_descriptor_proto.map {
         DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
-      }.map { it.name }
+      }.map { it.name },
     ).containsExactly("a.proto", "b.proto")
 
     val responseB = SchemaReflector(schema, includeDependencies = true)
@@ -108,7 +110,7 @@ internal class SchemaReflectorTest {
     assertThat(
       responseB.file_descriptor_response!!.file_descriptor_proto.map {
         DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
-      }.map { it.name }
+      }.map { it.name },
     ).containsExactly("b.proto")
   }
 
@@ -124,19 +126,22 @@ internal class SchemaReflectorTest {
         |  optional B b = 1;
         |  optional C c = 2;
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
       add(
         "b.proto".toPath(),
         """
         |message B { }
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
       add(
         "c.proto".toPath(),
         """
         |message C { }
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
 
@@ -145,7 +150,7 @@ internal class SchemaReflectorTest {
     assertThat(
       response.file_descriptor_response!!.file_descriptor_proto.map {
         DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
-      }.map { it.name }
+      }.map { it.name },
     ).containsExactly("a.proto", "b.proto", "c.proto")
   }
 
@@ -161,7 +166,8 @@ internal class SchemaReflectorTest {
         |  optional B b = 1;
         |  optional C c = 2;
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
       add(
         "b.proto".toPath(),
@@ -170,13 +176,15 @@ internal class SchemaReflectorTest {
         |message B {
         |  optional C c = 1;
         | }
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
       add(
         "c.proto".toPath(),
         """
         |message C { }
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
 
@@ -185,7 +193,7 @@ internal class SchemaReflectorTest {
     assertThat(
       response.file_descriptor_response!!.file_descriptor_proto.map {
         DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
-      }.map { it.name }
+      }.map { it.name },
     ).containsExactly("a.proto", "b.proto", "c.proto")
   }
 
@@ -199,13 +207,15 @@ internal class SchemaReflectorTest {
         |message A {
         |  optional B b = 1;
         |}
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
       add(
         "b.proto".toPath(),
         """
         |import public "b-new.proto";
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
       add(
         "b-new.proto".toPath(),
@@ -214,13 +224,15 @@ internal class SchemaReflectorTest {
         |message B {
         |  optional C c = 1;
         | }
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
       add(
         "c.proto".toPath(),
         """
         |message C { }
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
 
@@ -229,7 +241,7 @@ internal class SchemaReflectorTest {
     assertThat(
       response.file_descriptor_response!!.file_descriptor_proto.map {
         DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
-      }.map { it.name }
+      }.map { it.name },
     ).containsExactly("a.proto", "b.proto", "b-new.proto", "c.proto")
   }
 }

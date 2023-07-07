@@ -1,11 +1,11 @@
 /*
- * Copyright 2021 Square Inc.
+ * Copyright (C) 2021 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ import grpc.reflection.v1alpha.ServiceResponse
  */
 class SchemaReflector(
   private val schema: Schema,
-  private val includeDependencies: Boolean = true
+  private val includeDependencies: Boolean = true,
 ) {
   fun process(request: ServerReflectionRequest): ServerReflectionResponse {
     val response = when {
@@ -43,23 +43,23 @@ class SchemaReflector(
       request.file_by_filename != null -> fileByFilename(request)
       request.file_containing_symbol != null -> fileContainingSymbol(request.file_containing_symbol)
       request.all_extension_numbers_of_type != null -> allExtensionNumbersOfType(
-        request.all_extension_numbers_of_type
+        request.all_extension_numbers_of_type,
       )
       request.file_containing_extension != null -> fileContainingExtension(
-        request.file_containing_extension
+        request.file_containing_extension,
       )
       else -> {
         ServerReflectionResponse(
           error_response = ErrorResponse(
             error_code = GrpcStatus.INVALID_ARGUMENT.code,
-            "unsupported request"
-          )
+            "unsupported request",
+          ),
         )
       }
     }
     return response.copy(
       valid_host = request.host,
-      original_request = request
+      original_request = request,
     )
   }
 
@@ -69,8 +69,8 @@ class SchemaReflector(
       return ServerReflectionResponse(
         error_response = ErrorResponse(
           error_code = GrpcStatus.NOT_FOUND.code,
-          error_message = "unknown type: \"$type\""
-        )
+          error_message = "unknown type: \"$type\"",
+        ),
       )
     }
 
@@ -80,7 +80,7 @@ class SchemaReflector(
       all_extension_numbers_response = ExtensionNumberResponse(
         base_type_name = type,
         extension_number = extensionNumbers,
-      )
+      ),
     )
   }
 
@@ -91,8 +91,8 @@ class SchemaReflector(
       return ServerReflectionResponse(
         error_response = ErrorResponse(
           error_code = GrpcStatus.NOT_FOUND.code,
-          error_message = "unknown type: \"$extension.containing_type\""
-        )
+          error_message = "unknown type: \"$extension.containing_type\"",
+        ),
       )
     }
 
@@ -101,8 +101,8 @@ class SchemaReflector(
       ?: return ServerReflectionResponse(
         error_response = ErrorResponse(
           error_code = GrpcStatus.NOT_FOUND.code,
-          error_message = "unknown type: \"$extension.containing_type\""
-        )
+          error_message = "unknown type: \"$extension.containing_type\"",
+        ),
       )
 
     val location = field.location
@@ -111,7 +111,7 @@ class SchemaReflector(
     val allProtoFiles = allDependencies(protoFile)
     val schemaEncoder = SchemaEncoder(schema)
     return ServerReflectionResponse(
-      file_descriptor_response = FileDescriptorResponse(allProtoFiles.map { schemaEncoder.encode(it) })
+      file_descriptor_response = FileDescriptorResponse(allProtoFiles.map { schemaEncoder.encode(it) }),
     )
   }
 
@@ -130,8 +130,8 @@ class SchemaReflector(
 
     return ServerReflectionResponse(
       list_services_response = ListServiceResponse(
-        service = allServiceNames.sortedBy { it.name }
-      )
+        service = allServiceNames.sortedBy { it.name },
+      ),
     )
   }
 
@@ -140,7 +140,7 @@ class SchemaReflector(
     val allProtoFiles = allDependencies(protoFile)
     val schemaEncoder = SchemaEncoder(schema)
     return ServerReflectionResponse(
-      file_descriptor_response = FileDescriptorResponse(allProtoFiles.map { schemaEncoder.encode(it) })
+      file_descriptor_response = FileDescriptorResponse(allProtoFiles.map { schemaEncoder.encode(it) }),
     )
   }
 
@@ -151,15 +151,15 @@ class SchemaReflector(
       ?: return ServerReflectionResponse(
         error_response = ErrorResponse(
           error_code = GrpcStatus.NOT_FOUND.code,
-          "unknown symbol: $file_containing_symbol"
-        )
+          "unknown symbol: $file_containing_symbol",
+        ),
       )
 
     val protoFile = schema.protoFile(location.path)!!
     val allProtoFiles = allDependencies(protoFile)
     val schemaEncoder = SchemaEncoder(schema)
     return ServerReflectionResponse(
-      file_descriptor_response = FileDescriptorResponse(allProtoFiles.map { schemaEncoder.encode(it) })
+      file_descriptor_response = FileDescriptorResponse(allProtoFiles.map { schemaEncoder.encode(it) }),
     )
   }
 
