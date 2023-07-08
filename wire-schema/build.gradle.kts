@@ -32,12 +32,13 @@ kotlin {
       browser()
     }
   }
-
   sourceSets {
     val commonMain by getting {
       dependencies {
         api(projects.wireRuntime)
       }
+    }
+    val commonTest by getting {
     }
     val jvmMain by getting {
       dependencies {
@@ -68,7 +69,6 @@ kotlin {
     }
   }
 }
-
 
 if (project.rootProject.name == "wire") {
   configure<MavenPublishBaseExtension> {

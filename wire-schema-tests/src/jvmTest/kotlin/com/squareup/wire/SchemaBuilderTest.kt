@@ -19,7 +19,7 @@ import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.SchemaException
 import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
 class SchemaBuilderTest {
