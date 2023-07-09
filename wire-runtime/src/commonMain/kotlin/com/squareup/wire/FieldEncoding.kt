@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright (C) 2013 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,8 +17,8 @@ package com.squareup.wire
 
 import com.squareup.wire.internal.ProtocolException
 import com.squareup.wire.internal.Throws
-import okio.IOException
 import kotlin.jvm.JvmStatic
+import okio.IOException
 
 enum class FieldEncoding(internal val value: Int) {
   VARINT(0), FIXED64(1), LENGTH_DELIMITED(2), FIXED32(5);

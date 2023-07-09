@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2023 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.squareup.wire.java
 
 import com.squareup.javapoet.JavaFile
@@ -8,8 +23,8 @@ import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.SchemaHandler
 import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
-import okio.Path
 import java.io.IOException
+import okio.Path
 
 class JavaSchemaHandler(
   /** True for emitted types to implement `android.os.Parcelable`. */
@@ -87,7 +102,9 @@ class JavaSchemaHandler(
       "${javaTypeName.simpleName()}.java"
 
     context.logger.artifactHandled(
-      outDirectory, "${javaFile.packageName}.${javaFile.typeSpec.name}", "Java"
+      outDirectory,
+      "${javaFile.packageName}.${javaFile.typeSpec.name}",
+      "Java",
     )
     try {
       context.fileSystem.createDirectories(filePath.parent!!)
@@ -96,7 +113,8 @@ class JavaSchemaHandler(
       }
     } catch (e: IOException) {
       throw IOException(
-        "Error emitting ${javaFile.packageName}.${javaFile.typeSpec.name} to $outDirectory", e
+        "Error emitting ${javaFile.packageName}.${javaFile.typeSpec.name} to $outDirectory",
+        e,
       )
     }
     return filePath

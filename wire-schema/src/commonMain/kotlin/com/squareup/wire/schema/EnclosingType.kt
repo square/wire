@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ data class EnclosingType(
   override val documentation: String,
   override val nestedTypes: List<Type>,
   override val nestedExtendList: List<Extend>,
-  override val syntax: Syntax
+  override val syntax: Syntax,
 ) : Type() {
   override val options
     get() = Options(Options.MESSAGE_OPTIONS, listOf())
@@ -57,6 +57,6 @@ data class EnclosingType(
   fun toElement() = MessageElement(
     location = location,
     name = type.simpleName,
-    nestedTypes = toElements(nestedTypes)
+    nestedTypes = toElements(nestedTypes),
   )
 }

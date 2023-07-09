@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ data class OptionElement(
   val kind: Kind,
   val value: Any,
   /** If true, this [OptionElement] is a custom option. */
-  val isParenthesized: Boolean
+  val isParenthesized: Boolean,
 ) {
   enum class Kind {
     STRING,
@@ -40,7 +40,7 @@ data class OptionElement(
     ENUM,
     MAP,
     LIST,
-    OPTION
+    OPTION,
   }
 
   /** An internal representation of the Option primitive types. */
@@ -53,7 +53,8 @@ data class OptionElement(
       STRING -> append("""$formattedName = "$value"""")
       BOOLEAN,
       NUMBER,
-      ENUM -> append("$formattedName = $value")
+      ENUM,
+      -> append("$formattedName = $value")
       OPTION -> {
         // Treat nested options as non-parenthesized always, prevents double parentheses.
         val optionValue = (value as OptionElement).copy()
@@ -77,7 +78,7 @@ data class OptionElement(
 
   private fun formatOptionMap(
     builder: StringBuilder,
-    valueMap: Map<String, *>
+    valueMap: Map<String, *>,
   ) {
     val lastIndex = valueMap.size - 1
     valueMap.entries.forEachIndexed { index, entry ->
@@ -95,7 +96,8 @@ data class OptionElement(
         when (value.kind) {
           BOOLEAN,
           NUMBER,
-          ENUM -> {
+          ENUM,
+          -> {
             append("${value.value}")
           }
           else -> append(formatOptionMapValue(value.value))
@@ -134,7 +136,7 @@ data class OptionElement(
       name: String,
       kind: Kind,
       value: Any,
-      isParenthesized: Boolean = false
+      isParenthesized: Boolean = false,
     ) = OptionElement(name, kind, value, isParenthesized)
   }
 }

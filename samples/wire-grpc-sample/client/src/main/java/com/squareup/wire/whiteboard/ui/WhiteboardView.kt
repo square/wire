@@ -1,11 +1,11 @@
 /*
- * Copyright 2022 Block Inc.
+ * Copyright (C) 2022 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,7 +55,7 @@ class WhiteboardView(
         realY - realHeight / 2f,
         realX + realWidth / 2f - 1,
         realY + realHeight / 2f - 1,
-        Paint().apply { color = point.color }
+        Paint().apply { color = point.color },
       )
     }
   }
@@ -64,7 +64,8 @@ class WhiteboardView(
   override fun onTouchEvent(event: MotionEvent): Boolean {
     when (event.action) {
       MotionEvent.ACTION_DOWN,
-      MotionEvent.ACTION_MOVE -> {
+      MotionEvent.ACTION_MOVE,
+      -> {
         val (abstractX, abstractY) = convertToAbstract(event.x, event.y)
         onBoardEventListener!!.onPoint(Point(abstractX, abstractY, color))
       }
@@ -76,18 +77,18 @@ class WhiteboardView(
 
   private fun convertToReal(
     x: Int,
-    y: Int
+    y: Int,
   ) = Pair(
     x * width / abstractWidth,
-    y * height / abstractHeight
+    y * height / abstractHeight,
   )
 
   private fun convertToAbstract(
     x: Float,
-    y: Float
+    y: Float,
   ) = Pair(
     (x / width * abstractWidth).roundToInt(),
-    (y / height * abstractHeight).roundToInt()
+    (y / height * abstractHeight).roundToInt(),
   )
 
   private fun Canvas.showEmptyView() {
@@ -103,7 +104,7 @@ class WhiteboardView(
       text,
       (centerX - (paint.measureText(text) / 2).toInt()).toFloat(),
       (centerY - (paint.descent() + paint.ascent()) / 2).toInt().toFloat(),
-      paint
+      paint,
     )
   }
 }

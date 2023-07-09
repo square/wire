@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 Square Inc.
+ * Copyright (C) 2018 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,11 +17,11 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
+import kotlin.test.assertFailsWith
 import okio.Path
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import kotlin.test.assertFailsWith
 
 // TODO(Benoit) Move to `commonTest`.
 class RootTest {
@@ -59,7 +59,7 @@ class RootTest {
 
     assertThat(roots[0].allProtoFiles().map { it.location }).containsExactlyInAnyOrder(
       Location.get(sourceDir.toString(), "squareup/dinosaurs/dinosaur.proto"),
-      Location.get(sourceDir.toString(), "squareup/dinosaurs/geology.proto")
+      Location.get(sourceDir.toString(), "squareup/dinosaurs/geology.proto"),
     )
   }
 
@@ -67,7 +67,7 @@ class RootTest {
     fs.addZip(
       "lib/dinosaurs.zip",
       "squareup/dinosaurs/dinosaur.proto" to "/* dinosaur.proto */",
-      "squareup/dinosaurs/geology.proto" to "/* geology.proto */"
+      "squareup/dinosaurs/geology.proto" to "/* geology.proto */",
     )
 
     val sourceZip = Location.get("lib/dinosaurs.zip")
@@ -81,7 +81,7 @@ class RootTest {
 
     assertThat(roots[0].allProtoFiles().map { it.location }).containsExactlyInAnyOrder(
       Location.get(sourceZip.toString(), "squareup/dinosaurs/dinosaur.proto"),
-      Location.get(sourceZip.toString(), "squareup/dinosaurs/geology.proto")
+      Location.get(sourceZip.toString(), "squareup/dinosaurs/geology.proto"),
     )
   }
 
@@ -89,7 +89,7 @@ class RootTest {
     fs.addZip(
       "lib/dinosaurs.zip",
       "squareup/dinosaurs/raptor.proto" to "/* raptor.proto */",
-      "squareup/dinosaurs/raptor.nba" to "/* raptor.nba */"
+      "squareup/dinosaurs/raptor.nba" to "/* raptor.nba */",
     )
 
     val sourceZip = Location.get("lib/dinosaurs.zip")

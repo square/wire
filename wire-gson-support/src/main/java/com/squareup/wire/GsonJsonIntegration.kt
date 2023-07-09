@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ import java.lang.reflect.Type
 internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>() {
   override fun frameworkAdapter(
     framework: Gson,
-    type: Type
+    type: Type,
   ): TypeAdapter<Any?> = framework.getAdapter(TypeToken.get(type)).nullSafe() as TypeAdapter<Any?>
 
   override fun listAdapter(elementAdapter: TypeAdapter<Any?>): TypeAdapter<Any?> =
@@ -37,7 +37,7 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
   override fun mapAdapter(
     framework: Gson,
     keyFormatter: JsonFormatter<*>,
-    valueAdapter: TypeAdapter<Any?>
+    valueAdapter: TypeAdapter<Any?>,
   ): TypeAdapter<Any?> = MapJsonAdapter(keyFormatter, valueAdapter).nullSafe() as TypeAdapter<Any?>
 
   fun <T> TypeAdapter<T>.serializeNulls(): TypeAdapter<T> {
@@ -67,7 +67,7 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
     FormatterJsonAdapter(jsonFormatter).nullSafe() as TypeAdapter<Any?>
 
   private class FormatterJsonAdapter<T : Any>(
-    private val formatter: JsonFormatter<T>
+    private val formatter: JsonFormatter<T>,
   ) : TypeAdapter<T>() {
     override fun write(writer: JsonWriter, value: T) {
       val stringOrNumber = formatter.toStringOrNumber(value)
@@ -90,7 +90,7 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
 
   /** Adapt a list of values by delegating to an adapter for a single value. */
   private class ListJsonAdapter<T>(
-    private val single: TypeAdapter<T>
+    private val single: TypeAdapter<T>,
   ) : TypeAdapter<List<T?>>() {
     override fun read(reader: JsonReader): List<T?> {
       val result = mutableListOf<T?>()
@@ -114,7 +114,7 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
   /** Adapt a list of values by delegating to an adapter for a single value. */
   private class MapJsonAdapter<K : Any, V>(
     private val keyFormatter: JsonFormatter<K>,
-    private val valueAdapter: TypeAdapter<V>
+    private val valueAdapter: TypeAdapter<V>,
   ) : TypeAdapter<Map<K, V>>() {
     override fun read(reader: JsonReader): Map<K, V> {
       val result = mutableMapOf<K, V>()

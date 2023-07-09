@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 Square Inc.
+ * Copyright (C) 2014 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,12 +32,12 @@ class RedactTest {
     assertEquals("RedactedFields{a=██, b=b, c=c}", redacted.toString())
     val redactedRepeated = RedactedRepeated(
       a = listOf("a", "b"),
-      b = listOf(RedactedFields("a", "b", "c", null), RedactedFields("d", "e", "f", null))
+      b = listOf(RedactedFields("a", "b", "c", null), RedactedFields("d", "e", "f", null)),
     )
     assertEquals(
       "RedactedRepeated{a=██, b=[RedactedFields{a=██, b=b, c=c}, " +
         "RedactedFields{a=██, b=e, c=f}]}",
-      redactedRepeated.toString()
+      redactedRepeated.toString(),
     )
   }
 
@@ -56,7 +56,7 @@ class RedactTest {
     val message = RedactedChild(
       a = "a",
       b = RedactedFields(a = "a", b = "b", c = "c"),
-      c = NotRedacted(a = "a", b = "b")
+      c = NotRedacted(a = "a", b = "b"),
     )
     val expected = message.copy(b = message.b!!.copy(a = null))
     assertEquals(expected, RedactedChild.ADAPTER.redact(message))
@@ -76,10 +76,10 @@ class RedactTest {
   @Test fun repeatedField() {
     val message = RedactedRepeated(
       a = listOf("a", "b"),
-      b = listOf(RedactedFields("a", "b", "c", null), RedactedFields("d", "e", "f", null))
+      b = listOf(RedactedFields("a", "b", "c", null), RedactedFields("d", "e", "f", null)),
     )
     val expected = RedactedRepeated(
-      b = listOf(RedactedFields(null, "b", "c", null), RedactedFields(null, "e", "f", null))
+      b = listOf(RedactedFields(null, "b", "c", null), RedactedFields(null, "e", "f", null)),
     )
     val actual = RedactedRepeated.ADAPTER.redact(message)
     assertEquals(expected, actual)

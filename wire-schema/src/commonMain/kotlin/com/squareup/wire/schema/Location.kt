@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ data class Location(
   val line: Int = -1,
 
   /** The column on the line of this location, or -1 for no specific column.  */
-  val column: Int = -1
+  val column: Int = -1,
 ) {
 
   fun at(line: Int, column: Int) = Location(base, path, line, column)
@@ -68,7 +68,7 @@ data class Location(
     @JvmStatic
     fun get(
       base: String,
-      path: String
+      path: String,
     ): Location {
       return Location(base.trimEnd('/'), path, -1, -1)
     }

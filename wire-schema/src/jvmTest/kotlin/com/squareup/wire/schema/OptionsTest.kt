@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ class OptionsTest {
             |  optional int32 a = 1 [(foo_options).opt1 = 123, (foo_options).opt2 = "baz"];
             |  optional int32 b = 2 [(foo_options) = { opt1: 456 opt2: "quux" }];
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }
 
@@ -78,7 +78,7 @@ class OptionsTest {
             |message Message {
             |  optional int32 b = 2 [(foo) = { bar { baz: 123 } }];
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }
 
@@ -133,7 +133,7 @@ class OptionsTest {
             |
             |  optional int32 b = 2;
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }
 
@@ -152,7 +152,8 @@ class OptionsTest {
            |    HTTP,
            |    HTTPS
            |  ]
-           |}""".trimMargin()
+           |}
+        """.trimMargin(),
       )
 
     val foo = ProtoMember.get(Options.MESSAGE_OPTIONS, "foo")
@@ -170,9 +171,9 @@ class OptionsTest {
           foo to
             arrayListOf(
               mapOf(name to "test", type to "STRING", schemes to listOf("HTTP", "HTTPS")),
-              mapOf(name to "test2", type to "NUMBER", schemes to listOf("HTTP", "HTTPS"))
-            )
-        )
+              mapOf(name to "test2", type to "NUMBER", schemes to listOf("HTTP", "HTTPS")),
+            ),
+        ),
       )
   }
 
@@ -194,7 +195,7 @@ class OptionsTest {
             |message MoreOptions {
             |  extensions 100 to 200;
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
       add(
         "a/c/event_more_options.proto".toPath(),
@@ -211,7 +212,7 @@ class OptionsTest {
             |message EvenMoreOptions {
             |  optional string string_option = 1;
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
       add(
         "a/d/message.proto".toPath(),
@@ -227,7 +228,7 @@ class OptionsTest {
             |    [a.c.even_more_options]: {string_option: "foo"}
             |  };
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }
     val moreOptionsType = ProtoType.get("a.b.MoreOptions")
@@ -330,7 +331,7 @@ class OptionsTest {
         |extend google.protobuf.EnumValueOptions {
         |  optional MyOption my_option = 1000;
         |}
-      """.trimMargin()
+        """.trimMargin(),
       )
     }
 
@@ -349,9 +350,9 @@ class OptionsTest {
               mapOf("key-3" to mapOf()),
               mapOf("key-4" to null),
               mapOf("key-5" to mapOf(someString to "value-5", someInt32 to "5")),
-            )
-          )
-        )
+            ),
+          ),
+        ),
       )
   }
 
@@ -398,7 +399,7 @@ class OptionsTest {
         |extend google.protobuf.EnumValueOptions {
         |  MyOption my_option = 1000;
         |}
-      """.trimMargin()
+        """.trimMargin(),
       )
     }
 

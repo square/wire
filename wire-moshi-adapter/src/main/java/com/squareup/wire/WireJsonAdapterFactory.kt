@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 Square Inc.
+ * Copyright (C) 2018 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,7 +53,7 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
     val newMap = typeUrlToAdapter.toMutableMap()
     for (adapter in adapters) {
       val key = adapter.typeUrl ?: throw IllegalArgumentException(
-        "recompile ${adapter.type} to use it with WireJsonAdapterFactory"
+        "recompile ${adapter.type} to use it with WireJsonAdapterFactory",
       )
       newMap[key] = adapter
     }
@@ -71,7 +71,7 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
   override fun create(
     type: Type,
     annotations: Set<Annotation>,
-    moshi: Moshi
+    moshi: Moshi,
   ): JsonAdapter<*>? {
     val rawType = Types.getRawType(type)
 
@@ -86,7 +86,7 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
         )
         val jsonAdapters = MoshiJsonIntegration.jsonAdapters(messageAdapter, moshi)
         val redactedFieldsAdapter = moshi.adapter<List<String>>(
-          Types.newParameterizedType(List::class.java, String::class.java)
+          Types.newParameterizedType(List::class.java, String::class.java),
         )
         MessageJsonAdapter(messageAdapter, jsonAdapters, redactedFieldsAdapter).nullSafe()
       }

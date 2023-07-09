@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.kotlin.grpcserver
 
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 /**
  * This is an adapter class to convert Wire generated Channel based routines to
@@ -35,7 +35,7 @@ object FlowAdapter {
   fun <I : Any, O : Any> serverStream(
     context: CoroutineContext,
     request: I,
-    f: suspend (I, SendChannel<O>) -> Unit
+    f: suspend (I, SendChannel<O>) -> Unit,
   ): Flow<O> {
     val sendChannel = Channel<O>()
 
@@ -46,7 +46,7 @@ object FlowAdapter {
   suspend fun <I : Any, O : Any> clientStream(
     context: CoroutineContext,
     request: Flow<I>,
-    f: suspend (ReceiveChannel<I>) -> O
+    f: suspend (ReceiveChannel<I>) -> O,
   ): O {
     val receiveChannel = Channel<I>()
 
@@ -61,7 +61,7 @@ object FlowAdapter {
   fun <I : Any, O : Any> bidiStream(
     context: CoroutineContext,
     request: Flow<I>,
-    f: suspend (ReceiveChannel<I>, SendChannel<O>) -> Unit
+    f: suspend (ReceiveChannel<I>, SendChannel<O>) -> Unit,
   ): Flow<O> {
     val sendChannel = Channel<O>()
     val receiveChannel = Channel<I>()

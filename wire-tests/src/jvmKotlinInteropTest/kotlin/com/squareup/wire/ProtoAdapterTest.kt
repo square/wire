@@ -1,11 +1,11 @@
 /*
- * Copyright 2015 Square Inc.
+ * Copyright (C) 2015 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,10 @@
 package com.squareup.wire
 
 import com.squareup.wire.protos.kotlin.person.Person
+import kotlin.test.Test
 import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.toByteString
 import org.assertj.core.api.Assertions.assertThat
-import kotlin.test.Test
 
 class ProtoAdapterTest {
   @Test fun fromClass() {

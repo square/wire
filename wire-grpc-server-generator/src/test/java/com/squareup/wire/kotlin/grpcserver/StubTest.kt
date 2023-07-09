@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,11 +40,11 @@ class StubTest {
               service,
               options = KotlinGrpcGenerator.Companion.Options(
                 singleMethodServices = false,
-                suspendingCalls = false
-              )
+                suspendingCalls = false,
+              ),
             )
           }
-          .build()
+          .build(),
       )
       .build()
 
@@ -53,7 +53,10 @@ class StubTest {
 
   @Test
   fun `generates stubs for suspended bidi streaming rpc`() {
-    val code = stubCodeFor("test", "TestService", """
+    val code = stubCodeFor(
+      "test",
+      "TestService",
+      """
       syntax = "proto2";
       package test;
 
@@ -61,8 +64,10 @@ class StubTest {
       service TestService {
         rpc TestRPC(stream Test) returns (stream Test){}
       }
-      """.trimMargin())
-    assertEquals("""
+      """.trimMargin(),
+    )
+    assertEquals(
+      """
       package test
 
       import io.grpc.CallOptions
@@ -86,12 +91,17 @@ class StubTest {
               getTestRPCMethod(), request, callOptions)
         }
       }
-    """.trimIndent().trim(), code)
+      """.trimIndent().trim(),
+      code,
+    )
   }
 
   @Test
   fun `generates stubs for suspended server streaming rpc`() {
-    val code = stubCodeFor("test", "TestService", """
+    val code = stubCodeFor(
+      "test",
+      "TestService",
+      """
       syntax = "proto2";
       package test;
 
@@ -99,8 +109,10 @@ class StubTest {
       service TestService {
         rpc TestRPC(Test) returns (stream Test){}
       }
-      """.trimMargin())
-    assertEquals("""
+      """.trimMargin(),
+    )
+    assertEquals(
+      """
       package test
 
       import io.grpc.CallOptions
@@ -124,12 +136,17 @@ class StubTest {
               getTestRPCMethod(), request, callOptions)
         }
       }
-    """.trimIndent().trim(), code)
+      """.trimIndent().trim(),
+      code,
+    )
   }
 
   @Test
   fun `generates stubs for suspended client streaming rpc`() {
-    val code = stubCodeFor("test", "TestService", """
+    val code = stubCodeFor(
+      "test",
+      "TestService",
+      """
       syntax = "proto2";
       package test;
 
@@ -137,8 +154,10 @@ class StubTest {
       service TestService {
         rpc TestRPC(stream Test) returns (Test){}
       }
-      """.trimMargin())
-    assertEquals("""
+      """.trimMargin(),
+    )
+    assertEquals(
+      """
       package test
 
       import io.grpc.CallOptions
@@ -162,14 +181,20 @@ class StubTest {
               getTestRPCMethod(), request, callOptions)
         }
       }
-    """.trimIndent().trim(), code)
+      """.trimIndent().trim(),
+      code,
+    )
   }
 
-  private fun stubCodeFor(pkg: String, serviceName: String, schemaCode: String,
-                              options: KotlinGrpcGenerator.Companion.Options = KotlinGrpcGenerator.Companion.Options(
-                                singleMethodServices = false,
-                                suspendingCalls = true
-                              )): String {
+  private fun stubCodeFor(
+    pkg: String,
+    serviceName: String,
+    schemaCode: String,
+    options: KotlinGrpcGenerator.Companion.Options = KotlinGrpcGenerator.Companion.Options(
+      singleMethodServices = false,
+      suspendingCalls = true,
+    ),
+  ): String {
     val schema = buildSchema { add("test.proto".toPath(), schemaCode) }
     val service = schema.getService("$pkg.$serviceName")!!
     val typeSpec = TypeSpec.classBuilder("${serviceName}WireGrpc")

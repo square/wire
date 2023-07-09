@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -105,7 +105,7 @@ import com.squareup.wire.internal.sanitize
  */
 data class OneOf<out K : OneOf.Key<T>, T>(
   val key: K,
-  val value: T
+  val value: T,
 ) {
   @Suppress("UNCHECKED_CAST") // We statically guarantee Keys and Values are of the same types.
   fun <X> getOrNull(key: Key<X>): X? {
@@ -161,6 +161,6 @@ data class OneOf<out K : OneOf.Key<T>, T>(
     val adapter: ProtoAdapter<T>,
     val declaredName: String,
     val redacted: Boolean = false,
-    val jsonName: String = ""
+    val jsonName: String = "",
   )
 }

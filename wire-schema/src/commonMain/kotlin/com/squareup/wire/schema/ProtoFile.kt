@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,7 +45,7 @@ data class ProtoFile(
       Type.toElements(types),
       Service.toElements(services),
       Extend.toElements(extendList),
-      options.elements
+      options.elements,
     )
   }
 
@@ -103,7 +103,7 @@ data class ProtoFile(
 
     val result = ProtoFile(
       location, imports, publicImports, packageName, retainedTypes,
-      retainedServices, retainedExtends, retainedOptions, syntax
+      retainedServices, retainedExtends, retainedOptions, syntax,
     )
     result.javaPackage = javaPackage
     result.wirePackage = wirePackage
@@ -122,7 +122,7 @@ data class ProtoFile(
 
     val result = ProtoFile(
       location, imports, publicImports, packageName, retainedTypes,
-      retainedServices, retainedExtends, retainedOptions, syntax
+      retainedServices, retainedExtends, retainedOptions, syntax,
     )
     result.javaPackage = javaPackage
     result.wirePackage = wirePackage
@@ -151,7 +151,7 @@ data class ProtoFile(
     return if (imports.size != retainedImports.size) {
       val result = ProtoFile(
         location, retainedImports, publicImports, packageName, types, services,
-        extendList, options, syntax
+        extendList, options, syntax,
       )
       result.javaPackage = javaPackage
       result.wirePackage = wirePackage
@@ -198,7 +198,7 @@ data class ProtoFile(
       return ProtoFile(
         protoFileElement.location, protoFileElement.imports,
         protoFileElement.publicImports, packageName, types, services, wireExtends, options,
-        protoFileElement.syntax
+        protoFileElement.syntax,
       )
     }
 

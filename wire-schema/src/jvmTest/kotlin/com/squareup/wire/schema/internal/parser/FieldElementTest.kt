@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,14 +35,14 @@ class FieldElementTest {
       tag = 1,
       options = listOf(
         OptionElement.create("default", Kind.ENUM, "TEST"),
-        OptionElement.create("deprecated", Kind.BOOLEAN, "true")
-      )
+        OptionElement.create("deprecated", Kind.BOOLEAN, "true"),
+      ),
     )
 
     assertThat(field.options)
       .containsOnly(
         OptionElement.create("default", Kind.ENUM, "TEST"),
-        OptionElement.create("deprecated", Kind.BOOLEAN, "true")
+        OptionElement.create("deprecated", Kind.BOOLEAN, "true"),
       )
   }
 
@@ -56,7 +56,7 @@ class FieldElementTest {
       type = "string",
       name = "name",
       tag = 1,
-      options = listOf(kitKat, fooBar)
+      options = listOf(kitKat, fooBar),
     )
 
     assertThat(field.options).hasSize(2)
@@ -70,14 +70,15 @@ class FieldElementTest {
       type = "string",
       name = "name",
       tag = 1,
-      defaultValue = "defaultValue"
+      defaultValue = "defaultValue",
     )
 
     assertThat(field.toSchema())
       .isEqualTo(
         """
             |required string name = 1 [default = "defaultValue"];
-            |""".trimMargin()
+            |
+        """.trimMargin(),
       )
   }
 
@@ -90,7 +91,7 @@ class FieldElementTest {
       name = "name",
       defaultValue = "defaultValue",
       jsonName = "my_json",
-      tag = 1
+      tag = 1,
     )
 
     assertThat(field.toSchema())
@@ -100,7 +101,8 @@ class FieldElementTest {
             |  default = "defaultValue",
             |  json_name = "my_json"
             |];
-            |""".trimMargin()
+            |
+        """.trimMargin(),
       )
   }
 
@@ -112,14 +114,15 @@ class FieldElementTest {
       type = "string",
       name = "name",
       jsonName = "my_json",
-      tag = 1
+      tag = 1,
     )
 
     assertThat(field.toSchema())
       .isEqualTo(
         """
             |required string name = 1 [json_name = "my_json"];
-            |""".trimMargin()
+            |
+        """.trimMargin(),
       )
   }
 }

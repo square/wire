@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,11 +26,12 @@ import org.junit.Test
 
 class MessageElementTest {
   internal var location = Location.get("file.proto")
+
   @Test
   fun emptyToSchema() {
     val element = MessageElement(
       location = location,
-      name = "Message"
+      name = "Message",
     )
     val expected = "message Message {}\n"
     assertThat(element.toSchema()).isEqualTo(expected)
@@ -47,15 +48,16 @@ class MessageElementTest {
           label = REQUIRED,
           type = "string",
           name = "name",
-          tag = 1
-        )
-      )
+          tag = 1,
+        ),
+      ),
     )
     val expected = """
         |message Message {
         |  required string name = 1;
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(element.toSchema()).isEqualTo(expected)
   }
 
@@ -66,19 +68,19 @@ class MessageElementTest {
       label = REQUIRED,
       type = "string",
       name = "first_name",
-      tag = 1
+      tag = 1,
     )
     val lastName = FieldElement(
       location = location,
       label = REQUIRED,
       type = "string",
       name = "last_name",
-      tag = 2
+      tag = 2,
     )
     val element = MessageElement(
       location = location,
       name = "Message",
-      fields = listOf(firstName, lastName)
+      fields = listOf(firstName, lastName),
     )
     assertThat(element.fields).hasSize(2)
   }
@@ -95,16 +97,17 @@ class MessageElementTest {
           label = REQUIRED,
           type = "string",
           name = "name",
-          tag = 1
-        )
-      )
+          tag = 1,
+        ),
+      ),
     )
     val expected = """
         |// Hello
         |message Message {
         |  required string name = 1;
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(element.toSchema()).isEqualTo(expected)
   }
 
@@ -115,13 +118,13 @@ class MessageElementTest {
       label = REQUIRED,
       type = "string",
       name = "name",
-      tag = 1
+      tag = 1,
     )
     val element = MessageElement(
       location = location,
       name = "Message",
       fields = listOf(field),
-      options = listOf(OptionElement.create("kit", Kind.STRING, "kat"))
+      options = listOf(OptionElement.create("kit", Kind.STRING, "kat")),
     )
     val expected =
       """message Message {
@@ -129,7 +132,8 @@ class MessageElementTest {
         |
         |  required string name = 1;
         |}
-        |""".trimMargin()
+        |
+      """.trimMargin()
     assertThat(element.toSchema()).isEqualTo(expected)
   }
 
@@ -140,7 +144,7 @@ class MessageElementTest {
       label = REQUIRED,
       type = "string",
       name = "name",
-      tag = 1
+      tag = 1,
     )
     val kitKat = OptionElement.create("kit", Kind.STRING, "kat")
     val fooBar = OptionElement.create("foo", Kind.STRING, "bar")
@@ -148,7 +152,7 @@ class MessageElementTest {
       location = location,
       name = "Message",
       fields = listOf(field),
-      options = listOf(kitKat, fooBar)
+      options = listOf(kitKat, fooBar),
     )
     assertThat(element.options).hasSize(2)
   }
@@ -164,8 +168,8 @@ class MessageElementTest {
           label = REQUIRED,
           type = "string",
           name = "name",
-          tag = 1
-        )
+          tag = 1,
+        ),
       ),
       nestedTypes = listOf(
         MessageElement(
@@ -177,11 +181,11 @@ class MessageElementTest {
               label = REQUIRED,
               type = "string",
               name = "name",
-              tag = 1
-            )
-          )
-        )
-      )
+              tag = 1,
+            ),
+          ),
+        ),
+      ),
     )
     val expected = """
         |message Message {
@@ -191,7 +195,8 @@ class MessageElementTest {
         |    required string name = 1;
         |  }
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(element.toSchema()).isEqualTo(expected)
   }
 
@@ -199,11 +204,11 @@ class MessageElementTest {
   fun addMultipleTypes() {
     val nested1 = MessageElement(
       location = location,
-      name = "Nested1"
+      name = "Nested1",
     )
     val nested2 = MessageElement(
       location = location,
-      name = "Nested2"
+      name = "Nested2",
     )
     val element = MessageElement(
       location = location,
@@ -214,10 +219,10 @@ class MessageElementTest {
           label = REQUIRED,
           type = "string",
           name = "name",
-          tag = 1
-        )
+          tag = 1,
+        ),
       ),
-      nestedTypes = listOf(nested1, nested2)
+      nestedTypes = listOf(nested1, nested2),
     )
     assertThat(element.nestedTypes).hasSize(2)
   }
@@ -233,10 +238,10 @@ class MessageElementTest {
           label = REQUIRED,
           type = "string",
           name = "name",
-          tag = 1
-        )
+          tag = 1,
+        ),
       ),
-      extensions = listOf(ExtensionsElement(location = location, values = listOf(500..501)))
+      extensions = listOf(ExtensionsElement(location = location, values = listOf(500..501))),
     )
     val expected = """
         |message Message {
@@ -244,7 +249,8 @@ class MessageElementTest {
         |
         |  extensions 500 to 501;
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(element.toSchema()).isEqualTo(expected)
   }
 
@@ -261,10 +267,10 @@ class MessageElementTest {
           label = REQUIRED,
           type = "string",
           name = "name",
-          tag = 1
-        )
+          tag = 1,
+        ),
       ),
-      extensions = listOf(fives, sixes)
+      extensions = listOf(fives, sixes),
     )
     assertThat(element.extensions).hasSize(2)
   }
@@ -282,11 +288,11 @@ class MessageElementTest {
               location = location,
               type = "string",
               name = "name",
-              tag = 1
-            )
-          )
-        )
-      )
+              tag = 1,
+            ),
+          ),
+        ),
+      ),
     )
     val expected = """
         |message Message {
@@ -294,7 +300,8 @@ class MessageElementTest {
         |    string name = 1;
         |  }
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(element.toSchema()).isEqualTo(expected)
   }
 
@@ -311,8 +318,8 @@ class MessageElementTest {
               location = location,
               type = "string",
               name = "name",
-              tag = 1
-            )
+              tag = 1,
+            ),
           ),
           groups = listOf(
             GroupElement(
@@ -325,20 +332,20 @@ class MessageElementTest {
                   label = OPTIONAL,
                   type = "int32",
                   name = "result_per_page",
-                  tag = 4
+                  tag = 4,
                 ),
                 FieldElement(
                   location = location.at(7, 7),
                   label = OPTIONAL,
                   type = "int32",
                   name = "page_count",
-                  tag = 5
-                )
-              )
-            )
-          )
-        )
-      )
+                  tag = 5,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     )
     // spotless:off because spotless will remove the indents (trailing spaces) in the oneof block.
     val expected = """
@@ -352,7 +359,8 @@ class MessageElementTest {
         |    }
         |  }
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     // spotless:on
     assertThat(element.toSchema()).isEqualTo(expected)
   }
@@ -366,9 +374,9 @@ class MessageElementTest {
           location = location,
           type = "string",
           name = "name",
-          tag = 1
-        )
-      )
+          tag = 1,
+        ),
+      ),
     )
     val hey = OneOfElement(
       name = "hey",
@@ -377,14 +385,14 @@ class MessageElementTest {
           location = location,
           type = "string",
           name = "city",
-          tag = 2
-        )
-      )
+          tag = 2,
+        ),
+      ),
     )
     val element = MessageElement(
       location = location,
       name = "Message",
-      oneOfs = listOf(hi, hey)
+      oneOfs = listOf(hi, hey),
     )
     assertThat(element.oneOfs).hasSize(2)
   }
@@ -398,8 +406,8 @@ class MessageElementTest {
         ReservedElement(location = location, values = listOf(10, 12..14, "foo")),
         ReservedElement(location = location, values = listOf(10)),
         ReservedElement(location = location, values = listOf(12..MAX_TAG_VALUE)),
-        ReservedElement(location = location, values = listOf("foo"))
-      )
+        ReservedElement(location = location, values = listOf("foo")),
+      ),
     )
     val expected = """
         |message Message {
@@ -408,7 +416,8 @@ class MessageElementTest {
         |  reserved 12 to max;
         |  reserved "foo";
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(element.toSchema()).isEqualTo(expected)
   }
 
@@ -429,25 +438,25 @@ class MessageElementTest {
               label = REQUIRED,
               type = "string",
               name = "url",
-              tag = 2
+              tag = 2,
             ),
             FieldElement(
               location = location.at(4, 5),
               label = OPTIONAL,
               type = "string",
               name = "title",
-              tag = 3
+              tag = 3,
             ),
             FieldElement(
               location = location.at(5, 5),
               label = REPEATED,
               type = "string",
               name = "snippets",
-              tag = 4
-            )
-          )
-        )
-      )
+              tag = 4,
+            ),
+          ),
+        ),
+      ),
     )
     val expected = """
         |message SearchResponse {
@@ -457,7 +466,8 @@ class MessageElementTest {
         |    repeated string snippets = 4;
         |  }
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(element.toSchema()).isEqualTo(expected)
   }
 
@@ -468,48 +478,48 @@ class MessageElementTest {
       label = REQUIRED,
       type = "string",
       name = "name",
-      tag = 2
+      tag = 2,
     )
     val oneOf1Field1 = FieldElement(
       location = location.at(1, 1),
       type = "string",
       name = "namey",
-      tag = 1
+      tag = 1,
     )
     val oneOf1Field2 = FieldElement(
       location = location.at(2, 1),
       type = "int32",
       name = "aField",
-      tag = 5
+      tag = 5,
     )
 
     val oneOf1 = OneOfElement(
       name = "thingy",
-      fields = listOf(oneOf1Field1, oneOf1Field2)
+      fields = listOf(oneOf1Field1, oneOf1Field2),
     )
     val field2 = FieldElement(
       location = location.at(2, 3),
       label = REQUIRED,
       type = "bool",
       name = "other_name",
-      tag = 3
+      tag = 3,
     )
     val oneOf2Field = FieldElement(
       location = location.at(3, 0),
       type = "string",
       name = "namer",
-      tag = 4
+      tag = 4,
     )
     val oneOf2 = OneOfElement(
       name = "thinger",
-      fields = listOf(oneOf2Field)
+      fields = listOf(oneOf2Field),
     )
     val extensions1 = ExtensionsElement(location = location.at(5, 0), values = listOf(500..501))
     val extensions2 = ExtensionsElement(location = location.at(6, 2), values = listOf(503))
     val nested = MessageElement(
       location = location.at(7, 1),
       name = "Nested",
-      fields = listOf(field1)
+      fields = listOf(field1),
     )
     val option = OptionElement.create("kit", Kind.STRING, "kat")
     val element = MessageElement(
@@ -519,7 +529,7 @@ class MessageElementTest {
       oneOfs = listOf(oneOf1, oneOf2),
       nestedTypes = listOf(nested),
       extensions = listOf(extensions1, extensions2),
-      options = listOf(option)
+      options = listOf(option),
     )
     val expected = """
         |message Message {
@@ -545,7 +555,8 @@ class MessageElementTest {
         |    required string name = 2;
         |  }
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(element.toSchema()).isEqualTo(expected)
   }
 
@@ -556,7 +567,7 @@ class MessageElementTest {
       label = REQUIRED,
       type = "string",
       name = "name",
-      tag = 1
+      tag = 1,
     )
     val expected = "required string name = 1;\n"
     assertThat(field.toSchema()).isEqualTo(expected)
@@ -570,7 +581,7 @@ class MessageElementTest {
       type = "string",
       name = "name",
       tag = 1,
-      defaultValue = "benoît"
+      defaultValue = "benoît",
     )
     val expected = "required string name = 1 [default = \"benoît\"];\n"
     assertThat(field.toSchema()).isEqualTo(expected)
@@ -584,7 +595,7 @@ class MessageElementTest {
       type = "int32",
       name = "age",
       tag = 1,
-      defaultValue = "34"
+      defaultValue = "34",
     )
     val expected = "required int32 age = 1 [default = 34];\n"
     assertThat(field.toSchema()).isEqualTo(expected)
@@ -598,7 +609,7 @@ class MessageElementTest {
       type = "bool",
       name = "human",
       tag = 1,
-      defaultValue = "true"
+      defaultValue = "true",
     )
     val expected = "required bool human = 1 [default = true];\n"
     assertThat(field.toSchema()).isEqualTo(expected)
@@ -610,7 +621,7 @@ class MessageElementTest {
       location = location,
       type = "string",
       name = "name",
-      tag = 1
+      tag = 1,
     )
     val expected = "string name = 1;\n"
     assertThat(field.toSchema()).isEqualTo(expected)
@@ -624,12 +635,13 @@ class MessageElementTest {
       type = "string",
       name = "name",
       tag = 1,
-      documentation = "Hello"
+      documentation = "Hello",
     )
     val expected =
       """// Hello
         |required string name = 1;
-        |""".trimMargin()
+        |
+      """.trimMargin()
     assertThat(field.toSchema()).isEqualTo(expected)
   }
 
@@ -641,11 +653,12 @@ class MessageElementTest {
       type = "string",
       name = "name",
       tag = 1,
-      options = listOf(OptionElement.create("kit", Kind.STRING, "kat"))
+      options = listOf(OptionElement.create("kit", Kind.STRING, "kat")),
     )
     val expected =
       """required string name = 1 [kit = "kat"];
-        |""".trimMargin()
+        |
+      """.trimMargin()
     assertThat(field.toSchema()).isEqualTo(expected)
   }
 
@@ -659,15 +672,16 @@ class MessageElementTest {
       tag = 1,
       options = listOf(
         OptionElement.create("kit", Kind.STRING, "kat"),
-        OptionElement.create("dup", Kind.STRING, "lo")
-      )
+        OptionElement.create("dup", Kind.STRING, "lo"),
+      ),
     )
     val expected =
       """required string name = 1 [
         |  kit = "kat",
         |  dup = "lo"
         |];
-        |""".trimMargin()
+        |
+      """.trimMargin()
     assertThat(field.toSchema()).isEqualTo(expected)
   }
 
@@ -679,7 +693,8 @@ class MessageElementTest {
         |  int32 page_number = 2;
         |  int32 result_per_page = 3;
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     val oneOf = OneOfElement(
       name = "page_info",
       fields = listOf(
@@ -687,18 +702,18 @@ class MessageElementTest {
           location = location.at(4, 5),
           type = "int32",
           name = "page_number",
-          tag = 2
+          tag = 2,
         ),
         FieldElement(
           location = location.at(5, 5),
           type = "int32",
           name = "result_per_page",
-          tag = 3
-        )
+          tag = 3,
+        ),
       ),
       options = listOf(
-        OptionElement.create("my_option", Kind.BOOLEAN, "true", true)
-      )
+        OptionElement.create("my_option", Kind.BOOLEAN, "true", true),
+      ),
     )
     assertThat(oneOf.toSchema()).isEqualTo(expected)
   }

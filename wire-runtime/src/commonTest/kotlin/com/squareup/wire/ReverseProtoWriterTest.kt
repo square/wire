@@ -1,11 +1,11 @@
 /*
- * Copyright 2021 Square Inc.
+ * Copyright (C) 2021 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,11 +18,11 @@ package com.squareup.wire
 import com.squareup.wire.FieldEncoding.LENGTH_DELIMITED
 import com.squareup.wire.ProtoAdapter.Companion.newMapAdapter
 import com.squareup.wire.Syntax.PROTO_2
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import okio.Buffer
 import okio.ByteString.Companion.encodeUtf8
 import okio.utf8Size
-import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class ReverseProtoWriterTest {
   @Test fun utf8() {
@@ -146,11 +146,11 @@ class ReverseProtoWriterTest {
   @Test fun reverseEncodedMessageEmbedsForwardEncodedMessage() {
     val alanGrant = Person(
       name = "Alan Grant",
-      birthYear = 1950
+      birthYear = 1950,
     )
     val digUpDinosaurs = Task(
       description = "dig up dinosaurs",
-      assignee = alanGrant
+      assignee = alanGrant,
     )
     val alanGrantEncoded = Person.ADAPTER.encodeByteString(alanGrant)
     assertEquals(alanGrant, Person.ADAPTER.decode(alanGrantEncoded))
@@ -206,7 +206,7 @@ class ReverseProtoWriterTest {
         Person::class,
         "type.googleapis.com/Person",
         PROTO_2,
-        null
+        null,
       ) {
         override fun redact(value: Person) = error("unexpected call")
 
@@ -246,7 +246,7 @@ class ReverseProtoWriterTest {
         Task::class,
         "type.googleapis.com/Task",
         PROTO_2,
-        null
+        null,
       ) {
         override fun redact(value: Task) = error("unexpected call")
 

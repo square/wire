@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ data class EnumType(
   val constants: List<EnumConstant>,
   private val reserveds: List<Reserved>,
   override val options: Options,
-  override val syntax: Syntax
+  override val syntax: Syntax,
 ) : Type() {
   private var allowAlias: Any? = null
 
@@ -94,8 +94,11 @@ data class EnumType(
       constants.groupBy {
         buildString(it.name.length) {
           for (char in it.name) {
-            if (char in 'A'..'Z') append(char - ('A' - 'a'))
-            else append(char)
+            if (char in 'A'..'Z') {
+              append(char - ('A' - 'a'))
+            } else {
+              append(char)
+            }
           }
         }
       }
@@ -107,7 +110,7 @@ data class EnumType(
         val error = buildString {
           append(
             "Ambiguous constant names (if you are using allow_alias, use the same value for " +
-              "these constants):"
+              "these constants):",
           )
           constants.forEach {
             append("\n  ${it.name}:${it.tag} (${it.location})")
@@ -155,7 +158,7 @@ data class EnumType(
       constants = retainedConstants,
       options = options.retainAll(schema, markSet),
       syntax = syntax,
-      reserveds = reserveds
+      reserveds = reserveds,
     )
     result.allowAlias = allowAlias
     return result
@@ -199,7 +202,7 @@ data class EnumType(
     fun fromElement(
       protoType: ProtoType,
       enumElement: EnumElement,
-      syntax: Syntax
+      syntax: Syntax,
     ): EnumType {
       return EnumType(
         type = protoType,

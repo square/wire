@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,14 +19,10 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.buildSchema
 import com.squareup.wire.kotlin.grpcserver.BindableAdapterGenerator.addBindableAdapter
-import com.squareup.wire.schema.addLocal
 import com.squareup.wire.kotlin.grpcserver.GoldenTestUtils.assertFileEquals
-import java.io.File
+import com.squareup.wire.schema.addLocal
 import kotlin.test.assertEquals
 import okio.Path.Companion.toPath
-import okio.buffer
-import okio.source
-import org.assertj.core.api.Assertions
 import org.junit.Test
 
 class BindableAdapterTest {
@@ -47,7 +43,7 @@ class BindableAdapterTest {
               KotlinGrpcGenerator.Companion.Options(singleMethodServices = true, suspendingCalls = false),
             )
           }
-          .build()
+          .build(),
       )
       .build()
 
@@ -56,7 +52,10 @@ class BindableAdapterTest {
 
   @Test
   fun `works on suspending streaming responses`() {
-    val code = bindableCodeFor("test", "TestService", """
+    val code = bindableCodeFor(
+      "test",
+      "TestService",
+      """
       syntax = "proto2";
       package test;
 
@@ -64,8 +63,10 @@ class BindableAdapterTest {
       service TestService {
         rpc TestRPC(Test) returns (stream Test){}
       }
-      """.trimMargin())
-    assertEquals("""
+      """.trimMargin(),
+    )
+    assertEquals(
+      """
       package test
 
       import com.squareup.wire.kotlin.grpcserver.FlowAdapter
@@ -79,12 +80,17 @@ class BindableAdapterTest {
               service()::TestRPC)
         }
       }
-    """.trimIndent().trim(), code)
+      """.trimIndent().trim(),
+      code,
+    )
   }
 
   @Test
   fun `works on suspending streaming requests`() {
-    val code = bindableCodeFor("test", "TestService", """
+    val code = bindableCodeFor(
+      "test",
+      "TestService",
+      """
       syntax = "proto2";
       package test;
 
@@ -92,8 +98,10 @@ class BindableAdapterTest {
       service TestService {
         rpc TestRPC(stream Test) returns (Test){}
       }
-      """.trimMargin())
-    assertEquals("""
+      """.trimMargin(),
+    )
+    assertEquals(
+      """
       package test
 
       import com.squareup.wire.kotlin.grpcserver.FlowAdapter
@@ -107,12 +115,17 @@ class BindableAdapterTest {
               request, service()::TestRPC)
         }
       }
-    """.trimIndent().trim(), code)
+      """.trimIndent().trim(),
+      code,
+    )
   }
 
   @Test
   fun `works on suspending streaming bidi rpcs`() {
-    val code = bindableCodeFor("test", "TestService", """
+    val code = bindableCodeFor(
+      "test",
+      "TestService",
+      """
       syntax = "proto2";
       package test;
 
@@ -120,8 +133,10 @@ class BindableAdapterTest {
       service TestService {
         rpc TestRPC(stream Test) returns (stream Test){}
       }
-      """.trimMargin())
-    assertEquals("""
+      """.trimMargin(),
+    )
+    assertEquals(
+      """
       package test
 
       import com.squareup.wire.kotlin.grpcserver.FlowAdapter
@@ -135,12 +150,17 @@ class BindableAdapterTest {
               service()::TestRPC)
         }
       }
-    """.trimIndent().trim(), code)
+      """.trimIndent().trim(),
+      code,
+    )
   }
 
   @Test
   fun `works on suspending streaming bidi rpcs with single method services`() {
-    val code = bindableCodeFor("test", "TestService", """
+    val code = bindableCodeFor(
+      "test",
+      "TestService",
+      """
       syntax = "proto2";
       package test;
 
@@ -148,11 +168,14 @@ class BindableAdapterTest {
       service TestService {
         rpc TestRPC(stream Test) returns (stream Test){}
       }
-      """.trimMargin(), KotlinGrpcGenerator.Companion.Options(
-      singleMethodServices = true,
-      suspendingCalls = true
-    ))
-    assertEquals("""
+      """.trimMargin(),
+      KotlinGrpcGenerator.Companion.Options(
+        singleMethodServices = true,
+        suspendingCalls = true,
+      ),
+    )
+    assertEquals(
+      """
       package test
 
       import com.squareup.wire.kotlin.grpcserver.FlowAdapter
@@ -166,14 +189,20 @@ class BindableAdapterTest {
               TestRPC()::TestRPC)
         }
       }
-    """.trimIndent().trim(), code)
+      """.trimIndent().trim(),
+      code,
+    )
   }
 
-  private fun bindableCodeFor(pkg: String, serviceName: String, schemaCode: String,
-                              options: KotlinGrpcGenerator.Companion.Options = KotlinGrpcGenerator.Companion.Options(
-    singleMethodServices = false,
-    suspendingCalls = true
-  )): String {
+  private fun bindableCodeFor(
+    pkg: String,
+    serviceName: String,
+    schemaCode: String,
+    options: KotlinGrpcGenerator.Companion.Options = KotlinGrpcGenerator.Companion.Options(
+      singleMethodServices = false,
+      suspendingCalls = true,
+    ),
+  ): String {
     val schema = buildSchema { add("test.proto".toPath(), schemaCode) }
     val service = schema.getService("$pkg.$serviceName")!!
     val typeSpec = TypeSpec.classBuilder("${serviceName}WireGrpc")
@@ -188,4 +217,3 @@ class BindableAdapterTest {
       .trim()
   }
 }
-

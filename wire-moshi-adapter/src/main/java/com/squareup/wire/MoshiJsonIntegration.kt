@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ import java.lang.reflect.Type
 internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>() {
   override fun frameworkAdapter(
     framework: Moshi,
-    type: Type
+    type: Type,
   ): JsonAdapter<Any?> = framework.adapter<Any?>(type).nullSafe()
 
   override fun listAdapter(elementAdapter: JsonAdapter<Any?>): JsonAdapter<Any?> =
@@ -36,7 +36,7 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
   override fun mapAdapter(
     framework: Moshi,
     keyFormatter: JsonFormatter<*>,
-    valueAdapter: JsonAdapter<Any?>
+    valueAdapter: JsonAdapter<Any?>,
   ): JsonAdapter<Any?> = MapJsonAdapter(keyFormatter, valueAdapter).nullSafe() as JsonAdapter<Any?>
 
   override fun structAdapter(framework: Moshi): JsonAdapter<Any?> =
@@ -46,11 +46,11 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
     FormatterJsonAdapter(jsonFormatter).nullSafe() as JsonAdapter<Any?>
 
   private class FormatterJsonAdapter<T : Any>(
-    private val formatter: JsonFormatter<T>
+    private val formatter: JsonFormatter<T>,
   ) : JsonAdapter<T>() {
     override fun toJson(
       writer: JsonWriter,
-      value: T?
+      value: T?,
     ) {
       val stringOrNumber = formatter.toStringOrNumber(value!!)
       if (stringOrNumber is Number) {
@@ -72,7 +72,7 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
 
   /** Adapt a list of values by delegating to an adapter for a single value. */
   private class ListJsonAdapter<T>(
-    private val single: JsonAdapter<T>
+    private val single: JsonAdapter<T>,
   ) : JsonAdapter<List<T?>>() {
     override fun fromJson(reader: JsonReader): List<T?> {
       val result = mutableListOf<T?>()
@@ -86,7 +86,7 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
 
     override fun toJson(
       writer: JsonWriter,
-      value: List<T?>?
+      value: List<T?>?,
     ) {
       writer.beginArray()
       for (v in value!!) {
@@ -99,7 +99,7 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
   /** Adapt a list of values by delegating to an adapter for a single value. */
   private class MapJsonAdapter<K : Any, V>(
     private val keyFormatter: JsonFormatter<K>,
-    private val valueAdapter: JsonAdapter<V>
+    private val valueAdapter: JsonAdapter<V>,
   ) : JsonAdapter<Map<K, V>>() {
     override fun fromJson(reader: JsonReader): Map<K, V>? {
       val result = mutableMapOf<K, V>()

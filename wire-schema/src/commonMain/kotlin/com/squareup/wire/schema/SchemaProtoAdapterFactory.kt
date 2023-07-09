@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ import okio.ByteString
  */
 internal class SchemaProtoAdapterFactory(
   val schema: Schema,
-  private val includeUnknown: Boolean
+  private val includeUnknown: Boolean,
 ) {
   private val adapterMap = mutableMapOf<ProtoType?, ProtoAdapter<*>>(
     ProtoType.BOOL to ProtoAdapter.BOOL,
@@ -110,12 +110,12 @@ internal class SchemaProtoAdapterFactory(
 
   /** We prevent cycles by linking against while we're still building the graph of adapters. */
   private class DeferredAdapter<T>(
-    binding: SchemaMessageBinding
+    binding: SchemaMessageBinding,
   ) : ProtoAdapter<T>(
     fieldEncoding = FieldEncoding.LENGTH_DELIMITED,
     type = binding.messageType,
     typeUrl = binding.typeUrl,
-    syntax = binding.syntax
+    syntax = binding.syntax,
   ) {
     lateinit var delegate: ProtoAdapter<T>
 
@@ -131,7 +131,7 @@ internal class SchemaProtoAdapterFactory(
   }
 
   private class EnumAdapter(
-    private val enumType: EnumType
+    private val enumType: EnumType,
   ) : ProtoAdapter<Any>(VARINT, Any::class, null, enumType.syntax) {
     override fun encodedSize(value: Any): Int {
       return when (value) {
@@ -189,7 +189,7 @@ internal class SchemaProtoAdapterFactory(
   private class SchemaMessageBinding(
     override val typeUrl: String?,
     override val syntax: Syntax,
-    private val includeUnknown: Boolean
+    private val includeUnknown: Boolean,
   ) : MessageBinding<Map<String, Any>, MutableMap<String, Any>> {
 
     override val messageType = Map::class
@@ -212,10 +212,11 @@ internal class SchemaProtoAdapterFactory(
       builder: MutableMap<String, Any>,
       tag: Int,
       fieldEncoding: FieldEncoding,
-      value: Any?
+      value: Any?,
     ) {
       if (!includeUnknown || value == null) return
       val name = tag.toString()
+
       @Suppress("UNCHECKED_CAST")
       val values = builder.getOrPut(name) { mutableListOf<Any>() } as MutableList<Any>
       values.add(value)
@@ -227,7 +228,7 @@ internal class SchemaProtoAdapterFactory(
 
   private inner class SchemaFieldOrOneOfBinding(
     val field: Field,
-    val oneOf: OneOf?
+    val oneOf: OneOf?,
   ) : FieldOrOneOfBinding<Map<String, Any>, MutableMap<String, Any>>() {
     override val tag: Int = field.tag
     override val label: WireField.Label

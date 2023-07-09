@@ -84,6 +84,7 @@ val test by tasks.getting(Test::class) {
 configure<SpotlessExtension> {
   kotlin {
     targetExclude(
+      // Generated files.
       "src/test/proto-grpc/**/*.kt",
     )
   }

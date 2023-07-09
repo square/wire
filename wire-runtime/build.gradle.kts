@@ -1,3 +1,4 @@
+import com.diffplug.gradle.spotless.SpotlessExtension
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
@@ -157,5 +158,21 @@ if (project.rootProject.name == "wire") {
     configure(
       KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
     )
+  }
+
+  configure<SpotlessExtension> {
+    kotlin {
+      targetExclude(
+        // Google license for Protobuf.
+        "src/commonMain/kotlin/com/squareup/wire/ProtoReader.kt",
+        // Google license for R8.
+        "src/commonMain/kotlin/com/squareup/wire/internal/MathMethods.kt",
+        // Apache 2-licensed files from Jetbrains.
+        "src/commonMain/kotlin/com/squareup/wire/internal/DoubleArrayList.kt",
+        "src/commonMain/kotlin/com/squareup/wire/internal/FloatArrayList.kt",
+        "src/commonMain/kotlin/com/squareup/wire/internal/IntArrayList.kt",
+        "src/commonMain/kotlin/com/squareup/wire/internal/LongArrayList.kt",
+      )
+    }
   }
 }

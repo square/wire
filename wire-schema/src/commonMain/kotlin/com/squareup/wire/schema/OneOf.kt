@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ import kotlin.jvm.JvmStatic
 data class OneOf(
   val name: String,
   val documentation: String,
-  val fields: List<Field>
+  val fields: List<Field>,
 ) {
   fun link(linker: Linker) {
     for (field in fields) {
@@ -55,7 +55,7 @@ data class OneOf(
     @JvmStatic
     fun fromElements(
       namespaces: List<String>,
-      elements: List<OneOfElement>
+      elements: List<OneOfElement>,
     ) = elements.map {
       if (it.groups.isNotEmpty()) {
         val (_, location) = it.groups[0]
@@ -65,7 +65,7 @@ data class OneOf(
       return@map OneOf(
         name = it.name,
         documentation = it.documentation,
-        fields = Field.fromElements(namespaces, it.fields, false, oneOf = true)
+        fields = Field.fromElements(namespaces, it.fields, false, oneOf = true),
       )
     }
 
@@ -76,7 +76,7 @@ data class OneOf(
           name = it.name,
           documentation = it.documentation,
           fields = Field.toElements(it.fields),
-          groups = emptyList()
+          groups = emptyList(),
         )
       }
   }

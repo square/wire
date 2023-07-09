@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ class ExtensionsElementTest {
   fun singleValueToSchema() {
     val actual = ExtensionsElement(
       location = location,
-      values = listOf(500)
+      values = listOf(500),
     )
     val expected = "extensions 500;\n"
     assertThat(actual.toSchema()).isEqualTo(expected)
@@ -37,7 +37,7 @@ class ExtensionsElementTest {
   fun rangeToSchema() {
     val actual = ExtensionsElement(
       location = location,
-      values = listOf(500..505)
+      values = listOf(500..505),
     )
     val expected = "extensions 500 to 505;\n"
     assertThat(actual.toSchema()).isEqualTo(expected)
@@ -47,7 +47,7 @@ class ExtensionsElementTest {
   fun maxRangeToSchema() {
     val actual = ExtensionsElement(
       location = location,
-      values = listOf(500..MAX_TAG_VALUE)
+      values = listOf(500..MAX_TAG_VALUE),
     )
     val expected = "extensions 500 to max;\n"
     assertThat(actual.toSchema()).isEqualTo(expected)
@@ -58,12 +58,13 @@ class ExtensionsElementTest {
     val actual = ExtensionsElement(
       location = location,
       documentation = "Hello",
-      values = listOf(500)
+      values = listOf(500),
     )
     val expected = """
         |// Hello
         |extensions 500;
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(actual.toSchema()).isEqualTo(expected)
   }
 }

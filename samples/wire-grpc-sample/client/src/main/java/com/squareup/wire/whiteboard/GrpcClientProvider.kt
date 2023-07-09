@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,6 @@
 package com.squareup.wire.whiteboard
 
 import com.squareup.wire.GrpcClient
-import okhttp3.OkHttpClient
-import okhttp3.Protocol.HTTP_1_1
-import okhttp3.Protocol.HTTP_2
-import okio.Buffer
 import java.io.IOException
 import java.io.InputStream
 import java.security.GeneralSecurityException
@@ -32,6 +28,10 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
+import okhttp3.OkHttpClient
+import okhttp3.Protocol.HTTP_1_1
+import okhttp3.Protocol.HTTP_2
+import okio.Buffer
 
 object GrpcClientProvider {
   private val okHttpClient = OkHttpClient.Builder()
@@ -55,7 +55,7 @@ object GrpcClientProvider {
     val sslSocketFactory: SSLSocketFactory
     try {
       trustManager = trustManagerForCertificates(
-        trustedCertificatesInputStream()
+        trustedCertificatesInputStream(),
       )
       val sslContext = SSLContext.getInstance("TLS")
       sslContext.init(null, arrayOf(trustManager), null)
@@ -109,17 +109,17 @@ object GrpcClientProvider {
 
     // Use it to build an X509 trust manager.
     val keyManagerFactory = KeyManagerFactory.getInstance(
-      KeyManagerFactory.getDefaultAlgorithm()
+      KeyManagerFactory.getDefaultAlgorithm(),
     )
     keyManagerFactory.init(keyStore, password)
     val trustManagerFactory = TrustManagerFactory.getInstance(
-      TrustManagerFactory.getDefaultAlgorithm()
+      TrustManagerFactory.getDefaultAlgorithm(),
     )
     trustManagerFactory.init(keyStore)
     val trustManagers = trustManagerFactory.trustManagers
     if (trustManagers.size != 1 || trustManagers[0] !is X509TrustManager) {
       throw IllegalStateException(
-        "Unexpected default trust managers:" + Arrays.toString(trustManagers)
+        "Unexpected default trust managers:" + Arrays.toString(trustManagers),
       )
     }
     return trustManagers[0] as X509TrustManager

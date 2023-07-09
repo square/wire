@@ -37,12 +37,12 @@ import com.squareup.wire.internal.ProtocolException
 import com.squareup.wire.internal.Throws
 import com.squareup.wire.internal.and
 import com.squareup.wire.internal.shl
+import kotlin.jvm.JvmName
 import okio.Buffer
 import okio.BufferedSource
 import okio.ByteString
 import okio.EOFException
 import okio.IOException
-import kotlin.jvm.JvmName
 
 /**
  * Reads and decodes protocol message fields.
@@ -50,18 +50,25 @@ import kotlin.jvm.JvmName
 class ProtoReader(private val source: BufferedSource) {
   /** The current position in the input source, starting at 0 and increasing monotonically. */
   private var pos: Long = 0
+
   /** The absolute position of the end of the current message. */
   private var limit = Long.MAX_VALUE
+
   /** The current number of levels of message nesting. */
   private var recursionDepth = 0
+
   /** How to interpret the next read call. */
   private var state = STATE_LENGTH_DELIMITED
+
   /** The most recently read tag. Used to make packed values look like regular values. */
   private var tag = -1
+
   /** Limit once we complete the current length-delimited value. */
   private var pushedLimit: Long = -1
+
   /** The encoding of the next value to be read. */
   private var nextFieldEncoding: FieldEncoding? = null
+
   /** Pooled buffers for unknown fields, indexed by [recursionDepth]. */
   private val bufferStack = mutableListOf<Buffer>()
 
@@ -118,7 +125,7 @@ class ProtoReader(private val source: BufferedSource) {
   @Deprecated(
     level = DeprecationLevel.WARNING,
     message = "prefer endMessageAndGetUnknownFields()",
-    replaceWith = ReplaceWith("endMessageAndGetUnknownFields(token)")
+    replaceWith = ReplaceWith("endMessageAndGetUnknownFields(token)"),
   )
   fun endMessage(token: Long) {
     endMessageAndGetUnknownFields(token)
@@ -277,7 +284,8 @@ class ProtoReader(private val source: BufferedSource) {
       }
       STATE_VARINT,
       STATE_FIXED64,
-      STATE_FIXED32 -> true // Not packed.
+      STATE_FIXED32,
+      -> true // Not packed.
 
       else -> throw ProtocolException("unexpected state: $state")
     }
@@ -465,7 +473,7 @@ class ProtoReader(private val source: BufferedSource) {
   fun addUnknownField(
     tag: Int,
     fieldEncoding: FieldEncoding,
-    value: Any?
+    value: Any?,
   ) {
     val unknownFieldsWriter = ProtoWriter(bufferStack[recursionDepth - 1])
     val protoAdapter = fieldEncoding.rawProtoAdapter()

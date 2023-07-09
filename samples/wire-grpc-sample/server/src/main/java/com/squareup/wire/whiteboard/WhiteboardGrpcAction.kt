@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,8 +19,8 @@ import com.squareup.wire.MessageSink
 import com.squareup.wire.MessageSource
 import com.squareup.wire.whiteboard.WhiteboardUpdate.InitialiseBoard
 import com.squareup.wire.whiteboard.WhiteboardUpdate.UpdatePoints
-import misk.web.actions.WebAction
 import javax.inject.Singleton
+import misk.web.actions.WebAction
 
 @Singleton
 class WhiteboardGrpcAction : WebAction, WhiteboardWhiteboardBlockingServer {
@@ -29,7 +29,7 @@ class WhiteboardGrpcAction : WebAction, WhiteboardWhiteboardBlockingServer {
 
   override fun Whiteboard(
     request: MessageSource<WhiteboardCommand>,
-    response: MessageSink<WhiteboardUpdate>
+    response: MessageSink<WhiteboardUpdate>,
   ) {
     val client = Client(request, response)
     clients += client
@@ -38,14 +38,14 @@ class WhiteboardGrpcAction : WebAction, WhiteboardWhiteboardBlockingServer {
 
   inner class Client(
     private val commands: MessageSource<WhiteboardCommand>,
-    private val updates: MessageSink<WhiteboardUpdate>
+    private val updates: MessageSink<WhiteboardUpdate>,
   ) {
     fun process() {
       updates.use {
         val initialiseBoard = InitialiseBoard(
           BOARD_WIDTH,
           BOARD_HEIGHT,
-          COLORS[clients.indexOf(this) % COLORS.size]
+          COLORS[clients.indexOf(this) % COLORS.size],
         )
         updates.write(WhiteboardUpdate(initialise_board = initialiseBoard))
         updates.write(WhiteboardUpdate(update_points = UpdatePoints(points)))
@@ -75,7 +75,7 @@ class WhiteboardGrpcAction : WebAction, WhiteboardWhiteboardBlockingServer {
       0xff00c8fa.toInt(), // Blue
       0xfff46e38.toInt(), // Red
       0xff0bb634.toInt(), // Green
-      0xff333333.toInt() // Black
+      0xff333333.toInt(), // Black
     )
   }
 }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -362,7 +362,8 @@ class Linker {
     protoType: ProtoType,
     field: String,
   ): Field? {
-    @Suppress("NAME_SHADOWING") var field = field
+    @Suppress("NAME_SHADOWING")
+    var field = field
     if (field.startsWith("[") && field.endsWith("]")) {
       field = field.substring(1, field.length - 1)
     }
@@ -509,7 +510,7 @@ class Linker {
           values.forEachIndexed { index, enumType ->
             append(
               "\n  ${index + 1}. ${enumType.type}.$constant " +
-                "(${enumType.constant(constant)!!.location})"
+                "(${enumType.constant(constant)!!.location})",
             )
           }
         }
@@ -522,7 +523,8 @@ class Linker {
     location: Location,
     type: ProtoType,
   ) {
-    @Suppress("NAME_SHADOWING") var type = type
+    @Suppress("NAME_SHADOWING")
+    var type = type
 
     // Map key type is always scalar. No need to validate it.
     if (type.isMap) type = type.valueType!!

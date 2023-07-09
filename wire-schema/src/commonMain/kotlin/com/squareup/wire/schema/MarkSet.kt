@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,15 +27,17 @@ package com.squareup.wire.schema
  *  3. Retaining which members and types have been marked.
  */
 class MarkSet(
-  val pruningRules: PruningRules
+  val pruningRules: PruningRules,
 ) {
   /** The types to retain. We may retain a type but not all of its members. */
   val types = mutableSetOf<ProtoType>()
 
   /** The members to retain. Any member not in here should be pruned! */
   val members = mutableMapOf<ProtoType, MutableSet<ProtoMember>>()
+
   /** The root members which are never to be pruned, including their referenced type. */
   private val rootMemberTypes = mutableMapOf<ProtoMember, ProtoType>()
+
   /** The members this MarkSet have seen. The values should be non-null once the marking is done. */
   private val memberTypes = mutableMapOf<ProtoMember, ProtoType>()
 

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ data class Extend(
   val location: Location,
   val documentation: String,
   val name: String,
-  val fields: List<Field>
+  val fields: List<Field>,
 ) {
   // Null until this extend is linked.
   var type: ProtoType? = null
@@ -80,13 +80,13 @@ data class Extend(
     @JvmStatic
     fun fromElements(
       namespaces: List<String>,
-      extendElements: List<ExtendElement>
+      extendElements: List<ExtendElement>,
     ) = extendElements.map {
       Extend(
         location = it.location,
         documentation = it.documentation,
         name = it.name,
-        fields = Field.fromElements(namespaces, it.fields, extension = true, oneOf = false)
+        fields = Field.fromElements(namespaces, it.fields, extension = true, oneOf = false),
       )
     }
 
@@ -96,7 +96,7 @@ data class Extend(
         location = it.location,
         name = it.name,
         documentation = it.documentation,
-        fields = Field.toElements(it.fields)
+        fields = Field.toElements(it.fields),
       )
     }
   }

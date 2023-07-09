@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ class WireTest {
       optional_external_msg = ExternalMessage(f = 99.9f),
       default_nested_enum = SimpleMessage.NestedEnum.BAR,
       required_int32 = 456,
-      repeated_double = doubles
+      repeated_double = doubles,
     )
 
     assertEquals(789, msg.optional_int32)
@@ -73,14 +73,15 @@ class WireTest {
       id = 1,
       name = "Such, I mean it, such [a] {funny} name.",
       phone = listOf(Person.PhoneNumber(number = "123,456,789")),
-      aliases = listOf("B-lo,ved", "D{esperado}")
+      aliases = listOf("B-lo,ved", "D{esperado}"),
     )
     val expected = """Person{
           |id=1
           |, name=Such\, I mean it\, such \[a\] \{funny\} name.
           |, phone=[PhoneNumber{number=123\,456\,789}]
           |, aliases=[B-lo\,ved, D\{esperado\}]
-          |}""".trimMargin().replace("\n", "")
+          |}
+    """.trimMargin().replace("\n", "")
     assertEquals(expected, person.toString())
   }
 }

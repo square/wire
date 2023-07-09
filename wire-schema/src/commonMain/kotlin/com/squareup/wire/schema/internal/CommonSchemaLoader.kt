@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 Square Inc.
+ * Copyright (C) 2018 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -89,7 +89,7 @@ internal class CommonSchemaLoader : Loader, ProfileLoader {
   /** Initialize the [WireRun.sourcePath] and [WireRun.protoPath] from which files are loaded. */
   fun initRoots(
     sourcePath: List<Location>,
-    protoPath: List<Location> = listOf()
+    protoPath: List<Location> = listOf(),
   ) {
     check(sourcePathRoots == null && protoPathRoots == null)
     sourcePathRoots = allRoots(sourcePath)
@@ -152,7 +152,7 @@ internal class CommonSchemaLoader : Loader, ProfileLoader {
           |unable to find $path
           |  searching ${protoPathRoots!!.size} proto paths:
           |    ${protoPathRoots!!.joinToString(separator = "\n    ")}
-          """.trimMargin()
+    """.trimMargin()
     return ProtoFile.get(ProtoFileElement.empty(path))
   }
 

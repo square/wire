@@ -1,11 +1,11 @@
 /*
- * Copyright 2015 Square Inc.
+ * Copyright (C) 2015 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,24 +15,25 @@
  */
 package com.squareup.wire;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
+
 import com.squareup.wire.protos.oneof.OneOfMessage;
 import java.io.IOException;
 import org.junit.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 public class OneOfTest {
 
   private static final byte[] INITIAL_BYTES = {};
   // (Tag #1 << 3 | VARINT) = 8.
-  private static final byte[] FOO_BYTES = { 8, 17 };
+  private static final byte[] FOO_BYTES = {8, 17};
   // (Tag #3 << 3 | LENGTH_DELIMITED) = 26, string length = 6.
-  private static final byte[] BAR_BYTES = { 26, 6, 'b', 'a', 'r', 'b', 'a', 'r'};
+  private static final byte[] BAR_BYTES = {26, 6, 'b', 'a', 'r', 'b', 'a', 'r'};
 
   private final ProtoAdapter<OneOfMessage> adapter = OneOfMessage.ADAPTER;
 
-  @Test public void testOneOf() throws Exception {
+  @Test
+  public void testOneOf() throws Exception {
     OneOfMessage.Builder builder = new OneOfMessage.Builder();
     validate(builder, null, null, INITIAL_BYTES);
 
@@ -55,7 +56,8 @@ public class OneOfTest {
     validate(builder, null, null, INITIAL_BYTES);
   }
 
-  @Test public void buildFailsWhenBothFieldsAreNonNull() throws Exception {
+  @Test
+  public void buildFailsWhenBothFieldsAreNonNull() throws Exception {
     OneOfMessage.Builder builder = new OneOfMessage.Builder();
     builder.foo = 1;
     builder.bar = "two";
@@ -67,7 +69,8 @@ public class OneOfTest {
     }
   }
 
-  @Test public void constructorFailsWhenBothFieldsAreNonNull() throws Exception {
+  @Test
+  public void constructorFailsWhenBothFieldsAreNonNull() throws Exception {
     try {
       new OneOfMessage(1, "two", null);
       fail();
@@ -76,8 +79,9 @@ public class OneOfTest {
     }
   }
 
-  private void validate(OneOfMessage.Builder builder, Integer expectedFoo, String expectedBar,
-      byte[] expectedBytes) throws IOException {
+  private void validate(
+      OneOfMessage.Builder builder, Integer expectedFoo, String expectedBar, byte[] expectedBytes)
+      throws IOException {
     // Check builder fields
     assertThat(builder.foo).isEqualTo(expectedFoo);
     assertThat(builder.bar).isEqualTo(expectedBar);

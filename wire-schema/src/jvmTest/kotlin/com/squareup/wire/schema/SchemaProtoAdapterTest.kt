@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,9 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.buildSchema
+import java.io.EOFException
+import java.io.IOException
+import java.net.ProtocolException
 import okio.Buffer
 import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.toByteString
@@ -23,9 +26,6 @@ import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
-import java.io.EOFException
-import java.io.IOException
-import java.net.ProtocolException
 
 class SchemaProtoAdapterTest {
   private val coffeeSchema = buildSchema {
@@ -54,7 +54,7 @@ class SchemaProtoAdapterTest {
           |  optional string bean_type = 1;
           |  optional double caffeine_level = 2;
           |}
-          """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -63,7 +63,7 @@ class SchemaProtoAdapterTest {
     "customer_name" to "Dan",
     "shots" to listOf(mapOf("caffeine_level" to 0.5)),
     "size_ounces" to 16,
-    "dairy" to mapOf("count" to 1)
+    "dairy" to mapOf("count" to 1),
   )
 
   private val dansCoffeeEncoded = "0a0344616e120911000000000000e03f70107a021001".decodeHex()
@@ -73,10 +73,10 @@ class SchemaProtoAdapterTest {
     "shots" to
       listOf(
         mapOf("bean_type" to "colombian", "caffeine_level" to 1.0),
-        mapOf("bean_type" to "colombian", "caffeine_level" to 1.0)
+        mapOf("bean_type" to "colombian", "caffeine_level" to 1.0),
       ),
     "foam" to "ZOMG_SO_FOAMY",
-    "size_ounces" to 24
+    "size_ounces" to 24,
   )
 
   private val jessesCoffeeEncoded = (
@@ -119,7 +119,7 @@ class SchemaProtoAdapterTest {
             |  // }
             |  optional string b = 4;
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }.protoAdapter("Message")
     val encoded = (
@@ -141,7 +141,7 @@ class SchemaProtoAdapterTest {
             |message Message {
             |  optional string a = 1;
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }.protoAdapter("Message")
     val encoded = "130a0161".decodeHex()
@@ -162,7 +162,7 @@ class SchemaProtoAdapterTest {
             |message Message {
             |  optional string a = 1;
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }.protoAdapter("Message")
     val encoded = "0a01611c".decodeHex()
@@ -184,7 +184,7 @@ class SchemaProtoAdapterTest {
             |message Message {
             |  optional string a = 1;
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }.protoAdapter("Message")
     val encoded = "130a01611c".decodeHex()
@@ -206,7 +206,7 @@ class SchemaProtoAdapterTest {
             |message Message {
             |  repeated int32 a = 90 [packed = false];
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }.protoAdapter("Message")
     val expected = mapOf("a" to listOf(601, 701))
@@ -228,7 +228,7 @@ class SchemaProtoAdapterTest {
             |message Message {
             |  repeated int32 a = 90 [packed = true];
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }.protoAdapter("Message")
     val expected = mapOf("a" to listOf(601, 701))
@@ -252,7 +252,7 @@ class SchemaProtoAdapterTest {
             |  optional BinaryTreeNode right = 2;
             |  optional string value = 3;
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }.protoAdapter("BinaryTreeNode")
     val value = mapOf(
@@ -260,13 +260,13 @@ class SchemaProtoAdapterTest {
       "left" to mapOf(
         "value" to "B",
         "left" to mapOf("value" to "A"),
-        "right" to mapOf("value" to "C")
+        "right" to mapOf("value" to "C"),
       ),
       "right" to mapOf(
         "value" to "F",
         "left" to mapOf("value" to "E"),
-        "right" to mapOf("value" to "G")
-      )
+        "right" to mapOf("value" to "G"),
+      ),
     )
     val encoded = "0a0d0a031a014112031a01431a0142120d0a031a014512031a01471a01461a0144".decodeHex()
     assertThat(adapter.encode(value).toByteString()).isEqualTo(encoded)
@@ -283,7 +283,7 @@ class SchemaProtoAdapterTest {
              |  optional string customer_name = 1;
              |  optional int32 size_ounces = 14;
              |}
-             """.trimMargin()
+        """.trimMargin(),
       )
     }
 
@@ -291,7 +291,7 @@ class SchemaProtoAdapterTest {
       "customer_name" to "Dan",
       "2" to listOf("11000000000000e03f".decodeHex()),
       "size_ounces" to 16,
-      "15" to listOf("1001".decodeHex())
+      "15" to listOf("1001".decodeHex()),
     )
 
     val adapter = schema.protoAdapter("CafeDrink", true)
@@ -309,7 +309,7 @@ class SchemaProtoAdapterTest {
             |  optional string customer_name = 1;
             |  optional int32 size_ounces = 14;
             |}
-            """.trimMargin()
+        """.trimMargin(),
       )
     }
 

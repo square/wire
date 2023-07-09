@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ object ImplBaseGenerator {
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
     service: Service,
-    options: KotlinGrpcGenerator.Companion.Options
+    options: KotlinGrpcGenerator.Companion.Options,
   ) = builder
     .addType(
       TypeSpec.classBuilder("${service.name}ImplBase")
@@ -47,7 +47,7 @@ object ImplBaseGenerator {
         .addSuperinterface(WireBindableService::class)
         .apply { addImplBaseConstructor(options) }
         .apply { addImplBaseBody(generator, this, service, options) }
-        .build()
+        .build(),
     )
 
   private fun TypeSpec.Builder.addImplBaseConstructor(options: KotlinGrpcGenerator.Companion.Options) {
@@ -59,14 +59,14 @@ object ImplBaseGenerator {
               .defaultValue(
                 CodeBlock.builder()
                   .addStatement("kotlin.coroutines.EmptyCoroutineContext")
-                  .build()
-              ).build()
+                  .build(),
+              ).build(),
           )
-          .build()
+          .build(),
       ).addProperty(
         PropertySpec.builder("context", CoroutineContext::class, KModifier.PROTECTED)
           .initializer("context")
-          .build()
+          .build(),
       )
     }
   }
@@ -75,7 +75,7 @@ object ImplBaseGenerator {
     generator: ClassNameGenerator,
     builder: FunSpec.Builder,
     rpc: Rpc,
-    options: KotlinGrpcGenerator.Companion.Options
+    options: KotlinGrpcGenerator.Companion.Options,
   ): FunSpec.Builder {
     val rpcRequestType = generator.classNameFor(rpc.requestType!!)
     val rpcResponseType = generator.classNameFor(rpc.responseType!!)
@@ -96,17 +96,19 @@ object ImplBaseGenerator {
         rpc.requestStreaming ->
           builder
             .addParameter(
-              "response", ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(rpcResponseType)
+              "response",
+              ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(rpcResponseType),
             )
             .returns(
-              ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(rpcRequestType)
+              ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(rpcRequestType),
             )
 
         else ->
           builder
             .addParameter("request", rpcRequestType)
             .addParameter(
-              "response", ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(rpcResponseType)
+              "response",
+              ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(rpcResponseType),
             )
             .returns(UNIT)
       }
@@ -117,7 +119,7 @@ object ImplBaseGenerator {
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
     service: Service,
-    options: KotlinGrpcGenerator.Companion.Options
+    options: KotlinGrpcGenerator.Companion.Options,
   ): TypeSpec.Builder {
     service.rpcs.forEach { rpc ->
       builder.addFunction(
@@ -126,7 +128,7 @@ object ImplBaseGenerator {
           .apply { addImplBaseRpcSignature(generator, this, rpc, options) }
           .apply { if (options.suspendingCalls && !rpc.responseStreaming) { addModifiers(KModifier.SUSPEND) } }
           .addCode(CodeBlock.of("throw %T()", UnsupportedOperationException::class.java))
-          .build()
+          .build(),
       )
     }
 
@@ -135,7 +137,7 @@ object ImplBaseGenerator {
         .addModifiers(KModifier.OVERRIDE)
         .returns(ClassName("io.grpc", "ServerServiceDefinition"))
         .addCode(bindServiceCodeBlock(service, options))
-        .build()
+        .build(),
     )
 
     service.rpcs
@@ -152,14 +154,14 @@ object ImplBaseGenerator {
                 .addParameter(ParameterSpec(name = "value", type = className))
                 .returns(InputStream::class)
                 .addCode(streamCodeFor(it, className))
-                .build()
+                .build(),
             )
             .addFunction(
               FunSpec.builder("marshalledClass")
                 .addModifiers(KModifier.OVERRIDE)
                 .returns(Class::class.asClassName().parameterizedBy(className))
                 .addCode(CodeBlock.of("return %T::class.java", className))
-                .build()
+                .build(),
             )
             .addFunction(
               FunSpec.builder("parse")
@@ -167,9 +169,9 @@ object ImplBaseGenerator {
                 .addParameter("stream", InputStream::class)
                 .returns(className)
                 .addCode(parseCodeFor(it, className))
-                .build()
+                .build(),
             )
-            .build()
+            .build(),
         )
       }
 
@@ -224,8 +226,8 @@ object ImplBaseGenerator {
              implementation = this@${service.name}ImplBase::${it.name},
            )
          )
-      """.trimIndent(),
-          MemberName(ClassName("io.grpc.stub", "ServerCalls"), bindServiceCallType(it))
+          """.trimIndent(),
+          MemberName(ClassName("io.grpc.stub", "ServerCalls"), bindServiceCallType(it)),
         )
       } else {
         codeBlock.add(
@@ -233,8 +235,8 @@ object ImplBaseGenerator {
           get${it.name}Method(),
           %M(this@${service.name}ImplBase::${it.name})
         )
-        """.trimIndent(),
-          MemberName(ClassName("io.grpc.stub", "ServerCalls"), bindServiceCallType(it))
+          """.trimIndent(),
+          MemberName(ClassName("io.grpc.stub", "ServerCalls"), bindServiceCallType(it)),
         )
       }
     }

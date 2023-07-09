@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ class ExtendElementTest {
   fun emptyToSchema() {
     val extend = ExtendElement(
       location = location,
-      name = "Name"
+      name = "Name",
     )
     val expected = "extend Name {}\n"
     assertThat(extend.toSchema()).isEqualTo(expected)
@@ -44,15 +44,16 @@ class ExtendElementTest {
           label = REQUIRED,
           type = "string",
           name = "name",
-          tag = 1
-        )
-      )
+          tag = 1,
+        ),
+      ),
     )
     val expected = """
         |extend Name {
         |  required string name = 1;
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(extend.toSchema()).isEqualTo(expected)
   }
 
@@ -63,19 +64,19 @@ class ExtendElementTest {
       label = REQUIRED,
       type = "string",
       name = "first_name",
-      tag = 1
+      tag = 1,
     )
     val lastName = FieldElement(
       location = location,
       label = REQUIRED,
       type = "string",
       name = "last_name",
-      tag = 2
+      tag = 2,
     )
     val extend = ExtendElement(
       location = location,
       name = "Name",
-      fields = listOf(firstName, lastName)
+      fields = listOf(firstName, lastName),
     )
     assertThat(extend.fields).hasSize(2)
   }
@@ -92,16 +93,17 @@ class ExtendElementTest {
           label = REQUIRED,
           type = "string",
           name = "name",
-          tag = 1
-        )
-      )
+          tag = 1,
+        ),
+      ),
     )
     val expected = """
         |// Hello
         |extend Name {
         |  required string name = 1;
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(extend.toSchema()).isEqualTo(expected)
   }
 
@@ -117,15 +119,16 @@ class ExtendElementTest {
           type = "string",
           name = "name",
           jsonName = "my_json",
-          tag = 1
-        )
-      )
+          tag = 1,
+        ),
+      ),
     )
     val expected = """
         |extend Name {
         |  required string name = 1 [json_name = "my_json"];
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(extend.toSchema()).isEqualTo(expected)
   }
 
@@ -142,16 +145,17 @@ class ExtendElementTest {
           type = "string",
           name = "name",
           tag = 1,
-          defaultValue = "defaultValue"
-        )
-      )
+          defaultValue = "defaultValue",
+        ),
+      ),
     )
     val expected = """
         |// Hello
         |extend Name {
         |  required string name = 1 [default = "defaultValue"];
         |}
-        |""".trimMargin()
+        |
+    """.trimMargin()
     assertThat(extend.toSchema()).isEqualTo(expected)
   }
 }

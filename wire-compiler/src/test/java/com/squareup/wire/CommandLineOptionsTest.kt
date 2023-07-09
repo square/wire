@@ -1,11 +1,11 @@
 /*
- * Copyright 2015 Square Inc.
+ * Copyright (C) 2015 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,12 +16,12 @@
 package com.squareup.wire
 
 import com.squareup.wire.schema.WireRun
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintWriter
 import kotlin.test.assertFailsWith
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
 class CommandLineOptionsTest {
   @Test
@@ -41,7 +41,10 @@ class CommandLineOptionsTest {
     assertThat(compiler.protoPaths).containsOnly("foo/bar")
 
     compiler = parseArgs(
-      "--java_out=.", "--proto_path=foo/bar", "--proto_path=one/two", "--proto_path=three/four"
+      "--java_out=.",
+      "--proto_path=foo/bar",
+      "--proto_path=one/two",
+      "--proto_path=three/four",
     )
     assertThat(compiler.protoPaths).containsExactly("foo/bar", "one/two", "three/four")
   }
@@ -114,14 +117,15 @@ class CommandLineOptionsTest {
       |b:
       |  dependencies:
       |   - a
-      |""".trimMargin()
+      |
+      """.trimMargin(),
     )
 
     val compiler =
       parseArgs("--java_out=.", "--experimental-module-manifest=${tmpFile.absolutePath}")
 
     assertThat(compiler.modules).isEqualTo(
-      mapOf("a" to WireRun.Module(), "b" to WireRun.Module(dependencies = setOf("a")))
+      mapOf("a" to WireRun.Module(), "b" to WireRun.Module(dependencies = setOf("a"))),
     )
   }
 

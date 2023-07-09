@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -89,12 +89,12 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
     val rpcCallStyle = RpcCallStyle.values()
       .singleOrNull { it.toString().equals(rpcCallStyle, ignoreCase = true) }
       ?: throw IllegalArgumentException(
-        "Unknown rpcCallStyle $rpcCallStyle. Valid values: ${RpcCallStyle.values().contentToString()}"
+        "Unknown rpcCallStyle $rpcCallStyle. Valid values: ${RpcCallStyle.values().contentToString()}",
       )
     val rpcRole = RpcRole.values()
       .singleOrNull { it.toString().equals(rpcRole, ignoreCase = true) }
       ?: throw IllegalArgumentException(
-        "Unknown rpcRole $rpcRole. Valid values: ${RpcRole.values().contentToString()}"
+        "Unknown rpcRole $rpcRole. Valid values: ${RpcRole.values().contentToString()}",
       )
 
     return KotlinTarget(
@@ -127,6 +127,7 @@ open class CustomOutput @Inject constructor() : WireOutput() {
   var includes: List<String>? = null
   var excludes: List<String>? = null
   var exclusive: Boolean = true
+
   /**
    * Black boxed payload which a caller can set for the custom [SchemaHandler.Factory] to receive.
    */

@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 Square Inc.
+ * Copyright (C) 2018 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,11 +18,11 @@ package com.squareup.wire
 import com.squareup.wire.internal.createRuntimeMessageAdapter
 import com.squareup.wire.protos.kotlin.map.Mappy
 import com.squareup.wire.protos.kotlin.map.Thing
-import okio.ByteString
-import okio.ByteString.Companion.decodeHex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import okio.ByteString
+import okio.ByteString.Companion.decodeHex
 
 class KotlinMapTest {
   private val adapter = createRuntimeMessageAdapter(
@@ -53,8 +53,8 @@ class KotlinMapTest {
       things = mapOf(
         "one" to Thing("One"),
         "two" to Thing("Two"),
-        "three" to Thing("Three")
-      )
+        "three" to Thing("Three"),
+      ),
     )
   }
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright (C) 2013 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -76,8 +76,10 @@ annotation class WireField(
     OPTIONAL,
     REPEATED,
     ONE_OF,
+
     /** Implies [REPEATED]. */
     PACKED,
+
     /**
      * Special label to define proto3 fields which should not be emitted if their value is equal
      * to their type's respective identity value. E.g.: a field of type `int32` will not get emitted
@@ -87,12 +89,15 @@ annotation class WireField(
     ;
 
     val isRepeated: Boolean
-      @JvmName("isRepeated") get() = this == REPEATED || this == PACKED
+      @JvmName("isRepeated")
+      get() = this == REPEATED || this == PACKED
 
     val isPacked: Boolean
-      @JvmName("isPacked") get() = this == PACKED
+      @JvmName("isPacked")
+      get() = this == PACKED
 
     val isOneOf: Boolean
-      @JvmName("isOneOf") get() = this == ONE_OF
+      @JvmName("isOneOf")
+      get() = this == ONE_OF
   }
 }

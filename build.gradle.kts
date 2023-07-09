@@ -1,6 +1,8 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
+import com.diffplug.spotless.LineEnding
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
+import kotlinx.validation.ApiValidationExtension
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
@@ -10,7 +12,6 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import kotlinx.validation.ApiValidationExtension
 
 buildscript {
   dependencies {
@@ -56,15 +57,30 @@ allprojects {
 }
 
 subprojects {
-  apply(plugin = "com.diffplug.spotless")
-  configure<SpotlessExtension> {
-    setEnforceCheck(false)
-    kotlin {
-      target("**/*.kt")
-      ktlint(libs.versions.ktlint.get()).userData(kotlin.collections.mapOf("indent_size" to "2"))
-      trimTrailingWhitespace()
-      endWithNewline()
-      toggleOffOn()
+  if (name != "wire-golden-files") {
+    apply(plugin = "com.diffplug.spotless")
+    configure<SpotlessExtension> {
+      val licenseHeaderFile = rootProject.file("gradle/license-header.txt")
+      kotlin {
+        target("**/*.kt")
+        ktlint(libs.versions.ktlint.get()).editorConfigOverride(
+          mapOf("ktlint_standard_filename" to "disabled"),
+        )
+        trimTrailingWhitespace()
+        endWithNewline()
+        toggleOffOn()
+        lineEndings = LineEnding.UNIX
+        licenseHeaderFile(licenseHeaderFile)
+      }
+      java {
+        target("**/*.java")
+        googleJavaFormat(libs.googleJavaFormat.get().version)
+        trimTrailingWhitespace()
+        endWithNewline()
+        toggleOffOn()
+        lineEndings = LineEnding.UNIX
+        licenseHeaderFile(licenseHeaderFile)
+      }
     }
   }
 

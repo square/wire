@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -101,36 +101,67 @@ class ProtoType {
 
   companion object {
     @JvmField val BOOL = ProtoType(true, "bool")
+
     @JvmField val BYTES = ProtoType(true, "bytes")
+
     @JvmField val DOUBLE = ProtoType(true, "double")
+
     @JvmField val FLOAT = ProtoType(true, "float")
+
     @JvmField val FIXED32 = ProtoType(true, "fixed32")
+
     @JvmField val FIXED64 = ProtoType(true, "fixed64")
+
     @JvmField val INT32 = ProtoType(true, "int32")
+
     @JvmField val INT64 = ProtoType(true, "int64")
+
     @JvmField val SFIXED32 = ProtoType(true, "sfixed32")
+
     @JvmField val SFIXED64 = ProtoType(true, "sfixed64")
+
     @JvmField val SINT32 = ProtoType(true, "sint32")
+
     @JvmField val SINT64 = ProtoType(true, "sint64")
+
     @JvmField val STRING = ProtoType(true, "string")
+
     @JvmField val UINT32 = ProtoType(true, "uint32")
+
     @JvmField val UINT64 = ProtoType(true, "uint64")
+
     @JvmField val ANY = ProtoType(false, "google.protobuf.Any")
+
     @JvmField val DURATION = ProtoType(false, "google.protobuf.Duration")
+
     @JvmField val TIMESTAMP = ProtoType(false, "google.protobuf.Timestamp")
+
     @JvmField val EMPTY = ProtoType(false, "google.protobuf.Empty")
+
     @JvmField val STRUCT_MAP = ProtoType(false, "google.protobuf.Struct")
+
     @JvmField val STRUCT_VALUE = ProtoType(false, "google.protobuf.Value")
+
     @JvmField val STRUCT_NULL = ProtoType(false, "google.protobuf.NullValue")
+
     @JvmField val STRUCT_LIST = ProtoType(false, "google.protobuf.ListValue")
+
     @JvmField val DOUBLE_VALUE = ProtoType(false, "google.protobuf.DoubleValue")
+
     @JvmField val FLOAT_VALUE = ProtoType(false, "google.protobuf.FloatValue")
+
     @JvmField val INT64_VALUE = ProtoType(false, "google.protobuf.Int64Value")
+
     @JvmField val UINT64_VALUE = ProtoType(false, "google.protobuf.UInt64Value")
+
     @JvmField val INT32_VALUE = ProtoType(false, "google.protobuf.Int32Value")
+
     @JvmField val UINT32_VALUE = ProtoType(false, "google.protobuf.UInt32Value")
+
     @JvmField val BOOL_VALUE = ProtoType(false, "google.protobuf.BoolValue")
+
     @JvmField val STRING_VALUE = ProtoType(false, "google.protobuf.StringValue")
+
     @JvmField val BYTES_VALUE = ProtoType(false, "google.protobuf.BytesValue")
 
     private val SCALAR_TYPES: Map<String, ProtoType> = listOf(
@@ -148,7 +179,7 @@ class ProtoType {
       SINT64,
       STRING,
       UINT32,
-      UINT64
+      UINT64,
     ).associateBy { it.string }
 
     internal val NUMERIC_SCALAR_TYPES = listOf(
@@ -163,7 +194,7 @@ class ProtoType {
       SINT32,
       SINT64,
       UINT32,
-      UINT64
+      UINT64,
     )
 
     /** All types defined in `google/protobuf/wrappers.proto`. */

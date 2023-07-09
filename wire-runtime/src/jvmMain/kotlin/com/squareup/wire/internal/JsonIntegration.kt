@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,11 +18,11 @@ package com.squareup.wire.internal
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Syntax
-import okio.ByteString
-import okio.ByteString.Companion.decodeBase64
 import java.lang.reflect.Type
 import java.math.BigDecimal
 import java.math.BigInteger
+import okio.ByteString
+import okio.ByteString.Companion.decodeBase64
 
 /**
  * Integrates a JSON library like Moshi or Gson into proto. This rigid interface attempts to make it
@@ -39,7 +39,7 @@ abstract class JsonIntegration<F, A> {
   abstract fun mapAdapter(
     framework: F,
     keyFormatter: JsonFormatter<*>,
-    valueAdapter: A
+    valueAdapter: A,
   ): A
 
   /**
@@ -54,7 +54,7 @@ abstract class JsonIntegration<F, A> {
   /** Returns a message type that supports encoding and decoding JSON objects of type [type]. */
   fun <M : Any, B : Any> jsonAdapters(
     adapter: RuntimeMessageAdapter<M, B>,
-    framework: F
+    framework: F,
   ): List<A> {
     val fieldBindings = adapter.fields.values.toTypedArray()
     return fieldBindings.map { jsonAdapter(framework, adapter.syntax, it) }
@@ -64,7 +64,7 @@ abstract class JsonIntegration<F, A> {
   private fun <M : Any, B : Any> jsonAdapter(
     framework: F,
     syntax: Syntax,
-    field: FieldOrOneOfBinding<M, B>
+    field: FieldOrOneOfBinding<M, B>,
   ): A {
     if (field.singleAdapter.isStruct) {
       return structAdapter(framework)
@@ -81,7 +81,7 @@ abstract class JsonIntegration<F, A> {
       field.isMap -> mapAdapter(
         framework = framework,
         keyFormatter = mapKeyJsonFormatter(field.keyAdapter),
-        valueAdapter = singleAdapter
+        valueAdapter = singleAdapter,
       )
       else -> singleAdapter
     }
@@ -90,7 +90,8 @@ abstract class JsonIntegration<F, A> {
   private fun jsonFormatter(syntax: Syntax, protoAdapter: ProtoAdapter<*>): JsonFormatter<*>? {
     when (protoAdapter) {
       ProtoAdapter.BYTES,
-      ProtoAdapter.BYTES_VALUE -> return ByteStringJsonFormatter
+      ProtoAdapter.BYTES_VALUE,
+      -> return ByteStringJsonFormatter
       ProtoAdapter.DURATION -> return DurationJsonFormatter
       ProtoAdapter.INSTANT -> return InstantJsonFormatter
       is EnumAdapter<*> -> return EnumJsonFormatter(protoAdapter)
@@ -105,14 +106,17 @@ abstract class JsonIntegration<F, A> {
       return when (protoAdapter) {
         ProtoAdapter.UINT32,
         ProtoAdapter.FIXED32,
-        ProtoAdapter.UINT32_VALUE -> UnsignedIntAsNumberJsonFormatter
+        ProtoAdapter.UINT32_VALUE,
+        -> UnsignedIntAsNumberJsonFormatter
         ProtoAdapter.INT64,
         ProtoAdapter.SFIXED64,
         ProtoAdapter.SINT64,
-        ProtoAdapter.INT64_VALUE -> LongAsStringJsonFormatter
+        ProtoAdapter.INT64_VALUE,
+        -> LongAsStringJsonFormatter
         ProtoAdapter.FIXED64,
         ProtoAdapter.UINT64,
-        ProtoAdapter.UINT64_VALUE -> UnsignedLongAsStringJsonFormatter
+        ProtoAdapter.UINT64_VALUE,
+        -> UnsignedLongAsStringJsonFormatter
         else -> null
       }
     }
@@ -123,14 +127,18 @@ abstract class JsonIntegration<F, A> {
       ProtoAdapter.STRING -> StringJsonFormatter
       ProtoAdapter.INT32,
       ProtoAdapter.SINT32,
-      ProtoAdapter.SFIXED32 -> IntAsStringJsonFormatter
+      ProtoAdapter.SFIXED32,
+      -> IntAsStringJsonFormatter
       ProtoAdapter.FIXED32,
-      ProtoAdapter.UINT32 -> UnsignedIntAsStringJsonFormatter
+      ProtoAdapter.UINT32,
+      -> UnsignedIntAsStringJsonFormatter
       ProtoAdapter.INT64,
       ProtoAdapter.SFIXED64,
-      ProtoAdapter.SINT64 -> LongAsStringJsonFormatter
+      ProtoAdapter.SINT64,
+      -> LongAsStringJsonFormatter
       ProtoAdapter.FIXED64,
-      ProtoAdapter.UINT64 -> UnsignedLongAsStringJsonFormatter
+      ProtoAdapter.UINT64,
+      -> UnsignedLongAsStringJsonFormatter
       else -> error("Unexpected map key type: ${protoAdapter.type}")
     }
   }

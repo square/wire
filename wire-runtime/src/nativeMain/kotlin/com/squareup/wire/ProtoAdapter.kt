@@ -1,11 +1,11 @@
 /*
- * Copyright 2015 Square Inc.
+ * Copyright (C) 2015 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,10 +15,10 @@
  */
 package com.squareup.wire
 
+import kotlin.reflect.KClass
 import okio.BufferedSink
 import okio.BufferedSource
 import okio.ByteString
-import kotlin.reflect.KClass
 
 actual abstract class ProtoAdapter<E> actual constructor(
   internal actual val fieldEncoding: FieldEncoding,
@@ -126,7 +126,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
       "Unable to pack a length-delimited type."
     }
     return packedAdapter ?: throw UnsupportedOperationException(
-      "Can't create a packed adapter from a packed or repeated adapter."
+      "Can't create a packed adapter from a packed or repeated adapter.",
     )
   }
 
@@ -139,13 +139,13 @@ actual abstract class ProtoAdapter<E> actual constructor(
    */
   actual fun asRepeated(): ProtoAdapter<List<E>> {
     return repeatedAdapter ?: throw UnsupportedOperationException(
-      "Can't create a repeated adapter from a repeated or packed adapter."
+      "Can't create a repeated adapter from a repeated or packed adapter.",
     )
   }
 
   actual class EnumConstantNotFoundException actual constructor(
     actual val value: Int,
-    type: KClass<*>?
+    type: KClass<*>?,
   ) : IllegalArgumentException("Unknown enum tag $value for ${type?.simpleName}")
 
   actual companion object {
@@ -158,7 +158,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
      */
     actual fun <K, V> newMapAdapter(
       keyAdapter: ProtoAdapter<K>,
-      valueAdapter: ProtoAdapter<V>
+      valueAdapter: ProtoAdapter<V>,
     ): ProtoAdapter<Map<K, V>> {
       return commonNewMapAdapter(keyAdapter, valueAdapter)
     }
@@ -176,6 +176,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     actual val SFIXED32_ARRAY: ProtoAdapter<IntArray> = IntArrayProtoAdapter(SFIXED32)
     actual val INT64: ProtoAdapter<Long> = commonInt64()
     actual val INT64_ARRAY: ProtoAdapter<LongArray> = LongArrayProtoAdapter(INT64)
+
     /**
      * Like INT64, but negative longs are interpreted as large positive values, and encoded that way
      * in JSON.

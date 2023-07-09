@@ -18,6 +18,21 @@ if (project.rootProject.name == "wire") {
       KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
     )
   }
+
+  configure<SpotlessExtension> {
+    kotlin {
+      targetExclude(
+        // Generated files.
+        "src/test/java/**/*.kt",
+      )
+    }
+    java {
+      targetExclude(
+        // Generated files.
+        "src/test/java/**/*.java",
+      )
+    }
+  }
 }
 
 dependencies {
@@ -27,14 +42,4 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.assertj)
   testImplementation(projects.wireTestUtils)
-}
-
-configure<SpotlessExtension> {
-  kotlin {
-    targetExclude(
-      "src/test/java/com/squareup/wire/protos/**/*.kt",
-      "src/test/java/com/squareup/wire/proto2/**/*.kt",
-      "src/test/java/squareup/proto2/keywords/**/*.kt",
-    )
-  }
 }

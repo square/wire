@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ import kotlin.jvm.JvmField
  */
 class Options(
   private val optionType: ProtoType,
-  private val optionElements: List<OptionElement>
+  private val optionElements: List<OptionElement>,
 ) {
   // Null until this options is linked.
   private var entries: List<LinkedOptionEntry>? = null
@@ -78,7 +78,7 @@ class Options(
     extensionType: ProtoType,
     option: OptionElement,
     validate: Boolean,
-    location: Location
+    location: Location,
   ): List<LinkedOptionEntry>? {
     val type = linker.getForOptions(extensionType) as? MessageType
       ?: return null // No known extensions for the given extension type.
@@ -146,7 +146,7 @@ class Options(
     linker: Linker,
     context: ProtoType,
     isRepeated: Boolean,
-    value: Any
+    value: Any,
   ): Any {
     when (value) {
       is OptionElement -> {
@@ -168,15 +168,27 @@ class Options(
           val mapFieldKeyAsString = value["key"]
           val mapFieldValueAsString = value["value"]
           val mapFieldKey =
-            if (mapFieldKeyAsString == null) null
-            else canonicalizeValue(
-              linker, context.keyType!!, isRepeated = false, mapFieldKeyAsString
-            )
+            if (mapFieldKeyAsString == null) {
+              null
+            } else {
+              canonicalizeValue(
+                linker,
+                context.keyType!!,
+                isRepeated = false,
+                mapFieldKeyAsString,
+              )
+            }
           val mapFieldValue =
-            if (mapFieldValueAsString == null) null
-            else canonicalizeValue(
-              linker, context.valueType!!, isRepeated = false, mapFieldValueAsString
-            )
+            if (mapFieldValueAsString == null) {
+              null
+            } else {
+              canonicalizeValue(
+                linker,
+                context.valueType!!,
+                isRepeated = false,
+                mapFieldValueAsString,
+              )
+            }
           return coerceValueForField(context, mapOf(mapFieldKey to mapFieldValue), isRepeated)
         } else {
           val result = mutableMapOf<ProtoMember, Any>()
@@ -246,9 +258,10 @@ class Options(
   private fun union(
     linker: Linker,
     a: List<LinkedOptionEntry>,
-    b: List<LinkedOptionEntry>
+    b: List<LinkedOptionEntry>,
   ): List<LinkedOptionEntry> {
     val aMap: Map<ProtoMember, Any?> = a.toMap()
+
     @Suppress("UNCHECKED_CAST")
     val bMap: Map<ProtoMember, Any> = b.toMap() as Map<ProtoMember, Any>
 
@@ -268,7 +281,7 @@ class Options(
         LinkedOptionEntry(
           optionElement,
           protoMember,
-          valuesMap[protoMember]
+          valuesMap[protoMember],
         )
       }
   }
@@ -276,7 +289,7 @@ class Options(
   private fun union(
     linker: Linker,
     a: Map<ProtoMember, Any?>,
-    b: Map<ProtoMember, Any>
+    b: Map<ProtoMember, Any>,
   ): Map<ProtoMember, Any?> {
     val result: MutableMap<ProtoMember, Any?> = LinkedHashMap(a)
     for (entry in b) {
@@ -304,7 +317,7 @@ class Options(
     sink: MutableMap<ProtoType, MutableCollection<ProtoMember>>,
     type: ProtoType,
     o: Any?,
-    pruningRules: PruningRules
+    pruningRules: PruningRules,
   ) {
     when (o) {
       is Map<*, *> -> {
@@ -346,7 +359,7 @@ class Options(
     schema: Schema,
     markSet: MarkSet,
     type: ProtoType?,
-    o: Any
+    o: Any,
   ): Any? {
     return when {
       o is Map<*, *> -> {
@@ -390,12 +403,19 @@ class Options(
 
   companion object {
     @JvmField val FILE_OPTIONS = ProtoType.get("google.protobuf.FileOptions")
+
     @JvmField val MESSAGE_OPTIONS = ProtoType.get("google.protobuf.MessageOptions")
+
     @JvmField val FIELD_OPTIONS = ProtoType.get("google.protobuf.FieldOptions")
+
     @JvmField val ONEOF_OPTIONS = ProtoType.get("google.protobuf.OneofOptions")
+
     @JvmField val ENUM_OPTIONS = ProtoType.get("google.protobuf.EnumOptions")
+
     @JvmField val ENUM_VALUE_OPTIONS = ProtoType.get("google.protobuf.EnumValueOptions")
+
     @JvmField val SERVICE_OPTIONS = ProtoType.get("google.protobuf.ServiceOptions")
+
     @JvmField val METHOD_OPTIONS = ProtoType.get("google.protobuf.MethodOptions")
     val GOOGLE_PROTOBUF_OPTION_TYPES = arrayOf(
       FILE_OPTIONS,
@@ -405,7 +425,7 @@ class Options(
       ENUM_OPTIONS,
       ENUM_VALUE_OPTIONS,
       SERVICE_OPTIONS,
-      METHOD_OPTIONS
+      METHOD_OPTIONS,
     )
 
     /**
@@ -426,7 +446,7 @@ class Options(
      */
     fun resolveFieldPath(
       name: String,
-      fullyQualifiedNames: Set<String?>
+      fullyQualifiedNames: Set<String?>,
     ): Array<String>? { // Try to resolve a local name.
       var pos = 0
       val chompedName = name.removePrefix(".")

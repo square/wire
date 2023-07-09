@@ -1,3 +1,4 @@
+import com.diffplug.gradle.spotless.SpotlessExtension
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
@@ -75,5 +76,14 @@ if (project.rootProject.name == "wire") {
     configure(
       KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
     )
+  }
+
+  configure<SpotlessExtension> {
+    kotlin {
+      targetExclude(
+        // Apache 2-licensed file from Apache.
+        "src/jvmTest/kotlin/com/squareup/wire/schema/MavenVersionsTest.kt",
+      )
+    }
   }
 }

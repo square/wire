@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ import com.squareup.wire.schema.internal.parser.SyntaxReader
 /** Parses `.wire` files.  */
 class ProfileParser(
   private val location: Location,
-  data: String
+  data: String,
 ) {
   private val reader = SyntaxReader(data.toCharArray(), location)
   private val imports = mutableListOf<String>()
@@ -47,7 +47,7 @@ class ProfileParser(
           location = location,
           packageName = packageName,
           imports = imports,
-          typeConfigs = typeConfigs
+          typeConfigs = typeConfigs,
         )
       }
 
@@ -78,7 +78,7 @@ class ProfileParser(
   /** Reads a type config and returns it.  */
   private fun readTypeConfig(
     location: Location,
-    documentation: String
+    documentation: String,
   ): TypeConfigElement {
     val name = reader.readDataType()
     val withOptions = mutableListOf<OptionElement>()
@@ -116,7 +116,7 @@ class ProfileParser(
       documentation = documentation,
       with = withOptions,
       target = target,
-      adapter = adapter
+      adapter = adapter,
     )
   }
 }

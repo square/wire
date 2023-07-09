@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Square Inc.
+ * Copyright (C) 2016 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,13 +17,13 @@ package com.squareup.wire
 
 import android.os.Parcel
 import android.os.Parcelable
-import okio.ByteString
 import java.lang.reflect.Array.newInstance
+import okio.ByteString
 
 /** An Android-specific [Message] which adds support for [Parcelable]. */
 abstract class AndroidMessage<M : Message<M, B>, B : Message.Builder<M, B>> protected constructor(
   adapter: ProtoAdapter<M>,
-  unknownFields: ByteString
+  unknownFields: ByteString,
 ) : Message<M, B>(adapter, unknownFields), Parcelable {
 
   override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -33,7 +33,7 @@ abstract class AndroidMessage<M : Message<M, B>, B : Message.Builder<M, B>> prot
   override fun describeContents() = 0
 
   private class ProtoAdapterCreator<M> internal constructor(
-    private val adapter: ProtoAdapter<M>
+    private val adapter: ProtoAdapter<M>,
   ) : Parcelable.Creator<M> {
     override fun createFromParcel(input: Parcel): M = adapter.decode(input.createByteArray())
 

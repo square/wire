@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,12 +18,12 @@ package com.squareup.wire.schema
 import com.squareup.javapoet.ClassName
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
+import java.io.IOException
 import okio.Path
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
-import java.io.IOException
 
 // TODO(Benoit) Move to `commonTest`.
 class ProfileLoaderTest {
@@ -31,7 +31,8 @@ class ProfileLoaderTest {
     if (Path.DIRECTORY_SEPARATOR == "\\") emulateWindows() else emulateUnix()
   }
 
-  @Test @Throws(IOException::class)
+  @Test
+  @Throws(IOException::class)
   fun test() {
     fs.add(
       "source-path/a/b/message1.proto",
@@ -39,7 +40,7 @@ class ProfileLoaderTest {
         |package a.b;
         |message Message1 {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/a/b/c/message2.proto",
@@ -47,7 +48,7 @@ class ProfileLoaderTest {
         |package a.b.c;
         |message Message2 {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/android.wire",
@@ -57,7 +58,7 @@ class ProfileLoaderTest {
         |type a.b.Message1 {
         |  target java.lang.Object using com.example.Message1#OBJECT_ADAPTER;
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/a/b/c/android.wire",
@@ -68,7 +69,7 @@ class ProfileLoaderTest {
         |type a.b.c.Message2 {
         |  target java.lang.String using com.example.Message2#STRING_ADAPTER;
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
 
     val profile = loadAndLinkProfile("android")
@@ -85,14 +86,15 @@ class ProfileLoaderTest {
       .isEqualTo(AdapterConstant("com.example.Message2#STRING_ADAPTER"))
   }
 
-  @Test @Throws(IOException::class)
+  @Test
+  @Throws(IOException::class)
   fun profileInZip() {
     fs.addZip(
       "/source/protos.zip",
       "a/b/message.proto" to """
           |package a.b;
           |message Message {}
-          """.trimMargin(),
+      """.trimMargin(),
       "a/b/android.wire" to """
           |syntax = "wire2";
           |package a.b;
@@ -100,12 +102,12 @@ class ProfileLoaderTest {
           |type a.b.Message {
           |  target java.lang.Object using com.example.Message#ADAPTER;
           |}
-          """.trimMargin()
+      """.trimMargin(),
     )
 
     val profile = loadAndLinkProfile(
       "android",
-      sourcePath = listOf(Location.get("/source/protos.zip"))
+      sourcePath = listOf(Location.get("/source/protos.zip")),
     )
 
     val message = ProtoType.get("a.b.Message")
@@ -122,7 +124,7 @@ class ProfileLoaderTest {
         |package a.b;
         |message Message {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/a/b/android.wire",
@@ -131,7 +133,7 @@ class ProfileLoaderTest {
         |type a.b.Message2 {
         |  target java.lang.Object using com.example.Message#OBJECT_ADAPTER;
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     val profile = loadAndLinkProfile("android")
     val message = ProtoType.get("a.b.Message")
@@ -146,7 +148,7 @@ class ProfileLoaderTest {
         |package a.b;
         |message Message {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/a/b/android.wire",
@@ -155,7 +157,7 @@ class ProfileLoaderTest {
         |type a.b.Message {
         |  target java.lang.Object using com.example.Message#OBJECT_ADAPTER;
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     try {
       loadAndLinkProfile("android")
@@ -163,14 +165,14 @@ class ProfileLoaderTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage(
         "a/b/android.wire needs to import a/b/message.proto" +
-          " (source-path/a/b/android.wire:2:1)"
+          " (source-path/a/b/android.wire:2:1)",
       )
     }
   }
 
   private fun loadAndLinkProfile(
     name: String,
-    sourcePath: List<Location> = listOf(Location.get("source-path"))
+    sourcePath: List<Location> = listOf(Location.get("source-path")),
   ): Profile {
     val loader = SchemaLoader(fs)
     loader.initRoots(sourcePath)

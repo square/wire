@@ -289,6 +289,19 @@ configure<SpotlessExtension> {
       "src/jvmKotlinInteropTest/proto-kotlin/**/*.kt",
       "src/jvmJsonJavaTest/proto-java/**/*.kt",
       "src/jvmJsonKotlinTest/proto-kotlin/**/*.kt",
-      )
+    )
+  }
+  java {
+    targetExclude(
+      "src/jvmJavaTest/proto-java/**/*.java",
+      "src/jvmJavaNoOptionsTest/proto-java/**/*.java",
+      "src/jvmJavaCompactTest/proto-java/**/*.java",
+      "src/jvmJavaPrunedTest/proto-java/**/*.java",
+      "src/jvmJavaAndroidTest/proto-java/**/*.java",
+      "src/jvmJavaAndroidCompactTest/proto-java/**/*.java",
+      "src/jvmJavaTest/proto-java/**/*.java",
+      "src/jvmKotlinInteropTest/proto-kotlin/**/*.java",
+      "src/jvmJsonJavaTest/proto-java/**/*.java",
+    )
   }
 }

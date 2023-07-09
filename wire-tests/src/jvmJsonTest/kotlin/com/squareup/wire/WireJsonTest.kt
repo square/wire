@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,10 @@ import com.google.gson.JsonSyntaxException
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
+import com.squareup.wire.proto2.alltypes.AllTypes as AllTypesProto2
+import com.squareup.wire.proto3.alltypes.AllTypes as AllTypesProto3
+import java.io.File
+import java.util.Collections
 import okio.ByteString
 import okio.buffer
 import okio.source
@@ -42,10 +46,6 @@ import squareup.proto3.FreeGarlicBreadPromotion
 import squareup.proto3.MapTypes
 import squareup.proto3.Pizza
 import squareup.proto3.PizzaDelivery
-import java.io.File
-import java.util.Collections
-import com.squareup.wire.proto2.alltypes.AllTypes as AllTypesProto2
-import com.squareup.wire.proto3.alltypes.AllTypes as AllTypesProto3
 
 /**
  * Tests meant to be executed against both Java generated and Kotlin generated code among different
@@ -68,7 +68,7 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
       jsonLibrary.toJson(parsed, AllTypesProto2::class.java),
-      jsonLibrary.toJson(value, AllTypesProto2::class.java)
+      jsonLibrary.toJson(value, AllTypesProto2::class.java),
     )
   }
 
@@ -76,7 +76,7 @@ class WireJsonTest {
     val value = allTypesProto2IdentityBuilder().build()
     assertJsonEquals(
       ALL_TYPES_IDENTITY_PROTO2_JSON,
-      jsonLibrary.toJson(value, AllTypesProto2::class.java)
+      jsonLibrary.toJson(value, AllTypesProto2::class.java),
     )
   }
 
@@ -87,7 +87,7 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
       jsonLibrary.toJson(parsed, AllTypesProto2::class.java),
-      jsonLibrary.toJson(value, AllTypesProto2::class.java)
+      jsonLibrary.toJson(value, AllTypesProto2::class.java),
     )
   }
 
@@ -96,8 +96,9 @@ class WireJsonTest {
     builder.addUnknownField(9000, FieldEncoding.FIXED32, 9000)
     builder.addUnknownField(9001, FieldEncoding.FIXED64, 9001L)
     builder.addUnknownField(
-      9002, FieldEncoding.LENGTH_DELIMITED,
-      ByteString.of('9'.toByte(), '0'.toByte(), '0'.toByte(), '2'.toByte())
+      9002,
+      FieldEncoding.LENGTH_DELIMITED,
+      ByteString.of('9'.toByte(), '0'.toByte(), '0'.toByte(), '2'.toByte()),
     )
     builder.addUnknownField(9003, FieldEncoding.VARINT, 9003L)
 
@@ -126,21 +127,21 @@ class WireJsonTest {
 
     // Encoding.
     assertThat(jsonLibrary.toJson(nested, NestedCamelCase::class.java)).isEqualTo(
-      """{"oneInt32":1}"""
+      """{"oneInt32":1}""",
     )
 
     // More fields
     assertThat(jsonLibrary.fromJson("""{"nestedMessage":{"oneInt32":1}}""", CamelCase::class.java))
       .isEqualTo(
         CamelCase.Builder().nested__message(NestedCamelCase.Builder().one_int32(1).build())
-          .build()
+          .build(),
       )
     assertThat(
-      jsonLibrary.fromJson("""{"nested__message":{"one_int32":1}}""", CamelCase::class.java)
+      jsonLibrary.fromJson("""{"nested__message":{"one_int32":1}}""", CamelCase::class.java),
     )
       .isEqualTo(
         CamelCase.Builder().nested__message(NestedCamelCase.Builder().one_int32(1).build())
-          .build()
+          .build(),
       )
     assertThat(jsonLibrary.fromJson("""{"RepInt32":[1, 2]}""", CamelCase::class.java))
       .isEqualTo(CamelCase.Builder()._Rep_int32(listOf(1, 2)).build())
@@ -178,7 +179,8 @@ class WireJsonTest {
         |    "1": 2
         |  }
         |}
-        |""".trimMargin()
+        |
+      """.trimMargin(),
     )
 
     // Confirm protoc prints the same.
@@ -205,7 +207,7 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
       jsonLibrary.toJson(parsed, AllStructs::class.java),
-      jsonLibrary.toJson(value, AllStructs::class.java)
+      jsonLibrary.toJson(value, AllStructs::class.java),
     )
   }
 
@@ -232,7 +234,7 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
       jsonLibrary.toJson(parsed, AllStructs::class.java),
-      jsonLibrary.toJson(value, AllStructs::class.java)
+      jsonLibrary.toJson(value, AllStructs::class.java),
     )
   }
 
@@ -255,7 +257,7 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
       jsonLibrary.toJson(parsed, PizzaDelivery::class.java),
-      jsonLibrary.toJson(value, PizzaDelivery::class.java)
+      jsonLibrary.toJson(value, PizzaDelivery::class.java),
     )
   }
 
@@ -267,14 +269,14 @@ class WireJsonTest {
       // Moshi.
       assertThat(expected).hasMessage(
         "Cannot resolve type: " +
-          "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion in \$.promotion"
+          "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion in \$.promotion",
       )
     } catch (expected: JsonSyntaxException) {
       // Gson.
       assertThat(expected)
         .hasMessageContaining(
           "Cannot resolve type: " +
-            "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion in \$.promotion"
+            "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion in \$.promotion",
         )
     }
   }
@@ -284,7 +286,7 @@ class WireJsonTest {
       .address("507 Cross Street")
       .pizzas(listOf(Pizza.Builder().toppings(listOf("pineapple", "onion")).build()))
       .promotion(
-        AnyMessage.pack(FreeGarlicBreadPromotion.Builder().is_extra_cheesey(true).build())
+        AnyMessage.pack(FreeGarlicBreadPromotion.Builder().is_extra_cheesey(true).build()),
       )
       .delivered_within_or_free(durationOfSeconds(1_799L, 500_000_000L))
       .loyalty(emptyMap<String, Any?>())
@@ -300,14 +302,14 @@ class WireJsonTest {
         .hasMessage(
           "Cannot find type for url: " +
             "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion " +
-            "in \$.promotion.@type"
+            "in \$.promotion.@type",
         )
     } catch (expected: JsonIOException) {
       // Gson.
       assertThat(expected)
         .hasMessageContaining(
           "Cannot find type for url: " +
-            "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion"
+            "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion",
         )
     }
   }
@@ -378,7 +380,7 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
       jsonLibrary.toJson(parsed, All64::class.java),
-      jsonLibrary.toJson(value, All64::class.java)
+      jsonLibrary.toJson(value, All64::class.java),
     )
   }
 
@@ -414,7 +416,7 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
       jsonLibrary.toJson(parsed, All64::class.java),
-      jsonLibrary.toJson(value, All64::class.java)
+      jsonLibrary.toJson(value, All64::class.java),
     )
   }
 
@@ -440,20 +442,20 @@ class WireJsonTest {
     assertThat(
       jsonLibrary.fromJson(
         """{"mySint64":"123", "repSint64": ["456"]}""",
-        All64::class.java
-      )
+        All64::class.java,
+      ),
     ).isEqualTo(signed)
     assertThat(
       jsonLibrary.fromJson(
         """{"mySint64":123, "repSint64": [456]}""",
-        All64::class.java
-      )
+        All64::class.java,
+      ),
     ).isEqualTo(signed)
     assertThat(
       jsonLibrary.fromJson(
         """{"mySint64":123.0, "repSint64": [456.0]}""",
-        All64::class.java
-      )
+        All64::class.java,
+      ),
     ).isEqualTo(signed)
 
     val signedJson = jsonLibrary.toJson(signed, All64::class.java)
@@ -464,20 +466,20 @@ class WireJsonTest {
     assertThat(
       jsonLibrary.fromJson(
         """{"myUint64":"123", "repUint64": ["456"]}""",
-        All64::class.java
-      )
+        All64::class.java,
+      ),
     ).isEqualTo(unsigned)
     assertThat(
       jsonLibrary.fromJson(
         """{"myUint64":123, "repUint64": [456]}""",
-        All64::class.java
-      )
+        All64::class.java,
+      ),
     ).isEqualTo(unsigned)
     assertThat(
       jsonLibrary.fromJson(
         """{"myUint64":123.0, "repUint64": [456.0]}""",
-        All64::class.java
-      )
+        All64::class.java,
+      ),
     ).isEqualTo(unsigned)
 
     val unsignedJson = jsonLibrary.toJson(unsigned, All64::class.java)
@@ -490,20 +492,20 @@ class WireJsonTest {
     assertThat(
       jsonLibrary.fromJson(
         """{"mySint32":"-2147483648", "repSint32": ["-2147483648"]}""",
-        All32::class.java
-      )
+        All32::class.java,
+      ),
     ).isEqualTo(signed)
     assertThat(
       jsonLibrary.fromJson(
         """{"mySint32":-2147483648, "repSint32": [-2147483648]}""",
-        All32::class.java
-      )
+        All32::class.java,
+      ),
     ).isEqualTo(signed)
     assertThat(
       jsonLibrary.fromJson(
         """{"mySint32":-2147483648.0, "repSint32": [-2147483648.0]}""",
-        All32::class.java
-      )
+        All32::class.java,
+      ),
     ).isEqualTo(signed)
 
     val signedJson = jsonLibrary.toJson(signed, All32::class.java)
@@ -515,32 +517,32 @@ class WireJsonTest {
     assertThat(
       jsonLibrary.fromJson(
         """{"myUint32":-2147483648, "repUint32": [-2147483648]}""",
-        All32::class.java
-      )
+        All32::class.java,
+      ),
     ).isEqualTo(unsigned)
     assertThat(
       jsonLibrary.fromJson(
         """{"myUint32":-2147483648.0, "repUint32": [-2147483648.0]}""",
-        All32::class.java
-      )
+        All32::class.java,
+      ),
     ).isEqualTo(unsigned)
     assertThat(
       jsonLibrary.fromJson(
         """{"myUint32":2147483648.0, "repUint32": [-2147483648.0]}""",
-        All32::class.java
-      )
+        All32::class.java,
+      ),
     ).isEqualTo(unsigned)
     assertThat(
       jsonLibrary.fromJson(
         """{"myUint32":2.147483648E9, "repUint32": [2.147483648E9]}""",
-        All32::class.java
-      )
+        All32::class.java,
+      ),
     ).isEqualTo(unsigned)
     assertThat(
       jsonLibrary.fromJson(
         """{"myUint32":-2.147483648E9, "repUint32": [-2.147483648E9]}""",
-        All32::class.java
-      )
+        All32::class.java,
+      ),
     ).isEqualTo(unsigned)
 
     val unsignedJson = jsonLibrary.toJson(unsigned, All32::class.java)
@@ -560,7 +562,7 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(allTypes.toString())
     assertJsonEquals(
       jsonLibrary.toJson(parsed, AllTypesProto3::class.java),
-      jsonLibrary.toJson(allTypes, AllTypesProto3::class.java)
+      jsonLibrary.toJson(allTypes, AllTypesProto3::class.java),
     )
   }
 
@@ -582,7 +584,7 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(allTypes.toString())
     assertJsonEquals(
       jsonLibrary.toJson(parsed, AllTypesProto3::class.java),
-      jsonLibrary.toJson(allTypes, AllTypesProto3::class.java)
+      jsonLibrary.toJson(allTypes, AllTypesProto3::class.java),
     )
   }
 
@@ -592,7 +594,7 @@ class WireJsonTest {
     val value = allTypesExplicitIdentityProto3Builder().build()
     assertJsonEquals(
       ALL_TYPES_EXPLICIT_IDENTITY_PROTO3_JSON,
-      jsonLibrary.toJson(value, AllTypesProto3::class.java)
+      jsonLibrary.toJson(value, AllTypesProto3::class.java),
     )
   }
 
@@ -601,13 +603,13 @@ class WireJsonTest {
 
     val parsed = jsonLibrary.fromJson(
       ALL_TYPES_EXPLICIT_IDENTITY_PROTO3_JSON,
-      AllTypesProto3::class.java
+      AllTypesProto3::class.java,
     )
     assertThat(parsed).isEqualTo(value)
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
       jsonLibrary.toJson(parsed, AllTypesProto3::class.java),
-      jsonLibrary.toJson(value, AllTypesProto3::class.java)
+      jsonLibrary.toJson(value, AllTypesProto3::class.java),
     )
   }
 
@@ -645,7 +647,7 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
       jsonLibrary.toJson(parsed, AllWrappers::class.java),
-      jsonLibrary.toJson(value, AllWrappers::class.java)
+      jsonLibrary.toJson(value, AllWrappers::class.java),
     )
   }
 
@@ -655,62 +657,62 @@ class WireJsonTest {
       .map_int32_int32(
         mapOf(
           Int.MIN_VALUE to Int.MIN_VALUE + 1,
-          Int.MAX_VALUE to Int.MAX_VALUE - 1
-        )
+          Int.MAX_VALUE to Int.MAX_VALUE - 1,
+        ),
       )
       .map_sint32_sint32(
         mapOf(
           Int.MIN_VALUE to Int.MIN_VALUE + 1,
-          Int.MAX_VALUE to Int.MAX_VALUE - 1
-        )
+          Int.MAX_VALUE to Int.MAX_VALUE - 1,
+        ),
       )
       .map_sfixed32_sfixed32(
         mapOf(
           Int.MIN_VALUE to Int.MIN_VALUE + 1,
-          Int.MAX_VALUE to Int.MAX_VALUE - 1
-        )
+          Int.MAX_VALUE to Int.MAX_VALUE - 1,
+        ),
       )
       .map_fixed32_fixed32(
         mapOf(
           Int.MIN_VALUE to Int.MIN_VALUE + 1,
-          Int.MAX_VALUE to Int.MAX_VALUE - 1
-        )
+          Int.MAX_VALUE to Int.MAX_VALUE - 1,
+        ),
       )
       .map_uint32_uint32(
         mapOf(
           Int.MIN_VALUE to Int.MIN_VALUE + 1,
-          Int.MAX_VALUE to Int.MAX_VALUE - 1
-        )
+          Int.MAX_VALUE to Int.MAX_VALUE - 1,
+        ),
       )
       .map_int64_int64(
         mapOf(
           Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-          Long.MAX_VALUE to Long.MAX_VALUE - 1L
-        )
+          Long.MAX_VALUE to Long.MAX_VALUE - 1L,
+        ),
       )
       .map_sfixed64_sfixed64(
         mapOf(
           Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-          Long.MAX_VALUE to Long.MAX_VALUE - 1L
-        )
+          Long.MAX_VALUE to Long.MAX_VALUE - 1L,
+        ),
       )
       .map_sint64_sint64(
         mapOf(
           Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-          Long.MAX_VALUE to Long.MAX_VALUE - 1L
-        )
+          Long.MAX_VALUE to Long.MAX_VALUE - 1L,
+        ),
       )
       .map_fixed64_fixed64(
         mapOf(
           Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-          Long.MAX_VALUE to Long.MAX_VALUE - 1L
-        )
+          Long.MAX_VALUE to Long.MAX_VALUE - 1L,
+        ),
       )
       .map_uint64_uint64(
         mapOf(
           Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-          Long.MAX_VALUE to Long.MAX_VALUE - 1L
-        )
+          Long.MAX_VALUE to Long.MAX_VALUE - 1L,
+        ),
       )
       .build()
 
@@ -721,7 +723,7 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
       jsonLibrary.toJson(parsed, MapTypes::class.java),
-      jsonLibrary.toJson(value, MapTypes::class.java)
+      jsonLibrary.toJson(value, MapTypes::class.java),
     )
   }
 
@@ -757,7 +759,7 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
       jsonLibrary.toJson(parsed, All32::class.java),
-      jsonLibrary.toJson(value, All32::class.java)
+      jsonLibrary.toJson(value, All32::class.java),
     )
   }
 
@@ -793,7 +795,7 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
       jsonLibrary.toJson(parsed, All32::class.java),
-      jsonLibrary.toJson(value, All32::class.java)
+      jsonLibrary.toJson(value, All32::class.java),
     )
   }
 
@@ -1151,7 +1153,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER))
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
         )
         .build()
 
@@ -1172,7 +1174,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER))
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
         )
         .disableHtmlEscaping()
         .create()
@@ -1194,7 +1196,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER))
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
         )
         .build()
 
@@ -1215,7 +1217,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER))
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
         )
         .disableHtmlEscaping()
         .create()

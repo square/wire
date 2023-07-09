@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright (C) 2013 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 package com.squareup.wire;
+
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import com.squareup.wire.protos.custom_options.FooBar;
 import com.squareup.wire.protos.custom_options.MessageWithOptions;
@@ -37,13 +41,7 @@ import okio.Buffer;
 import okio.ByteString;
 import org.junit.Test;
 
-import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
-
-/**
- * Test Wire runtime.
- */
+/** Test Wire runtime. */
 public class WireTest {
 
   @Test
@@ -63,8 +61,7 @@ public class WireTest {
         new SimpleMessage.NestedMessage.Builder();
     nested_msg_builder.bb(2);
     builder.optional_nested_msg(nested_msg_builder.build());
-    ExternalMessage.Builder external_msg_builder =
-        new ExternalMessage.Builder();
+    ExternalMessage.Builder external_msg_builder = new ExternalMessage.Builder();
     external_msg_builder.f(99.9f);
     builder.optional_external_msg(external_msg_builder.build());
     builder.default_nested_enum(SimpleMessage.NestedEnum.BAR);
@@ -121,34 +118,38 @@ public class WireTest {
     assertThat(msg.repeated_double).isEqualTo(doubles);
   }
 
-  @Test public void mutateBuilder() throws Exception {
-    SimpleMessage message = new SimpleMessage.Builder()
-        .required_int32(10)
-        .build();
+  @Test
+  public void mutateBuilder() throws Exception {
+    SimpleMessage message = new SimpleMessage.Builder().required_int32(10).build();
 
     SimpleMessage.Builder builder = message.newBuilder();
     builder.required_int32 = 20;
     builder.repeated_double.add(30.5);
     builder.optional_int32 = 40;
 
-    assertThat(builder.build()).isEqualTo(new SimpleMessage.Builder()
-        .required_int32(20)
-        .repeated_double(Arrays.asList(30.5))
-        .optional_int32(40)
-        .build());
+    assertThat(builder.build())
+        .isEqualTo(
+            new SimpleMessage.Builder()
+                .required_int32(20)
+                .repeated_double(Arrays.asList(30.5))
+                .optional_int32(40)
+                .build());
   }
 
   @Test
   public void testPerson() throws IOException {
-    Person person = new Person.Builder()
-        .name("Omar")
-        .id(1234)
-        .email("omar@wire.com")
-        .phone(Arrays.asList(new PhoneNumber.Builder()
-            .number("410-555-0909")
-            .type(PhoneType.MOBILE)
-            .build()))
-        .build();
+    Person person =
+        new Person.Builder()
+            .name("Omar")
+            .id(1234)
+            .email("omar@wire.com")
+            .phone(
+                Arrays.asList(
+                    new PhoneNumber.Builder()
+                        .number("410-555-0909")
+                        .type(PhoneType.MOBILE)
+                        .build()))
+            .build();
 
     ProtoAdapter<Person> adapter = Person.ADAPTER;
 
@@ -158,24 +159,25 @@ public class WireTest {
 
   @Test
   public void testExtensions() throws Exception {
-    ExternalMessage optional_external_msg = new ExternalMessage.Builder()
-        .fooext(Arrays.asList(444, 555))
-        .barext(333)
-        .bazext(222)
-        .nested_message_ext(new SimpleMessage.NestedMessage.Builder().bb(77).build())
-        .nested_enum_ext(SimpleMessage.NestedEnum.BAZ)
-        .build();
+    ExternalMessage optional_external_msg =
+        new ExternalMessage.Builder()
+            .fooext(Arrays.asList(444, 555))
+            .barext(333)
+            .bazext(222)
+            .nested_message_ext(new SimpleMessage.NestedMessage.Builder().bb(77).build())
+            .nested_enum_ext(SimpleMessage.NestedEnum.BAZ)
+            .build();
 
-    SimpleMessage msg = new SimpleMessage.Builder()
-        .optional_external_msg(optional_external_msg)
-        .required_int32(456)
-        .build();
+    SimpleMessage msg =
+        new SimpleMessage.Builder()
+            .optional_external_msg(optional_external_msg)
+            .required_int32(456)
+            .build();
 
     assertThat(msg.optional_external_msg.fooext).containsExactly(444, 555);
     assertThat(msg.optional_external_msg.barext).isEqualTo(new Integer(333));
     assertThat(msg.optional_external_msg.bazext).isEqualTo(new Integer(222));
-    assertThat(msg.optional_external_msg.nested_message_ext.bb)
-        .isEqualTo(new Integer(77));
+    assertThat(msg.optional_external_msg.nested_message_ext.bb).isEqualTo(new Integer(77));
     assertThat(msg.optional_external_msg.nested_enum_ext).isEqualTo(SimpleMessage.NestedEnum.BAZ);
 
     ProtoAdapter<SimpleMessage> adapter = SimpleMessage.ADAPTER;
@@ -191,14 +193,14 @@ public class WireTest {
 
   @Test
   public void testExtensionEnum() throws Exception {
-    ExternalMessage optional_external_msg = new ExternalMessage.Builder()
-        .nested_enum_ext(SimpleMessage.NestedEnum.BAZ)
-        .build();
+    ExternalMessage optional_external_msg =
+        new ExternalMessage.Builder().nested_enum_ext(SimpleMessage.NestedEnum.BAZ).build();
 
-    SimpleMessage msg = new SimpleMessage.Builder()
-        .optional_external_msg(optional_external_msg)
-        .required_int32(456)
-        .build();
+    SimpleMessage msg =
+        new SimpleMessage.Builder()
+            .optional_external_msg(optional_external_msg)
+            .required_int32(456)
+            .build();
 
     ProtoAdapter<SimpleMessage> adapter = SimpleMessage.ADAPTER;
 
@@ -213,8 +215,8 @@ public class WireTest {
     // Original value shows up as an extension.
     assertThat(msg.toString()).contains("nested_enum_ext=BAZ");
     // New value is unknown in the tag map.
-    ProtoReader reader = new ProtoReader(new Buffer().write(
-        newMsg.optional_external_msg.unknownFields()));
+    ProtoReader reader =
+        new ProtoReader(new Buffer().write(newMsg.optional_external_msg.unknownFields()));
     reader.beginMessage();
     assertThat(reader.nextTag()).isEqualTo(129);
     assertThat(reader.peekFieldEncoding().rawProtoAdapter().decode(reader)).isEqualTo(17L);
@@ -233,10 +235,11 @@ public class WireTest {
             .bazext(222)
             .build();
 
-    SimpleMessage msg = new SimpleMessage.Builder()
-        .optional_external_msg(optional_external_msg)
-        .required_int32(456)
-        .build();
+    SimpleMessage msg =
+        new SimpleMessage.Builder()
+            .optional_external_msg(optional_external_msg)
+            .required_int32(456)
+            .build();
 
     assertThat(msg.optional_external_msg.fooext).containsExactly(444, 555);
     assertThat(msg.optional_external_msg.barext).isEqualTo(new Integer(333));
@@ -255,13 +258,12 @@ public class WireTest {
 
   @Test
   public void testEmptyList() throws IOException {
-    SimpleMessage noListMessage = new SimpleMessage.Builder()
-        .required_int32(1)
-        .build();
-    SimpleMessage emptyListMessage = new SimpleMessage.Builder()
-        .required_int32(1)
-        .repeated_double(new ArrayList<Double>())
-        .build();
+    SimpleMessage noListMessage = new SimpleMessage.Builder().required_int32(1).build();
+    SimpleMessage emptyListMessage =
+        new SimpleMessage.Builder()
+            .required_int32(1)
+            .repeated_double(new ArrayList<Double>())
+            .build();
 
     assertThat(noListMessage.repeated_double).isNotNull();
     assertThat(noListMessage.repeated_double).hasSize(0);
@@ -300,12 +302,14 @@ public class WireTest {
 
   @Test
   public void testBadEnum() throws IOException {
-    Person person = new Person.Builder()
-        .id(1)
-        .name("Joe Schmoe")
-        .phone(Arrays.asList(
-            new PhoneNumber.Builder().number("555-1212").type(PhoneType.WORK).build()))
-        .build();
+    Person person =
+        new Person.Builder()
+            .id(1)
+            .name("Joe Schmoe")
+            .phone(
+                Arrays.asList(
+                    new PhoneNumber.Builder().number("555-1212").type(PhoneType.WORK).build()))
+            .build();
 
     assertThat(person.phone.get(0).type).isEqualTo(PhoneType.WORK);
 
@@ -335,7 +339,8 @@ public class WireTest {
     assertThat(data).isEqualTo(newData);
   }
 
-  @Test public void listMustBeNonNull() {
+  @Test
+  public void listMustBeNonNull() {
     Person.Builder builder = new Person.Builder();
     builder.id = 1;
     builder.name = "Joe Schmoe";
@@ -344,13 +349,15 @@ public class WireTest {
       builder.build();
       fail();
     } catch (NullPointerException expected) {
-      assertThat(expected).hasMessage("Parameter specified as non-null is null: "
-          + "method com.squareup.wire.internal.Internal__InternalKt.immutableCopyOf, parameter list"
-      );
+      assertThat(expected)
+          .hasMessage(
+              "Parameter specified as non-null is null: "
+                  + "method com.squareup.wire.internal.Internal__InternalKt.immutableCopyOf, parameter list");
     }
   }
 
-  @Test public void listElementsMustBeNonNull() {
+  @Test
+  public void listElementsMustBeNonNull() {
     Person.Builder builder = new Person.Builder();
     builder.id = 1;
     builder.name = "Joe Schmoe";
@@ -363,73 +370,81 @@ public class WireTest {
     }
   }
 
-  @Test public void builderListsAreAlwaysMutable() {
+  @Test
+  public void builderListsAreAlwaysMutable() {
     PhoneNumber phone = new PhoneNumber.Builder().number("555-1212").type(PhoneType.WORK).build();
 
     Person.Builder newBuilder = new Person.Builder();
     newBuilder.phone.add(phone);
 
-    Person person = new Person.Builder()
-        .id(1)
-        .name("Joe Schmoe")
-        .phone(singletonList(phone))
-        .build();
+    Person person =
+        new Person.Builder().id(1).name("Joe Schmoe").phone(singletonList(phone)).build();
     Person.Builder copyBuilder = person.newBuilder();
     copyBuilder.phone.add(phone);
   }
 
-  @Test public void emptyMessageToString() {
+  @Test
+  public void emptyMessageToString() {
     NoFields empty = new NoFields();
     assertThat(empty.toString()).isEqualTo("NoFields{}");
   }
 
-  @Test public void sanitizedToString() {
-    Person person = new Person.Builder().id(1).name("Such, I mean it, such [a] {funny} name.")
-        .phone(singletonList(new PhoneNumber.Builder().number("123,456,789").build()))
-        .aliases(Arrays.asList("B-lo,ved", "D{esperado}"))
-        .build();
+  @Test
+  public void sanitizedToString() {
+    Person person =
+        new Person.Builder()
+            .id(1)
+            .name("Such, I mean it, such [a] {funny} name.")
+            .phone(singletonList(new PhoneNumber.Builder().number("123,456,789").build()))
+            .aliases(Arrays.asList("B-lo,ved", "D{esperado}"))
+            .build();
 
     String printedPerson = person.toString();
-    assertThat(printedPerson).isEqualTo(
-        "Person{"
-            + "id=1, "
-            + "name=Such\\, I mean it\\, such \\[a\\] \\{funny\\} name., "
-            + "phone=[PhoneNumber{number=123\\,456\\,789}], "
-            + "aliases=[B-lo\\,ved, D\\{esperado\\}]"
-            + "}");
+    assertThat(printedPerson)
+        .isEqualTo(
+            "Person{"
+                + "id=1, "
+                + "name=Such\\, I mean it\\, such \\[a\\] \\{funny\\} name., "
+                + "phone=[PhoneNumber{number=123\\,456\\,789}], "
+                + "aliases=[B-lo\\,ved, D\\{esperado\\}]"
+                + "}");
   }
 
-  @Test public void createUseResursiveMapBuilderWithoutCrashing() {
-    ModelEvaluation model = new ModelEvaluation.Builder()
-        .name("name")
-        .score(33.0)
-        .models(new LinkedHashMap<>())
-        .build();
+  @Test
+  public void createUseResursiveMapBuilderWithoutCrashing() {
+    ModelEvaluation model =
+        new ModelEvaluation.Builder()
+            .name("name")
+            .score(33.0)
+            .models(new LinkedHashMap<>())
+            .build();
     assertThat(ModelEvaluation.ADAPTER.encodeByteString(model).hex())
         .isEqualTo("0a046e616d65110000000000804040");
   }
 
-  @Test public void optionsOnMessageType() {
-    MyMessageOptionTwoOption myMessageOptionTwo
-        = MessageWithOptions.class.getAnnotation(MyMessageOptionTwoOption.class);
+  @Test
+  public void optionsOnMessageType() {
+    MyMessageOptionTwoOption myMessageOptionTwo =
+        MessageWithOptions.class.getAnnotation(MyMessageOptionTwoOption.class);
     assertThat(myMessageOptionTwo.value()).isEqualTo(91011.0f);
 
-    MyMessageOptionFourOption myMessageOptionFour
-        = MessageWithOptions.class.getAnnotation(MyMessageOptionFourOption.class);
+    MyMessageOptionFourOption myMessageOptionFour =
+        MessageWithOptions.class.getAnnotation(MyMessageOptionFourOption.class);
     assertThat(myMessageOptionFour.value()).isEqualTo(FooBar.FooBarBazEnum.FOO);
   }
 
-  @Test public void optionsOnField() throws Exception {
-    MyFieldOptionOneOption myFieldOptionOne = FooBar.class.getDeclaredField("foo")
-        .getAnnotation(MyFieldOptionOneOption.class);
+  @Test
+  public void optionsOnField() throws Exception {
+    MyFieldOptionOneOption myFieldOptionOne =
+        FooBar.class.getDeclaredField("foo").getAnnotation(MyFieldOptionOneOption.class);
     assertThat(myFieldOptionOne.value()).isEqualTo(17);
 
-    MyFieldOptionTwoOption myFieldOptionTwo = FooBar.class.getDeclaredField("bar")
-        .getAnnotation(MyFieldOptionTwoOption.class);
+    MyFieldOptionTwoOption myFieldOptionTwo =
+        FooBar.class.getDeclaredField("bar").getAnnotation(MyFieldOptionTwoOption.class);
     assertThat(myFieldOptionTwo.value()).isEqualTo(33.5f);
 
-    MyFieldOptionThreeOption myFieldOptionThree = FooBar.class.getDeclaredField("baz")
-        .getAnnotation(MyFieldOptionThreeOption.class);
+    MyFieldOptionThreeOption myFieldOptionThree =
+        FooBar.class.getDeclaredField("baz").getAnnotation(MyFieldOptionThreeOption.class);
     assertThat(myFieldOptionThree.value()).isEqualTo(FooBar.FooBarBazEnum.BAR);
   }
 }

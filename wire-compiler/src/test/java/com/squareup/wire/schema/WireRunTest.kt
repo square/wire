@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 Square Inc.
+ * Copyright (C) 2018 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,21 +21,18 @@ import com.squareup.wire.WireLogger.Companion.NONE
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.WireRun.Module
-import com.squareup.wire.schema.internal.TypeMover
 import com.squareup.wire.schema.internal.TypeMover.Move
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.containsRelativePaths
 import com.squareup.wire.testing.findFiles
 import com.squareup.wire.testing.readUtf8
-import okio.Buffer
-import okio.FileSystem
+import kotlin.test.assertFailsWith
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
-import kotlin.test.assertFailsWith
 
 class WireRunTest {
   private val fs = FakeFileSystem().apply {
@@ -52,13 +49,13 @@ class WireRunTest {
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("colors/src/main/proto")),
       protoPath = listOf(Location.get("polygons/src/main/proto")),
-      targets = listOf(JavaTarget(outDirectory = "generated/java"))
+      targets = listOf(JavaTarget(outDirectory = "generated/java")),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/java/squareup/colors/Blue.java",
-      "generated/java/squareup/colors/Red.java"
+      "generated/java/squareup/colors/Red.java",
     )
     assertThat(fs.readUtf8("generated/java/squareup/colors/Blue.java"))
       .contains("public final class Blue extends Message")
@@ -75,13 +72,13 @@ class WireRunTest {
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("colors/src/main/proto")),
       protoPath = listOf(Location.get("polygons/src/main/proto")),
-      targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/kt/squareup/colors/Blue.kt",
-      "generated/kt/squareup/colors/Red.kt"
+      "generated/kt/squareup/colors/Red.kt",
     )
     assertThat(fs.readUtf8("generated/kt/squareup/colors/Blue.kt"))
       .contains("class Blue")
@@ -100,25 +97,25 @@ class WireRunTest {
       sourcePath = listOf(Location.get("routes/src/main/proto")),
       protoPath = listOf(
         Location.get("colors/src/main/proto"),
-        Location.get("polygons/src/main/proto")
+        Location.get("polygons/src/main/proto"),
       ),
-      targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/kt/squareup/routes/RouteClient.kt",
-      "generated/kt/squareup/routes/GrpcRouteClient.kt"
+      "generated/kt/squareup/routes/GrpcRouteClient.kt",
     )
     assertThat(fs.readUtf8("generated/kt/squareup/routes/RouteClient.kt"))
       .contains(
         "interface RouteClient : Service",
-        "fun GetUpdatedBlue()"
+        "fun GetUpdatedBlue()",
       )
     assertThat(fs.readUtf8("generated/kt/squareup/routes/GrpcRouteClient.kt"))
       .contains(
         "class GrpcRouteClient(\n  private val client: GrpcClient,\n) : RouteClient",
-        "override fun GetUpdatedBlue()"
+        "override fun GetUpdatedBlue()",
       )
   }
 
@@ -133,25 +130,25 @@ class WireRunTest {
       sourcePath = listOf(Location.get("routes/src/main/proto")),
       protoPath = listOf(
         Location.get("colors/src/main/proto"),
-        Location.get("polygons/src/main/proto")
+        Location.get("polygons/src/main/proto"),
       ),
       targets = listOf(
         KotlinTarget(
           outDirectory = "generated/kt",
           rpcCallStyle = RpcCallStyle.BLOCKING,
-          rpcRole = RpcRole.SERVER
-        )
-      )
+          rpcRole = RpcRole.SERVER,
+        ),
+      ),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
-      "generated/kt/squareup/routes/RouteBlockingServer.kt"
+      "generated/kt/squareup/routes/RouteBlockingServer.kt",
     )
     assertThat(fs.readUtf8("generated/kt/squareup/routes/RouteBlockingServer.kt"))
       .contains(
         "interface RouteBlockingServer : Service",
-        "fun GetUpdatedRed"
+        "fun GetUpdatedRed",
       )
       .doesNotContain("suspend fun GetUpdatedRed")
   }
@@ -167,11 +164,11 @@ class WireRunTest {
       sourcePath = listOf(Location.get("routes/src/main/proto")),
       protoPath = listOf(
         Location.get("colors/src/main/proto"),
-        Location.get("polygons/src/main/proto")
+        Location.get("polygons/src/main/proto"),
       ),
       targets = listOf(
-        KotlinTarget(outDirectory = "generated/kt", singleMethodServices = true)
-      )
+        KotlinTarget(outDirectory = "generated/kt", singleMethodServices = true),
+      ),
     )
     wireRun.execute(fs, logger)
 
@@ -179,7 +176,7 @@ class WireRunTest {
       "generated/kt/squareup/routes/RouteGetUpdatedBlueClient.kt",
       "generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt",
       "generated/kt/squareup/routes/GrpcRouteGetUpdatedBlueClient.kt",
-      "generated/kt/squareup/routes/GrpcRouteGetUpdatedRedClient.kt"
+      "generated/kt/squareup/routes/GrpcRouteGetUpdatedRedClient.kt",
     )
     assertThat(fs.readUtf8("generated/kt/squareup/routes/RouteGetUpdatedBlueClient.kt"))
       .contains("interface RouteGetUpdatedBlueClient : Service")
@@ -187,12 +184,12 @@ class WireRunTest {
       .contains("interface RouteGetUpdatedRedClient : Service")
     assertThat(fs.readUtf8("generated/kt/squareup/routes/GrpcRouteGetUpdatedBlueClient.kt"))
       .contains(
-        "class GrpcRouteGetUpdatedBlueClient(\n  private val client: GrpcClient,\n) : RouteGetUpdatedBlueClient"
+        "class GrpcRouteGetUpdatedBlueClient(\n  private val client: GrpcClient,\n) : RouteGetUpdatedBlueClient",
       )
       .doesNotContain("RouteGetUpdatedRedClient")
     assertThat(fs.readUtf8("generated/kt/squareup/routes/GrpcRouteGetUpdatedRedClient.kt"))
       .contains(
-        "class GrpcRouteGetUpdatedRedClient(\n  private val client: GrpcClient,\n) : RouteGetUpdatedRedClient"
+        "class GrpcRouteGetUpdatedRedClient(\n  private val client: GrpcClient,\n) : RouteGetUpdatedRedClient",
       )
       .doesNotContain("RouteGetUpdatedBlueClient")
   }
@@ -206,13 +203,13 @@ class WireRunTest {
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("colors/src/main/proto")),
       protoPath = listOf(Location.get("polygons/src/main/proto")),
-      targets = listOf(ProtoTarget(outDirectory = "generated/proto"))
+      targets = listOf(ProtoTarget(outDirectory = "generated/proto")),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/proto/squareup/colors/blue.proto",
-      "generated/proto/squareup/colors/red.proto"
+      "generated/proto/squareup/colors/red.proto",
     )
     assertThat(fs.readUtf8("generated/proto/squareup/colors/blue.proto"))
       .contains("message Blue {")
@@ -232,18 +229,18 @@ class WireRunTest {
       targets = listOf(
         KotlinTarget(
           outDirectory = "generated/kt",
-          includes = listOf("squareup.colors.Blue")
+          includes = listOf("squareup.colors.Blue"),
         ),
         JavaTarget(
-          outDirectory = "generated/java"
-        )
-      )
+          outDirectory = "generated/java",
+        ),
+      ),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/java/squareup/colors/Red.java",
-      "generated/kt/squareup/colors/Blue.kt"
+      "generated/kt/squareup/colors/Blue.kt",
     )
     assertThat(fs.readUtf8("generated/kt/squareup/colors/Blue.kt"))
       .contains("class Blue")
@@ -256,7 +253,7 @@ class WireRunTest {
     assertThat(
       assertFailsWith<IllegalArgumentException> {
         newEventListenerFactory("foo").create()
-      }
+      },
     ).hasMessage("Couldn't find EventListenerClass 'foo'")
   }
 
@@ -265,7 +262,7 @@ class WireRunTest {
     assertThat(
       assertFailsWith<IllegalArgumentException> {
         newEventListenerFactory("java.lang.Void").create()
-      }
+      },
     ).hasMessage("No public constructor on java.lang.Void")
   }
 
@@ -274,7 +271,7 @@ class WireRunTest {
     assertThat(
       assertFailsWith<IllegalArgumentException> {
         newEventListenerFactory("java.lang.Object").create()
-      }
+      },
     ).hasMessage("java.lang.Object does not implement EventListener.Factory")
   }
 
@@ -294,11 +291,11 @@ class WireRunTest {
       targets = listOf(
         KotlinTarget(
           outDirectory = "generated/kt",
-          includes = listOf("squareup.colors.Blue")
+          includes = listOf("squareup.colors.Blue"),
         ),
         KotlinTarget(
-          outDirectory = "generated/kt"
-        )
+          outDirectory = "generated/kt",
+        ),
       ),
       eventListeners = listeners,
     )
@@ -421,18 +418,18 @@ class WireRunTest {
       targets = listOf(
         JavaTarget(
           outDirectory = "generated/java",
-          includes = listOf("squareup.colors.Blue")
+          includes = listOf("squareup.colors.Blue"),
         ),
         KotlinTarget(
-          outDirectory = "generated/kt"
-        )
-      )
+          outDirectory = "generated/kt",
+        ),
+      ),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/java/squareup/colors/Blue.java",
-      "generated/kt/squareup/colors/Red.kt"
+      "generated/kt/squareup/colors/Red.kt",
     )
     assertThat(fs.readUtf8("generated/java/squareup/colors/Blue.java"))
       .contains("public final class Blue extends Message")
@@ -449,24 +446,24 @@ class WireRunTest {
     val wireRun = WireRun(
       sourcePath = listOf(
         Location.get("colors/src/main/proto"),
-        Location.get("polygons/src/main/proto")
+        Location.get("polygons/src/main/proto"),
       ),
       targets = listOf(
         KotlinTarget(
           outDirectory = "generated/kt",
-          excludes = listOf("squareup.colors.Red")
+          excludes = listOf("squareup.colors.Red"),
         ),
         JavaTarget(
-          outDirectory = "generated/java"
-        )
-      )
+          outDirectory = "generated/java",
+        ),
+      ),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/kt/squareup/colors/Blue.kt",
       "generated/java/squareup/colors/Red.java",
-      "generated/kt/squareup/polygons/Triangle.kt"
+      "generated/kt/squareup/polygons/Triangle.kt",
     )
     assertThat(fs.readUtf8("generated/kt/squareup/colors/Blue.kt"))
       .contains("class Blue")
@@ -485,24 +482,24 @@ class WireRunTest {
     val wireRun = WireRun(
       sourcePath = listOf(
         Location.get("colors/src/main/proto"),
-        Location.get("polygons/src/main/proto")
+        Location.get("polygons/src/main/proto"),
       ),
       targets = listOf(
         KotlinTarget(
           outDirectory = "generated/kt",
-          excludes = listOf("squareup.colors.*")
+          excludes = listOf("squareup.colors.*"),
         ),
         JavaTarget(
-          outDirectory = "generated/java"
-        )
-      )
+          outDirectory = "generated/java",
+        ),
+      ),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/java/squareup/colors/Blue.java",
       "generated/java/squareup/colors/Red.java",
-      "generated/kt/squareup/polygons/Triangle.kt"
+      "generated/kt/squareup/polygons/Triangle.kt",
     )
     assertThat(fs.readUtf8("generated/java/squareup/colors/Blue.java"))
       .contains("public final class Blue extends Message")
@@ -522,12 +519,12 @@ class WireRunTest {
       sourcePath = listOf(Location.get("colors/src/main/proto")),
       protoPath = listOf(Location.get("polygons/src/main/proto")),
       treeShakingRoots = listOf("squareup.colors.Blue"),
-      targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
-      "generated/kt/squareup/colors/Blue.kt"
+      "generated/kt/squareup/colors/Blue.kt",
     )
   }
 
@@ -555,7 +552,7 @@ class WireRunTest {
       assertThat(expected).hasMessage(
         "Unused element(s) in roots:\n" +
           "  squareup.colors.Purple\n" +
-          "  squareup.colors.Color#name"
+          "  squareup.colors.Color#name",
       )
     }
   }
@@ -581,7 +578,7 @@ class WireRunTest {
       assertThat(expected).hasMessage(
         "Unused element(s) in prunes:\n" +
           "  squareup.colors.Purple\n" +
-          "  squareup.colors.Color#name"
+          "  squareup.colors.Color#name",
       )
     }
   }
@@ -609,7 +606,7 @@ class WireRunTest {
           "  squareup.colors.Green\n" +
           "Unused element(s) in prunes:\n" +
           "  squareup.colors.Purple\n" +
-          "  squareup.colors.Color#name"
+          "  squareup.colors.Color#name",
       )
     }
   }
@@ -624,12 +621,12 @@ class WireRunTest {
       sourcePath = listOf(Location.get("colors/src/main/proto")),
       protoPath = listOf(Location.get("polygons/src/main/proto")),
       treeShakingRubbish = listOf("squareup.colors.Red"),
-      targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
-      "generated/kt/squareup/colors/Blue.kt"
+      "generated/kt/squareup/colors/Blue.kt",
     )
   }
 
@@ -643,18 +640,18 @@ class WireRunTest {
       targets = listOf(
         JavaTarget(
           outDirectory = "generated/java",
-          includes = listOf("squareup.polygons.Square")
+          includes = listOf("squareup.polygons.Square"),
         ),
         KotlinTarget(
-          outDirectory = "generated/kt"
-        )
-      )
+          outDirectory = "generated/kt",
+        ),
+      ),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/java/com/squareup/polygons/Square.java",
-      "generated/kt/com/squareup/polygons/Rhombus.kt"
+      "generated/kt/com/squareup/polygons/Rhombus.kt",
     )
   }
 
@@ -667,21 +664,21 @@ class WireRunTest {
       sourcePath = listOf(Location.get("polygons/src/main/proto")),
       targets = listOf(
         JavaTarget(
-          outDirectory = "generated/java"
+          outDirectory = "generated/java",
         ),
         KotlinTarget(
           outDirectory = "generated/kt",
           exclusive = false,
-          includes = listOf("squareup.polygons.Square")
-        )
-      )
+          includes = listOf("squareup.polygons.Square"),
+        ),
+      ),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/java/com/squareup/polygons/Square.java",
       "generated/java/com/squareup/polygons/Rhombus.java",
-      "generated/kt/com/squareup/polygons/Square.kt"
+      "generated/kt/com/squareup/polygons/Square.kt",
     )
   }
 
@@ -696,20 +693,20 @@ class WireRunTest {
           |message Red {
           |  string oval = 1;
           |}
-          """.trimMargin()
+      """.trimMargin(),
     )
     writeTriangleProto()
 
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("colors/src/main/proto")),
       protoPath = listOf(Location.get("polygons/src/main/proto")),
-      targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/kt/squareup/colors/Blue.kt",
-      "generated/kt/squareup/colors/Red.kt"
+      "generated/kt/squareup/colors/Red.kt",
     )
   }
 
@@ -729,18 +726,18 @@ class WireRunTest {
           |message Triangle {
           |  repeated squareup.geometry.Angle angles = 2; // No such type!
           |}
-          """.trimMargin()
+      """.trimMargin(),
     )
 
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("colors/src/main/proto")),
       protoPath = listOf(Location.get("polygons/src/main/proto")),
-      targets = listOf(JavaTarget(outDirectory = "generated/java"))
+      targets = listOf(JavaTarget(outDirectory = "generated/java")),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
-      "generated/java/squareup/colors/Blue.java"
+      "generated/java/squareup/colors/Blue.java",
     )
     assertThat(fs.readUtf8("generated/java/squareup/colors/Blue.java"))
       .contains("public final class Blue extends Message")
@@ -757,16 +754,16 @@ class WireRunTest {
           |option (unicorn) = true; // No such option!
           |message Triangle {
           |}
-          """.trimMargin()
+      """.trimMargin(),
     )
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("colors/src/main/proto")),
       protoPath = listOf(Location.get("polygons/src/main/proto")),
-      targets = listOf(JavaTarget(outDirectory = "generated/java"))
+      targets = listOf(JavaTarget(outDirectory = "generated/java")),
     )
     wireRun.execute(fs, logger)
     assertThat(fs.findFiles("generated")).containsRelativePaths(
-      "generated/java/squareup/colors/Blue.java"
+      "generated/java/squareup/colors/Blue.java",
     )
     assertThat(fs.readUtf8("generated/java/squareup/colors/Blue.java"))
       .contains("public final class Blue extends Message")
@@ -785,28 +782,30 @@ class WireRunTest {
         CustomTarget(
           outDirectory = "generated/markdown",
           schemaHandlerFactory = MarkdownHandlerFactory(),
-        )
-      )
+        ),
+      ),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/markdown/squareup/colors/Blue.md",
-      "generated/markdown/squareup/colors/Red.md"
+      "generated/markdown/squareup/colors/Red.md",
     )
     assertThat(fs.readUtf8("generated/markdown/squareup/colors/Blue.md")).isEqualTo(
       """
             |# Blue
             |
             |This is the color of the sky.
-            |""".trimMargin()
+            |
+      """.trimMargin(),
     )
     assertThat(fs.readUtf8("generated/markdown/squareup/colors/Red.md")).isEqualTo(
       """
             |# Red
             |
             |This is the color of the sky when the sky is lava.
-            |""".trimMargin()
+            |
+      """.trimMargin(),
     )
   }
 
@@ -815,7 +814,7 @@ class WireRunTest {
     assertThat(
       assertFailsWith<IllegalArgumentException> {
         callCustomHandler(newSchemaHandler("foo"))
-      }
+      },
     ).hasMessage("Couldn't find SchemaHandlerClass 'foo'")
   }
 
@@ -824,7 +823,7 @@ class WireRunTest {
     assertThat(
       assertFailsWith<IllegalArgumentException> {
         callCustomHandler(newSchemaHandler("java.lang.Void"))
-      }
+      },
     ).hasMessage("No public constructor on java.lang.Void")
   }
 
@@ -833,7 +832,7 @@ class WireRunTest {
     assertThat(
       assertFailsWith<IllegalArgumentException> {
         callCustomHandler(newSchemaHandler("java.lang.Object"))
-      }
+      },
     ).hasMessage("java.lang.Object does not implement SchemaHandler.Factory")
   }
 
@@ -863,18 +862,18 @@ class WireRunTest {
   @Test
   fun errorReportingCustomHandler() {
     val customHandler = newSchemaHandler(
-      "${WireRunTest::class.qualifiedName}${"$"}ErrorReportingCustomHandler"
+      "${WireRunTest::class.qualifiedName}${"$"}ErrorReportingCustomHandler",
     )
 
     assertThat(
       assertFailsWith<SchemaException> {
         callCustomHandler(customHandler)
-      }
+      },
     ).hasMessage(
       """
         |field starts with 'a'
         |  for field angles (polygons/src/main/proto/squareup/polygons/triangle.proto:4:3)
-        """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -892,7 +891,7 @@ class WireRunTest {
         logger = NULL_LOGGER,
         errorCollector = errorCollector,
         claimedPaths = ClaimedPaths(),
-      )
+      ),
     )
 
     errorCollector.throwIfNonEmpty()
@@ -908,7 +907,7 @@ class WireRunTest {
           |message Red {
           |  optional string oval = 1;
           |}
-          """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -920,12 +919,12 @@ class WireRunTest {
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("colors/src/main/proto")),
       protoPath = listOf(Location.get("polygons/src/main/proto")),
-      targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
-      "generated/kt/squareup/colors/Orange.kt"
+      "generated/kt/squareup/colors/Orange.kt",
     )
     assertThat(fs.readUtf8("generated/kt/squareup/colors/Orange.kt"))
       .contains("class Orange")
@@ -940,12 +939,12 @@ class WireRunTest {
       sourcePath = listOf(Location.get("colors/src/main/proto")),
       protoPath = listOf(Location.get("polygons/src/main/proto")),
       treeShakingRoots = listOf("squareup.colors.*"),
-      targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
     )
     wireRun.execute(fs, logger)
 
     assertThat(fs.findFiles("generated")).containsRelativePaths(
-      "generated/kt/squareup/colors/Orange.kt"
+      "generated/kt/squareup/colors/Orange.kt",
     )
     assertThat(fs.readUtf8("generated/kt/squareup/colors/Orange.kt"))
       .contains("class Orange")
@@ -959,7 +958,8 @@ class WireRunTest {
       |syntax = "proto2";
       |message A {}
       |message B {}
-      |""".trimMargin()
+      |
+      """.trimMargin(),
     )
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("protos")),
@@ -968,10 +968,10 @@ class WireRunTest {
         "a" to Module(
           pruningRules = PruningRules.Builder()
             .prune("B")
-            .build()
+            .build(),
         ),
-        "b" to Module(dependencies = setOf("a"))
-      )
+        "b" to Module(dependencies = setOf("a")),
+      ),
     )
     wireRun.execute(fs, logger)
 
@@ -1003,7 +1003,8 @@ class WireRunTest {
       |}
       |message B {
       |}
-      |""".trimMargin()
+      |
+      """.trimMargin(),
     )
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("protos")),
@@ -1012,12 +1013,12 @@ class WireRunTest {
         "a" to Module(
           pruningRules = PruningRules.Builder()
             .prune("example.B")
-            .build()
+            .build(),
         ),
         "b" to Module(
-          dependencies = setOf("a")
-        )
-      )
+          dependencies = setOf("a"),
+        ),
+      ),
     )
     wireRun.execute(fs, logger)
 
@@ -1025,12 +1026,12 @@ class WireRunTest {
     assertThat(fs.findFiles("gen/a")).containsRelativePaths(
       "gen/a/example/A.java",
       "gen/a/example/MapsToOption.java",
-      "gen/a/example/TypeOption.java"
+      "gen/a/example/TypeOption.java",
     )
     assertThat(fs.findFiles("gen/b")).containsRelativePaths(
       "gen/b/example/B.java",
       "gen/b/example/MapsToOption.java",
-      "gen/b/example/TypeOption.java"
+      "gen/b/example/TypeOption.java",
     )
   }
 
@@ -1041,7 +1042,8 @@ class WireRunTest {
           |package one;
           |option java_package = "same.package";
           |message Owner {}
-          |""".trimMargin()
+          |
+      """.trimMargin(),
     )
     fs.add(
       "protos/two/jp.proto",
@@ -1049,11 +1051,12 @@ class WireRunTest {
           |package two;
           |option java_package = "same.package";
           |message Owner {}
-          |""".trimMargin()
+          |
+      """.trimMargin(),
     )
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("protos")),
-      targets = listOf(JavaTarget(outDirectory = "generated/java"))
+      targets = listOf(JavaTarget(outDirectory = "generated/java")),
     )
 
     try {
@@ -1063,7 +1066,7 @@ class WireRunTest {
       assertThat(expected).hasMessage(
         "Same file generated/java/same/package/Owner.java is getting generated by different messages:\n" +
           "  Owner at protos/one/au.proto:3:1\n" +
-          "  Owner at protos/two/jp.proto:3:1"
+          "  Owner at protos/two/jp.proto:3:1",
       )
     }
   }
@@ -1080,7 +1083,7 @@ class WireRunTest {
           |service Route {
           |  rpc GetUpdatedRed(squareup.colors.Red) returns (squareup.colors.Red) {}
           |}
-          """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "routes/src/main/proto/squareup/routes2/route.proto",
@@ -1092,12 +1095,12 @@ class WireRunTest {
           |service Route {
           |  rpc GetUpdatedRed(squareup.colors.Red) returns (squareup.colors.Red) {}
           |}
-          """.trimMargin()
+      """.trimMargin(),
     )
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("routes/src/main/proto")),
       protoPath = listOf(Location.get("colors/src/main/proto")),
-      targets = listOf(KotlinTarget(outDirectory = "generated/kt", exclusive = false))
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt", exclusive = false)),
     )
 
     try {
@@ -1107,7 +1110,7 @@ class WireRunTest {
       assertThat(expected).hasMessage(
         "Same file generated/kt/same/package/RouteClient.kt is getting generated by different services:\n" +
           "  Route at routes/src/main/proto/squareup/routes1/route.proto:5:1\n" +
-          "  Route at routes/src/main/proto/squareup/routes2/route.proto:5:1"
+          "  Route at routes/src/main/proto/squareup/routes2/route.proto:5:1",
       )
     }
   }
@@ -1120,8 +1123,8 @@ class WireRunTest {
         modules = mapOf(
           "one" to Module(dependencies = setOf("two")),
           "two" to Module(dependencies = setOf("three")),
-          "three" to Module(dependencies = setOf("one"))
-        )
+          "three" to Module(dependencies = setOf("one")),
+        ),
       ).execute(fs, NONE)
       fail()
     } catch (e: IllegalArgumentException) {
@@ -1129,7 +1132,8 @@ class WireRunTest {
         """
         |ERROR: Modules contain dependency cycle(s):
         | - [one, two, three]
-        |""".trimMargin()
+        |
+        """.trimMargin(),
       )
     }
   }
@@ -1146,7 +1150,7 @@ class WireRunTest {
         |  optional locations.Office office = 1;
         |  optional locations.Residence residence = 2;
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/locations/office.proto",
@@ -1157,7 +1161,7 @@ class WireRunTest {
         |message Office {
         |  optional people.OfficeManager office_manager = 1;
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/locations/residence.proto",
@@ -1166,7 +1170,7 @@ class WireRunTest {
         |package locations;
         |message Residence {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "source-path/people/office_manager.proto",
@@ -1175,7 +1179,7 @@ class WireRunTest {
         |package people;
         |message OfficeManager {
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
 
     val wireRun = WireRun(
@@ -1197,7 +1201,7 @@ class WireRunTest {
         |    people/employee.proto:
         |      import "locations/office.proto";
         |      import "locations/residence.proto";
-        """.trimMargin()
+        """.trimMargin(),
       )
     }
   }
@@ -1211,19 +1215,19 @@ class WireRunTest {
         JavaTarget(
           outDirectory = "generated/java",
           emitDeclaredOptions = true,
-          exclusive = false
+          exclusive = false,
         ),
         KotlinTarget(
           outDirectory = "generated/kt",
           emitDeclaredOptions = true,
-          exclusive = false
-        )
-      )
+          exclusive = false,
+        ),
+      ),
     )
     wireRun.execute(fs, logger)
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/java/squareup/options/DocumentationUrlOption.java",
-      "generated/kt/squareup/options/DocumentationUrlOption.kt"
+      "generated/kt/squareup/options/DocumentationUrlOption.kt",
     )
     assertThat(fs.readUtf8("generated/java/squareup/options/DocumentationUrlOption.java"))
       .contains("public @interface DocumentationUrlOption")
@@ -1240,14 +1244,14 @@ class WireRunTest {
         JavaTarget(
           outDirectory = "generated/java",
           emitDeclaredOptions = false,
-          exclusive = false
+          exclusive = false,
         ),
         KotlinTarget(
           outDirectory = "generated/kt",
           emitDeclaredOptions = false,
-          exclusive = false
-        )
-      )
+          exclusive = false,
+        ),
+      ),
     )
     wireRun.execute(fs, logger)
     assertThat(fs.findFiles("generated")).containsRelativePaths()
@@ -1264,19 +1268,19 @@ class WireRunTest {
         JavaTarget(
           outDirectory = "generated/java",
           emitAppliedOptions = true,
-          exclusive = false
+          exclusive = false,
         ),
         KotlinTarget(
           outDirectory = "generated/kt",
           emitAppliedOptions = true,
-          exclusive = false
-        )
-      )
+          exclusive = false,
+        ),
+      ),
     )
     wireRun.execute(fs, logger)
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/java/squareup/polygons/Octagon.java",
-      "generated/kt/squareup/polygons/Octagon.kt"
+      "generated/kt/squareup/polygons/Octagon.kt",
     )
     assertThat(fs.readUtf8("generated/java/squareup/polygons/Octagon.java"))
       .contains("@DocumentationUrlOption(\"https://en.wikipedia.org/wiki/Octagon\")")
@@ -1295,19 +1299,19 @@ class WireRunTest {
         JavaTarget(
           outDirectory = "generated/java",
           emitAppliedOptions = false,
-          exclusive = false
+          exclusive = false,
         ),
         KotlinTarget(
           outDirectory = "generated/kt",
           emitAppliedOptions = false,
-          exclusive = false
-        )
-      )
+          exclusive = false,
+        ),
+      ),
     )
     wireRun.execute(fs, logger)
     assertThat(fs.findFiles("generated")).containsRelativePaths(
       "generated/java/squareup/polygons/Octagon.java",
-      "generated/kt/squareup/polygons/Octagon.kt"
+      "generated/kt/squareup/polygons/Octagon.kt",
     )
     assertThat(fs.readUtf8("generated/java/squareup/polygons/Octagon.java"))
       .doesNotContain("@DocumentationUrl")
@@ -1323,7 +1327,7 @@ class WireRunTest {
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("colors/src/main/proto")),
       protoPath = listOf(Location.get("polygons/src/main/proto")),
-      targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
     )
 
     try {
@@ -1339,7 +1343,7 @@ class WireRunTest {
           |unable to resolve squareup.polygons.Triangle
           |  for field triangle (colors/src/main/proto/squareup/colors/blue.proto:7:3)
           |  in message squareup.colors.Blue (colors/src/main/proto/squareup/colors/blue.proto:5:1)
-          """.trimMargin()
+        """.trimMargin(),
       )
     }
   }
@@ -1364,11 +1368,11 @@ class WireRunTest {
         |extend squareup.polygons.Triangle {
         |  optional string documentation_url = 22202;
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("polygons/src/main/proto")),
-      targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
     )
     wireRun.execute(fs, logger)
     assertThat(fs.findFiles("generated")).containsRelativePaths(
@@ -1392,7 +1396,7 @@ class WireRunTest {
           |  optional string circle = 1;
           |  optional squareup.polygons.Triangle.Type triangle = 2;
           |}
-          """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -1408,7 +1412,7 @@ class WireRunTest {
           |  rpc GetUpdatedRed(squareup.colors.Red) returns (squareup.colors.Red) {}
           |  rpc GetUpdatedBlue(squareup.colors.Blue) returns (squareup.colors.Blue) {}
           |}
-          """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -1424,7 +1428,7 @@ class WireRunTest {
           |  optional string circle = 1;
           |  optional squareup.polygons.Triangle triangle = 2;
           |}
-          """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -1442,7 +1446,7 @@ class WireRunTest {
           |    RIGHTANGLED = 3;
           |  }
           |}
-          """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -1456,7 +1460,7 @@ class WireRunTest {
           |message Square {
           |  optional double length = 1;
           |}
-          """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -1471,7 +1475,7 @@ class WireRunTest {
         |  optional double length = 1;
         |  optional double acute_angle = 2;
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -1486,7 +1490,7 @@ class WireRunTest {
         |extend google.protobuf.MessageOptions {
         |  optional string documentation_url = 22200;
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -1502,7 +1506,7 @@ class WireRunTest {
         |  option (options.documentation_url) = "https://en.wikipedia.org/wiki/Octagon";
         |  optional bool stop = 1;
         |}
-        """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -1511,7 +1515,7 @@ class WireRunTest {
       override fun artifactHandled(
         outputPath: Path,
         qualifiedName: String,
-        targetName: String
+        targetName: String,
       ) = Unit
 
       override fun artifactSkipped(type: ProtoType, targetName: String) = Unit

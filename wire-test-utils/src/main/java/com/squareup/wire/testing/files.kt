@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 Square Inc.
+ * Copyright (C) 2018 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,10 @@
  */
 package com.squareup.wire.testing
 
+import java.nio.charset.Charset
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+import kotlin.text.Charsets.UTF_8
 import okio.ByteString
 import okio.FileSystem
 import okio.Path
@@ -23,16 +27,12 @@ import okio.buffer
 import okio.sink
 import org.assertj.core.api.IterableAssert
 import org.assertj.core.api.ListAssert
-import java.nio.charset.Charset
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
-import kotlin.text.Charsets.UTF_8
 
 fun FileSystem.add(
   pathString: String,
   contents: String,
   charset: Charset = UTF_8,
-  bom: ByteString = ByteString.EMPTY
+  bom: ByteString = ByteString.EMPTY,
 ) {
   val path = pathString.toPath()
   if (path.parent != null) {

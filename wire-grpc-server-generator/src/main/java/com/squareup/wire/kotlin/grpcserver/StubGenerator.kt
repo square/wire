@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,13 @@
  */
 package com.squareup.wire.kotlin.grpcserver
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.kotlin.grpcserver.ImplBaseGenerator.addImplBaseRpcSignature
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
@@ -26,7 +31,7 @@ object StubGenerator {
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
     service: Service,
-    options: KotlinGrpcGenerator.Companion.Options
+    options: KotlinGrpcGenerator.Companion.Options,
   ): TypeSpec.Builder {
     return if (options.suspendingCalls) {
       suspendedStubs(generator, service, builder, options)
@@ -39,12 +44,13 @@ object StubGenerator {
     generator: ClassNameGenerator,
     service: Service,
     builder: TypeSpec.Builder,
-    options: KotlinGrpcGenerator.Companion.Options
+    options: KotlinGrpcGenerator.Companion.Options,
   ): TypeSpec.Builder {
     val serviceClassName = generator.classNameFor(service.type)
     val stubClassName = ClassName(
       packageName = serviceClassName.packageName,
-      "${serviceClassName.simpleName}WireGrpc", "${serviceClassName.simpleName}Stub"
+      "${serviceClassName.simpleName}WireGrpc",
+      "${serviceClassName.simpleName}Stub",
     )
     return builder
       .addFunction(
@@ -52,16 +58,20 @@ object StubGenerator {
           .addParameter("channel", ClassName("io.grpc", "Channel"))
           .returns(stubClassName)
           .addCode("return %T(channel)", stubClassName)
-          .build()
+          .build(),
       )
       .addType(
         TypeSpec.classBuilder(stubClassName)
           .apply {
-            addAbstractStubConstructor(generator, this, service,
-              ClassName("io.grpc.kotlin", "AbstractCoroutineStub"))
+            addAbstractStubConstructor(
+              generator,
+              this,
+              service,
+              ClassName("io.grpc.kotlin", "AbstractCoroutineStub"),
+            )
             addSuspendedStubRpcCalls(generator, this, service, options)
           }
-          .build()
+          .build(),
       )
   }
 
@@ -69,12 +79,13 @@ object StubGenerator {
     generator: ClassNameGenerator,
     service: Service,
     builder: TypeSpec.Builder,
-    options: KotlinGrpcGenerator.Companion.Options
+    options: KotlinGrpcGenerator.Companion.Options,
   ): TypeSpec.Builder {
     val serviceClassName = generator.classNameFor(service.type)
     val stubClassName = ClassName(
       packageName = serviceClassName.packageName,
-      "${serviceClassName.simpleName}WireGrpc", "${serviceClassName.simpleName}Stub"
+      "${serviceClassName.simpleName}WireGrpc",
+      "${serviceClassName.simpleName}Stub",
     )
     return builder
       .addFunction(
@@ -82,7 +93,7 @@ object StubGenerator {
           .addParameter("channel", ClassName("io.grpc", "Channel"))
           .returns(stubClassName)
           .addCode("return %T(channel)", stubClassName)
-          .build()
+          .build(),
       )
       .addType(
         TypeSpec.classBuilder(stubClassName)
@@ -90,7 +101,7 @@ object StubGenerator {
             addAbstractStubConstructor(generator, this, service, ClassName("io.grpc.stub", "AbstractStub"))
             addStubRpcCalls(generator, this, service, options)
           }
-          .build()
+          .build(),
       )
   }
 
@@ -98,12 +109,13 @@ object StubGenerator {
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
     service: Service,
-    superClass: ClassName
+    superClass: ClassName,
   ): TypeSpec.Builder {
     val serviceClassName = generator.classNameFor(service.type)
     val stubClassName = ClassName(
       packageName = serviceClassName.packageName,
-      "${serviceClassName.simpleName}WireGrpc", "${serviceClassName.simpleName}Stub"
+      "${serviceClassName.simpleName}WireGrpc",
+      "${serviceClassName.simpleName}Stub",
     )
     return builder
       // Really this is a superclass, just want to add secondary constructors.
@@ -113,7 +125,7 @@ object StubGenerator {
           .addModifiers(KModifier.INTERNAL)
           .addParameter("channel", ClassName("io.grpc", "Channel"))
           .callSuperConstructor("channel")
-          .build()
+          .build(),
       )
       .addFunction(
         FunSpec.constructorBuilder()
@@ -121,7 +133,7 @@ object StubGenerator {
           .addParameter("channel", ClassName("io.grpc", "Channel"))
           .addParameter("callOptions", ClassName("io.grpc", "CallOptions"))
           .callSuperConstructor("channel", "callOptions")
-          .build()
+          .build(),
       )
       .addFunction(
         FunSpec.builder("build")
@@ -130,7 +142,7 @@ object StubGenerator {
           .addParameter("callOptions", ClassName("io.grpc", "CallOptions"))
           .addStatement("return ${service.name}Stub(channel, callOptions)")
           .returns(ClassName("", "${service.name}Stub"))
-          .build()
+          .build(),
       )
   }
 
@@ -138,26 +150,26 @@ object StubGenerator {
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
     service: Service,
-    options: KotlinGrpcGenerator.Companion.Options
+    options: KotlinGrpcGenerator.Companion.Options,
   ): TypeSpec.Builder {
     service.rpcs.forEach { rpc ->
       val codeBlock = when {
         rpc.requestStreaming ->
           CodeBlock.of(
             "return %M(channel.newCall(get${rpc.name}Method(), callOptions), response)",
-            MemberName(ClassName("io.grpc.stub", "ClientCalls"), clientCallType(rpc))
+            MemberName(ClassName("io.grpc.stub", "ClientCalls"), clientCallType(rpc)),
           )
         else ->
           CodeBlock.of(
             "%M(channel.newCall(get${rpc.name}Method(), callOptions), request, response)",
-            MemberName(ClassName("io.grpc.stub", "ClientCalls"), clientCallType(rpc))
+            MemberName(ClassName("io.grpc.stub", "ClientCalls"), clientCallType(rpc)),
           )
       }
       builder.addFunction(
         FunSpec.builder(rpc.name)
           .apply { addImplBaseRpcSignature(generator, this, rpc, options) }
           .addCode(codeBlock)
-          .build()
+          .build(),
       )
     }
     return builder
@@ -167,19 +179,19 @@ object StubGenerator {
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
     service: Service,
-    options: KotlinGrpcGenerator.Companion.Options
+    options: KotlinGrpcGenerator.Companion.Options,
   ): TypeSpec.Builder {
     service.rpcs.forEach { rpc ->
       val codeBlock = CodeBlock.of(
         "return %M(channel, get${rpc.name}Method(), request, callOptions)",
-        MemberName(ClassName("io.grpc.kotlin", "ClientCalls"), suspendedClientCallType(rpc))
+        MemberName(ClassName("io.grpc.kotlin", "ClientCalls"), suspendedClientCallType(rpc)),
       )
       builder.addFunction(
         FunSpec.builder(rpc.name)
           .apply { addImplBaseRpcSignature(generator, this, rpc, options) }
           .addModifiers(KModifier.SUSPEND)
           .addCode(codeBlock)
-          .build()
+          .build(),
       )
     }
     return builder

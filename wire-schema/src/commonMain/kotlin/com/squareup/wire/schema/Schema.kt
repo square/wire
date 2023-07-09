@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,8 +16,8 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.ProtoAdapter
-import okio.Path
 import kotlin.collections.set
+import okio.Path
 
 /**
  * A collection of .proto files that describe a set of messages. A schema is *linked*: each
@@ -113,7 +113,7 @@ class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
    */
   fun protoAdapter(
     typeName: String,
-    includeUnknown: Boolean
+    includeUnknown: Boolean,
   ): ProtoAdapter<Any> {
     val type = requireNotNull(getType(typeName)) { "unexpected type $typeName" }
     return SchemaProtoAdapterFactory(this, includeUnknown)[type.type]
@@ -128,7 +128,7 @@ class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
 
     private fun buildTypesIndex(
       protoFiles: Iterable<ProtoFile>,
-      protoFilesIndex: MutableMap<ProtoType, ProtoFile>
+      protoFilesIndex: MutableMap<ProtoType, ProtoFile>,
     ): Map<String, Type> {
       val typesByName = mutableMapOf<String, Type>()
 
@@ -153,7 +153,7 @@ class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
 
     private fun buildServicesIndex(
       protoFiles: Iterable<ProtoFile>,
-      protoFilesIndex: MutableMap<ProtoType, ProtoFile>
+      protoFilesIndex: MutableMap<ProtoType, ProtoFile>,
     ): Map<String, Service> {
       val result = mutableMapOf<String, Service>()
       for (protoFile in protoFiles) {

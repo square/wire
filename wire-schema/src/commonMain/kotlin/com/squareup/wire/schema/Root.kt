@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 Square Inc.
+ * Copyright (C) 2018 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ internal sealed class Root {
 // TODO(jwilson): rework this API to combine baseToRoots and Closer.
 internal fun Location.roots(
   fs: FileSystem,
-  baseToRoots: MutableMap<String, List<Root>> = mutableMapOf()
+  baseToRoots: MutableMap<String, List<Root>> = mutableMapOf(),
 ): List<Root> {
   if (isWireRuntimeProto(this)) {
     // Handle descriptor.proto, etc. by returning a placeholder path.
@@ -80,7 +80,7 @@ internal expect fun ProtoFilePath.parse(): ProtoFile
 internal class ProtoFilePath(
   val location: Location,
   val fileSystem: FileSystem,
-  val path: Path
+  val path: Path,
 ) : Root() {
   override val base: String?
     get() = null
@@ -113,7 +113,7 @@ internal class DirectoryRoot(
   val fileSystem: FileSystem,
 
   /** The root to search. If this is a .zip file this is within its internal file system. */
-  val rootDirectory: Path
+  val rootDirectory: Path,
 ) : Root() {
   override fun allProtoFiles(): Set<ProtoFilePath> {
     return fileSystem.listRecursively(rootDirectory)
@@ -121,7 +121,7 @@ internal class DirectoryRoot(
       .map { descendant ->
         val location = Location.get(
           base = base,
-          path = descendant.relativeTo(rootDirectory).withUnixSlashes().toString()
+          path = descendant.relativeTo(rootDirectory).withUnixSlashes().toString(),
         )
         ProtoFilePath(location, fileSystem, descendant)
       }
@@ -134,7 +134,7 @@ internal class DirectoryRoot(
     return ProtoFilePath(
       location = Location.get(base, import.toPath().withUnixSlashes().toString()),
       fileSystem = fileSystem,
-      path = resolved
+      path = resolved,
     )
   }
 

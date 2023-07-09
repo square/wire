@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright (C) 2013 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.squareup.wire;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.squareup.wire.protos.unknownfields.EnumVersionTwo;
 import com.squareup.wire.protos.unknownfields.NestedVersionOne;
@@ -25,8 +27,6 @@ import java.util.Arrays;
 import okio.ByteString;
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class UnknownFieldsTest {
 
   private final ProtoAdapter<VersionOne> v1Adapter = VersionOne.ADAPTER;
@@ -34,27 +34,27 @@ public class UnknownFieldsTest {
 
   @Test
   public void testUnknownFields() throws IOException {
-    NestedVersionOne v1_obj = new NestedVersionOne.Builder()
-        .i(111)
-        .build();
-    NestedVersionTwo v2_obj = new NestedVersionTwo.Builder()
-        .i(111)
-        .v2_i(12345)
-        .v2_s("222")
-        .v2_f32(67890)
-        .v2_f64(98765L)
-        .v2_rs(Arrays.asList("1", "2"))
-        .build();
+    NestedVersionOne v1_obj = new NestedVersionOne.Builder().i(111).build();
+    NestedVersionTwo v2_obj =
+        new NestedVersionTwo.Builder()
+            .i(111)
+            .v2_i(12345)
+            .v2_s("222")
+            .v2_f32(67890)
+            .v2_f64(98765L)
+            .v2_rs(Arrays.asList("1", "2"))
+            .build();
 
-    VersionTwo v2 = new VersionTwo.Builder()
-        .i(111)
-        .v2_i(12345)
-        .v2_s("222")
-        .v2_f32(67890)
-        .v2_f64(98765L)
-        .v2_rs(Arrays.asList("1", "2"))
-        .obj(v2_obj)
-        .build();
+    VersionTwo v2 =
+        new VersionTwo.Builder()
+            .i(111)
+            .v2_i(12345)
+            .v2_s("222")
+            .v2_f32(67890)
+            .v2_f64(98765L)
+            .v2_rs(Arrays.asList("1", "2"))
+            .obj(v2_obj)
+            .build();
     assertThat(v2.i).isEqualTo(new Integer(111));
     assertThat(v2.obj).isEqualTo(v2_obj.newBuilder().build());
     // Check v.2 fields
@@ -81,11 +81,8 @@ public class UnknownFieldsTest {
     assertThat(v1Adapter.encode(v1)).isNotEqualTo(v1Adapter.encode(v1Simple));
 
     // Unknown fields can be removed for equals() and hashCode();
-    VersionOne v1Known = v1
-        .withoutUnknownFields()
-        .newBuilder()
-        .obj(v1.obj.withoutUnknownFields())
-        .build();
+    VersionOne v1Known =
+        v1.withoutUnknownFields().newBuilder().obj(v1.obj.withoutUnknownFields()).build();
     assertThat(v1Known).isEqualTo(v1Simple);
     assertThat(v1Known.hashCode()).isEqualTo(v1Simple.hashCode());
     assertThat(v1Adapter.encode(v1Known)).isEqualTo(v1Adapter.encode(v1Simple));
@@ -101,10 +98,7 @@ public class UnknownFieldsTest {
     assertThat(v2B.obj).isEqualTo(v2_obj);
 
     // "Modify" v1 via a merged builder, serialize, and re-parse
-    VersionOne v1Modified = v1.newBuilder()
-        .i(777)
-        .obj(v1_obj.newBuilder().i(777).build())
-        .build();
+    VersionOne v1Modified = v1.newBuilder().i(777).obj(v1_obj.newBuilder().i(777).build()).build();
     assertThat(v1Modified.i).isEqualTo(new Integer(777));
     assertThat(v1Modified.obj).isEqualTo(v1_obj.newBuilder().i(777).build());
     byte[] v1ModifiedBytes = v1Adapter.encode(v1Modified);
@@ -115,26 +109,25 @@ public class UnknownFieldsTest {
     assertThat(v2C.v2_s).isEqualTo("222");
     assertThat(v2C.v2_f32).isEqualTo(new Integer(67890));
     assertThat(v2C.v2_f64).isEqualTo(new Long(98765L));
-    assertThat(v2C.obj).isEqualTo(new NestedVersionTwo.Builder()
-        .i(777)
-        .build());
+    assertThat(v2C.obj).isEqualTo(new NestedVersionTwo.Builder().i(777).build());
     assertThat(v2C.v2_rs).containsExactly("1", "2");
   }
 
   @Test
   public void repeatedCallsToBuildRetainUnknownFields() throws IOException {
-    VersionTwo v2 = new VersionTwo.Builder()
-        .i(111)
-        .v2_i(12345)
-        .v2_s("222")
-        .v2_f32(67890)
-        .v2_f64(98765L)
-        .v2_rs(Arrays.asList("1", "2"))
-        .build();
+    VersionTwo v2 =
+        new VersionTwo.Builder()
+            .i(111)
+            .v2_i(12345)
+            .v2_s("222")
+            .v2_f32(67890)
+            .v2_f64(98765L)
+            .v2_rs(Arrays.asList("1", "2"))
+            .build();
 
     // Serializes v2 and decodes it as a VersionOne.
     byte[] v2Bytes = v2Adapter.encode(v2);
-    VersionOne.Builder v1Builder  = v1Adapter.decode(v2Bytes).newBuilder();
+    VersionOne.Builder v1Builder = v1Adapter.decode(v2Bytes).newBuilder();
 
     // Builds v1Builder. It should equal to v2.
     VersionOne v1A = v1Builder.build();
@@ -149,26 +142,13 @@ public class UnknownFieldsTest {
 
   @Test
   public void unknownFieldsCanBeAddedBetweenCallsToBuild() throws IOException {
-    VersionTwo v2A = new VersionTwo.Builder()
-        .i(111)
-        .v2_i(12345)
-        .v2_s("222")
-        .v2_f32(67890)
-        .build();
-    VersionTwo v2B = new VersionTwo.Builder()
-        .v2_f64(98765L)
-        .build();
-    VersionTwo v2C = new VersionTwo.Builder()
-        .v2_rs(Arrays.asList("1", "2"))
-        .build();
+    VersionTwo v2A = new VersionTwo.Builder().i(111).v2_i(12345).v2_s("222").v2_f32(67890).build();
+    VersionTwo v2B = new VersionTwo.Builder().v2_f64(98765L).build();
+    VersionTwo v2C = new VersionTwo.Builder().v2_rs(Arrays.asList("1", "2")).build();
     // A combination of v1A and v1B.
-    VersionTwo v2AB = v2A.newBuilder()
-        .v2_f64(v2B.v2_f64)
-        .build();
+    VersionTwo v2AB = v2A.newBuilder().v2_f64(v2B.v2_f64).build();
     // A combination of v1A, v1B and v1C.
-    VersionTwo v2All = v2AB.newBuilder()
-        .v2_rs(v2C.v2_rs)
-        .build();
+    VersionTwo v2All = v2AB.newBuilder().v2_rs(v2C.v2_rs).build();
 
     // Serializes v2A and decodes it as a VersionOne.
     byte[] v2ABytes = v2Adapter.encode(v2A);
@@ -208,14 +188,15 @@ public class UnknownFieldsTest {
 
   @Test
   public void unknownFieldsCanBeAddedAfterClearingUnknownFields() throws IOException {
-    VersionTwo v2 = new VersionTwo.Builder()
-        .i(111)
-        .v2_i(12345)
-        .v2_s("222")
-        .v2_f32(67890)
-        .v2_f64(98765L)
-        .v2_rs(Arrays.asList("1", "2"))
-        .build();
+    VersionTwo v2 =
+        new VersionTwo.Builder()
+            .i(111)
+            .v2_i(12345)
+            .v2_s("222")
+            .v2_f32(67890)
+            .v2_f64(98765L)
+            .v2_rs(Arrays.asList("1", "2"))
+            .build();
 
     // Serializes v2 and decodes it as a VersionOne.
     byte[] v2Bytes = v2Adapter.encode(v2);
@@ -233,31 +214,24 @@ public class UnknownFieldsTest {
 
   @Test
   public void addedUnknownFieldsCanBeClearedFromBuilder() throws IOException {
-    VersionTwo v2 = new VersionTwo.Builder()
-        .i(111)
-        .v2_i(12345)
-        .v2_s("222")
-        .v2_f32(67890)
-        .build();
+    VersionTwo v2 = new VersionTwo.Builder().i(111).v2_i(12345).v2_s("222").v2_f32(67890).build();
 
     // Serializes v2 and decodes it as a VersionOne.
     byte[] v2Bytes = v2Adapter.encode(v2);
     VersionOne fromV2 = v1Adapter.decode(v2Bytes);
 
     // Adds unknown fields to an empty builder and clears them again.
-    VersionOne emptyV1 = new VersionOne.Builder()
-        .addUnknownFields(fromV2.unknownFields())
-        .clearUnknownFields()
-        .build();
+    VersionOne emptyV1 =
+        new VersionOne.Builder()
+            .addUnknownFields(fromV2.unknownFields())
+            .clearUnknownFields()
+            .build();
     assertThat(emptyV1.unknownFields()).isEqualTo(ByteString.EMPTY);
   }
 
   @Test
   public void unknownEnumFields() throws IOException {
-    VersionTwo v2 = new VersionTwo.Builder()
-        .en(EnumVersionTwo.PUSS_IN_BOOTS_V2)
-        .i(100)
-        .build();
+    VersionTwo v2 = new VersionTwo.Builder().en(EnumVersionTwo.PUSS_IN_BOOTS_V2).i(100).build();
     byte[] v2Serialized = VersionTwo.ADAPTER.encode(v2);
     VersionOne v1 = VersionOne.ADAPTER.decode(v2Serialized);
     assertThat(v1.i).isEqualTo(100);

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,10 +17,11 @@ package com.squareup.wire.schema
 
 internal class FileLinker(
   val protoFile: ProtoFile,
-  private val linker: Linker
+  private val linker: Linker,
 ) {
   /** Lazily computed set of files used to reference other types and options. */
   private var effectiveImports: Set<String>? = null
+
   /** True once this linker has registered its types with the enclosing linker. */
   private var typesRegistered = false
   private var extensionsLinked = false
@@ -28,6 +29,7 @@ internal class FileLinker(
   private var extensionOptionsLinked = false
   private var importedExtensionOptionsLinked = false
   private var fileOptionsLinked = false
+
   /** The set of types defined in this file whose members have been linked. */
   private val typesWithMembersLinked: MutableSet<ProtoType> = LinkedHashSet()
 
@@ -47,7 +49,7 @@ internal class FileLinker(
 
   private fun addImportsRecursive(
     sink: MutableSet<String>,
-    paths: Collection<String>
+    paths: Collection<String>,
   ) {
     for (path in paths) {
       if (sink.add(path)) {

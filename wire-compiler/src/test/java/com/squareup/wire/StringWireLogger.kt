@@ -1,11 +1,11 @@
 /*
- * Copyright 2015 Square Inc.
+ * Copyright (C) 2015 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ internal class StringWireLogger : WireLogger {
   @Synchronized override fun artifactHandled(
     outputPath: Path,
     qualifiedName: String,
-    targetName: String
+    targetName: String,
   ) {
     buffer.append("$outputPath $qualifiedName (target=$targetName)\n")
   }
@@ -42,7 +42,7 @@ internal class StringWireLogger : WireLogger {
     buffer.append(
       """Unused element in treeShakingRoots:
       |  ${unusedRoots.joinToString(separator = "\n  ")}
-      """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -52,7 +52,7 @@ internal class StringWireLogger : WireLogger {
     buffer.append(
       """Unused element in treeShakingRubbish:
       |  ${unusedPrunes.joinToString(separator = "\n  ")}
-      """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -62,7 +62,7 @@ internal class StringWireLogger : WireLogger {
     buffer.append(
       """Unused includes in targets:
       |  ${unusedIncludes.joinToString(separator = "\n  ")}
-      """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -72,7 +72,7 @@ internal class StringWireLogger : WireLogger {
     buffer.append(
       """Unused excludes in targets:
       |  ${unusedExcludes.joinToString(separator = "\n  ")}
-      """.trimMargin()
+      """.trimMargin(),
     )
   }
 }

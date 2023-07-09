@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,15 +15,16 @@
  */
 package com.squareup.wire.internal
 
+import java.lang.reflect.Method
 import okio.Sink
 import okio.Source
 import okio.gzip
-import java.lang.reflect.Method
 
 actual typealias Call = okhttp3.Call
 
 @Suppress("NOTHING_TO_INLINE")
 internal actual inline fun Sink.asGzip(): Sink = gzip()
+
 @Suppress("NOTHING_TO_INLINE")
 internal actual inline fun Source.asGzip(): Source = gzip()
 

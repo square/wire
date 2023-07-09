@@ -1,11 +1,11 @@
 /*
- * Copyright 2015 Square Inc.
+ * Copyright (C) 2015 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,18 +17,27 @@ package com.squareup.wire
 
 import com.squareup.wire.protos.kotlin.Form
 import com.squareup.wire.protos.kotlin.OneOfMessage
+import kotlin.test.assertEquals
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
-import kotlin.test.assertEquals
 
 class OneOfTest {
   private val INITIAL_BYTES = byteArrayOf()
+
   // (Tag #1 << 3 | VARINT) = 8.
   private val FOO_BYTES = byteArrayOf(8, 17)
+
   // (Tag #3 << 3 | LENGTH_DELIMITED) = 26, string length = 6.
   private val BAR_BYTES = byteArrayOf(
-    26, 6, 'b'.toByte(), 'a'.toByte(), 'r'.toByte(), 'b'.toByte(), 'a'.toByte(), 'r'.toByte()
+    26,
+    6,
+    'b'.toByte(),
+    'a'.toByte(),
+    'r'.toByte(),
+    'b'.toByte(),
+    'a'.toByte(),
+    'r'.toByte(),
   )
 
   private val adapter = OneOfMessage.ADAPTER
@@ -39,28 +48,28 @@ class OneOfTest {
     builder.validate(
       expectedFoo = null,
       expectedBar = null,
-      expectedBytes = INITIAL_BYTES
+      expectedBytes = INITIAL_BYTES,
     )
 
     builder.foo(17)
     builder.validate(
       expectedFoo = 17,
       expectedBar = null,
-      expectedBytes = FOO_BYTES
+      expectedBytes = FOO_BYTES,
     )
 
     builder.bar("barbar")
     builder.validate(
       expectedFoo = null,
       expectedBar = "barbar",
-      expectedBytes = BAR_BYTES
+      expectedBytes = BAR_BYTES,
     )
 
     builder.foo(17)
     builder.validate(
       expectedFoo = 17,
       expectedBar = null,
-      expectedBytes = FOO_BYTES
+      expectedBytes = FOO_BYTES,
     )
   }
 
@@ -101,7 +110,7 @@ class OneOfTest {
   private fun OneOfMessage.Builder.validate(
     expectedFoo: Int?,
     expectedBar: String?,
-    expectedBytes: ByteArray
+    expectedBytes: ByteArray,
   ) {
     // Check builder fields
     assertThat(foo).isEqualTo(expectedFoo)

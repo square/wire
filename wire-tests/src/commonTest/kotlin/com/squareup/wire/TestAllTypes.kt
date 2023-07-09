@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright (C) 2013 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,11 +16,11 @@
 package com.squareup.wire
 
 import com.squareup.wire.protos.kotlin.alltypes.AllTypes
-import okio.Buffer
-import okio.ByteString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import okio.Buffer
+import okio.ByteString
 
 class TestAllTypes {
 
@@ -264,7 +264,7 @@ class TestAllTypes {
     builder = builder.copy(
       ext_opt_bool = false,
       ext_rep_bool = list(false),
-      ext_pack_bool = list(false)
+      ext_pack_bool = list(false),
     )
 
     assertEquals(false, builder.ext_opt_bool)
@@ -331,7 +331,8 @@ class TestAllTypes {
   }
 
   @IgnoreJs // https://youtrack.jetbrains.com/issue/KT-35078
-  @Test fun testToString() {
+  @Test
+  fun testToString() {
     val data = adapter.encode(allTypes)
     val parsed = adapter.decode(data)
     assertEquals(TestAllTypesData.expectedToString, parsed.toString())
@@ -343,7 +344,7 @@ class TestAllTypes {
     assertEquals(
       "çok\u0007\b\u000C\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011" +
         "\u0001\u0001\u0011güzel",
-      AllTypes.DEFAULT_DEFAULT_STRING
+      AllTypes.DEFAULT_DEFAULT_STRING,
     )
   }
 
@@ -385,8 +386,11 @@ class TestAllTypes {
     data[index++] = 0xa4.toByte() // end group, tag = 20, type = 4
     data[index++] = 0x01.toByte()
     arraycopy(
-      TestAllTypesData.expectedOutput.toByteArray(), 17, data, index,
-      TestAllTypesData.expectedOutput.size - 17
+      TestAllTypesData.expectedOutput.toByteArray(),
+      17,
+      data,
+      index,
+      TestAllTypesData.expectedOutput.size - 17,
     )
     val parsed = adapter.decode(data)
     assertEquals(allTypes, parsed)

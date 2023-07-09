@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ import okio.buffer
 class GrpcMessageSource<T : Any>(
   private val source: BufferedSource,
   private val messageAdapter: ProtoAdapter<T>,
-  private val grpcEncoding: String? = null
+  private val grpcEncoding: String? = null,
 ) : MessageSource<T> {
   override fun read(): T? {
     if (source.exhausted()) return null
@@ -46,7 +46,7 @@ class GrpcMessageSource<T : Any>(
       compressedFlag.toInt() == 0 -> GrpcDecoder.IdentityGrpcDecoder
       compressedFlag.toInt() == 1 -> {
         grpcEncoding?.toGrpcDecoding() ?: throw ProtocolException(
-          "message is encoded but message-encoding header was omitted"
+          "message is encoded but message-encoding header was omitted",
         )
       }
       else -> throw ProtocolException("unexpected compressed-flag: $compressedFlag")

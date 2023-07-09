@@ -1,11 +1,11 @@
 /*
- * Copyright 2021 Square Inc.
+ * Copyright (C) 2021 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ internal object GradleWireLogger : WireLogger {
     slf4jLogger.warn(
       """Unused element in treeShakingRoots:
       |  ${unusedRoots.joinToString(separator = "\n  ")}
-      """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -36,7 +36,7 @@ internal object GradleWireLogger : WireLogger {
     slf4jLogger.warn(
       """Unused element in treeShakingRubbish:
       |  ${unusedPrunes.joinToString(separator = "\n  ")}
-      """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -44,7 +44,7 @@ internal object GradleWireLogger : WireLogger {
     slf4jLogger.warn(
       """Unused includes in targets:
       |  ${unusedIncludes.joinToString(separator = "\n  ")}
-      """.trimMargin()
+      """.trimMargin(),
     )
   }
 
@@ -52,7 +52,7 @@ internal object GradleWireLogger : WireLogger {
     slf4jLogger.warn(
       """Unused excludes in targets:
       |  ${unusedExcludes.joinToString(separator = "\n  ")}
-      """.trimMargin()
+      """.trimMargin(),
     )
   }
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright (C) 2013 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ import java.io.IOException
 
 internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   private val messageAdapter: RuntimeMessageAdapter<M, B>,
-  private val jsonAdapters: List<TypeAdapter<Any?>>
+  private val jsonAdapters: List<TypeAdapter<Any?>>,
 ) : TypeAdapter<M>() {
   private val nameToField = mutableMapOf<String, JsonField<M, B>>()
     .also { map ->
@@ -45,7 +45,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
     messageAdapter.writeAllFields(
       message = message,
       jsonAdapters = jsonAdapters,
-      redactedFieldsAdapter = null
+      redactedFieldsAdapter = null,
     ) { name, value, jsonAdapter ->
       out.name(name)
       jsonAdapter.write(out, value)
@@ -79,6 +79,6 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
 
   data class JsonField<M : Message<M, B>, B : Message.Builder<M, B>>(
     val adapter: TypeAdapter<Any?>,
-    val fieldBinding: FieldOrOneOfBinding<M, B>
+    val fieldBinding: FieldOrOneOfBinding<M, B>,
   )
 }

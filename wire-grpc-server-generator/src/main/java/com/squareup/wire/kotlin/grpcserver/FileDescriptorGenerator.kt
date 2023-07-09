@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,9 +70,12 @@ object FileDescriptorGenerator {
   private fun addDescriptorMapProperty(builder: TypeSpec.Builder, encoded: MutableMap<String, String>) {
     builder.addProperty(
       PropertySpec
-        .builder("descriptorMap", Map::class.parameterizedBy(
-            String::class, DescriptorProtos.FileDescriptorProto::class
-          )
+        .builder(
+          "descriptorMap",
+          Map::class.parameterizedBy(
+            String::class,
+            DescriptorProtos.FileDescriptorProto::class,
+          ),
         )
         .addModifiers(KModifier.PRIVATE)
         .initializer(
@@ -86,8 +89,8 @@ object FileDescriptorGenerator {
                   }
                 }.addStatement(")),")
             }
-          }.addStatement(")").build()
-        ).build()
+          }.addStatement(")").build(),
+        ).build(),
     )
   }
 
@@ -104,8 +107,8 @@ object FileDescriptorGenerator {
             val proto = descriptorMap[path]!!
             val deps = proto.dependencyList.filter { !visited.contains(it) }.map { fileDescriptor(it, visited + path) }
             return Descriptors.FileDescriptor.buildFrom(proto, deps.toTypedArray())
-          """.trimIndent()
-        ).build()
+          """.trimIndent(),
+        ).build(),
     )
   }
 
@@ -121,8 +124,8 @@ object FileDescriptorGenerator {
             val str = data.fold(java.lang.StringBuilder()) { b, s -> b.append(s) }.toString()
             val bytes = java.util.Base64.getDecoder().decode(str)
             return DescriptorProtos.FileDescriptorProto.parseFrom(bytes)
-          """.trimIndent()
-        ).build()
+          """.trimIndent(),
+        ).build(),
     )
   }
 

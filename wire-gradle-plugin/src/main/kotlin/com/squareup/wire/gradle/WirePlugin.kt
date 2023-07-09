@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,9 @@ import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.Source
 import com.squareup.wire.gradle.kotlin.sourceRoots
 import com.squareup.wire.schema.newEventListenerFactory
+import java.io.File
+import java.lang.reflect.Array as JavaArray
+import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
@@ -37,9 +40,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.io.File
-import java.util.concurrent.atomic.AtomicBoolean
-import java.lang.reflect.Array as JavaArray
 
 class WirePlugin : Plugin<Project> {
   private val android = AtomicBoolean(false)
@@ -149,7 +149,7 @@ class WirePlugin : Plugin<Project> {
             project.relativePath(source.outputDir(project))
           } else {
             output.out!!
-          }
+          },
         )
       }
       val generatedSourcesDirectories: Set<File> =
@@ -259,8 +259,11 @@ class WirePlugin : Plugin<Project> {
   }
 
   private fun Source.outputDir(project: Project): File {
-    return if (sources.size > 1) File(project.targetDefaultOutputPath(), name)
-    else File(project.targetDefaultOutputPath())
+    return if (sources.size > 1) {
+      File(project.targetDefaultOutputPath(), name)
+    } else {
+      File(project.targetDefaultOutputPath())
+    }
   }
 
   private fun Project.addWireRuntimeDependency(
@@ -282,7 +285,7 @@ class WirePlugin : Plugin<Project> {
           project.extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets
         val sourceSet = (sourceSets.getByName("commonMain") as DefaultKotlinSourceSet)
         project.configurations.getByName(sourceSet.apiConfigurationName).dependencies.add(
-          runtimeDependency
+          runtimeDependency,
         )
       }
 
@@ -291,7 +294,7 @@ class WirePlugin : Plugin<Project> {
           project.extensions.getByType(KotlinJsProjectExtension::class.java).sourceSets
         val sourceSet = (sourceSets.getByName("main") as DefaultKotlinSourceSet)
         project.configurations.getByName(sourceSet.apiConfigurationName).dependencies.add(
-          runtimeDependency
+          runtimeDependency,
         )
       }
 
@@ -334,7 +337,7 @@ class WirePlugin : Plugin<Project> {
     // 1.7.x: `fun source(vararg sources: Any)`
     private val SOURCE_FUNCTION = KotlinCompile::class.java.getMethod(
       "source",
-      JavaArray.newInstance(Any::class.java, 0).javaClass
+      JavaArray.newInstance(Any::class.java, 0).javaClass,
     )
   }
 }

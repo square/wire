@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,6 +24,7 @@ import com.squareup.wire.whiteboard.WhiteboardUpdate.InitialiseBoard
 import com.squareup.wire.whiteboard.WhiteboardUpdate.UpdatePoints
 import com.squareup.wire.whiteboard.ui.MainContentView
 import com.squareup.wire.whiteboard.ui.WhiteboardView
+import java.io.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -31,7 +32,6 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.IOException
 
 class MainActivity : ComponentActivity(), OnBoardEventListener {
   private lateinit var sendCommandChannel: SendChannel<WhiteboardCommand>
@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity(), OnBoardEventListener {
           withContext(Dispatchers.Main) {
             when {
               update.initialise_board != null -> initialiseBoard(
-                update.initialise_board as InitialiseBoard
+                update.initialise_board as InitialiseBoard,
               )
 
               update.update_points != null -> updatePoints(update.update_points as UpdatePoints)

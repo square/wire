@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,14 +37,14 @@ class LinkerTest {
       |message A {
       |  optional B b = 1;
       |}
-      """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "proto-path/b.proto",
       """
       |message B {
       |}
-      """.trimMargin()
+      """.trimMargin(),
     )
     val schema = loadAndLinkSchema()
 
@@ -64,21 +64,21 @@ class LinkerTest {
       |import "b.proto";
       |message A {
       |}
-      """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "proto-path/b.proto",
       """
       |message B {
       |}
-      """.trimMargin()
+      """.trimMargin(),
     )
     val schema = loadAndLinkSchema()
 
     assertThat(schema.protoFiles.map { it.location }).containsExactly(
       Location.get("source-path", "a.proto"),
       Location.get("google/protobuf/descriptor.proto"),
-      Location.get("wire/extensions.proto")
+      Location.get("wire/extensions.proto"),
     )
   }
 
@@ -91,7 +91,7 @@ class LinkerTest {
       |message A {
       |  optional B b = 1;
       |}
-      """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "proto-path/b.proto",
@@ -100,7 +100,7 @@ class LinkerTest {
       |}
       |message C {
       |}
-      """.trimMargin()
+      """.trimMargin(),
     )
     val schema = loadAndLinkSchema()
 
@@ -117,7 +117,7 @@ class LinkerTest {
      |message A {
      |  optional string s = 1 [formatting_options.language.name = "English"];
      |}
-    """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "proto-path/formatting_options.proto",
@@ -143,7 +143,7 @@ class LinkerTest {
       |  TITLE_CASE = 2;
       |  SENTENCE_CASE = 3;
       |}
-      """.trimMargin()
+      """.trimMargin(),
     )
     val schema = loadAndLinkSchema()
 
@@ -168,7 +168,7 @@ class LinkerTest {
       |message A {
       |  optional B b = 1;
       |}
-      """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "proto-path/b.proto",
@@ -178,7 +178,7 @@ class LinkerTest {
       |}
       |message C {
       |}
-      """.trimMargin()
+      """.trimMargin(),
     )
     val schema = loadAndLinkSchema()
 
@@ -196,7 +196,7 @@ class LinkerTest {
       |message A {
       |  optional B b = 1;
       |}
-      """.trimMargin()
+      """.trimMargin(),
     )
     fs.add(
       "proto-path/b.proto",
@@ -204,7 +204,7 @@ class LinkerTest {
       |option java_package = "com.squareup.b";
       |message B {
       |}
-      """.trimMargin()
+      """.trimMargin(),
     )
     val schema = loadAndLinkSchema()
 
@@ -223,7 +223,7 @@ class LinkerTest {
       |  SCISSORS = 2;
       |  PAPER = 3;
       |}
-      """.trimMargin()
+      """.trimMargin(),
     )
     fs.add("proto-path/b.proto", "")
     val schema = loadAndLinkSchema()
@@ -236,7 +236,7 @@ class LinkerTest {
     val loader = SchemaLoader(fs)
     loader.initRoots(
       sourcePath = listOf(Location.get("source-path")),
-      protoPath = listOf(Location.get("proto-path"))
+      protoPath = listOf(Location.get("proto-path")),
     )
     return loader.loadSchema()
   }

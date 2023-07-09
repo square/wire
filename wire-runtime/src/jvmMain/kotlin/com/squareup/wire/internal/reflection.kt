@@ -1,11 +1,11 @@
 /*
- * Copyright 2021 Square Inc.
+ * Copyright (C) 2021 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,13 +72,13 @@ fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
       newBuilderInstance,
       Collections.unmodifiableMap(fields),
       typeUrl,
-      syntax
-    )
+      syntax,
+    ),
   )
 }
 
 private fun <M : Message<M, B>, B : Message.Builder<M, B>> getKeys(
-  messageField: Field
+  messageField: Field,
 ): Set<OneOf.Key<*>> {
   val messageClass = messageField.declaringClass
   val keysField = messageClass.getDeclaredField(boxedOneOfKeysFieldName(messageField.name))
@@ -104,7 +104,7 @@ fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
 
 @Suppress("UNCHECKED_CAST")
 private fun <M : Message<M, B>, B : Message.Builder<M, B>> getBuilderType(
-  messageType: Class<M>
+  messageType: Class<M>,
 ): Class<B> {
   return runCatching {
     Class.forName("${messageType.name}\$Builder") as Class<B>
@@ -118,7 +118,7 @@ private class RuntimeMessageBinding<M : Message<M, B>, B : Message.Builder<M, B>
   private val createBuilder: () -> B,
   override val fields: Map<Int, FieldOrOneOfBinding<M, B>>,
   override val typeUrl: String?,
-  override val syntax: Syntax
+  override val syntax: Syntax,
 ) : MessageBinding<M, B> {
 
   override fun unknownFields(message: M) = message.unknownFields

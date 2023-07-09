@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Square Inc.
+ * Copyright (C) 2016 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,8 +16,8 @@
 package com.squareup.wire
 
 import com.squareup.wire.internal.Throws
-import okio.IOException
 import kotlin.reflect.KClass
+import okio.IOException
 
 /**
  * An abstract [ProtoAdapter] that converts values of an enum to and from integers.
@@ -25,7 +25,7 @@ import kotlin.reflect.KClass
 expect abstract class EnumAdapter<E : WireEnum> protected constructor(
   type: KClass<E>,
   syntax: Syntax,
-  identity: E?
+  identity: E?,
 ) : ProtoAdapter<E> {
   override fun encodedSize(value: E): Int
 
@@ -65,7 +65,7 @@ internal inline fun <E : WireEnum> commonEncode(writer: ReverseProtoWriter, valu
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun <E : WireEnum> EnumAdapter<E>.commonDecode(
   reader: ProtoReader,
-  fromValue: (Int) -> E?
+  fromValue: (Int) -> E?,
 ): E {
   val value = reader.readVarint32()
   return fromValue(value) ?: throw ProtoAdapter.EnumConstantNotFoundException(value, type)

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,7 +46,7 @@ data class MessageType(
   val extensionsList: List<Extensions>,
   private val reserveds: List<Reserved>,
   override val options: Options,
-  override val syntax: Syntax
+  override val syntax: Syntax,
 ) : Type() {
   private var deprecated: Any? = null
 
@@ -160,7 +160,7 @@ data class MessageType(
 
   override fun retainAll(
     schema: Schema,
-    markSet: MarkSet
+    markSet: MarkSet,
   ): Type? {
     val retainedNestedTypes = nestedTypes.mapNotNull { it.retainAll(schema, markSet) }
     val retainedNestedExtends = nestedExtendList.mapNotNull { it.retainAll(schema, markSet) }
@@ -188,7 +188,7 @@ data class MessageType(
       extensionsList = extensionsList,
       reserveds = reserveds,
       options = options.retainAll(schema, markSet),
-      syntax = syntax
+      syntax = syntax,
     )
     result.deprecated = deprecated
     return result
@@ -223,7 +223,7 @@ data class MessageType(
       extensionsList = emptyList(),
       reserveds = emptyList(),
       options = options.retainLinked(),
-      syntax = syntax
+      syntax = syntax,
     )
   }
 
@@ -239,7 +239,7 @@ data class MessageType(
       fields = toElements(declaredFields),
       oneOfs = toElements(oneOfs),
       extensions = toElements(extensionsList),
-      groups = emptyList()
+      groups = emptyList(),
     )
   }
 
@@ -250,7 +250,7 @@ data class MessageType(
       namespaces: List<String>,
       protoType: ProtoType,
       messageElement: MessageElement,
-      syntax: Syntax
+      syntax: Syntax,
     ): MessageType {
       check(messageElement.groups.isEmpty()) {
         "${messageElement.groups[0].location}: 'group' is not supported"
@@ -278,7 +278,7 @@ data class MessageType(
         extensionsList = fromElements(messageElement.extensions),
         reserveds = fromElements(messageElement.reserveds),
         options = Options(MESSAGE_OPTIONS, messageElement.options),
-        syntax = syntax
+        syntax = syntax,
       )
     }
   }

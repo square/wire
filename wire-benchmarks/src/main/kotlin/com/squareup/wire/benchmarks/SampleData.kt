@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2023 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.squareup.wire.benchmarks
 
 import squareup.wire.benchmarks.EmailMessage as EmailMessageWire
@@ -45,7 +60,8 @@ object SampleData {
       |> (519) 555-2233
       |> dentist@example.com
       |>
-      |""".trimMargin()
+      |
+  """.trimMargin()
 
   @JvmStatic
   fun newMediumValueWire(): EmailSearchResponseWire {
@@ -54,9 +70,9 @@ object SampleData {
       results = listOf(
         EmailThreadWire(
           subject = subject,
-          messages = listOf(newEmailMessageWire())
-        )
-      )
+          messages = listOf(newEmailMessageWire()),
+        ),
+      ),
     )
   }
 
@@ -65,17 +81,17 @@ object SampleData {
     sender = newSenderWire(),
     recipients = listOf(newRecipientWire()),
     subject = subject,
-    body = body
+    body = body,
   )
 
   fun newSenderWire() = NameAndAddressWire(
     display_name = senderDisplayName,
-    email_address = senderEmailAddress
+    email_address = senderEmailAddress,
   )
 
   fun newRecipientWire() = NameAndAddressWire(
     display_name = recipientDisplayName,
-    email_address = recipientEmailAddress
+    email_address = recipientEmailAddress,
   )
 
   @JvmStatic
@@ -88,7 +104,7 @@ object SampleData {
             .apply {
               subject = SampleData.subject
               addMessages(newEmailMessageProtobuf())
-            }.build()
+            }.build(),
         )
       }.build()
   }

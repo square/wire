@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@ object MethodDescriptorGenerator {
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
     service: Service,
-    rpc: Rpc
+    rpc: Rpc,
   ): TypeSpec.Builder {
     val requestType = generator.classNameFor(rpc.requestType!!)
     val responseType = generator.classNameFor(rpc.responseType!!)
@@ -39,32 +39,32 @@ object MethodDescriptorGenerator {
         PropertySpec.builder(
           name = "get${rpc.name}Method",
           type = methodDescriptorType(requestType, responseType).copy(nullable = true),
-          modifiers = listOf(KModifier.PRIVATE)
+          modifiers = listOf(KModifier.PRIVATE),
         )
           .mutable(true)
           .addAnnotation(Volatile::class)
           .initializer("null")
-          .build()
+          .build(),
       )
       .addFunction(
         FunSpec.builder("get${rpc.name}Method")
           .returns(methodDescriptorType(requestType, responseType))
           .addCode(methodDescriptorCodeBlock(generator, service, rpc))
-          .build()
+          .build(),
       )
   }
 
   private fun methodDescriptorCodeBlock(
     generator: ClassNameGenerator,
     service: Service,
-    rpc: Rpc
+    rpc: Rpc,
   ): CodeBlock {
     val requestType = generator.classNameFor(rpc.requestType!!)
     val responseType = generator.classNameFor(rpc.responseType!!)
     val codeBlock = CodeBlock.builder()
     codeBlock.addStatement(
       "var result: %T = get${rpc.name}Method",
-      methodDescriptorType(requestType, responseType).copy(nullable = true)
+      methodDescriptorType(requestType, responseType).copy(nullable = true),
     )
     codeBlock.add(
       """
@@ -89,14 +89,14 @@ object MethodDescriptorGenerator {
         return get${rpc.name}Method!!
       """.trimIndent(),
       requestType,
-      responseType
+      responseType,
     )
     return codeBlock.build()
   }
 
   private fun methodDescriptorType(
     requestType: ClassName,
-    responseType: ClassName
+    responseType: ClassName,
   ) = ClassName("io.grpc", "MethodDescriptor").parameterizedBy(requestType, responseType)
 
   private fun methodType(rpc: Rpc): String = when {

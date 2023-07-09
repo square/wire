@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2023 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.squareup.wire.swift
 
 import com.squareup.wire.Syntax.PROTO_2
@@ -29,7 +44,6 @@ import io.outfoxx.swiftpoet.FileMemberSpec
 import io.outfoxx.swiftpoet.FileSpec
 import io.outfoxx.swiftpoet.FunctionSignatureSpec
 import io.outfoxx.swiftpoet.FunctionSpec
-import io.outfoxx.swiftpoet.INT
 import io.outfoxx.swiftpoet.INT32
 import io.outfoxx.swiftpoet.INT64
 import io.outfoxx.swiftpoet.Modifier.FILEPRIVATE
@@ -55,7 +69,7 @@ import java.util.Locale.US
 class SwiftGenerator private constructor(
   val schema: Schema,
   private val nameToTypeName: Map<ProtoType, DeclaredTypeName>,
-  private val referenceCycleIndirections: Map<ProtoType, Set<ProtoType>>
+  private val referenceCycleIndirections: Map<ProtoType, Set<ProtoType>>,
 ) {
   private val proto2Codable = DeclaredTypeName.typeName("Wire.Proto2Codable")
   private val proto3Codable = DeclaredTypeName.typeName("Wire.Proto3Codable")
@@ -157,7 +171,8 @@ class SwiftGenerator private constructor(
     get() = when (encodeMode!!) {
       EncodeMode.MAP -> DICTIONARY.parameterizedBy(keyType.typeName, valueType.typeName)
       EncodeMode.REPEATED,
-      EncodeMode.PACKED -> ARRAY.parameterizedBy(type!!.typeName)
+      EncodeMode.PACKED,
+      -> ARRAY.parameterizedBy(type!!.typeName)
       EncodeMode.NULL_IF_ABSENT -> OPTIONAL.parameterizedBy(type!!.typeName)
       EncodeMode.REQUIRED -> type!!.typeName
       EncodeMode.OMIT_IDENTITY -> {
@@ -222,17 +237,17 @@ class SwiftGenerator private constructor(
       .fields
       .mapNotNull { schema.getType(it.type!!) as? EnumType }
       .forEach { enum ->
-         // ensure that a 0 case exists
-         if (enum.constants.filter { it.tag == 0 }.isEmpty()) {
-           throw NoSuchElementException("Missing a zero value for ${enum.name}")
-         }
+        // ensure that a 0 case exists
+        if (enum.constants.filter { it.tag == 0 }.isEmpty()) {
+          throw NoSuchElementException("Missing a zero value for ${enum.name}")
+        }
       }
   }
 
   @OptIn(ExperimentalStdlibApi::class) // TODO move to build flag
   private fun generateMessage(
     type: MessageType,
-    fileMembers: MutableList<FileMemberSpec>
+    fileMembers: MutableList<FileMemberSpec>,
   ): List<TypeSpec> {
     val structType = type.typeName
     val oneOfEnumNames = type.oneOfs.associateWith { structType.nestedType(it.name.capitalize(US)) }
@@ -256,13 +271,13 @@ class SwiftGenerator private constructor(
 
         if (type.isHeapAllocated) {
           addAttribute(
-            AttributeSpec.builder("dynamicMemberLookup").build()
+            AttributeSpec.builder("dynamicMemberLookup").build(),
           )
 
           addProperty(
             PropertySpec.varBuilder(storageName, storageType, PRIVATE)
               .addAttribute(AttributeSpec.builder(heap).build())
-              .build()
+              .build(),
           )
 
           generateMessageStoragePropertyDelegates(type, storageName, storageType)
@@ -283,10 +298,10 @@ class SwiftGenerator private constructor(
                   "self.%N = %T(%L)",
                   storageName,
                   storageType,
-                  storageParams.joinToCode(separator = ",%W")
+                  storageParams.joinToCode(separator = ",%W"),
                 )
               }
-              .build()
+              .build(),
           )
 
           addFunction(
@@ -295,7 +310,7 @@ class SwiftGenerator private constructor(
               .beginControlFlow("if", "!isKnownUniquelyReferenced(&_%N)", storageName)
               .addStatement("_%1N = %2T(wrappedValue: %1N)", storageName, heap)
               .endControlFlow("if")
-              .build()
+              .build(),
           )
         } else {
           generateMessageProperties(type, oneOfEnumNames)
@@ -353,7 +368,7 @@ class SwiftGenerator private constructor(
                 }
               }
             }
-            .build()
+            .build(),
         )
     } else {
       null
@@ -368,7 +383,7 @@ class SwiftGenerator private constructor(
               generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
               generateMessageConstructor(type, oneOfEnumNames, includeDefaults = false)
             }
-            .build()
+            .build(),
         )
         .build()
       fileMembers += FileMemberSpec.builder(storageExtension).build()
@@ -381,7 +396,7 @@ class SwiftGenerator private constructor(
             .addParameter("from", "reader", protoReader)
             .throws(true)
             .addStatement("self.%N = try %T(from: reader)", storageName, storageType)
-            .build()
+            .build(),
         )
         .addFunction(
           FunctionSpec.builder("encode")
@@ -389,7 +404,7 @@ class SwiftGenerator private constructor(
             .addParameter("to", "writer", protoWriter)
             .throws(true)
             .addStatement("try %N.encode(to: writer)", storageName)
-            .build()
+            .build(),
         )
         .build()
       fileMembers += FileMemberSpec.builder(structProtoCodableExtension).build()
@@ -442,9 +457,9 @@ class SwiftGenerator private constructor(
             .getter(
               FunctionSpec.getterBuilder()
                 .addStatement("return %N.description", storageName)
-                .build()
+                .build(),
             )
-            .build()
+            .build(),
         )
 
         val storageRedactableExtension = ExtensionSpec.builder(storageType)
@@ -452,7 +467,7 @@ class SwiftGenerator private constructor(
           .addType(
             TypeAliasSpec.builder("RedactedKeys", structType.nestedType("RedactedKeys"))
               .addModifiers(PUBLIC)
-              .build()
+              .build(),
           )
           .build()
         fileMembers += FileMemberSpec.builder(storageRedactableExtension)
@@ -490,7 +505,7 @@ class SwiftGenerator private constructor(
     type: MessageType,
     structType: DeclaredTypeName,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
-    propertyNames: Collection<String>
+    propertyNames: Collection<String>,
   ): ExtensionSpec.Builder = apply {
     addSuperType(type.protoCodableType)
 
@@ -507,23 +522,23 @@ class SwiftGenerator private constructor(
           type.fields.forEach { field ->
             val localType = when (type.syntax) {
               PROTO_2 -> if (field.isRepeated || field.isMap) {
-                  field.typeName
-                } else {
-                  field.typeName.makeOptional()
-                }
+                field.typeName
+              } else {
+                field.typeName.makeOptional()
+              }
               PROTO_3 -> if (field.isOptional || (field.isEnum && !field.isRepeated)) {
-                  field.typeName.makeOptional()
-                } else {
-                  field.typeName
-                }
+                field.typeName.makeOptional()
+              } else {
+                field.typeName
+              }
             }
 
             val initializer = when (type.syntax) {
               PROTO_2 -> when {
-                  field.isMap -> "[:]"
-                  field.isRepeated -> "[]"
-                  else -> "nil"
-                }
+                field.isMap -> "[:]"
+                field.isRepeated -> "[]"
+                else -> "nil"
+              }
               PROTO_3 -> field.proto3InitialValue
             }
 
@@ -575,7 +590,7 @@ class SwiftGenerator private constructor(
                     field.tag,
                     oneOf.name,
                     field.name,
-                    field.typeName.makeNonOptional()
+                    field.typeName.makeNonOptional(),
                   )
                 }
                 else -> {
@@ -584,7 +599,7 @@ class SwiftGenerator private constructor(
                     field.tag,
                     oneOf.name,
                     field.name,
-                    field.typeName.makeNonOptional()
+                    field.typeName.makeNonOptional(),
                   )
                 }
               }
@@ -598,7 +613,7 @@ class SwiftGenerator private constructor(
           // Check required and bind members.
           addStatement("")
           type.fields.forEach { field ->
-            val initializer = when(type.syntax) {
+            val initializer = when (type.syntax) {
               PROTO_2 -> if (field.isOptional || field.isRepeated || field.isMap) {
                 CodeBlock.of("%N", field.name)
               } else {
@@ -616,7 +631,7 @@ class SwiftGenerator private constructor(
             addStatement("self.%1N = %1N", oneOf.name)
           }
         }
-        .build()
+        .build(),
     )
 
     val writer = if ("writer" in propertyNames) "_writer" else "writer"
@@ -654,7 +669,7 @@ class SwiftGenerator private constructor(
           }
         }
         .addStatement("try $writer.writeUnknownFields(unknownFields)")
-        .build()
+        .build(),
     )
   }
 
@@ -668,7 +683,7 @@ class SwiftGenerator private constructor(
         .addModifiers(PUBLIC)
         .addModifiers(STATIC)
         .addStatement("return \"%N\"", type.type.typeUrl!!)
-        .build()
+        .build(),
     )
   }
 
@@ -693,8 +708,8 @@ class SwiftGenerator private constructor(
             .throws(true)
             .addStatement("let container = try decoder.singleValueContainer()")
             .addStatement("self.%N = try container.decode(%T.self)", storageName, storageType)
-            .build()
-          )
+            .build(),
+        )
         addFunction(
           FunctionSpec.builder("encode")
             .addParameter("to", "encoder", encoder)
@@ -702,15 +717,15 @@ class SwiftGenerator private constructor(
             .throws(true)
             .addStatement("var container = encoder.singleValueContainer()")
             .addStatement("try container.encode(%N)", storageName)
-            .build()
-          )
+            .build(),
+        )
       }
       .build()
   }
 
   private fun messageCodableExtension(
     type: MessageType,
-    structType: DeclaredTypeName
+    structType: DeclaredTypeName,
   ): ExtensionSpec {
     return ExtensionSpec.builder(structType)
       .addSuperType(codable)
@@ -730,7 +745,7 @@ class SwiftGenerator private constructor(
             TypeSpec.enumBuilder(codingKeys)
               .addModifiers(PUBLIC)
               .addSuperType(codingKey)
-              .build()
+              .build(),
           )
         }
 
@@ -776,7 +791,7 @@ class SwiftGenerator private constructor(
                   addStatement(
                     "self.%1N = try container.$decode($typeArg%2T.self, $forKeys: $keys)",
                     field.name,
-                    typeName
+                    typeName,
                   )
                 }
 
@@ -799,7 +814,7 @@ class SwiftGenerator private constructor(
                         "let %1N = try container.decodeIfPresent(%2T.self, forKey: %3S)",
                         field.name,
                         typeName,
-                        keyName
+                        keyName,
                       )
                     } else {
                       nextControlFlow(
@@ -807,7 +822,7 @@ class SwiftGenerator private constructor(
                         "let %1N = try container.decodeIfPresent(%2T.self, forKey: %3S)",
                         field.name,
                         typeName,
-                        keyName
+                        keyName,
                       )
                     }
                     addStatement("self.%1N = .%2N(%2N)", oneOf.name, field.name)
@@ -817,7 +832,7 @@ class SwiftGenerator private constructor(
                   endControlFlow("if")
                 }
               }
-              .build()
+              .build(),
           )
           addFunction(
             FunctionSpec.builder("encode")
@@ -854,13 +869,13 @@ class SwiftGenerator private constructor(
                     val (keys, args) = field.codableName?.let { codableName ->
                       Pair(
                         "preferCamelCase ? %2S : %1S",
-                        arrayOf(field.name, codableName)
+                        arrayOf(field.name, codableName),
                       )
                     } ?: Pair("%1S", arrayOf(field.name))
 
                     addStatement(
                       "try container.$encode(${typeArg}self.%1N, forKey: $keys)",
-                      *args
+                      *args,
                     )
                   }
 
@@ -896,20 +911,20 @@ class SwiftGenerator private constructor(
                     val (keys, args) = field.codableName?.let { codableName ->
                       Pair(
                         "preferCamelCase ? %2S : %1S",
-                        arrayOf(field.name, codableName)
+                        arrayOf(field.name, codableName),
                       )
                     } ?: Pair("%1S", arrayOf(field.name))
 
                     addStatement(
                       "case .%1N(let %1N): try container.encode(%1N, forKey: $keys)",
-                      *args
+                      *args,
                     )
                   }
                   addStatement("case %T.none: break", OPTIONAL)
                   endControlFlow("switch")
                 }
               }
-              .build()
+              .build(),
           )
         }
       }
@@ -927,7 +942,7 @@ class SwiftGenerator private constructor(
   private fun FunctionSpec.Builder.addParameters(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
-    includeDefaults: Boolean = true
+    includeDefaults: Boolean = true,
   ) = apply {
     type.fields.forEach { field ->
       addParameter(
@@ -937,7 +952,7 @@ class SwiftGenerator private constructor(
               withFieldDefault(field)
             }
           }
-          .build()
+          .build(),
       )
     }
     type.oneOfs.forEach { oneOf ->
@@ -945,7 +960,7 @@ class SwiftGenerator private constructor(
       addParameter(
         ParameterSpec.builder(oneOf.name, enumName)
           .defaultValue("nil")
-          .build()
+          .build(),
       )
     }
   }
@@ -953,7 +968,7 @@ class SwiftGenerator private constructor(
   private fun TypeSpec.Builder.generateMessageConstructor(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
-    includeDefaults: Boolean = true
+    includeDefaults: Boolean = true,
   ) {
     addFunction(
       FunctionSpec.constructorBuilder()
@@ -967,14 +982,14 @@ class SwiftGenerator private constructor(
             addStatement("self.%1N = %1N", oneOf.name)
           }
         }
-        .build()
+        .build(),
     )
   }
 
   private fun TypeSpec.Builder.generateMessageProperties(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
-    forStorageType: Boolean = false
+    forStorageType: Boolean = false,
   ) {
     type.fields.forEach { field ->
       val property = PropertySpec.varBuilder(field.name, field.typeName, PUBLIC)
@@ -1001,21 +1016,21 @@ class SwiftGenerator private constructor(
               addDoc("%N\n", oneOf.documentation.sanitizeDoc())
             }
           }
-          .build()
+          .build(),
       )
     }
 
     addProperty(
       PropertySpec.varBuilder("unknownFields", FOUNDATION_DATA, PUBLIC)
         .initializer(".init()")
-        .build()
+        .build(),
     )
   }
 
   private fun TypeSpec.Builder.generateMessageStoragePropertyDelegates(
     type: MessageType,
     storageName: String,
-    storageType: DeclaredTypeName
+    storageType: DeclaredTypeName,
   ) {
     if (!type.isHeapAllocated) {
       println("Generating storage property delegates for a non-heap allocated type?!")
@@ -1032,21 +1047,21 @@ class SwiftGenerator private constructor(
           writableKeyPath.parameterizedBy(storageType, propertyVariable),
         )
         .returns(propertyVariable)
-        .build()
+        .build(),
     )
-    .addModifiers(PUBLIC)
-    .getter(
-      FunctionSpec.getterBuilder()
-        .addStatement("%N[keyPath: keyPath]", storageName)
-        .build()
-    )
-    .setter(
-      FunctionSpec.setterBuilder()
-        .addStatement("copyStorage()")
-        .addStatement("%N[keyPath: keyPath] = newValue", storageName)
-        .build()
-    )
-    .build()
+      .addModifiers(PUBLIC)
+      .getter(
+        FunctionSpec.getterBuilder()
+          .addStatement("%N[keyPath: keyPath]", storageName)
+          .build(),
+      )
+      .setter(
+        FunctionSpec.setterBuilder()
+          .addStatement("copyStorage()")
+          .addStatement("%N[keyPath: keyPath] = newValue", storageName)
+          .build(),
+      )
+      .build()
 
     addProperty(subscript)
   }
@@ -1054,7 +1069,7 @@ class SwiftGenerator private constructor(
   private fun TypeSpec.Builder.generateMessageOneOfs(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
-    fileMembers: MutableList<FileMemberSpec>
+    fileMembers: MutableList<FileMemberSpec>,
   ) {
     type.oneOfs.forEach { oneOf ->
       val enumName = oneOfEnumNames.getValue(oneOf)
@@ -1076,7 +1091,7 @@ class SwiftGenerator private constructor(
                       addAttribute(deprecated)
                     }
                   }
-                  .build()
+                  .build(),
               )
             }
           }
@@ -1090,14 +1105,15 @@ class SwiftGenerator private constructor(
                 oneOf.fields.forEach { field ->
                   addStatement(
                     "case .%1N(let %1N): try $writer.encode(tag: %2L, value: %1N)",
-                    field.name, field.tag
+                    field.name,
+                    field.tag,
                   )
                 }
               }
               .endControlFlow("switch")
-              .build()
+              .build(),
           )
-          .build()
+          .build(),
       )
 
       val equatableExtension = ExtensionSpec.builder(enumName)
@@ -1136,7 +1152,7 @@ class SwiftGenerator private constructor(
                   }
                 }
               }
-              .build()
+              .build(),
           )
           .build()
         fileMembers += FileMemberSpec.builder(redactableExtension)
@@ -1155,7 +1171,7 @@ class SwiftGenerator private constructor(
 
   private fun generateEnum(
     type: EnumType,
-    fileMembers: MutableList<FileMemberSpec>
+    fileMembers: MutableList<FileMemberSpec>,
   ): TypeSpec {
     val enumName = type.typeName
     return TypeSpec.enumBuilder(enumName)
@@ -1185,7 +1201,7 @@ class SwiftGenerator private constructor(
                   addAttribute(deprecated)
                 }
               }
-              .build()
+              .build(),
           )
         }
 
@@ -1201,9 +1217,9 @@ class SwiftGenerator private constructor(
                   }
                 }
                 .endControlFlow("switch")
-                .build()
+                .build(),
             )
-            .build()
+            .build(),
         )
 
         // Swift won't synthesize CaseIterable conformance if any constants contain an availability
@@ -1217,11 +1233,11 @@ class SwiftGenerator private constructor(
                   .addStatement(
                     "return [%L]",
                     type.constants.map { CodeBlock.of(".%N", it.name) }
-                      .joinToCode(",%W")
+                      .joinToCode(",%W"),
                   )
-                  .build()
+                  .build(),
               )
-              .build()
+              .build(),
           )
         }
         type.nestedTypes.forEach { nestedType ->
@@ -1235,14 +1251,14 @@ class SwiftGenerator private constructor(
 
   private fun generateEnclosing(
     type: EnclosingType,
-    fileMembers: MutableList<FileMemberSpec>
+    fileMembers: MutableList<FileMemberSpec>,
   ): TypeSpec {
     return TypeSpec.enumBuilder(type.typeName)
       .addModifiers(PUBLIC)
       .addDoc(
         "%N\n",
         "*Note:* This type only exists to maintain class structure for its nested types and " +
-          "is not an actual message."
+          "is not an actual message.",
       )
       .apply {
         type.nestedTypes.forEach { nestedType ->
@@ -1289,10 +1305,11 @@ class SwiftGenerator private constructor(
 
     private val NEEDS_CUSTOM_CODABLE = setOf("Duration", "Timestamp")
 
-    @JvmStatic @JvmName("get")
+    @JvmStatic
+    @JvmName("get")
     operator fun invoke(
       schema: Schema,
-      existingTypeModuleName: Map<ProtoType, String> = emptyMap()
+      existingTypeModuleName: Map<ProtoType, String> = emptyMap(),
     ): SwiftGenerator {
       val nameToTypeName = mutableMapOf<ProtoType, DeclaredTypeName>()
 
@@ -1341,7 +1358,7 @@ class SwiftGenerator private constructor(
 
     private fun computeReferenceCycleIndirections(
       schema: Schema,
-      existingTypes: Set<ProtoType>
+      existingTypes: Set<ProtoType>,
     ): Map<ProtoType, Set<ProtoType>> {
       val indirections = mutableMapOf<ProtoType, MutableSet<ProtoType>>()
 

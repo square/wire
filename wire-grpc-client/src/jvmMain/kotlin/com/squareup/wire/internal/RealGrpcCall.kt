@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,18 +20,18 @@ import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
 import com.squareup.wire.GrpcResponse
 import com.squareup.wire.use
+import java.util.concurrent.TimeUnit
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Callback
 import okhttp3.Response
 import okio.IOException
 import okio.Timeout
-import java.util.concurrent.TimeUnit
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 internal class RealGrpcCall<S : Any, R : Any>(
   private val grpcClient: GrpcClient,
-  override val method: GrpcMethod<S, R>
+  override val method: GrpcMethod<S, R>,
 ) : GrpcCall<S, R> {
   /** Non-null once this is executed. */
   private var call: Call? = null
@@ -137,7 +137,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
     val requestBody = newRequestBody(
       minMessageToCompress = grpcClient.minMessageToCompress,
       requestAdapter = method.requestAdapter,
-      onlyMessage = request
+      onlyMessage = request,
     )
     val result = grpcClient.newCall(method, requestMetadata, requestBody)
     this.call = result

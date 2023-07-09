@@ -1,11 +1,11 @@
 /*
- * Copyright 2021 Square Inc.
+ * Copyright (C) 2021 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,7 +57,7 @@ import okio.ByteString.Companion.toByteString
  *     commented out below.
  */
 class SchemaEncoder(
-  private val schema: Schema
+  private val schema: Schema,
 ) {
   private val fileOptionsProtoAdapter =
     schema.protoAdapter(Options.FILE_OPTIONS.toString(), false)
@@ -90,14 +90,15 @@ class SchemaEncoder(
       // TODO(jwilson): can extension fields be maps?
       for (extend in value.extendList.reversed()) {
         fieldEncoder.asRepeated().encodeWithTag(
-          writer, 7,
+          writer,
+          7,
           extend.fields.map {
             EncodedField(
               syntax = value.syntax,
               field = it,
-              extendee = extend.type!!.dotName
+              extendee = extend.type!!.dotName,
             )
-          }
+          },
         )
       }
 
@@ -129,7 +130,7 @@ class SchemaEncoder(
           EncodedField(
             syntax = syntax,
             field = it,
-            oneOfIndex = encodedOneOfs.size
+            oneOfIndex = encodedOneOfs.size,
           )
         }
         encodedOneOfs.add(EncodedOneOf(oneOf.name, fields = oneOfFields))
@@ -142,7 +143,7 @@ class SchemaEncoder(
         var encodedField = EncodedField(
           syntax = syntax,
           field = field,
-          type = syntheticMap?.fieldType ?: field.type!!
+          type = syntheticMap?.fieldType ?: field.type!!,
         )
         if (encodedField.isProto3Optional) {
           encodedField = encodedField.copy(oneOfIndex = encodedOneOfs.size)
@@ -199,7 +200,7 @@ class SchemaEncoder(
    */
   private fun collectSyntheticMapEntries(
     enclosingTypeOrPackage: String?,
-    fields: List<Field>
+    fields: List<Field>,
   ): Map<Field, SyntheticMapEntry> {
     val result = mutableMapOf<Field, SyntheticMapEntry>()
     for (field in fields) {
@@ -210,7 +211,7 @@ class SchemaEncoder(
           enclosingTypeOrPackage = enclosingTypeOrPackage,
           name = name,
           keyType = fieldType.keyType!!,
-          valueType = fieldType.valueType!!
+          valueType = fieldType.valueType!!,
         )
       }
     }
@@ -221,7 +222,7 @@ class SchemaEncoder(
     enclosingTypeOrPackage: String?,
     val name: String,
     val keyType: ProtoType,
-    val valueType: ProtoType
+    val valueType: ProtoType,
   ) {
     val fieldType = ProtoType.get(enclosingTypeOrPackage, name)
   }
@@ -268,7 +269,7 @@ class SchemaEncoder(
     val field: Field,
     val type: ProtoType = field.type!!,
     val extendee: String? = null,
-    val oneOfIndex: Int? = null
+    val oneOfIndex: Int? = null,
   ) {
     val isProto3Optional
       get() = syntax == Syntax.PROTO_3 && field.label == Field.Label.OPTIONAL
@@ -336,7 +337,7 @@ class SchemaEncoder(
 
   private class EncodedOneOf(
     val name: String,
-    val fields: List<EncodedField> = listOf()
+    val fields: List<EncodedField> = listOf(),
   )
 
   private val oneOfEncoder: Encoder<EncodedOneOf> = object : Encoder<EncodedOneOf>() {
@@ -405,7 +406,10 @@ class SchemaEncoder(
 
   /** Encodes a synthetic map type. */
   private abstract class Encoder<T> : ProtoAdapter<T>(
-    FieldEncoding.LENGTH_DELIMITED, null, null, Syntax.PROTO_2
+    FieldEncoding.LENGTH_DELIMITED,
+    null,
+    null,
+    Syntax.PROTO_2,
   ) {
     override fun redact(value: T) = value
     override fun encodedSize(value: T): Int = throw UnsupportedOperationException()

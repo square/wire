@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright (C) 2013 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,26 +15,29 @@
  */
 package com.squareup.wire
 
-import okio.Buffer
-import okio.BufferedSink
-import okio.ByteString
 import java.io.IOException
 import java.io.ObjectStreamException
 import java.io.OutputStream
 import java.io.Serializable
+import okio.Buffer
+import okio.BufferedSink
+import okio.ByteString
 
 /** A protocol buffer message. */
 actual abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>>
 protected actual constructor(
   /** The [ProtoAdapter] for encoding and decoding messages of this type. */
-  @field:Transient @get:JvmName("adapter") actual val adapter: ProtoAdapter<M>,
-  unknownFields: ByteString
+  @field:Transient
+  @get:JvmName("adapter")
+  actual val adapter: ProtoAdapter<M>,
+  unknownFields: ByteString,
 ) : Serializable {
   /**
    * Returns a byte string containing the proto encoding of this message's unknown fields. Returns
    * an empty byte string if this message has no unknown fields.
    */
-  @field:Transient @get:JvmName("unknownFields")
+  @field:Transient
+  @get:JvmName("unknownFields")
   actual val unknownFields: ByteString = unknownFields
     get() {
       // Some naughty libraries construct Messages by reflection which causes this non-null field
@@ -48,7 +51,8 @@ protected actual constructor(
   @Transient internal var cachedSerializedSize = 0
 
   /** If non-zero, the hash code of this message. Accessed by generated code. */
-  @Transient @JvmField protected actual var hashCode = 0
+  @Transient @JvmField
+  protected actual var hashCode = 0
 
   /**
    * Returns a new builder initialized with the data in this message.
@@ -94,7 +98,9 @@ protected actual constructor(
    */
   actual abstract class Builder<M : Message<M, B>, B : Builder<M, B>> protected constructor() {
     @Transient internal actual var unknownFieldsByteString = ByteString.EMPTY
+
     @Transient internal actual var unknownFieldsBuffer: Buffer? = null
+
     @Transient internal actual var unknownFieldsWriter: ProtoWriter? = null
 
     actual fun addUnknownFields(unknownFields: ByteString): Builder<M, B> = apply {
@@ -107,7 +113,7 @@ protected actual constructor(
     actual fun addUnknownField(
       tag: Int,
       fieldEncoding: FieldEncoding,
-      value: Any?
+      value: Any?,
     ): Builder<M, B> = apply {
       prepareForNewUnknownFields()
       @Suppress("UNCHECKED_CAST")
