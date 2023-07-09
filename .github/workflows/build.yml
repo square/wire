@@ -85,7 +85,7 @@ jobs:
         run: |
           ./gradlew -Pswift=false build --stacktrace
 
-  windows:
+  windows-check-test-files:
     runs-on: windows-latest
 
     steps:
@@ -111,8 +111,28 @@ jobs:
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
         shell: bash
 
-      - name: Install Chrome
-        uses: browser-actions/setup-chrome@latest
+  windows-build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Set git to use LF and not automatically replace them with CRLF.
+        run: |
+          git config --global core.autocrlf false
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Configure JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 19
+
+#      - name: Install Chrome
+#        uses: browser-actions/setup-chrome@latest
 
       - name: Test
         run: |
@@ -162,7 +182,7 @@ jobs:
   publish:
     runs-on: macos-latest
     if: github.repository == 'square/wire' && github.ref == 'refs/heads/master'
-    needs: [jvm, multiplatform, windows, swift]
+    needs: [jvm, multiplatform, windows-check-test-files, windows-build, swift]
 
     steps:
       - name: Checkout
