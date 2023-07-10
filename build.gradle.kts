@@ -63,6 +63,9 @@ subprojects {
       val licenseHeaderFile = rootProject.file("gradle/license-header.txt")
       kotlin {
         target("**/*.kt")
+        // Spotless would be checking generated files by Gradle (type accessors) and was failing the build because of
+        // this so ignore it.
+        targetExclude("**/.gradle/**")
         ktlint(libs.versions.ktlint.get()).editorConfigOverride(
           mapOf("ktlint_standard_filename" to "disabled"),
         )
@@ -74,6 +77,9 @@ subprojects {
       }
       java {
         target("**/*.java")
+        // Spotless would be checking generated files by Gradle (type accessors) and was failing the build because of
+        // this so ignore it.
+        targetExclude("**/.gradle/**")
         googleJavaFormat(libs.googleJavaFormat.get().version)
         trimTrailingWhitespace()
         endWithNewline()
