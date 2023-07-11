@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import java.util.Locale.US
 import java.util.concurrent.LinkedBlockingQueue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -30,7 +31,7 @@ class GrpcCallsTest {
   @Test
   fun execute() {
     val grpcCall = GrpcCall<String, String> { request ->
-      request.toUpperCase()
+      request.uppercase(US)
     }
     runBlocking {
       assertThat(grpcCall.execute("hello")).isEqualTo("HELLO")
@@ -40,7 +41,7 @@ class GrpcCallsTest {
   @Test
   fun executeBlocking() {
     val grpcCall = GrpcCall<String, String> { request ->
-      request.toUpperCase()
+      request.uppercase(US)
     }
     assertThat(grpcCall.executeBlocking("hello")).isEqualTo("HELLO")
   }
@@ -48,7 +49,7 @@ class GrpcCallsTest {
   @Test
   fun enqueue() {
     val grpcCall = GrpcCall<String, String> { request ->
-      request.toUpperCase()
+      request.uppercase(US)
     }
 
     val log = LinkedBlockingQueue<String>()
@@ -71,7 +72,7 @@ class GrpcCallsTest {
 
   @Test
   fun executeThrowsException() {
-    val grpcCall = GrpcCall<String, String> { request ->
+    val grpcCall = GrpcCall<String, String> { _ ->
       throw Exception("boom!")
     }
     runBlocking {
@@ -86,7 +87,7 @@ class GrpcCallsTest {
 
   @Test
   fun executeBlockingThrowsException() {
-    val grpcCall = GrpcCall<String, String> { request ->
+    val grpcCall = GrpcCall<String, String> { _ ->
       throw Exception("boom!")
     }
 
@@ -100,7 +101,7 @@ class GrpcCallsTest {
 
   @Test
   fun enqueueThrowsException() {
-    val grpcCall = GrpcCall<String, String> { request ->
+    val grpcCall = GrpcCall<String, String> { _ ->
       throw Exception("boom!")
     }
 
@@ -126,7 +127,7 @@ class GrpcCallsTest {
   @Test
   fun executeAfterExecute() {
     val grpcCall = GrpcCall<String, String> { request ->
-      request.toUpperCase()
+      request.uppercase(US)
     }
     assertThat(grpcCall.executeBlocking("hello")).isEqualTo("HELLO")
 
@@ -143,7 +144,7 @@ class GrpcCallsTest {
   @Test
   fun executeBlockingAfterExecute() {
     val grpcCall = GrpcCall<String, String> { request ->
-      request.toUpperCase()
+      request.uppercase(US)
     }
     assertThat(grpcCall.executeBlocking("hello")).isEqualTo("HELLO")
 
@@ -158,7 +159,7 @@ class GrpcCallsTest {
   @Test
   fun enqueueAfterExecute() {
     val grpcCall = GrpcCall<String, String> { request ->
-      request.toUpperCase()
+      request.uppercase(US)
     }
     assertThat(grpcCall.executeBlocking("hello")).isEqualTo("HELLO")
 
@@ -183,7 +184,7 @@ class GrpcCallsTest {
 
   @Test
   fun executeCanceled() {
-    val grpcCall = GrpcCall<String, String> { request ->
+    val grpcCall = GrpcCall<String, String> { _ ->
       error("unexpected call")
     }
     grpcCall.cancel()
@@ -200,7 +201,7 @@ class GrpcCallsTest {
 
   @Test
   fun executeBlockingCanceled() {
-    val grpcCall = GrpcCall<String, String> { request ->
+    val grpcCall = GrpcCall<String, String> { _ ->
       error("unexpected call")
     }
     grpcCall.cancel()
@@ -215,7 +216,7 @@ class GrpcCallsTest {
 
   @Test
   fun enqueueCanceled() {
-    val grpcCall = GrpcCall<String, String> { request ->
+    val grpcCall = GrpcCall<String, String> { _ ->
       error("unexpected call")
     }
     grpcCall.cancel()
@@ -240,7 +241,7 @@ class GrpcCallsTest {
 
   @Test
   fun cloneIsIndependent() {
-    val grpcCall = GrpcCall(String::toUpperCase)
+    val grpcCall = GrpcCall<String, String> { it.uppercase(US) }
     val requestMetadata = mutableMapOf("1" to "one")
     grpcCall.requestMetadata = requestMetadata
     assertThat(grpcCall.executeBlocking("hello")).isEqualTo("HELLO")
@@ -254,7 +255,7 @@ class GrpcCallsTest {
 
   @Test
   fun propagatesGrpcExceptionsWithoutWrappingIOException() {
-    val grpcCall = GrpcCall<String, String> { request ->
+    val grpcCall = GrpcCall<String, String> { _ ->
       throw GrpcException(GrpcStatus.INTERNAL, "oops")
     }
 

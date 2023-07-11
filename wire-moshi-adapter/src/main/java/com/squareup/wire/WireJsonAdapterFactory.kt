@@ -68,6 +68,7 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
     return plus(listOf(adapter))
   }
 
+  @Suppress("UNCHECKED_CAST")
   override fun create(
     type: Type,
     annotations: Set<Annotation>,

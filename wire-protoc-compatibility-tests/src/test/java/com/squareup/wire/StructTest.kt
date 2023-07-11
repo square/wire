@@ -528,8 +528,10 @@ class StructTest {
     }
   }
 
+  @Suppress("LiftReturnOrAssignment")
   private fun List<*>.isUnmodifiable(): Boolean {
     try {
+      @Suppress("UNCHECKED_CAST")
       (this as MutableList<Any>).add("x")
       return false
     } catch (_: UnsupportedOperationException) {
@@ -537,9 +539,11 @@ class StructTest {
     }
   }
 
+  @Suppress("LiftReturnOrAssignment")
   private fun Map<*, *>.isUnmodifiable(): Boolean {
     try {
-      (this as MutableMap<Any, Any>).put("x", "x")
+      @Suppress("UNCHECKED_CAST")
+      (this as MutableMap<Any, Any>)["x"] = "x"
       return false
     } catch (_: UnsupportedOperationException) {
       return true

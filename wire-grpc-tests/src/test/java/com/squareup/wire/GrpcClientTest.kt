@@ -499,7 +499,7 @@ class GrpcClientTest {
     mockService.enqueueSendError(StatusException(Status.FAILED_PRECONDITION))
 
     runBlocking {
-      val (requestChannel, responseChannel) = routeGuideService.RouteChat().executeIn(this)
+      val (_, responseChannel) = routeGuideService.RouteChat().executeIn(this)
 
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "marco"))
 
@@ -1012,7 +1012,7 @@ class GrpcClientTest {
   @Test
   fun responseStatusIsNot200() {
     interceptor = object : Interceptor {
-      override fun intercept(chain: Interceptor.Chain): Response {
+      override fun intercept(chain: Chain): Response {
         return Response.Builder()
           .request(chain.request())
           .protocol(HTTP_2)
@@ -1039,7 +1039,7 @@ class GrpcClientTest {
   @Test
   fun responseContentTypeIsNotGrpc() {
     interceptor = object : Interceptor {
-      override fun intercept(chain: Interceptor.Chain): Response {
+      override fun intercept(chain: Chain): Response {
         return Response.Builder()
           .request(chain.request())
           .protocol(HTTP_2)
@@ -1067,7 +1067,7 @@ class GrpcClientTest {
   @Test
   fun contentTypeApplicationGrpc() {
     interceptor = object : Interceptor {
-      override fun intercept(chain: Interceptor.Chain): Response {
+      override fun intercept(chain: Chain): Response {
         val response = chain.proceed(chain.request())
         return response.newBuilder()
           .body(object : ResponseBody() {
@@ -1086,7 +1086,7 @@ class GrpcClientTest {
   @Test
   fun contentTypeApplicationGrpcPlusProto() {
     interceptor = object : Interceptor {
-      override fun intercept(chain: Interceptor.Chain): Response {
+      override fun intercept(chain: Chain): Response {
         val response = chain.proceed(chain.request())
         return response.newBuilder()
           .body(object : ResponseBody() {
@@ -1234,7 +1234,7 @@ class GrpcClientTest {
     mockService.enqueueSendFeature(name = "tree at 5,6")
     mockService.enqueue(SendCompleted)
     interceptor = object : Interceptor {
-      override fun intercept(chain: Interceptor.Chain): Response {
+      override fun intercept(chain: Chain): Response {
         val grpcMethod = chain.request().tag(GrpcMethod::class.java)
         assertThat(grpcMethod?.path).isEqualTo("/routeguide.RouteGuide/GetFeature")
         return chain.proceed(chain.request())
@@ -1526,7 +1526,7 @@ class GrpcClientTest {
   @Test
   fun requestResponseCanceledInHttpCall() {
     interceptor = object : Interceptor {
-      override fun intercept(chain: Interceptor.Chain): Response {
+      override fun intercept(chain: Chain): Response {
         chain.call().cancel()
         throw IOException("boom")
       }
@@ -1547,7 +1547,7 @@ class GrpcClientTest {
   @Test
   fun requestResponseStreamingCanceledInHttpCall() {
     interceptor = object : Interceptor {
-      override fun intercept(chain: Interceptor.Chain): Response {
+      override fun intercept(chain: Chain): Response {
         chain.call().cancel()
         throw IOException("boom")
       }
@@ -1597,7 +1597,7 @@ class GrpcClientTest {
     assertThat(noTrailersResponse.trailers().size).isEqualTo(0)
 
     return object : Interceptor {
-      override fun intercept(chain: Interceptor.Chain): Response {
+      override fun intercept(chain: Chain): Response {
         val response = chain.proceed(chain.request())
         return noTrailersResponse.newBuilder()
           .request(response.request)
