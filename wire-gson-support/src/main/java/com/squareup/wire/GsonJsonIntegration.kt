@@ -29,16 +29,24 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
   override fun frameworkAdapter(
     framework: Gson,
     type: Type,
-  ): TypeAdapter<Any?> = framework.getAdapter(TypeToken.get(type)).nullSafe() as TypeAdapter<Any?>
+  ): TypeAdapter<Any?> {
+    @Suppress("UNCHECKED_CAST")
+    return framework.getAdapter(TypeToken.get(type)).nullSafe() as TypeAdapter<Any?>
+  }
 
-  override fun listAdapter(elementAdapter: TypeAdapter<Any?>): TypeAdapter<Any?> =
-    ListJsonAdapter(elementAdapter).nullSafe() as TypeAdapter<Any?>
+  override fun listAdapter(elementAdapter: TypeAdapter<Any?>): TypeAdapter<Any?> {
+    @Suppress("UNCHECKED_CAST")
+    return ListJsonAdapter(elementAdapter).nullSafe() as TypeAdapter<Any?>
+  }
 
   override fun mapAdapter(
     framework: Gson,
     keyFormatter: JsonFormatter<*>,
     valueAdapter: TypeAdapter<Any?>,
-  ): TypeAdapter<Any?> = MapJsonAdapter(keyFormatter, valueAdapter).nullSafe() as TypeAdapter<Any?>
+  ): TypeAdapter<Any?> {
+    @Suppress("UNCHECKED_CAST")
+    return MapJsonAdapter(keyFormatter, valueAdapter).nullSafe() as TypeAdapter<Any?>
+  }
 
   fun <T> TypeAdapter<T>.serializeNulls(): TypeAdapter<T> {
     val delegate = this
@@ -60,11 +68,15 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
     }
   }
 
-  override fun structAdapter(framework: Gson): TypeAdapter<Any?> =
-    framework.getAdapter(Object::class.java).serializeNulls().nullSafe() as TypeAdapter<Any?>
+  override fun structAdapter(framework: Gson): TypeAdapter<Any?> {
+    @Suppress("UNCHECKED_CAST")
+    return framework.getAdapter(Object::class.java).serializeNulls().nullSafe() as TypeAdapter<Any?>
+  }
 
-  override fun formatterAdapter(jsonFormatter: JsonFormatter<*>): TypeAdapter<Any?> =
-    FormatterJsonAdapter(jsonFormatter).nullSafe() as TypeAdapter<Any?>
+  override fun formatterAdapter(jsonStringAdapter: JsonFormatter<*>): TypeAdapter<Any?> {
+    @Suppress("UNCHECKED_CAST")
+    return FormatterJsonAdapter(jsonStringAdapter).nullSafe() as TypeAdapter<Any?>
+  }
 
   private class FormatterJsonAdapter<T : Any>(
     private val formatter: JsonFormatter<T>,

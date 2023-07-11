@@ -162,10 +162,11 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
   }
 
   override fun getFeature(point: Point, responseObserver: StreamObserver<Feature>) {
+    @Suppress("UNCHECKED_CAST")
     streamObserver = responseObserver as StreamObserver<Any>
     assertNextActionAndProcessScript {
       assertThat(it).isEqualTo(
-        Action.ReceiveCall(
+        ReceiveCall(
           path = "/routeguide.RouteGuide/GetFeature",
           requestHeaders = takeLastRequestHeaders(it),
         ),
@@ -180,10 +181,11 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
   }
 
   override fun recordRoute(responseObserver: StreamObserver<RouteSummary>): StreamObserver<Point> {
+    @Suppress("UNCHECKED_CAST")
     streamObserver = responseObserver as StreamObserver<Any>
     assertNextActionAndProcessScript {
       assertThat(it).isEqualTo(
-        Action.ReceiveCall(
+        ReceiveCall(
           path = "/routeguide.RouteGuide/RecordRoute",
           requestHeaders = takeLastRequestHeaders(it),
         ),
@@ -193,10 +195,11 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
   }
 
   override fun listFeatures(rectangle: Rectangle, responseObserver: StreamObserver<Feature>) {
+    @Suppress("UNCHECKED_CAST")
     streamObserver = responseObserver as StreamObserver<Any>
     assertNextActionAndProcessScript {
       assertThat(it).isEqualTo(
-        Action.ReceiveCall(
+        ReceiveCall(
           path = "/routeguide.RouteGuide/ListFeatures",
           requestHeaders = takeLastRequestHeaders(it),
         ),
@@ -211,10 +214,11 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
   }
 
   override fun routeChat(responseObserver: StreamObserver<RouteNote>): StreamObserver<RouteNote> {
+    @Suppress("UNCHECKED_CAST")
     streamObserver = responseObserver as StreamObserver<Any>
     assertNextActionAndProcessScript {
       assertThat(it).isEqualTo(
-        Action.ReceiveCall(
+        ReceiveCall(
           path = "/routeguide.RouteGuide/RouteChat",
           requestHeaders = takeLastRequestHeaders(it),
         ),

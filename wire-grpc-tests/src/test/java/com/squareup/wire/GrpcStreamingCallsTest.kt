@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import java.util.Locale.US
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -28,13 +29,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
 
+@Suppress("CatchMayIgnoreException", "UNUSED_ANONYMOUS_PARAMETER")
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
 class GrpcStreamingCallsTest {
   @Test
   fun execute() {
     val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
-      requests.consumeEach { responses.send(it.toUpperCase()) }
+      requests.consumeEach { responses.send(it.uppercase(US)) }
       responses.close()
     }
     runBlocking {
@@ -49,7 +51,7 @@ class GrpcStreamingCallsTest {
   @Test
   fun executeBlocking() {
     val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
-      requests.consumeEach { responses.send(it.toUpperCase()) }
+      requests.consumeEach { responses.send(it.uppercase(US)) }
       responses.close()
     }
     val (requests, responses) = grpcCall.executeBlocking()
@@ -105,7 +107,7 @@ class GrpcStreamingCallsTest {
   @Test
   fun executeAfterExecute() {
     val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
-      requests.consumeEach { responses.send(it.toUpperCase()) }
+      requests.consumeEach { responses.send(it.uppercase(US)) }
       responses.close()
     }
 
@@ -126,7 +128,7 @@ class GrpcStreamingCallsTest {
   @Test
   fun executeBlockingAfterExecute() {
     val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
-      requests.consumeEach { responses.send(it.toUpperCase()) }
+      requests.consumeEach { responses.send(it.uppercase(US)) }
       responses.close()
     }
 
@@ -190,7 +192,7 @@ class GrpcStreamingCallsTest {
   fun cloneIsIndependent() {
     val requestMetadata = mutableMapOf("1" to "one")
     val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
-      requests.consumeEach { responses.send(it.toUpperCase()) }
+      requests.consumeEach { responses.send(it.uppercase(US)) }
       responses.close()
     }
     grpcCall.requestMetadata = requestMetadata
@@ -218,7 +220,7 @@ class GrpcStreamingCallsTest {
   @Test
   fun executeIsScoped() {
     val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
-      requests.consumeEach { responses.send(it.toUpperCase()) }
+      requests.consumeEach { responses.send(it.uppercase(US)) }
       responses.close()
     }
 

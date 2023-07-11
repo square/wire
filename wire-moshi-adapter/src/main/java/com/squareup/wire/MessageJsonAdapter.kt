@@ -41,6 +41,7 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
 
   @Throws(IOException::class)
   override fun toJson(out: JsonWriter, message: M?) {
+    @Suppress("UNCHECKED_CAST")
     val redactedFieldsAdapter = when (out.tag(RedactedTag::class.java)?.enabled) {
       true -> redactedFieldsAdapter
       else -> null

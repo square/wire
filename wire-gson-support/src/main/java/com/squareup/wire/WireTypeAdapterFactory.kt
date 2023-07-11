@@ -72,6 +72,7 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
     return plus(listOf(adapter))
   }
 
+  @Suppress("UNCHECKED_CAST")
   override fun <T> create(gson: Gson, type: TypeToken<T>): TypeAdapter<T>? {
     val rawType = type.rawType
 

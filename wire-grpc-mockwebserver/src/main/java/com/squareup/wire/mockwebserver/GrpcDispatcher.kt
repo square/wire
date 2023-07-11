@@ -26,7 +26,6 @@ import java.lang.reflect.Method
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Headers.Companion.headersOf
-import okhttp3.Request
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.RecordedRequest
@@ -205,9 +204,7 @@ class GrpcDispatcher(
      * corresponding calls.
      */
     private val nullGrpcClient = GrpcClient.Builder()
-      .callFactory(object : Call.Factory {
-        override fun newCall(it: Request) = NullCall
-      })
+      .callFactory { NullCall }
       .baseUrl("https://localhost/")
       .build()
   }

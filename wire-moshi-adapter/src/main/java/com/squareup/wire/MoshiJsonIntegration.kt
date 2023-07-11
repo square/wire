@@ -30,20 +30,27 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
     type: Type,
   ): JsonAdapter<Any?> = framework.adapter<Any?>(type).nullSafe()
 
-  override fun listAdapter(elementAdapter: JsonAdapter<Any?>): JsonAdapter<Any?> =
-    ListJsonAdapter(elementAdapter).nullSafe() as JsonAdapter<Any?>
+  override fun listAdapter(elementAdapter: JsonAdapter<Any?>): JsonAdapter<Any?> {
+    @Suppress("UNCHECKED_CAST")
+    return ListJsonAdapter(elementAdapter).nullSafe() as JsonAdapter<Any?>
+  }
 
   override fun mapAdapter(
     framework: Moshi,
     keyFormatter: JsonFormatter<*>,
     valueAdapter: JsonAdapter<Any?>,
-  ): JsonAdapter<Any?> = MapJsonAdapter(keyFormatter, valueAdapter).nullSafe() as JsonAdapter<Any?>
+  ): JsonAdapter<Any?> {
+    @Suppress("UNCHECKED_CAST")
+    return MapJsonAdapter(keyFormatter, valueAdapter).nullSafe() as JsonAdapter<Any?>
+  }
 
   override fun structAdapter(framework: Moshi): JsonAdapter<Any?> =
     framework.adapter<Any?>(Object::class.java).serializeNulls().nullSafe()
 
-  override fun formatterAdapter(jsonFormatter: JsonFormatter<*>): JsonAdapter<Any?> =
-    FormatterJsonAdapter(jsonFormatter).nullSafe() as JsonAdapter<Any?>
+  override fun formatterAdapter(jsonStringAdapter: JsonFormatter<*>): JsonAdapter<Any?> {
+    @Suppress("UNCHECKED_CAST")
+    return FormatterJsonAdapter(jsonStringAdapter).nullSafe() as JsonAdapter<Any?>
+  }
 
   private class FormatterJsonAdapter<T : Any>(
     private val formatter: JsonFormatter<T>,
@@ -101,7 +108,7 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
     private val keyFormatter: JsonFormatter<K>,
     private val valueAdapter: JsonAdapter<V>,
   ) : JsonAdapter<Map<K, V>>() {
-    override fun fromJson(reader: JsonReader): Map<K, V>? {
+    override fun fromJson(reader: JsonReader): Map<K, V> {
       val result = mutableMapOf<K, V>()
       reader.beginObject()
       while (reader.hasNext()) {

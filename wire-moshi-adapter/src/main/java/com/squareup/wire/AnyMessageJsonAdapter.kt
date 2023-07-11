@@ -41,6 +41,7 @@ internal class AnyMessageJsonAdapter(
     val protoAdapter = typeUrlToAdapter[value.typeUrl]
       ?: throw JsonDataException("Cannot find type for url: ${value.typeUrl} in ${writer.path}")
 
+    @Suppress("UNCHECKED_CAST")
     val delegate = moshi.adapter(protoAdapter.type!!.java) as JsonAdapter<Message<*, *>>
 
     val flattenToken = writer.beginFlatten()
@@ -62,6 +63,7 @@ internal class AnyMessageJsonAdapter(
     val protoAdapter = typeUrlToAdapter[typeUrl]
       ?: throw JsonDataException("Cannot resolve type: $typeUrl in ${reader.path}")
 
+    @Suppress("UNCHECKED_CAST")
     val delegate = moshi.adapter(protoAdapter.type!!.java) as JsonAdapter<Message<*, *>>
 
     val value = delegate.fromJson(reader)

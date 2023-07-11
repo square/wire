@@ -43,6 +43,7 @@ class AnyMessageTypeAdapter(
     val protoAdapter = typeUrlToAdapter[value.typeUrl]
       ?: throw IOException("Cannot find type for url: ${value.typeUrl}")
 
+    @Suppress("UNCHECKED_CAST")
     val delegate = gson.getAdapter(protoAdapter.type!!.java) as TypeAdapter<Message<*, *>>
 
     val jsonObject = delegate.toJsonTree(value.unpack(protoAdapter) as Message<*, *>).asJsonObject
@@ -68,6 +69,7 @@ class AnyMessageTypeAdapter(
     val protoAdapter = typeUrlToAdapter[typeUrl]
       ?: throw IOException("Cannot resolve type: $typeUrl in ${reader.path}")
 
+    @Suppress("UNCHECKED_CAST")
     val delegate = gson.getAdapter(protoAdapter.type!!.java) as TypeAdapter<Message<*, *>>
 
     val value = delegate.fromJsonTree(jsonElement)

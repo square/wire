@@ -94,6 +94,7 @@ class InteropChecker(
   private fun roundtripWireBytes(message: Any) {
     val adapter = ProtoAdapter.get(message::class.java)
 
+    @Suppress("UNCHECKED_CAST")
     val wireBytes = (adapter as ProtoAdapter<Any>).encodeByteString(message)
     assertThat(wireBytes).isEqualTo(protocBytes)
     assertThat(adapter.encodeByteString(message)).isEqualTo(protocBytes)
@@ -101,6 +102,7 @@ class InteropChecker(
   }
 
   private fun roundtripGson(message: Any) {
+    @Suppress("UNCHECKED_CAST")
     val adapter = gson.getAdapter(message::class.java) as TypeAdapter<Any>
 
     assertThat(adapter.toJson(message)).isEqualTo(wireCanonicalJson)
@@ -111,6 +113,7 @@ class InteropChecker(
   }
 
   private fun roundtripMoshi(message: Any) {
+    @Suppress("UNCHECKED_CAST")
     val adapter = moshi.adapter(message::class.java) as JsonAdapter<Any>
 
     assertThat(adapter.toJson(message)).isEqualTo(wireCanonicalJson)
