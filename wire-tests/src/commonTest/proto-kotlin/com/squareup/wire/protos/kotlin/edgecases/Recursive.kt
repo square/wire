@@ -29,7 +29,7 @@ public class Recursive(
     declaredName = "value",
     schemaIndex = 0,
   )
-  public val value_: Int? = null,
+  public val `value`: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.edgecases.Recursive#ADAPTER",
@@ -49,7 +49,7 @@ public class Recursive(
     if (other === this) return true
     if (other !is Recursive) return false
     if (unknownFields != other.unknownFields) return false
-    if (value_ != other.value_) return false
+    if (`value` != other.`value`) return false
     if (recursive != other.recursive) return false
     return true
   }
@@ -58,7 +58,7 @@ public class Recursive(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + (value_?.hashCode() ?: 0)
+      result = result * 37 + (`value`?.hashCode() ?: 0)
       result = result * 37 + (recursive?.hashCode() ?: 0)
       super.hashCode = result
     }
@@ -67,16 +67,16 @@ public class Recursive(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (value_ != null) result += """value_=$value_"""
+    if (`value` != null) result += """`value`=$`value`"""
     if (recursive != null) result += """recursive=$recursive"""
     return result.joinToString(prefix = "Recursive{", separator = ", ", postfix = "}")
   }
 
   public fun copy(
-    value_: Int? = this.value_,
+    `value`: Int? = this.`value`,
     recursive: Recursive? = this.recursive,
     unknownFields: ByteString = this.unknownFields,
-  ): Recursive = Recursive(value_, recursive, unknownFields)
+  ): Recursive = Recursive(`value`, recursive, unknownFields)
 
   public companion object {
     @JvmField
@@ -90,13 +90,13 @@ public class Recursive(
     ) {
       override fun encodedSize(`value`: Recursive): Int {
         var size = value.unknownFields.size
-        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.value_)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.`value`)
         size += Recursive.ADAPTER.encodedSizeWithTag(2, value.recursive)
         return size
       }
 
       override fun encode(writer: ProtoWriter, `value`: Recursive) {
-        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value_)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.`value`)
         Recursive.ADAPTER.encodeWithTag(writer, 2, value.recursive)
         writer.writeBytes(value.unknownFields)
       }
@@ -104,21 +104,21 @@ public class Recursive(
       override fun encode(writer: ReverseProtoWriter, `value`: Recursive) {
         writer.writeBytes(value.unknownFields)
         Recursive.ADAPTER.encodeWithTag(writer, 2, value.recursive)
-        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value_)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.`value`)
       }
 
       override fun decode(reader: ProtoReader): Recursive {
-        var value_: Int? = null
+        var `value`: Int? = null
         var recursive: Recursive? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> value_ = ProtoAdapter.INT32.decode(reader)
+            1 -> `value` = ProtoAdapter.INT32.decode(reader)
             2 -> recursive = Recursive.ADAPTER.decode(reader)
             else -> reader.readUnknownField(tag)
           }
         }
         return Recursive(
-          value_ = value_,
+          `value` = `value`,
           recursive = recursive,
           unknownFields = unknownFields
         )

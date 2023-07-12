@@ -37,7 +37,7 @@ public class KeywordKotlin(
     schemaIndex = 0,
   )
   @JvmField
-  public val object_: String? = null,
+  public val `object`: String? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
@@ -46,9 +46,9 @@ public class KeywordKotlin(
     schemaIndex = 1,
   )
   @JvmField
-  public val when_: Int,
-  fun_: Map<String, String> = emptyMap(),
-  return_: List<Boolean> = emptyList(),
+  public val `when`: Int,
+  `fun`: Map<String, String> = emptyMap(),
+  `return`: List<Boolean> = emptyList(),
   enums: List<KeywordKotlinEnum> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<KeywordKotlin, KeywordKotlin.Builder>(ADAPTER, unknownFields) {
@@ -60,7 +60,7 @@ public class KeywordKotlin(
     schemaIndex = 2,
   )
   @JvmField
-  public val fun_: Map<String, String> = immutableCopyOf("fun_", fun_)
+  public val `fun`: Map<String, String> = immutableCopyOf("`fun`", `fun`)
 
   @field:WireField(
     tag = 4,
@@ -70,7 +70,7 @@ public class KeywordKotlin(
     schemaIndex = 3,
   )
   @JvmField
-  public val return_: List<Boolean> = immutableCopyOf("return_", return_)
+  public val `return`: List<Boolean> = immutableCopyOf("`return`", `return`)
 
   @field:WireField(
     tag = 5,
@@ -83,10 +83,10 @@ public class KeywordKotlin(
 
   override fun newBuilder(): Builder {
     val builder = Builder()
-    builder.object_ = object_
-    builder.when_ = when_
-    builder.fun_ = fun_
-    builder.return_ = return_
+    builder.`object` = `object`
+    builder.`when` = `when`
+    builder.`fun` = `fun`
+    builder.`return` = `return`
     builder.enums = enums
     builder.addUnknownFields(unknownFields)
     return builder
@@ -96,10 +96,10 @@ public class KeywordKotlin(
     if (other === this) return true
     if (other !is KeywordKotlin) return false
     if (unknownFields != other.unknownFields) return false
-    if (object_ != other.object_) return false
-    if (when_ != other.when_) return false
-    if (fun_ != other.fun_) return false
-    if (return_ != other.return_) return false
+    if (`object` != other.`object`) return false
+    if (`when` != other.`when`) return false
+    if (`fun` != other.`fun`) return false
+    if (`return` != other.`return`) return false
     if (enums != other.enums) return false
     return true
   }
@@ -108,10 +108,10 @@ public class KeywordKotlin(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + (object_?.hashCode() ?: 0)
-      result = result * 37 + when_.hashCode()
-      result = result * 37 + fun_.hashCode()
-      result = result * 37 + return_.hashCode()
+      result = result * 37 + (`object`?.hashCode() ?: 0)
+      result = result * 37 + `when`.hashCode()
+      result = result * 37 + `fun`.hashCode()
+      result = result * 37 + `return`.hashCode()
       result = result * 37 + enums.hashCode()
       super.hashCode = result
     }
@@ -120,57 +120,57 @@ public class KeywordKotlin(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (object_ != null) result += """object_=${sanitize(object_)}"""
-    result += """when_=$when_"""
-    if (fun_.isNotEmpty()) result += """fun_=$fun_"""
-    if (return_.isNotEmpty()) result += """return_=$return_"""
+    if (`object` != null) result += """`object`=${sanitize(`object`)}"""
+    result += """`when`=$`when`"""
+    if (`fun`.isNotEmpty()) result += """`fun`=$`fun`"""
+    if (`return`.isNotEmpty()) result += """`return`=$`return`"""
     if (enums.isNotEmpty()) result += """enums=$enums"""
     return result.joinToString(prefix = "KeywordKotlin{", separator = ", ", postfix = "}")
   }
 
   public fun copy(
-    object_: String? = this.object_,
-    when_: Int = this.when_,
-    fun_: Map<String, String> = this.fun_,
-    return_: List<Boolean> = this.return_,
+    `object`: String? = this.`object`,
+    `when`: Int = this.`when`,
+    `fun`: Map<String, String> = this.`fun`,
+    `return`: List<Boolean> = this.`return`,
     enums: List<KeywordKotlinEnum> = this.enums,
     unknownFields: ByteString = this.unknownFields,
-  ): KeywordKotlin = KeywordKotlin(object_, when_, fun_, return_, enums, unknownFields)
+  ): KeywordKotlin = KeywordKotlin(`object`, `when`, `fun`, `return`, enums, unknownFields)
 
   public class Builder : Message.Builder<KeywordKotlin, Builder>() {
     @JvmField
-    public var object_: String? = null
+    public var `object`: String? = null
 
     @JvmField
-    public var when_: Int? = null
+    public var `when`: Int? = null
 
     @JvmField
-    public var fun_: Map<String, String> = emptyMap()
+    public var `fun`: Map<String, String> = emptyMap()
 
     @JvmField
-    public var return_: List<Boolean> = emptyList()
+    public var `return`: List<Boolean> = emptyList()
 
     @JvmField
     public var enums: List<KeywordKotlinEnum> = emptyList()
 
-    public fun object_(object_: String?): Builder {
-      this.object_ = object_
+    public fun `object`(`object`: String?): Builder {
+      this.`object` = `object`
       return this
     }
 
-    public fun when_(when_: Int): Builder {
-      this.when_ = when_
+    public fun `when`(`when`: Int): Builder {
+      this.`when` = `when`
       return this
     }
 
-    public fun fun_(fun_: Map<String, String>): Builder {
-      this.fun_ = fun_
+    public fun `fun`(`fun`: Map<String, String>): Builder {
+      this.`fun` = `fun`
       return this
     }
 
-    public fun return_(return_: List<Boolean>): Builder {
-      checkElementsNotNull(return_)
-      this.return_ = return_
+    public fun `return`(`return`: List<Boolean>): Builder {
+      checkElementsNotNull(`return`)
+      this.`return` = `return`
       return this
     }
 
@@ -181,10 +181,10 @@ public class KeywordKotlin(
     }
 
     override fun build(): KeywordKotlin = KeywordKotlin(
-      object_ = object_,
-      when_ = when_ ?: throw missingRequiredFields(when_, "when_"),
-      fun_ = fun_,
-      return_ = return_,
+      `object` = `object`,
+      `when` = `when` ?: throw missingRequiredFields(`when`, "`when`"),
+      `fun` = `fun`,
+      `return` = `return`,
       enums = enums,
       unknownFields = buildUnknownFields()
     )
@@ -205,19 +205,19 @@ public class KeywordKotlin(
 
       override fun encodedSize(`value`: KeywordKotlin): Int {
         var size = value.unknownFields.size
-        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.object_)
-        size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.when_)
-        size += funAdapter.encodedSizeWithTag(3, value.fun_)
-        size += ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(4, value.return_)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.`object`)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.`when`)
+        size += funAdapter.encodedSizeWithTag(3, value.`fun`)
+        size += ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(4, value.`return`)
         size += KeywordKotlinEnum.ADAPTER.asRepeated().encodedSizeWithTag(5, value.enums)
         return size
       }
 
       override fun encode(writer: ProtoWriter, `value`: KeywordKotlin) {
-        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.object_)
-        ProtoAdapter.INT32.encodeWithTag(writer, 2, value.when_)
-        funAdapter.encodeWithTag(writer, 3, value.fun_)
-        ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 4, value.return_)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.`object`)
+        ProtoAdapter.INT32.encodeWithTag(writer, 2, value.`when`)
+        funAdapter.encodeWithTag(writer, 3, value.`fun`)
+        ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 4, value.`return`)
         KeywordKotlinEnum.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.enums)
         writer.writeBytes(value.unknownFields)
       }
@@ -225,24 +225,24 @@ public class KeywordKotlin(
       override fun encode(writer: ReverseProtoWriter, `value`: KeywordKotlin) {
         writer.writeBytes(value.unknownFields)
         KeywordKotlinEnum.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.enums)
-        ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 4, value.return_)
-        funAdapter.encodeWithTag(writer, 3, value.fun_)
-        ProtoAdapter.INT32.encodeWithTag(writer, 2, value.when_)
-        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.object_)
+        ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 4, value.`return`)
+        funAdapter.encodeWithTag(writer, 3, value.`fun`)
+        ProtoAdapter.INT32.encodeWithTag(writer, 2, value.`when`)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.`object`)
       }
 
       override fun decode(reader: ProtoReader): KeywordKotlin {
-        var object_: String? = null
-        var when_: Int? = null
-        val fun_ = mutableMapOf<String, String>()
-        val return_ = mutableListOf<Boolean>()
+        var `object`: String? = null
+        var `when`: Int? = null
+        val `fun` = mutableMapOf<String, String>()
+        val `return` = mutableListOf<Boolean>()
         val enums = mutableListOf<KeywordKotlinEnum>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> object_ = ProtoAdapter.STRING.decode(reader)
-            2 -> when_ = ProtoAdapter.INT32.decode(reader)
-            3 -> fun_.putAll(funAdapter.decode(reader))
-            4 -> return_.add(ProtoAdapter.BOOL.decode(reader))
+            1 -> `object` = ProtoAdapter.STRING.decode(reader)
+            2 -> `when` = ProtoAdapter.INT32.decode(reader)
+            3 -> `fun`.putAll(funAdapter.decode(reader))
+            4 -> `return`.add(ProtoAdapter.BOOL.decode(reader))
             5 -> try {
               KeywordKotlinEnum.ADAPTER.tryDecode(reader, enums)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
@@ -252,10 +252,10 @@ public class KeywordKotlin(
           }
         }
         return KeywordKotlin(
-          object_ = object_,
-          when_ = when_ ?: throw missingRequiredFields(when_, "when"),
-          fun_ = fun_,
-          return_ = return_,
+          `object` = `object`,
+          `when` = `when` ?: throw missingRequiredFields(`when`, "when"),
+          `fun` = `fun`,
+          `return` = `return`,
           enums = enums,
           unknownFields = unknownFields
         )
@@ -273,15 +273,15 @@ public class KeywordKotlin(
     override val `value`: Int,
   ) : WireEnum {
     @WireEnumConstant(declaredName = "object")
-    object_(0),
+    `object`(0),
     @WireEnumConstant(declaredName = "when")
-    when_(1),
+    `when`(1),
     @WireEnumConstant(declaredName = "fun")
-    fun_(2),
+    `fun`(2),
     @WireEnumConstant(declaredName = "return")
-    return_(3),
+    `return`(3),
     @WireEnumConstant(declaredName = "open")
-    open_(4),
+    `open`(4),
     @WireEnumConstant(declaredName = "name")
     name_(5),
     @WireEnumConstant(declaredName = "ordinal")
@@ -293,7 +293,7 @@ public class KeywordKotlin(
       public val ADAPTER: ProtoAdapter<KeywordKotlinEnum> = object : EnumAdapter<KeywordKotlinEnum>(
         KeywordKotlinEnum::class, 
         PROTO_2, 
-        KeywordKotlinEnum.object_
+        KeywordKotlinEnum.`object`
       ) {
         override fun fromValue(`value`: Int): KeywordKotlinEnum? =
             KeywordKotlinEnum.fromValue(value)
@@ -301,11 +301,11 @@ public class KeywordKotlin(
 
       @JvmStatic
       public fun fromValue(`value`: Int): KeywordKotlinEnum? = when (value) {
-        0 -> object_
-        1 -> when_
-        2 -> fun_
-        3 -> return_
-        4 -> open_
+        0 -> `object`
+        1 -> `when`
+        2 -> `fun`
+        3 -> `return`
+        4 -> `open`
         5 -> name_
         6 -> ordinal_
         else -> null

@@ -193,7 +193,7 @@ public class AllTypes(
   public val duration: Duration? = null,
   struct: Map<String, *>? = null,
   list_value: List<*>? = null,
-  value_: Any? = null,
+  `value`: Any? = null,
   null_value: Nothing? = null,
   @field:WireField(
     tag = 24,
@@ -454,7 +454,7 @@ public class AllTypes(
     declaredName = "value",
     schemaIndex = 21,
   )
-  public val value_: Any? = immutableCopyOfStruct("value_", value_)
+  public val `value`: Any? = immutableCopyOfStruct("`value`", `value`)
 
   @field:WireField(
     tag = 23,
@@ -1005,7 +1005,7 @@ public class AllTypes(
     if (duration != other.duration) return false
     if (struct != other.struct) return false
     if (list_value != other.list_value) return false
-    if (value_ != other.value_) return false
+    if (`value` != other.`value`) return false
     if (null_value != other.null_value) return false
     if (empty != other.empty) return false
     if (timestamp != other.timestamp) return false
@@ -1113,7 +1113,7 @@ public class AllTypes(
       result = result * 37 + (duration?.hashCode() ?: 0)
       result = result * 37 + (struct?.hashCode() ?: 0)
       result = result * 37 + (list_value?.hashCode() ?: 0)
-      result = result * 37 + (value_?.hashCode() ?: 0)
+      result = result * 37 + (`value`?.hashCode() ?: 0)
       result = result * 37 + (null_value?.hashCode() ?: 0)
       result = result * 37 + (empty?.hashCode() ?: 0)
       result = result * 37 + (timestamp?.hashCode() ?: 0)
@@ -1221,7 +1221,7 @@ public class AllTypes(
     if (duration != null) result += """duration=$duration"""
     if (struct != null) result += """struct=$struct"""
     if (list_value != null) result += """list_value=$list_value"""
-    if (value_ != null) result += """value_=$value_"""
+    if (`value` != null) result += """`value`=$`value`"""
     if (null_value != null) result += """null_value=$null_value"""
     if (empty != null) result += """empty=$empty"""
     if (timestamp != null) result += """timestamp=$timestamp"""
@@ -1328,7 +1328,7 @@ public class AllTypes(
     duration: Duration? = this.duration,
     struct: Map<String, *>? = this.struct,
     list_value: List<*>? = this.list_value,
-    value_: Any? = this.value_,
+    `value`: Any? = this.`value`,
     null_value: Nothing? = this.null_value,
     empty: Unit? = this.empty,
     timestamp: Instant? = this.timestamp,
@@ -1413,7 +1413,7 @@ public class AllTypes(
       proto3_kotlin_fixed32, proto3_kotlin_sfixed32, proto3_kotlin_int64, proto3_kotlin_uint64,
       proto3_kotlin_sint64, proto3_kotlin_fixed64, proto3_kotlin_sfixed64, proto3_kotlin_bool,
       proto3_kotlin_float, proto3_kotlin_double, proto3_kotlin_string, proto3_kotlin_bytes,
-      nested_enum, nested_message, any, duration, struct, list_value, value_, null_value, empty,
+      nested_enum, nested_message, any, duration, struct, list_value, `value`, null_value, empty,
       timestamp, opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64,
       opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double,
       opt_string, opt_bytes, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32,
@@ -1517,8 +1517,8 @@ public class AllTypes(
             value.struct)
         if (value.list_value != null) size += ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(21,
             value.list_value)
-        if (value.value_ != null) size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(22,
-            value.value_)
+        if (value.`value` != null) size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(22,
+            value.`value`)
         if (value.null_value != null) size += ProtoAdapter.STRUCT_NULL.encodedSizeWithTag(23,
             value.null_value)
         if (value.empty != null) size += ProtoAdapter.EMPTY.encodedSizeWithTag(24, value.empty)
@@ -1643,7 +1643,8 @@ public class AllTypes(
         if (value.struct != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 20, value.struct)
         if (value.list_value != null) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 21,
             value.list_value)
-        if (value.value_ != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 22, value.value_)
+        if (value.`value` != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 22,
+            value.`value`)
         if (value.null_value != null) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 23,
             value.null_value)
         if (value.empty != null) ProtoAdapter.EMPTY.encodeWithTag(writer, 24, value.empty)
@@ -1809,7 +1810,8 @@ public class AllTypes(
         if (value.empty != null) ProtoAdapter.EMPTY.encodeWithTag(writer, 24, value.empty)
         if (value.null_value != null) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 23,
             value.null_value)
-        if (value.value_ != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 22, value.value_)
+        if (value.`value` != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 22,
+            value.`value`)
         if (value.list_value != null) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 21,
             value.list_value)
         if (value.struct != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 20, value.struct)
@@ -1873,7 +1875,7 @@ public class AllTypes(
         var duration: Duration? = null
         var struct: Map<String, *>? = null
         var list_value: List<*>? = null
-        var value_: Any? = null
+        var `value`: Any? = null
         var null_value: Nothing? = null
         var empty: Unit? = null
         var timestamp: Instant? = null
@@ -1980,7 +1982,7 @@ public class AllTypes(
             19 -> duration = ProtoAdapter.DURATION.decode(reader)
             20 -> struct = ProtoAdapter.STRUCT_MAP.decode(reader)
             21 -> list_value = ProtoAdapter.STRUCT_LIST.decode(reader)
-            22 -> value_ = ProtoAdapter.STRUCT_VALUE.decode(reader)
+            22 -> `value` = ProtoAdapter.STRUCT_VALUE.decode(reader)
             23 -> try {
               null_value = ProtoAdapter.STRUCT_NULL.decode(reader)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
@@ -2222,7 +2224,7 @@ public class AllTypes(
           duration = duration,
           struct = struct,
           list_value = list_value,
-          value_ = value_,
+          `value` = `value`,
           null_value = null_value,
           empty = empty,
           timestamp = timestamp,
@@ -2312,7 +2314,7 @@ public class AllTypes(
         duration = value.duration?.let(ProtoAdapter.DURATION::redact),
         struct = value.struct?.let(ProtoAdapter.STRUCT_MAP::redact),
         list_value = value.list_value?.let(ProtoAdapter.STRUCT_LIST::redact),
-        value_ = value.value_?.let(ProtoAdapter.STRUCT_VALUE::redact),
+        `value` = value.`value`?.let(ProtoAdapter.STRUCT_VALUE::redact),
         empty = value.empty?.let(ProtoAdapter.EMPTY::redact),
         timestamp = value.timestamp?.let(ProtoAdapter.INSTANT::redact),
         rep_nested_message = value.rep_nested_message.redactElements(NestedMessage.ADAPTER),

@@ -326,7 +326,7 @@ public class FooBar(
       declaredName = "value",
       schemaIndex = 0,
     )
-    public val value_: FooBarBazEnum? = null,
+    public val `value`: FooBarBazEnum? = null,
     unknownFields: ByteString = ByteString.EMPTY,
   ) : Message<Nested, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -340,7 +340,7 @@ public class FooBar(
       if (other === this) return true
       if (other !is Nested) return false
       if (unknownFields != other.unknownFields) return false
-      if (value_ != other.value_) return false
+      if (`value` != other.`value`) return false
       return true
     }
 
@@ -348,7 +348,7 @@ public class FooBar(
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
-        result = result * 37 + (value_?.hashCode() ?: 0)
+        result = result * 37 + (`value`?.hashCode() ?: 0)
         super.hashCode = result
       }
       return result
@@ -356,12 +356,12 @@ public class FooBar(
 
     override fun toString(): String {
       val result = mutableListOf<String>()
-      if (value_ != null) result += """value_=$value_"""
+      if (`value` != null) result += """`value`=$`value`"""
       return result.joinToString(prefix = "Nested{", separator = ", ", postfix = "}")
     }
 
-    public fun copy(value_: FooBarBazEnum? = this.value_, unknownFields: ByteString =
-        this.unknownFields): Nested = Nested(value_, unknownFields)
+    public fun copy(`value`: FooBarBazEnum? = this.`value`, unknownFields: ByteString =
+        this.unknownFields): Nested = Nested(`value`, unknownFields)
 
     public companion object {
       @JvmField
@@ -375,26 +375,26 @@ public class FooBar(
       ) {
         override fun encodedSize(`value`: Nested): Int {
           var size = value.unknownFields.size
-          size += FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value_)
+          size += FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.`value`)
           return size
         }
 
         override fun encode(writer: ProtoWriter, `value`: Nested) {
-          FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value_)
+          FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.`value`)
           writer.writeBytes(value.unknownFields)
         }
 
         override fun encode(writer: ReverseProtoWriter, `value`: Nested) {
           writer.writeBytes(value.unknownFields)
-          FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value_)
+          FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.`value`)
         }
 
         override fun decode(reader: ProtoReader): Nested {
-          var value_: FooBarBazEnum? = null
+          var `value`: FooBarBazEnum? = null
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
               1 -> try {
-                value_ = FooBarBazEnum.ADAPTER.decode(reader)
+                `value` = FooBarBazEnum.ADAPTER.decode(reader)
               } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
                 reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
               }
@@ -402,7 +402,7 @@ public class FooBar(
             }
           }
           return Nested(
-            value_ = value_,
+            `value` = `value`,
             unknownFields = unknownFields
           )
         }

@@ -113,7 +113,7 @@ public class SimpleMessage(
     schemaIndex = 8,
   )
   @JvmField
-  public val package_: String? = null,
+  public val `package`: String? = null,
   /**
    * field with the name "result"
    */
@@ -169,7 +169,7 @@ public class SimpleMessage(
     builder.repeated_double = repeated_double
     builder.default_foreign_enum = default_foreign_enum
     builder.no_default_foreign_enum = no_default_foreign_enum
-    builder.package_ = package_
+    builder.`package` = `package`
     builder.result = result
     builder.other = other
     builder.o = o
@@ -189,7 +189,7 @@ public class SimpleMessage(
     if (repeated_double != other_.repeated_double) return false
     if (default_foreign_enum != other_.default_foreign_enum) return false
     if (no_default_foreign_enum != other_.no_default_foreign_enum) return false
-    if (package_ != other_.package_) return false
+    if (`package` != other_.`package`) return false
     if (result != other_.result) return false
     if (other != other_.other) return false
     if (o != other_.o) return false
@@ -208,7 +208,7 @@ public class SimpleMessage(
       result_ = result_ * 37 + repeated_double.hashCode()
       result_ = result_ * 37 + (default_foreign_enum?.hashCode() ?: 0)
       result_ = result_ * 37 + (no_default_foreign_enum?.hashCode() ?: 0)
-      result_ = result_ * 37 + (package_?.hashCode() ?: 0)
+      result_ = result_ * 37 + (`package`?.hashCode() ?: 0)
       result_ = result_ * 37 + (result?.hashCode() ?: 0)
       result_ = result_ * 37 + (other?.hashCode() ?: 0)
       result_ = result_ * 37 + (o?.hashCode() ?: 0)
@@ -228,7 +228,7 @@ public class SimpleMessage(
     if (default_foreign_enum != null) result_ += """default_foreign_enum=$default_foreign_enum"""
     if (no_default_foreign_enum != null) result_ +=
         """no_default_foreign_enum=$no_default_foreign_enum"""
-    if (package_ != null) result_ += """package_=${sanitize(package_)}"""
+    if (`package` != null) result_ += """`package`=${sanitize(`package`)}"""
     if (result != null) result_ += """result=${sanitize(result)}"""
     if (other != null) result_ += """other=${sanitize(other)}"""
     if (o != null) result_ += """o=${sanitize(o)}"""
@@ -244,14 +244,14 @@ public class SimpleMessage(
     repeated_double: List<Double> = this.repeated_double,
     default_foreign_enum: ForeignEnum? = this.default_foreign_enum,
     no_default_foreign_enum: ForeignEnum? = this.no_default_foreign_enum,
-    package_: String? = this.package_,
+    `package`: String? = this.`package`,
     result: String? = this.result,
     other: String? = this.other,
     o: String? = this.o,
     unknownFields: ByteString = this.unknownFields,
   ): SimpleMessage = SimpleMessage(optional_int32, optional_nested_msg, optional_external_msg,
       default_nested_enum, required_int32, repeated_double, default_foreign_enum,
-      no_default_foreign_enum, package_, result, other, o, unknownFields)
+      no_default_foreign_enum, `package`, result, other, o, unknownFields)
 
   public class Builder : Message.Builder<SimpleMessage, Builder>() {
     @JvmField
@@ -279,7 +279,7 @@ public class SimpleMessage(
     public var no_default_foreign_enum: ForeignEnum? = null
 
     @JvmField
-    public var package_: String? = null
+    public var `package`: String? = null
 
     @JvmField
     public var result: String? = null
@@ -357,8 +357,8 @@ public class SimpleMessage(
     /**
      * field with the same name as a Java keyword
      */
-    public fun package_(package_: String?): Builder {
-      this.package_ = package_
+    public fun `package`(`package`: String?): Builder {
+      this.`package` = `package`
       return this
     }
 
@@ -396,7 +396,7 @@ public class SimpleMessage(
       repeated_double = repeated_double,
       default_foreign_enum = default_foreign_enum,
       no_default_foreign_enum = no_default_foreign_enum,
-      package_ = package_,
+      `package` = `package`,
       result = result,
       other = other,
       o = o,
@@ -434,7 +434,7 @@ public class SimpleMessage(
         size += ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(6, value.repeated_double)
         size += ForeignEnum.ADAPTER.encodedSizeWithTag(7, value.default_foreign_enum)
         size += ForeignEnum.ADAPTER.encodedSizeWithTag(8, value.no_default_foreign_enum)
-        size += ProtoAdapter.STRING.encodedSizeWithTag(9, value.package_)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(9, value.`package`)
         size += ProtoAdapter.STRING.encodedSizeWithTag(10, value.result)
         size += ProtoAdapter.STRING.encodedSizeWithTag(11, value.other)
         size += ProtoAdapter.STRING.encodedSizeWithTag(12, value.o)
@@ -450,7 +450,7 @@ public class SimpleMessage(
         ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 6, value.repeated_double)
         ForeignEnum.ADAPTER.encodeWithTag(writer, 7, value.default_foreign_enum)
         ForeignEnum.ADAPTER.encodeWithTag(writer, 8, value.no_default_foreign_enum)
-        ProtoAdapter.STRING.encodeWithTag(writer, 9, value.package_)
+        ProtoAdapter.STRING.encodeWithTag(writer, 9, value.`package`)
         ProtoAdapter.STRING.encodeWithTag(writer, 10, value.result)
         ProtoAdapter.STRING.encodeWithTag(writer, 11, value.other)
         ProtoAdapter.STRING.encodeWithTag(writer, 12, value.o)
@@ -462,7 +462,7 @@ public class SimpleMessage(
         ProtoAdapter.STRING.encodeWithTag(writer, 12, value.o)
         ProtoAdapter.STRING.encodeWithTag(writer, 11, value.other)
         ProtoAdapter.STRING.encodeWithTag(writer, 10, value.result)
-        ProtoAdapter.STRING.encodeWithTag(writer, 9, value.package_)
+        ProtoAdapter.STRING.encodeWithTag(writer, 9, value.`package`)
         ForeignEnum.ADAPTER.encodeWithTag(writer, 8, value.no_default_foreign_enum)
         ForeignEnum.ADAPTER.encodeWithTag(writer, 7, value.default_foreign_enum)
         ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 6, value.repeated_double)
@@ -482,7 +482,7 @@ public class SimpleMessage(
         val repeated_double = mutableListOf<Double>()
         var default_foreign_enum: ForeignEnum? = null
         var no_default_foreign_enum: ForeignEnum? = null
-        var package_: String? = null
+        var `package`: String? = null
         var result: String? = null
         var other: String? = null
         var o: String? = null
@@ -508,7 +508,7 @@ public class SimpleMessage(
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
-            9 -> package_ = ProtoAdapter.STRING.decode(reader)
+            9 -> `package` = ProtoAdapter.STRING.decode(reader)
             10 -> result = ProtoAdapter.STRING.decode(reader)
             11 -> other = ProtoAdapter.STRING.decode(reader)
             12 -> o = ProtoAdapter.STRING.decode(reader)
@@ -525,7 +525,7 @@ public class SimpleMessage(
           repeated_double = repeated_double,
           default_foreign_enum = default_foreign_enum,
           no_default_foreign_enum = no_default_foreign_enum,
-          package_ = package_,
+          `package` = `package`,
           result = result,
           other = other,
           o = o,
