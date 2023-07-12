@@ -70,12 +70,14 @@ class BindableAdapterTest {
       package test
 
       import com.squareup.wire.kotlin.grpcserver.FlowAdapter
+      import kotlin.coroutines.CoroutineContext
       import kotlinx.coroutines.flow.Flow
 
       public class TestServiceWireGrpc {
         public class BindableAdapter(
+          context: CoroutineContext = kotlin.coroutines.EmptyCoroutineContext,
           private val service: () -> TestServiceServer,
-        ) : TestServiceWireGrpc.TestServiceImplBase() {
+        ) : TestServiceWireGrpc.TestServiceImplBase(context) {
           override fun TestRPC(request: Test): Flow<Test> = FlowAdapter.serverStream(context, request,
               service()::TestRPC)
         }
@@ -105,12 +107,14 @@ class BindableAdapterTest {
       package test
 
       import com.squareup.wire.kotlin.grpcserver.FlowAdapter
+      import kotlin.coroutines.CoroutineContext
       import kotlinx.coroutines.flow.Flow
 
       public class TestServiceWireGrpc {
         public class BindableAdapter(
+          context: CoroutineContext = kotlin.coroutines.EmptyCoroutineContext,
           private val service: () -> TestServiceServer,
-        ) : TestServiceWireGrpc.TestServiceImplBase() {
+        ) : TestServiceWireGrpc.TestServiceImplBase(context) {
           override suspend fun TestRPC(request: Flow<Test>): Test = FlowAdapter.clientStream(context,
               request, service()::TestRPC)
         }
@@ -140,12 +144,14 @@ class BindableAdapterTest {
       package test
 
       import com.squareup.wire.kotlin.grpcserver.FlowAdapter
+      import kotlin.coroutines.CoroutineContext
       import kotlinx.coroutines.flow.Flow
 
       public class TestServiceWireGrpc {
         public class BindableAdapter(
+          context: CoroutineContext = kotlin.coroutines.EmptyCoroutineContext,
           private val service: () -> TestServiceServer,
-        ) : TestServiceWireGrpc.TestServiceImplBase() {
+        ) : TestServiceWireGrpc.TestServiceImplBase(context) {
           override fun TestRPC(request: Flow<Test>): Flow<Test> = FlowAdapter.bidiStream(context, request,
               service()::TestRPC)
         }
@@ -179,12 +185,14 @@ class BindableAdapterTest {
       package test
 
       import com.squareup.wire.kotlin.grpcserver.FlowAdapter
+      import kotlin.coroutines.CoroutineContext
       import kotlinx.coroutines.flow.Flow
 
       public class TestServiceWireGrpc {
         public class BindableAdapter(
+          context: CoroutineContext = kotlin.coroutines.EmptyCoroutineContext,
           private val TestRPC: () -> TestServiceTestRPCServer,
-        ) : TestServiceWireGrpc.TestServiceImplBase() {
+        ) : TestServiceWireGrpc.TestServiceImplBase(context) {
           override fun TestRPC(request: Flow<Test>): Flow<Test> = FlowAdapter.bidiStream(context, request,
               TestRPC()::TestRPC)
         }

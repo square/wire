@@ -128,8 +128,9 @@ public object MyServiceWireGrpc {
   }
 
   public class BindableAdapter(
+    context: CoroutineContext = kotlin.coroutines.EmptyCoroutineContext,
     private val service: () -> MyServiceServer,
-  ) : MyServiceImplBase() {
+  ) : MyServiceImplBase(context) {
     override suspend fun doSomething(request: Unit): Unit = service().doSomething(request)
   }
 
