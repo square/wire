@@ -1074,6 +1074,7 @@ class ProtoParserTest {
           ),
           oneOfs = listOf(
             OneOfElement(
+              location = location.at(3, 3),
               name = "page_info",
               fields = listOf(
                 FieldElement(
@@ -1128,6 +1129,7 @@ class ProtoParserTest {
           ),
           oneOfs = listOf(
             OneOfElement(
+              location = location.at(3, 3),
               name = "page_info",
               fields = listOf(
                 FieldElement(
@@ -3103,6 +3105,7 @@ class ProtoParserTest {
           ),
           oneOfs = listOf(
             OneOfElement(
+              location = location.at(3, 3),
               name = "page_info",
               fields = listOf(
                 FieldElement(

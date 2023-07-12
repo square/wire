@@ -34,7 +34,7 @@ class RootTest {
 
     val location = Location.get("sample/src/main/proto", "squareup/dinosaurs/dinosaur.proto")
     val roots = location.roots(fs)
-    assertThat(roots.size == 1)
+    assertThat(roots.size == 1).isTrue()
 
     // Standalone files resolve because we have a base directory.
     assertThat(roots[0].resolve("squareup/dinosaurs/dinosaur.proto")).isEqualTo(roots[0])

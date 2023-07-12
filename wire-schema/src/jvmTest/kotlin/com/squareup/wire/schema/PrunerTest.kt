@@ -1075,6 +1075,37 @@ class PrunerTest {
   }
 
   @Test
+  fun excludeOneOfOptions() {
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
+        """
+             |syntax = "proto3";
+             |import "google/protobuf/descriptor.proto";
+             |extend google.protobuf.OneofOptions {
+             |  string my_oneof_option = 22101;
+             |}
+             |message Message {
+             |  oneof choice {
+             |    option (my_oneof_option) = "Well done";
+             |
+             |    string one = 1;
+             |    string two = 2;
+             |  }
+             |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .prune("google.protobuf.OneofOptions")
+        .build(),
+    )
+    val oneOf = (pruned.getType("Message") as MessageType).oneOfs[0]
+    assertThat(oneOf.options.map).isEmpty()
+  }
+
+  @Test
   fun excludeRepeatedOptions() {
     val schema = buildSchema {
       add(

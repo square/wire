@@ -154,7 +154,7 @@ class ProtoParser internal constructor(
       }
 
       label == "oneof" && context.permitsOneOf() -> {
-        readOneOf(documentation)
+        readOneOf(location, documentation)
       }
 
       label == "extensions" && context.permitsExtensions() -> {
@@ -408,7 +408,7 @@ class ProtoParser internal constructor(
     return result
   }
 
-  private fun readOneOf(documentation: String): OneOfElement {
+  private fun readOneOf(location: Location, documentation: String): OneOfElement {
     val name = reader.readName()
     val fields = mutableListOf<FieldElement>()
     val groups = mutableListOf<GroupElement>()
@@ -436,6 +436,7 @@ class ProtoParser internal constructor(
       fields = fields,
       groups = groups,
       options = options,
+      location = location,
     )
   }
 

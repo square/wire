@@ -491,17 +491,21 @@ public final class com/squareup/wire/schema/MessageType$Companion {
 
 public final class com/squareup/wire/schema/OneOf {
 	public static final field Companion Lcom/squareup/wire/schema/OneOf$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/Options;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lcom/squareup/wire/schema/OneOf;
-	public static synthetic fun copy$default (Lcom/squareup/wire/schema/OneOf;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/OneOf;
+	public final fun component4 ()Lcom/squareup/wire/schema/Location;
+	public final fun component5 ()Lcom/squareup/wire/schema/Options;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/Options;)Lcom/squareup/wire/schema/OneOf;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/OneOf;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/Options;ILjava/lang/Object;)Lcom/squareup/wire/schema/OneOf;
 	public fun equals (Ljava/lang/Object;)Z
 	public static final fun fromElements (Ljava/util/List;Ljava/util/List;)Ljava/util/List;
 	public final fun getDocumentation ()Ljava/lang/String;
 	public final fun getFields ()Ljava/util/List;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
 	public final fun getName ()Ljava/lang/String;
+	public final fun getOptions ()Lcom/squareup/wire/schema/Options;
 	public fun hashCode ()I
 	public final fun link (Lcom/squareup/wire/schema/Linker;)V
 	public final fun linkOptions (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;Z)V
@@ -1270,19 +1274,21 @@ public final class com/squareup/wire/schema/internal/parser/MessageElement : com
 }
 
 public final class com/squareup/wire/schema/internal/parser/OneOfElement {
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/schema/Location;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/schema/Location;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/util/List;
 	public final fun component4 ()Ljava/util/List;
 	public final fun component5 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;)Lcom/squareup/wire/schema/internal/parser/OneOfElement;
-	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/OneOfElement;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/OneOfElement;
+	public final fun component6 ()Lcom/squareup/wire/schema/Location;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/schema/Location;)Lcom/squareup/wire/schema/internal/parser/OneOfElement;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/internal/parser/OneOfElement;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/schema/Location;ILjava/lang/Object;)Lcom/squareup/wire/schema/internal/parser/OneOfElement;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDocumentation ()Ljava/lang/String;
 	public final fun getFields ()Ljava/util/List;
 	public final fun getGroups ()Ljava/util/List;
+	public final fun getLocation ()Lcom/squareup/wire/schema/Location;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getOptions ()Ljava/util/List;
 	public fun hashCode ()I

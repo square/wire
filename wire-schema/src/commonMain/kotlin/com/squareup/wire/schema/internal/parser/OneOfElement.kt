@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema.internal.parser
 
+import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.appendDocumentation
 import com.squareup.wire.schema.internal.appendIndented
 
@@ -24,6 +25,7 @@ data class OneOfElement(
   val fields: List<FieldElement> = emptyList(),
   val groups: List<GroupElement> = emptyList(),
   val options: List<OptionElement> = emptyList(),
+  val location: Location,
 ) {
   fun toSchema() = buildString {
     appendDocumentation(documentation)
