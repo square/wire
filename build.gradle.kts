@@ -57,7 +57,10 @@ allprojects {
 }
 
 subprojects {
-  if (name != "wire-golden-files") {
+  if (name != "wire-golden-files" &&
+        name != "wire-tests-proto3-swift" &&
+        name != "wire-tests-swift"
+  ) {
     apply(plugin = "com.diffplug.spotless")
     configure<SpotlessExtension> {
       val licenseHeaderFile = rootProject.file("gradle/license-header.txt")
@@ -66,9 +69,7 @@ subprojects {
         // Spotless would be checking generated files by Gradle (type accessors) and was failing the build because of
         // this so ignore it. Probably related with how tests are run for the wire-gradle-plugin module.
         targetExclude("**/.gradle/**", "**/build/generated/source/wire/**")
-        ktlint(libs.versions.ktlint.get()).editorConfigOverride(
-          mapOf("ktlint_standard_filename" to "disabled"),
-        )
+        ktlint(libs.versions.ktlint.get()).editorConfigOverride(mapOf("ktlint_standard_filename" to "disabled"))
         trimTrailingWhitespace()
         endWithNewline()
         toggleOffOn()
@@ -86,6 +87,11 @@ subprojects {
         toggleOffOn()
         lineEndings = LineEnding.UNIX
         licenseHeaderFile(licenseHeaderFile)
+      }
+      format("Swift") {
+        target("**/*.swift")
+        lineEndings = LineEnding.UNIX
+        licenseHeaderFile(licenseHeaderFile, "(@propertyWrapper|public |import |enum )")
       }
     }
   }
@@ -127,14 +133,13 @@ subprojects {
       showStandardStreams = false
     }
   }
-
   if (!(
-      project.name.endsWith("-swift") ||
-        project.name.endsWith("-bom") ||
-        project.name.endsWith("-benchmarks") ||
-        project.name.contains("golden") ||
-        project.name.contains("protoc") ||
-        project.displayName.contains("sample")
+       project.name.endsWith("-swift") ||
+         project.name.endsWith("-bom") ||
+         project.name.endsWith("-benchmarks") ||
+         project.name.contains("golden") ||
+         project.name.contains("protoc") ||
+         project.displayName.contains("sample")
       )
   ) {
     apply(plugin = "checkstyle")
