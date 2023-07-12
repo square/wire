@@ -1,5 +1,6 @@
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinJvm
+import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
 plugins {
@@ -67,7 +68,7 @@ kotlin {
 if (project.rootProject.name == "wire") {
   configure<MavenPublishBaseExtension> {
     configure(
-      KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
+      KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
     )
   }
 }
