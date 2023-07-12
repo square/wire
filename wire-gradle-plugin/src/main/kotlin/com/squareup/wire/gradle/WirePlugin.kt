@@ -28,7 +28,6 @@ import java.lang.reflect.Array as JavaArray
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.UnknownConfigurationException
 import org.gradle.api.internal.file.FileOrUriNotationConverter
@@ -284,34 +283,30 @@ class WirePlugin : Plugin<Project> {
         val sourceSets =
           project.extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets
         val sourceSet = (sourceSets.getByName("commonMain") as DefaultKotlinSourceSet)
-        project.configurations.getByName(sourceSet.apiConfigurationName).dependencies.add(
-          runtimeDependency,
-        )
+        project.dependencies.add(sourceSet.apiConfigurationName, runtimeDependency)
       }
 
       isJsOnly -> {
         val sourceSets =
           project.extensions.getByType(KotlinJsProjectExtension::class.java).sourceSets
         val sourceSet = (sourceSets.getByName("main") as DefaultKotlinSourceSet)
-        project.configurations.getByName(sourceSet.apiConfigurationName).dependencies.add(
-          runtimeDependency,
-        )
+        project.dependencies.add(sourceSet.apiConfigurationName, runtimeDependency)
       }
 
       else -> {
         try {
-          project.configurations.getByName("api").dependencies.add(runtimeDependency)
+          project.dependencies.add("api", runtimeDependency)
         } catch (_: UnknownConfigurationException) {
           // No `api` configuration on Java applications.
-          project.configurations.getByName("implementation").dependencies.add(runtimeDependency)
+          project.dependencies.add("implementation", runtimeDependency)
         }
       }
     }
   }
 
-  private fun wireRuntimeDependency(isInternalBuild: Boolean): Dependency {
+  private fun wireRuntimeDependency(isInternalBuild: Boolean): Any {
     return if (isInternalBuild) {
-      project.dependencies.project(mapOf("path" to ":wire-runtime"))
+      project.project(":wire-runtime")
     } else {
       project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION")
     }
