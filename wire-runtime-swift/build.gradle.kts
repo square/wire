@@ -152,6 +152,7 @@ configure<SpotlessExtension> {
   format("Swift") {
     targetExclude(
       "src/main/swift/wellknowntypes/*.swift",
+      "src/test/swift/gen/*.swift",
       "src/test/swift/sample/*.swift",
     )
   }
