@@ -137,8 +137,6 @@ class WirePlugin : Plugin<Project> {
         protoSourceInput.addPaths(project, defaultSourceFolders(source))
       }
 
-      val inputFiles = project.layout.files(protoSourceInput.inputFiles, protoPathInput.inputFiles)
-
       val projectDependencies =
         (protoSourceInput.dependencies + protoPathInput.dependencies).filterIsInstance<ProjectDependency>()
 
@@ -219,8 +217,6 @@ class WirePlugin : Plugin<Project> {
         task.permitPackageCycles.set(extension.permitPackageCycles)
         task.dryRun.set(extension.dryRun)
         task.rejectUnusedRootsOrPrunes.set(extension.rejectUnusedRootsOrPrunes)
-
-        task.inputFiles.setFrom(inputFiles)
 
         task.projectDirProperty.set(project.layout.projectDirectory)
         task.buildDirProperty.set(project.layout.buildDirectory)

@@ -45,9 +45,6 @@ internal class WireInput(var configuration: Configuration) {
   val dependencies: DependencySet
     get() = configuration.dependencies
 
-  // Deferred dependency evaluation.
-  val inputFiles = mutableSetOf<File>()
-
   fun addPaths(project: Project, paths: Set<String>) {
     for (path in paths) {
       val dependency = resolveDependency(project, path)
@@ -71,9 +68,6 @@ internal class WireInput(var configuration: Configuration) {
 
   fun addTrees(project: Project, trees: Set<SourceDirectorySet>) {
     for (tree in trees) {
-      tree.srcDirs.forEach {
-        inputFiles.add(it)
-      }
       val dependency = project.dependencies.create(tree)
       configuration.dependencies.add(dependency)
     }
@@ -88,7 +82,6 @@ internal class WireInput(var configuration: Configuration) {
         if (converted is File) {
           val file =
             if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
-          if (!dependency.mayBeProject) inputFiles.add(file)
 
           return when {
             file.isDirectory -> project.dependencies.create(project.files(dependency))

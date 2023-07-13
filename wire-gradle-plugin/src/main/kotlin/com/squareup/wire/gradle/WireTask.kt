@@ -91,10 +91,6 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
   val permitPackageCycles: Property<Boolean> = objects.property(Boolean::class.java)
     .convention(false)
 
-  @get:InputFiles
-  @get:PathSensitive(PathSensitivity.RELATIVE)
-  abstract val inputFiles: ConfigurableFileCollection
-
   @get:Internal
   abstract val projectDirProperty: DirectoryProperty
 
@@ -144,12 +140,6 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
       logger.debug("prunes: ${prunes.orNull}")
       logger.debug("rules: ${rules.orNull}")
       logger.debug("targets: ${targets.orNull}")
-    }
-
-    inputFiles.forEach { fileObj ->
-      check(fileObj.exists()) {
-        "Invalid path string: \"${fileObj.path}\". Path does not exist."
-      }
     }
 
     val projectDirAsFile = projectDir.asFile

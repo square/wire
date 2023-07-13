@@ -193,7 +193,6 @@ public abstract class com/squareup/wire/gradle/WireTask : org/gradle/api/tasks/S
 	public abstract fun getBuildDirProperty ()Lorg/gradle/api/file/DirectoryProperty;
 	public final fun getDryRun ()Lorg/gradle/api/provider/Property;
 	public abstract fun getEventListenerFactories ()Lorg/gradle/api/provider/ListProperty;
-	public abstract fun getInputFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	public abstract fun getMoves ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getOnlyVersion ()Lorg/gradle/api/provider/Property;
 	public abstract fun getOutputDirectories ()Lorg/gradle/api/file/ConfigurableFileCollection;
