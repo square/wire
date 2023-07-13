@@ -1,3 +1,5 @@
+import com.diffplug.gradle.spotless.SpotlessExtension
+
 plugins {
   id("swift-library")
   id("xctest")
@@ -145,3 +147,12 @@ fun List<String>.extractDeveloperDir(): String? = this
   }
   ?.removePrefix("-F")
   ?.removeSuffix("/Library/Frameworks")
+
+configure<SpotlessExtension> {
+  format("Swift") {
+    targetExclude(
+      "src/main/swift/wellknowntypes/*.swift",
+      "src/test/swift/sample/*.swift",
+    )
+  }
+}
