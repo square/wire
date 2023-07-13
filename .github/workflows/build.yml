@@ -41,16 +41,16 @@ jobs:
 
       - name: Check test files
         run: |
-          ./gradlew clean generateTests --stacktrace
+          ./gradlew clean generateTests --stacktrace --warning-mode all
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
       - name: Test Native and JS
         run: |
-          ./gradlew -Dkjs=true -Dknative=true -Pswift=false samples:native:build samples:js:build --stacktrace
+          ./gradlew -Dkjs=true -Dknative=true -Pswift=false samples:native:build samples:js:build --stacktrace --warning-mode all
 
       - name: Test
         run: |
-          ./gradlew -Dkjs=false -Dknative=false -Pswift=false build --stacktrace -x samples:native:build -x samples:js:build
+          ./gradlew -Dkjs=false -Dknative=false -Pswift=false build --stacktrace --warning-mode all -x samples:native:build -x samples:js:build
 
   multiplatform:
     runs-on: macos-latest
@@ -75,7 +75,7 @@ jobs:
 
       - name: Check test files
         run: |
-          ./gradlew clean generateTests --stacktrace
+          ./gradlew clean generateTests --stacktrace --warning-mode all
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
       - name: Install Chrome
@@ -83,7 +83,7 @@ jobs:
 
       - name: Test
         run: |
-          ./gradlew -Pswift=false build --stacktrace
+          ./gradlew -Pswift=false build --stacktrace --warning-mode all
 
   windows:
     runs-on: windows-latest
@@ -107,7 +107,7 @@ jobs:
 
       - name: Check test files
         run: |
-          ./gradlew clean generateTests --stacktrace
+          ./gradlew clean generateTests --stacktrace --warning-mode all
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
         shell: bash
 
@@ -116,7 +116,7 @@ jobs:
 
       - name: Test
         run: |
-          ./gradlew -Pswift=false build --stacktrace
+          ./gradlew -Pswift=false build --stacktrace --warning-mode all
         shell: bash
 
   swift:
@@ -143,7 +143,7 @@ jobs:
         # This builds the wire-swift-runtime, verifies that generated protos match what's currently
         # checked into the repo both for the runtime itself and for its tests, and runs the tests.
         run: |
-          ./gradlew :wire-runtime-swift:build --stacktrace
+          ./gradlew :wire-runtime-swift:build --stacktrace --warning-mode all
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nGenerated files changed. Did you run ./gradlew generateSwiftProtos?"; exit 1; fi
 
       - name: Generate Swift from golden proto files
@@ -152,9 +152,9 @@ jobs:
         # wire-tests-swift build but should still be reviewed manually. Finally, run the associated
         # unit tests.
         run: |
-          ./gradlew generateSwiftTests --stacktrace
+          ./gradlew generateSwiftTests --stacktrace --warning-mode all
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nGenerated files changed. Did you run ./gradlew generateSwiftProtos and generateSwiftTests?"; exit 1; fi
-          ./gradlew :wire-tests-swift:build --stacktrace
+          ./gradlew :wire-tests-swift:build --stacktrace --warning-mode all
 
       - name: Test Swift Package Manager
         run: swift test
@@ -181,7 +181,7 @@ jobs:
 
       - name: Upload Artifacts
         run: |
-          ./gradlew clean publish --stacktrace --no-parallel --no-daemon
+          ./gradlew clean publish --stacktrace --warning-mode all --no-parallel --no-daemon
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
@@ -189,7 +189,7 @@ jobs:
 
       - name: Plublish plugin to Gradle portal
         run: |
-          ./gradlew publishPluginToGradlePortalIfRelease --stacktrace
+          ./gradlew publishPluginToGradlePortalIfRelease --stacktrace --warning-mode all
         env:
           GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
           GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
