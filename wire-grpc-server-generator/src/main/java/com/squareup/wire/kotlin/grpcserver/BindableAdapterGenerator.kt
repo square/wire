@@ -58,7 +58,8 @@ object BindableAdapterGenerator {
                     type = ExecutorService::class,
                   )
                 } else {
-                  // suspending calls optionally allow for adding to the CoroutineContext
+                  // For suspending calls, optionally allow for adding to the CoroutineContext
+                  // via a context parameter.
                   this.addParameter(
                     ParameterSpec.builder("context", CoroutineContext::class)
                       .defaultValue("kotlin.coroutines.EmptyCoroutineContext")
