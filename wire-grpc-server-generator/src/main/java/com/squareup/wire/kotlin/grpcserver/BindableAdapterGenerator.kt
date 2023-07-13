@@ -62,9 +62,10 @@ object BindableAdapterGenerator {
                   // via a context parameter.
                   this.addParameter(
                     ParameterSpec.builder("context", CoroutineContext::class)
-                      .defaultValue("kotlin.coroutines.EmptyCoroutineContext")
+                      .defaultValue("%T", ClassName("kotlin.coroutines", "EmptyCoroutineContext"))
                       .build(),
                   )
+                  this.addAnnotation(JvmOverloads::class)
                 }
               }
               .apply { addRpcConstructorParameters(generator, this, service, options) }
