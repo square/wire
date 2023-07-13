@@ -1017,8 +1017,6 @@ class SwiftGenerator private constructor(
       }
       val default = field.default
       if (default != null) {
-        val typeName = type.typeName
-        val fieldName = field.name
         val defaultValue = defaultFieldInitializer(field.type!!, default)
         property.addAttribute(AttributeSpec.builder(defaulted).addArgument("defaultValue: $defaultValue").build())
       }
