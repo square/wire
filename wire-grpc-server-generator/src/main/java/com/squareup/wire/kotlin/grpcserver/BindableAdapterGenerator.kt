@@ -20,12 +20,14 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.LambdaTypeName
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.kotlin.grpcserver.ImplBaseGenerator.addImplBaseRpcSignature
 import com.squareup.wire.schema.Service
 import java.util.concurrent.ExecutorService
+import kotlin.coroutines.CoroutineContext
 
 object BindableAdapterGenerator {
 
@@ -55,6 +57,15 @@ object BindableAdapterGenerator {
                     name = "streamExecutor",
                     type = ExecutorService::class,
                   )
+                } else {
+                  // For suspending calls, optionally allow for adding to the CoroutineContext
+                  // via a context parameter.
+                  this.addParameter(
+                    ParameterSpec.builder("context", CoroutineContext::class)
+                      .defaultValue("%T", ClassName("kotlin.coroutines", "EmptyCoroutineContext"))
+                      .build(),
+                  )
+                  this.addAnnotation(JvmOverloads::class)
                 }
               }
               .apply { addRpcConstructorParameters(generator, this, service, options) }
@@ -66,6 +77,12 @@ object BindableAdapterGenerator {
                 PropertySpec.builder("streamExecutor", ExecutorService::class)
                   .addModifiers(KModifier.PRIVATE)
                   .initializer("streamExecutor")
+                  .build(),
+              )
+            } else {
+              superclassConstructorParameters.add(
+                CodeBlock.builder()
+                  .add("context")
                   .build(),
               )
             }
