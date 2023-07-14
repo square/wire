@@ -15,13 +15,14 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.internal.Serializable
 import kotlin.jvm.JvmField
 import kotlin.jvm.Synchronized
 
 class GrpcStatus private constructor(
   val name: String,
   val code: Int,
-) {
+) : Serializable {
   companion object {
     private val INSTANCES = mutableMapOf<Int, GrpcStatus>()
 
