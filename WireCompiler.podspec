@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.osx.deployment_target  = '10.15'
 
   s.prepare_command = <<-CMD
-    curl https://repo.maven.apache.org/maven2/com/squareup/wire/wire-compiler/#{version}/wire-compiler-#{version}-jar-with-dependencies.jar --output compiler.jar
+    curl -L #{get_maven_host}/com/squareup/wire/wire-compiler/#{version}/wire-compiler-#{version}-jar-with-dependencies.jar --output compiler.jar
   CMD
 
   s.preserve_paths = 'compiler.jar'
