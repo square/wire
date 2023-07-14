@@ -19,6 +19,9 @@ def get_version
   raise error_message
 end
 
+def get_maven_host
+  return ENV['POD_MAVEN_HOST'] || 'https://repo.maven.apache.org/maven2'
+end
 
 private def git_root
   `git rev-parse --show-toplevel`.strip
