@@ -1,14 +1,29 @@
+/*
+ * Copyright (C) 2023 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.squareup.wire
 
 import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
 import com.squareup.wire.proto2.kotlin.Getters
-import com.squareup.wire.proto2.person.kotlin.Person.PhoneNumber
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 import com.squareup.wire.proto2.person.java.Person as JavaPerson
 import com.squareup.wire.proto2.person.javainteropkotlin.Person as JavaInteropKotlinPerson
 import com.squareup.wire.proto2.person.kotlin.Person as KotlinPerson
+import com.squareup.wire.proto2.person.kotlin.Person.PhoneNumber
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
 class MoshiPersonTest {
   /**
@@ -56,7 +71,7 @@ class MoshiPersonTest {
         |  },
         |  "is_canadian": true
         |}
-        """.trimMargin()
+        """.trimMargin(),
       )
     assertThat(personWithName)
       .isEqualTo(
@@ -68,7 +83,7 @@ class MoshiPersonTest {
           favorite_numbers = listOf(1, 2, 3),
           area_numbers = mapOf(519 to "555-5555"),
           is_canadian = true,
-        )
+        ),
       )
   }
 
@@ -84,7 +99,7 @@ class MoshiPersonTest {
           favorite_numbers = listOf(1, 2, 3),
           area_numbers = mapOf(519 to "555-5555"),
           is_canadian = true,
-        )
+        ),
       )
     assertJsonEquals(
       """
@@ -103,7 +118,7 @@ class MoshiPersonTest {
       |  "is_canadian": true
       |}
       """.trimMargin(),
-      json
+      json,
     )
   }
 
