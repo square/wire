@@ -60,7 +60,7 @@ public final class com/squareup/wire/GrpcMethod {
 	public final fun getResponseAdapter ()Lcom/squareup/wire/ProtoAdapter;
 }
 
-public final class com/squareup/wire/GrpcStatus {
+public final class com/squareup/wire/GrpcStatus : java/io/Serializable {
 	public static final field ABORTED Lcom/squareup/wire/GrpcStatus;
 	public static final field ALREADY_EXISTS Lcom/squareup/wire/GrpcStatus;
 	public static final field CANCELLED Lcom/squareup/wire/GrpcStatus;
