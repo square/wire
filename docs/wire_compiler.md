@@ -532,18 +532,21 @@ configuration. Booleans and enums are shown with their default behavior.
 ```groovy
 wire {
   custom {
-   // The name of a Java class to generate code with. This class must:
-   //  * be in the buildscript dependencies for this Gradle project
-   //  * be a public class
-   //  * have a public no-arguments constructor
-   //  * implement the com.squareup.wire.schema.SchemaHandler.Factory interface
-   schemaHandlerFactoryClass = "com.example.MyCustomHandlerFactory"
+    // The name of a Java class to generate code with. This class must:
+    //  * be in the buildscript dependencies for this Gradle project
+    //  * be a public class
+    //  * have a public no-arguments constructor
+    //  * implement the com.squareup.wire.schema.SchemaHandler.Factory interface
+    schemaHandlerFactoryClass = "com.example.MyCustomHandlerFactory"
 
-   // These options work the same as the java and kotlin targets above.
-   includes = ['com.example.pizza.*']
-   excludes = ['com.example.sales.*']
-   exclusive = true
-   out "${buildDir}/custom"
+    // These options work the same as the java and kotlin targets above.
+    includes = ['com.example.pizza.*']
+    excludes = ['com.example.sales.*']
+    exclusive = true
+    out "${buildDir}/custom"
+
+    // Custom payload which can be passed to the `SchemaHandler.Factory`.
+    options = [a: "one", b: "two", c: "three"]
   }
 }
 ```

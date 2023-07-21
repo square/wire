@@ -1,6 +1,32 @@
 Change Log
 ==========
 
+Version 4.8.0
+-------------
+
+_2023-07-21_
+
+* Fix: JSON to Kotlin deserialization is now _really_ bullet-proofed against
+  `Class.getDeclaredFields` random ordering.
+* Fix: proto3 types (`Duration`, `Struct`, etc) are now supported when doing dynamic serialization.
+* Fix: `GrpcStatus` is now serializable which enables `GrpcException` serialization.
+* New: `GrpcClient` is now abstract. You can customize how network calls are implemented.
+* New: You can now pass an [event listener][event_listener] to receive metric events.
+* New: New option for the Wire Gradle plugin. `rejectUnusedRootsOrPrunes = true` will fail the build if
+  any roots or prunes are not used when refactoring the schema. This can help discover incorrect
+  configurations early and avoid mis-expectations about the built schema.
+* New: `OneOf`'s options are now loaded to the schema.
+* New: Wire will now fail if it detects a type name collision which can happen if a same file is loaded from different paths.
+* New: `wire-schema-tests` is now multiplatform.
+* New: `SchemaHandler.Factory` can now receive payload set within the Wire Gradle plugin. Implement
+  the method `fun create(includes, excludes, exclusive, outDirectory. options): SchemaHandler` to receive it.
+* New: custom targets can now pass custom payloads to their `SchemaHandler.Factory`. The `custom {}`
+  takes a map<string, string> to its new field `options`.
+* Swift: Default values are now generated via a `Defaulted` property wrapper.
+* Swift: Fully-qualify `Foundation.Data` to prevent name collisions with messages named `Data`.
+* Move: Some types have been moved from `wire-compiler` to `wire-run`: `WireRun`, `Target`, `DirectedAcyclicGraph`, `PartitionedSchema`.
+* Dependency: KotlinPoet has been bumped to `1.14.2`.
+
 Version 4.7.2
 -------------
 
@@ -1166,6 +1192,7 @@ Initial version.
  [custom-handlers-recipes]: https://github.com/square/wire/tree/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
  [javapoet]: https://github.com/square/javapoet
  [jimfs]: https://github.com/google/jimfs
+ [event_listener]: https://github.com/square/wire/blob/3e300c492a74e80260581e3aee624d9cf3e5b1f8/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/EventListener.kt#L105-L111
  [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
  [okio_3_0_0]: https://square.github.io/okio/changelog/#version-300
  [okio_3_0_0_a_3]: https://square.github.io/okio/changelog/#version-300-alpha3
