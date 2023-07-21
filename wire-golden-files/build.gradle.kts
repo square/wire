@@ -4,7 +4,27 @@ plugins {
   id("com.squareup.wire")
 }
 
+dependencies {
+  implementation(projects.wireGrpcClient)
+}
+
 wire {
+  kotlin {
+    includes = listOf("squareup.wire.service.*")
+    out = "src/main/kotlin"
+    exclusive = false
+    rpcRole = "client"
+    rpcCallStyle = "suspending"
+  }
+
+  kotlin {
+    includes = listOf("squareup.wire.service.*")
+    out = "src/main/kotlin"
+    exclusive = true
+    rpcRole = "server"
+    rpcCallStyle = "blocking"
+  }
+
   kotlin {
     includes = listOf("squareup.wire.buildersonly.*")
     out = "src/main/kotlin"
@@ -21,4 +41,9 @@ wire {
   kotlin {
     out = "src/main/kotlin"
   }
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
 }
