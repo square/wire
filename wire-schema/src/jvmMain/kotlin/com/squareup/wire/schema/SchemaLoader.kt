@@ -16,14 +16,14 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.internal.CommonSchemaLoader
-import com.squareup.wire.schema.internal.toOkioFileSystem
 import java.nio.file.FileSystem as NioFileSystem
 import okio.FileSystem
+import okio.FileSystem.Companion.asOkioFileSystem
 
 actual class SchemaLoader : Loader, ProfileLoader {
   private val delegate: CommonSchemaLoader
 
-  constructor(fileSystem: NioFileSystem) : this(fileSystem.toOkioFileSystem())
+  constructor(fileSystem: NioFileSystem) : this(fileSystem.asOkioFileSystem())
 
   actual constructor(fileSystem: FileSystem) {
     delegate = CommonSchemaLoader(fileSystem)

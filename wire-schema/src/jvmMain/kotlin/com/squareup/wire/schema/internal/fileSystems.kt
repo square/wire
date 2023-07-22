@@ -16,17 +16,8 @@
 package com.squareup.wire.schema.internal
 
 import java.nio.charset.Charset
-import java.nio.file.FileSystem
-import java.nio.file.FileSystems
 import okio.BufferedSource
 import okio.ByteString.Companion.decodeHex
-
-internal fun FileSystem.toOkioFileSystem(): okio.FileSystem {
-  return when {
-    this == FileSystems.getDefault() -> okio.FileSystem.SYSTEM
-    else -> error("Wire doesn't support non-default file system: $this")
-  }
-}
 
 private val UNICODE_BOMS = okio.Options.of(
   "efbbbf".decodeHex(), // UTF-8
