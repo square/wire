@@ -13,6 +13,8 @@ class MyEventListenerFactory : EventListener.Factory {
 }
 
 wire {
+  protoLibrary = true
+
   sourcePath {
     srcDir("src/main/proto")
   }
