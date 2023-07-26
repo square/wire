@@ -37,6 +37,7 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectories
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
@@ -48,6 +49,10 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
 
   @get:OutputDirectories
   abstract val outputDirectories: ConfigurableFileCollection
+
+  @get:Optional
+  @get:OutputDirectory
+  abstract val protoLibraryOutput: DirectoryProperty
 
   @get:Input
   val pluginVersion: Property<String> = objects.property(String::class.java)

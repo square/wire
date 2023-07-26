@@ -22,6 +22,8 @@ import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.Source
 import com.squareup.wire.gradle.kotlin.sourceRoots
+import com.squareup.wire.schema.ProtoTarget
+import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.newEventListenerFactory
 import java.io.File
 import java.lang.reflect.Array as JavaArray
@@ -144,15 +146,18 @@ class WirePlugin : Plugin<Project> {
 
       val targets = outputs.map { output ->
         output.toTarget(
-          if (output.out == null) {
-            project.relativePath(source.outputDir(project))
-          } else {
-            output.out!!
+          when (val out = output.out) {
+            null -> project.relativePath(source.outputDir(project))
+            project.libraryProtoOutputPath() -> project.relativePath(out)
+            else -> out
           },
         )
       }
       val generatedSourcesDirectories: Set<File> =
         targets
+          // Emitted `.proto` files have a special treatment. Their root should be a resource, not a
+          // source. We exclude the `ProtoTarget` and we'll add its output to the resources below.
+          .filterNot { it is ProtoTarget }
           .map { target -> project.file(target.outDirectory) }
           .toSet()
 
@@ -200,12 +205,19 @@ class WirePlugin : Plugin<Project> {
           protoPathInput.debug(task.logger)
         }
         val outputDirectories: List<String> = buildList {
-          addAll(targets.map { it.outDirectory })
-          if (extension.protoLibrary) {
-            add(project.libraryProtoOutputPath())
-          }
+          addAll(
+            targets
+              // Emitted `.proto` files have a special treatment. Their root should be a resource, not
+              // a source. We exclude the `ProtoTarget` and we'll add its output to the resources
+              // below.
+              .filterNot { it is ProtoTarget }
+              .map(Target::outDirectory),
+          )
         }
         task.outputDirectories.setFrom(outputDirectories)
+        if (extension.protoLibrary) {
+          task.protoLibraryOutput.set(File(project.libraryProtoOutputPath()))
+        }
         task.sourceInput.set(protoSourceInput.toLocations(project))
         task.protoInput.set(protoPathInput.toLocations(project))
         task.roots.set(extension.roots.toList())
@@ -239,12 +251,13 @@ class WirePlugin : Plugin<Project> {
       source.kotlinSourceDirectorySet?.srcDir(taskOutputDirectories)
       source.javaSourceDirectorySet?.srcDir(taskOutputDirectories)
       source.registerGeneratedDirectory?.invoke(taskOutputDirectories)
+
       if (extension.protoLibrary) {
         val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
         // Note that there are no source sets for some platforms such as native.
         if (sourceSets.isNotEmpty()) {
           sourceSets.getByName("main") { main: SourceSet ->
-            main.resources.srcDir(taskOutputDirectories)
+            main.resources.srcDir(project.libraryProtoOutputPath())
           }
         }
       }
