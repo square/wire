@@ -1,0 +1,8 @@
+plugins {
+  id 'kotlin'
+  id 'com.squareup.wire'
+}
+
+wire {
+  protoLibrary = true
+}

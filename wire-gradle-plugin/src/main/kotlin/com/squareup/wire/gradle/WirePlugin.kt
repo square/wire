@@ -252,12 +252,13 @@ class WirePlugin : Plugin<Project> {
       source.javaSourceDirectorySet?.srcDir(taskOutputDirectories)
       source.registerGeneratedDirectory?.invoke(taskOutputDirectories)
 
+      val protoOutputDirectory = task.map { it.protoLibraryOutput }
       if (extension.protoLibrary) {
         val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
         // Note that there are no source sets for some platforms such as native.
         if (sourceSets.isNotEmpty()) {
           sourceSets.getByName("main") { main: SourceSet ->
-            main.resources.srcDir(project.libraryProtoOutputPath())
+            main.resources.srcDir(protoOutputDirectory)
           }
         }
       }
