@@ -15,6 +15,8 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.kotlin.RpcCallStyle
+import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.CustomTarget
 import com.squareup.wire.schema.JavaTarget
 import com.squareup.wire.schema.KotlinTarget
@@ -115,6 +117,13 @@ class WireCompiler internal constructor(
   val permitPackageCycles: Boolean,
   val javaInterop: Boolean,
   val kotlinBoxOneOfsMinSize: Int,
+  val kotlinExclusive: Boolean,
+  val kotlinRpcCallStyle: RpcCallStyle,
+  val kotlinRpcRole: RpcRole,
+  val kotlinSingleMethodServices: Boolean,
+  val kotlinGrpcServerCompatible: Boolean,
+  val kotlinNameSuffix: String?,
+  val kotlinBuildersOnly: Boolean,
   val eventListenerFactoryClasses: List<String>,
 ) {
 
@@ -132,12 +141,19 @@ class WireCompiler internal constructor(
       )
     } else if (kotlinOut != null) {
       targets += KotlinTarget(
+        exclusive = kotlinExclusive,
         outDirectory = kotlinOut,
         android = emitAndroid,
         javaInterop = javaInterop,
         emitDeclaredOptions = emitDeclaredOptions,
         emitAppliedOptions = emitAppliedOptions,
+        rpcCallStyle = kotlinRpcCallStyle,
+        rpcRole = kotlinRpcRole,
+        singleMethodServices = kotlinSingleMethodServices,
         boxOneOfsMinSize = kotlinBoxOneOfsMinSize,
+        grpcServerCompatible = kotlinGrpcServerCompatible,
+        nameSuffix = kotlinNameSuffix,
+        buildersOnly = kotlinBuildersOnly,
       )
     } else if (swiftOut != null) {
       targets += SwiftTarget(
@@ -230,6 +246,13 @@ class WireCompiler internal constructor(
     private const val JAVA_INTEROP = "--java_interop"
     private const val DRY_RUN = "--dry_run"
     private const val KOTLIN_BOX_ONEOFS_MIN_SIZE = "--kotlin_box_oneofs_min_size="
+    private const val KOTLIN_EXCLUSIVE = "--kotlin_exclusive"
+    private const val KOTLIN_RPC_CALL_STYLE = "--kotlin_rpc_call_style"
+    private const val KOTLIN_RPC_ROLE = "--kotlin_rpc_role"
+    private const val KOTLIN_SINGLE_METHOD_SERVICES = "--kotlin_single_method_services"
+    private const val KOTLIN_GRPC_SERVER_COMPATIBLE = "--kotlin_grpc_server_compatible"
+    private const val KOTLIN_NAMESUFFIX = "--kotlin_namesuffix"
+    private const val KOTLIN_BUILDERS_ONLY = "--kotlin_builders_only"
 
     @Throws(IOException::class)
     @JvmStatic
@@ -281,6 +304,13 @@ class WireCompiler internal constructor(
       var permitPackageCycles = false
       var javaInterop = false
       var kotlinBoxOneOfsMinSize = 5_000
+      var kotlinExclusive = true
+      var kotlinRpcCallStyle = RpcCallStyle.SUSPENDING
+      var kotlinRpcRole = RpcRole.CLIENT
+      var kotlinSingleMethodServices = false
+      var kotlinGrpcServerCompatible = false
+      var kotlinNameSuffix: String? = null
+      var kotlinBuildersOnly = false
       var dryRun = false
 
       for (arg in args) {
@@ -301,6 +331,28 @@ class WireCompiler internal constructor(
 
           arg.startsWith(KOTLIN_BOX_ONEOFS_MIN_SIZE) -> {
             kotlinBoxOneOfsMinSize = arg.substring(KOTLIN_BOX_ONEOFS_MIN_SIZE.length).toInt()
+          }
+
+          arg.startsWith(KOTLIN_EXCLUSIVE) -> {
+            kotlinExclusive = arg.substring(KOTLIN_EXCLUSIVE.length).toBoolean()
+          }
+          arg.startsWith(KOTLIN_RPC_CALL_STYLE) -> {
+            kotlinRpcCallStyle = RpcCallStyle.valueOf(arg.substring(KOTLIN_RPC_CALL_STYLE.length).uppercase())
+          }
+          arg.startsWith(KOTLIN_RPC_ROLE) -> {
+            kotlinRpcRole = RpcRole.valueOf(arg.substring(KOTLIN_RPC_ROLE.length).uppercase())
+          }
+          arg.startsWith(KOTLIN_SINGLE_METHOD_SERVICES) -> {
+            kotlinSingleMethodServices = arg.substring(KOTLIN_SINGLE_METHOD_SERVICES.length).toBoolean()
+          }
+          arg.startsWith(KOTLIN_GRPC_SERVER_COMPATIBLE) -> {
+            kotlinGrpcServerCompatible = arg.substring(KOTLIN_GRPC_SERVER_COMPATIBLE.length).toBoolean()
+          }
+          arg.startsWith(KOTLIN_NAMESUFFIX) -> {
+            kotlinNameSuffix = arg.substring(KOTLIN_NAMESUFFIX.length)
+          }
+          arg.startsWith(KOTLIN_BUILDERS_ONLY) -> {
+            kotlinBuildersOnly = arg.substring(KOTLIN_BUILDERS_ONLY.length).toBoolean()
           }
 
           arg.startsWith(SWIFT_OUT_FLAG) -> {
@@ -390,6 +442,13 @@ class WireCompiler internal constructor(
         permitPackageCycles = permitPackageCycles,
         javaInterop = javaInterop,
         kotlinBoxOneOfsMinSize = kotlinBoxOneOfsMinSize,
+        kotlinExclusive = kotlinExclusive,
+        kotlinRpcCallStyle = kotlinRpcCallStyle,
+        kotlinRpcRole = kotlinRpcRole,
+        kotlinSingleMethodServices = kotlinSingleMethodServices,
+        kotlinGrpcServerCompatible = kotlinGrpcServerCompatible,
+        kotlinNameSuffix = kotlinNameSuffix,
+        kotlinBuildersOnly = kotlinBuildersOnly,
         eventListenerFactoryClasses = eventListenerFactoryClasses,
       )
     }
