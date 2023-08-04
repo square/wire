@@ -336,21 +336,27 @@ class WireCompiler internal constructor(
           arg.startsWith(KOTLIN_EXCLUSIVE) -> {
             kotlinExclusive = arg.substring(KOTLIN_EXCLUSIVE.length).toBoolean()
           }
+
           arg.startsWith(KOTLIN_RPC_CALL_STYLE) -> {
             kotlinRpcCallStyle = RpcCallStyle.valueOf(arg.substring(KOTLIN_RPC_CALL_STYLE.length).uppercase())
           }
+
           arg.startsWith(KOTLIN_RPC_ROLE) -> {
             kotlinRpcRole = RpcRole.valueOf(arg.substring(KOTLIN_RPC_ROLE.length).uppercase())
           }
+
           arg.startsWith(KOTLIN_SINGLE_METHOD_SERVICES) -> {
             kotlinSingleMethodServices = arg.substring(KOTLIN_SINGLE_METHOD_SERVICES.length).toBoolean()
           }
+
           arg.startsWith(KOTLIN_GRPC_SERVER_COMPATIBLE) -> {
             kotlinGrpcServerCompatible = arg.substring(KOTLIN_GRPC_SERVER_COMPATIBLE.length).toBoolean()
           }
+
           arg.startsWith(KOTLIN_NAMESUFFIX) -> {
             kotlinNameSuffix = arg.substring(KOTLIN_NAMESUFFIX.length)
           }
+
           arg.startsWith(KOTLIN_BUILDERS_ONLY) -> {
             kotlinBuildersOnly = arg.substring(KOTLIN_BUILDERS_ONLY.length).toBoolean()
           }
