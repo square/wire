@@ -53,12 +53,15 @@ if (project.rootProject.name == "wire") {
 }
 
 dependencies {
+  implementation(gradleKotlinDsl())
+
   implementation(projects.wireCompiler)
   implementation(projects.wireKotlinGenerator)
   implementation(libs.swiftpoet)
   implementation(libs.okio.fakefilesystem)
 
   compileOnly(gradleApi())
+
   implementation(libs.pluginz.kotlin)
   compileOnly(libs.pluginz.android)
 
@@ -87,7 +90,7 @@ val test by tasks.getting(Test::class) {
 if (project.rootProject.name == "wire") {
   configure<MavenPublishBaseExtension> {
     configure(
-      GradlePlugin(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
+      GradlePlugin(javadocJar = Dokka("dokkaGfm"), sourcesJar = true),
     )
   }
 }

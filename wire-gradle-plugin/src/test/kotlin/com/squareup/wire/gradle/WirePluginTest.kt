@@ -67,7 +67,8 @@ class WirePluginTest {
     getOutputDirectories(File("src/test/projects")).forEach(::unsafeDelete)
   }
 
-  @Test fun versionIsExposed() {
+  @Test
+  fun versionIsExposed() {
     assertThat(VERSION).isNotNull()
   }
 
@@ -1322,6 +1323,30 @@ class WirePluginTest {
     assertThat(notExpected).doesNotExist()
 
     ZipFile(File(fixtureRoot, "geology/build/libs/geology.jar")).use {
+      assertThat(it.getEntry("squareup/geology/period.proto")).isNotNull()
+    }
+  }
+
+  @Test
+  fun allowLazySetOutputDirectory() {
+    val fixtureRoot = File("src/test/projects/lazy-set-target-out-from-property")
+
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("build", "--stacktrace", "--info").build()
+    }
+
+    assertThat(result.task(":generateMainProtos")?.outcome)
+      .isIn(TaskOutcome.SUCCESS, TaskOutcome.UP_TO_DATE)
+    val generatedProto1 = fixtureRoot.resolve("build/right/com/squareup/dinosaurs/Dinosaur.kt")
+    val generatedProto2 = fixtureRoot.resolve("build/right/com/squareup/geology/Period.kt")
+    assertThat(generatedProto1).exists()
+    assertThat(generatedProto2).exists()
+
+    val notExpected = fixtureRoot.resolve("build/wrong")
+    assertThat(notExpected).doesNotExist()
+
+    ZipFile(fixtureRoot.resolve("build/libs/lazy-set-target-out-from-property.jar")).use {
+      assertThat(it.getEntry("squareup/dinosaurs/dinosaur.proto")).isNotNull()
       assertThat(it.getEntry("squareup/geology/period.proto")).isNotNull()
     }
   }

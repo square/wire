@@ -1,0 +1,37 @@
+plugins {
+    id 'application'
+    id 'org.jetbrains.kotlin.jvm'
+    id 'com.squareup.wire'
+}
+
+mainClassName = 'com.squareup.dinosaurs.Sample'
+
+repositories {
+    maven {
+        url "file://${projectDir.absolutePath}/../../../../../build/localMaven"
+    }
+    mavenCentral()
+}
+
+dependencies {
+    implementation "com.squareup.wire:wire-runtime:$VERSION_NAME"
+}
+
+def outputLocation = objects.property(String)
+outputLocation.set("$buildDir/wrong")
+
+wire {
+    protoLibrary = true
+
+    kotlin {
+        out = outputLocation.orNull
+    }
+}
+
+outputLocation.set("$buildDir/right")
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}

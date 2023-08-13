@@ -27,8 +27,10 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.util.PatternFilterable
+import org.gradle.kotlin.dsl.listProperty
+import org.gradle.kotlin.dsl.newInstance
 
-open class WireExtension(project: Project) {
+open class WireExtension(private val project: Project) {
   private val objectFactory = project.objects
 
   internal val sourcePaths = mutableSetOf<String>()
@@ -121,7 +123,7 @@ open class WireExtension(project: Project) {
 
   /** Specified what types to output where. Maps to [com.squareup.wire.schema.Target] */
   @get:Input
-  val outputs = mutableListOf<WireOutput>()
+  val outputs = objectFactory.listProperty<WireOutput>()
 
   /**
    * True to emit `.proto` files into the output resources. Use this when your `.jar` file can be
@@ -267,34 +269,28 @@ open class WireExtension(project: Project) {
     }
   }
 
-  fun java(action: Action<JavaOutput>) {
-    val javaOutput = objectFactory.newInstance(JavaOutput::class.java)
-    action.execute(javaOutput)
-    outputs += javaOutput
-  }
+  fun java(action: Action<JavaOutput>) = addOutput<JavaOutput>(action)
 
-  fun kotlin(action: Action<KotlinOutput>) {
-    val kotlinOutput = objectFactory.newInstance(KotlinOutput::class.java)
-    action.execute(kotlinOutput)
-    outputs += kotlinOutput
-  }
+  fun kotlin(action: Action<KotlinOutput>) = addOutput<KotlinOutput>(action)
 
-  fun proto(action: Action<ProtoOutput>) {
-    val protoOutput = objectFactory.newInstance(ProtoOutput::class.java)
-    action.execute(protoOutput)
-    outputs += protoOutput
-  }
+  fun proto(action: Action<ProtoOutput>) = addOutput<ProtoOutput>(action)
 
-  fun custom(action: Action<CustomOutput>) {
-    val customOutput = objectFactory.newInstance(CustomOutput::class.java)
-    action.execute(customOutput)
-    outputs += customOutput
-  }
+  fun custom(action: Action<CustomOutput>) = addOutput<CustomOutput>(action)
 
   fun move(action: Action<Move>) {
     val move = objectFactory.newInstance(Move::class.java)
     action.execute(move)
     moves += move
+  }
+
+  private inline fun <reified T : WireOutput> addOutput(action: Action<T>) {
+    outputs.add(
+      project.provider {
+        val output = objectFactory.newInstance<T>()
+        action.execute(output)
+        output
+      },
+    )
   }
 
   // TODO(Benoit) See how we can make this class better, it's a mess and doesn't scale nicely.

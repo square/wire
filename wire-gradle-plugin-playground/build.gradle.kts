@@ -8,9 +8,12 @@ plugins {
 
 class MyEventListenerFactory : EventListener.Factory {
   override fun create(): EventListener {
-    return object: EventListener() {}
+    return object : EventListener() {}
   }
 }
+
+val outputDirectory = objects.property<String>()
+outputDirectory.set("$buildDir/something-wrong")
 
 wire {
   protoLibrary = true
@@ -22,8 +25,11 @@ wire {
   eventListenerFactory(MyEventListenerFactory())
 
   kotlin {
+    out = outputDirectory.orNull
   }
 }
+
+outputDirectory.set(null as String?)
 
 dependencies {
   implementation(projects.wireGrpcClient)
