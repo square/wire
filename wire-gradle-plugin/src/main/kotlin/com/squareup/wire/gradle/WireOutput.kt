@@ -31,7 +31,7 @@ import javax.inject.Inject
  * as destination directories and configuration options). This includes registering output
  * directories with the project so they can be compiled after they are generated.
  */
-sealed class WireOutput {
+abstract class WireOutput {
   /** Set this to override the default output directory for this [WireOutput]. */
   var out: String? = null
 

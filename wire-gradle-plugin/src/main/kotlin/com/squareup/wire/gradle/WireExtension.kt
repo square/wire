@@ -269,13 +269,13 @@ open class WireExtension(private val project: Project) {
     }
   }
 
-  fun java(action: Action<JavaOutput>) = addOutput<JavaOutput>(action)
+  fun java(action: Action<JavaOutput>) = addOutputAsLazyProvider<JavaOutput>(action)
 
-  fun kotlin(action: Action<KotlinOutput>) = addOutput<KotlinOutput>(action)
+  fun kotlin(action: Action<KotlinOutput>) = addOutputAsLazyProvider<KotlinOutput>(action)
 
-  fun proto(action: Action<ProtoOutput>) = addOutput<ProtoOutput>(action)
+  fun proto(action: Action<ProtoOutput>) = addOutputAsLazyProvider<ProtoOutput>(action)
 
-  fun custom(action: Action<CustomOutput>) = addOutput<CustomOutput>(action)
+  fun custom(action: Action<CustomOutput>) = addOutputAsLazyProvider<CustomOutput>(action)
 
   fun move(action: Action<Move>) {
     val move = objectFactory.newInstance(Move::class.java)
@@ -283,7 +283,7 @@ open class WireExtension(private val project: Project) {
     moves += move
   }
 
-  private inline fun <reified T : WireOutput> addOutput(action: Action<T>) {
+  private inline fun <reified T : WireOutput> addOutputAsLazyProvider(action: Action<T>) {
     outputs.add(
       project.provider {
         val output = objectFactory.newInstance<T>()

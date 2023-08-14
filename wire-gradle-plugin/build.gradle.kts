@@ -90,7 +90,7 @@ val test by tasks.getting(Test::class) {
 if (project.rootProject.name == "wire") {
   configure<MavenPublishBaseExtension> {
     configure(
-      GradlePlugin(javadocJar = Dokka("dokkaGfm"), sourcesJar = true),
+      GradlePlugin(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
     )
   }
 }

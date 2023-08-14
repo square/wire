@@ -26,6 +26,10 @@ import com.squareup.wire.gradle.kotlin.sourceRoots
 import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.newEventListenerFactory
+import java.io.File
+import java.lang.reflect.Array as JavaArray
+import java.util.concurrent.atomic.AtomicBoolean
+import javax.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -46,11 +50,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.io.File
-import java.util.*
-import java.util.concurrent.atomic.AtomicBoolean
-import javax.inject.Inject
-import java.lang.reflect.Array as JavaArray
 
 class WirePlugin @Inject internal constructor(
   private val objects: ObjectFactory,
@@ -122,6 +121,11 @@ class WirePlugin @Inject internal constructor(
           "At least one target must be provided for project '${project.path}\n" +
                   "See our documentation for details: https://square.github.io/wire/wire_compiler/#customizing-output"
         }
+
+        val hasKotlinOutput = extension.outputs.map { list -> list.any { it is KotlinOutput } }
+        check(!hasKotlinOutput || kotlin.get()) {
+          "Wire Gradle plugin applied in " + "project '${project.path}' but no supported Kotlin plugin was found"
+        }
       }
     }
 
@@ -160,8 +164,8 @@ class WirePlugin @Inject internal constructor(
       val projectDependencies =
         (protoSourceInput.dependencies + protoPathInput.dependencies).filterIsInstance<ProjectDependency>()
 
-      val targets = outputs.map { outputs ->
-        outputs.map { output ->
+      val targets = outputs.map { outputsList ->
+        outputsList.map { output ->
           output.toTarget(
             when (val out = output.out) {
               null -> project.relativePath(source.outputDir(project))
@@ -177,7 +181,7 @@ class WirePlugin @Inject internal constructor(
           // source. We exclude the `ProtoTarget` and we'll add its output to the resources below.
           list
             .filterNot { it is ProtoTarget }
-            .map { target -> target.outDirectory }
+            .map(Target::outDirectory)
         },
       )
 
@@ -199,7 +203,7 @@ class WirePlugin @Inject internal constructor(
           it.name.equals("compileKotlin") || it.name == "compile${source.name.capitalize()}Kotlin"
         }
         .configureEach {
-          if (hasJavaOutput.get() || hasKotlinOutput.get()) {
+          if (hasJavaOrKotlinOutput.get()) {
             // Note that [KotlinCompile.source] will process files but will ignore strings.
             SOURCE_FUNCTION.invoke(it, arrayOf(generatedSourcesDirectories))
           }
@@ -219,16 +223,8 @@ class WirePlugin @Inject internal constructor(
           protoSourceInput.debug(task.logger)
           protoPathInput.debug(task.logger)
         }
-        val outputDirectories = targets.map { list ->
-          list
-            // Emitted `.proto` files have a special treatment. Their root should be a resource, not
-            // a source. We exclude the `ProtoTarget` and we'll add its output to the resources
-            // below.
-            .filterNot { it is ProtoTarget }
-            .map(Target::outDirectory)
-        }
 
-        task.outputDirectories.setFrom(outputDirectories)
+        task.outputDirectories.setFrom(generatedSourcesDirectories)
         if (extension.protoLibrary) {
           task.protoLibraryOutput.set(File(project.libraryProtoOutputPath()))
         }
@@ -293,22 +289,6 @@ class WirePlugin @Inject internal constructor(
     }
   }
 
-  private fun WireSourceDirectorySet.maybeAddSrcDirs(hasOutput: Provider<Boolean>, files: FileCollection) {
-    srcDir(
-      project.provider {
-        val result = objects.fileCollection()
-
-        if (hasOutput.get()) {
-          result.from(
-            files.map { it.toRelativeString(project.projectDir) },
-          )
-        }
-
-        result
-      },
-    )
-  }
-
   private fun Project.addWireRuntimeDependency(
     hasJavaOrKotlinOutput: Provider<Boolean>,
   ) {
@@ -348,6 +328,22 @@ class WirePlugin @Inject internal constructor(
     }
   }
 
+  private fun WireSourceDirectorySet.maybeAddSrcDirs(hasOutput: Provider<Boolean>, files: FileCollection) {
+    srcDir(
+      project.provider {
+        val result = objects.fileCollection()
+
+        if (hasOutput.get()) {
+          result.from(
+            files.map { it.toRelativeString(project.projectDir) },
+          )
+        }
+
+        result
+      },
+    )
+  }
+
   private fun wireRuntimeDependency(isInternalBuild: Boolean): Dependency {
     return if (isInternalBuild) {
       project.dependencies.create(project.project(":wire-runtime"))
@@ -379,8 +375,4 @@ class WirePlugin @Inject internal constructor(
       JavaArray.newInstance(Any::class.java, 0).javaClass,
     )
   }
-}
-
-private fun String.capitalize(): String {
-  return replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.US) else it.toString() }
 }
