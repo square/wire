@@ -246,12 +246,12 @@ class WireCompiler internal constructor(
     private const val JAVA_INTEROP = "--java_interop"
     private const val DRY_RUN = "--dry_run"
     private const val KOTLIN_BOX_ONEOFS_MIN_SIZE = "--kotlin_box_oneofs_min_size="
-    private const val KOTLIN_EXCLUSIVE = "--kotlin_exclusive"
-    private const val KOTLIN_RPC_CALL_STYLE = "--kotlin_rpc_call_style"
-    private const val KOTLIN_RPC_ROLE = "--kotlin_rpc_role"
+    private const val NO_KOTLIN_EXCLUSIVE = "--no_kotlin_exclusive"
+    private const val KOTLIN_RPC_CALL_STYLE = "--kotlin_rpc_call_style="
+    private const val KOTLIN_RPC_ROLE = "--kotlin_rpc_role="
     private const val KOTLIN_SINGLE_METHOD_SERVICES = "--kotlin_single_method_services"
     private const val KOTLIN_GRPC_SERVER_COMPATIBLE = "--kotlin_grpc_server_compatible"
-    private const val KOTLIN_NAMESUFFIX = "--kotlin_namesuffix"
+    private const val KOTLIN_NAME_SUFFIX = "--kotlin_name_suffix="
     private const val KOTLIN_BUILDERS_ONLY = "--kotlin_builders_only"
 
     @Throws(IOException::class)
@@ -333,10 +333,6 @@ class WireCompiler internal constructor(
             kotlinBoxOneOfsMinSize = arg.substring(KOTLIN_BOX_ONEOFS_MIN_SIZE.length).toInt()
           }
 
-          arg.startsWith(KOTLIN_EXCLUSIVE) -> {
-            kotlinExclusive = arg.substring(KOTLIN_EXCLUSIVE.length).toBoolean()
-          }
-
           arg.startsWith(KOTLIN_RPC_CALL_STYLE) -> {
             kotlinRpcCallStyle = RpcCallStyle.valueOf(arg.substring(KOTLIN_RPC_CALL_STYLE.length).uppercase())
           }
@@ -345,20 +341,8 @@ class WireCompiler internal constructor(
             kotlinRpcRole = RpcRole.valueOf(arg.substring(KOTLIN_RPC_ROLE.length).uppercase())
           }
 
-          arg.startsWith(KOTLIN_SINGLE_METHOD_SERVICES) -> {
-            kotlinSingleMethodServices = arg.substring(KOTLIN_SINGLE_METHOD_SERVICES.length).toBoolean()
-          }
-
-          arg.startsWith(KOTLIN_GRPC_SERVER_COMPATIBLE) -> {
-            kotlinGrpcServerCompatible = arg.substring(KOTLIN_GRPC_SERVER_COMPATIBLE.length).toBoolean()
-          }
-
-          arg.startsWith(KOTLIN_NAMESUFFIX) -> {
-            kotlinNameSuffix = arg.substring(KOTLIN_NAMESUFFIX.length)
-          }
-
-          arg.startsWith(KOTLIN_BUILDERS_ONLY) -> {
-            kotlinBuildersOnly = arg.substring(KOTLIN_BUILDERS_ONLY.length).toBoolean()
+          arg.startsWith(KOTLIN_NAME_SUFFIX) -> {
+            kotlinNameSuffix = arg.substring(KOTLIN_NAME_SUFFIX.length)
           }
 
           arg.startsWith(SWIFT_OUT_FLAG) -> {
@@ -404,6 +388,10 @@ class WireCompiler internal constructor(
             modules = parseManifestModules(yaml)
           }
 
+          arg == NO_KOTLIN_EXCLUSIVE -> kotlinExclusive = false
+          arg == KOTLIN_SINGLE_METHOD_SERVICES -> kotlinSingleMethodServices = true
+          arg == KOTLIN_GRPC_SERVER_COMPATIBLE -> kotlinGrpcServerCompatible = true
+          arg == KOTLIN_BUILDERS_ONLY -> kotlinBuildersOnly = true
           arg == ANDROID -> emitAndroid = true
           arg == ANDROID_ANNOTATIONS -> emitAndroidAnnotations = true
           arg == COMPACT -> emitCompact = true

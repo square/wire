@@ -676,6 +676,29 @@ class WireCompilerTest {
     assertKotlinOutputs(outputs)
   }
 
+  @Test
+  fun testWithAllKotlinFlags() {
+    val sources = arrayOf("service_kotlin_with_all_flags.proto")
+    compileToKotlin(
+      sources,
+      "--no_kotlin_exclusive",
+      "--kotlin_rpc_call_style=blocking",
+      "--kotlin_rpc_role=server",
+      "--kotlin_single_method_services",
+      "--kotlin_grpc_server_compatible",
+      "--kotlin_name_suffix=SomeSuffix",
+      "--kotlin_builders_only",
+    )
+
+    val outputs = arrayOf(
+      "com/squareup/wire/protos/kotlin/services/all_flags_on/SomeRequest.kt",
+      "com/squareup/wire/protos/kotlin/services/all_flags_on/SomeResponse.kt",
+      "com/squareup/wire/protos/kotlin/services/all_flags_on/SomeServiceSomeMethodSomeSuffix.kt",
+      "com/squareup/wire/protos/kotlin/services/all_flags_on/SomeServiceWireGrpc.kt",
+    )
+    assertKotlinOutputs(outputs)
+  }
+
   private fun compileToJava(sources: Array<String>, vararg extraArgs: String) =
     invokeCompiler(TargetLanguage.JAVA, sources, *extraArgs)
 
