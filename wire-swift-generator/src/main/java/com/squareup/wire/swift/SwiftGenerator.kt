@@ -46,6 +46,7 @@ import io.outfoxx.swiftpoet.FileMemberSpec
 import io.outfoxx.swiftpoet.FileSpec
 import io.outfoxx.swiftpoet.FunctionSignatureSpec
 import io.outfoxx.swiftpoet.FunctionSpec
+import io.outfoxx.swiftpoet.FunctionTypeName
 import io.outfoxx.swiftpoet.INT
 import io.outfoxx.swiftpoet.INT32
 import io.outfoxx.swiftpoet.INT64
@@ -65,6 +66,7 @@ import io.outfoxx.swiftpoet.TypeSpec
 import io.outfoxx.swiftpoet.TypeVariableName
 import io.outfoxx.swiftpoet.UINT32
 import io.outfoxx.swiftpoet.UINT64
+import io.outfoxx.swiftpoet.VOID
 import io.outfoxx.swiftpoet.joinToCode
 import io.outfoxx.swiftpoet.parameterizedBy
 import java.util.Locale.US
@@ -258,7 +260,7 @@ class SwiftGenerator private constructor(
     fileMembers: MutableList<FileMemberSpec>,
   ): List<TypeSpec> {
     val structType = type.typeName
-    val oneOfEnumNames = type.oneOfs.associateWith { structType.nestedType(it.name.capitalize(US)) }
+    val oneOfEnumNames = type.oneOfs.associateWith { structType.nestedType(it.name.replaceFirstChar(Char::uppercase)) }
 
     // TODO use a NameAllocator
     val propertyNames = type.fields.map { it.name } + type.oneOfs.map { it.name }
@@ -977,11 +979,23 @@ class SwiftGenerator private constructor(
             includeOneOfs = false,
             fieldsFilter = { it.isRequiredParameter }
         )
+        .addParameter(
+          ParameterSpec.builder(
+            "configure",
+            FunctionTypeName.get(
+              TypeVariableName.typeVariable("inout Self.${storageType.simpleName}"),
+              returnType = VOID
+            )
+          )
+          .defaultValue("{ _ in }")
+          .build()
+        )
         .apply {
           val storageParams = mutableListOf<CodeBlock>()
           type.fields.filter { it.isRequiredParameter }.forEach { field ->
             storageParams += CodeBlock.of("%1N: %1N", field.name)
           }
+          storageParams += CodeBlock.of("%1N: %1N", "configure")
           addStatement(
             "self.%N = %T(\n%L\n)",
             storageName,
@@ -1035,6 +1049,17 @@ class SwiftGenerator private constructor(
             includeOneOfs = false,
             fieldsFilter = { it.isRequiredParameter }
         )
+        .addParameter(
+          ParameterSpec.builder(
+            "configure",
+            FunctionTypeName.get(
+              TypeVariableName.typeVariable("inout Self"),
+              returnType = VOID
+            )
+          )
+          .defaultValue("{ _ in }")
+          .build()
+        )
         .apply {
           type.fields.filter { it.isRequiredParameter }.forEach { field ->
             addStatement(
@@ -1042,6 +1067,7 @@ class SwiftGenerator private constructor(
               field.name,
             )
           }
+          addStatement("configure(&self)")
         }
         .build(),
     )

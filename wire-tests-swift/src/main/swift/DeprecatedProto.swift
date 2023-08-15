@@ -9,7 +9,8 @@ public struct DeprecatedProto {
     public var foo: String?
     public var unknownFields: Foundation.Data = .init()
 
-    public init() {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
     }
 
     @_disfavoredOverload

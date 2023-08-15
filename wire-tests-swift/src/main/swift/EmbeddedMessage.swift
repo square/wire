@@ -9,7 +9,8 @@ public struct EmbeddedMessage {
     public var inner_number_after: Int32?
     public var unknownFields: Foundation.Data = .init()
 
-    public init() {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
     }
 
     @_disfavoredOverload

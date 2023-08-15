@@ -18,7 +18,8 @@ public struct Dinosaur {
     public var period: Period?
     public var unknownFields: Foundation.Data = .init()
 
-    public init() {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
     }
 
     @_disfavoredOverload

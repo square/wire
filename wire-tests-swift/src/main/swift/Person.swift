@@ -27,9 +27,14 @@ public struct Person {
     public var aliases: [String] = []
     public var unknownFields: Foundation.Data = .init()
 
-    public init(id: Int32, name: String) {
+    public init(
+        id: Int32,
+        name: String,
+        configure: (inout Self) -> Void = { _ in }
+    ) {
         self.id = id
         self.name = name
+        configure(&self)
     }
 
     @_disfavoredOverload
@@ -82,8 +87,9 @@ public struct Person {
         public var type: Person.PhoneType?
         public var unknownFields: Foundation.Data = .init()
 
-        public init(number: String) {
+        public init(number: String, configure: (inout Self) -> Void = { _ in }) {
             self.number = number
+            configure(&self)
         }
 
         @_disfavoredOverload

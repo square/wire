@@ -17,7 +17,8 @@ public struct FooBar {
     public var more_string: String?
     public var unknownFields: Foundation.Data = .init()
 
-    public init() {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
     }
 
     @_disfavoredOverload
@@ -50,7 +51,8 @@ public struct FooBar {
         public var value: FooBar.FooBarBazEnum?
         public var unknownFields: Foundation.Data = .init()
 
-        public init() {
+        public init(configure: (inout Self) -> Void = { _ in }) {
+            configure(&self)
         }
 
         @_disfavoredOverload
@@ -65,7 +67,8 @@ public struct FooBar {
         public var serial: [Int32] = []
         public var unknownFields: Foundation.Data = .init()
 
-        public init() {
+        public init(configure: (inout Self) -> Void = { _ in }) {
+            configure(&self)
         }
 
         @_disfavoredOverload

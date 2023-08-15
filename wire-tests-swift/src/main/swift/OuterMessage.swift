@@ -9,7 +9,8 @@ public struct OuterMessage {
     public var embedded_message: EmbeddedMessage?
     public var unknownFields: Foundation.Data = .init()
 
-    public init() {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
     }
 
     @_disfavoredOverload

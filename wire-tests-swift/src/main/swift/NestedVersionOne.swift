@@ -8,7 +8,8 @@ public struct NestedVersionOne {
     public var i: Int32?
     public var unknownFields: Foundation.Data = .init()
 
-    public init() {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
     }
 
     @_disfavoredOverload

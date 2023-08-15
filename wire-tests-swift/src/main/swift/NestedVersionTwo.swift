@@ -13,7 +13,8 @@ public struct NestedVersionTwo {
     public var v2_rs: [String] = []
     public var unknownFields: Foundation.Data = .init()
 
-    public init() {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
     }
 
     @_disfavoredOverload

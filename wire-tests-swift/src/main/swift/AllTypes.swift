@@ -35,7 +35,8 @@ public struct AllTypes {
         req_string: String,
         req_bytes: Foundation.Data,
         req_nested_enum: AllTypes.NestedEnum,
-        req_nested_message: AllTypes.NestedMessage
+        req_nested_message: AllTypes.NestedMessage,
+        configure: (inout Self.Storage) -> Void = { _ in }
     ) {
         self.storage = AllTypes.Storage(
                 req_int32: req_int32,
@@ -54,7 +55,8 @@ public struct AllTypes {
                 req_string: req_string,
                 req_bytes: req_bytes,
                 req_nested_enum: req_nested_enum,
-                req_nested_message: req_nested_message
+                req_nested_message: req_nested_message,
+                configure: configure
                 )
     }
 
@@ -380,7 +382,8 @@ public struct AllTypes {
         public var a: Int32?
         public var unknownFields: Foundation.Data = .init()
 
-        public init() {
+        public init(configure: (inout Self) -> Void = { _ in }) {
+            configure(&self)
         }
 
         @_disfavoredOverload
@@ -660,7 +663,8 @@ extension AllTypes {
             req_string: Swift.String,
             req_bytes: Foundation.Data,
             req_nested_enum: AllTypes.NestedEnum,
-            req_nested_message: AllTypes.NestedMessage
+            req_nested_message: AllTypes.NestedMessage,
+            configure: (inout Self) -> Swift.Void = { _ in }
         ) {
             self.req_int32 = req_int32
             self.req_uint32 = req_uint32
@@ -679,6 +683,7 @@ extension AllTypes {
             self.req_bytes = req_bytes
             self.req_nested_enum = req_nested_enum
             self.req_nested_message = req_nested_message
+            configure(&self)
         }
 
         @_disfavoredOverload

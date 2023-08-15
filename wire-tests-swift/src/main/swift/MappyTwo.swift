@@ -11,7 +11,8 @@ public struct MappyTwo {
     public var int_things_two: [Int32 : Thing] = [:]
     public var unknownFields: Foundation.Data = .init()
 
-    public init() {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
     }
 
     @_disfavoredOverload
