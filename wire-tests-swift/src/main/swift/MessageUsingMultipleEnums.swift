@@ -12,6 +12,10 @@ public struct MessageUsingMultipleEnums {
     public var b: OtherMessageWithStatus.Status?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(a: MessageWithStatus.Status? = nil, b: OtherMessageWithStatus.Status? = nil) {
         self.a = a
         self.b = b

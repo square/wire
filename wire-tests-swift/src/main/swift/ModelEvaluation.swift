@@ -22,9 +22,13 @@ public struct ModelEvaluation {
 
     public var name: String?
     public var score: Double?
-    public var models: [String : ModelEvaluation]
+    public var models: [String : ModelEvaluation] = [:]
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(
         name: String? = nil,
         score: Double? = nil,

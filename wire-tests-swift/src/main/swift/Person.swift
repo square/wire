@@ -23,10 +23,16 @@ public struct Person {
     /**
      * A list of the customer's phone numbers.
      */
-    public var phone: [Person.PhoneNumber]
-    public var aliases: [String]
+    public var phone: [Person.PhoneNumber] = []
+    public var aliases: [String] = []
     public var unknownFields: Foundation.Data = .init()
 
+    public init(id: Int32, name: String) {
+        self.id = id
+        self.name = name
+    }
+
+    @_disfavoredOverload
     public init(
         id: Int32,
         name: String,
@@ -76,6 +82,11 @@ public struct Person {
         public var type: Person.PhoneType?
         public var unknownFields: Foundation.Data = .init()
 
+        public init(number: String) {
+            self.number = number
+        }
+
+        @_disfavoredOverload
         public init(number: String, type: Person.PhoneType? = nil) {
             self.number = number
             _type.wrappedValue = type

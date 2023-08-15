@@ -9,6 +9,10 @@ public struct ExternalMessage {
     public var f: Float?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(f: Float? = nil) {
         _f.wrappedValue = f
     }

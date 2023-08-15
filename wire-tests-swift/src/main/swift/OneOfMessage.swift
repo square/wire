@@ -14,6 +14,10 @@ public struct OneOfMessage {
     public var choice: Choice?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(choice: Choice? = nil) {
         self.choice = choice
     }

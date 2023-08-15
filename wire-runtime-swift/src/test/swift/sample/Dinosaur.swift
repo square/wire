@@ -12,12 +12,16 @@ public struct Dinosaur {
     /**
      * URLs with images of this dinosaur.
      */
-    public var picture_urls: [String]
+    public var picture_urls: [String] = []
     public var length_meters: Double?
     public var mass_kilograms: Double?
     public var period: Period?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(
         name: String? = nil,
         picture_urls: [String] = [],

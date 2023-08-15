@@ -5,12 +5,16 @@ import Wire
 
 public struct MappyTwo {
 
-    public var string_enums: [String : MappyTwo.ValueEnum]
-    public var int_things: [Int64 : Thing]
-    public var string_ints: [String : Int64]
-    public var int_things_two: [Int32 : Thing]
+    public var string_enums: [String : MappyTwo.ValueEnum] = [:]
+    public var int_things: [Int64 : Thing] = [:]
+    public var string_ints: [String : Int64] = [:]
+    public var int_things_two: [Int32 : Thing] = [:]
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(
         string_enums: [String : MappyTwo.ValueEnum] = [:],
         int_things: [Int64 : Thing] = [:],

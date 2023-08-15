@@ -11,6 +11,10 @@ public struct Percents {
     public var text: String?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(text: String? = nil) {
         self.text = text
     }

@@ -9,6 +9,10 @@ public struct DeprecatedProto {
     public var foo: String?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(foo: String? = nil) {
         self.foo = foo
     }

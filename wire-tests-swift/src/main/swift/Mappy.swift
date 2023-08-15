@@ -5,9 +5,13 @@ import Wire
 
 public struct Mappy {
 
-    public var things: [String : Thing]
+    public var things: [String : Thing] = [:]
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(things: [String : Thing] = [:]) {
         self.things = things
     }

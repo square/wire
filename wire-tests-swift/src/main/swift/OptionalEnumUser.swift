@@ -8,6 +8,10 @@ public struct OptionalEnumUser {
     public var optional_enum: OptionalEnumUser.OptionalEnum?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(optional_enum: OptionalEnumUser.OptionalEnum? = nil) {
         self.optional_enum = optional_enum
     }

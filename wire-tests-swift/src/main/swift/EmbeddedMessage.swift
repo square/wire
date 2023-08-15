@@ -5,10 +5,14 @@ import Wire
 
 public struct EmbeddedMessage {
 
-    public var inner_repeated_number: [Int32]
+    public var inner_repeated_number: [Int32] = []
     public var inner_number_after: Int32?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(inner_repeated_number: [Int32] = [], inner_number_after: Int32? = nil) {
         self.inner_repeated_number = inner_repeated_number
         self.inner_number_after = inner_number_after

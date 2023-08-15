@@ -8,6 +8,10 @@ public struct Thing {
     public var name: String?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(name: String? = nil) {
         self.name = name
     }

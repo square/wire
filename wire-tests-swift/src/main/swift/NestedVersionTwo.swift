@@ -10,9 +10,13 @@ public struct NestedVersionTwo {
     public var v2_s: String?
     public var v2_f32: UInt32?
     public var v2_f64: UInt64?
-    public var v2_rs: [String]
+    public var v2_rs: [String] = []
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(
         i: Int32? = nil,
         v2_i: Int32? = nil,

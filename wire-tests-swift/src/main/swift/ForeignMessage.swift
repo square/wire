@@ -8,6 +8,10 @@ public struct ForeignMessage {
     public var i: Int32?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(i: Int32? = nil) {
         self.i = i
     }

@@ -551,7 +551,6 @@ Swift is a pragmatic and expressive programming language with rich support for v
 Here's how we used Swift to model Protocol Buffers messages:
 
  * Messages are structs that conform to `Equatable`, `Codable` and `Sendable`. All Messages have value semantics.
- * Messages have a memberwise initializer to populate fields.
  * Fields are generated as properties.
  * The nullability of each field's type depends on its label: `required`, `repeated` and `map`
    fields get non-nullable types, whereas `optional` fields are of nullable types.

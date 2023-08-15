@@ -10,6 +10,10 @@ public struct VersionOne {
     public var en: EnumVersionOne?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(
         i: Int32? = nil,
         obj: NestedVersionOne? = nil,

@@ -8,6 +8,10 @@ public struct RedactedOneOf {
     public var a: A?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(a: A? = nil) {
         self.a = a
     }

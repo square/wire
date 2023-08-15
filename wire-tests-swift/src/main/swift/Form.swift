@@ -9,6 +9,10 @@ public struct Form {
     public var decision: Decision?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(choice: Choice? = nil, decision: Decision? = nil) {
         self.choice = choice
         self.decision = decision
@@ -125,6 +129,10 @@ public struct Form {
         public var text: String?
         public var unknownFields: Foundation.Data = .init()
 
+        public init() {
+        }
+
+        @_disfavoredOverload
         public init(text: String? = nil) {
             self.text = text
         }

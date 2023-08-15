@@ -9,14 +9,18 @@ public struct FooBar {
     public var bar: String?
     public var baz: FooBar.Nested?
     public var qux: UInt64?
-    public var fred: [Float]
+    public var fred: [Float] = []
     public var daisy: Double?
-    public var nested: [FooBar]
+    public var nested: [FooBar] = []
     public var ext: FooBar.FooBarBazEnum?
-    public var rep: [FooBar.FooBarBazEnum]
+    public var rep: [FooBar.FooBarBazEnum] = []
     public var more_string: String?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(
         foo: Int32? = nil,
         bar: String? = nil,
@@ -46,6 +50,10 @@ public struct FooBar {
         public var value: FooBar.FooBarBazEnum?
         public var unknownFields: Foundation.Data = .init()
 
+        public init() {
+        }
+
+        @_disfavoredOverload
         public init(value: FooBar.FooBarBazEnum? = nil) {
             self.value = value
         }
@@ -54,9 +62,13 @@ public struct FooBar {
 
     public struct More {
 
-        public var serial: [Int32]
+        public var serial: [Int32] = []
         public var unknownFields: Foundation.Data = .init()
 
+        public init() {
+        }
+
+        @_disfavoredOverload
         public init(serial: [Int32] = []) {
             self.serial = serial
         }

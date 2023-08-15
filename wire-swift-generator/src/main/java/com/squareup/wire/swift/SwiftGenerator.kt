@@ -137,6 +137,9 @@ class SwiftGenerator private constructor(
   internal val Field.valueType: ProtoType
     get() = type!!.valueType!!
 
+  private val Field.isRequiredParameter: Boolean
+    get() = !isOptional && !isRepeated && !isMap
+
   private val Field.isCollection: Boolean
     get() = when (typeName.makeNonOptional()) {
       DATA, STRING -> true
@@ -286,28 +289,7 @@ class SwiftGenerator private constructor(
           )
 
           generateMessageStoragePropertyDelegates(type, storageName, storageType)
-
-          addFunction(
-            FunctionSpec.constructorBuilder()
-              .addModifiers(PUBLIC)
-              .addParameters(type, oneOfEnumNames, includeDefaults = true)
-              .apply {
-                val storageParams = mutableListOf<CodeBlock>()
-                type.fields.forEach { field ->
-                  storageParams += CodeBlock.of("%1N: %1N", field.name)
-                }
-                type.oneOfs.forEach { oneOf ->
-                  storageParams += CodeBlock.of("%1N: %1N", oneOf.name)
-                }
-                addStatement(
-                  "self.%N = %T(%L)",
-                  storageName,
-                  storageType,
-                  storageParams.joinToCode(separator = ",%W"),
-                )
-              }
-              .build(),
-          )
+          generateMessageStorageDelegateConstructor(type, storageName, storageType, oneOfEnumNames)
 
           addFunction(
             FunctionSpec.builder("copyStorage")
@@ -953,8 +935,10 @@ class SwiftGenerator private constructor(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
     includeDefaults: Boolean = true,
+    includeOneOfs: Boolean = true,
+    fieldsFilter: (Field) -> Boolean = { true }
   ) = apply {
-    type.fields.forEach { field ->
+    type.fields.filter(fieldsFilter).forEach { field ->
       addParameter(
         ParameterSpec.builder(field.name, field.typeName)
           .apply {
@@ -965,14 +949,75 @@ class SwiftGenerator private constructor(
           .build(),
       )
     }
-    type.oneOfs.forEach { oneOf ->
-      val enumName = oneOfEnumNames.getValue(oneOf).makeOptional()
-      addParameter(
-        ParameterSpec.builder(oneOf.name, enumName)
-          .defaultValue("nil")
-          .build(),
-      )
+    if (includeOneOfs) {
+      type.oneOfs.forEach { oneOf ->
+        val enumName = oneOfEnumNames.getValue(oneOf).makeOptional()
+        addParameter(
+          ParameterSpec.builder(oneOf.name, enumName)
+            .defaultValue("nil")
+            .build(),
+        )
+      }
     }
+  }
+
+  private fun TypeSpec.Builder.generateMessageStorageDelegateConstructor(
+    type: MessageType,
+    storageName: String,
+    storageType: DeclaredTypeName,
+    oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
+  ) {
+    addFunction(
+      FunctionSpec.constructorBuilder()
+        .addModifiers(PUBLIC)
+        .addParameters(
+            type,
+            oneOfEnumNames,
+            includeDefaults = false,
+            includeOneOfs = false,
+            fieldsFilter = { it.isRequiredParameter }
+        )
+        .apply {
+          val storageParams = mutableListOf<CodeBlock>()
+          type.fields.filter { it.isRequiredParameter }.forEach { field ->
+            storageParams += CodeBlock.of("%1N: %1N", field.name)
+          }
+          addStatement(
+            "self.%N = %T(\n%L\n)",
+            storageName,
+            storageType,
+            storageParams.joinToCode(separator = ",\n"),
+          )
+        }
+        .build(),
+    )
+
+    if (type.fields.all { it.isRequiredParameter } && type.oneOfs.isEmpty()) {
+      return
+    }
+
+    addFunction(
+      FunctionSpec.constructorBuilder()
+        .addModifiers(PUBLIC)
+        .addParameters(type, oneOfEnumNames, includeDefaults = true)
+        .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
+        .apply {
+          val storageParams = mutableListOf<CodeBlock>()
+          type.fields.forEach { field ->
+            storageParams += CodeBlock.of("%1N: %1N", field.name)
+          }
+          type.oneOfs.forEach { oneOf ->
+            storageParams += CodeBlock.of("%1N: %1N", oneOf.name)
+          }
+          addStatement(
+            "self.%N = %T(\n%L\n)",
+            storageName,
+            storageType,
+            storageParams.joinToCode(separator = ",\n"),
+          )
+        }
+        .build(),
+    )
   }
 
   private fun TypeSpec.Builder.generateMessageConstructor(
@@ -983,7 +1028,33 @@ class SwiftGenerator private constructor(
     addFunction(
       FunctionSpec.constructorBuilder()
         .addModifiers(PUBLIC)
+        .addParameters(
+            type,
+            oneOfEnumNames,
+            includeDefaults = false,
+            includeOneOfs = false,
+            fieldsFilter = { it.isRequiredParameter }
+        )
+        .apply {
+          type.fields.filter { it.isRequiredParameter }.forEach { field ->
+            addStatement(
+              if (field.default != null) "_%1N.wrappedValue = %1N" else { "self.%1N = %1N" },
+              field.name,
+            )
+          }
+        }
+        .build(),
+    )
+
+    if (type.fields.all { it.isRequiredParameter } && type.oneOfs.isEmpty()) {
+      return
+    }
+
+    addFunction(
+      FunctionSpec.constructorBuilder()
+        .addModifiers(PUBLIC)
         .addParameters(type, oneOfEnumNames, includeDefaults)
+        .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
         .apply {
           type.fields.forEach { field ->
             addStatement(
@@ -1019,6 +1090,12 @@ class SwiftGenerator private constructor(
       if (default != null) {
         val defaultValue = defaultFieldInitializer(field.type!!, default)
         property.addAttribute(AttributeSpec.builder(defaulted).addArgument("defaultValue: $defaultValue").build())
+      }
+
+      if (field.isMap) {
+        property.initializer("[:]")
+      } else if (field.isRepeated) {
+        property.initializer("[]")
       }
 
       addProperty(property.build())
@@ -1390,6 +1467,7 @@ class SwiftGenerator private constructor(
     private const val FLAG_REMOVE_EQUATABLE = "WIRE_REMOVE_EQUATABLE"
     private const val FLAG_REMOVE_HASHABLE = "WIRE_REMOVE_HASHABLE"
     private const val FLAG_REMOVE_REDACTABLE = "WIRE_REMOVE_REDACTABLE"
+    private const val FLAG_INCLUDE_MEMBERWISE_INITIALIZER = "WIRE_INCLUDE_MEMBERWISE_INITIALIZER"
 
     private val NEEDS_CUSTOM_CODABLE = setOf("Duration", "Timestamp")
 

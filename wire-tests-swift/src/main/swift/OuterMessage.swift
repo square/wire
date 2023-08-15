@@ -9,6 +9,10 @@ public struct OuterMessage {
     public var embedded_message: EmbeddedMessage?
     public var unknownFields: Foundation.Data = .init()
 
+    public init() {
+    }
+
+    @_disfavoredOverload
     public init(outer_number_before: Int32? = nil, embedded_message: EmbeddedMessage? = nil) {
         self.outer_number_before = outer_number_before
         self.embedded_message = embedded_message
