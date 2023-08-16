@@ -685,7 +685,6 @@ class WireCompilerTest {
       "--kotlin_rpc_call_style=blocking",
       "--kotlin_rpc_role=server",
       "--kotlin_single_method_services",
-      "--kotlin_grpc_server_compatible",
       "--kotlin_name_suffix=SomeSuffix",
       "--kotlin_builders_only",
     )
@@ -694,7 +693,6 @@ class WireCompilerTest {
       "com/squareup/wire/protos/kotlin/services/all_flags_on/SomeRequest.kt",
       "com/squareup/wire/protos/kotlin/services/all_flags_on/SomeResponse.kt",
       "com/squareup/wire/protos/kotlin/services/all_flags_on/SomeServiceSomeMethodSomeSuffix.kt",
-      "com/squareup/wire/protos/kotlin/services/all_flags_on/SomeServiceWireGrpc.kt",
     )
     assertKotlinOutputs(outputs)
   }

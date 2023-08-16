@@ -290,10 +290,28 @@ val generateKotlinServicesTests by tasks.creating(JavaExec::class) {
   classpath = wire
   mainClass.set("com.squareup.wire.WireCompiler")
   args = listOf(
-      "--proto_path=wire-tests/src/commonTest/proto/kotlin",
-      "--kotlin_out=wire-tests/src/jvmKotlinInteropTest/proto-kotlin",
-      "service_kotlin.proto",
-      "service_without_package.proto"
+    "--proto_path=wire-tests/src/commonTest/proto/kotlin",
+    "--kotlin_out=wire-tests/src/jvmKotlinInteropTest/proto-kotlin",
+    "service_kotlin.proto",
+    "service_without_package.proto",
+  )
+}
+
+val generateKotlinServicesAllFlagsTests by tasks.creating(JavaExec::class) {
+  group = "Generate Tests"
+  description = "Generates Kotlin classes from the test protos with all flags"
+  classpath = wire
+  mainClass.set("com.squareup.wire.WireCompiler")
+  args = listOf(
+    "--no_kotlin_exclusive",
+    "--kotlin_rpc_call_style=blocking",
+    "--kotlin_rpc_role=server",
+    "--kotlin_single_method_services",
+    "--kotlin_name_suffix=SomeSuffix",
+    "--kotlin_builders_only",
+    "--proto_path=wire-tests/src/commonTest/proto/kotlin",
+    "--kotlin_out=wire-tests/src/jvmKotlinInteropTest/proto-kotlin",
+    "service_kotlin_with_all_flags.proto",
   )
 }
 
@@ -603,6 +621,7 @@ val generateTests by tasks.creating {
     generateKotlinTests,
     generateKotlinZipTests,
     generateKotlinServicesTests,
+    generateKotlinServicesAllFlagsTests,
     generateKotlinAndroidTests,
     generateKotlinJavaInteropTests,
     generateJavaForKotlinJavaInteropTests,
