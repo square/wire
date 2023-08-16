@@ -24,7 +24,14 @@ public final class com/squareup/wire/WireCompiler {
 	public final fun getJavaInterop ()Z
 	public final fun getJavaOut ()Ljava/lang/String;
 	public final fun getKotlinBoxOneOfsMinSize ()I
+	public final fun getKotlinBuildersOnly ()Z
+	public final fun getKotlinExclusive ()Z
+	public final fun getKotlinGrpcServerCompatible ()Z
+	public final fun getKotlinNameSuffix ()Ljava/lang/String;
 	public final fun getKotlinOut ()Ljava/lang/String;
+	public final fun getKotlinRpcCallStyle ()Lcom/squareup/wire/kotlin/RpcCallStyle;
+	public final fun getKotlinRpcRole ()Lcom/squareup/wire/kotlin/RpcRole;
+	public final fun getKotlinSingleMethodServices ()Z
 	public final fun getLog ()Lcom/squareup/wire/WireLogger;
 	public final fun getModules ()Ljava/util/Map;
 	public final fun getPermitPackageCycles ()Z
