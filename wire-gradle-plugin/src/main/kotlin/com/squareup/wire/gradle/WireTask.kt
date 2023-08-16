@@ -50,6 +50,10 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
   @get:OutputDirectories
   abstract val outputDirectories: ConfigurableFileCollection
 
+  @get:InputFiles
+  @get:PathSensitive(PathSensitivity.RELATIVE)
+  abstract val projectDependencies: ConfigurableFileCollection
+
   @get:Optional
   @get:OutputDirectory
   abstract val protoLibraryOutput: DirectoryProperty
