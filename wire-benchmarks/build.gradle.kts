@@ -10,7 +10,7 @@ plugins {
   id("com.google.protobuf")
   id("com.squareup.wire")
   id("com.github.johnrengelman.shadow")
-  id("me.champeau.jmh").version("0.6.6")
+  id("me.champeau.jmh").version("0.7.1")
 }
 
 sourceSets {
@@ -52,7 +52,7 @@ dependencies {
 
 tasks {
   val jmhJar by getting(ShadowJar::class) {
-    setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     transform(DontIncludeResourceTransformer().apply {
       resource = "META-INF/BenchmarkList"
