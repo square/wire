@@ -69,7 +69,6 @@ import io.outfoxx.swiftpoet.UINT64
 import io.outfoxx.swiftpoet.VOID
 import io.outfoxx.swiftpoet.joinToCode
 import io.outfoxx.swiftpoet.parameterizedBy
-import java.util.Locale.US
 import okio.ByteString.Companion.encode
 
 class SwiftGenerator private constructor(
@@ -938,7 +937,7 @@ class SwiftGenerator private constructor(
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
     includeDefaults: Boolean = true,
     includeOneOfs: Boolean = true,
-    fieldsFilter: (Field) -> Boolean = { true }
+    fieldsFilter: (Field) -> Boolean = { true },
   ) = apply {
     type.fields.filter(fieldsFilter).forEach { field ->
       addParameter(
@@ -975,22 +974,22 @@ class SwiftGenerator private constructor(
       FunctionSpec.constructorBuilder()
         .addModifiers(PUBLIC)
         .addParameters(
-            type,
-            oneOfEnumNames,
-            includeDefaults = false,
-            includeOneOfs = false,
-            fieldsFilter = { it.isRequiredParameter }
+          type,
+          oneOfEnumNames,
+          includeDefaults = false,
+          includeOneOfs = false,
+          fieldsFilter = { it.isRequiredParameter },
         )
         .addParameter(
           ParameterSpec.builder(
             "configure",
             FunctionTypeName.get(
               TypeVariableName.typeVariable("inout Self.${storageType.simpleName}"),
-              returnType = VOID
-            )
+              returnType = VOID,
+            ),
           )
-          .defaultValue("{ _ in }")
-          .build()
+            .defaultValue("{ _ in }")
+            .build(),
         )
         .apply {
           val storageParams = mutableListOf<CodeBlock>()
@@ -1038,8 +1037,8 @@ class SwiftGenerator private constructor(
       .build()
 
     fileMembers += FileMemberSpec.builder(memberwiseExtension)
-        .addGuard("$FLAG_INCLUDE_MEMBERWISE_INITIALIZER")
-        .build()
+      .addGuard("$FLAG_INCLUDE_MEMBERWISE_INITIALIZER")
+      .build()
   }
 
   private fun TypeSpec.Builder.generateMessageConstructor(
@@ -1053,22 +1052,22 @@ class SwiftGenerator private constructor(
       FunctionSpec.constructorBuilder()
         .addModifiers(PUBLIC)
         .addParameters(
-            type,
-            oneOfEnumNames,
-            includeDefaults = false,
-            includeOneOfs = false,
-            fieldsFilter = { it.isRequiredParameter }
+          type,
+          oneOfEnumNames,
+          includeDefaults = false,
+          includeOneOfs = false,
+          fieldsFilter = { it.isRequiredParameter },
         )
         .addParameter(
           ParameterSpec.builder(
             "configure",
             FunctionTypeName.get(
               TypeVariableName.typeVariable("inout Self"),
-              returnType = VOID
-            )
+              returnType = VOID,
+            ),
           )
-          .defaultValue("{ _ in }")
-          .build()
+            .defaultValue("{ _ in }")
+            .build(),
         )
         .apply {
           type.fields.filter { it.isRequiredParameter }.forEach { field ->
@@ -1108,8 +1107,8 @@ class SwiftGenerator private constructor(
       .build()
 
     fileMembers += FileMemberSpec.builder(memberwiseExtension)
-        .addGuard("$FLAG_INCLUDE_MEMBERWISE_INITIALIZER")
-        .build()
+      .addGuard("$FLAG_INCLUDE_MEMBERWISE_INITIALIZER")
+      .build()
   }
 
   private fun TypeSpec.Builder.generateMessageProperties(
