@@ -2536,6 +2536,74 @@ class SchemaTest {
   }
 
   @Test
+  fun extensionInProtoPathDontLoad() {
+    val schema = buildSchema {
+      add(
+        "a/original.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |package a;
+        |message A {
+        |  optional string one = 1;
+        |}
+        """.trimMargin(),
+      )
+      addProtoPath(
+        "b/extension.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |package b;
+        |import "a/original.proto";
+        |extend a.A {
+        |  optional string two = 2;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val fields = (schema.getType("a.A") as MessageType).fields
+    assertThat(fields).hasSize(1)
+    with(fields[0]) {
+      assertThat(namespaces).isEqualTo(listOf("a", "A"))
+      assertThat(name).isEqualTo("one")
+      assertThat(isExtension).isEqualTo(false)
+    }
+  }
+
+  @Test
+  fun extensionInSourceLoadsEvenIfParentMessageIsInProtoPath() {
+    val schema = buildSchema {
+      addProtoPath(
+        "a/original.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |package a;
+        |message A {
+        |  optional string one = 1;
+        |}
+        """.trimMargin(),
+      )
+      add(
+        "b/extension.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |package b;
+        |import "a/original.proto";
+        |extend a.A {
+        |  optional string two = 2;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val fields = (schema.getType("a.A") as MessageType).fields
+    assertThat(fields).hasSize(1)
+    with(fields[0]) {
+      assertThat(namespaces).isEqualTo(listOf("b"))
+      assertThat(name).isEqualTo("two")
+      assertThat(isExtension).isEqualTo(true)
+    }
+  }
+
+  @Test
   fun optionsWithRelativePathUsedInExtensions() {
     val schema = buildSchema {
       add(
