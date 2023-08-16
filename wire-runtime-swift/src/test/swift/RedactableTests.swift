@@ -28,12 +28,16 @@ final class RedactableTests: XCTestCase {
     }
 
     func testRedactedOneOf() {
-        let redacted1 = Redacted(name: "Foo", choice: .yes("yes"))
+        let redacted1 = Redacted(name: "Foo") {
+            $0.choice = .yes("yes")
+        }
         XCTAssertEqual(
             redacted1.description,
             "Redacted(name: <redacted>, nested: nil, choice: Optional(Choice(yes: \"yes\")), unknownFields: 0 bytes)"
         )
-        let redacted2 = Redacted(name: "Foo", choice: .no("no"))
+        let redacted2 = Redacted(name: "Foo") {
+            $0.choice = .no("no")
+        }
         XCTAssertEqual(
             redacted2.description,
             "Redacted(name: <redacted>, nested: nil, choice: Optional(Choice(no: <redacted>)), unknownFields: 0 bytes)"
@@ -51,13 +55,11 @@ final class RedactableTests: XCTestCase {
     }
 
     func testNestedRedactedField() {
-        let redacted = Redacted2(
-            name: "foo",
-            partially_redacted: .init(
-                name: "bar",
-                enabled: true
-            )
-        )
+        let redacted = Redacted2(name: "foo") {
+            $0.partially_redacted = Redacted3(name: "bar") {
+                $0.enabled = true
+            }
+        }
         XCTAssertEqual(
             redacted.description,
             "Redacted2(name: \"foo\", fully_redacted: nil, partially_redacted: Optional(Redacted3(name: \"bar\", enabled: <redacted>, unknownFields: 0 bytes)), unknownFields: 0 bytes)"

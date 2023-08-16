@@ -17,14 +17,19 @@ public struct NestedVersionTwo {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension NestedVersionTwo {
+
     @_disfavoredOverload
     public init(
-        i: Int32? = nil,
-        v2_i: Int32? = nil,
-        v2_s: String? = nil,
-        v2_f32: UInt32? = nil,
-        v2_f64: UInt64? = nil,
-        v2_rs: [String] = []
+        i: Swift.Int32? = nil,
+        v2_i: Swift.Int32? = nil,
+        v2_s: Swift.String? = nil,
+        v2_f32: Swift.UInt32? = nil,
+        v2_f64: Swift.UInt64? = nil,
+        v2_rs: [Swift.String] = []
     ) {
         self.i = i
         self.v2_i = v2_i
@@ -35,6 +40,7 @@ public struct NestedVersionTwo {
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension NestedVersionTwo : Equatable {

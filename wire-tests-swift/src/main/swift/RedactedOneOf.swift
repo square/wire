@@ -12,11 +12,6 @@ public struct RedactedOneOf {
         configure(&self)
     }
 
-    @_disfavoredOverload
-    public init(a: A? = nil) {
-        self.a = a
-    }
-
     public enum A {
 
         case b(Int32)
@@ -32,6 +27,17 @@ public struct RedactedOneOf {
     }
 
 }
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension RedactedOneOf {
+
+    @_disfavoredOverload
+    public init(a: A? = nil) {
+        self.a = a
+    }
+
+}
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension RedactedOneOf.A : Equatable {

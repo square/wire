@@ -19,14 +19,19 @@ public struct VersionTwo {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension VersionTwo {
+
     @_disfavoredOverload
     public init(
-        i: Int32? = nil,
-        v2_i: Int32? = nil,
-        v2_s: String? = nil,
-        v2_f32: UInt32? = nil,
-        v2_f64: UInt64? = nil,
-        v2_rs: [String] = [],
+        i: Swift.Int32? = nil,
+        v2_i: Swift.Int32? = nil,
+        v2_s: Swift.String? = nil,
+        v2_f32: Swift.UInt32? = nil,
+        v2_f64: Swift.UInt64? = nil,
+        v2_rs: [Swift.String] = [],
         obj: NestedVersionTwo? = nil,
         en: EnumVersionTwo? = nil
     ) {
@@ -41,6 +46,7 @@ public struct VersionTwo {
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension VersionTwo : Equatable {

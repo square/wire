@@ -13,13 +13,19 @@ public struct EmbeddedMessage {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension EmbeddedMessage {
+
     @_disfavoredOverload
-    public init(inner_repeated_number: [Int32] = [], inner_number_after: Int32? = nil) {
+    public init(inner_repeated_number: [Swift.Int32] = [], inner_number_after: Swift.Int32? = nil) {
         self.inner_repeated_number = inner_repeated_number
         self.inner_number_after = inner_number_after
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension EmbeddedMessage : Equatable {

@@ -16,6 +16,11 @@ public struct MessageUsingMultipleEnums {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension MessageUsingMultipleEnums {
+
     @_disfavoredOverload
     public init(a: MessageWithStatus.Status? = nil, b: OtherMessageWithStatus.Status? = nil) {
         self.a = a
@@ -23,6 +28,7 @@ public struct MessageUsingMultipleEnums {
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension MessageUsingMultipleEnums : Equatable {

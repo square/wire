@@ -159,7 +159,10 @@ final class ProtoReaderTests: XCTestCase {
             00     // Length 0
         """)!
         try test(data: data) { reader in
-            let expected = Parent(name: "Bob", child: .init())
+            let expected = Parent {
+                $0.name = "Bob"
+                $0.child = .init()
+            }
             XCTAssertEqual(try reader.decode(Parent.self), expected)
         }
     }
@@ -327,7 +330,10 @@ final class ProtoReaderTests: XCTestCase {
             01 // Value 1
         """)!
         try test(data: data, enumStrategy: .returnNil) { reader in
-            let message = OneOfs(standalone_enum: OneOfs.NestedEnum.A, choice: OneOfs.Choice.similar_enum_option(OneOfs.NestedEnum.A))
+            let message = OneOfs {
+                $0.standalone_enum = .A
+                $0.choice = .similar_enum_option(.A)
+            }
             XCTAssertEqual(try reader.decode(OneOfs.self), message)
         }
     }
@@ -340,7 +346,9 @@ final class ProtoReaderTests: XCTestCase {
             02 // Value 2
         """)!
         try test(data: data, enumStrategy: .returnNil) { reader in
-            let message = OneOfs(standalone_enum: OneOfs.NestedEnum.A, choice: nil)
+            let message = OneOfs {
+                $0.standalone_enum = .A
+            }
             XCTAssertEqual(try reader.decode(OneOfs.self), message)
         }
     }

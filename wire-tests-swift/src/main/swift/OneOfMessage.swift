@@ -18,11 +18,6 @@ public struct OneOfMessage {
         configure(&self)
     }
 
-    @_disfavoredOverload
-    public init(choice: Choice? = nil) {
-        self.choice = choice
-    }
-
     public enum Choice {
 
         /**
@@ -49,6 +44,17 @@ public struct OneOfMessage {
     }
 
 }
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension OneOfMessage {
+
+    @_disfavoredOverload
+    public init(choice: Choice? = nil) {
+        self.choice = choice
+    }
+
+}
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension OneOfMessage.Choice : Equatable {

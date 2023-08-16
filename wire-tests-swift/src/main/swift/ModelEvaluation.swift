@@ -29,11 +29,16 @@ public struct ModelEvaluation {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension ModelEvaluation {
+
     @_disfavoredOverload
     public init(
-        name: String? = nil,
-        score: Double? = nil,
-        models: [String : ModelEvaluation] = [:]
+        name: Swift.String? = nil,
+        score: Swift.Double? = nil,
+        models: [Swift.String : ModelEvaluation] = [:]
     ) {
         self.name = name
         self.score = score
@@ -41,6 +46,7 @@ public struct ModelEvaluation {
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension ModelEvaluation : Equatable {

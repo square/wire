@@ -14,9 +14,14 @@ public struct VersionOne {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension VersionOne {
+
     @_disfavoredOverload
     public init(
-        i: Int32? = nil,
+        i: Swift.Int32? = nil,
         obj: NestedVersionOne? = nil,
         en: EnumVersionOne? = nil
     ) {
@@ -26,6 +31,7 @@ public struct VersionOne {
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension VersionOne : Equatable {

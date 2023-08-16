@@ -12,11 +12,6 @@ public struct OptionalEnumUser {
         configure(&self)
     }
 
-    @_disfavoredOverload
-    public init(optional_enum: OptionalEnumUser.OptionalEnum? = nil) {
-        self.optional_enum = optional_enum
-    }
-
     public enum OptionalEnum : UInt32, CaseIterable, ProtoEnum {
 
         case FOO = 1
@@ -32,6 +27,17 @@ public struct OptionalEnumUser {
     }
 
 }
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension OptionalEnumUser {
+
+    @_disfavoredOverload
+    public init(optional_enum: OptionalEnumUser.OptionalEnum? = nil) {
+        self.optional_enum = optional_enum
+    }
+
+}
+#endif
 
 #if swift(>=5.5)
 extension OptionalEnumUser.OptionalEnum : Sendable {

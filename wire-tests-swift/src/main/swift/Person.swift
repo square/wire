@@ -37,21 +37,6 @@ public struct Person {
         configure(&self)
     }
 
-    @_disfavoredOverload
-    public init(
-        id: Int32,
-        name: String,
-        email: String? = nil,
-        phone: [Person.PhoneNumber] = [],
-        aliases: [String] = []
-    ) {
-        self.id = id
-        self.name = name
-        self.email = email
-        self.phone = phone
-        self.aliases = aliases
-    }
-
     /**
      * Represents the type of the phone number: mobile, home or work.
      */
@@ -92,18 +77,45 @@ public struct Person {
             configure(&self)
         }
 
-        @_disfavoredOverload
-        public init(number: String, type: Person.PhoneType? = nil) {
-            self.number = number
-            _type.wrappedValue = type
-        }
-
     }
 
 }
 
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Person {
+
+    @_disfavoredOverload
+    public init(
+        id: Swift.Int32,
+        name: Swift.String,
+        email: Swift.String? = nil,
+        phone: [Person.PhoneNumber] = [],
+        aliases: [Swift.String] = []
+    ) {
+        self.id = id
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.aliases = aliases
+    }
+
+}
+#endif
+
 #if swift(>=5.5)
 extension Person.PhoneType : Sendable {
+}
+#endif
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Person.PhoneNumber {
+
+    @_disfavoredOverload
+    public init(number: Swift.String, type: Person.PhoneType? = nil) {
+        self.number = number
+        _type.wrappedValue = type
+    }
+
 }
 #endif
 

@@ -15,12 +15,18 @@ public struct Percents {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Percents {
+
     @_disfavoredOverload
-    public init(text: String? = nil) {
+    public init(text: Swift.String? = nil) {
         self.text = text
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension Percents : Equatable {

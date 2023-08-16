@@ -15,12 +15,18 @@ public struct VeryLongProtoNameCausingBrokenLineBreaks {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension VeryLongProtoNameCausingBrokenLineBreaks {
+
     @_disfavoredOverload
-    public init(foo: String? = nil) {
+    public init(foo: Swift.String? = nil) {
         self.foo = foo
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension VeryLongProtoNameCausingBrokenLineBreaks : Equatable {

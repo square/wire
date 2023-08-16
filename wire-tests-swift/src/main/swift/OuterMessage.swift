@@ -13,13 +13,19 @@ public struct OuterMessage {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension OuterMessage {
+
     @_disfavoredOverload
-    public init(outer_number_before: Int32? = nil, embedded_message: EmbeddedMessage? = nil) {
+    public init(outer_number_before: Swift.Int32? = nil, embedded_message: EmbeddedMessage? = nil) {
         self.outer_number_before = outer_number_before
         self.embedded_message = embedded_message
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension OuterMessage : Equatable {

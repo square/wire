@@ -291,7 +291,7 @@ class SwiftGenerator private constructor(
           )
 
           generateMessageStoragePropertyDelegates(type, storageName, storageType)
-          generateMessageStorageDelegateConstructor(type, storageName, storageType, oneOfEnumNames)
+          generateMessageStorageDelegateConstructor(type, storageName, structType, storageType, oneOfEnumNames, fileMembers)
 
           addFunction(
             FunctionSpec.builder("copyStorage")
@@ -303,7 +303,7 @@ class SwiftGenerator private constructor(
           )
         } else {
           generateMessageProperties(type, oneOfEnumNames)
-          generateMessageConstructor(type, oneOfEnumNames)
+          generateMessageConstructor(type, structType, oneOfEnumNames, fileMembers)
         }
 
         generateMessageOneOfs(type, oneOfEnumNames, fileMembers)
@@ -370,7 +370,7 @@ class SwiftGenerator private constructor(
             .addModifiers(PUBLIC)
             .apply {
               generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
-              generateMessageConstructor(type, oneOfEnumNames, includeDefaults = false)
+              generateMessageConstructor(type, storageType, oneOfEnumNames, fileMembers, includeMemberwiseDefaults = false)
             }
             .build(),
         )
@@ -966,8 +966,10 @@ class SwiftGenerator private constructor(
   private fun TypeSpec.Builder.generateMessageStorageDelegateConstructor(
     type: MessageType,
     storageName: String,
+    structType: DeclaredTypeName,
     storageType: DeclaredTypeName,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
+    fileMembers: MutableList<FileMemberSpec>,
   ) {
     addFunction(
       FunctionSpec.constructorBuilder()
@@ -1010,34 +1012,42 @@ class SwiftGenerator private constructor(
       return
     }
 
-    addFunction(
-      FunctionSpec.constructorBuilder()
-        .addModifiers(PUBLIC)
-        .addParameters(type, oneOfEnumNames, includeDefaults = true)
-        .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
-        .apply {
-          val storageParams = mutableListOf<CodeBlock>()
-          type.fields.forEach { field ->
-            storageParams += CodeBlock.of("%1N: %1N", field.name)
+    val memberwiseExtension = ExtensionSpec.builder(structType)
+      .addFunction(
+        FunctionSpec.constructorBuilder()
+          .addModifiers(PUBLIC)
+          .addParameters(type, oneOfEnumNames, includeDefaults = true)
+          .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
+          .apply {
+            val storageParams = mutableListOf<CodeBlock>()
+            type.fields.forEach { field ->
+              storageParams += CodeBlock.of("%1N: %1N", field.name)
+            }
+            type.oneOfs.forEach { oneOf ->
+              storageParams += CodeBlock.of("%1N: %1N", oneOf.name)
+            }
+            addStatement(
+              "self.%N = %T(\n%L\n)",
+              storageName,
+              storageType,
+              storageParams.joinToCode(separator = ",\n"),
+            )
           }
-          type.oneOfs.forEach { oneOf ->
-            storageParams += CodeBlock.of("%1N: %1N", oneOf.name)
-          }
-          addStatement(
-            "self.%N = %T(\n%L\n)",
-            storageName,
-            storageType,
-            storageParams.joinToCode(separator = ",\n"),
-          )
-        }
-        .build(),
-    )
+          .build(),
+      )
+      .build()
+
+    fileMembers += FileMemberSpec.builder(memberwiseExtension)
+        .addGuard("$FLAG_INCLUDE_MEMBERWISE_INITIALIZER")
+        .build()
   }
 
   private fun TypeSpec.Builder.generateMessageConstructor(
     type: MessageType,
+    structType: DeclaredTypeName,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
-    includeDefaults: Boolean = true,
+    fileMembers: MutableList<FileMemberSpec>,
+    includeMemberwiseDefaults: Boolean = true,
   ) {
     addFunction(
       FunctionSpec.constructorBuilder()
@@ -1076,24 +1086,30 @@ class SwiftGenerator private constructor(
       return
     }
 
-    addFunction(
-      FunctionSpec.constructorBuilder()
-        .addModifiers(PUBLIC)
-        .addParameters(type, oneOfEnumNames, includeDefaults)
-        .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
-        .apply {
-          type.fields.forEach { field ->
-            addStatement(
-              if (field.default != null) "_%1N.wrappedValue = %1N" else { "self.%1N = %1N" },
-              field.name,
-            )
+    val memberwiseExtension = ExtensionSpec.builder(structType)
+      .addFunction(
+        FunctionSpec.constructorBuilder()
+          .addModifiers(PUBLIC)
+          .addParameters(type, oneOfEnumNames, includeDefaults = includeMemberwiseDefaults)
+          .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
+          .apply {
+            type.fields.forEach { field ->
+              addStatement(
+                if (field.default != null) "_%1N.wrappedValue = %1N" else { "self.%1N = %1N" },
+                field.name,
+              )
+            }
+            type.oneOfs.forEach { oneOf ->
+              addStatement("self.%1N = %1N", oneOf.name)
+            }
           }
-          type.oneOfs.forEach { oneOf ->
-            addStatement("self.%1N = %1N", oneOf.name)
-          }
-        }
-        .build(),
-    )
+          .build(),
+      )
+      .build()
+
+    fileMembers += FileMemberSpec.builder(memberwiseExtension)
+        .addGuard("$FLAG_INCLUDE_MEMBERWISE_INITIALIZER")
+        .build()
   }
 
   private fun TypeSpec.Builder.generateMessageProperties(

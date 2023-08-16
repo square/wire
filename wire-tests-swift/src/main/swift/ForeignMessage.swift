@@ -12,12 +12,18 @@ public struct ForeignMessage {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension ForeignMessage {
+
     @_disfavoredOverload
-    public init(i: Int32? = nil) {
+    public init(i: Swift.Int32? = nil) {
         self.i = i
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension ForeignMessage : Equatable {

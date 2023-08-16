@@ -12,12 +12,18 @@ public struct Thing {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Thing {
+
     @_disfavoredOverload
-    public init(name: String? = nil) {
+    public init(name: Swift.String? = nil) {
         self.name = name
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension Thing : Equatable {

@@ -13,12 +13,18 @@ public struct ExternalMessage {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension ExternalMessage {
+
     @_disfavoredOverload
-    public init(f: Float? = nil) {
+    public init(f: Swift.Float? = nil) {
         _f.wrappedValue = f
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension ExternalMessage : Equatable {

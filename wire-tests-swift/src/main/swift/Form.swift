@@ -13,12 +13,6 @@ public struct Form {
         configure(&self)
     }
 
-    @_disfavoredOverload
-    public init(choice: Choice? = nil, decision: Decision? = nil) {
-        self.choice = choice
-        self.decision = decision
-    }
-
     public enum Choice {
 
         case button_element(Form.ButtonElement)
@@ -139,11 +133,6 @@ public struct Form {
             configure(&self)
         }
 
-        @_disfavoredOverload
-        public init(text: String? = nil) {
-            self.text = text
-        }
-
     }
 
     public struct CustomizedCardElement {
@@ -207,6 +196,18 @@ public struct Form {
     }
 
 }
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Form {
+
+    @_disfavoredOverload
+    public init(choice: Choice? = nil, decision: Decision? = nil) {
+        self.choice = choice
+        self.decision = decision
+    }
+
+}
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension Form.Choice : Equatable {
@@ -500,6 +501,17 @@ extension Form.SpacerElement : Proto2Codable {
 extension Form.SpacerElement : Codable {
 
     public enum CodingKeys : Swift.CodingKey {
+    }
+
+}
+#endif
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Form.TextElement {
+
+    @_disfavoredOverload
+    public init(text: Swift.String? = nil) {
+        self.text = text
     }
 
 }

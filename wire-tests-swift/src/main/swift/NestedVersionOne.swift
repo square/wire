@@ -12,12 +12,18 @@ public struct NestedVersionOne {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension NestedVersionOne {
+
     @_disfavoredOverload
-    public init(i: Int32? = nil) {
+    public init(i: Swift.Int32? = nil) {
         self.i = i
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension NestedVersionOne : Equatable {

@@ -12,12 +12,18 @@ public struct ContainsDuration {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension ContainsDuration {
+
     @_disfavoredOverload
     public init(duration: Duration? = nil) {
         self.duration = duration
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension ContainsDuration : Equatable {

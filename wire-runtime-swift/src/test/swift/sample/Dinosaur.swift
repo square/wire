@@ -22,12 +22,17 @@ public struct Dinosaur {
         configure(&self)
     }
 
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Dinosaur {
+
     @_disfavoredOverload
     public init(
-        name: String? = nil,
-        picture_urls: [String] = [],
-        length_meters: Double? = nil,
-        mass_kilograms: Double? = nil,
+        name: Swift.String? = nil,
+        picture_urls: [Swift.String] = [],
+        length_meters: Swift.Double? = nil,
+        mass_kilograms: Swift.Double? = nil,
         period: Period? = nil
     ) {
         self.name = name
@@ -38,6 +43,7 @@ public struct Dinosaur {
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension Dinosaur : Equatable {
