@@ -7,8 +7,7 @@ public struct MessageWithStatus {
 
     public var unknownFields: Foundation.Data = .init()
 
-    public init(configure: (inout Self) -> Void = { _ in }) {
-        configure(&self)
+    public init() {
     }
 
     public enum Status : UInt32, CaseIterable, ProtoEnum {

@@ -970,7 +970,7 @@ class SwiftGenerator private constructor(
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
     fileMembers: MutableList<FileMemberSpec>,
   ) {
-// CONFIGURE: Only include if there's optional parameters / oneOfs
+    val needsConfigure = type.fields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty()
 
     addFunction(
       FunctionSpec.constructorBuilder()
@@ -982,23 +982,30 @@ class SwiftGenerator private constructor(
           includeOneOfs = false,
           fieldsFilter = { it.isRequiredParameter },
         )
-        .addParameter(
-          ParameterSpec.builder(
-            "configure",
-            FunctionTypeName.get(
+        .apply {
+          if (needsConfigure) {
+            val closureType = FunctionTypeName.get(
               TypeVariableName.typeVariable("inout Self.${storageType.simpleName}"),
               returnType = VOID,
-            ),
-          )
-            .defaultValue("{ _ in }")
-            .build(),
-        )
+            )
+
+            addParameter(
+              ParameterSpec.builder("configure", closureType)
+                .defaultValue("{ _ in }")
+                .build(),
+            )
+          }
+        }
         .apply {
           val storageParams = mutableListOf<CodeBlock>()
           type.fields.filter { it.isRequiredParameter }.forEach { field ->
             storageParams += CodeBlock.of("%1N: %1N", field.name)
           }
-          storageParams += CodeBlock.of("%1N: %1N", "configure")
+
+          if (needsConfigure) {
+            storageParams += CodeBlock.of("%1N: %1N", "configure")
+          }
+
           addStatement(
             "self.%N = %T(\n%L\n)",
             storageName,
@@ -1009,7 +1016,7 @@ class SwiftGenerator private constructor(
         .build(),
     )
 
-    if (type.fields.all { it.isRequiredParameter } && type.oneOfs.isEmpty()) {
+    if (!needsConfigure) {
       return
     }
 
@@ -1052,7 +1059,7 @@ class SwiftGenerator private constructor(
     fileMembers: MutableList<FileMemberSpec>,
     includeMemberwiseDefaults: Boolean = true,
   ) {
-// CONFIGURE: Only include if there's optional parameters / oneOfs
+    val needsConfigure = type.fields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty()
 
     addFunction(
       FunctionSpec.constructorBuilder()
@@ -1064,17 +1071,20 @@ class SwiftGenerator private constructor(
           includeOneOfs = false,
           fieldsFilter = { it.isRequiredParameter },
         )
-        .addParameter(
-          ParameterSpec.builder(
-            "configure",
-            FunctionTypeName.get(
+        .apply {
+          if (needsConfigure) {
+            val closureType = FunctionTypeName.get(
               TypeVariableName.typeVariable("inout Self"),
               returnType = VOID,
-            ),
-          )
-            .defaultValue("{ _ in }")
-            .build(),
-        )
+            )
+
+            addParameter(
+              ParameterSpec.builder("configure", closureType)
+                .defaultValue("{ _ in }")
+                .build(),
+            )
+          }
+        }
         .apply {
           type.fields.filter { it.isRequiredParameter }.forEach { field ->
             addStatement(
@@ -1082,12 +1092,14 @@ class SwiftGenerator private constructor(
               field.name,
             )
           }
-          addStatement("configure(&self)")
+          if (needsConfigure) {
+            addStatement("configure(&self)")
+          }
         }
         .build(),
     )
 
-    if (type.fields.all { it.isRequiredParameter } && type.oneOfs.isEmpty()) {
+    if (!needsConfigure) {
       return
     }
 

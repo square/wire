@@ -110,14 +110,9 @@ public struct Timestamp {
     public var nanos: Int32
     public var unknownFields: Foundation.Data = .init()
 
-    public init(
-        seconds: Int64,
-        nanos: Int32,
-        configure: (inout Self) -> Void = { _ in }
-    ) {
+    public init(seconds: Int64, nanos: Int32) {
         self.seconds = seconds
         self.nanos = nanos
-        configure(&self)
     }
 
 }

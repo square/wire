@@ -78,8 +78,7 @@ public struct Form {
 
         public var unknownFields: Foundation.Data = .init()
 
-        public init(configure: (inout Self) -> Void = { _ in }) {
-            configure(&self)
+        public init() {
         }
 
     }
@@ -88,8 +87,7 @@ public struct Form {
 
         public var unknownFields: Foundation.Data = .init()
 
-        public init(configure: (inout Self) -> Void = { _ in }) {
-            configure(&self)
+        public init() {
         }
 
     }
@@ -98,8 +96,7 @@ public struct Form {
 
         public var unknownFields: Foundation.Data = .init()
 
-        public init(configure: (inout Self) -> Void = { _ in }) {
-            configure(&self)
+        public init() {
         }
 
     }
@@ -108,8 +105,7 @@ public struct Form {
 
         public var unknownFields: Foundation.Data = .init()
 
-        public init(configure: (inout Self) -> Void = { _ in }) {
-            configure(&self)
+        public init() {
         }
 
     }
@@ -118,8 +114,7 @@ public struct Form {
 
         public var unknownFields: Foundation.Data = .init()
 
-        public init(configure: (inout Self) -> Void = { _ in }) {
-            configure(&self)
+        public init() {
         }
 
     }
@@ -139,8 +134,7 @@ public struct Form {
 
         public var unknownFields: Foundation.Data = .init()
 
-        public init(configure: (inout Self) -> Void = { _ in }) {
-            configure(&self)
+        public init() {
         }
 
     }
@@ -149,8 +143,7 @@ public struct Form {
 
         public var unknownFields: Foundation.Data = .init()
 
-        public init(configure: (inout Self) -> Void = { _ in }) {
-            configure(&self)
+        public init() {
         }
 
     }
@@ -159,8 +152,7 @@ public struct Form {
 
         public var unknownFields: Foundation.Data = .init()
 
-        public init(configure: (inout Self) -> Void = { _ in }) {
-            configure(&self)
+        public init() {
         }
 
     }
@@ -169,8 +161,7 @@ public struct Form {
 
         public var unknownFields: Foundation.Data = .init()
 
-        public init(configure: (inout Self) -> Void = { _ in }) {
-            configure(&self)
+        public init() {
         }
 
     }
@@ -179,8 +170,7 @@ public struct Form {
 
         public var unknownFields: Foundation.Data = .init()
 
-        public init(configure: (inout Self) -> Void = { _ in }) {
-            configure(&self)
+        public init() {
         }
 
     }
@@ -189,8 +179,7 @@ public struct Form {
 
         public var unknownFields: Foundation.Data = .init()
 
-        public init(configure: (inout Self) -> Void = { _ in }) {
-            configure(&self)
+        public init() {
         }
 
     }
