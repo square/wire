@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 4.8.1
+-------------
+
+_2023-08-17_
+
+* Fix: Correctly define sources folders vs. resources folders for Wire generated code.
+* Fix: Generated `.proto` are correctly added to the built artifact.
+* New: All options of KotlinTarget available on CLI.
+
 Version 4.8.0
 -------------
 
