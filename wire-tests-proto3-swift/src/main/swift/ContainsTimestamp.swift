@@ -18,6 +18,7 @@ public struct ContainsTimestamp {
 extension ContainsTimestamp {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(timestamp: Timestamp? = nil) {
         self.timestamp = timestamp
     }

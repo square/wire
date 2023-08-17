@@ -37,6 +37,7 @@ public struct MappyTwo {
 extension MappyTwo {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(
         string_enums: [Swift.String : MappyTwo.ValueEnum] = [:],
         int_things: [Swift.Int64 : Thing] = [:],

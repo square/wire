@@ -970,6 +970,8 @@ class SwiftGenerator private constructor(
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
     fileMembers: MutableList<FileMemberSpec>,
   ) {
+// CONFIGURE: Only include if there's optional parameters / oneOfs
+
     addFunction(
       FunctionSpec.constructorBuilder()
         .addModifiers(PUBLIC)
@@ -1011,12 +1013,14 @@ class SwiftGenerator private constructor(
       return
     }
 
+    // These will be removed in November 2023
     val memberwiseExtension = ExtensionSpec.builder(structType)
       .addFunction(
         FunctionSpec.constructorBuilder()
           .addModifiers(PUBLIC)
           .addParameters(type, oneOfEnumNames, includeDefaults = true)
           .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
+          .addAttribute(deprecated)
           .apply {
             val storageParams = mutableListOf<CodeBlock>()
             type.fields.forEach { field ->
@@ -1048,6 +1052,8 @@ class SwiftGenerator private constructor(
     fileMembers: MutableList<FileMemberSpec>,
     includeMemberwiseDefaults: Boolean = true,
   ) {
+// CONFIGURE: Only include if there's optional parameters / oneOfs
+
     addFunction(
       FunctionSpec.constructorBuilder()
         .addModifiers(PUBLIC)
@@ -1085,12 +1091,14 @@ class SwiftGenerator private constructor(
       return
     }
 
+    // These will be removed in November 2023
     val memberwiseExtension = ExtensionSpec.builder(structType)
       .addFunction(
         FunctionSpec.constructorBuilder()
           .addModifiers(PUBLIC)
           .addParameters(type, oneOfEnumNames, includeDefaults = includeMemberwiseDefaults)
           .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
+          .addAttribute(deprecated)
           .apply {
             type.fields.forEach { field ->
               addStatement(

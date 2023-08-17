@@ -65,6 +65,7 @@ public struct FooBar {
 extension FooBar {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(
         foo: Swift.Int32? = nil,
         bar: Swift.String? = nil,
@@ -96,6 +97,7 @@ extension FooBar {
 extension FooBar.Nested {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(value: FooBar.FooBarBazEnum? = nil) {
         self.value = value
     }
@@ -171,6 +173,7 @@ extension FooBar.Nested : Codable {
 extension FooBar.More {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(serial: [Swift.Int32] = []) {
         self.serial = serial
     }

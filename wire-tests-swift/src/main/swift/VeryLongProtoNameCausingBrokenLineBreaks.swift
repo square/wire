@@ -21,6 +21,7 @@ public struct VeryLongProtoNameCausingBrokenLineBreaks {
 extension VeryLongProtoNameCausingBrokenLineBreaks {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(foo: Swift.String? = nil) {
         self.foo = foo
     }

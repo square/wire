@@ -32,6 +32,7 @@ public struct RedactedOneOf {
 extension RedactedOneOf {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(a: A? = nil) {
         self.a = a
     }

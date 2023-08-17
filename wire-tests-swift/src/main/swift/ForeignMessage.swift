@@ -18,6 +18,7 @@ public struct ForeignMessage {
 extension ForeignMessage {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(i: Swift.Int32? = nil) {
         self.i = i
     }

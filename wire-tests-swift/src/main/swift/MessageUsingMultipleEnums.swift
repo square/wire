@@ -22,6 +22,7 @@ public struct MessageUsingMultipleEnums {
 extension MessageUsingMultipleEnums {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(a: MessageWithStatus.Status? = nil, b: OtherMessageWithStatus.Status? = nil) {
         self.a = a
         self.b = b

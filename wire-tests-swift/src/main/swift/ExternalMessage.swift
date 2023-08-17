@@ -19,6 +19,7 @@ public struct ExternalMessage {
 extension ExternalMessage {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(f: Swift.Float? = nil) {
         _f.wrappedValue = f
     }

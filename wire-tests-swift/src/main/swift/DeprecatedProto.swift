@@ -19,6 +19,7 @@ public struct DeprecatedProto {
 extension DeprecatedProto {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(foo: Swift.String? = nil) {
         self.foo = foo
     }

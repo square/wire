@@ -97,6 +97,7 @@ public struct AllTypes {
 extension AllTypes {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(
         opt_int32: Swift.Int32? = nil,
         opt_uint32: Swift.UInt32? = nil,
@@ -405,6 +406,7 @@ extension AllTypes.NestedEnum : Sendable {
 extension AllTypes.NestedMessage {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(a: Swift.Int32? = nil) {
         self.a = a
     }
@@ -495,6 +497,7 @@ extension AllTypes : @unchecked Sendable {
 extension AllTypes.Storage {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(
         opt_int32: Swift.Int32?,
         opt_uint32: Swift.UInt32?,

@@ -18,6 +18,7 @@ public struct NestedVersionOne {
 extension NestedVersionOne {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(i: Swift.Int32? = nil) {
         self.i = i
     }

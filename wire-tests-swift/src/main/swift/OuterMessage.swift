@@ -19,6 +19,7 @@ public struct OuterMessage {
 extension OuterMessage {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(outer_number_before: Swift.Int32? = nil, embedded_message: EmbeddedMessage? = nil) {
         self.outer_number_before = outer_number_before
         self.embedded_message = embedded_message

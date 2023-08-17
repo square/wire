@@ -19,6 +19,7 @@ public struct EmbeddedMessage {
 extension EmbeddedMessage {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(inner_repeated_number: [Swift.Int32] = [], inner_number_after: Swift.Int32? = nil) {
         self.inner_repeated_number = inner_repeated_number
         self.inner_number_after = inner_number_after

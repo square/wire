@@ -21,6 +21,7 @@ public struct Percents {
 extension Percents {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(text: Swift.String? = nil) {
         self.text = text
     }

@@ -18,6 +18,7 @@ public struct ContainsDuration {
 extension ContainsDuration {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(duration: Duration? = nil) {
         self.duration = duration
     }

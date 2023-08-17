@@ -32,6 +32,7 @@ public struct OptionalEnumUser {
 extension OptionalEnumUser {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(optional_enum: OptionalEnumUser.OptionalEnum? = nil) {
         self.optional_enum = optional_enum
     }

@@ -20,6 +20,7 @@ public struct VersionOne {
 extension VersionOne {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(
         i: Swift.Int32? = nil,
         obj: NestedVersionOne? = nil,

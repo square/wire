@@ -28,6 +28,7 @@ public struct Dinosaur {
 extension Dinosaur {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(
         name: Swift.String? = nil,
         picture_urls: [Swift.String] = [],

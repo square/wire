@@ -201,6 +201,7 @@ public struct Form {
 extension Form {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(choice: Choice? = nil, decision: Decision? = nil) {
         self.choice = choice
         self.decision = decision
@@ -510,6 +511,7 @@ extension Form.SpacerElement : Codable {
 extension Form.TextElement {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(text: Swift.String? = nil) {
         self.text = text
     }

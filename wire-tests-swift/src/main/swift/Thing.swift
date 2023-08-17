@@ -18,6 +18,7 @@ public struct Thing {
 extension Thing {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(name: Swift.String? = nil) {
         self.name = name
     }

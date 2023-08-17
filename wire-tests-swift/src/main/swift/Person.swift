@@ -85,6 +85,7 @@ public struct Person {
 extension Person {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(
         id: Swift.Int32,
         name: Swift.String,
@@ -111,6 +112,7 @@ extension Person.PhoneType : Sendable {
 extension Person.PhoneNumber {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(number: Swift.String, type: Person.PhoneType? = nil) {
         self.number = number
         _type.wrappedValue = type

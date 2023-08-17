@@ -49,6 +49,7 @@ public struct OneOfMessage {
 extension OneOfMessage {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(choice: Choice? = nil) {
         self.choice = choice
     }

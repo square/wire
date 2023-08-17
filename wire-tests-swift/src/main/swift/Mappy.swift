@@ -18,6 +18,7 @@ public struct Mappy {
 extension Mappy {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(things: [Swift.String : Thing] = [:]) {
         self.things = things
     }

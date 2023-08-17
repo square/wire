@@ -35,6 +35,7 @@ public struct ModelEvaluation {
 extension ModelEvaluation {
 
     @_disfavoredOverload
+    @available(*, deprecated)
     public init(
         name: Swift.String? = nil,
         score: Swift.Double? = nil,
