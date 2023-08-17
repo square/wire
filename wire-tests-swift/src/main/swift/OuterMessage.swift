@@ -9,12 +9,24 @@ public struct OuterMessage {
     public var embedded_message: EmbeddedMessage?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(outer_number_before: Int32? = nil, embedded_message: EmbeddedMessage? = nil) {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
+    }
+
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension OuterMessage {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(outer_number_before: Swift.Int32? = nil, embedded_message: EmbeddedMessage? = nil) {
         self.outer_number_before = outer_number_before
         self.embedded_message = embedded_message
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension OuterMessage : Equatable {

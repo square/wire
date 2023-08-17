@@ -5,14 +5,26 @@ import Wire
 
 public struct Mappy {
 
-    public var things: [String : Thing]
+    public var things: [String : Thing] = [:]
     public var unknownFields: Foundation.Data = .init()
 
-    public init(things: [String : Thing] = [:]) {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
+    }
+
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Mappy {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(things: [Swift.String : Thing] = [:]) {
         self.things = things
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension Mappy : Equatable {

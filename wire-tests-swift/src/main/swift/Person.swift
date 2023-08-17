@@ -23,22 +23,18 @@ public struct Person {
     /**
      * A list of the customer's phone numbers.
      */
-    public var phone: [Person.PhoneNumber]
-    public var aliases: [String]
+    public var phone: [Person.PhoneNumber] = []
+    public var aliases: [String] = []
     public var unknownFields: Foundation.Data = .init()
 
     public init(
         id: Int32,
         name: String,
-        email: String? = nil,
-        phone: [Person.PhoneNumber] = [],
-        aliases: [String] = []
+        configure: (inout Self) -> Void = { _ in }
     ) {
         self.id = id
         self.name = name
-        self.email = email
-        self.phone = phone
-        self.aliases = aliases
+        configure(&self)
     }
 
     /**
@@ -76,17 +72,52 @@ public struct Person {
         public var type: Person.PhoneType?
         public var unknownFields: Foundation.Data = .init()
 
-        public init(number: String, type: Person.PhoneType? = nil) {
+        public init(number: String, configure: (inout Self) -> Void = { _ in }) {
             self.number = number
-            _type.wrappedValue = type
+            configure(&self)
         }
 
     }
 
 }
 
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Person {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(
+        id: Swift.Int32,
+        name: Swift.String,
+        email: Swift.String? = nil,
+        phone: [Person.PhoneNumber] = [],
+        aliases: [Swift.String] = []
+    ) {
+        self.id = id
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.aliases = aliases
+    }
+
+}
+#endif
+
 #if swift(>=5.5)
 extension Person.PhoneType : Sendable {
+}
+#endif
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Person.PhoneNumber {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(number: Swift.String, type: Person.PhoneType? = nil) {
+        self.number = number
+        _type.wrappedValue = type
+    }
+
 }
 #endif
 

@@ -123,20 +123,20 @@ final class ProtoWriterTests: XCTestCase {
 
     func testEncodeDefaultProto2Values() throws {
         let writer = ProtoWriter()
-        let proto = SimpleOptional2(
-            opt_int32: 0,
-            opt_int64: 0,
-            opt_uint32: 0,
-            opt_uint64: 0,
-            opt_float: 0,
-            opt_double: 0,
-            opt_bytes: .init(),
-            opt_string: "",
-            opt_enum: .UNKNOWN,
-            repeated_int32: [],
-            repeated_string: [],
-            map_int32_string: [:]
-        )
+        let proto = SimpleOptional2 {
+            $0.opt_int32 = 0
+            $0.opt_int64 = 0
+            $0.opt_uint32 = 0
+            $0.opt_uint64 = 0
+            $0.opt_float = 0
+            $0.opt_double = 0
+            $0.opt_bytes = .init()
+            $0.opt_string = ""
+            $0.opt_enum = .UNKNOWN
+            $0.repeated_int32 = []
+            $0.repeated_string = []
+            $0.map_int32_string = [:]
+        }
         try writer.encode(tag: 1, value: proto)
 
         // All values are encoded in proto2, including defaults.
@@ -191,11 +191,12 @@ final class ProtoWriterTests: XCTestCase {
             req_double: 0,
             req_bytes: .init(),
             req_string: "",
-            req_enum: .UNKNOWN,
-            repeated_int32: [],
-            repeated_string: [],
-            map_int32_string: [:]
-        )
+            req_enum: .UNKNOWN
+        ) {
+            $0.repeated_int32 = []
+            $0.repeated_string = []
+            $0.map_int32_string = [:]
+        }
         try writer.encode(tag: 1, value: proto)
 
         // No data should be encoded. Just the top-level message tag with a length of zero.
@@ -551,7 +552,10 @@ final class ProtoWriterTests: XCTestCase {
     func testEncodePackedRepeatedProto2Default() throws {
         let writer = ProtoWriter()
         let data = Data(json_data: "12")
-        let person = Person(name: "name", id: 1, email: "email", ids: [1, 2, 3], data: data)
+        let person = Person(name: "name", id: 1, data: data) {
+            $0.email = "email"
+            $0.ids = [1, 2, 3]
+        }
         try writer.encode(tag: 1, value: person)
 
         // Proto2 should used "packed: false" by default.
@@ -583,7 +587,10 @@ final class ProtoWriterTests: XCTestCase {
 
     func testEncodePackedRepeatedProto3Default() throws {
         let writer = ProtoWriter()
-        let person = Person3(name: "name", id: 1, email: "email", ids: [1, 2, 3])
+        let person = Person3(name: "name", id: 1) {
+            $0.email = "email"
+            $0.ids = [1, 2, 3]
+        }
         try writer.encode(tag: 1, value: person)
 
         // Proto3 should used "packed: true" by default.

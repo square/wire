@@ -9,9 +9,8 @@ public struct Form {
     public var decision: Decision?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(choice: Choice? = nil, decision: Decision? = nil) {
-        self.choice = choice
-        self.decision = decision
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
     }
 
     public enum Choice {
@@ -125,8 +124,8 @@ public struct Form {
         public var text: String?
         public var unknownFields: Foundation.Data = .init()
 
-        public init(text: String? = nil) {
-            self.text = text
+        public init(configure: (inout Self) -> Void = { _ in }) {
+            configure(&self)
         }
 
     }
@@ -186,6 +185,19 @@ public struct Form {
     }
 
 }
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Form {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(choice: Choice? = nil, decision: Decision? = nil) {
+        self.choice = choice
+        self.decision = decision
+    }
+
+}
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension Form.Choice : Equatable {
@@ -479,6 +491,18 @@ extension Form.SpacerElement : Proto2Codable {
 extension Form.SpacerElement : Codable {
 
     public enum CodingKeys : Swift.CodingKey {
+    }
+
+}
+#endif
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Form.TextElement {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(text: Swift.String? = nil) {
+        self.text = text
     }
 
 }

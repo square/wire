@@ -8,11 +8,23 @@ public struct ForeignMessage {
     public var i: Int32?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(i: Int32? = nil) {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
+    }
+
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension ForeignMessage {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(i: Swift.Int32? = nil) {
         self.i = i
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension ForeignMessage : Equatable {

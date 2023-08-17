@@ -22,11 +22,14 @@ final class JsonLitmusTest : XCTestCase {
     func testSimpleRoundtrip() {
         let expectedPerson = Person(
             id: 42,
-            name: "Luke Skywalker",
-            email: "luke@skywalker.net",
-            phone: [.init(number: "800-555-1234", type: .WORK)],
-            aliases: ["Nerfherder"]
-        )
+            name: "Luke Skywalker"
+        ) {
+            $0.email = "luke@skywalker.net"
+            $0.phone = [
+                Person.PhoneNumber(number: "800-555-1234") { $0.type = .WORK },
+            ]
+            $0.aliases = ["Nerfherder"]
+        }
         let expectedJson = """
         {\
         "email":"luke@skywalker.net",\

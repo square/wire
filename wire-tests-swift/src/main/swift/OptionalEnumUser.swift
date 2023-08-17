@@ -8,8 +8,8 @@ public struct OptionalEnumUser {
     public var optional_enum: OptionalEnumUser.OptionalEnum?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(optional_enum: OptionalEnumUser.OptionalEnum? = nil) {
-        self.optional_enum = optional_enum
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
     }
 
     public enum OptionalEnum : UInt32, CaseIterable, ProtoEnum {
@@ -27,6 +27,18 @@ public struct OptionalEnumUser {
     }
 
 }
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension OptionalEnumUser {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(optional_enum: OptionalEnumUser.OptionalEnum? = nil) {
+        self.optional_enum = optional_enum
+    }
+
+}
+#endif
 
 #if swift(>=5.5)
 extension OptionalEnumUser.OptionalEnum : Sendable {

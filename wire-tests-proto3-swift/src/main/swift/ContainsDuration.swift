@@ -8,11 +8,23 @@ public struct ContainsDuration {
     public var duration: Duration?
     public var unknownFields: Foundation.Data = .init()
 
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
+    }
+
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension ContainsDuration {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
     public init(duration: Duration? = nil) {
         self.duration = duration
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension ContainsDuration : Equatable {

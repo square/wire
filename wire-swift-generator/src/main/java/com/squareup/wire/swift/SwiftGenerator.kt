@@ -46,6 +46,7 @@ import io.outfoxx.swiftpoet.FileMemberSpec
 import io.outfoxx.swiftpoet.FileSpec
 import io.outfoxx.swiftpoet.FunctionSignatureSpec
 import io.outfoxx.swiftpoet.FunctionSpec
+import io.outfoxx.swiftpoet.FunctionTypeName
 import io.outfoxx.swiftpoet.INT
 import io.outfoxx.swiftpoet.INT32
 import io.outfoxx.swiftpoet.INT64
@@ -65,9 +66,9 @@ import io.outfoxx.swiftpoet.TypeSpec
 import io.outfoxx.swiftpoet.TypeVariableName
 import io.outfoxx.swiftpoet.UINT32
 import io.outfoxx.swiftpoet.UINT64
+import io.outfoxx.swiftpoet.VOID
 import io.outfoxx.swiftpoet.joinToCode
 import io.outfoxx.swiftpoet.parameterizedBy
-import java.util.Locale.US
 import okio.ByteString.Companion.encode
 
 class SwiftGenerator private constructor(
@@ -136,6 +137,9 @@ class SwiftGenerator private constructor(
     get() = type!!.keyType!!
   internal val Field.valueType: ProtoType
     get() = type!!.valueType!!
+
+  private val Field.isRequiredParameter: Boolean
+    get() = !isOptional && !isRepeated && !isMap
 
   private val Field.isCollection: Boolean
     get() = when (typeName.makeNonOptional()) {
@@ -255,7 +259,7 @@ class SwiftGenerator private constructor(
     fileMembers: MutableList<FileMemberSpec>,
   ): List<TypeSpec> {
     val structType = type.typeName
-    val oneOfEnumNames = type.oneOfs.associateWith { structType.nestedType(it.name.capitalize(US)) }
+    val oneOfEnumNames = type.oneOfs.associateWith { structType.nestedType(it.name.replaceFirstChar(Char::uppercase)) }
 
     // TODO use a NameAllocator
     val propertyNames = type.fields.map { it.name } + type.oneOfs.map { it.name }
@@ -286,28 +290,7 @@ class SwiftGenerator private constructor(
           )
 
           generateMessageStoragePropertyDelegates(type, storageName, storageType)
-
-          addFunction(
-            FunctionSpec.constructorBuilder()
-              .addModifiers(PUBLIC)
-              .addParameters(type, oneOfEnumNames, includeDefaults = true)
-              .apply {
-                val storageParams = mutableListOf<CodeBlock>()
-                type.fields.forEach { field ->
-                  storageParams += CodeBlock.of("%1N: %1N", field.name)
-                }
-                type.oneOfs.forEach { oneOf ->
-                  storageParams += CodeBlock.of("%1N: %1N", oneOf.name)
-                }
-                addStatement(
-                  "self.%N = %T(%L)",
-                  storageName,
-                  storageType,
-                  storageParams.joinToCode(separator = ",%W"),
-                )
-              }
-              .build(),
-          )
+          generateMessageStorageDelegateConstructor(type, storageName, structType, storageType, oneOfEnumNames, fileMembers)
 
           addFunction(
             FunctionSpec.builder("copyStorage")
@@ -319,7 +302,7 @@ class SwiftGenerator private constructor(
           )
         } else {
           generateMessageProperties(type, oneOfEnumNames)
-          generateMessageConstructor(type, oneOfEnumNames)
+          generateMessageConstructor(type, structType, oneOfEnumNames, fileMembers)
         }
 
         generateMessageOneOfs(type, oneOfEnumNames, fileMembers)
@@ -386,7 +369,7 @@ class SwiftGenerator private constructor(
             .addModifiers(PUBLIC)
             .apply {
               generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
-              generateMessageConstructor(type, oneOfEnumNames, includeDefaults = false)
+              generateMessageConstructor(type, storageType, oneOfEnumNames, fileMembers, includeMemberwiseDefaults = false)
             }
             .build(),
         )
@@ -953,8 +936,10 @@ class SwiftGenerator private constructor(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
     includeDefaults: Boolean = true,
+    includeOneOfs: Boolean = true,
+    fieldsFilter: (Field) -> Boolean = { true },
   ) = apply {
-    type.fields.forEach { field ->
+    type.fields.filter(fieldsFilter).forEach { field ->
       addParameter(
         ParameterSpec.builder(field.name, field.typeName)
           .apply {
@@ -965,38 +950,185 @@ class SwiftGenerator private constructor(
           .build(),
       )
     }
-    type.oneOfs.forEach { oneOf ->
-      val enumName = oneOfEnumNames.getValue(oneOf).makeOptional()
-      addParameter(
-        ParameterSpec.builder(oneOf.name, enumName)
-          .defaultValue("nil")
+    if (includeOneOfs) {
+      type.oneOfs.forEach { oneOf ->
+        val enumName = oneOfEnumNames.getValue(oneOf).makeOptional()
+        addParameter(
+          ParameterSpec.builder(oneOf.name, enumName)
+            .defaultValue("nil")
+            .build(),
+        )
+      }
+    }
+  }
+
+  private fun TypeSpec.Builder.generateMessageStorageDelegateConstructor(
+    type: MessageType,
+    storageName: String,
+    structType: DeclaredTypeName,
+    storageType: DeclaredTypeName,
+    oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
+    fileMembers: MutableList<FileMemberSpec>,
+  ) {
+    val needsConfigure = type.fields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty()
+
+    addFunction(
+      FunctionSpec.constructorBuilder()
+        .addModifiers(PUBLIC)
+        .addParameters(
+          type,
+          oneOfEnumNames,
+          includeDefaults = false,
+          includeOneOfs = false,
+          fieldsFilter = { it.isRequiredParameter },
+        )
+        .apply {
+          if (needsConfigure) {
+            val closureType = FunctionTypeName.get(
+              TypeVariableName.typeVariable("inout Self.${storageType.simpleName}"),
+              returnType = VOID,
+            )
+
+            addParameter(
+              ParameterSpec.builder("configure", closureType)
+                .defaultValue("{ _ in }")
+                .build(),
+            )
+          }
+        }
+        .apply {
+          val storageParams = mutableListOf<CodeBlock>()
+          type.fields.filter { it.isRequiredParameter }.forEach { field ->
+            storageParams += CodeBlock.of("%1N: %1N", field.name)
+          }
+
+          if (needsConfigure) {
+            storageParams += CodeBlock.of("%1N: %1N", "configure")
+          }
+
+          addStatement(
+            "self.%N = %T(\n%L\n)",
+            storageName,
+            storageType,
+            storageParams.joinToCode(separator = ",\n"),
+          )
+        }
+        .build(),
+    )
+
+    if (!needsConfigure) {
+      return
+    }
+
+    // These will be removed in November 2023
+    val memberwiseExtension = ExtensionSpec.builder(structType)
+      .addFunction(
+        FunctionSpec.constructorBuilder()
+          .addModifiers(PUBLIC)
+          .addParameters(type, oneOfEnumNames, includeDefaults = true)
+          .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
+          .addAttribute(deprecated)
+          .apply {
+            val storageParams = mutableListOf<CodeBlock>()
+            type.fields.forEach { field ->
+              storageParams += CodeBlock.of("%1N: %1N", field.name)
+            }
+            type.oneOfs.forEach { oneOf ->
+              storageParams += CodeBlock.of("%1N: %1N", oneOf.name)
+            }
+            addStatement(
+              "self.%N = %T(\n%L\n)",
+              storageName,
+              storageType,
+              storageParams.joinToCode(separator = ",\n"),
+            )
+          }
           .build(),
       )
-    }
+      .build()
+
+    fileMembers += FileMemberSpec.builder(memberwiseExtension)
+      .addGuard("$FLAG_INCLUDE_MEMBERWISE_INITIALIZER")
+      .build()
   }
 
   private fun TypeSpec.Builder.generateMessageConstructor(
     type: MessageType,
+    structType: DeclaredTypeName,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
-    includeDefaults: Boolean = true,
+    fileMembers: MutableList<FileMemberSpec>,
+    includeMemberwiseDefaults: Boolean = true,
   ) {
+    val needsConfigure = type.fields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty()
+
     addFunction(
       FunctionSpec.constructorBuilder()
         .addModifiers(PUBLIC)
-        .addParameters(type, oneOfEnumNames, includeDefaults)
+        .addParameters(
+          type,
+          oneOfEnumNames,
+          includeDefaults = false,
+          includeOneOfs = false,
+          fieldsFilter = { it.isRequiredParameter },
+        )
         .apply {
-          type.fields.forEach { field ->
+          if (needsConfigure) {
+            val closureType = FunctionTypeName.get(
+              TypeVariableName.typeVariable("inout Self"),
+              returnType = VOID,
+            )
+
+            addParameter(
+              ParameterSpec.builder("configure", closureType)
+                .defaultValue("{ _ in }")
+                .build(),
+            )
+          }
+        }
+        .apply {
+          type.fields.filter { it.isRequiredParameter }.forEach { field ->
             addStatement(
               if (field.default != null) "_%1N.wrappedValue = %1N" else { "self.%1N = %1N" },
               field.name,
             )
           }
-          type.oneOfs.forEach { oneOf ->
-            addStatement("self.%1N = %1N", oneOf.name)
+          if (needsConfigure) {
+            addStatement("configure(&self)")
           }
         }
         .build(),
     )
+
+    if (!needsConfigure) {
+      return
+    }
+
+    // These will be removed in November 2023
+    val memberwiseExtension = ExtensionSpec.builder(structType)
+      .addFunction(
+        FunctionSpec.constructorBuilder()
+          .addModifiers(PUBLIC)
+          .addParameters(type, oneOfEnumNames, includeDefaults = includeMemberwiseDefaults)
+          .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
+          .addAttribute(deprecated)
+          .apply {
+            type.fields.forEach { field ->
+              addStatement(
+                if (field.default != null) "_%1N.wrappedValue = %1N" else { "self.%1N = %1N" },
+                field.name,
+              )
+            }
+            type.oneOfs.forEach { oneOf ->
+              addStatement("self.%1N = %1N", oneOf.name)
+            }
+          }
+          .build(),
+      )
+      .build()
+
+    fileMembers += FileMemberSpec.builder(memberwiseExtension)
+      .addGuard("$FLAG_INCLUDE_MEMBERWISE_INITIALIZER")
+      .build()
   }
 
   private fun TypeSpec.Builder.generateMessageProperties(
@@ -1019,6 +1151,12 @@ class SwiftGenerator private constructor(
       if (default != null) {
         val defaultValue = defaultFieldInitializer(field.type!!, default)
         property.addAttribute(AttributeSpec.builder(defaulted).addArgument("defaultValue: $defaultValue").build())
+      }
+
+      if (field.isMap) {
+        property.initializer("[:]")
+      } else if (field.isRepeated) {
+        property.initializer("[]")
       }
 
       addProperty(property.build())
@@ -1390,6 +1528,7 @@ class SwiftGenerator private constructor(
     private const val FLAG_REMOVE_EQUATABLE = "WIRE_REMOVE_EQUATABLE"
     private const val FLAG_REMOVE_HASHABLE = "WIRE_REMOVE_HASHABLE"
     private const val FLAG_REMOVE_REDACTABLE = "WIRE_REMOVE_REDACTABLE"
+    private const val FLAG_INCLUDE_MEMBERWISE_INITIALIZER = "WIRE_INCLUDE_MEMBERWISE_INITIALIZER"
 
     private val NEEDS_CUSTOM_CODABLE = setOf("Duration", "Timestamp")
 

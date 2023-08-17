@@ -25,13 +25,17 @@ final class DefaultedTests: XCTestCase {
     }
 
     func testProjectedValueIsWrappedValue() throws {
-        let phoneNumber = Person.PhoneNumber(number: "1234567890", type: Person.PhoneType.WORK)
+        let phoneNumber = Person.PhoneNumber(number: "1234567890") {
+            $0.type = .WORK
+        }
         XCTAssertEqual(phoneNumber.type, Person.PhoneType.WORK)
         XCTAssertEqual(phoneNumber.$type, Person.PhoneType.WORK)
     }
 
     func testProjectedValueWhenResettingWrappedValue() throws {
-        var phoneNumber = Person.PhoneNumber(number: "1234567890", type: Person.PhoneType.WORK)
+        var phoneNumber = Person.PhoneNumber(number: "1234567890") {
+            $0.type = .WORK
+        }
         XCTAssertEqual(phoneNumber.type, Person.PhoneType.WORK)
         XCTAssertEqual(phoneNumber.$type, Person.PhoneType.WORK)
         phoneNumber.type = nil

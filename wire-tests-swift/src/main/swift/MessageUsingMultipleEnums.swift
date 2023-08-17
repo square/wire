@@ -12,12 +12,24 @@ public struct MessageUsingMultipleEnums {
     public var b: OtherMessageWithStatus.Status?
     public var unknownFields: Foundation.Data = .init()
 
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
+    }
+
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension MessageUsingMultipleEnums {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
     public init(a: MessageWithStatus.Status? = nil, b: OtherMessageWithStatus.Status? = nil) {
         self.a = a
         self.b = b
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension MessageUsingMultipleEnums : Equatable {

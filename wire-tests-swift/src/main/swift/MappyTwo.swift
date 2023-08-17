@@ -5,22 +5,14 @@ import Wire
 
 public struct MappyTwo {
 
-    public var string_enums: [String : MappyTwo.ValueEnum]
-    public var int_things: [Int64 : Thing]
-    public var string_ints: [String : Int64]
-    public var int_things_two: [Int32 : Thing]
+    public var string_enums: [String : MappyTwo.ValueEnum] = [:]
+    public var int_things: [Int64 : Thing] = [:]
+    public var string_ints: [String : Int64] = [:]
+    public var int_things_two: [Int32 : Thing] = [:]
     public var unknownFields: Foundation.Data = .init()
 
-    public init(
-        string_enums: [String : MappyTwo.ValueEnum] = [:],
-        int_things: [Int64 : Thing] = [:],
-        string_ints: [String : Int64] = [:],
-        int_things_two: [Int32 : Thing] = [:]
-    ) {
-        self.string_enums = string_enums
-        self.int_things = int_things
-        self.string_ints = string_ints
-        self.int_things_two = int_things_two
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
     }
 
     public enum ValueEnum : UInt32, CaseIterable, ProtoEnum {
@@ -40,6 +32,26 @@ public struct MappyTwo {
     }
 
 }
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension MappyTwo {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(
+        string_enums: [Swift.String : MappyTwo.ValueEnum] = [:],
+        int_things: [Swift.Int64 : Thing] = [:],
+        string_ints: [Swift.String : Swift.Int64] = [:],
+        int_things_two: [Swift.Int32 : Thing] = [:]
+    ) {
+        self.string_enums = string_enums
+        self.int_things = int_things
+        self.string_ints = string_ints
+        self.int_things_two = int_things_two
+    }
+
+}
+#endif
 
 #if swift(>=5.5)
 extension MappyTwo.ValueEnum : Sendable {

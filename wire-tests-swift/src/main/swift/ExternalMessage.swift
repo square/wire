@@ -9,11 +9,23 @@ public struct ExternalMessage {
     public var f: Float?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(f: Float? = nil) {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
+    }
+
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension ExternalMessage {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(f: Swift.Float? = nil) {
         _f.wrappedValue = f
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension ExternalMessage : Equatable {

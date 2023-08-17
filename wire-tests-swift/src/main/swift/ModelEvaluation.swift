@@ -22,13 +22,24 @@ public struct ModelEvaluation {
 
     public var name: String?
     public var score: Double?
-    public var models: [String : ModelEvaluation]
+    public var models: [String : ModelEvaluation] = [:]
     public var unknownFields: Foundation.Data = .init()
 
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
+    }
+
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension ModelEvaluation {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
     public init(
-        name: String? = nil,
-        score: Double? = nil,
-        models: [String : ModelEvaluation] = [:]
+        name: Swift.String? = nil,
+        score: Swift.Double? = nil,
+        models: [Swift.String : ModelEvaluation] = [:]
     ) {
         self.name = name
         self.score = score
@@ -36,6 +47,7 @@ public struct ModelEvaluation {
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension ModelEvaluation : Equatable {

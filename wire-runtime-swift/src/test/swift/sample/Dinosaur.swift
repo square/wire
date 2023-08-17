@@ -12,17 +12,28 @@ public struct Dinosaur {
     /**
      * URLs with images of this dinosaur.
      */
-    public var picture_urls: [String]
+    public var picture_urls: [String] = []
     public var length_meters: Double?
     public var mass_kilograms: Double?
     public var period: Period?
     public var unknownFields: Foundation.Data = .init()
 
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
+    }
+
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Dinosaur {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
     public init(
-        name: String? = nil,
-        picture_urls: [String] = [],
-        length_meters: Double? = nil,
-        mass_kilograms: Double? = nil,
+        name: Swift.String? = nil,
+        picture_urls: [Swift.String] = [],
+        length_meters: Swift.Double? = nil,
+        mass_kilograms: Swift.Double? = nil,
         period: Period? = nil
     ) {
         self.name = name
@@ -33,6 +44,7 @@ public struct Dinosaur {
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension Dinosaur : Equatable {

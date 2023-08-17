@@ -21,14 +21,13 @@ final class RoundTripTests: XCTestCase {
 
     func testPersonEncodeDecode() throws {
         let personData = Data(json_data: "")
-        let person = Person(
-            name: "Luke Skywalker",
-            id: 42,
-            email: "luke@skywalker.net",
-            phone: [.init(number: "800-555-1234", type: .WORK)],
-            aliases: ["Nerfherder"],
-            data: personData
-        )
+        let person = Person(name: "Luke Skywalker", id: 42, data: personData) {
+            $0.email = "luke@skywalker.net"
+            $0.phone = [
+                Person.PhoneNumber(number: "800-555-1234") { $0.type = .WORK },
+            ]
+            $0.aliases = ["Nerfherder"]
+        }
 
         let encoder = ProtoEncoder()
         let data = try encoder.encode(person)
@@ -46,11 +45,12 @@ final class RoundTripTests: XCTestCase {
             string_value: "",
             bytes_value: Foundation.Data(),
             bool_value: false,
-            enum_value: .UNKNOWN,
-            message_value: nil,
-            repeated_value: [],
-            map_value: [:]
-        )
+            enum_value: .UNKNOWN
+        ) {
+            $0.message_value = nil
+            $0.repeated_value = []
+            $0.map_value = [:]
+        }
 
         let encoder = ProtoEncoder()
         let data = try encoder.encode(empty)

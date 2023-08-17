@@ -551,7 +551,6 @@ Swift is a pragmatic and expressive programming language with rich support for v
 Here's how we used Swift to model Protocol Buffers messages:
 
  * Messages are structs that conform to `Equatable`, `Codable` and `Sendable`. All Messages have value semantics.
- * Messages have a memberwise initializer to populate fields.
  * Fields are generated as properties.
  * The nullability of each field's type depends on its label: `required`, `repeated` and `map`
    fields get non-nullable types, whereas `optional` fields are of nullable types.
@@ -576,12 +575,22 @@ public struct Dinosaur {
     /**
      * URLs with images of this dinosaur.
      */
-    public var picture_urls: [String]
+    public var picture_urls: [String] = []
     public var length_meters: Double?
     public var mass_kilograms: Double?
     public var period: Period?
-    public var unknownFields: Data = .init()
+    public var unknownFields: Foundation.Data = .init()
 
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
+    }
+
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Dinosaur {
+
+    @_disfavoredOverload
     public init(
         name: String? = nil,
         picture_urls: [String] = [],
@@ -597,6 +606,7 @@ public struct Dinosaur {
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension Dinosaur : Equatable {
@@ -614,12 +624,15 @@ extension Dinosaur : Sendable {
 #endif
 
 extension Dinosaur : ProtoMessage {
+
     public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.dinosaurs.Dinosaur"
     }
+
 }
 
 extension Dinosaur : Proto2Codable {
+
     public init(from reader: ProtoReader) throws {
         var name: String? = nil
         var picture_urls: [String] = []
@@ -655,10 +668,12 @@ extension Dinosaur : Proto2Codable {
         try writer.encode(tag: 5, value: self.period)
         try writer.writeUnknownFields(unknownFields)
     }
+
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Dinosaur : Codable {
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.name = try container.decodeIfPresent(String.self, forKey: "name")
@@ -681,6 +696,7 @@ extension Dinosaur : Codable {
         try container.encodeIfPresent(self.mass_kilograms, forKey: preferCamelCase ? "massKilograms" : "mass_kilograms")
         try container.encodeIfPresent(self.period, forKey: "period")
     }
+
 }
 #endif
 ```
@@ -688,10 +704,10 @@ extension Dinosaur : Codable {
 Creating and accessing proto models is easy:
 
 ```swift
-let stegosaurus = Dinosaur(
-    name: "Stegosaurus",
-    period: .JURASSIC
-)
+let stegosaurus = Dinosaur {
+    $0.name = "Stegosaurus"
+    $0.period = .JURASSIC
+}
 
 print("My favorite dinosaur existed in the \(stegosaurus.period) period.")
 ```

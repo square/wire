@@ -11,11 +11,23 @@ public struct VeryLongProtoNameCausingBrokenLineBreaks {
     public var foo: String?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(foo: String? = nil) {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
+    }
+
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension VeryLongProtoNameCausingBrokenLineBreaks {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(foo: Swift.String? = nil) {
         self.foo = foo
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension VeryLongProtoNameCausingBrokenLineBreaks : Equatable {

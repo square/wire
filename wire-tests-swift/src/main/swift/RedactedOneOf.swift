@@ -8,8 +8,8 @@ public struct RedactedOneOf {
     public var a: A?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(a: A? = nil) {
-        self.a = a
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
     }
 
     public enum A {
@@ -27,6 +27,18 @@ public struct RedactedOneOf {
     }
 
 }
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension RedactedOneOf {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(a: A? = nil) {
+        self.a = a
+    }
+
+}
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension RedactedOneOf.A : Equatable {

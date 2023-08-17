@@ -14,8 +14,8 @@ public struct OneOfMessage {
     public var choice: Choice?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(choice: Choice? = nil) {
-        self.choice = choice
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
     }
 
     public enum Choice {
@@ -44,6 +44,18 @@ public struct OneOfMessage {
     }
 
 }
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension OneOfMessage {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(choice: Choice? = nil) {
+        self.choice = choice
+    }
+
+}
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension OneOfMessage.Choice : Equatable {

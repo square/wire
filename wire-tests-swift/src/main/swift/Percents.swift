@@ -11,11 +11,23 @@ public struct Percents {
     public var text: String?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(text: String? = nil) {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
+    }
+
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Percents {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(text: Swift.String? = nil) {
         self.text = text
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension Percents : Equatable {

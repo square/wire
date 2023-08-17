@@ -8,11 +8,23 @@ public struct Thing {
     public var name: String?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(name: String? = nil) {
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
+    }
+
+}
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension Thing {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(name: Swift.String? = nil) {
         self.name = name
     }
 
 }
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension Thing : Equatable {

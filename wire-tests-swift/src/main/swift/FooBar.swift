@@ -9,36 +9,16 @@ public struct FooBar {
     public var bar: String?
     public var baz: FooBar.Nested?
     public var qux: UInt64?
-    public var fred: [Float]
+    public var fred: [Float] = []
     public var daisy: Double?
-    public var nested: [FooBar]
+    public var nested: [FooBar] = []
     public var ext: FooBar.FooBarBazEnum?
-    public var rep: [FooBar.FooBarBazEnum]
+    public var rep: [FooBar.FooBarBazEnum] = []
     public var more_string: String?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(
-        foo: Int32? = nil,
-        bar: String? = nil,
-        baz: FooBar.Nested? = nil,
-        qux: UInt64? = nil,
-        fred: [Float] = [],
-        daisy: Double? = nil,
-        nested: [FooBar] = [],
-        ext: FooBar.FooBarBazEnum? = nil,
-        rep: [FooBar.FooBarBazEnum] = [],
-        more_string: String? = nil
-    ) {
-        self.foo = foo
-        self.bar = bar
-        self.baz = baz
-        self.qux = qux
-        self.fred = fred
-        self.daisy = daisy
-        self.nested = nested
-        self.ext = ext
-        self.rep = rep
-        self.more_string = more_string
+    public init(configure: (inout Self) -> Void = { _ in }) {
+        configure(&self)
     }
 
     public struct Nested {
@@ -46,19 +26,19 @@ public struct FooBar {
         public var value: FooBar.FooBarBazEnum?
         public var unknownFields: Foundation.Data = .init()
 
-        public init(value: FooBar.FooBarBazEnum? = nil) {
-            self.value = value
+        public init(configure: (inout Self) -> Void = { _ in }) {
+            configure(&self)
         }
 
     }
 
     public struct More {
 
-        public var serial: [Int32]
+        public var serial: [Int32] = []
         public var unknownFields: Foundation.Data = .init()
 
-        public init(serial: [Int32] = []) {
-            self.serial = serial
+        public init(configure: (inout Self) -> Void = { _ in }) {
+            configure(&self)
         }
 
     }
@@ -80,6 +60,50 @@ public struct FooBar {
     }
 
 }
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension FooBar {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(
+        foo: Swift.Int32? = nil,
+        bar: Swift.String? = nil,
+        baz: FooBar.Nested? = nil,
+        qux: Swift.UInt64? = nil,
+        fred: [Swift.Float] = [],
+        daisy: Swift.Double? = nil,
+        nested: [FooBar] = [],
+        ext: FooBar.FooBarBazEnum? = nil,
+        rep: [FooBar.FooBarBazEnum] = [],
+        more_string: Swift.String? = nil
+    ) {
+        self.foo = foo
+        self.bar = bar
+        self.baz = baz
+        self.qux = qux
+        self.fred = fred
+        self.daisy = daisy
+        self.nested = nested
+        self.ext = ext
+        self.rep = rep
+        self.more_string = more_string
+    }
+
+}
+#endif
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension FooBar.Nested {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(value: FooBar.FooBarBazEnum? = nil) {
+        self.value = value
+    }
+
+}
+#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension FooBar.Nested : Equatable {
@@ -140,6 +164,18 @@ extension FooBar.Nested : Codable {
         var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
 
         try container.encodeIfPresent(self.value, forKey: "value")
+    }
+
+}
+#endif
+
+#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
+extension FooBar.More {
+
+    @_disfavoredOverload
+    @available(*, deprecated)
+    public init(serial: [Swift.Int32] = []) {
+        self.serial = serial
     }
 
 }

@@ -44,20 +44,20 @@ extension CodableTests {
         }
         """
 
-        let expected = SimpleOptional2(
-            opt_int32: 1,
-            opt_int64: 2,
-            opt_uint32: 3,
-            opt_uint64: 4,
-            opt_float: 5,
-            opt_double: 6,
-            opt_bytes: Foundation.Data(hexEncoded: "0123456"),
-            opt_string: "foo",
-            opt_enum: .UNKNOWN,
-            repeated_int32: [1, 2, 3],
-            repeated_string: ["foo", "bar", "baz"],
-            map_int32_string: [1: "foo", 2: "bar"]
-        )
+        let expected = SimpleOptional2 {
+            $0.opt_int32 = 1
+            $0.opt_int64 = 2
+            $0.opt_uint32 = 3
+            $0.opt_uint64 = 4
+            $0.opt_float = 5
+            $0.opt_double = 6
+            $0.opt_bytes = Foundation.Data(hexEncoded: "0123456")
+            $0.opt_string = "foo"
+            $0.opt_enum = .UNKNOWN
+            $0.repeated_int32 = [1, 2, 3]
+            $0.repeated_string = ["foo", "bar", "baz"]
+            $0.map_int32_string = [1: "foo", 2: "bar"]
+        }
 
         try assertDecode(json: json, expected: expected)
     }
@@ -92,11 +92,12 @@ extension CodableTests {
             req_double: 6,
             req_bytes: Foundation.Data(hexEncoded: "0123456")!,
             req_string: "foo",
-            req_enum: .UNKNOWN,
-            repeated_int32: [1, 2, 3],
-            repeated_string: ["foo", "bar", "baz"],
-            map_int32_string: [1: "foo", 2: "bar"]
-        )
+            req_enum: .UNKNOWN
+        ) {
+            $0.repeated_int32 = [1, 2, 3]
+            $0.repeated_string = ["foo", "bar", "baz"]
+            $0.map_int32_string = [1: "foo", 2: "bar"]
+        }
 
         try assertDecode(json: json, expected: expected)
     }
@@ -107,20 +108,20 @@ extension CodableTests {
 extension CodableTests {
     func testEncodeOptional() throws {
         // Only include one value in maps until https://bugs.swift.org/browse/SR-13414 is fixed.
-        let proto = SimpleOptional2(
-            opt_int32: 1,
-            opt_int64: 2,
-            opt_uint32: 3,
-            opt_uint64: 4,
-            opt_float: 5,
-            opt_double: 6,
-            opt_bytes: Foundation.Data(hexEncoded: "0123456"),
-            opt_string: "foo",
-            opt_enum: .UNKNOWN,
-            repeated_int32: [1, 2, 3],
-            repeated_string: ["foo", "bar", "baz"],
-            map_int32_string: [1: "foo"]
-        )
+        let proto = SimpleOptional2 {
+            $0.opt_int32 = 1
+            $0.opt_int64 = 2
+            $0.opt_uint32 = 3
+            $0.opt_uint64 = 4
+            $0.opt_float = 5
+            $0.opt_double = 6
+            $0.opt_bytes = Foundation.Data(hexEncoded: "0123456")
+            $0.opt_string = "foo"
+            $0.opt_enum = .UNKNOWN
+            $0.repeated_int32 = [1, 2, 3]
+            $0.repeated_string = ["foo", "bar", "baz"]
+            $0.map_int32_string = [1: "foo"]
+        }
 
         let expected = """
         {
@@ -155,11 +156,12 @@ extension CodableTests {
             req_double: 6,
             req_bytes: Foundation.Data(hexEncoded: "0123456")!,
             req_string: "foo",
-            req_enum: .UNKNOWN,
-            repeated_int32: [1, 2, 3],
-            repeated_string: ["foo", "bar", "baz"],
-            map_int32_string: [1: "foo"]
-        )
+            req_enum: .UNKNOWN
+        ) {
+            $0.repeated_int32 = [1, 2, 3]
+            $0.repeated_string = ["foo", "bar", "baz"]
+            $0.map_int32_string = [1: "foo"]
+        }
 
         let expected = """
         {
@@ -244,12 +246,12 @@ extension CodableTests {
         }
         """
 
-        let proto = SimpleOptional2(
-            opt_double: 6,
-            opt_enum: .A,
-            repeated_string: ["B"],
-            map_int32_string: [1 : "foo"]
-        )
+        let proto = SimpleOptional2 {
+            $0.opt_double = 6
+            $0.opt_enum = .A
+            $0.repeated_string = ["B"]
+            $0.map_int32_string = [1 : "foo"]
+        }
 
         try assertEncode(proto: proto, expected: json)
     }
@@ -269,13 +271,13 @@ extension CodableTests {
         }
         """
 
-        let proto = SimpleOptional2(
-            opt_int64: 5,
-            opt_double: 6,
-            opt_enum: .A,
-            repeated_string: ["B"],
-            map_int32_string: [1 : "foo"]
-        )
+        let proto = SimpleOptional2 {
+            $0.opt_int64 = 5
+            $0.opt_double = 6
+            $0.opt_enum = .A
+            $0.repeated_string = ["B"]
+            $0.map_int32_string = [1 : "foo"]
+        }
 
         try assertDecode(json: json, expected: proto)
     }
@@ -285,7 +287,10 @@ extension CodableTests {
 
 extension CodableTests {
     func testHeapRoundtrip() throws {
-        let proto = SwiftStackOverflow(value3: "hello")
+        let proto = SwiftStackOverflow {
+            $0.value3 = "hello"
+        }
+
         let json = """
         {
           "value3":"hello"
