@@ -135,7 +135,11 @@ class WirePlugin : Plugin<Project> {
     protoPathInput.addPaths(project, extension.protoPaths)
 
     sources.forEach { source ->
-      val protoSourceInput = WireInput(project.configurations.getByName("protoSource").copy())
+      val protoSourceInput = WireInput(
+        configuration = project.configurations.getByName("protoSource").copy().also {
+          it.isCanBeConsumed = false
+        },
+      )
       protoSourceInput.addTrees(project, extension.sourceTrees)
       protoSourceInput.addJars(project, extension.sourceJars)
       protoSourceInput.addPaths(project, extension.sourcePaths)
