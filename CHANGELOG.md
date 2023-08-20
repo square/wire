@@ -6,6 +6,8 @@ Version 4.8.1
 
 _2023-08-17_
 
+* New: Swift messages now have the form `init(REQUIRED FIELDS, (inout Storage) -> Void)`
+* New: Swift, the member-wise initializer has been removed by default. It can be re-enabled by defining `WIRE_INCLUDE_MEMBERWISE_INITIALIZER`; however, it will be removed in November 2024. See https://github.com/square/wire/pull/2561 for details
 * Fix: Correctly define sources folders vs. resources folders for Wire generated code.
 * Fix: Generated `.proto` are correctly added to the built artifact.
 * New: All options of KotlinTarget available on CLI.
