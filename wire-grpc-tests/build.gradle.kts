@@ -64,7 +64,7 @@ dependencies {
   if (JavaVersion.current().isJava9Compatible()) {
     // Workaround for @javax.annotation.Generated
     // see: https://github.com/grpc/grpc-java/issues/3633
-    implementation("javax.annotation:javax.annotation-api:1.3.1")
+    implementation("javax.annotation:javax.annotation-api:1.3.2")
   }
   compileOnly(libs.android)
   testImplementation(libs.junit)
