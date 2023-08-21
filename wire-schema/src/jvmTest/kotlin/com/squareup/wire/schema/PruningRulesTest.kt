@@ -22,7 +22,10 @@ import org.junit.Test
 class PruningRulesTest {
   @Test
   fun enclosing() {
-    assertThat(PruningRules.enclosing("a.b.Outer#member")).isEqualTo("a.b.Outer")
+    assertThat(PruningRules.enclosing("a.b.Outer#c.d.member")).isEqualTo("a.b.Outer#c.d.*")
+    assertThat(PruningRules.enclosing("a.b.Outer#c.d.*")).isEqualTo("a.b.Outer#c.*")
+    assertThat(PruningRules.enclosing("a.b.Outer#c.*")).isEqualTo("a.b.Outer#*")
+    assertThat(PruningRules.enclosing("a.b.Outer#*")).isEqualTo("a.b.Outer")
     assertThat(PruningRules.enclosing("a.b.Outer")).isEqualTo("a.b.*")
     assertThat(PruningRules.enclosing("a.b.*")).isEqualTo("a.*")
     assertThat(PruningRules.enclosing("a.*")).isEqualTo("*")
@@ -31,7 +34,9 @@ class PruningRulesTest {
 
   @Test
   fun enclosingOnNestedClass() {
-    assertThat(PruningRules.enclosing("a.b.Outer.Inner#member")).isEqualTo("a.b.Outer.Inner")
+    assertThat(PruningRules.enclosing("a.b.Outer.Inner#c.member")).isEqualTo("a.b.Outer.Inner#c.*")
+    assertThat(PruningRules.enclosing("a.b.Outer.Inner#c.*")).isEqualTo("a.b.Outer.Inner#*")
+    assertThat(PruningRules.enclosing("a.b.Outer.Inner#*")).isEqualTo("a.b.Outer.Inner")
     assertThat(PruningRules.enclosing("a.b.Outer.Inner")).isEqualTo("a.b.Outer.*")
     assertThat(PruningRules.enclosing("a.b.Outer.*")).isEqualTo("a.b.*")
   }
@@ -67,6 +72,102 @@ class PruningRulesTest {
     assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.UNSPECIFIED)
     assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.UNSPECIFIED)
     assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.UNSPECIFIED)
+  }
+
+  @Test
+  fun includeMemberWithQualifiedName() {
+    val set = PruningRules.Builder()
+      .addRoot("a.b.Message#c.d.member")
+      .build()
+    assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Message.Nested")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Message#c.d.member")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#c.d.other")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Message#c.e.member")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.UNSPECIFIED)
+  }
+
+  @Test
+  fun includeMemberWithQualifiedNameAndWildstar() {
+    val set = PruningRules.Builder()
+      .addRoot("a.b.Message#c.d.*")
+      .build()
+    assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Message.Nested")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Message#c.d.member")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#c.d.other")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#c.e.member")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.UNSPECIFIED)
+  }
+
+  @Test
+  fun includeMemberWithWildstar() {
+    val set = PruningRules.Builder()
+      .addRoot("a.b.Message#*")
+      .build()
+    assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Message.Nested")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Message#c.d.member")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#c.d.other")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#c.e.member")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.UNSPECIFIED)
+  }
+
+  @Test
+  fun excludeMemberWithQualifiedName() {
+    val set = PruningRules.Builder()
+      .prune("a.b.Message#c.d.member")
+      .build()
+    assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message.Nested")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#c.d.member")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Message#c.d.other")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#c.e.member")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.INCLUDED)
+  }
+
+  @Test
+  fun excludeMemberWithQualifiedNameAndWildstar() {
+    val set = PruningRules.Builder()
+      .prune("a.b.Message#c.d.*")
+      .build()
+    assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message.Nested")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#c.d.member")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Message#c.d.other")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Message#c.e.member")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.INCLUDED)
+  }
+
+  @Test
+  fun excludeMemberWithWildstar() {
+    val set = PruningRules.Builder()
+      .prune("a.b.Message#*")
+      .build()
+    assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message.Nested")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#c.d.member")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Message#c.d.other")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Message#c.e.member")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.INCLUDED)
   }
 
   @Test
@@ -155,6 +256,36 @@ class PruningRulesTest {
   }
 
   @Test
+  fun excludeTypeWithQualifiedNameDoesNotTakePrecedenceOverIncludeMember() {
+    val set = PruningRules.Builder()
+      .prune("a.b.Message")
+      .addRoot("a.b.Message#c.member")
+      .build()
+    assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Message#c.member")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#c.other")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Message#d.other")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Another#c.member")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.UNSPECIFIED)
+  }
+
+  @Test
+  fun excludeTypeWithQualifiedNameWildcardDoesNotTakePrecedenceOverIncludeMember() {
+    val set = PruningRules.Builder()
+      .prune("a.b.Message")
+      .addRoot("a.b.Message#c.*")
+      .build()
+    assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Message#c.member")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#c.other")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#d.other")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Another#c.member")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.UNSPECIFIED)
+  }
+
+  @Test
   fun excludeMemberTakesPrecedenceOverIncludeType() {
     val set = PruningRules.Builder()
       .prune("a.b.Message#member")
@@ -164,6 +295,36 @@ class PruningRulesTest {
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED)
     assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.UNSPECIFIED)
+  }
+
+  @Test
+  fun excludeMemberTakesPrecedenceOverIncludeTypeWithQualifiedName() {
+    val set = PruningRules.Builder()
+      .prune("a.b.Message#c.member")
+      .addRoot("a.b.Message")
+      .build()
+    assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#c.member")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Message#c.other")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#d.other")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Another#c.member")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.UNSPECIFIED)
+  }
+
+  @Test
+  fun excludeMemberTakesPrecedenceOverIncludeTypeWithQualifiedNameWildcard() {
+    val set = PruningRules.Builder()
+      .prune("a.b.Message#c.*")
+      .addRoot("a.b.Message")
+      .build()
+    assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Message#c.member")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Message#c.other")).isEqualTo(Policy.EXCLUDED)
+    assertThat(policy(set, "a.b.Message#d.other")).isEqualTo(Policy.INCLUDED)
+    assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.UNSPECIFIED)
+    assertThat(policy(set, "a.b.Another#c.member")).isEqualTo(Policy.UNSPECIFIED)
     assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.UNSPECIFIED)
   }
 
@@ -187,20 +348,33 @@ class PruningRulesTest {
       .addRoot("a.*")
       .addRoot("b.IncludedType")
       .addRoot("c.IncludedMember#member")
+      .addRoot("d.IncludedMember#e.member")
+      .addRoot("f.IncludedMember#g.*")
       .build()
     assertThat(set.unusedRoots()).containsExactly(
       "a.*",
       "b.IncludedType",
       "c.IncludedMember#member",
+      "d.IncludedMember#e.member",
+      "f.IncludedMember#g.*",
     )
 
     set.isRoot(ProtoType.get("a.*"))
-    assertThat(set.unusedRoots()).containsExactly("b.IncludedType", "c.IncludedMember#member")
+    assertThat(set.unusedRoots())
+      .containsExactly("b.IncludedType", "c.IncludedMember#member", "d.IncludedMember#e.member", "f.IncludedMember#g.*")
 
     set.isRoot(ProtoType.get("b.IncludedType"))
-    assertThat(set.unusedRoots()).containsExactly("c.IncludedMember#member")
+    assertThat(set.unusedRoots())
+      .containsExactly("c.IncludedMember#member", "d.IncludedMember#e.member", "f.IncludedMember#g.*")
 
     set.isRoot(ProtoMember.get("c.IncludedMember#member"))
+    assertThat(set.unusedRoots())
+      .containsExactly("d.IncludedMember#e.member", "f.IncludedMember#g.*")
+
+    set.isRoot(ProtoMember.get("d.IncludedMember#e.member"))
+    assertThat(set.unusedRoots()).containsExactly("f.IncludedMember#g.*")
+
+    set.isRoot(ProtoMember.get("f.IncludedMember#g.*"))
     assertThat(set.unusedRoots()).isEmpty()
   }
 
@@ -210,20 +384,30 @@ class PruningRulesTest {
       .prune("a.*")
       .prune("b.ExcludedType")
       .prune("c.ExcludedMember#member")
+      .prune("d.ExcludedMember#e.member")
+      .prune("f.ExcludedMember#g.*")
       .build()
     assertThat(set.unusedPrunes()).containsExactly(
       "a.*",
       "b.ExcludedType",
       "c.ExcludedMember#member",
+      "d.ExcludedMember#e.member",
+      "f.ExcludedMember#g.*",
     )
 
     set.isRoot(ProtoType.get("a.*"))
-    assertThat(set.unusedPrunes()).containsExactly("b.ExcludedType", "c.ExcludedMember#member")
+    assertThat(set.unusedPrunes()).containsExactly("b.ExcludedType", "c.ExcludedMember#member", "d.ExcludedMember#e.member", "f.ExcludedMember#g.*")
 
     set.isRoot(ProtoType.get("b.ExcludedType"))
-    assertThat(set.unusedPrunes()).containsExactly("c.ExcludedMember#member")
+    assertThat(set.unusedPrunes()).containsExactly("c.ExcludedMember#member", "d.ExcludedMember#e.member", "f.ExcludedMember#g.*")
 
     set.isRoot(ProtoMember.get("c.ExcludedMember#member"))
+    assertThat(set.unusedPrunes()).containsExactly("d.ExcludedMember#e.member", "f.ExcludedMember#g.*")
+
+    set.isRoot(ProtoMember.get("d.ExcludedMember#e.member"))
+    assertThat(set.unusedPrunes()).containsExactly("f.ExcludedMember#g.*")
+
+    set.isRoot(ProtoMember.get("f.ExcludedMember#g.*"))
     assertThat(set.unusedPrunes()).isEmpty()
   }
 
