@@ -64,6 +64,10 @@ class WirePlugin : Plugin<Project> {
       it.isCanBeConsumed = false
       it.isTransitive = false
     }
+    project.configurations.create("protoProjectDependencies").also {
+      it.isCanBeResolved = true
+      it.isCanBeConsumed = false
+    }
 
     val androidPluginHandler = { _: Plugin<*> ->
       android.set(true)
@@ -111,6 +115,8 @@ class WirePlugin : Plugin<Project> {
       }
     }
 
+    val projectDependenciesConfiguration = project.configurations.getByName("protoProjectDependencies")
+
     val outputs = extension.outputs
     check(outputs.isNotEmpty()) {
       "At least one target must be provided for project '${project.path}\n" + "See our documentation for details: https://square.github.io/wire/wire_compiler/#customizing-output"
@@ -129,7 +135,11 @@ class WirePlugin : Plugin<Project> {
     protoPathInput.addPaths(project, extension.protoPaths)
 
     sources.forEach { source ->
-      val protoSourceInput = WireInput(project.configurations.getByName("protoSource").copy())
+      val protoSourceInput = WireInput(
+        configuration = project.configurations.getByName("protoSource").copy().also {
+          it.isCanBeConsumed = false
+        },
+      )
       protoSourceInput.addTrees(project, extension.sourceTrees)
       protoSourceInput.addJars(project, extension.sourceJars)
       protoSourceInput.addPaths(project, extension.sourcePaths)
@@ -143,6 +153,9 @@ class WirePlugin : Plugin<Project> {
 
       val projectDependencies =
         (protoSourceInput.dependencies + protoPathInput.dependencies).filterIsInstance<ProjectDependency>()
+      for (projectDependency in projectDependencies) {
+        projectDependenciesConfiguration.dependencies.add(projectDependency)
+      }
 
       val targets = outputs.map { output ->
         output.toTarget(
@@ -215,6 +228,7 @@ class WirePlugin : Plugin<Project> {
           )
         }
         task.outputDirectories.setFrom(outputDirectories)
+        task.projectDependencies.setFrom(projectDependenciesConfiguration)
         if (extension.protoLibrary) {
           task.protoLibraryOutput.set(File(project.libraryProtoOutputPath()))
         }
@@ -239,10 +253,6 @@ class WirePlugin : Plugin<Project> {
 
         val factories = extension.eventListenerFactories + extension.eventListenerFactoryClasses().map(::newEventListenerFactory)
         task.eventListenerFactories.set(factories)
-
-        for (projectDependency in projectDependencies) {
-          task.dependsOn(projectDependency)
-        }
       }
 
       val taskOutputDirectories = task.map { it.outputDirectories }

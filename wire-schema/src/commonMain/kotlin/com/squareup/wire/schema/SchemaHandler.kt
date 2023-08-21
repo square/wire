@@ -195,6 +195,8 @@ abstract class SchemaHandler {
     @Deprecated("Wire does not call this method anymore. Implement the other 'create' method to receive the payload associated with the schema handler.")
     fun create(): SchemaHandler
 
+    // TODO(Benoit) At some point, let's make this method without any defaults so that new consumers
+    //  actually see this method first, and not the deprecated one.
     fun create(
       includes: List<String>,
       excludes: List<String>,
