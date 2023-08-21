@@ -273,7 +273,9 @@ class PruningRules private constructor(builder: Builder) {
     /**
      * Returns the identifier or wildcard that encloses [identifier], or null if it is not enclosed.
      *
-     *  * If [identifier] is a member this returns the enclosing type.
+     *  * If [identifier] is a member this returns the enclosing type. If the member is a qualified
+     *    name, this returns instead the enclosing package of this member, like
+     *    `squareup.dinosaurs.Alligator#myextension.*`.
      *
      *  * If it is a type it returns the enclosing package with a wildcard, like
      *    `squareup.dinosaurs.*`.
@@ -284,10 +286,20 @@ class PruningRules private constructor(builder: Builder) {
      */
     internal fun enclosing(identifier: String): String? {
       val hash = identifier.lastIndexOf('#')
-      if (hash != -1) return identifier.substring(0, hash)
+      if (hash != -1) {
+        val beforeHash = identifier.substring(0, hash)
+        val afterHash = enclosing(identifier.substring(hash + 1, identifier.length))
+
+        return when {
+          afterHash != null -> "$beforeHash#$afterHash"
+          else -> beforeHash
+        }
+      }
 
       val from = if (identifier.endsWith(".*")) identifier.length - 3 else identifier.length - 1
       val dot = identifier.lastIndexOf('.', from)
+
+      if (hash != -1 && hash > dot) return identifier.substring(0, hash)
       if (dot != -1) return identifier.substring(0, dot) + ".*"
 
       if (identifier != "*") return "*"
