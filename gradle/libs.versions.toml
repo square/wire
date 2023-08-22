@@ -69,7 +69,7 @@ okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", versio
 # `plugins` is a keyword in version catalogs.
 # Check https://docs.gradle.org/current/userguide/platforms.html#sec:version-catalog-plugin
 #  if we ever wanna migrate to this.
-pluginz-android = { module = "com.android.tools.build:gradle", version = "8.0.2" }
+pluginz-android = { module = "com.android.tools.build:gradle", version = "8.1.1" }
 pluginz-binaryCompatibilityValidator = { module = "org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin", version = "0.13.2" }
 pluginz-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 pluginz-kotlinSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
@@ -82,7 +82,7 @@ protobuf-javaUtil = { module = "com.google.protobuf:protobuf-java-util", version
 protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
 swiftpoet = { module = "io.outfoxx:swiftpoet", version = "1.5.0" }
 truth = { module = "com.google.truth:truth", version = "1.1.5" }
-vanniktechPublishPlugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.20.0" }
+vanniktechPublishPlugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.25.3" }
 
 wire-compiler = { module = "com.squareup.wire:wire-compiler" }
 wire-gradlePlugin = { module = "com.squareup.wire:wire-gradle-plugin" }
