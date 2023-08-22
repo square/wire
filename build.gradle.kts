@@ -28,7 +28,7 @@ buildscript {
     classpath(libs.pluginz.buildConfig)
     classpath(libs.wire.gradlePlugin)
     classpath("com.google.guava:guava:31.1-jre")
-    classpath("org.ow2.asm:asm:9.1")
+    classpath("org.ow2.asm:asm:9.5")
   }
 
   repositories {
