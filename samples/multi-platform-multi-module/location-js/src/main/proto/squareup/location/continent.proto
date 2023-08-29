@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+package squareup.location;
+
+option java_package = "com.squareup.location";
+
+enum Continent {
+  AFRICA = 0;
+  AMERICA = 1;
+  ANTARCTICA = 2;
+  ASIA = 3;
+  AUSTRALIA = 4;
+  EUROPE = 5;
+}
