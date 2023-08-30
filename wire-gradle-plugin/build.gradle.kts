@@ -1,6 +1,6 @@
 import com.gradle.publish.PluginBundleExtension
 import com.vanniktech.maven.publish.GradlePlugin
-import com.vanniktech.maven.publish.JavadocJar.Dokka
+import com.vanniktech.maven.publish.JavadocJar.Javadoc
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -16,7 +16,8 @@ plugins {
   id("com.github.gmazzo.buildconfig")
   id("java-gradle-plugin")
   id("com.gradle.plugin-publish").version("0.18.0").apply(false)
-  id("org.jetbrains.dokka")
+  // TODO(Benoit)  Re-enable dokka when it works again. Probably related to https://github.com/Kotlin/dokka/issues/2977
+  // id("org.jetbrains.dokka")
   id("com.vanniktech.maven.publish.base").apply(false)
 }
 
@@ -87,7 +88,7 @@ val test by tasks.getting(Test::class) {
 if (project.rootProject.name == "wire") {
   configure<MavenPublishBaseExtension> {
     configure(
-      GradlePlugin(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
+      GradlePlugin(javadocJar = Javadoc(), sourcesJar = true)
     )
   }
 }
