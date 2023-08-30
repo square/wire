@@ -273,10 +273,15 @@ class WirePlugin : Plugin<Project> {
       if (extension.protoLibrary) {
         val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
         // Note that there are no source sets for some platforms such as native.
-        if (sourceSets.isNotEmpty()) {
+        // TODO(Benoit) Probably should be checking for other names than `main`. As well, source
+        //  sets might be created 'afterEvaluate'. Does that mean we should do this work in
+        //  `afterEvaluate` as well? See: https://kotlinlang.org/docs/multiplatform-dsl-reference.html#source-sets
+        if (sourceSets.findByName("main") != null) {
           sourceSets.getByName("main") { main: SourceSet ->
             main.resources.srcDir(protoOutputDirectory)
           }
+        } else {
+          project.logger.warn("${project.displayName} doesn't have a 'main' source sets. The .proto files will not automatically be added to the artifact.")
         }
       }
 
