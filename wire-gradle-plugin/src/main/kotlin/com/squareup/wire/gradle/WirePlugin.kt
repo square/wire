@@ -38,6 +38,7 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -64,9 +65,15 @@ class WirePlugin : Plugin<Project> {
       it.isCanBeConsumed = false
       it.isTransitive = false
     }
-    project.configurations.create("protoProjectDependencies").also {
+    project.configurations.create("protoProjectDependenciesJvm").also {
       it.isCanBeResolved = true
       it.isCanBeConsumed = false
+      it.attributes { attributesContainer ->
+        // TODO(Benoit) If another project, on which this one depends, exposes multiple variants,
+        //  Wire won't be able to pick one. We force the resolution to JVM. On the other hand, this
+        //  breaks inter-module dependencies for non-jvm modules. We need to fix it.
+        attributesContainer.attribute(KotlinPlatformType.attribute, KotlinPlatformType.jvm)
+      }
     }
 
     val androidPluginHandler = { _: Plugin<*> ->
@@ -115,7 +122,7 @@ class WirePlugin : Plugin<Project> {
       }
     }
 
-    val projectDependenciesConfiguration = project.configurations.getByName("protoProjectDependencies")
+    val projectDependenciesJvmConfiguration = project.configurations.getByName("protoProjectDependenciesJvm")
 
     val outputs = extension.outputs
     check(outputs.isNotEmpty()) {
@@ -154,7 +161,7 @@ class WirePlugin : Plugin<Project> {
       val projectDependencies =
         (protoSourceInput.dependencies + protoPathInput.dependencies).filterIsInstance<ProjectDependency>()
       for (projectDependency in projectDependencies) {
-        projectDependenciesConfiguration.dependencies.add(projectDependency)
+        projectDependenciesJvmConfiguration.dependencies.add(projectDependency)
       }
 
       val targets = outputs.map { output ->
@@ -228,7 +235,7 @@ class WirePlugin : Plugin<Project> {
           )
         }
         task.outputDirectories.setFrom(outputDirectories)
-        task.projectDependencies.setFrom(projectDependenciesConfiguration)
+        task.projectDependencies.setFrom(projectDependenciesJvmConfiguration)
         if (extension.protoLibrary) {
           task.protoLibraryOutput.set(File(project.libraryProtoOutputPath()))
         }
