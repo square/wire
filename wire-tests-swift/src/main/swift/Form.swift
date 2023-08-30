@@ -29,20 +29,20 @@ public struct Form {
         case detail_row_element(Form.DetailRowElement)
         case currency_conversion_flags_element(Form.CurrencyConversionFlagsElement)
 
-        fileprivate func encode(to writer: ProtoWriter) throws {
+        fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
-            case .button_element(let button_element): try writer.encode(tag: 1, value: button_element)
-            case .local_image_element(let local_image_element): try writer.encode(tag: 2, value: local_image_element)
-            case .remote_image_element(let remote_image_element): try writer.encode(tag: 3, value: remote_image_element)
-            case .money_element(let money_element): try writer.encode(tag: 4, value: money_element)
-            case .spacer_element(let spacer_element): try writer.encode(tag: 5, value: spacer_element)
-            case .text_element(let text_element): try writer.encode(tag: 6, value: text_element)
-            case .customized_card_element(let customized_card_element): try writer.encode(tag: 7, value: customized_card_element)
-            case .address_element(let address_element): try writer.encode(tag: 8, value: address_element)
-            case .text_input_element(let text_input_element): try writer.encode(tag: 9, value: text_input_element)
-            case .option_picker_element(let option_picker_element): try writer.encode(tag: 10, value: option_picker_element)
-            case .detail_row_element(let detail_row_element): try writer.encode(tag: 11, value: detail_row_element)
-            case .currency_conversion_flags_element(let currency_conversion_flags_element): try writer.encode(tag: 12, value: currency_conversion_flags_element)
+            case .button_element(let button_element): try protoWriter.encode(tag: 1, value: button_element)
+            case .local_image_element(let local_image_element): try protoWriter.encode(tag: 2, value: local_image_element)
+            case .remote_image_element(let remote_image_element): try protoWriter.encode(tag: 3, value: remote_image_element)
+            case .money_element(let money_element): try protoWriter.encode(tag: 4, value: money_element)
+            case .spacer_element(let spacer_element): try protoWriter.encode(tag: 5, value: spacer_element)
+            case .text_element(let text_element): try protoWriter.encode(tag: 6, value: text_element)
+            case .customized_card_element(let customized_card_element): try protoWriter.encode(tag: 7, value: customized_card_element)
+            case .address_element(let address_element): try protoWriter.encode(tag: 8, value: address_element)
+            case .text_input_element(let text_input_element): try protoWriter.encode(tag: 9, value: text_input_element)
+            case .option_picker_element(let option_picker_element): try protoWriter.encode(tag: 10, value: option_picker_element)
+            case .detail_row_element(let detail_row_element): try protoWriter.encode(tag: 11, value: detail_row_element)
+            case .currency_conversion_flags_element(let currency_conversion_flags_element): try protoWriter.encode(tag: 12, value: currency_conversion_flags_element)
             }
         }
 
@@ -59,16 +59,16 @@ public struct Form {
         case g(String)
         case h(String)
 
-        fileprivate func encode(to writer: ProtoWriter) throws {
+        fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
-            case .a(let a): try writer.encode(tag: 101, value: a)
-            case .b(let b): try writer.encode(tag: 102, value: b)
-            case .c(let c): try writer.encode(tag: 103, value: c)
-            case .d(let d): try writer.encode(tag: 104, value: d)
-            case .e(let e): try writer.encode(tag: 105, value: e)
-            case .f(let f): try writer.encode(tag: 106, value: f)
-            case .g(let g): try writer.encode(tag: 107, value: g)
-            case .h(let h): try writer.encode(tag: 108, value: h)
+            case .a(let a): try protoWriter.encode(tag: 101, value: a)
+            case .b(let b): try protoWriter.encode(tag: 102, value: b)
+            case .c(let c): try protoWriter.encode(tag: 103, value: c)
+            case .d(let d): try protoWriter.encode(tag: 104, value: d)
+            case .e(let e): try protoWriter.encode(tag: 105, value: e)
+            case .f(let f): try protoWriter.encode(tag: 106, value: f)
+            case .g(let g): try protoWriter.encode(tag: 107, value: g)
+            case .h(let h): try protoWriter.encode(tag: 108, value: h)
             }
         }
 
@@ -266,19 +266,19 @@ extension Form.ButtonElement : ProtoMessage {
 
 extension Form.ButtonElement : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+    public init(from protoReader: Wire.ProtoReader) throws {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            default: try reader.readUnknownField(tag: tag)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -317,19 +317,19 @@ extension Form.LocalImageElement : ProtoMessage {
 
 extension Form.LocalImageElement : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+    public init(from protoReader: Wire.ProtoReader) throws {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            default: try reader.readUnknownField(tag: tag)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -368,19 +368,19 @@ extension Form.RemoteImageElement : ProtoMessage {
 
 extension Form.RemoteImageElement : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+    public init(from protoReader: Wire.ProtoReader) throws {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            default: try reader.readUnknownField(tag: tag)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -419,19 +419,19 @@ extension Form.MoneyElement : ProtoMessage {
 
 extension Form.MoneyElement : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+    public init(from protoReader: Wire.ProtoReader) throws {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            default: try reader.readUnknownField(tag: tag)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -470,19 +470,19 @@ extension Form.SpacerElement : ProtoMessage {
 
 extension Form.SpacerElement : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+    public init(from protoReader: Wire.ProtoReader) throws {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            default: try reader.readUnknownField(tag: tag)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -533,24 +533,24 @@ extension Form.TextElement : ProtoMessage {
 
 extension Form.TextElement : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var text: Swift.String? = nil
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: text = try reader.decode(Swift.String.self)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: text = try protoReader.decode(Swift.String.self)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.text = text
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.text)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.text)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -597,19 +597,19 @@ extension Form.CustomizedCardElement : ProtoMessage {
 
 extension Form.CustomizedCardElement : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+    public init(from protoReader: Wire.ProtoReader) throws {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            default: try reader.readUnknownField(tag: tag)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -648,19 +648,19 @@ extension Form.AddressElement : ProtoMessage {
 
 extension Form.AddressElement : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+    public init(from protoReader: Wire.ProtoReader) throws {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            default: try reader.readUnknownField(tag: tag)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -699,19 +699,19 @@ extension Form.TextInputElement : ProtoMessage {
 
 extension Form.TextInputElement : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+    public init(from protoReader: Wire.ProtoReader) throws {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            default: try reader.readUnknownField(tag: tag)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -750,19 +750,19 @@ extension Form.OptionPickerElement : ProtoMessage {
 
 extension Form.OptionPickerElement : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+    public init(from protoReader: Wire.ProtoReader) throws {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            default: try reader.readUnknownField(tag: tag)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -801,19 +801,19 @@ extension Form.DetailRowElement : ProtoMessage {
 
 extension Form.DetailRowElement : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+    public init(from protoReader: Wire.ProtoReader) throws {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            default: try reader.readUnknownField(tag: tag)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -852,19 +852,19 @@ extension Form.CurrencyConversionFlagsElement : ProtoMessage {
 
 extension Form.CurrencyConversionFlagsElement : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+    public init(from protoReader: Wire.ProtoReader) throws {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            default: try reader.readUnknownField(tag: tag)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -903,50 +903,50 @@ extension Form : ProtoMessage {
 
 extension Form : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var choice: Choice? = nil
         var decision: Decision? = nil
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: choice = .button_element(try reader.decode(Form.ButtonElement.self))
-            case 2: choice = .local_image_element(try reader.decode(Form.LocalImageElement.self))
-            case 3: choice = .remote_image_element(try reader.decode(Form.RemoteImageElement.self))
-            case 4: choice = .money_element(try reader.decode(Form.MoneyElement.self))
-            case 5: choice = .spacer_element(try reader.decode(Form.SpacerElement.self))
-            case 6: choice = .text_element(try reader.decode(Form.TextElement.self))
-            case 7: choice = .customized_card_element(try reader.decode(Form.CustomizedCardElement.self))
-            case 8: choice = .address_element(try reader.decode(Form.AddressElement.self))
-            case 9: choice = .text_input_element(try reader.decode(Form.TextInputElement.self))
-            case 10: choice = .option_picker_element(try reader.decode(Form.OptionPickerElement.self))
-            case 11: choice = .detail_row_element(try reader.decode(Form.DetailRowElement.self))
-            case 12: choice = .currency_conversion_flags_element(try reader.decode(Form.CurrencyConversionFlagsElement.self))
-            case 101: decision = .a(try reader.decode(Swift.String.self))
-            case 102: decision = .b(try reader.decode(Swift.String.self))
-            case 103: decision = .c(try reader.decode(Swift.String.self))
-            case 104: decision = .d(try reader.decode(Swift.String.self))
-            case 105: decision = .e(try reader.decode(Swift.String.self))
-            case 106: decision = .f(try reader.decode(Swift.String.self))
-            case 107: decision = .g(try reader.decode(Swift.String.self))
-            case 108: decision = .h(try reader.decode(Swift.String.self))
-            default: try reader.readUnknownField(tag: tag)
+            case 1: choice = .button_element(try protoReader.decode(Form.ButtonElement.self))
+            case 2: choice = .local_image_element(try protoReader.decode(Form.LocalImageElement.self))
+            case 3: choice = .remote_image_element(try protoReader.decode(Form.RemoteImageElement.self))
+            case 4: choice = .money_element(try protoReader.decode(Form.MoneyElement.self))
+            case 5: choice = .spacer_element(try protoReader.decode(Form.SpacerElement.self))
+            case 6: choice = .text_element(try protoReader.decode(Form.TextElement.self))
+            case 7: choice = .customized_card_element(try protoReader.decode(Form.CustomizedCardElement.self))
+            case 8: choice = .address_element(try protoReader.decode(Form.AddressElement.self))
+            case 9: choice = .text_input_element(try protoReader.decode(Form.TextInputElement.self))
+            case 10: choice = .option_picker_element(try protoReader.decode(Form.OptionPickerElement.self))
+            case 11: choice = .detail_row_element(try protoReader.decode(Form.DetailRowElement.self))
+            case 12: choice = .currency_conversion_flags_element(try protoReader.decode(Form.CurrencyConversionFlagsElement.self))
+            case 101: decision = .a(try protoReader.decode(Swift.String.self))
+            case 102: decision = .b(try protoReader.decode(Swift.String.self))
+            case 103: decision = .c(try protoReader.decode(Swift.String.self))
+            case 104: decision = .d(try protoReader.decode(Swift.String.self))
+            case 105: decision = .e(try protoReader.decode(Swift.String.self))
+            case 106: decision = .f(try protoReader.decode(Swift.String.self))
+            case 107: decision = .g(try protoReader.decode(Swift.String.self))
+            case 108: decision = .h(try protoReader.decode(Swift.String.self))
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.choice = choice
         self.decision = decision
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
         if let choice = self.choice {
-            try choice.encode(to: writer)
+            try choice.encode(to: protoWriter)
         }
         if let decision = self.decision {
-            try decision.encode(to: writer)
+            try decision.encode(to: protoWriter)
         }
-        try writer.writeUnknownFields(unknownFields)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }

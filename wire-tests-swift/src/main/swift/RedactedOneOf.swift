@@ -17,10 +17,10 @@ public struct RedactedOneOf {
         case b(Int32)
         case c(String)
 
-        fileprivate func encode(to writer: ProtoWriter) throws {
+        fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
-            case .b(let b): try writer.encode(tag: 1, value: b)
-            case .c(let c): try writer.encode(tag: 2, value: c)
+            case .b(let b): try protoWriter.encode(tag: 1, value: b)
+            case .c(let c): try protoWriter.encode(tag: 2, value: c)
             }
         }
 
@@ -92,27 +92,27 @@ extension RedactedOneOf : ProtoMessage {
 
 extension RedactedOneOf : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var a: A? = nil
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: a = .b(try reader.decode(Swift.Int32.self))
-            case 2: a = .c(try reader.decode(Swift.String.self))
-            default: try reader.readUnknownField(tag: tag)
+            case 1: a = .b(try protoReader.decode(Swift.Int32.self))
+            case 2: a = .c(try protoReader.decode(Swift.String.self))
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.a = a
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
         if let a = self.a {
-            try a.encode(to: writer)
+            try a.encode(to: protoWriter)
         }
-        try writer.writeUnknownFields(unknownFields)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }

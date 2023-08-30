@@ -74,7 +74,7 @@ extension VersionTwo : ProtoMessage {
 
 extension VersionTwo : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var i: Swift.Int32? = nil
         var v2_i: Swift.Int32? = nil
         var v2_s: Swift.String? = nil
@@ -84,21 +84,21 @@ extension VersionTwo : Proto2Codable {
         var obj: NestedVersionTwo? = nil
         var en: EnumVersionTwo? = nil
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: i = try reader.decode(Swift.Int32.self)
-            case 2: v2_i = try reader.decode(Swift.Int32.self)
-            case 3: v2_s = try reader.decode(Swift.String.self)
-            case 4: v2_f32 = try reader.decode(Swift.UInt32.self, encoding: .fixed)
-            case 5: v2_f64 = try reader.decode(Swift.UInt64.self, encoding: .fixed)
-            case 6: try reader.decode(into: &v2_rs)
-            case 7: obj = try reader.decode(NestedVersionTwo.self)
-            case 8: en = try reader.decode(EnumVersionTwo.self)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: i = try protoReader.decode(Swift.Int32.self)
+            case 2: v2_i = try protoReader.decode(Swift.Int32.self)
+            case 3: v2_s = try protoReader.decode(Swift.String.self)
+            case 4: v2_f32 = try protoReader.decode(Swift.UInt32.self, encoding: .fixed)
+            case 5: v2_f64 = try protoReader.decode(Swift.UInt64.self, encoding: .fixed)
+            case 6: try protoReader.decode(into: &v2_rs)
+            case 7: obj = try protoReader.decode(NestedVersionTwo.self)
+            case 8: en = try protoReader.decode(EnumVersionTwo.self)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.i = i
         self.v2_i = v2_i
@@ -110,16 +110,16 @@ extension VersionTwo : Proto2Codable {
         self.en = en
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.i)
-        try writer.encode(tag: 2, value: self.v2_i)
-        try writer.encode(tag: 3, value: self.v2_s)
-        try writer.encode(tag: 4, value: self.v2_f32, encoding: .fixed)
-        try writer.encode(tag: 5, value: self.v2_f64, encoding: .fixed)
-        try writer.encode(tag: 6, value: self.v2_rs)
-        try writer.encode(tag: 7, value: self.obj)
-        try writer.encode(tag: 8, value: self.en)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.i)
+        try protoWriter.encode(tag: 2, value: self.v2_i)
+        try protoWriter.encode(tag: 3, value: self.v2_s)
+        try protoWriter.encode(tag: 4, value: self.v2_f32, encoding: .fixed)
+        try protoWriter.encode(tag: 5, value: self.v2_f64, encoding: .fixed)
+        try protoWriter.encode(tag: 6, value: self.v2_rs)
+        try protoWriter.encode(tag: 7, value: self.obj)
+        try protoWriter.encode(tag: 8, value: self.en)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }

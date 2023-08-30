@@ -83,23 +83,23 @@ extension MappyTwo : ProtoMessage {
 
 extension MappyTwo : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var string_enums: [Swift.String : MappyTwo.ValueEnum] = [:]
         var int_things: [Swift.Int64 : Thing] = [:]
         var string_ints: [Swift.String : Swift.Int64] = [:]
         var int_things_two: [Swift.Int32 : Thing] = [:]
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: try reader.decode(into: &string_enums)
-            case 2: try reader.decode(into: &int_things, keyEncoding: .signed)
-            case 3: try reader.decode(into: &string_ints, valueEncoding: .signed)
-            case 4: try reader.decode(into: &int_things_two, keyEncoding: .signed)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: try protoReader.decode(into: &string_enums)
+            case 2: try protoReader.decode(into: &int_things, keyEncoding: .signed)
+            case 3: try protoReader.decode(into: &string_ints, valueEncoding: .signed)
+            case 4: try protoReader.decode(into: &int_things_two, keyEncoding: .signed)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.string_enums = string_enums
         self.int_things = int_things
@@ -107,12 +107,12 @@ extension MappyTwo : Proto2Codable {
         self.int_things_two = int_things_two
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.string_enums)
-        try writer.encode(tag: 2, value: self.int_things, keyEncoding: .signed)
-        try writer.encode(tag: 3, value: self.string_ints, valueEncoding: .signed)
-        try writer.encode(tag: 4, value: self.int_things_two, keyEncoding: .signed)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.string_enums)
+        try protoWriter.encode(tag: 2, value: self.int_things, keyEncoding: .signed)
+        try protoWriter.encode(tag: 3, value: self.string_ints, valueEncoding: .signed)
+        try protoWriter.encode(tag: 4, value: self.int_things_two, keyEncoding: .signed)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }

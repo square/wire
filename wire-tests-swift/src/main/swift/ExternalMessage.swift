@@ -52,24 +52,24 @@ extension ExternalMessage : ProtoMessage {
 
 extension ExternalMessage : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var f: Swift.Float? = nil
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: f = try reader.decode(Swift.Float.self)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: f = try protoReader.decode(Swift.Float.self)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         _f.wrappedValue = f
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.f)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.f)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }

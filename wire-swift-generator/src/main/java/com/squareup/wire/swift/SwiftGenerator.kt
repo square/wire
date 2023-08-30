@@ -381,17 +381,17 @@ class SwiftGenerator private constructor(
         .addFunction(
           FunctionSpec.constructorBuilder()
             .addModifiers(PUBLIC)
-            .addParameter("from", "reader", protoReader)
+            .addParameter("from", "protoReader", protoReader)
             .throws(true)
-            .addStatement("self.%N = try %T(from: reader)", storageName, storageType)
+            .addStatement("self.%N = try %T(from: protoReader)", storageName, storageType)
             .build(),
         )
         .addFunction(
           FunctionSpec.builder("encode")
             .addModifiers(PUBLIC)
-            .addParameter("to", "writer", protoWriter)
+            .addParameter("to", "protoWriter", protoWriter)
             .throws(true)
-            .addStatement("try %N.encode(to: writer)", storageName)
+            .addStatement("try %N.encode(to: protoWriter)", storageName)
             .build(),
         )
         .build()
@@ -497,7 +497,7 @@ class SwiftGenerator private constructor(
   ): ExtensionSpec.Builder = apply {
     addSuperType(type.protoCodableType)
 
-    val reader = if ("reader" in propertyNames) "_reader" else "reader"
+    val reader = if ("protoReader" in propertyNames) "_protoReader" else "protoReader"
     val token = if ("token" in propertyNames) "_token" else "token"
     val tag = if ("tag" in propertyNames) "_tag" else "tag"
     addFunction(
@@ -626,7 +626,7 @@ class SwiftGenerator private constructor(
         .build(),
     )
 
-    val writer = if ("writer" in propertyNames) "_writer" else "writer"
+    val writer = if ("protoWriter" in propertyNames) "_protoWriter" else "protoWriter"
     addFunction(
       FunctionSpec.builder("encode")
         .addModifiers(PUBLIC)
@@ -1301,7 +1301,7 @@ class SwiftGenerator private constructor(
       val enumName = oneOfEnumNames.getValue(oneOf)
 
       // TODO use a NameAllocator
-      val writer = if (oneOf.fields.any { it.name == "writer" }) "_writer" else "writer"
+      val writer = if (oneOf.fields.any { it.name == "protoWriter" }) "_protoWriter" else "protoWriter"
       addType(
         TypeSpec.enumBuilder(enumName)
           .addModifiers(PUBLIC)

@@ -37,19 +37,19 @@ extension NoFields : ProtoMessage {
 
 extension NoFields : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+    public init(from protoReader: Wire.ProtoReader) throws {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            default: try reader.readUnknownField(tag: tag)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
