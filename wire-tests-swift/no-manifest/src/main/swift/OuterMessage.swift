@@ -5,7 +5,9 @@ import Wire
 
 public struct OuterMessage {
 
+    @ProtoDefaulted
     public var outer_number_before: Int32?
+    @ProtoDefaulted
     public var embedded_message: EmbeddedMessage?
     public var unknownFields: Foundation.Data = .init()
 
@@ -21,8 +23,8 @@ extension OuterMessage {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(outer_number_before: Swift.Int32? = nil, embedded_message: EmbeddedMessage? = nil) {
-        self.outer_number_before = outer_number_before
-        self.embedded_message = embedded_message
+        self._outer_number_before.wrappedValue = outer_number_before
+        self._embedded_message.wrappedValue = embedded_message
     }
 
 }
@@ -42,6 +44,13 @@ extension OuterMessage : Hashable {
 extension OuterMessage : Sendable {
 }
 #endif
+
+extension OuterMessage : ProtoDefaultedValue {
+
+    public static var defaultedValue: OuterMessage {
+        OuterMessage()
+    }
+}
 
 extension OuterMessage : ProtoMessage {
 
@@ -67,8 +76,8 @@ extension OuterMessage : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.outer_number_before = outer_number_before
-        self.embedded_message = embedded_message
+        self._outer_number_before.wrappedValue = outer_number_before
+        self._embedded_message.wrappedValue = embedded_message
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -84,8 +93,8 @@ extension OuterMessage : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.outer_number_before = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "outerNumberBefore", "outer_number_before")
-        self.embedded_message = try container.decodeIfPresent(EmbeddedMessage.self, firstOfKeys: "embeddedMessage", "embedded_message")
+        self._outer_number_before.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "outerNumberBefore", "outer_number_before")
+        self._embedded_message.wrappedValue = try container.decodeIfPresent(EmbeddedMessage.self, firstOfKeys: "embeddedMessage", "embedded_message")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {

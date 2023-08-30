@@ -6,6 +6,7 @@ import Wire
 public struct EmbeddedMessage {
 
     public var inner_repeated_number: [Int32] = []
+    @ProtoDefaulted
     public var inner_number_after: Int32?
     public var unknownFields: Foundation.Data = .init()
 
@@ -22,7 +23,7 @@ extension EmbeddedMessage {
     @available(*, deprecated)
     public init(inner_repeated_number: [Swift.Int32] = [], inner_number_after: Swift.Int32? = nil) {
         self.inner_repeated_number = inner_repeated_number
-        self.inner_number_after = inner_number_after
+        self._inner_number_after.wrappedValue = inner_number_after
     }
 
 }
@@ -42,6 +43,13 @@ extension EmbeddedMessage : Hashable {
 extension EmbeddedMessage : Sendable {
 }
 #endif
+
+extension EmbeddedMessage : ProtoDefaultedValue {
+
+    public static var defaultedValue: EmbeddedMessage {
+        EmbeddedMessage()
+    }
+}
 
 extension EmbeddedMessage : ProtoMessage {
 
@@ -68,7 +76,7 @@ extension EmbeddedMessage : Proto2Codable {
         self.unknownFields = try protoReader.endMessage(token: token)
 
         self.inner_repeated_number = inner_repeated_number
-        self.inner_number_after = inner_number_after
+        self._inner_number_after.wrappedValue = inner_number_after
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -85,7 +93,7 @@ extension EmbeddedMessage : Codable {
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         self.inner_repeated_number = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "innerRepeatedNumber", "inner_repeated_number")
-        self.inner_number_after = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "innerNumberAfter", "inner_number_after")
+        self._inner_number_after.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "innerNumberAfter", "inner_number_after")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {

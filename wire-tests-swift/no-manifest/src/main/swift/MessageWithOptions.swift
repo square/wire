@@ -27,6 +27,13 @@ extension MessageWithOptions : Sendable {
 }
 #endif
 
+extension MessageWithOptions : ProtoDefaultedValue {
+
+    public static var defaultedValue: MessageWithOptions {
+        MessageWithOptions()
+    }
+}
+
 extension MessageWithOptions : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {

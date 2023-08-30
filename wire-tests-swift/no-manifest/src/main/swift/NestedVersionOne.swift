@@ -5,6 +5,7 @@ import Wire
 
 public struct NestedVersionOne {
 
+    @ProtoDefaulted
     public var i: Int32?
     public var unknownFields: Foundation.Data = .init()
 
@@ -20,7 +21,7 @@ extension NestedVersionOne {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(i: Swift.Int32? = nil) {
-        self.i = i
+        self._i.wrappedValue = i
     }
 
 }
@@ -40,6 +41,13 @@ extension NestedVersionOne : Hashable {
 extension NestedVersionOne : Sendable {
 }
 #endif
+
+extension NestedVersionOne : ProtoDefaultedValue {
+
+    public static var defaultedValue: NestedVersionOne {
+        NestedVersionOne()
+    }
+}
 
 extension NestedVersionOne : ProtoMessage {
 
@@ -63,7 +71,7 @@ extension NestedVersionOne : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.i = i
+        self._i.wrappedValue = i
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -78,7 +86,7 @@ extension NestedVersionOne : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.i = try container.decodeIfPresent(Swift.Int32.self, forKey: "i")
+        self._i.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, forKey: "i")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {

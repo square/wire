@@ -44,16 +44,20 @@ extension Redactable {
             guard let label = label else {
                 return "\(value)"
             }
-            if RedactedKeys(rawValue: label) != nil {
+            var strippedLabel = label
+            if (label.hasPrefix("_")) {
+                strippedLabel = String(label.dropFirst(1))
+            }
+            if RedactedKeys(rawValue: strippedLabel) != nil {
                 // This is a redacted field, but if it's nil then that's ok to print
                 if "\(value)" != "nil" {
-                    return "\(label): <redacted>"
+                    return "\(strippedLabel): <redacted>"
                 }
             }
             if value is String {
-                return "\(label): \"\(value)\""
+                return "\(strippedLabel): \"\(value)\""
             }
-            return "\(label): \(value)"
+            return "\(strippedLabel): \(value)"
         }
 
         if fields.count > 0 {

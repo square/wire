@@ -17,7 +17,13 @@ import Foundation
 
 // MARK: -
 
-extension Bool : ProtoCodable {
+extension Bool : ProtoCodable, ProtoDefaultedValue {
+    
+    // MARK: - ProtoDefaultedValue
+    
+    public static var defaultedValue: Bool {
+        false
+    }
 
     // MARK: - ProtoDecodable
 
@@ -40,7 +46,13 @@ extension Bool : ProtoCodable {
 
 // MARK: -
 
-extension Data : ProtoCodable {
+extension Data : ProtoCodable, ProtoDefaultedValue {
+    
+    // MARK: - ProtoDefaultedValue
+    
+    public static var defaultedValue: Data {
+        Data()
+    }
 
     // MARK: - ProtoDecodable
 
@@ -61,7 +73,7 @@ extension Data : ProtoCodable {
 
 // MARK: -
 
-extension Double : ProtoCodable {
+extension Double : ProtoCodable, ProtoDefaultedValue {
 
     // MARK: - ProtoDecodable
 
@@ -84,7 +96,7 @@ extension Double : ProtoCodable {
 
 // MARK: -
 
-extension Float : ProtoCodable {
+extension Float : ProtoCodable, ProtoDefaultedValue {
 
     // MARK: - ProtoDecodable
 
@@ -107,7 +119,13 @@ extension Float : ProtoCodable {
 
 // MARK: -
 
-extension String : ProtoCodable {
+extension String : ProtoCodable, ProtoDefaultedValue {
+    
+    // MARK: - ProtoDefaultedValue
+    
+    public static var defaultedValue: String {
+        ""
+    }
 
     // MARK: - ProtoDecodable
 

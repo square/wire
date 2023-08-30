@@ -5,6 +5,7 @@ import Wire
 
 public struct Thing {
 
+    @ProtoDefaulted
     public var name: String?
     public var unknownFields: Foundation.Data = .init()
 
@@ -20,7 +21,7 @@ extension Thing {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(name: Swift.String? = nil) {
-        self.name = name
+        self._name.wrappedValue = name
     }
 
 }
@@ -40,6 +41,13 @@ extension Thing : Hashable {
 extension Thing : Sendable {
 }
 #endif
+
+extension Thing : ProtoDefaultedValue {
+
+    public static var defaultedValue: Thing {
+        Thing()
+    }
+}
 
 extension Thing : ProtoMessage {
 
@@ -63,7 +71,7 @@ extension Thing : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.name = name
+        self._name.wrappedValue = name
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -78,7 +86,7 @@ extension Thing : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.name = try container.decodeIfPresent(Swift.String.self, forKey: "name")
+        self._name.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "name")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {

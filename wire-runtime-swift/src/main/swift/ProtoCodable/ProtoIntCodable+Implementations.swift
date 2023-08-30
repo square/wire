@@ -17,7 +17,7 @@ import Foundation
 
 // MARK: -
 
-extension Int32: ProtoIntCodable {
+extension Int32: ProtoIntCodable, ProtoDefaultedValue {
 
     // MARK: - ProtoIntDecodable
 
@@ -56,7 +56,7 @@ extension Int32: ProtoIntCodable {
 
 // MARK: -
 
-extension UInt32: ProtoIntCodable {
+extension UInt32: ProtoIntCodable, ProtoDefaultedValue {
 
     // MARK: - ProtoIntDecodable
 
@@ -93,7 +93,7 @@ extension UInt32: ProtoIntCodable {
 
 // MARK: -
 
-extension Int64: ProtoIntCodable {
+extension Int64: ProtoIntCodable, ProtoDefaultedValue {
 
     // MARK: - ProtoIntDecodable
 
@@ -132,7 +132,7 @@ extension Int64: ProtoIntCodable {
 
 // MARK: -
 
-extension UInt64: ProtoIntCodable {
+extension UInt64: ProtoIntCodable, ProtoDefaultedValue {
 
     // MARK: - ProtoIntDecodable
 

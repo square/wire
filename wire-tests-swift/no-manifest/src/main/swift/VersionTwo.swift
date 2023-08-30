@@ -5,12 +5,18 @@ import Wire
 
 public struct VersionTwo {
 
+    @ProtoDefaulted
     public var i: Int32?
+    @ProtoDefaulted
     public var v2_i: Int32?
+    @ProtoDefaulted
     public var v2_s: String?
+    @ProtoDefaulted
     public var v2_f32: UInt32?
+    @ProtoDefaulted
     public var v2_f64: UInt64?
     public var v2_rs: [String] = []
+    @ProtoDefaulted
     public var obj: NestedVersionTwo?
     public var en: EnumVersionTwo?
     public var unknownFields: Foundation.Data = .init()
@@ -36,13 +42,13 @@ extension VersionTwo {
         obj: NestedVersionTwo? = nil,
         en: EnumVersionTwo? = nil
     ) {
-        self.i = i
-        self.v2_i = v2_i
-        self.v2_s = v2_s
-        self.v2_f32 = v2_f32
-        self.v2_f64 = v2_f64
+        self._i.wrappedValue = i
+        self._v2_i.wrappedValue = v2_i
+        self._v2_s.wrappedValue = v2_s
+        self._v2_f32.wrappedValue = v2_f32
+        self._v2_f64.wrappedValue = v2_f64
         self.v2_rs = v2_rs
-        self.obj = obj
+        self._obj.wrappedValue = obj
         self.en = en
     }
 
@@ -63,6 +69,13 @@ extension VersionTwo : Hashable {
 extension VersionTwo : Sendable {
 }
 #endif
+
+extension VersionTwo : ProtoDefaultedValue {
+
+    public static var defaultedValue: VersionTwo {
+        VersionTwo()
+    }
+}
 
 extension VersionTwo : ProtoMessage {
 
@@ -100,13 +113,13 @@ extension VersionTwo : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.i = i
-        self.v2_i = v2_i
-        self.v2_s = v2_s
-        self.v2_f32 = v2_f32
-        self.v2_f64 = v2_f64
+        self._i.wrappedValue = i
+        self._v2_i.wrappedValue = v2_i
+        self._v2_s.wrappedValue = v2_s
+        self._v2_f32.wrappedValue = v2_f32
+        self._v2_f64.wrappedValue = v2_f64
         self.v2_rs = v2_rs
-        self.obj = obj
+        self._obj.wrappedValue = obj
         self.en = en
     }
 
@@ -129,13 +142,13 @@ extension VersionTwo : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.i = try container.decodeIfPresent(Swift.Int32.self, forKey: "i")
-        self.v2_i = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "v2I", "v2_i")
-        self.v2_s = try container.decodeIfPresent(Swift.String.self, firstOfKeys: "v2S", "v2_s")
-        self.v2_f32 = try container.decodeIfPresent(Swift.UInt32.self, firstOfKeys: "v2F32", "v2_f32")
-        self.v2_f64 = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, firstOfKeys: "v2F64", "v2_f64")
+        self._i.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, forKey: "i")
+        self._v2_i.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "v2I", "v2_i")
+        self._v2_s.wrappedValue = try container.decodeIfPresent(Swift.String.self, firstOfKeys: "v2S", "v2_s")
+        self._v2_f32.wrappedValue = try container.decodeIfPresent(Swift.UInt32.self, firstOfKeys: "v2F32", "v2_f32")
+        self._v2_f64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, firstOfKeys: "v2F64", "v2_f64")
         self.v2_rs = try container.decodeProtoArray(Swift.String.self, firstOfKeys: "v2Rs", "v2_rs")
-        self.obj = try container.decodeIfPresent(NestedVersionTwo.self, forKey: "obj")
+        self._obj.wrappedValue = try container.decodeIfPresent(NestedVersionTwo.self, forKey: "obj")
         self.en = try container.decodeIfPresent(EnumVersionTwo.self, forKey: "en")
     }
 

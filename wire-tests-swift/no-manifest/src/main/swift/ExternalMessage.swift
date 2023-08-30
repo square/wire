@@ -5,7 +5,7 @@ import Wire
 
 public struct ExternalMessage {
 
-    @Defaulted(defaultValue: 20)
+    @CustomDefaulted(defaultValue: 20)
     public var f: Float?
     public var unknownFields: Foundation.Data = .init()
 
@@ -21,7 +21,7 @@ extension ExternalMessage {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(f: Swift.Float? = nil) {
-        _f.wrappedValue = f
+        self._f.wrappedValue = f
     }
 
 }
@@ -41,6 +41,13 @@ extension ExternalMessage : Hashable {
 extension ExternalMessage : Sendable {
 }
 #endif
+
+extension ExternalMessage : ProtoDefaultedValue {
+
+    public static var defaultedValue: ExternalMessage {
+        ExternalMessage()
+    }
+}
 
 extension ExternalMessage : ProtoMessage {
 
@@ -64,7 +71,7 @@ extension ExternalMessage : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        _f.wrappedValue = f
+        self._f.wrappedValue = f
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -79,7 +86,7 @@ extension ExternalMessage : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        _f.wrappedValue = try container.decodeIfPresent(Swift.Float.self, forKey: "f")
+        self._f.wrappedValue = try container.decodeIfPresent(Swift.Float.self, forKey: "f")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {

@@ -41,6 +41,13 @@ extension RedactedOneOf : Sendable {
 }
 #endif
 
+extension RedactedOneOf : ProtoDefaultedValue {
+
+    public static var defaultedValue: RedactedOneOf {
+        RedactedOneOf()
+    }
+}
+
 extension RedactedOneOf : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {

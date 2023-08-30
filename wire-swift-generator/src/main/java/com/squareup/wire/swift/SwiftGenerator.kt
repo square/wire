@@ -81,12 +81,14 @@ class SwiftGenerator private constructor(
   private val protoReader = DeclaredTypeName.typeName("Wire.ProtoReader")
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
   private val protoEnum = DeclaredTypeName.typeName("Wire.ProtoEnum")
+  private val protoDefaultedValue = DeclaredTypeName.typeName("Wire.ProtoDefaultedValue")
 
   private val heap = DeclaredTypeName.typeName("Wire.CopyOnWrite")
   private val indirect = DeclaredTypeName.typeName("Wire.Indirect")
   private val redactable = DeclaredTypeName.typeName("Wire.Redactable")
   private val redactedKey = DeclaredTypeName.typeName("Wire.RedactedKey")
-  private val defaulted = DeclaredTypeName.typeName("Wire.Defaulted")
+  private val customDefaulted = DeclaredTypeName.typeName("Wire.CustomDefaulted")
+  private val protoDefaulted = DeclaredTypeName.typeName("Wire.ProtoDefaulted")
 
   private val stringLiteralCodingKeys = DeclaredTypeName.typeName("Wire.StringLiteralCodingKeys")
 
@@ -158,8 +160,42 @@ class SwiftGenerator private constructor(
       else -> null
     }
 
+  private val MessageType.supportsEmptyInitialization: Boolean
+    get() = if (needsCustomCodable) {
+      // These types' fields aren't properly loaded
+      false
+    } else {
+      fields.isEmpty() || fields.all { !it.isRequiredParameter }
+    }
+
+  private val EnumType.supportsEmptyInitialization: Boolean
+    get() = constants.any { it.tag == 0 }
+
+  private val Field.isProtoDefaulted: Boolean
+    get() {
+      if (isRequiredParameter || isMap || isRepeated) {
+        return false
+      }
+      if (type == ProtoType.ANY) return false
+      if (isMessage) {
+        val messageType = schema.getType(type!!) as MessageType
+        return messageType.supportsEmptyInitialization
+      }
+      if (isEnum) {
+        val enumType = schema.getType(type!!) as EnumType
+        return enumType.supportsEmptyInitialization
+      }
+      return true
+    }
+
+  private val Field.defaultedValue: CodeBlock?
+    get() = default?.let {
+      defaultFieldInitializer(type!!, it)
+    }
+
   // see https://protobuf.dev/programming-guides/proto3/#default
   private val Field.proto3InitialValue: String
+    // TODO: Defaults: REMOVE ME! :)
     get() = when {
       isMap -> "[:]"
       isRepeated -> "[]"
@@ -256,6 +292,7 @@ class SwiftGenerator private constructor(
    */
   @Throws(NoSuchElementException::class)
   private fun validateProto3DefaultsExist(type: MessageType) {
+    // TODO: Defaults: REMOVE ME! :)
     if (type.syntax == PROTO_2) { return }
 
     // validate each enum field
@@ -339,6 +376,22 @@ class SwiftGenerator private constructor(
     fileMembers += FileMemberSpec.builder(structSendableExtension)
       .addGuard("swift(>=5.5)")
       .build()
+
+    // Add proto defaulted value
+
+    if (type.supportsEmptyInitialization) {
+      val defaultedValueExtension = ExtensionSpec.builder(structType)
+        .addSuperType(protoDefaultedValue)
+        .addProperty(
+          PropertySpec.varBuilder("defaultedValue", structType, PUBLIC, STATIC).getter(
+            FunctionSpec.getterBuilder().addCode(
+              CodeBlock.of("%T()\n", structType),
+            ).build(),
+          ).build(),
+        ).build()
+
+      fileMembers += FileMemberSpec.builder(defaultedValueExtension).build()
+    }
 
     // Add redaction, which is potentially delegated
     val requiresRedaction = type.fields.any { it.isRedacted }
@@ -638,6 +691,8 @@ class SwiftGenerator private constructor(
           // Check required and bind members.
           addStatement("")
           type.fields.forEach { field ->
+            val hasPropertyWrapper = !isIndirect(type, field) && (field.defaultedValue != null || field.isProtoDefaulted)
+
             val initializer = when (type.syntax) {
               PROTO_2 -> if (field.isOptional || field.isRepeated || field.isMap) {
                 CodeBlock.of("%N", field.name)
@@ -650,8 +705,13 @@ class SwiftGenerator private constructor(
                 CodeBlock.of("%N", field.name)
               }
             }
+
             addStatement(
-              if (field.default != null) "_%N.wrappedValue = %L" else { "self.%N = %L" },
+              if (hasPropertyWrapper) {
+                "self._%N.wrappedValue = %L"
+              } else {
+                "self.%N = %L"
+              },
               field.name,
               initializer,
             )
@@ -802,6 +862,8 @@ class SwiftGenerator private constructor(
               .addStatement("let container = try decoder.container(keyedBy: %T.self)", codingKeys)
               .apply {
                 type.fields.forEach { field ->
+                  val hasPropertyWrapper = !isIndirect(type, field) && (field.defaultedValue != null || field.isProtoDefaulted)
+
                   var typeName: TypeName = field.typeName.makeNonOptional()
                   if (field.isRepeated && typeName is ParameterizedTypeName) {
                     typeName = typeName.typeArguments[0]
@@ -831,7 +893,7 @@ class SwiftGenerator private constructor(
                     .map { CodeBlock.of("%S", it) }
                     .joinToCode()
 
-                  val prefix = if (field.default != null) { "_%1N.wrappedValue" } else { "self.%1N" }
+                  val prefix = if (hasPropertyWrapper) { "self._%1N.wrappedValue" } else { "self.%1N" }
                   addStatement(
                     "$prefix = try container.$decode($typeArg%2T.self, $forKeys: $keys)",
                     field.name,
@@ -1145,8 +1207,13 @@ class SwiftGenerator private constructor(
         }
         .apply {
           type.fields.filter { it.isRequiredParameter }.forEach { field ->
+            val hasPropertyWrapper = !isIndirect(type, field) && (field.defaultedValue != null || field.isProtoDefaulted)
             addStatement(
-              if (field.default != null) "_%1N.wrappedValue = %1N" else { "self.%1N = %1N" },
+              if (hasPropertyWrapper) {
+                "self._%1N.wrappedValue = %1N"
+              } else {
+                "self.%1N = %1N"
+              },
               field.name,
             )
           }
@@ -1171,8 +1238,13 @@ class SwiftGenerator private constructor(
           .addAttribute(deprecated)
           .apply {
             type.fields.forEach { field ->
+              val hasPropertyWrapper = !isIndirect(type, field) && (field.defaultedValue != null || field.isProtoDefaulted)
               addStatement(
-                if (field.default != null) "_%1N.wrappedValue = %1N" else { "self.%1N = %1N" },
+                if (hasPropertyWrapper) {
+                  "self._%1N.wrappedValue = %1N"
+                } else {
+                  "self.%1N = %1N"
+                },
                 field.name,
               )
             }
@@ -1223,11 +1295,14 @@ class SwiftGenerator private constructor(
       }
       if (isIndirect(type, field)) {
         property.addAttribute(AttributeSpec.builder(indirect).build())
-      }
-      val default = field.default
-      if (default != null) {
-        val defaultValue = defaultFieldInitializer(field.type!!, default)
-        property.addAttribute(AttributeSpec.builder(defaulted).addArgument("defaultValue: $defaultValue").build())
+      } else {
+        val defaultedValue = field.defaultedValue
+
+        if (defaultedValue != null) {
+          property.addAttribute(AttributeSpec.builder(customDefaulted).addArgument("defaultValue: $defaultedValue").build())
+        } else if (field.isProtoDefaulted) {
+          property.addAttribute(AttributeSpec.builder(protoDefaulted).build())
+        }
       }
 
       if (field.isMap) {
@@ -1278,7 +1353,8 @@ class SwiftGenerator private constructor(
       typeName == DOUBLE -> defaultValue.toDoubleFieldInitializer()
       typeName == STRING -> CodeBlock.of("%S", stringLiteralWithQuotes2(defaultValue.toString()))
       typeName == DATA -> CodeBlock.of(
-        "Foundation.Data(base64Encoded: %S)!",
+        "%T(base64Encoded: %S)!",
+        FOUNDATION_DATA,
         defaultValue.toString().encode(charset = Charsets.ISO_8859_1).base64(),
       )
       protoType.isEnum -> CodeBlock.of("%T.%L", typeName, defaultValue)
@@ -1549,6 +1625,18 @@ class SwiftGenerator private constructor(
       .addSuperType(UINT32)
       .addSuperType(CASE_ITERABLE)
       .addSuperType(protoEnum)
+      .apply {
+        if (type.supportsEmptyInitialization) {
+          addSuperType(protoDefaultedValue)
+          addProperty(
+            PropertySpec.varBuilder("defaultedValue", enumName, PUBLIC, STATIC).getter(
+              FunctionSpec.getterBuilder().addCode(
+                CodeBlock.of("%T.%L\n", type.typeName.makeNonOptional(), type.constants.first { it.tag == 0 }.name),
+              ).build(),
+            ).build(),
+          )
+        }
+      }
       .apply {
         val sendableExtension = ExtensionSpec.builder(enumName)
           .addSuperType(sendable)

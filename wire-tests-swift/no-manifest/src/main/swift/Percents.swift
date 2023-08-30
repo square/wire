@@ -8,6 +8,7 @@ public struct Percents {
     /**
      * e.g. "No limits, free to send and just 2.75% to receive".
      */
+    @ProtoDefaulted
     public var text: String?
     public var unknownFields: Foundation.Data = .init()
 
@@ -23,7 +24,7 @@ extension Percents {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(text: Swift.String? = nil) {
-        self.text = text
+        self._text.wrappedValue = text
     }
 
 }
@@ -43,6 +44,13 @@ extension Percents : Hashable {
 extension Percents : Sendable {
 }
 #endif
+
+extension Percents : ProtoDefaultedValue {
+
+    public static var defaultedValue: Percents {
+        Percents()
+    }
+}
 
 extension Percents : ProtoMessage {
 
@@ -66,7 +74,7 @@ extension Percents : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.text = text
+        self._text.wrappedValue = text
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -81,7 +89,7 @@ extension Percents : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.text = try container.decodeIfPresent(Swift.String.self, forKey: "text")
+        self._text.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "text")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {

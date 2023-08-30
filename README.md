@@ -571,42 +571,24 @@ public struct Dinosaur {
     /**
      * Common name of this dinosaur, like "Stegosaurus".
      */
+    @ProtoDefaulted
     public var name: String?
     /**
      * URLs with images of this dinosaur.
      */
     public var picture_urls: [String] = []
+    @ProtoDefaulted
     public var length_meters: Double?
+    @ProtoDefaulted
     public var mass_kilograms: Double?
     public var period: Period?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(configure: (inout Self) -> Void = { _ in }) {
+    public init(configure: (inout Self) -> Swift.Void = { _ in }) {
         configure(&self)
     }
 
 }
-
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension Dinosaur {
-
-    @_disfavoredOverload
-    public init(
-        name: String? = nil,
-        picture_urls: [String] = [],
-        length_meters: Double? = nil,
-        mass_kilograms: Double? = nil,
-        period: Period? = nil
-    ) {
-        self.name = name
-        self.picture_urls = picture_urls
-        self.length_meters = length_meters
-        self.mass_kilograms = mass_kilograms
-        self.period = period
-    }
-
-}
-#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension Dinosaur : Equatable {
@@ -623,9 +605,16 @@ extension Dinosaur : Sendable {
 }
 #endif
 
+extension Dinosaur : ProtoDefaultedValue {
+
+    public static var defaultedValue: Dinosaur {
+        Dinosaur()
+    }
+}
+
 extension Dinosaur : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> String {
+    public static func protoMessageTypeURL() -> Swift.String {
         return "type.googleapis.com/squareup.dinosaurs.Dinosaur"
     }
 
@@ -633,40 +622,40 @@ extension Dinosaur : ProtoMessage {
 
 extension Dinosaur : Proto2Codable {
 
-    public init(from reader: ProtoReader) throws {
-        var name: String? = nil
-        var picture_urls: [String] = []
-        var length_meters: Double? = nil
-        var mass_kilograms: Double? = nil
+    public init(from protoReader: Wire.ProtoReader) throws {
+        var name: Swift.String? = nil
+        var picture_urls: [Swift.String] = []
+        var length_meters: Swift.Double? = nil
+        var mass_kilograms: Swift.Double? = nil
         var period: Period? = nil
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: name = try reader.decode(String.self)
-            case 2: try reader.decode(into: &picture_urls)
-            case 3: length_meters = try reader.decode(Double.self)
-            case 4: mass_kilograms = try reader.decode(Double.self)
-            case 5: period = try reader.decode(Period.self)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: name = try protoReader.decode(Swift.String.self)
+            case 2: try protoReader.decode(into: &picture_urls)
+            case 3: length_meters = try protoReader.decode(Swift.Double.self)
+            case 4: mass_kilograms = try protoReader.decode(Swift.Double.self)
+            case 5: period = try protoReader.decode(Period.self)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.name = name
+        self._name.wrappedValue = name
         self.picture_urls = picture_urls
-        self.length_meters = length_meters
-        self.mass_kilograms = mass_kilograms
+        self._length_meters.wrappedValue = length_meters
+        self._mass_kilograms.wrappedValue = mass_kilograms
         self.period = period
     }
 
-    public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.name)
-        try writer.encode(tag: 2, value: self.picture_urls)
-        try writer.encode(tag: 3, value: self.length_meters)
-        try writer.encode(tag: 4, value: self.mass_kilograms)
-        try writer.encode(tag: 5, value: self.period)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.name)
+        try protoWriter.encode(tag: 2, value: self.picture_urls)
+        try protoWriter.encode(tag: 3, value: self.length_meters)
+        try protoWriter.encode(tag: 4, value: self.mass_kilograms)
+        try protoWriter.encode(tag: 5, value: self.period)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -674,17 +663,17 @@ extension Dinosaur : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension Dinosaur : Codable {
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.name = try container.decodeIfPresent(String.self, forKey: "name")
-        self.picture_urls = try container.decodeProtoArray(String.self, firstOfKeys: "pictureUrls", "picture_urls")
-        self.length_meters = try container.decodeIfPresent(Double.self, firstOfKeys: "lengthMeters", "length_meters")
-        self.mass_kilograms = try container.decodeIfPresent(Double.self, firstOfKeys: "massKilograms", "mass_kilograms")
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        self._name.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "name")
+        self.picture_urls = try container.decodeProtoArray(Swift.String.self, firstOfKeys: "pictureUrls", "picture_urls")
+        self._length_meters.wrappedValue = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "lengthMeters", "length_meters")
+        self._mass_kilograms.wrappedValue = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "massKilograms", "mass_kilograms")
         self.period = try container.decodeIfPresent(Period.self, forKey: "period")
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 

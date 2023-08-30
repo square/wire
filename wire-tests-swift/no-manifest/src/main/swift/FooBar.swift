@@ -5,15 +5,21 @@ import Wire
 
 public struct FooBar {
 
+    @ProtoDefaulted
     public var foo: Int32?
+    @ProtoDefaulted
     public var bar: String?
+    @ProtoDefaulted
     public var baz: FooBar.Nested?
+    @ProtoDefaulted
     public var qux: UInt64?
     public var fred: [Float] = []
+    @ProtoDefaulted
     public var daisy: Double?
     public var nested: [FooBar] = []
     public var ext: FooBar.FooBarBazEnum?
     public var rep: [FooBar.FooBarBazEnum] = []
+    @ProtoDefaulted
     public var more_string: String?
     public var unknownFields: Foundation.Data = .init()
 
@@ -40,16 +46,16 @@ extension FooBar {
         rep: [FooBar.FooBarBazEnum] = [],
         more_string: Swift.String? = nil
     ) {
-        self.foo = foo
-        self.bar = bar
-        self.baz = baz
-        self.qux = qux
+        self._foo.wrappedValue = foo
+        self._bar.wrappedValue = bar
+        self._baz.wrappedValue = baz
+        self._qux.wrappedValue = qux
         self.fred = fred
-        self.daisy = daisy
+        self._daisy.wrappedValue = daisy
         self.nested = nested
         self.ext = ext
         self.rep = rep
-        self.more_string = more_string
+        self._more_string.wrappedValue = more_string
     }
 
 }
@@ -69,6 +75,13 @@ extension FooBar : Hashable {
 extension FooBar : Sendable {
 }
 #endif
+
+extension FooBar : ProtoDefaultedValue {
+
+    public static var defaultedValue: FooBar {
+        FooBar()
+    }
+}
 
 #if !WIRE_REMOVE_REDACTABLE
 extension FooBar : Redactable {
@@ -122,16 +135,16 @@ extension FooBar : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.foo = foo
-        self.bar = bar
-        self.baz = baz
-        self.qux = qux
+        self._foo.wrappedValue = foo
+        self._bar.wrappedValue = bar
+        self._baz.wrappedValue = baz
+        self._qux.wrappedValue = qux
         self.fred = fred
-        self.daisy = daisy
+        self._daisy.wrappedValue = daisy
         self.nested = nested
         self.ext = ext
         self.rep = rep
-        self.more_string = more_string
+        self._more_string.wrappedValue = more_string
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -155,16 +168,16 @@ extension FooBar : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.foo = try container.decodeIfPresent(Swift.Int32.self, forKey: "foo")
-        self.bar = try container.decodeIfPresent(Swift.String.self, forKey: "bar")
-        self.baz = try container.decodeIfPresent(FooBar.Nested.self, forKey: "baz")
-        self.qux = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, forKey: "qux")
+        self._foo.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, forKey: "foo")
+        self._bar.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "bar")
+        self._baz.wrappedValue = try container.decodeIfPresent(FooBar.Nested.self, forKey: "baz")
+        self._qux.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, forKey: "qux")
         self.fred = try container.decodeProtoArray(Swift.Float.self, forKey: "fred")
-        self.daisy = try container.decodeIfPresent(Swift.Double.self, forKey: "daisy")
+        self._daisy.wrappedValue = try container.decodeIfPresent(Swift.Double.self, forKey: "daisy")
         self.nested = try container.decodeProtoArray(FooBar.self, forKey: "nested")
         self.ext = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "ext")
         self.rep = try container.decodeProtoArray(FooBar.FooBarBazEnum.self, forKey: "rep")
-        self.more_string = try container.decodeIfPresent(Swift.String.self, firstOfKeys: "moreString", "more_string")
+        self._more_string.wrappedValue = try container.decodeIfPresent(Swift.String.self, firstOfKeys: "moreString", "more_string")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {
@@ -265,6 +278,13 @@ extension FooBar.Nested : Sendable {
 }
 #endif
 
+extension FooBar.Nested : ProtoDefaultedValue {
+
+    public static var defaultedValue: FooBar.Nested {
+        FooBar.Nested()
+    }
+}
+
 extension FooBar.Nested : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {
@@ -340,6 +360,13 @@ extension FooBar.More : Hashable {
 extension FooBar.More : Sendable {
 }
 #endif
+
+extension FooBar.More : ProtoDefaultedValue {
+
+    public static var defaultedValue: FooBar.More {
+        FooBar.More()
+    }
+}
 
 extension FooBar.More : ProtoMessage {
 

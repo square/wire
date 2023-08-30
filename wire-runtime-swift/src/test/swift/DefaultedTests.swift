@@ -18,6 +18,11 @@ import Wire
 import XCTest
 
 final class DefaultedTests: XCTestCase {
+    func testMessageIdentityValue() throws {
+        let d: D = D()
+        XCTAssertNotNil(d.$a)
+    }
+    
     func testProjectedValueIsDefaultValue() throws {
         let phoneNumber = Person.PhoneNumber(number: "1234567890")
         XCTAssertNil(phoneNumber.type)

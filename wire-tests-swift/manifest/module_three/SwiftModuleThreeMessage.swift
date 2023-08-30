@@ -6,6 +6,7 @@ import module_one
 
 public struct SwiftModuleThreeMessage {
 
+    @ProtoDefaulted
     public var name: String?
     public var unknownFields: Foundation.Data = .init()
 
@@ -21,7 +22,7 @@ extension SwiftModuleThreeMessage {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(name: Swift.String? = nil) {
-        self.name = name
+        self._name.wrappedValue = name
     }
 
 }
@@ -41,6 +42,13 @@ extension SwiftModuleThreeMessage : Hashable {
 extension SwiftModuleThreeMessage : Sendable {
 }
 #endif
+
+extension SwiftModuleThreeMessage : ProtoDefaultedValue {
+
+    public static var defaultedValue: SwiftModuleThreeMessage {
+        SwiftModuleThreeMessage()
+    }
+}
 
 extension SwiftModuleThreeMessage : ProtoMessage {
 
@@ -64,7 +72,7 @@ extension SwiftModuleThreeMessage : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.name = name
+        self._name.wrappedValue = name
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -79,7 +87,7 @@ extension SwiftModuleThreeMessage : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.name = try container.decodeIfPresent(Swift.String.self, forKey: "name")
+        self._name.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "name")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {
@@ -135,6 +143,13 @@ extension SwiftModuleThreeMessage.NestedMessage : Hashable {
 extension SwiftModuleThreeMessage.NestedMessage : Sendable {
 }
 #endif
+
+extension SwiftModuleThreeMessage.NestedMessage : ProtoDefaultedValue {
+
+    public static var defaultedValue: SwiftModuleThreeMessage.NestedMessage {
+        SwiftModuleThreeMessage.NestedMessage()
+    }
+}
 
 extension SwiftModuleThreeMessage.NestedMessage : ProtoMessage {
 

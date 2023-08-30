@@ -13,36 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Foundation
+public protocol ProtoDefaultedValue {
+    static var defaultedValue: Self { get }
+}
 
-/**
- When applied to field a projected value is provided for accessing the real value
- or the default value set.
- */
+// MARK: - ProtoDefaultedValue
+
+extension Numeric where Self: ProtoDefaultedValue {
+    public static var defaultedValue: Self {
+        .zero
+    }
+}
+
+// MARK: - ProtoDefaulted
+
 @propertyWrapper
-public struct Defaulted<Value> {
-
+public struct ProtoDefaulted<Value: ProtoDefaultedValue> {
     public var wrappedValue: Value?
-    let defaultValue: Value
 
-    public init(defaultValue: Value) {
-        self.defaultValue = defaultValue
+    public init() {
     }
 
     public var projectedValue: Value {
-        wrappedValue ?? defaultValue
+        wrappedValue ?? Value.defaultedValue
     }
 }
 
-extension Defaulted : Equatable where Value : Equatable {
+extension ProtoDefaulted : Equatable where Value : Equatable {
 }
 
-extension Defaulted : Hashable where Value : Hashable {
+extension ProtoDefaulted : Hashable where Value : Hashable {
 }
 
 #if swift(>=5.5)
 
-extension Defaulted : Sendable where Value : Sendable {
+extension ProtoDefaulted : Sendable where Value : Sendable {
 }
 
 #endif
