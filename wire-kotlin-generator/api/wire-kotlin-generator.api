@@ -36,6 +36,7 @@ public final class com/squareup/wire/kotlin/KotlinSchemaHandler$Companion {
 public final class com/squareup/wire/kotlin/RpcCallStyle : java/lang/Enum {
 	public static final field BLOCKING Lcom/squareup/wire/kotlin/RpcCallStyle;
 	public static final field SUSPENDING Lcom/squareup/wire/kotlin/RpcCallStyle;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/squareup/wire/kotlin/RpcCallStyle;
 	public static fun values ()[Lcom/squareup/wire/kotlin/RpcCallStyle;
 }
@@ -44,6 +45,7 @@ public final class com/squareup/wire/kotlin/RpcRole : java/lang/Enum {
 	public static final field CLIENT Lcom/squareup/wire/kotlin/RpcRole;
 	public static final field NONE Lcom/squareup/wire/kotlin/RpcRole;
 	public static final field SERVER Lcom/squareup/wire/kotlin/RpcRole;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/squareup/wire/kotlin/RpcRole;
 	public static fun values ()[Lcom/squareup/wire/kotlin/RpcRole;
 }

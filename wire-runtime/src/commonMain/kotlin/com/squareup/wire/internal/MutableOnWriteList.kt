@@ -15,8 +15,6 @@
  */
 package com.squareup.wire.internal
 
-import kotlin.jvm.JvmName
-
 /** A wrapper around an empty/immutable list which only switches to mutable on first mutation. */
 internal class MutableOnWriteList<T>(
   private val immutableList: List<T>,
@@ -26,7 +24,6 @@ internal class MutableOnWriteList<T>(
   override fun get(index: Int): T = mutableList[index]
 
   override val size: Int
-    @get:JvmName("size")
     get() = mutableList.size
 
   override fun set(index: Int, element: T): T {

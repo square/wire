@@ -63,6 +63,7 @@ public final class com/squareup/wire/FieldEncoding : java/lang/Enum {
 	public static final field LENGTH_DELIMITED Lcom/squareup/wire/FieldEncoding;
 	public static final field VARINT Lcom/squareup/wire/FieldEncoding;
 	public static final fun get$wire_runtime (I)Lcom/squareup/wire/FieldEncoding;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun rawProtoAdapter ()Lcom/squareup/wire/ProtoAdapter;
 	public static fun valueOf (Ljava/lang/String;)Lcom/squareup/wire/FieldEncoding;
 	public static fun values ()[Lcom/squareup/wire/FieldEncoding;
@@ -336,6 +337,7 @@ public final class com/squareup/wire/Syntax : java/lang/Enum {
 	public static final field Companion Lcom/squareup/wire/Syntax$Companion;
 	public static final field PROTO_2 Lcom/squareup/wire/Syntax;
 	public static final field PROTO_3 Lcom/squareup/wire/Syntax;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public fun toString ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Lcom/squareup/wire/Syntax;
 	public static fun values ()[Lcom/squareup/wire/Syntax;
@@ -376,6 +378,7 @@ public final class com/squareup/wire/WireField$Label : java/lang/Enum {
 	public static final field PACKED Lcom/squareup/wire/WireField$Label;
 	public static final field REPEATED Lcom/squareup/wire/WireField$Label;
 	public static final field REQUIRED Lcom/squareup/wire/WireField$Label;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun isOneOf ()Z
 	public final fun isPacked ()Z
 	public final fun isRepeated ()Z

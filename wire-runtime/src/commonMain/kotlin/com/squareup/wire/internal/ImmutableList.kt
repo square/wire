@@ -15,13 +15,10 @@
  */
 package com.squareup.wire.internal
 
-import kotlin.jvm.JvmName
-
 internal class ImmutableList<T>(list: List<T>) : AbstractList<T?>(), RandomAccess, Serializable {
   private val list = ArrayList(list)
 
   override val size: Int
-    @get:JvmName("size")
     get() = list.size
 
   override fun get(index: Int): T = list[index]
