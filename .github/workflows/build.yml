@@ -110,7 +110,6 @@ jobs:
         with:
           max_attempts: 5
           timeout_minutes: 90
-          retry_on: error
           shell: bash
           command: |
             ./gradlew -Pswift=false build --stacktrace --warning-mode all
