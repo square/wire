@@ -1,5 +1,4 @@
 import com.google.protobuf.gradle.protobuf
-import com.google.protobuf.gradle.protoc
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
