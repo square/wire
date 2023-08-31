@@ -8,15 +8,15 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.STARTED
-import org.jetbrains.dokka.gradle.DokkaTask
+// import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
   dependencies {
-    classpath(libs.dokka.core)
-    classpath(libs.dokka.gradlePlugin)
+    // classpath(libs.dokka.core)
+    // classpath(libs.dokka.gradlePlugin)
     classpath(libs.pluginz.android)
     classpath(libs.pluginz.binaryCompatibilityValidator)
     classpath(libs.pluginz.kotlin)
@@ -165,20 +165,20 @@ allprojects {
     }
   }
 
-  tasks.withType<DokkaTask>().configureEach {
-    dokkaSourceSets.configureEach {
-      reportUndocumented.set(false)
-      skipDeprecated.set(true)
-      jdkVersion.set(8)
-      perPackageOption {
-        matchingRegex.set("com\\.squareup\\.wire\\.internal.*")
-        suppress.set(true)
-      }
-    }
-    if (name == "dokkaGfm") {
-      outputDirectory.set(project.file("${project.rootDir}/docs/3.x"))
-    }
-  }
+  // tasks.withType<DokkaTask>().configureEach {
+  //   dokkaSourceSets.configureEach {
+  //     reportUndocumented.set(false)
+  //     skipDeprecated.set(true)
+  //     jdkVersion.set(8)
+  //     perPackageOption {
+  //       matchingRegex.set("com\\.squareup\\.wire\\.internal.*")
+  //       suppress.set(true)
+  //     }
+  //   }
+  //   if (name == "dokkaGfm") {
+  //     outputDirectory.set(project.file("${project.rootDir}/docs/3.x"))
+  //   }
+  // }
 
   plugins.withId("com.vanniktech.maven.publish.base") {
     configure<PublishingExtension> {
