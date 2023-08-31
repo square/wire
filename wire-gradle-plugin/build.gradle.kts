@@ -15,7 +15,7 @@ plugins {
   kotlin("jvm")
   id("com.github.gmazzo.buildconfig")
   id("java-gradle-plugin")
-  id("com.gradle.plugin-publish").version("0.18.0").apply(false)
+  id("com.gradle.plugin-publish").version("0.21.0").apply(false)
   // TODO(Benoit)  Re-enable dokka when it works again. Probably related to https://github.com/Kotlin/dokka/issues/2977
   // id("org.jetbrains.dokka")
   id("com.vanniktech.maven.publish.base").apply(false)
