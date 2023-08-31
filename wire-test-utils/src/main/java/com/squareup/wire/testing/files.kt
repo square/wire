@@ -50,7 +50,8 @@ fun FileSystem.readUtf8(pathString: String): String {
   }
 }
 
-fun FileSystem.findFiles(path: String): Set<String> {
+// We return an Iterable instead of a Set to please ambiguous APIs for Assertj.
+fun FileSystem.findFiles(path: String): Iterable<String> {
   return listRecursively(path.withPlatformSlashes().toPath())
     .filter { !metadata(it).isDirectory }
     .map { it.toString() }
