@@ -35,7 +35,7 @@ wire {
   protoLibrary = true
 
   kotlin {
-    buildersOnly = true
+    javaInterop = true
   }
 }
 

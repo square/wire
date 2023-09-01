@@ -6,7 +6,10 @@ plugins {
 
 wire {
   kotlin {
-    includes = listOf("squareup.wire.buildersonly.*")
+    includes = listOf(
+      "squareup.wire.buildersonly.*",
+      "squareup.wire.alltypes.*",
+    )
     out = "src/main/kotlin"
     buildersOnly = true
   }

@@ -1954,8 +1954,8 @@ class KotlinGeneratorTest {
     }
     val code = KotlinWithProfilesGenerator(schema)
       .generateKotlin("SomeMessage", buildersOnly = true)
-    assertThat(code).contains("SomeMessage internal constructor(")
-    assertThat(code).contains("InnerMessage internal constructor(")
+    assertThat(code).contains("SomeMessage private constructor(")
+    assertThat(code).contains("InnerMessage private constructor(")
     assertThat(code).doesNotContain("SomeMessage public constructor(")
     assertThat(code).doesNotContain("InnerMessage public constructor(")
   }

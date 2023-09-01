@@ -1,0 +1,41 @@
+/*
+ * Copyright 2023 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto2";
+
+package squareup.proto2.kotlin.buildersonly;
+
+import "wire/extensions.proto";
+
+message BuildersOnlyMessage {
+  message NestedMessage {
+    optional int32 a = 1;
+  }
+  optional string builder = 1;
+  required int32 data = 2;
+  repeated int32 message = 3;
+  optional NestedMessage nested_message = 4;
+  repeated int64 int64 = 5 [packed = true, (wire.use_array) = "true"];
+  map<string, string> map = 10;
+  oneof oneof {
+    int32 int32 = 15;
+    int32 class = 16;
+  }
+  oneof package {
+    int32 syntax = 17;
+    int32 enum = 18;
+    int32 value = 19;
+  }
+}

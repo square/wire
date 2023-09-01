@@ -17,7 +17,8 @@ import kotlin.Long
 import kotlin.String
 import okio.ByteString
 
-public class SomeRequest internal constructor(
+public class SomeRequest private constructor(
+  builder: Builder,
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<SomeRequest, SomeRequest.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
@@ -37,11 +38,9 @@ public class SomeRequest internal constructor(
 
   override fun toString(): String = "SomeRequest{}"
 
-  public fun copy(unknownFields: ByteString = this.unknownFields): SomeRequest =
-      SomeRequest(unknownFields)
-
   public class Builder : Message.Builder<SomeRequest, Builder>() {
     override fun build(): SomeRequest = SomeRequest(
+      builder = this,
       unknownFields = buildUnknownFields()
     )
   }
@@ -70,14 +69,17 @@ public class SomeRequest internal constructor(
       }
 
       override fun decode(reader: ProtoReader): SomeRequest {
+        val builder = Builder()
         val unknownFields = reader.forEachTag(reader::readUnknownField)
         return SomeRequest(
+          builder = builder,
           unknownFields = unknownFields
         )
       }
 
-      override fun redact(`value`: SomeRequest): SomeRequest = value.copy(
-        unknownFields = ByteString.EMPTY
+      override fun redact(`value`: SomeRequest): SomeRequest = SomeRequest(
+        builder = value.newBuilder(),
+        unknownFields = ByteString.EMPTY,
       )
     }
 

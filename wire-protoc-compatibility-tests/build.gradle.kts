@@ -31,6 +31,15 @@ wire {
   }
 
   kotlin {
+    buildersOnly = true
+    boxOneOfsMinSize = 3
+
+    includes = listOf(
+      "squareup.proto2.kotlin.buildersonly.*",
+    )
+  }
+
+  kotlin {
     javaInterop = true
     boxOneOfsMinSize = 5
 
