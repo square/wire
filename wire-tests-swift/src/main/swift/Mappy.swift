@@ -51,24 +51,24 @@ extension Mappy : ProtoMessage {
 
 extension Mappy : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var things: [Swift.String : Thing] = [:]
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: try reader.decode(into: &things)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: try protoReader.decode(into: &things)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.things = things
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.things)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.things)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }

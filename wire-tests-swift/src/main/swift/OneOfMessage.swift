@@ -33,11 +33,11 @@ public struct OneOfMessage {
          */
         case baz(String)
 
-        fileprivate func encode(to writer: ProtoWriter) throws {
+        fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
-            case .foo(let foo): try writer.encode(tag: 1, value: foo)
-            case .bar(let bar): try writer.encode(tag: 3, value: bar)
-            case .baz(let baz): try writer.encode(tag: 4, value: baz)
+            case .foo(let foo): try protoWriter.encode(tag: 1, value: foo)
+            case .bar(let bar): try protoWriter.encode(tag: 3, value: bar)
+            case .baz(let baz): try protoWriter.encode(tag: 4, value: baz)
             }
         }
 
@@ -97,28 +97,28 @@ extension OneOfMessage : ProtoMessage {
 
 extension OneOfMessage : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var choice: Choice? = nil
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: choice = .foo(try reader.decode(Swift.Int32.self))
-            case 3: choice = .bar(try reader.decode(Swift.String.self))
-            case 4: choice = .baz(try reader.decode(Swift.String.self))
-            default: try reader.readUnknownField(tag: tag)
+            case 1: choice = .foo(try protoReader.decode(Swift.Int32.self))
+            case 3: choice = .bar(try protoReader.decode(Swift.String.self))
+            case 4: choice = .baz(try protoReader.decode(Swift.String.self))
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.choice = choice
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
         if let choice = self.choice {
-            try choice.encode(to: writer)
+            try choice.encode(to: protoWriter)
         }
-        try writer.writeUnknownFields(unknownFields)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }

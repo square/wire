@@ -53,28 +53,28 @@ extension OuterMessage : ProtoMessage {
 
 extension OuterMessage : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var outer_number_before: Swift.Int32? = nil
         var embedded_message: EmbeddedMessage? = nil
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: outer_number_before = try reader.decode(Swift.Int32.self)
-            case 2: embedded_message = try reader.decode(EmbeddedMessage.self)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: outer_number_before = try protoReader.decode(Swift.Int32.self)
+            case 2: embedded_message = try protoReader.decode(EmbeddedMessage.self)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.outer_number_before = outer_number_before
         self.embedded_message = embedded_message
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.outer_number_before)
-        try writer.encode(tag: 2, value: self.embedded_message)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.outer_number_before)
+        try protoWriter.encode(tag: 2, value: self.embedded_message)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }

@@ -71,25 +71,25 @@ extension Dinosaur : ProtoMessage {
 
 extension Dinosaur : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var name: Swift.String? = nil
         var picture_urls: [Swift.String] = []
         var length_meters: Swift.Double? = nil
         var mass_kilograms: Swift.Double? = nil
         var period: Period? = nil
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: name = try reader.decode(Swift.String.self)
-            case 2: try reader.decode(into: &picture_urls)
-            case 3: length_meters = try reader.decode(Swift.Double.self)
-            case 4: mass_kilograms = try reader.decode(Swift.Double.self)
-            case 5: period = try reader.decode(Period.self)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: name = try protoReader.decode(Swift.String.self)
+            case 2: try protoReader.decode(into: &picture_urls)
+            case 3: length_meters = try protoReader.decode(Swift.Double.self)
+            case 4: mass_kilograms = try protoReader.decode(Swift.Double.self)
+            case 5: period = try protoReader.decode(Period.self)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.name = name
         self.picture_urls = picture_urls
@@ -98,13 +98,13 @@ extension Dinosaur : Proto2Codable {
         self.period = period
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.name)
-        try writer.encode(tag: 2, value: self.picture_urls)
-        try writer.encode(tag: 3, value: self.length_meters)
-        try writer.encode(tag: 4, value: self.mass_kilograms)
-        try writer.encode(tag: 5, value: self.period)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.name)
+        try protoWriter.encode(tag: 2, value: self.picture_urls)
+        try protoWriter.encode(tag: 3, value: self.length_meters)
+        try protoWriter.encode(tag: 4, value: self.mass_kilograms)
+        try protoWriter.encode(tag: 5, value: self.period)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }

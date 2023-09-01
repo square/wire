@@ -146,28 +146,28 @@ extension Person.PhoneNumber : ProtoMessage {
 
 extension Person.PhoneNumber : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var number: Swift.String? = nil
         var type: Person.PhoneType? = nil
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: number = try reader.decode(Swift.String.self)
-            case 2: type = try reader.decode(Person.PhoneType.self)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: number = try protoReader.decode(Swift.String.self)
+            case 2: type = try protoReader.decode(Person.PhoneType.self)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.number = try Person.PhoneNumber.checkIfMissing(number, "number")
         _type.wrappedValue = type
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.number)
-        try writer.encode(tag: 2, value: self.type)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.number)
+        try protoWriter.encode(tag: 2, value: self.type)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -219,25 +219,25 @@ extension Person : ProtoMessage {
 
 extension Person : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var id: Swift.Int32? = nil
         var name: Swift.String? = nil
         var email: Swift.String? = nil
         var phone: [Person.PhoneNumber] = []
         var aliases: [Swift.String] = []
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 2: id = try reader.decode(Swift.Int32.self)
-            case 1: name = try reader.decode(Swift.String.self)
-            case 3: email = try reader.decode(Swift.String.self)
-            case 4: try reader.decode(into: &phone)
-            case 5: try reader.decode(into: &aliases)
-            default: try reader.readUnknownField(tag: tag)
+            case 2: id = try protoReader.decode(Swift.Int32.self)
+            case 1: name = try protoReader.decode(Swift.String.self)
+            case 3: email = try protoReader.decode(Swift.String.self)
+            case 4: try protoReader.decode(into: &phone)
+            case 5: try protoReader.decode(into: &aliases)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.id = try Person.checkIfMissing(id, "id")
         self.name = try Person.checkIfMissing(name, "name")
@@ -246,13 +246,13 @@ extension Person : Proto2Codable {
         self.aliases = aliases
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 2, value: self.id)
-        try writer.encode(tag: 1, value: self.name)
-        try writer.encode(tag: 3, value: self.email)
-        try writer.encode(tag: 4, value: self.phone)
-        try writer.encode(tag: 5, value: self.aliases)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 2, value: self.id)
+        try protoWriter.encode(tag: 1, value: self.name)
+        try protoWriter.encode(tag: 3, value: self.email)
+        try protoWriter.encode(tag: 4, value: self.phone)
+        try protoWriter.encode(tag: 5, value: self.aliases)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }

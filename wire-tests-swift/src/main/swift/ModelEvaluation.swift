@@ -74,32 +74,32 @@ extension ModelEvaluation : ProtoMessage {
 
 extension ModelEvaluation : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var name: Swift.String? = nil
         var score: Swift.Double? = nil
         var models: [Swift.String : ModelEvaluation] = [:]
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: name = try reader.decode(Swift.String.self)
-            case 2: score = try reader.decode(Swift.Double.self)
-            case 3: try reader.decode(into: &models)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: name = try protoReader.decode(Swift.String.self)
+            case 2: score = try protoReader.decode(Swift.Double.self)
+            case 3: try protoReader.decode(into: &models)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.name = name
         self.score = score
         self.models = models
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.name)
-        try writer.encode(tag: 2, value: self.score)
-        try writer.encode(tag: 3, value: self.models)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.name)
+        try protoWriter.encode(tag: 2, value: self.score)
+        try protoWriter.encode(tag: 3, value: self.models)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }

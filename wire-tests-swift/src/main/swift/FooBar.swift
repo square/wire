@@ -130,24 +130,24 @@ extension FooBar.Nested : ProtoMessage {
 
 extension FooBar.Nested : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var value: FooBar.FooBarBazEnum? = nil
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: value = try reader.decode(FooBar.FooBarBazEnum.self)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: value = try protoReader.decode(FooBar.FooBarBazEnum.self)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.value = value
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.value)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.value)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -206,24 +206,24 @@ extension FooBar.More : ProtoMessage {
 
 extension FooBar.More : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var serial: [Swift.Int32] = []
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: try reader.decode(into: &serial)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: try protoReader.decode(into: &serial)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.serial = serial
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.serial)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.serial)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
@@ -278,7 +278,7 @@ extension FooBar : ProtoMessage {
 
 extension FooBar : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var foo: Swift.Int32? = nil
         var bar: Swift.String? = nil
         var baz: FooBar.Nested? = nil
@@ -290,23 +290,23 @@ extension FooBar : Proto2Codable {
         var rep: [FooBar.FooBarBazEnum] = []
         var more_string: Swift.String? = nil
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: foo = try reader.decode(Swift.Int32.self)
-            case 2: bar = try reader.decode(Swift.String.self)
-            case 3: baz = try reader.decode(FooBar.Nested.self)
-            case 4: qux = try reader.decode(Swift.UInt64.self)
-            case 5: try reader.decode(into: &fred)
-            case 6: daisy = try reader.decode(Swift.Double.self)
-            case 7: try reader.decode(into: &nested)
-            case 101: ext = try reader.decode(FooBar.FooBarBazEnum.self)
-            case 102: try reader.decode(into: &rep)
-            case 150: more_string = try reader.decode(Swift.String.self)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: foo = try protoReader.decode(Swift.Int32.self)
+            case 2: bar = try protoReader.decode(Swift.String.self)
+            case 3: baz = try protoReader.decode(FooBar.Nested.self)
+            case 4: qux = try protoReader.decode(Swift.UInt64.self)
+            case 5: try protoReader.decode(into: &fred)
+            case 6: daisy = try protoReader.decode(Swift.Double.self)
+            case 7: try protoReader.decode(into: &nested)
+            case 101: ext = try protoReader.decode(FooBar.FooBarBazEnum.self)
+            case 102: try protoReader.decode(into: &rep)
+            case 150: more_string = try protoReader.decode(Swift.String.self)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.foo = foo
         self.bar = bar
@@ -320,18 +320,18 @@ extension FooBar : Proto2Codable {
         self.more_string = more_string
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.foo)
-        try writer.encode(tag: 2, value: self.bar)
-        try writer.encode(tag: 3, value: self.baz)
-        try writer.encode(tag: 4, value: self.qux)
-        try writer.encode(tag: 5, value: self.fred)
-        try writer.encode(tag: 6, value: self.daisy)
-        try writer.encode(tag: 7, value: self.nested)
-        try writer.encode(tag: 101, value: self.ext)
-        try writer.encode(tag: 102, value: self.rep)
-        try writer.encode(tag: 150, value: self.more_string)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.foo)
+        try protoWriter.encode(tag: 2, value: self.bar)
+        try protoWriter.encode(tag: 3, value: self.baz)
+        try protoWriter.encode(tag: 4, value: self.qux)
+        try protoWriter.encode(tag: 5, value: self.fred)
+        try protoWriter.encode(tag: 6, value: self.daisy)
+        try protoWriter.encode(tag: 7, value: self.nested)
+        try protoWriter.encode(tag: 101, value: self.ext)
+        try protoWriter.encode(tag: 102, value: self.rep)
+        try protoWriter.encode(tag: 150, value: self.more_string)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }

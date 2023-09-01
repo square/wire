@@ -142,28 +142,28 @@ extension Timestamp : ProtoMessage {
 
 extension Timestamp : Proto3Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var seconds: Swift.Int64 = 0
         var nanos: Swift.Int32 = 0
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: seconds = try reader.decode(Swift.Int64.self)
-            case 2: nanos = try reader.decode(Swift.Int32.self)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: seconds = try protoReader.decode(Swift.Int64.self)
+            case 2: nanos = try protoReader.decode(Swift.Int32.self)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.seconds = seconds
         self.nanos = nanos
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.seconds)
-        try writer.encode(tag: 2, value: self.nanos)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.seconds)
+        try protoWriter.encode(tag: 2, value: self.nanos)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }

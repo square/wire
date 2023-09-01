@@ -53,28 +53,28 @@ extension EmbeddedMessage : ProtoMessage {
 
 extension EmbeddedMessage : Proto2Codable {
 
-    public init(from reader: Wire.ProtoReader) throws {
+    public init(from protoReader: Wire.ProtoReader) throws {
         var inner_repeated_number: [Swift.Int32] = []
         var inner_number_after: Swift.Int32? = nil
 
-        let token = try reader.beginMessage()
-        while let tag = try reader.nextTag(token: token) {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: try reader.decode(into: &inner_repeated_number)
-            case 2: inner_number_after = try reader.decode(Swift.Int32.self)
-            default: try reader.readUnknownField(tag: tag)
+            case 1: try protoReader.decode(into: &inner_repeated_number)
+            case 2: inner_number_after = try protoReader.decode(Swift.Int32.self)
+            default: try protoReader.readUnknownField(tag: tag)
             }
         }
-        self.unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try protoReader.endMessage(token: token)
 
         self.inner_repeated_number = inner_repeated_number
         self.inner_number_after = inner_number_after
     }
 
-    public func encode(to writer: Wire.ProtoWriter) throws {
-        try writer.encode(tag: 1, value: self.inner_repeated_number, packed: true)
-        try writer.encode(tag: 2, value: self.inner_number_after)
-        try writer.writeUnknownFields(unknownFields)
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.inner_repeated_number, packed: true)
+        try protoWriter.encode(tag: 2, value: self.inner_number_after)
+        try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
