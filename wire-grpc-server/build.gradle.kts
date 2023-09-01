@@ -1,6 +1,7 @@
 import com.vanniktech.maven.publish.JavadocJar.Javadoc
 import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import org.gradle.api.attributes.java.TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE
 
 plugins {
   id("java-library")
@@ -21,7 +22,13 @@ dependencies {
   implementation(libs.grpc.stub) {
     exclude(group = "com.google.guava", module = "guava")
   }
-  implementation("com.google.guava:guava:21.0")
+  implementation(libs.checker.qual)
+  implementation(libs.guava){
+    attributes {
+      // We help Gradle pick between the jre and android of Guava.
+      attribute(TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment::class.java, TargetJvmEnvironment.STANDARD_JVM))
+    }
+  }
   implementation(libs.kotlin.coroutines.core)
   testImplementation(projects.wireTestUtils)
   testImplementation(libs.kotlin.test.junit)

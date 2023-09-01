@@ -22,7 +22,6 @@ dependencies {
   implementation(projects.wireGrpcServerGenerator)
   implementation(libs.okio.core)
   api(libs.kotlinpoet)
-  implementation(libs.guava)
   testImplementation(projects.wireTestUtils)
   testImplementation(libs.kotlin.test.junit)
   testImplementation(libs.truth)

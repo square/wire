@@ -16,18 +16,23 @@
 package com.squareup.wire.kotlin.grpcserver
 
 import com.google.common.util.concurrent.Monitor
+import com.google.common.util.concurrent.Monitor.Guard
 import com.squareup.wire.MessageSource
 import io.grpc.stub.StreamObserver
 
 // This is for adapting Google style grpc stubs to Wire style grpc stubs.
-@Suppress("UnstableApiUsage")
+@Suppress("CheckResult")
 class MessageSourceAdapter<T : Any> : MessageSource<T>, StreamObserver<T> {
   private var value: T? = null
   private var error: Throwable? = null
   private var completed = false
   private val monitor = Monitor()
-  private val valuePresent = monitor.newGuard { value != null || error != null || completed }
-  private val valueAbsent = monitor.newGuard { value == null && error == null && !completed }
+  private val valuePresent = object : Guard(monitor) {
+    override fun isSatisfied(): Boolean = value != null || error != null || completed
+  }
+  private val valueAbsent = object : Guard(monitor) {
+    override fun isSatisfied(): Boolean = value == null && error == null && !completed
+  }
 
   override fun onNext(next: T) {
     monitor.enterIf(valueAbsent)

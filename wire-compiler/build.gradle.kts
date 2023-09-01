@@ -30,7 +30,6 @@ dependencies {
   implementation(projects.wireSwiftGenerator)
   implementation(libs.okio.core)
   implementation(libs.okio.fakefilesystem)
-  implementation(libs.guava)
   implementation(libs.kotlin.serialization)
   implementation(libs.kaml)
   testImplementation(libs.junit)
