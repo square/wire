@@ -10,25 +10,23 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.`internal`.FloatArrayList
 import com.squareup.wire.`internal`.JvmField
-import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.decodePrimitive_float
+import com.squareup.wire.`internal`.encodeArray_float
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
-import kotlin.Float
+import kotlin.FloatArray
 import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
-import kotlin.collections.List
 import okio.ByteString
 
 public class ParameterValueWithArray(
-  data_: List<Float> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY,
-) : Message<ParameterValueWithArray, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
@@ -36,8 +34,9 @@ public class ParameterValueWithArray(
     declaredName = "data",
     schemaIndex = 0,
   )
-  public val data_: List<Float> = immutableCopyOf("data_", data_)
-
+  public val data_: FloatArray = floatArrayOf(),
+  unknownFields: ByteString = ByteString.EMPTY,
+) : Message<ParameterValueWithArray, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
@@ -49,7 +48,7 @@ public class ParameterValueWithArray(
     if (other === this) return true
     if (other !is ParameterValueWithArray) return false
     if (unknownFields != other.unknownFields) return false
-    if (data_ != other.data_) return false
+    if (!data_.contentEquals(other.data_)) return false
     return true
   }
 
@@ -57,7 +56,7 @@ public class ParameterValueWithArray(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + data_.hashCode()
+      result = result * 37 + data_.contentHashCode()
       super.hashCode = result
     }
     return result
@@ -65,11 +64,11 @@ public class ParameterValueWithArray(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (data_.isNotEmpty()) result += """data_=$data_"""
+    if (data_.isNotEmpty()) result += """data_=${data_.contentToString()}"""
     return result.joinToString(prefix = "ParameterValueWithArray{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(data_: List<Float> = this.data_, unknownFields: ByteString = this.unknownFields):
+  public fun copy(data_: FloatArray = this.data_, unknownFields: ByteString = this.unknownFields):
       ParameterValueWithArray = ParameterValueWithArray(data_, unknownFields)
 
   public companion object {
@@ -85,39 +84,35 @@ public class ParameterValueWithArray(
     ) {
       override fun encodedSize(`value`: ParameterValueWithArray): Int {
         var size = value.unknownFields.size
-        size += ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1, value.data_)
+        size += ProtoAdapter.FLOAT_ARRAY.encodedSizeWithTag(1, value.data_)
         return size
       }
 
       override fun encode(writer: ProtoWriter, `value`: ParameterValueWithArray) {
-        ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1, value.data_)
+        ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 1, value.data_)
         writer.writeBytes(value.unknownFields)
       }
 
       override fun encode(writer: ReverseProtoWriter, `value`: ParameterValueWithArray) {
         writer.writeBytes(value.unknownFields)
-        ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1, value.data_)
+        encodeArray_float(value.data_, writer, 1)
       }
 
       override fun decode(reader: ProtoReader): ParameterValueWithArray {
-        var data_: MutableList<Float>? = null
+        var data_: FloatArrayList? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> {
               if (data_ == null) {
-                val minimumByteSize = 4
-                val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)
-                  .coerceAtMost(Int.MAX_VALUE.toLong())
-                  .toInt()
-                data_ = ArrayList(initialCapacity)
+                data_ = FloatArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
-              data_!!.add(ProtoAdapter.FLOAT.decode(reader))
+              data_!!.add(decodePrimitive_float(reader))
             }
             else -> reader.readUnknownField(tag)
           }
         }
         return ParameterValueWithArray(
-          data_ = data_ ?: listOf(),
+          data_ = data_?.toArray() ?: floatArrayOf(),
           unknownFields = unknownFields
         )
       }

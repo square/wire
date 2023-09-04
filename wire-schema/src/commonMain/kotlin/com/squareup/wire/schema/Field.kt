@@ -18,7 +18,6 @@ package com.squareup.wire.schema
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.GOOGLE_PROTOBUF_OPTION_TYPES
 import com.squareup.wire.schema.internal.parser.FieldElement
-import com.squareup.wire.schema.internal.parser.OptionElement
 import com.squareup.wire.schema.internal.parser.OptionElement.Companion.PACKED_OPTION_ELEMENT
 import kotlin.jvm.JvmStatic
 
@@ -109,7 +108,7 @@ data class Field(
     get() = encodeMode == EncodeMode.PACKED
 
   val useArray: Boolean
-    get() = options.elements.contains(OptionElement.USE_ARRAY_OPTION_ELEMENT)
+    get() = options.get(WIRE_USE_ARRAY) == "true"
 
   // Null until this field is linked.
   var jsonName: String? = null
@@ -249,6 +248,7 @@ data class Field(
   companion object {
     internal val DEPRECATED = ProtoMember.get(FIELD_OPTIONS, "deprecated")
     internal val PACKED = ProtoMember.get(FIELD_OPTIONS, "packed")
+    internal val WIRE_USE_ARRAY = ProtoMember.get(FIELD_OPTIONS, "wire.use_array")
 
     @JvmStatic
     fun fromElements(
