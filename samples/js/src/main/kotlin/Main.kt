@@ -20,6 +20,6 @@ fun main() {
     .area("519")
     .number("5550202")
     .build()
-  val person = Person(name = "Jacques", phone_number = phoneNumber)
+  val person = Person.Builder().name("Jacques").phone_number(phoneNumber).build()
   println("Hello, Kotlin/Native! Here is ${person.name} and their number: ${person.phone_number}")
 }

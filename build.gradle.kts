@@ -27,7 +27,7 @@ buildscript {
     classpath(libs.vanniktechPublishPlugin)
     classpath(libs.pluginz.buildConfig)
     classpath(libs.wire.gradlePlugin)
-    classpath("com.google.guava:guava:31.1-jre")
+    classpath(libs.guava)
     classpath("org.ow2.asm:asm:9.5")
   }
 

@@ -27,6 +27,11 @@ import squareup.proto2.java.interop.InteropTest.InteropCamelCase as InteropCamel
 import squareup.proto2.java.interop.InteropTest.InteropJsonName as InteropJsonNameP2
 import squareup.proto2.java.interop.InteropTest.InteropUint64 as InteropUint64P2
 import squareup.proto2.java.interop.InteropUint64 as InteropUint64J2
+import squareup.proto2.kotlin.buildersonly.BuildersOnlyMessage as BuildersOnlyMessageK2
+import squareup.proto2.kotlin.buildersonly.BuildersOnlyMessage.Companion.PACKAGE_VALUE
+import squareup.proto2.kotlin.buildersonly.BuildersOnlyMessage.NestedMessage as NestedMessageK2
+import squareup.proto2.kotlin.buildersonly.BuildersOnlyMessageOuterClass.BuildersOnlyMessage as BuildersOnlyMessageP2
+import squareup.proto2.kotlin.buildersonly.BuildersOnlyMessageOuterClass.BuildersOnlyMessage.NestedMessage as NestedMessageP2
 import squareup.proto2.kotlin.interop.InteropBoxOneOf as InteropBoxOneOfK2
 import squareup.proto2.kotlin.interop.InteropCamelCase as InteropCamelCaseK2
 import squareup.proto2.kotlin.interop.InteropDuration as InteropDurationK2
@@ -332,6 +337,35 @@ class InteropTest {
     )
     checker.check(InteropWrappersJ3.Builder().build())
     checker.check(InteropWrappersK3.Builder().build())
+  }
+
+  @Test fun buildersOnlyMessage() {
+    val checked = InteropChecker(
+      protocMessage = BuildersOnlyMessageP2.newBuilder()
+        .setBuilder("my_builder")
+        .setData(64)
+        .addAllMessage(listOf(33, 806))
+        .setNestedMessage(NestedMessageP2.newBuilder().setA(99).build())
+        .setInt32(32)
+        .setValue(95)
+        .addAllInt64(listOf(94440L, 77000L, 79510L, 44880L))
+        .putAllMap(mapOf("one" to "un", "two" to "deux"))
+        .build(),
+      canonicalJson = """{"builder":"my_builder","data":64,"message":[33,806],"nestedMessage":{"a":99},"int64":["94440","77000","79510","44880"],"map":{"one":"un","two":"deux"},"int32":32,"value":95}""",
+      wireCanonicalJson = """{"builder":"my_builder","data":64,"message":[33,806],"nested_message":{"a":99},"int64":[94440,77000,79510,44880],"map":{"one":"un","two":"deux"},"int32":32,"value":95}""",
+    )
+
+    val wireMessage = BuildersOnlyMessageK2.Builder()
+      .builder_("my_builder")
+      .data_(64)
+      .message(listOf(33, 806))
+      .squareup_proto2_kotlin_buildersonly_int32(32)
+      .package_(OneOf(PACKAGE_VALUE, 95))
+      .map(mapOf("one" to "un", "two" to "deux"))
+      .squareup_proto2_kotlin_buildersonly_int64(listOf(94440L, 77000L, 79510L, 44880L))
+      .nested_message(NestedMessageK2.Builder().a(99).build())
+      .build()
+    checked.check(wireMessage)
   }
 
   @Test fun wrappers() {

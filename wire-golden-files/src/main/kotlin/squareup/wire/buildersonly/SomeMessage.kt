@@ -18,16 +18,18 @@ import kotlin.Long
 import kotlin.String
 import okio.ByteString
 
-public class SomeMessage internal constructor(
+public class SomeMessage private constructor(
+  builder: Builder,
+  unknownFields: ByteString = ByteString.EMPTY,
+) : Message<SomeMessage, SomeMessage.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     schemaIndex = 0,
   )
   @JvmField
-  public val opt_int32: Int? = null,
-  unknownFields: ByteString = ByteString.EMPTY,
-) : Message<SomeMessage, SomeMessage.Builder>(ADAPTER, unknownFields) {
+  public val opt_int32: Int? = builder.opt_int32
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.opt_int32 = opt_int32
@@ -59,9 +61,6 @@ public class SomeMessage internal constructor(
     return result.joinToString(prefix = "SomeMessage{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(opt_int32: Int? = this.opt_int32, unknownFields: ByteString = this.unknownFields):
-      SomeMessage = SomeMessage(opt_int32, unknownFields)
-
   public class Builder : Message.Builder<SomeMessage, Builder>() {
     @JvmField
     public var opt_int32: Int? = null
@@ -72,7 +71,7 @@ public class SomeMessage internal constructor(
     }
 
     override fun build(): SomeMessage = SomeMessage(
-      opt_int32 = opt_int32,
+      builder = this,
       unknownFields = buildUnknownFields()
     )
   }
@@ -104,37 +103,40 @@ public class SomeMessage internal constructor(
       }
 
       override fun decode(reader: ProtoReader): SomeMessage {
-        var opt_int32: Int? = null
+        val builder = Builder()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> opt_int32 = ProtoAdapter.INT32.decode(reader)
+            1 -> builder.opt_int32(ProtoAdapter.INT32.decode(reader))
             else -> reader.readUnknownField(tag)
           }
         }
         return SomeMessage(
-          opt_int32 = opt_int32,
+          builder = builder,
           unknownFields = unknownFields
         )
       }
 
-      override fun redact(`value`: SomeMessage): SomeMessage = value.copy(
-        unknownFields = ByteString.EMPTY
+      override fun redact(`value`: SomeMessage): SomeMessage = SomeMessage(
+        builder = value.newBuilder(),
+        unknownFields = ByteString.EMPTY,
       )
     }
 
     private const val serialVersionUID: Long = 0L
   }
 
-  public class NestedMessage internal constructor(
+  public class NestedMessage private constructor(
+    builder: Builder,
+    unknownFields: ByteString = ByteString.EMPTY,
+  ) : Message<NestedMessage, NestedMessage.Builder>(ADAPTER, unknownFields) {
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
       schemaIndex = 0,
     )
     @JvmField
-    public val a: Int? = null,
-    unknownFields: ByteString = ByteString.EMPTY,
-  ) : Message<NestedMessage, NestedMessage.Builder>(ADAPTER, unknownFields) {
+    public val a: Int? = builder.a
+
     override fun newBuilder(): Builder {
       val builder = Builder()
       builder.a = a
@@ -166,9 +168,6 @@ public class SomeMessage internal constructor(
       return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
     }
 
-    public fun copy(a: Int? = this.a, unknownFields: ByteString = this.unknownFields): NestedMessage
-        = NestedMessage(a, unknownFields)
-
     public class Builder : Message.Builder<NestedMessage, Builder>() {
       @JvmField
       public var a: Int? = null
@@ -179,7 +178,7 @@ public class SomeMessage internal constructor(
       }
 
       override fun build(): NestedMessage = NestedMessage(
-        a = a,
+        builder = this,
         unknownFields = buildUnknownFields()
       )
     }
@@ -211,21 +210,22 @@ public class SomeMessage internal constructor(
         }
 
         override fun decode(reader: ProtoReader): NestedMessage {
-          var a: Int? = null
+          val builder = Builder()
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
-              1 -> a = ProtoAdapter.INT32.decode(reader)
+              1 -> builder.a(ProtoAdapter.INT32.decode(reader))
               else -> reader.readUnknownField(tag)
             }
           }
           return NestedMessage(
-            a = a,
+            builder = builder,
             unknownFields = unknownFields
           )
         }
 
-        override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
-          unknownFields = ByteString.EMPTY
+        override fun redact(`value`: NestedMessage): NestedMessage = NestedMessage(
+          builder = value.newBuilder(),
+          unknownFields = ByteString.EMPTY,
         )
       }
 
