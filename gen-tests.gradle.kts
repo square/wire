@@ -611,6 +611,7 @@ val generateTests by tasks.creating {
   group = "Generate Tests"
   description = "Generates all test classes"
   dependsOn(
+    "wire-golden-files:generateProtos",
     generateJavaTests,
     generateCompactTests,
     generateNoOptionsTests,
@@ -630,7 +631,7 @@ val generateTests by tasks.creating {
     generateMoshiTests,
     generateProto3KotlinTests,
     generateProto3JavaTests,
-    generateSharedJson
+    generateSharedJson,
   )
 }
 
