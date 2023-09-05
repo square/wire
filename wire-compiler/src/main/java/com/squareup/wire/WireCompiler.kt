@@ -28,11 +28,11 @@ import com.squareup.wire.schema.WireRun
 import com.squareup.wire.schema.isWireRuntimeProto
 import com.squareup.wire.schema.newEventListenerFactory
 import com.squareup.wire.schema.newSchemaHandler
-import com.squareup.wire.schema.toOkioFileSystem
 import java.io.IOException
 import java.nio.file.FileSystem as NioFileSystem
 import okio.FileNotFoundException
 import okio.FileSystem
+import okio.FileSystem.Companion.asOkioFileSystem
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.openZip
@@ -274,7 +274,7 @@ class WireCompiler internal constructor(
       logger: WireLogger,
       vararg args: String,
     ): WireCompiler {
-      return forArgs(fileSystem.toOkioFileSystem(), logger, *args)
+      return forArgs(fileSystem.asOkioFileSystem(), logger, *args)
     }
 
     @Throws(WireException::class)
