@@ -514,7 +514,7 @@ internal class DoubleArrayProtoAdapter(
   private val originalAdapter: ProtoAdapter<Double>,
 ) : ProtoAdapter<DoubleArray>(
   LENGTH_DELIMITED,
-  LongArray::class,
+  DoubleArray::class,
   null,
   originalAdapter.syntax,
   DoubleArray(0),
@@ -625,7 +625,7 @@ internal class FloatArrayProtoAdapter(
   private val originalAdapter: ProtoAdapter<Float>,
 ) : ProtoAdapter<FloatArray>(
   LENGTH_DELIMITED,
-  LongArray::class,
+  FloatArray::class,
   null,
   originalAdapter.syntax,
   FloatArray(0),
