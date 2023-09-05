@@ -37,8 +37,27 @@ import java.util.Locale
  * one language and other parts in another language.
  */
 
-fun builtInAdapterString(type: ProtoType): String? {
+@JvmOverloads
+fun builtInAdapterString(type: ProtoType, useArray: Boolean = false): String? {
   if (type.isScalar) {
+    if (useArray) {
+      return when (type) {
+        ProtoType.INT32 -> ProtoAdapter::class.java.name + "#INT32_ARRAY"
+        ProtoType.UINT32 -> ProtoAdapter::class.java.name + "#UINT32_ARRAY"
+        ProtoType.SINT32 -> ProtoAdapter::class.java.name + "#SINT32_ARRAY"
+        ProtoType.FIXED32 -> ProtoAdapter::class.java.name + "#FIXED32_ARRAY"
+        ProtoType.SFIXED32 -> ProtoAdapter::class.java.name + "#SFIXED32_ARRAY"
+        ProtoType.INT64 -> ProtoAdapter::class.java.name + "#INT64_ARRAY"
+        ProtoType.UINT64 -> ProtoAdapter::class.java.name + "#UINT64_ARRAY"
+        ProtoType.SINT64 -> ProtoAdapter::class.java.name + "#SINT64_ARRAY"
+        ProtoType.FIXED64 -> ProtoAdapter::class.java.name + "#FIXED64_ARRAY"
+        ProtoType.SFIXED64 -> ProtoAdapter::class.java.name + "#SFIXED64_ARRAY"
+        ProtoType.FLOAT -> ProtoAdapter::class.java.name + "#FLOAT_ARRAY"
+        ProtoType.DOUBLE -> ProtoAdapter::class.java.name + "#DOUBLE_ARRAY"
+        else -> throw IllegalArgumentException("No Array adapter for $type")
+      }
+    }
+
     return "${ProtoAdapter::class.java.name}#${type.toString().uppercase(Locale.US)}"
   }
   return when (type) {

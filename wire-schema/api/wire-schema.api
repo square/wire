@@ -1019,6 +1019,8 @@ public final class com/squareup/wire/schema/internal/JvmLanguages {
 	public static final fun annotationName (Lcom/squareup/wire/schema/ProtoFile;Lcom/squareup/wire/schema/Field;Lcom/squareup/wire/schema/internal/NameFactory;)Ljava/lang/Object;
 	public static final fun annotationTargetType (Lcom/squareup/wire/schema/Extend;)Ljava/lang/annotation/ElementType;
 	public static final fun builtInAdapterString (Lcom/squareup/wire/schema/ProtoType;)Ljava/lang/String;
+	public static final fun builtInAdapterString (Lcom/squareup/wire/schema/ProtoType;Z)Ljava/lang/String;
+	public static synthetic fun builtInAdapterString$default (Lcom/squareup/wire/schema/ProtoType;ZILjava/lang/Object;)Ljava/lang/String;
 	public static final fun eligibleAsAnnotationMember (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/Field;)Z
 	public static final fun hasEponymousType (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/Field;)Z
 	public static final fun javaPackage (Lcom/squareup/wire/schema/ProtoFile;)Ljava/lang/String;

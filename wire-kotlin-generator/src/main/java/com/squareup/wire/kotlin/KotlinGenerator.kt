@@ -1258,7 +1258,7 @@ class KotlinGenerator private constructor(
           addMember("keyAdapter = %S", field.type!!.keyType!!.adapterString())
           addMember("adapter = %S", field.type!!.valueType!!.adapterString())
         } else {
-          addMember("adapter = %S", field.type!!.adapterString())
+          addMember("adapter = %S", field.type!!.adapterString(field.useArray))
         }
       }
       .apply {
@@ -2169,13 +2169,13 @@ class KotlinGenerator private constructor(
     }
   }
 
-  private fun ProtoType.adapterString(): String {
+  private fun ProtoType.adapterString(useArray: Boolean = false): String {
     val adapterConstant = profile.getAdapter(this)
     if (adapterConstant != null) {
       return "${adapterConstant.javaClassName.reflectionName()}#${adapterConstant.memberName}"
     }
 
-    val builtInAdapterString = builtInAdapterString(this)
+    val builtInAdapterString = builtInAdapterString(this, useArray)
     if (builtInAdapterString != null) return builtInAdapterString
 
     return (typeName as ClassName).reflectionName() + "#ADAPTER"
