@@ -808,7 +808,7 @@ public class AllTypes private constructor(
 
   @field:WireField(
     tag = 601,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    adapter = "com.squareup.wire.ProtoAdapter#INT32_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 85,
   )
@@ -817,7 +817,7 @@ public class AllTypes private constructor(
 
   @field:WireField(
     tag = 602,
-    adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+    adapter = "com.squareup.wire.ProtoAdapter#UINT32_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 86,
   )
@@ -826,7 +826,7 @@ public class AllTypes private constructor(
 
   @field:WireField(
     tag = 603,
-    adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+    adapter = "com.squareup.wire.ProtoAdapter#SINT32_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 87,
   )
@@ -835,7 +835,7 @@ public class AllTypes private constructor(
 
   @field:WireField(
     tag = 604,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED32_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 88,
   )
@@ -844,7 +844,7 @@ public class AllTypes private constructor(
 
   @field:WireField(
     tag = 605,
-    adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED32_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 89,
   )
@@ -853,7 +853,7 @@ public class AllTypes private constructor(
 
   @field:WireField(
     tag = 606,
-    adapter = "com.squareup.wire.ProtoAdapter#INT64",
+    adapter = "com.squareup.wire.ProtoAdapter#INT64_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 90,
   )
@@ -862,7 +862,7 @@ public class AllTypes private constructor(
 
   @field:WireField(
     tag = 607,
-    adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+    adapter = "com.squareup.wire.ProtoAdapter#UINT64_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 91,
   )
@@ -871,7 +871,7 @@ public class AllTypes private constructor(
 
   @field:WireField(
     tag = 608,
-    adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+    adapter = "com.squareup.wire.ProtoAdapter#SINT64_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 92,
   )
@@ -880,7 +880,7 @@ public class AllTypes private constructor(
 
   @field:WireField(
     tag = 609,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED64_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 93,
   )
@@ -889,7 +889,7 @@ public class AllTypes private constructor(
 
   @field:WireField(
     tag = 610,
-    adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED64_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 94,
   )
@@ -898,7 +898,7 @@ public class AllTypes private constructor(
 
   @field:WireField(
     tag = 611,
-    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+    adapter = "com.squareup.wire.ProtoAdapter#FLOAT_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 95,
   )
@@ -907,7 +907,7 @@ public class AllTypes private constructor(
 
   @field:WireField(
     tag = 612,
-    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 96,
   )

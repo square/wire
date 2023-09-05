@@ -27,7 +27,7 @@ message BuildersOnlyMessage {
   required int32 data = 2;
   repeated int32 message = 3;
   optional NestedMessage nested_message = 4;
-  repeated int64 int64 = 5 [packed = true, (wire.use_array) = true];
+  repeated int64 int64 = 5 [packed = true, (wire.use_array) = false];
   map<string, string> map = 10;
   oneof oneof {
     int32 int32 = 15;

@@ -1579,7 +1579,7 @@ class KotlinGeneratorTest {
         |import "wire/extensions.proto";
         |
         |message Person {
-        |	repeated float info = 1 [packed = true, (wire.use_array) = true];
+        |	 repeated float info = 1 [packed = true, (wire.use_array) = true];
         |}
         |
         """.trimMargin(),

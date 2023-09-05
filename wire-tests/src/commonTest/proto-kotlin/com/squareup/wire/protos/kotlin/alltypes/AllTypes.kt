@@ -422,84 +422,84 @@ public class AllTypes(
   map_string_enum: Map<String, NestedEnum> = emptyMap(),
   @field:WireField(
     tag = 601,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    adapter = "com.squareup.wire.ProtoAdapter#INT32_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 85,
   )
   public val array_int32: IntArray = intArrayOf(),
   @field:WireField(
     tag = 602,
-    adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+    adapter = "com.squareup.wire.ProtoAdapter#UINT32_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 86,
   )
   public val array_uint32: IntArray = intArrayOf(),
   @field:WireField(
     tag = 603,
-    adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+    adapter = "com.squareup.wire.ProtoAdapter#SINT32_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 87,
   )
   public val array_sint32: IntArray = intArrayOf(),
   @field:WireField(
     tag = 604,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED32_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 88,
   )
   public val array_fixed32: IntArray = intArrayOf(),
   @field:WireField(
     tag = 605,
-    adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED32_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 89,
   )
   public val array_sfixed32: IntArray = intArrayOf(),
   @field:WireField(
     tag = 606,
-    adapter = "com.squareup.wire.ProtoAdapter#INT64",
+    adapter = "com.squareup.wire.ProtoAdapter#INT64_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 90,
   )
   public val array_int64: LongArray = longArrayOf(),
   @field:WireField(
     tag = 607,
-    adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+    adapter = "com.squareup.wire.ProtoAdapter#UINT64_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 91,
   )
   public val array_uint64: LongArray = longArrayOf(),
   @field:WireField(
     tag = 608,
-    adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+    adapter = "com.squareup.wire.ProtoAdapter#SINT64_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 92,
   )
   public val array_sint64: LongArray = longArrayOf(),
   @field:WireField(
     tag = 609,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED64_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 93,
   )
   public val array_fixed64: LongArray = longArrayOf(),
   @field:WireField(
     tag = 610,
-    adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED64_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 94,
   )
   public val array_sfixed64: LongArray = longArrayOf(),
   @field:WireField(
     tag = 611,
-    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+    adapter = "com.squareup.wire.ProtoAdapter#FLOAT_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 95,
   )
   public val array_float: FloatArray = floatArrayOf(),
   @field:WireField(
     tag = 612,
-    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE_ARRAY",
     label = WireField.Label.PACKED,
     schemaIndex = 96,
   )

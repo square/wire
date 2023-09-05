@@ -1606,7 +1606,7 @@ public final class JavaGenerator {
   }
 
   private String adapterString(ProtoType type) {
-    String builtInAdapterString = builtInAdapterString(type);
+    String builtInAdapterString = builtInAdapterString(type, false);
     if (builtInAdapterString != null) {
       return builtInAdapterString;
     }

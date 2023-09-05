@@ -29,7 +29,7 @@ import okio.ByteString
 public class ParameterValueWithArray(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+    adapter = "com.squareup.wire.ProtoAdapter#FLOAT_ARRAY",
     label = WireField.Label.PACKED,
     declaredName = "data",
     schemaIndex = 0,
