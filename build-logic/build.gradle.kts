@@ -13,6 +13,7 @@ buildscript {
     classpath(libs.pluginz.kotlinSerialization)
     classpath(libs.pluginz.shadow)
     classpath(libs.pluginz.buildConfig)
+    classpath(libs.guava)
   }
 
   repositories {

@@ -21,7 +21,8 @@ dependencies {
   implementation(libs.grpc.stub) {
     exclude(group = "com.google.guava", module = "guava")
   }
-  implementation("com.google.guava:guava:21.0")
+  implementation(libs.checker.qual)
+  implementation(libs.guava)
   implementation(libs.kotlin.coroutines.core)
   testImplementation(projects.wireTestUtils)
   testImplementation(libs.kotlin.test.junit)
