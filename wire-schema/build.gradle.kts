@@ -2,7 +2,6 @@ import com.diffplug.gradle.spotless.SpotlessExtension
 import com.vanniktech.maven.publish.JavadocJar.Javadoc
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import org.gradle.api.attributes.java.TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE
 
 plugins {
   kotlin("multiplatform")
@@ -46,12 +45,7 @@ kotlin {
     val jvmMain by getting {
       dependencies {
         api(libs.okio.core)
-        api(libs.guava.get().toString()) {
-          attributes {
-            // We help Gradle pick between the jre and android of Guava.
-            attribute(TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment::class.java, TargetJvmEnvironment.STANDARD_JVM))
-          }
-        }
+        api(libs.guava)
         api(libs.javapoet)
         api(libs.kotlinpoet)
       }
