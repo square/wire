@@ -15,7 +15,7 @@ plugins {
   kotlin("jvm")
   id("com.github.gmazzo.buildconfig")
   id("java-gradle-plugin")
-  id("com.gradle.plugin-publish").version("0.21.0").apply(false)
+  id("com.gradle.plugin-publish").version("1.2.1").apply(false)
   // TODO(Benoit)  Re-enable dokka when it works again. Probably related to https://github.com/Kotlin/dokka/issues/2977
   // id("org.jetbrains.dokka")
   id("com.vanniktech.maven.publish.base").apply(false)
@@ -28,27 +28,16 @@ if (project.rootProject.name == "wire") {
 }
 
 gradlePlugin {
+  website = "https://github.com/square/wire"
+  vcsUrl = "https://github.com/square/wire"
+  description = "generate code from .proto files"
   plugins {
     create("wire") {
       id = "com.squareup.wire"
       displayName = "Wire"
       implementationClass = "com.squareup.wire.gradle.WirePlugin"
       description = "generate code from .proto files"
-    }
-  }
-}
-
-if (project.rootProject.name == "wire") {
-  configure<PluginBundleExtension> {
-    website = "https://github.com/square/wire"
-    vcsUrl = "https://github.com/square/wire"
-    description = "generate code from .proto files"
-
-    (plugins) {
-      "wire" {
-        displayName = "Wire"
-        tags = listOf("wire", "protobuf")
-      }
+      tags = listOf("wire", "protobuf")
     }
   }
 }
