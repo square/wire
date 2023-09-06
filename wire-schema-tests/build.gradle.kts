@@ -16,10 +16,7 @@ if (project.rootProject.name == "wire") {
 }
 
 kotlin {
-  jvm {
-    // Required by MavenPublishBaseExtension even though we do not have Java sources.
-    withJava()
-  }
+  jvm().withJava() // Required by MavenPublishBaseExtension even though we do not have Java sources.
   if (System.getProperty("kjs", "true").toBoolean()) {
     js(IR) {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
@@ -35,6 +32,7 @@ kotlin {
       browser()
     }
   }
+
   sourceSets {
     val commonMain by getting {
       dependencies {

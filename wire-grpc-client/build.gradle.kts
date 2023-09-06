@@ -15,9 +15,7 @@ if (project.rootProject.name == "wire") {
 }
 
 kotlin {
-  jvm {
-    withJava()
-  }
+  jvm().withJava()
   if (System.getProperty("kjs", "true").toBoolean()) {
     js(IR) {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
@@ -34,18 +32,30 @@ kotlin {
     }
   }
   if (System.getProperty("knative", "true").toBoolean()) {
-    iosX64()
+    androidNativeArm32()
+    androidNativeArm64()
+    androidNativeX64()
+    androidNativeX86()
     iosArm64()
     iosSimulatorArm64()
-    // Required to generate tests tasks: https://youtrack.jetbrains.com/issue/KT-26547
-    linuxX64()
-    macosX64()
+    iosSimulatorArm64()
+    iosX64()
+    linuxArm64()
+    linuxX64() // Required to generate tests tasks: https://youtrack.jetbrains.com/issue/KT-26547
     macosArm64()
+    macosX64()
     mingwX64()
-    tvosX64()
     tvosArm64()
     tvosSimulatorArm64()
+    tvosX64()
+    wasm().nodejs()
+    watchosArm32()
+    watchosArm64()
+    watchosDeviceArm64()
+    watchosSimulatorArm64()
+    watchosX64()
   }
+
   sourceSets {
     val commonMain by getting {
       dependencies {
@@ -63,17 +73,51 @@ kotlin {
       val nativeMain by creating {
         dependsOn(commonMain)
       }
-      val iosX64Main by getting
+      val androidNativeArm32Main by getting
+      val androidNativeArm64Main by getting
+      val androidNativeX64Main by getting
+      val androidNativeX86Main by getting
       val iosArm64Main by getting
       val iosSimulatorArm64Main by getting
+      val iosX64Main by getting
+      val linuxArm64Main by getting
       val linuxX64Main by getting
-      val macosX64Main by getting
       val macosArm64Main by getting
+      val macosX64Main by getting
       val mingwX64Main by getting
-      val tvosX64Main by getting
       val tvosArm64Main by getting
       val tvosSimulatorArm64Main by getting
-      for (it in listOf(iosX64Main, iosArm64Main, iosSimulatorArm64Main, linuxX64Main, macosX64Main, macosArm64Main, mingwX64Main, tvosX64Main, tvosArm64Main, tvosSimulatorArm64Main)) {
+      val tvosX64Main by getting
+      val wasmMain by getting
+      val watchosArm32Main by getting
+      val watchosArm64Main by getting
+      val watchosDeviceArm64Main by getting
+      val watchosSimulatorArm64Main by getting
+      val watchosX64Main by getting
+      for (it in listOf(
+        androidNativeArm32Main,
+        androidNativeArm64Main,
+        androidNativeX64Main,
+        androidNativeX86Main,
+        iosArm64Main,
+        iosSimulatorArm64Main,
+        iosSimulatorArm64Main,
+        iosX64Main,
+        linuxArm64Main,
+        linuxX64Main,
+        macosArm64Main,
+        macosX64Main,
+        mingwX64Main,
+        tvosArm64Main,
+        tvosSimulatorArm64Main,
+        tvosX64Main,
+        wasmMain,
+        watchosArm32Main,
+        watchosArm64Main,
+        watchosDeviceArm64Main,
+        watchosSimulatorArm64Main,
+        watchosX64Main,
+      )) {
         it.dependsOn(nativeMain)
       }
     }
