@@ -28,7 +28,7 @@ androidx-annotations = { module = "androidx.annotation:annotation", version = "1
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
 androidx-compose = { module = "androidx.activity:activity-compose", version = "1.7.2" }
 androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4" }
-androidx-ktx = { module = "androidx.core:core-ktx", version = "1.10.1" }
+androidx-ktx = { module = "androidx.core:core-ktx", version = "1.12.0" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 checker-qual = { module = "org.checkerframework:checker-qual", version.ref = "checkerQual" }
 contour = { module = "app.cash.contour:contour", version = "1.1.0" }
