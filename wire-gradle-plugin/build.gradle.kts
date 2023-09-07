@@ -84,6 +84,7 @@ if (project.rootProject.name == "wire") {
 
   tasks.all {
     if (name == "generateMetadataFileForPluginMavenPublication") {
+      // We please the plugin-publish plugin which complains about missing explicit dependency between the two tasks.
       dependsOn("simpleJavadocJar")
     }
   }
