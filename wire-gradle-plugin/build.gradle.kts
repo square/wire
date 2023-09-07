@@ -82,6 +82,12 @@ if (project.rootProject.name == "wire") {
   }
 }
 
+  tasks.all {
+    if (name == "generateMetadataFileForPluginMavenPublication") {
+      dependsOn("simpleJavadocJar")
+    }
+  }
+
 buildConfig {
   useKotlinOutput {
     internalVisibility = true
