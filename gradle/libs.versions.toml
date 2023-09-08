@@ -32,8 +32,6 @@ androidx-ktx = { module = "androidx.core:core-ktx", version = "1.10.1" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 checker-qual = { module = "org.checkerframework:checker-qual", version.ref = "checkerQual" }
 contour = { module = "app.cash.contour:contour", version = "1.1.0" }
-dokka-core = { module = "org.jetbrains.dokka:dokka-core", version.ref = "dokka" }
-dokka-gradlePlugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 googleJavaFormat = "com.google.googlejavaformat:google-java-format:1.17.0"
 grpc-genJava = { module = "io.grpc:protoc-gen-grpc-java", version.ref = "grpc" }
 grpc-netty = { module = "io.grpc:grpc-netty", version.ref = "grpc" }
@@ -73,6 +71,7 @@ okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", versio
 #  if we ever wanna migrate to this.
 pluginz-android = { module = "com.android.tools.build:gradle", version = "8.1.1" }
 pluginz-binaryCompatibilityValidator = { module = "org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin", version = "0.13.2" }
+pluginz-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 pluginz-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 pluginz-kotlinSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 pluginz-shadow = { module = "com.github.johnrengelman:shadow", version = "8.1.1" }
