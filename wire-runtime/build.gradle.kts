@@ -6,8 +6,6 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 plugins {
   kotlin("multiplatform")
   id("com.github.gmazzo.buildconfig")
-  // TODO(Benoit)  Re-enable dokka when it works again. Probably related to https://github.com/Kotlin/dokka/issues/2977
-  // id("org.jetbrains.dokka")
   id("com.vanniktech.maven.publish.base").apply(false)
 }
 

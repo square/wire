@@ -21,17 +21,7 @@ git clone $REPO $DIR
 cd $DIR
 
 # Generate the API docs
-./gradlew \
-    :wire-grpc-client:dokkaGfm \
-    :wire-moshi-adapter:dokkaGfm \
-    :wire-runtime:dokkaGfm \
-    :wire-compiler:dokkaGfm \
-    :wire-gson-support:dokkaGfm \
-    :wire-java-generator:dokkaGfm \
-    :wire-kotlin-generator:dokkaGfm \
-    :wire-reflector:dokkaGfm \
-    :wire-schema:dokkaGfm \
-    :wire-swift-generator:dokkaGfm
+./gradlew dokkaGfmMultiModule
 
 # Fix *.md links to point to where the docs live under Mkdocs.
 # Linux
@@ -44,7 +34,6 @@ sed -i "" 's/docs\/wire_grpc.md/wire_grpc/' README.md
 cat README.md | grep -v 'project website' > docs/index.md
 cp CHANGELOG.md docs/changelog.md
 cp CONTRIBUTING.md docs/contributing.md
-cp RELEASING.md docs/releasing.md
 
 # Build the site and push the new files up to GitHub
 mkdocs gh-deploy
