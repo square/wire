@@ -1,4 +1,4 @@
-rootProject.name = "build-logic"
+rootProject.name = "build-support"
 
 include(":wire-compiler")
 project(":wire-compiler").projectDir = File("../wire-compiler")

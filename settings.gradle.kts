@@ -25,7 +25,7 @@ if (startParameter.projectProperties.get("swift") != "false") {
   include(":wire-tests-proto3-swift")
 }
 
-includeBuild("build-logic") {
+includeBuild("build-support") {
   dependencySubstitution {
     substitute(module("com.squareup.wire:wire-gradle-plugin")).using(project(":wire-gradle-plugin"))
     substitute(module("com.squareup.wire:wire-runtime")).using(project(":wire-runtime"))

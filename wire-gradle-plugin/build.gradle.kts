@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 // This module is included in two projects:
 // - In the root project where it's released as one of our artifacts
-// - In build-logic project where we can use it for the test-schema and samples.
+// - In build-support project where we can use it for the test-schema and samples.
 //
 // We only want to publish when it's being built in the root project.
 
