@@ -1,6 +1,6 @@
 import com.gradle.publish.PluginBundleExtension
 import com.vanniktech.maven.publish.GradlePlugin
-import com.vanniktech.maven.publish.JavadocJar.Javadoc
+import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -71,21 +71,6 @@ val test by tasks.getting(Test::class) {
   systemProperty("kjs", System.getProperty("kjs"))
   systemProperty("knative", System.getProperty("knative"))
 }
-
-if (project.rootProject.name == "wire") {
-  configure<MavenPublishBaseExtension> {
-    configure(
-      GradlePlugin(javadocJar = Javadoc(), sourcesJar = true)
-    )
-  }
-}
-
-  tasks.all {
-    if (name == "generateMetadataFileForPluginMavenPublication") {
-      // We please the plugin-publish plugin which complains about missing explicit dependency between the two tasks.
-      dependsOn("simpleJavadocJar")
-    }
-  }
 
 buildConfig {
   useKotlinOutput {
