@@ -1,5 +1,5 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
-import com.vanniktech.maven.publish.JavadocJar.Javadoc
+import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
@@ -38,7 +38,7 @@ sourceSets {
 if (project.rootProject.name == "wire") {
   configure<MavenPublishBaseExtension> {
     configure(
-      KotlinJvm(javadocJar = Javadoc(), sourcesJar = true)
+      KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
     )
   }
 }

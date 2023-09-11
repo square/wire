@@ -1,5 +1,5 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
-import com.vanniktech.maven.publish.JavadocJar.Javadoc
+import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
@@ -73,7 +73,7 @@ kotlin {
 if (project.rootProject.name == "wire") {
   configure<MavenPublishBaseExtension> {
     configure(
-      KotlinMultiplatform(javadocJar = Javadoc())
+      KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
     )
   }
 
