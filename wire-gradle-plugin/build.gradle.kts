@@ -1,7 +1,3 @@
-import com.gradle.publish.PluginBundleExtension
-import com.vanniktech.maven.publish.GradlePlugin
-import com.vanniktech.maven.publish.JavadocJar.Javadoc
-import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
@@ -16,8 +12,6 @@ plugins {
   id("com.github.gmazzo.buildconfig")
   id("java-gradle-plugin")
   id("com.gradle.plugin-publish").version("1.2.1").apply(false)
-  // TODO(Benoit)  Re-enable dokka when it works again. Probably related to https://github.com/Kotlin/dokka/issues/2977
-  // id("org.jetbrains.dokka")
   id("com.vanniktech.maven.publish.base").apply(false)
 }
 
@@ -73,21 +67,6 @@ val test by tasks.getting(Test::class) {
   systemProperty("kjs", System.getProperty("kjs"))
   systemProperty("knative", System.getProperty("knative"))
 }
-
-if (project.rootProject.name == "wire") {
-  configure<MavenPublishBaseExtension> {
-    configure(
-      GradlePlugin(javadocJar = Javadoc(), sourcesJar = true)
-    )
-  }
-}
-
-  tasks.all {
-    if (name == "generateMetadataFileForPluginMavenPublication") {
-      // We please the plugin-publish plugin which complains about missing explicit dependency between the two tasks.
-      dependsOn("simpleJavadocJar")
-    }
-  }
 
 buildConfig {
   useKotlinOutput {

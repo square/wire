@@ -6,8 +6,7 @@ buildscript {
   dependencies {
     classpath(libs.pluginz.kotlin)
     classpath(libs.vanniktechPublishPlugin)
-    // classpath(libs.dokka.core)
-    // classpath(libs.dokka.gradlePlugin)
+    classpath(libs.pluginz.dokka)
     classpath(libs.pluginz.buildConfig)
     classpath(libs.pluginz.spotless)
     classpath(libs.pluginz.kotlinSerialization)

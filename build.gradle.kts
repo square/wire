@@ -6,6 +6,7 @@ import kotlinx.validation.ApiValidationExtension
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
+import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.STARTED
 // import org.jetbrains.dokka.gradle.DokkaTask
@@ -15,8 +16,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
   dependencies {
-    // classpath(libs.dokka.core)
-    // classpath(libs.dokka.gradlePlugin)
+    classpath(libs.pluginz.dokka)
     classpath(libs.pluginz.android)
     classpath(libs.pluginz.binaryCompatibilityValidator)
     classpath(libs.pluginz.kotlin)
@@ -45,6 +45,7 @@ rootProject.plugins.withType(NodeJsRootPlugin::class) {
 }
 
 apply(plugin = "com.vanniktech.maven.publish.base")
+apply(plugin = "org.jetbrains.dokka")
 
 allprojects {
   group = project.property("GROUP") as String
@@ -153,6 +154,21 @@ subprojects {
         sourceSets = listOf(project.extensions.getByType<SourceSetContainer>()["main"])
       }
     }
+
+    apply(plugin = "org.jetbrains.dokka")
+
+    tasks.withType<DokkaTaskPartial>().configureEach {
+      outputDirectory.set(project.file("${project.rootDir}/docs/3.x"))
+      dokkaSourceSets.configureEach {
+          reportUndocumented.set(false)
+          skipDeprecated.set(true)
+          jdkVersion.set(8)
+          perPackageOption {
+            matchingRegex.set("com\\.squareup\\.wire.*\\.internal.*")
+            suppress.set(true)
+          }
+      }
+    }
   }
 }
 
@@ -165,27 +181,12 @@ allprojects {
     }
   }
 
-  // tasks.withType<DokkaTask>().configureEach {
-  //   dokkaSourceSets.configureEach {
-  //     reportUndocumented.set(false)
-  //     skipDeprecated.set(true)
-  //     jdkVersion.set(8)
-  //     perPackageOption {
-  //       matchingRegex.set("com\\.squareup\\.wire\\.internal.*")
-  //       suppress.set(true)
-  //     }
-  //   }
-  //   if (name == "dokkaGfm") {
-  //     outputDirectory.set(project.file("${project.rootDir}/docs/3.x"))
-  //   }
-  // }
-
   plugins.withId("com.vanniktech.maven.publish.base") {
     configure<PublishingExtension> {
       repositories {
         maven {
           name = "test"
-          setUrl("file://${project.rootProject.buildDir}/localMaven")
+          setUrl("file://${project.rootProject.layout.buildDirectory.dir("localMaven").get().asFile.path}")
         }
         /**
          * Want to push to an internal repository for testing?
