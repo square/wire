@@ -22,8 +22,8 @@ if (project.rootProject.name == "wire") {
 }
 
 gradlePlugin {
-  website = "https://github.com/square/wire"
-  vcsUrl = "https://github.com/square/wire"
+  website.set("https://github.com/square/wire")
+  vcsUrl.set("https://github.com/square/wire")
   description = "generate code from .proto files"
   plugins {
     create("wire") {
@@ -31,7 +31,7 @@ gradlePlugin {
       displayName = "Wire"
       implementationClass = "com.squareup.wire.gradle.WirePlugin"
       description = "generate code from .proto files"
-      tags = listOf("wire", "protobuf")
+      tags.set(listOf("wire", "protobuf"))
     }
   }
 }
