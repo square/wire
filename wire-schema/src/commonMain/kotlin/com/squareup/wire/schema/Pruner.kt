@@ -26,7 +26,7 @@ class Pruner(
   private val schema: Schema,
   private val pruningRules: PruningRules,
 ) {
-  private val marks = MarkSet(pruningRules)
+  private val marks = MarkSet(pruningRules, schema)
 
   /**
    * [types][ProtoType] and [members][ProtoMember] whose immediate dependencies have not
@@ -60,7 +60,21 @@ class Pruner(
 
   private fun markRoots() {
     for (protoFile in schema.protoFiles) {
-      markRoots(protoFile)
+      if (protoFile.location.toString() == DESCRIPTOR_PROTO) {
+        val currentCount = marks.types.size + marks.members.size
+        markRoots(protoFile)
+        // If any types or members of Google Protobuf's `descriptor.proto` has been marked, we add
+        // all file options of the proto file itself as roots. `descriptor.proto` uses them and we
+        // thus make sure that they never get pruned.
+        if (currentCount < marks.types.size + marks.members.size) {
+          for (optionType in protoFile.options.map.keys) {
+            marks.root(optionType)
+            queue.add(optionType)
+          }
+        }
+      } else {
+        markRoots(protoFile)
+      }
     }
   }
 

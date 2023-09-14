@@ -1511,6 +1511,40 @@ class PrunerTest {
     assertThat(authorType.constant("POSEIDON")!!.options.fields().values()).hasSize(1)
   }
 
+  /**
+   * We want to make sure file options used in Descriptor.proto itself cannot be pruned as Wire
+   * could otherwise emit a not compiling version of it.
+   */
+  @Test fun fileOptionsPruning() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |option java_package = "sup";
+        """.trimMargin(),
+      )
+    }
+
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("google.protobuf.FileOptions#java_package")
+        .build(),
+    )
+    val messageType = pruned.getType("google.protobuf.FileOptions") as MessageType
+    // `optimize_for` is a good candidate because its type isn't scalar.
+    assertThat(messageType.field("optimize_for")).isNotNull()
+    assertThat(pruned.getType("google.protobuf.FileOptions.OptimizeMode")).isNotNull()
+
+    // We confirm that we can load the pruned descriptor.proto without failing.
+    val newSchema = buildSchema {
+      add(
+        "google/protobuf/descriptor.proto".toPath(),
+        pruned.protoFile("google/protobuf/descriptor.proto")!!.toSchema(),
+      )
+    }
+    assertThat(newSchema.getType("google.protobuf.FileOptions")).isNotNull()
+  }
+
   @Test
   fun excludingGoogleProtobufPrunesAllOptionsOnMessages() {
     val schema = buildSchema {

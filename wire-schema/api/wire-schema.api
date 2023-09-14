@@ -422,6 +422,8 @@ public final class com/squareup/wire/schema/Location$Companion {
 public final class com/squareup/wire/schema/MarkSet {
 	public static final field Companion Lcom/squareup/wire/schema/MarkSet$Companion;
 	public fun <init> (Lcom/squareup/wire/schema/PruningRules;)V
+	public fun <init> (Lcom/squareup/wire/schema/PruningRules;Lcom/squareup/wire/schema/Schema;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/PruningRules;Lcom/squareup/wire/schema/Schema;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun contains (Lcom/squareup/wire/schema/ProtoMember;)Z
 	public final fun contains (Lcom/squareup/wire/schema/ProtoType;)Z
 	public final fun getMembers ()Ljava/util/Map;

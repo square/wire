@@ -15,6 +15,8 @@
  */
 package com.squareup.wire.schema
 
+import kotlin.jvm.JvmOverloads
+
 /**
  * A mark set is used in three phases:
  *
@@ -26,8 +28,10 @@ package com.squareup.wire.schema
  *     member already marked.
  *  3. Retaining which members and types have been marked.
  */
-class MarkSet(
+class MarkSet @JvmOverloads constructor(
   val pruningRules: PruningRules,
+  // `schema` is nullable to allow backward compatibility.
+  private val schema: Schema? = null,
 ) {
   /** The types to retain. We may retain a type but not all of its members. */
   val types = mutableSetOf<ProtoType>()
@@ -46,7 +50,14 @@ class MarkSet(
    * members of the same type.
    */
   fun root(protoMember: ProtoMember) {
-    check(!pruningRules.prunes(protoMember))
+    if (
+      // We don't check Google Protobuf internal proto members because they are treated differently
+      // with how Wire prunes things.
+      protoMember.type !in Options.GOOGLE_PROTOBUF_OPTION_TYPES ||
+      (schema?.isExtensionField(protoMember) != false)
+    ) {
+      check(!pruningRules.prunes(protoMember)) { "proto member $protoMember cannot be a root" }
+    }
     types.add(protoMember.type)
     rootMemberTypes[protoMember] = UNKNOWN_TYPE
     val memberSet = members.getOrPut(protoMember.type, { mutableSetOf() })
