@@ -254,7 +254,13 @@ data class ProtoTarget(
         val outDirectory = context.outDirectory
 
         for (protoFile in schema.protoFiles) {
-          if (!context.inSourcePath(protoFile) || protoFile.isEmpty()) continue
+          if (!context.inSourcePath(protoFile) ||
+            protoFile.isEmpty() ||
+            // We never emit the `.proto` files we are embedding within Wire.
+            isWireRuntimeProto(protoFile.location.path)
+          ) {
+            continue
+          }
 
           val relativePath = protoFile.location.path
             .substringBeforeLast("/", missingDelimiterValue = ".")

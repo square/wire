@@ -18,7 +18,7 @@ package com.squareup.wire.recipes
 import com.squareup.wire.WireTestLogger
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.SchemaHandler
-import com.squareup.wire.testing.containsRelativePaths
+import com.squareup.wire.testing.containsExactlyInAnyOrderAsRelativePaths
 import com.squareup.wire.testing.findFiles
 import com.squareup.wire.testing.readUtf8
 import okio.Path.Companion.toPath
@@ -80,7 +80,7 @@ class MarkdownHandlerTest {
     MarkdownHandler().handle(schema, context)
 
     assertThat(fileSystem.findFiles("generated"))
-      .containsRelativePaths(
+      .containsExactlyInAnyOrderAsRelativePaths(
         "generated/markdown/squareup/colors/Blue.md",
         "generated/markdown/squareup/colors/Red.md",
       )
