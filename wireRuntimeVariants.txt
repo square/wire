@@ -1,0 +1,878 @@
+--------------------------------------------------
+Variant archives
+--------------------------------------------------
+Configuration for archive artifacts.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Artifacts
+    - build/classes/kotlin/iosArm64/main/klib/wire-runtime.klib (artifactType = klib)
+    - build/classes/kotlin/iosSimulatorArm64/main/klib/wire-runtime.klib (artifactType = klib)
+    - build/classes/kotlin/iosX64/main/klib/wire-runtime.klib (artifactType = klib)
+    - build/classes/kotlin/linuxX64/main/klib/wire-runtime.klib (artifactType = klib)
+    - build/classes/kotlin/macosArm64/main/klib/wire-runtime.klib (artifactType = klib)
+    - build/classes/kotlin/macosX64/main/klib/wire-runtime.klib (artifactType = klib)
+    - build/classes/kotlin/mingwX64/main/klib/wire-runtime.klib (artifactType = klib)
+    - build/classes/kotlin/tvosArm64/main/klib/wire-runtime.klib (artifactType = klib)
+    - build/classes/kotlin/tvosSimulatorArm64/main/klib/wire-runtime.klib (artifactType = klib)
+    - build/classes/kotlin/tvosX64/main/klib/wire-runtime.klib (artifactType = klib)
+    - build/libs/wire-runtime-iosarm64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+    - build/libs/wire-runtime-iossimulatorarm64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+    - build/libs/wire-runtime-iosx64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+    - build/libs/wire-runtime-js-4.9.0-SNAPSHOT.klib (artifactType = klib)
+    - build/libs/wire-runtime-jvm-4.9.0-SNAPSHOT.jar (artifactType = jar)
+    - build/libs/wire-runtime-jvm-4.9.0-SNAPSHOT.jar (artifactType = jar)
+    - build/libs/wire-runtime-macosarm64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+    - build/libs/wire-runtime-macosx64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+    - build/libs/wire-runtime-metadata-4.9.0-SNAPSHOT.jar (artifactType = jar)
+    - build/libs/wire-runtime-metadata-4.9.0-SNAPSHOT.jar (artifactType = jar)
+    - build/libs/wire-runtime-tvosarm64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+    - build/libs/wire-runtime-tvossimulatorarm64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+    - build/libs/wire-runtime-tvosx64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+
+--------------------------------------------------
+Variant default
+--------------------------------------------------
+Configuration for default artifacts.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Artifacts
+    - build/libs/wire-runtime-jvm-4.9.0-SNAPSHOT.jar (artifactType = jar)
+
+--------------------------------------------------
+Variant iosArm64ApiElements
+--------------------------------------------------
+API elements for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-api
+    - org.jetbrains.kotlin.native.target = ios_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/classes/kotlin/iosArm64/main/klib/wire-runtime.klib (artifactType = klib)
+
+--------------------------------------------------
+Variant iosArm64CInteropApiElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.libraryelements         = cinterop-klib
+    - org.gradle.usage                   = kotlin-cinterop
+    - org.jetbrains.kotlin.native.target = ios_arm64
+    - org.jetbrains.kotlin.platform.type = native
+
+--------------------------------------------------
+Variant iosArm64MetadataElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-metadata
+    - org.jetbrains.kotlin.native.target = ios_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-iosarm64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+
+--------------------------------------------------
+Variant iosArm64SourcesElements
+--------------------------------------------------
+Source files of main compilation of iosArm64.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = documentation
+    - org.gradle.dependency.bundling     = external
+    - org.gradle.docstype                = sources
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-runtime
+    - org.jetbrains.kotlin.native.target = ios_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-iosarm64-4.9.0-SNAPSHOT-sources.jar (artifactType = jar, classifier = sources)
+
+--------------------------------------------------
+Variant iosSimulatorArm64ApiElements
+--------------------------------------------------
+API elements for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-api
+    - org.jetbrains.kotlin.native.target = ios_simulator_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/classes/kotlin/iosSimulatorArm64/main/klib/wire-runtime.klib (artifactType = klib)
+
+--------------------------------------------------
+Variant iosSimulatorArm64CInteropApiElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.libraryelements         = cinterop-klib
+    - org.gradle.usage                   = kotlin-cinterop
+    - org.jetbrains.kotlin.native.target = ios_simulator_arm64
+    - org.jetbrains.kotlin.platform.type = native
+
+--------------------------------------------------
+Variant iosSimulatorArm64MetadataElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-metadata
+    - org.jetbrains.kotlin.native.target = ios_simulator_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-iossimulatorarm64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+
+--------------------------------------------------
+Variant iosSimulatorArm64SourcesElements
+--------------------------------------------------
+Source files of main compilation of iosSimulatorArm64.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = documentation
+    - org.gradle.dependency.bundling     = external
+    - org.gradle.docstype                = sources
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-runtime
+    - org.jetbrains.kotlin.native.target = ios_simulator_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-iossimulatorarm64-4.9.0-SNAPSHOT-sources.jar (artifactType = jar, classifier = sources)
+
+--------------------------------------------------
+Variant iosX64ApiElements
+--------------------------------------------------
+API elements for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-api
+    - org.jetbrains.kotlin.native.target = ios_x64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/classes/kotlin/iosX64/main/klib/wire-runtime.klib (artifactType = klib)
+
+--------------------------------------------------
+Variant iosX64CInteropApiElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.libraryelements         = cinterop-klib
+    - org.gradle.usage                   = kotlin-cinterop
+    - org.jetbrains.kotlin.native.target = ios_x64
+    - org.jetbrains.kotlin.platform.type = native
+
+--------------------------------------------------
+Variant iosX64MetadataElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-metadata
+    - org.jetbrains.kotlin.native.target = ios_x64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-iosx64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+
+--------------------------------------------------
+Variant iosX64SourcesElements
+--------------------------------------------------
+Source files of main compilation of iosX64.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = documentation
+    - org.gradle.dependency.bundling     = external
+    - org.gradle.docstype                = sources
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-runtime
+    - org.jetbrains.kotlin.native.target = ios_x64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-iosx64-4.9.0-SNAPSHOT-sources.jar (artifactType = jar, classifier = sources)
+
+--------------------------------------------------
+Variant jsApiElements
+--------------------------------------------------
+API elements for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-api
+    - org.jetbrains.kotlin.js.compiler   = ir
+    - org.jetbrains.kotlin.platform.type = js
+Artifacts
+    - build/libs/wire-runtime-js-4.9.0-SNAPSHOT.klib (artifactType = klib)
+
+--------------------------------------------------
+Variant jsPublicPackageJsonConfiguration
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                         = library
+    - org.gradle.jvm.environment                  = non-jvm
+    - org.gradle.usage                            = kotlin-runtime
+    - org.jetbrains.kotlin.js.compiler            = ir
+    - org.jetbrains.kotlin.js.public.package.json = public-package-json
+    - org.jetbrains.kotlin.platform.type          = js
+Artifacts
+    - build/tmp/jsPublicPackageJson/package.json (artifactType = json)
+
+--------------------------------------------------
+Variant jsRuntimeElements
+--------------------------------------------------
+Elements of runtime for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-runtime
+    - org.jetbrains.kotlin.js.compiler   = ir
+    - org.jetbrains.kotlin.platform.type = js
+Artifacts
+    - build/libs/wire-runtime-js-4.9.0-SNAPSHOT.klib (artifactType = klib)
+
+--------------------------------------------------
+Variant jsSourcesElements
+--------------------------------------------------
+Source files of main compilation of js.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = documentation
+    - org.gradle.dependency.bundling     = external
+    - org.gradle.docstype                = sources
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-runtime
+    - org.jetbrains.kotlin.js.compiler   = ir
+    - org.jetbrains.kotlin.platform.type = js
+Artifacts
+    - build/libs/wire-runtime-js-4.9.0-SNAPSHOT-sources.jar (artifactType = jar, classifier = sources)
+
+--------------------------------------------------
+Variant jvmApiElements
+--------------------------------------------------
+API elements for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = standard-jvm
+    - org.gradle.libraryelements         = jar
+    - org.gradle.usage                   = java-api
+    - org.jetbrains.kotlin.platform.type = jvm
+Artifacts
+    - build/libs/wire-runtime-jvm-4.9.0-SNAPSHOT.jar (artifactType = jar)
+
+--------------------------------------------------
+Variant jvmRuntimeElements
+--------------------------------------------------
+Elements of runtime for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = standard-jvm
+    - org.gradle.libraryelements         = jar
+    - org.gradle.usage                   = java-runtime
+    - org.jetbrains.kotlin.platform.type = jvm
+Artifacts
+    - build/libs/wire-runtime-jvm-4.9.0-SNAPSHOT.jar (artifactType = jar)
+
+--------------------------------------------------
+Variant jvmSourcesElements
+--------------------------------------------------
+Source files of main compilation of jvm.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = documentation
+    - org.gradle.dependency.bundling     = external
+    - org.gradle.docstype                = sources
+    - org.gradle.jvm.environment         = standard-jvm
+    - org.gradle.libraryelements         = jar
+    - org.gradle.usage                   = java-runtime
+    - org.jetbrains.kotlin.platform.type = jvm
+Artifacts
+    - build/libs/wire-runtime-jvm-4.9.0-SNAPSHOT-sources.jar (artifactType = jar, classifier = sources)
+
+--------------------------------------------------
+Variant linuxX64ApiElements
+--------------------------------------------------
+API elements for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-api
+    - org.jetbrains.kotlin.native.target = linux_x64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/classes/kotlin/linuxX64/main/klib/wire-runtime.klib (artifactType = klib)
+
+--------------------------------------------------
+Variant linuxX64CInteropApiElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.libraryelements         = cinterop-klib
+    - org.gradle.usage                   = kotlin-cinterop
+    - org.jetbrains.kotlin.native.target = linux_x64
+    - org.jetbrains.kotlin.platform.type = native
+
+--------------------------------------------------
+Variant linuxX64MetadataElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-metadata
+    - org.jetbrains.kotlin.native.target = linux_x64
+    - org.jetbrains.kotlin.platform.type = native
+
+--------------------------------------------------
+Variant linuxX64SourcesElements
+--------------------------------------------------
+Source files of main compilation of linuxX64.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = documentation
+    - org.gradle.dependency.bundling     = external
+    - org.gradle.docstype                = sources
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-runtime
+    - org.jetbrains.kotlin.native.target = linux_x64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-linuxx64-4.9.0-SNAPSHOT-sources.jar (artifactType = jar, classifier = sources)
+
+--------------------------------------------------
+Variant macosArm64ApiElements
+--------------------------------------------------
+API elements for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-api
+    - org.jetbrains.kotlin.native.target = macos_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/classes/kotlin/macosArm64/main/klib/wire-runtime.klib (artifactType = klib)
+
+--------------------------------------------------
+Variant macosArm64CInteropApiElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.libraryelements         = cinterop-klib
+    - org.gradle.usage                   = kotlin-cinterop
+    - org.jetbrains.kotlin.native.target = macos_arm64
+    - org.jetbrains.kotlin.platform.type = native
+
+--------------------------------------------------
+Variant macosArm64MetadataElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-metadata
+    - org.jetbrains.kotlin.native.target = macos_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-macosarm64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+
+--------------------------------------------------
+Variant macosArm64SourcesElements
+--------------------------------------------------
+Source files of main compilation of macosArm64.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = documentation
+    - org.gradle.dependency.bundling     = external
+    - org.gradle.docstype                = sources
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-runtime
+    - org.jetbrains.kotlin.native.target = macos_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-macosarm64-4.9.0-SNAPSHOT-sources.jar (artifactType = jar, classifier = sources)
+
+--------------------------------------------------
+Variant macosX64ApiElements
+--------------------------------------------------
+API elements for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-api
+    - org.jetbrains.kotlin.native.target = macos_x64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/classes/kotlin/macosX64/main/klib/wire-runtime.klib (artifactType = klib)
+
+--------------------------------------------------
+Variant macosX64CInteropApiElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.libraryelements         = cinterop-klib
+    - org.gradle.usage                   = kotlin-cinterop
+    - org.jetbrains.kotlin.native.target = macos_x64
+    - org.jetbrains.kotlin.platform.type = native
+
+--------------------------------------------------
+Variant macosX64MetadataElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-metadata
+    - org.jetbrains.kotlin.native.target = macos_x64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-macosx64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+
+--------------------------------------------------
+Variant macosX64SourcesElements
+--------------------------------------------------
+Source files of main compilation of macosX64.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = documentation
+    - org.gradle.dependency.bundling     = external
+    - org.gradle.docstype                = sources
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-runtime
+    - org.jetbrains.kotlin.native.target = macos_x64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-macosx64-4.9.0-SNAPSHOT-sources.jar (artifactType = jar, classifier = sources)
+
+--------------------------------------------------
+Variant mainSourceElements (i)
+--------------------------------------------------
+List of source directories contained in the Main SourceSet.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category            = verification
+    - org.gradle.dependency.bundling = external
+    - org.gradle.verificationtype    = main-sources
+Artifacts
+    - src/jvmMain/java (artifactType = directory)
+    - src/jvmMain/resources (artifactType = directory)
+
+--------------------------------------------------
+Variant metadataApiElements
+--------------------------------------------------
+API elements for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-metadata
+    - org.jetbrains.kotlin.platform.type = common
+Artifacts
+    - build/libs/wire-runtime-metadata-4.9.0-SNAPSHOT.jar (artifactType = jar)
+
+--------------------------------------------------
+Variant metadataSourcesElements
+--------------------------------------------------
+Source files of main compilation of metadata.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = documentation
+    - org.gradle.dependency.bundling     = external
+    - org.gradle.docstype                = sources
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-runtime
+    - org.jetbrains.kotlin.platform.type = common
+Artifacts
+    - build/libs/wire-runtime-kotlin-4.9.0-SNAPSHOT-sources.jar (artifactType = jar, classifier = sources)
+
+--------------------------------------------------
+Variant mingwX64ApiElements
+--------------------------------------------------
+API elements for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-api
+    - org.jetbrains.kotlin.native.target = mingw_x64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/classes/kotlin/mingwX64/main/klib/wire-runtime.klib (artifactType = klib)
+
+--------------------------------------------------
+Variant mingwX64CInteropApiElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.libraryelements         = cinterop-klib
+    - org.gradle.usage                   = kotlin-cinterop
+    - org.jetbrains.kotlin.native.target = mingw_x64
+    - org.jetbrains.kotlin.platform.type = native
+
+--------------------------------------------------
+Variant mingwX64MetadataElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-metadata
+    - org.jetbrains.kotlin.native.target = mingw_x64
+    - org.jetbrains.kotlin.platform.type = native
+
+--------------------------------------------------
+Variant mingwX64SourcesElements
+--------------------------------------------------
+Source files of main compilation of mingwX64.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = documentation
+    - org.gradle.dependency.bundling     = external
+    - org.gradle.docstype                = sources
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-runtime
+    - org.jetbrains.kotlin.native.target = mingw_x64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-mingwx64-4.9.0-SNAPSHOT-sources.jar (artifactType = jar, classifier = sources)
+
+--------------------------------------------------
+Variant testResultsElementsForTest (i)
+--------------------------------------------------
+Directory containing binary results of running tests for the test Test Suite's test target.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category              = verification
+    - org.gradle.testsuite.name        = test
+    - org.gradle.testsuite.target.name = test
+    - org.gradle.testsuite.type        = unit-test
+    - org.gradle.verificationtype      = test-results
+Artifacts
+    - build/test-results/test/binary (artifactType = directory)
+
+--------------------------------------------------
+Variant tvosArm64ApiElements
+--------------------------------------------------
+API elements for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-api
+    - org.jetbrains.kotlin.native.target = tvos_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/classes/kotlin/tvosArm64/main/klib/wire-runtime.klib (artifactType = klib)
+
+--------------------------------------------------
+Variant tvosArm64CInteropApiElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.libraryelements         = cinterop-klib
+    - org.gradle.usage                   = kotlin-cinterop
+    - org.jetbrains.kotlin.native.target = tvos_arm64
+    - org.jetbrains.kotlin.platform.type = native
+
+--------------------------------------------------
+Variant tvosArm64MetadataElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-metadata
+    - org.jetbrains.kotlin.native.target = tvos_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-tvosarm64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+
+--------------------------------------------------
+Variant tvosArm64SourcesElements
+--------------------------------------------------
+Source files of main compilation of tvosArm64.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = documentation
+    - org.gradle.dependency.bundling     = external
+    - org.gradle.docstype                = sources
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-runtime
+    - org.jetbrains.kotlin.native.target = tvos_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-tvosarm64-4.9.0-SNAPSHOT-sources.jar (artifactType = jar, classifier = sources)
+
+--------------------------------------------------
+Variant tvosSimulatorArm64ApiElements
+--------------------------------------------------
+API elements for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-api
+    - org.jetbrains.kotlin.native.target = tvos_simulator_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/classes/kotlin/tvosSimulatorArm64/main/klib/wire-runtime.klib (artifactType = klib)
+
+--------------------------------------------------
+Variant tvosSimulatorArm64CInteropApiElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.libraryelements         = cinterop-klib
+    - org.gradle.usage                   = kotlin-cinterop
+    - org.jetbrains.kotlin.native.target = tvos_simulator_arm64
+    - org.jetbrains.kotlin.platform.type = native
+
+--------------------------------------------------
+Variant tvosSimulatorArm64MetadataElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-metadata
+    - org.jetbrains.kotlin.native.target = tvos_simulator_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-tvossimulatorarm64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+
+--------------------------------------------------
+Variant tvosSimulatorArm64SourcesElements
+--------------------------------------------------
+Source files of main compilation of tvosSimulatorArm64.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = documentation
+    - org.gradle.dependency.bundling     = external
+    - org.gradle.docstype                = sources
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-runtime
+    - org.jetbrains.kotlin.native.target = tvos_simulator_arm64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-tvossimulatorarm64-4.9.0-SNAPSHOT-sources.jar (artifactType = jar, classifier = sources)
+
+--------------------------------------------------
+Variant tvosX64ApiElements
+--------------------------------------------------
+API elements for main.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-api
+    - org.jetbrains.kotlin.native.target = tvos_x64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/classes/kotlin/tvosX64/main/klib/wire-runtime.klib (artifactType = klib)
+
+--------------------------------------------------
+Variant tvosX64CInteropApiElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.libraryelements         = cinterop-klib
+    - org.gradle.usage                   = kotlin-cinterop
+    - org.jetbrains.kotlin.native.target = tvos_x64
+    - org.jetbrains.kotlin.platform.type = native
+
+--------------------------------------------------
+Variant tvosX64MetadataElements
+--------------------------------------------------
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - artifactType                       = org.jetbrains.kotlin.klib
+    - org.gradle.category                = library
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-metadata
+    - org.jetbrains.kotlin.native.target = tvos_x64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-tvosx64-4.9.0-SNAPSHOT-metadata.jar (artifactType = jar, classifier = metadata)
+
+--------------------------------------------------
+Variant tvosX64SourcesElements
+--------------------------------------------------
+Source files of main compilation of tvosX64.
+
+Capabilities
+    - com.squareup.wire:wire-runtime:4.9.0-SNAPSHOT (default capability)
+Attributes
+    - org.gradle.category                = documentation
+    - org.gradle.dependency.bundling     = external
+    - org.gradle.docstype                = sources
+    - org.gradle.jvm.environment         = non-jvm
+    - org.gradle.usage                   = kotlin-runtime
+    - org.jetbrains.kotlin.native.target = tvos_x64
+    - org.jetbrains.kotlin.platform.type = native
+Artifacts
+    - build/libs/wire-runtime-tvosx64-4.9.0-SNAPSHOT-sources.jar (artifactType = jar, classifier = sources)
+
+(i) Configuration uses incubating attributes such as Category.VERIFICATION.

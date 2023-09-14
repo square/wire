@@ -14,9 +14,7 @@ if (project.rootProject.name == "wire") {
 }
 
 kotlin {
-  jvm {
-    withJava()
-  }
+  jvm().withJava()
   if (System.getProperty("kjs", "true").toBoolean()) {
     js(IR) {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
@@ -32,6 +30,7 @@ kotlin {
       browser()
     }
   }
+
   sourceSets {
     val commonMain by getting {
       dependencies {
