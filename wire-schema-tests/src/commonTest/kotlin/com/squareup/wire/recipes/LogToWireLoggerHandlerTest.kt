@@ -17,13 +17,15 @@
 
 package com.squareup.wire.recipes
 
+import assertk.assertThat
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
 import com.squareup.wire.WireTestLogger
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.SchemaHandler
+import kotlin.test.Test
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 
 class LogToWireLoggerHandlerTest {
   @Test fun loggingArtifacts() {
@@ -55,6 +57,10 @@ class LogToWireLoggerHandlerTest {
             |}
         """.trimMargin(),
       )
+      // We manually add fake runtime protos to please Wire when running on a non-JVM platforms.
+      // This isn't required if the code is to run on the JVM only.
+      add("google/protobuf/descriptor.proto".toPath(), "")
+      add("wire/extensions.proto".toPath(), "")
     }
     val logger = WireTestLogger()
     val context = SchemaHandler.Context(
@@ -68,6 +74,6 @@ class LogToWireLoggerHandlerTest {
     assertThat(logger.artifactHandled.removeFirst()).isEqualTo(Triple("out".toPath(), "test", "Request"))
     assertThat(logger.artifactHandled.removeFirst()).isEqualTo(Triple("out".toPath(), "test", "Response"))
     assertThat(logger.artifactHandled.removeFirst()).isEqualTo(Triple("out".toPath(), "test", "MyService"))
-    assertThat(logger.artifactHandled.isEmpty()).isTrue()
+    assertThat(logger.artifactHandled).isEmpty()
   }
 }

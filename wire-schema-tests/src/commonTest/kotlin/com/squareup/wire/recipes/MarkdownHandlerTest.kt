@@ -15,16 +15,18 @@
  */
 package com.squareup.wire.recipes
 
+import assertk.Assert
+import assertk.assertThat
+import assertk.assertions.containsExactlyInAnyOrder
+import assertk.assertions.isEqualTo
 import com.squareup.wire.WireTestLogger
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.SchemaHandler
-import com.squareup.wire.testing.containsExactlyInAnyOrderAsRelativePaths
-import com.squareup.wire.testing.findFiles
-import com.squareup.wire.testing.readUtf8
+import kotlin.test.Test
+import okio.FileSystem
+import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 
 class MarkdownHandlerTest {
   @Test fun markdownHandlerGenerates() {
@@ -68,6 +70,10 @@ class MarkdownHandlerTest {
                   |}
         """.trimMargin(),
       )
+      // We manually add fake runtime protos to please Wire when running on a non-JVM platforms.
+      // This isn't required if the code is to run on the JVM only.
+      add("google/protobuf/descriptor.proto".toPath(), "")
+      add("wire/extensions.proto".toPath(), "")
     }
 
     val fileSystem = FakeFileSystem()
@@ -103,4 +109,41 @@ class MarkdownHandlerTest {
         """.trimMargin(),
       )
   }
+
+  // TODO(Benoit) Move all that into a MPP test-utils module.
+  companion object {
+    private fun FileSystem.readUtf8(pathString: String): String {
+      read(pathString.toPath()) {
+        return readUtf8()
+      }
+    }
+
+    // We return an Iterable instead of a Set to please ambiguous APIs for Assertj.
+    private fun FileSystem.findFiles(path: String): Iterable<String> {
+      return listRecursively(path.withPlatformSlashes().toPath())
+        .filter { !metadata(it).isDirectory }
+        .map { it.toString() }
+        .toSet()
+    }
+
+    private val slash = Path.DIRECTORY_SEPARATOR
+    private val otherSlash = if (slash == "/") "\\" else "/"
+
+    /**
+     * This returns a string where all other slashes are replaced with the slash of the local platform.
+     * On Windows, `/` will be replaced with `\`. On other platforms, `\` will be replaced with `/`.
+     */
+    private fun String.withPlatformSlashes(): String {
+      return replace(otherSlash, slash)
+    }
+
+    /**
+     * This asserts that [this] contains exactly in any order all [values] regardless of the slash they
+     * may contain. This is useful to write one assertion which can be run on both macOS and Windows.
+     */
+    private fun Assert<Iterable<String>>.containsExactlyInAnyOrderAsRelativePaths(vararg values: String) {
+      @Suppress("NAME_SHADOWING")
+      val values = values.map { it.withPlatformSlashes() }
+      return containsExactlyInAnyOrder(*values.toTypedArray())
+    } }
 }

@@ -23,6 +23,7 @@ import com.squareup.wire.schema.Type
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.buffer
+import okio.use
 
 /** Sample schema handler which writes to disk generated artifacts. */
 class LogToFileHandler : SchemaHandler() {

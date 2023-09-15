@@ -24,7 +24,7 @@ import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import okio.Path.Companion.toPath
 
-class SchemaBuilderJvmTest {
+class SchemaBuilderTest {
   @Test fun emptySchema() {
     val exception = assertFailsWith<SchemaException> {
       buildSchema {}
@@ -32,7 +32,7 @@ class SchemaBuilderJvmTest {
     assertThat(exception.message).isEqualTo("no sources")
   }
 
-  @Test fun sourcePathOnly() {
+  @Test fun runtimeProtosAreLoadedOnTheJvm() {
     val schema = buildSchema {
       add(
         "example1.proto".toPath(),
@@ -60,12 +60,16 @@ class SchemaBuilderJvmTest {
         |
         """.trimMargin(),
       )
+      // We manually add fake runtime protos to please Wire when running on a non-JVM platforms.
+      // This isn't required if the code is to run on the JVM only.
+      add("google/protobuf/descriptor.proto".toPath(), "")
+      add("wire/extensions.proto".toPath(), "")
     }
     assertThat(schema.protoFiles.map { it.location }).containsExactlyInAnyOrder(
       Location.get("/sourcePath", "example1.proto"),
       Location.get("/sourcePath", "example2.proto"),
-      Location.get("google/protobuf/descriptor.proto"),
-      Location.get("wire/extensions.proto"),
+      Location.get("/sourcePath", "google/protobuf/descriptor.proto"),
+      Location.get("/sourcePath", "wire/extensions.proto"),
     )
   }
 }

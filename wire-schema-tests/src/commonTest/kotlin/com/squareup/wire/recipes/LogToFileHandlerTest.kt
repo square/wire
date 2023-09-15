@@ -18,11 +18,11 @@ package com.squareup.wire.recipes
 import com.squareup.wire.WireTestLogger
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.SchemaHandler
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import okio.BufferedSource
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
-import org.junit.Test
 
 class LogToFileHandlerTest {
   @Test fun loggingTypes() {
@@ -54,6 +54,10 @@ class LogToFileHandlerTest {
             |}
         """.trimMargin(),
       )
+      // We manually add fake runtime protos to please Wire when running on a non-JVM platforms.
+      // This isn't required if the code is to run on the JVM only.
+      add("google/protobuf/descriptor.proto".toPath(), "")
+      add("wire/extensions.proto".toPath(), "")
     }
 
     val context = SchemaHandler.Context(

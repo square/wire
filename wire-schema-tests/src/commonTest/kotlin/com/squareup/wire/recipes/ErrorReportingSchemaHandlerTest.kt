@@ -15,16 +15,17 @@
  */
 package com.squareup.wire.recipes
 
+import assertk.assertThat
+import assertk.assertions.startsWith
 import com.squareup.wire.WireTestLogger
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.ErrorCollector
 import com.squareup.wire.schema.SchemaException
 import com.squareup.wire.schema.SchemaHandler
+import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 
 class ErrorReportingSchemaHandlerTest {
   @Test fun errorsWhenStartsWithA() {
@@ -51,6 +52,10 @@ class ErrorReportingSchemaHandlerTest {
         |}
         """.trimMargin(),
       )
+      // We manually add fake runtime protos to please Wire when running on a non-JVM platforms.
+      // This isn't required if the code is to run on the JVM only.
+      add("google/protobuf/descriptor.proto".toPath(), "")
+      add("wire/extensions.proto".toPath(), "")
     }
 
     val errorCollector = ErrorCollector()
@@ -66,6 +71,6 @@ class ErrorReportingSchemaHandlerTest {
       errorCollector.throwIfNonEmpty()
     }
 
-    assertThat(exception.message).startsWith("field starts with 'a'")
+    assertThat(exception.message!!).startsWith("field starts with 'a'")
   }
 }

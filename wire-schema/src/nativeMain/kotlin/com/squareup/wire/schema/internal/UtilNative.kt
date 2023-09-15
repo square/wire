@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Square, Inc.
+ * Copyright (C) 2023 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema
+package com.squareup.wire.schema.internal
 
-actual object CoreLoader : Loader {
-  override fun load(path: String): ProtoFile {
-    error("Wire cannot load $path on JavaScript. Please manually add it to the proto path.")
+internal actual fun Char.isDigit() = this in '0'..'9'
+
+internal actual fun String.toEnglishLowerCase() = toLowerCase()
+
+actual interface MutableQueue<T : Any> : MutableCollection<T> {
+  actual fun poll(): T?
+}
+
+internal actual fun <T : Any> mutableQueueOf(): MutableQueue<T> {
+  val queue = mutableListOf<T>()
+  return object : MutableQueue<T>, MutableCollection<T> by queue {
+    override fun poll() = firstOrNull()
   }
-
-  override fun withErrors(errors: ErrorCollector) = this
 }
