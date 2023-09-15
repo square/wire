@@ -45,8 +45,13 @@ public struct CopyOnWrite<Value> {
     /// The reference type which holds onto our data.
     private var storage: Storage
 
+#if swift(>=5.5)
+    /// Closure used to compare the equality of elements. Differs based on type of `Value`.
+    private let isEqual: @Sendable (Value, Value) -> Bool
+#else
     /// Closure used to compare the equality of elements. Differs based on type of `Value`.
     private let isEqual: (Value, Value) -> Bool
+#endif
 
     /// Creates a new property wrapper with the provided value.
     public init(wrappedValue: Value) {
