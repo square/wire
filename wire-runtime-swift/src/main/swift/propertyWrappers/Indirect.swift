@@ -64,6 +64,8 @@ extension Indirect : Hashable where Value : Hashable {
 }
 
 #if swift(>=5.5)
+
 extension Indirect : Sendable where Value : Sendable {
 }
+
 #endif

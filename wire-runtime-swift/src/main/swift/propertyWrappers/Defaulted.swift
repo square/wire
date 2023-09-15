@@ -41,6 +41,8 @@ extension Defaulted : Hashable where Value : Hashable {
 }
 
 #if swift(>=5.5)
+
 extension Defaulted : Sendable where Value : Sendable {
 }
+
 #endif

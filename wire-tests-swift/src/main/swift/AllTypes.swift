@@ -1547,7 +1547,7 @@ extension AllTypes : Hashable {
 #endif
 
 #if swift(>=5.5)
-extension AllTypes : @unchecked Sendable {
+extension AllTypes : Sendable {
 }
 #endif
 
