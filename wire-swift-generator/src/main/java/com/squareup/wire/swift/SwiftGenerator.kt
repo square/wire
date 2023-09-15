@@ -84,7 +84,7 @@ class SwiftGenerator private constructor(
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
   private val protoEnum = DeclaredTypeName.typeName("Wire.ProtoEnum")
 
-  private val heap = DeclaredTypeName.typeName("Wire.Heap")
+  private val heap = DeclaredTypeName.typeName("Wire.CopyOnWrite")
   private val indirect = DeclaredTypeName.typeName("Wire.Indirect")
   private val redactable = DeclaredTypeName.typeName("Wire.Redactable")
   private val redactedKey = DeclaredTypeName.typeName("Wire.RedactedKey")
@@ -294,15 +294,6 @@ class SwiftGenerator private constructor(
 
           generateMessageStoragePropertyDelegates(type, storageName, storageType, oneOfEnumNames)
           generateMessageStorageDelegateConstructor(type, storageName, structType, storageType, oneOfEnumNames, fileMembers)
-
-          addFunction(
-            FunctionSpec.builder("copyStorage")
-              .addModifiers(PRIVATE, MUTATING)
-              .beginControlFlow("if", "!isKnownUniquelyReferenced(&_%N)", storageName)
-              .addStatement("_%1N = %2T(wrappedValue: %1N)", storageName, heap)
-              .endControlFlow("if")
-              .build(),
-          )
         } else {
           generateMessageProperties(type, oneOfEnumNames)
           generateMessageConstructor(type, structType, oneOfEnumNames, fileMembers)
@@ -1345,7 +1336,6 @@ class SwiftGenerator private constructor(
       )
       .setter(
         FunctionSpec.setterBuilder()
-          .addStatement("copyStorage()")
           .addStatement("%N[keyPath: keyPath] = newValue", storageName)
           .build(),
       )
@@ -1356,12 +1346,12 @@ class SwiftGenerator private constructor(
       val property = PropertySpec.varBuilder(field.name, field.typeName, PUBLIC)
         .getter(
           FunctionSpec.getterBuilder()
-            .addStatement("self[dynamicMember: \\.%N]", field.name)
+            .addStatement("%N.%N", storageName, field.name)
             .build(),
         )
         .setter(
           FunctionSpec.setterBuilder()
-            .addStatement("self[dynamicMember: \\.%N] = newValue", field.name)
+            .addStatement("%N.%N = newValue", storageName, field.name)
             .build(),
         )
 
@@ -1387,7 +1377,6 @@ class SwiftGenerator private constructor(
           )
           .setter(
             FunctionSpec.setterBuilder()
-              .addStatement("copyStorage()")
               .addStatement("%N.%N = newValue", storageName, oneOf.name)
               .build(),
           )
@@ -1404,12 +1393,12 @@ class SwiftGenerator private constructor(
       PropertySpec.varBuilder("unknownFields", FOUNDATION_DATA, PUBLIC)
         .getter(
           FunctionSpec.getterBuilder()
-            .addStatement("self[dynamicMember: \\.unknownFields]")
+            .addStatement("%N.unknownFields", storageName)
             .build(),
         )
         .setter(
           FunctionSpec.setterBuilder()
-            .addStatement("self[dynamicMember: \\.unknownFields] = newValue")
+            .addStatement("%N.unknownFields = newValue", storageName)
             .build(),
         )
         .build(),

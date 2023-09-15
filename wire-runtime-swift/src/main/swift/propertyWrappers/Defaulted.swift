@@ -20,27 +20,27 @@ import Foundation
  or the default value set.
  */
 @propertyWrapper
-public struct Defaulted<T> {
+public struct Defaulted<Value> {
 
-    public var wrappedValue: T?
-    let defaultValue: T
+    public var wrappedValue: Value?
+    let defaultValue: Value
 
-    public init(defaultValue: T) {
+    public init(defaultValue: Value) {
         self.defaultValue = defaultValue
     }
 
-    public var projectedValue: T {
+    public var projectedValue: Value {
         wrappedValue ?? defaultValue
     }
 }
 
-extension Defaulted : Equatable where T : Equatable {
+extension Defaulted : Equatable where Value : Equatable {
 }
 
-extension Defaulted : Hashable where T : Hashable {
+extension Defaulted : Hashable where Value : Hashable {
 }
 
 #if swift(>=5.5)
-extension Defaulted : Sendable where T : Sendable {
+extension Defaulted : Sendable where Value : Sendable {
 }
 #endif
