@@ -12,6 +12,10 @@ public final class com/squareup/wire/WireLogger$Companion {
 	public final fun getNONE ()Lcom/squareup/wire/WireLogger;
 }
 
+public abstract interface class com/squareup/wire/WireLogger$Factory : java/io/Serializable {
+	public abstract fun create ()Lcom/squareup/wire/WireLogger;
+}
+
 public final class com/squareup/wire/schema/AdapterConstant {
 	public static final field Companion Lcom/squareup/wire/schema/AdapterConstant$Companion;
 	public final field javaClassName Lcom/squareup/javapoet/ClassName;
@@ -974,6 +978,10 @@ public final class com/squareup/wire/schema/Type$Companion {
 	public final fun fromElements (Ljava/lang/String;Ljava/util/List;Lcom/squareup/wire/Syntax;)Ljava/util/List;
 	public final fun get (Ljava/util/List;Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/internal/parser/TypeElement;Lcom/squareup/wire/Syntax;)Lcom/squareup/wire/schema/Type;
 	public final fun toElements (Ljava/util/List;)Ljava/util/List;
+}
+
+public final class com/squareup/wire/schema/WireLoggersKt {
+	public static final fun newLoggerFactory (Ljava/lang/String;)Lcom/squareup/wire/WireLogger$Factory;
 }
 
 public final class com/squareup/wire/schema/WireRun {

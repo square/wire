@@ -27,6 +27,7 @@ import com.squareup.wire.schema.WIRE_RUNTIME_JAR
 import com.squareup.wire.schema.WireRun
 import com.squareup.wire.schema.isWireRuntimeProto
 import com.squareup.wire.schema.newEventListenerFactory
+import com.squareup.wire.schema.newLoggerFactory
 import com.squareup.wire.schema.newSchemaHandler
 import java.io.IOException
 import java.nio.file.FileSystem as NioFileSystem
@@ -69,6 +70,9 @@ import okio.openZip
  * `--event_listener_factory_class` should be used if you want to add a
  * [EventListener][com.squareup.wire.schema.EventListener]. The factory class itself should be
  * included in your classpath.
+ *
+ * `--logger_factory_class` should be used if you want a custom [WireLogger][com.squareup.wire.WireLogger]
+ *  to be called. The factory class itself * should be included in your classpath.
  *
  * `--schema_handler_factory_class` should be used if you want a custom
  * [SchemaHandler][com.squareup.wire.schema.SchemaHandler] to be called. The factory class itself should be included in
@@ -237,6 +241,7 @@ class WireCompiler internal constructor(
     private const val EXCLUDES_FLAG = "--excludes="
     private const val MANIFEST_FLAG = "--experimental-module-manifest="
     private const val EVENT_LISTENER_FACTORY_CLASS_FLAG = "--event_listener_factory_class="
+    private const val LOGGER_FACTORY_CLASS_FLAG = "--logger_factory_class="
     private const val ANDROID = "--android"
     private const val ANDROID_ANNOTATIONS = "--android-annotations"
     private const val COMPACT = "--compact"
@@ -295,6 +300,7 @@ class WireCompiler internal constructor(
       var swiftOut: String? = null
       var customOut: String? = null
       val eventListenerFactoryClasses = mutableListOf<String>()
+      var loggerFactoryClass: String? = null
       var schemaHandlerFactoryClass: String? = null
       var emitAndroid = false
       var emitAndroidAnnotations = false
@@ -351,6 +357,10 @@ class WireCompiler internal constructor(
 
           arg.startsWith(CUSTOM_OUT_FLAG) -> {
             customOut = arg.substring(CUSTOM_OUT_FLAG.length)
+          }
+
+          arg.startsWith(LOGGER_FACTORY_CLASS_FLAG) -> {
+            loggerFactoryClass = arg.substring(LOGGER_FACTORY_CLASS_FLAG.length)
           }
 
           arg.startsWith(EVENT_LISTENER_FACTORY_CLASS_FLAG) -> {
@@ -417,7 +427,11 @@ class WireCompiler internal constructor(
 
       return WireCompiler(
         fs = if (dryRun) DryRunFileSystem(fileSystem) else fileSystem,
-        log = logger,
+        log = if (loggerFactoryClass != null) {
+          newLoggerFactory(loggerFactoryClass).create()
+        } else {
+          logger
+        },
         protoPaths = protoPaths,
         javaOut = javaOut,
         kotlinOut = kotlinOut,
