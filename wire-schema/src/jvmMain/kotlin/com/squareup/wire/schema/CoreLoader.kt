@@ -16,6 +16,8 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.internal.parser.ProtoParser
+import okio.FileSystem
+import okio.Path
 import okio.Path.Companion.toPath
 import okio.asResourceFileSystem
 
@@ -34,18 +36,25 @@ actual object CoreLoader : Loader {
     CoreLoader::class.java.classLoader.asResourceFileSystem()
   }
 
+  @Deprecated("Instead use loadWireRuntimeProto.", replaceWith = ReplaceWith("loadWireRuntimeProto"))
   override fun load(path: String): ProtoFile {
+    return loadWireRuntimeProto(path.toPath())
+  }
+
+  actual fun loadWireRuntimeProto(path: Path): ProtoFile {
     if (isWireRuntimeProto(path)) {
       resourceFileSystem.read("/".toPath() / path) {
         val data = readUtf8()
-        val location = Location.get(path)
+        val location = Location.get(path.toString())
         val element = ProtoParser.parse(location, data)
         return ProtoFile.get(element)
       }
     }
 
-    error("unexpected load: $path")
+    error("Unexpected load: $path. It is missing from Wire's resources.")
   }
+
+  override fun load(path: Path, fileSystem: FileSystem) = commonLoad(path, fileSystem)
 
   override fun withErrors(errors: ErrorCollector) = this
 }

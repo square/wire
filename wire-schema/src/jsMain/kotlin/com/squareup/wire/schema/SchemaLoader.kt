@@ -17,6 +17,7 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.schema.internal.CommonSchemaLoader
 import okio.FileSystem
+import okio.Path
 
 actual class SchemaLoader : Loader, ProfileLoader {
   private val delegate: CommonSchemaLoader
@@ -62,7 +63,10 @@ actual class SchemaLoader : Loader, ProfileLoader {
 
   override fun loadProfile(name: String, schema: Schema) = delegate.loadProfile(name, schema)
 
+  @Deprecated("Instead use `load(Path, FileSystem)` for multiplatform support.")
   override fun load(path: String) = delegate.load(path)
+
+  override fun load(path: Path, fileSystem: FileSystem) = delegate.load(path, fileSystem)
 
   actual fun loadSchema(): Schema = delegate.loadSchema()
 }

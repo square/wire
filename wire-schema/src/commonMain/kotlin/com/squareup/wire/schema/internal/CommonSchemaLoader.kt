@@ -33,6 +33,8 @@ import com.squareup.wire.schema.parse
 import com.squareup.wire.schema.roots
 import okio.FileSystem
 import okio.IOException
+import okio.Path
+import okio.Path.Companion.toPath
 
 /**
  * Load proto files and their transitive dependencies and parse them. Keep track of which files were
@@ -128,11 +130,16 @@ internal class CommonSchemaLoader : Loader, ProfileLoader {
     return result
   }
 
+  @Deprecated("Instead use `load(Path, FileSystem)` or loadWireRuntimeProto(Path).")
   override fun load(path: String): ProtoFile {
-    // Traverse roots in search of the one that has this path.
+    return load(path.toPath(), fileSystem)
+  }
+
+  // Traverse roots in search of the one that has this path.
+  override fun load(path: Path, fileSystem: FileSystem): ProtoFile {
     var loadFrom: ProtoFilePath? = null
     for (protoPathRoot in protoPathRoots!!) {
-      val locationAndPath: ProtoFilePath = protoPathRoot.resolve(path) ?: continue
+      val locationAndPath: ProtoFilePath = protoPathRoot.resolve(path.toString()) ?: continue
       if (loadFrom != null) {
         errors += "$path is ambiguous:\n  $locationAndPath\n  $loadFrom"
         continue
@@ -145,7 +152,7 @@ internal class CommonSchemaLoader : Loader, ProfileLoader {
     }
 
     if (isWireRuntimeProto(path)) {
-      return CoreLoader.load(path)
+      return CoreLoader.loadWireRuntimeProto(path)
     }
 
     errors += """
@@ -153,12 +160,12 @@ internal class CommonSchemaLoader : Loader, ProfileLoader {
           |  searching ${protoPathRoots!!.size} proto paths:
           |    ${protoPathRoots!!.joinToString(separator = "\n    ")}
     """.trimMargin()
-    return ProtoFile.get(ProtoFileElement.empty(path))
+    return ProtoFile.get(ProtoFileElement.empty(path.toString()))
   }
 
   private fun load(protoFilePath: ProtoFilePath): ProtoFile {
     if (isWireRuntimeProto(protoFilePath.location)) {
-      return CoreLoader.load(protoFilePath.location.path)
+      return CoreLoader.load(protoFilePath.location.path.toPath(), fileSystem)
     }
 
     val protoFile = protoFilePath.parse()

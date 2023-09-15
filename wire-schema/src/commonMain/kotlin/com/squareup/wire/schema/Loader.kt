@@ -15,9 +15,15 @@
  */
 package com.squareup.wire.schema
 
+import okio.FileSystem
+import okio.Path
+
 /** Loads other files as needed by their import path. */
 interface Loader {
+  @Deprecated("Instead use `load(Path, FileSystem)`.")
   fun load(path: String): ProtoFile
+
+  fun load(path: Path, fileSystem: FileSystem): ProtoFile
 
   /** Returns a new loader that reports failures to [errors]. */
   fun withErrors(errors: ErrorCollector): Loader

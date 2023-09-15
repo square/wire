@@ -53,6 +53,8 @@ public final class com/squareup/wire/schema/ClaimedPaths {
 public final class com/squareup/wire/schema/CoreLoader : com/squareup/wire/schema/Loader {
 	public static final field INSTANCE Lcom/squareup/wire/schema/CoreLoader;
 	public fun load (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoFile;
+	public fun load (Lokio/Path;Lokio/FileSystem;)Lcom/squareup/wire/schema/ProtoFile;
+	public final fun loadWireRuntimeProto (Lokio/Path;)Lcom/squareup/wire/schema/ProtoFile;
 	public fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/CoreLoader;
 	public synthetic fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/Loader;
 }
@@ -61,6 +63,7 @@ public final class com/squareup/wire/schema/CoreLoaderKt {
 	public static final field WIRE_RUNTIME_JAR Ljava/lang/String;
 	public static final fun isWireRuntimeProto (Lcom/squareup/wire/schema/Location;)Z
 	public static final fun isWireRuntimeProto (Ljava/lang/String;)Z
+	public static final fun isWireRuntimeProto (Lokio/Path;)Z
 }
 
 public final class com/squareup/wire/schema/EmittingRules {
@@ -387,6 +390,7 @@ public final class com/squareup/wire/schema/Linker {
 
 public abstract interface class com/squareup/wire/schema/Loader {
 	public abstract fun load (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoFile;
+	public abstract fun load (Lokio/Path;Lokio/FileSystem;)Lcom/squareup/wire/schema/ProtoFile;
 	public abstract fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/Loader;
 }
 
@@ -884,6 +888,7 @@ public final class com/squareup/wire/schema/SchemaLoader : com/squareup/wire/sch
 	public final fun initRoots (Ljava/util/List;Ljava/util/List;)V
 	public static synthetic fun initRoots$default (Lcom/squareup/wire/schema/SchemaLoader;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)V
 	public fun load (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoFile;
+	public fun load (Lokio/Path;Lokio/FileSystem;)Lcom/squareup/wire/schema/ProtoFile;
 	public fun loadProfile (Ljava/lang/String;Lcom/squareup/wire/schema/Schema;)Lcom/squareup/wire/schema/Profile;
 	public final fun loadSchema ()Lcom/squareup/wire/schema/Schema;
 	public final fun setLoadExhaustively (Z)V

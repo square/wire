@@ -15,10 +15,21 @@
  */
 package com.squareup.wire.schema
 
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toPath
+
 actual object CoreLoader : Loader {
+  @Deprecated("Instead use loadWireRuntimeProto.", replaceWith = ReplaceWith("loadWireRuntimeProto"))
   override fun load(path: String): ProtoFile {
-    TODO("Not yet implemented in JS")
+    return loadWireRuntimeProto(path.toPath())
   }
+
+  actual fun loadWireRuntimeProto(path: Path): ProtoFile {
+    error("Wire cannot load $path on JavaScript. Please manually add it to the proto path.")
+  }
+
+  override fun load(path: Path, fileSystem: FileSystem) = commonLoad(path, fileSystem)
 
   override fun withErrors(errors: ErrorCollector) = this
 }
