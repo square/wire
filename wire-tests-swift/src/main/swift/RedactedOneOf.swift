@@ -5,25 +5,11 @@ import Wire
 
 public struct RedactedOneOf {
 
-    public var a: A?
+    public var a: RedactedOneOf.A?
     public var unknownFields: Foundation.Data = .init()
 
     public init(configure: (inout Self) -> Void = { _ in }) {
         configure(&self)
-    }
-
-    public enum A {
-
-        case b(Int32)
-        case c(String)
-
-        fileprivate func encode(to protoWriter: ProtoWriter) throws {
-            switch self {
-            case .b(let b): try protoWriter.encode(tag: 1, value: b)
-            case .c(let c): try protoWriter.encode(tag: 2, value: c)
-            }
-        }
-
     }
 
 }
@@ -35,33 +21,6 @@ extension RedactedOneOf {
     @available(*, deprecated)
     public init(a: A? = nil) {
         self.a = a
-    }
-
-}
-#endif
-
-#if !WIRE_REMOVE_EQUATABLE
-extension RedactedOneOf.A : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension RedactedOneOf.A : Hashable {
-}
-#endif
-
-#if swift(>=5.5)
-extension RedactedOneOf.A : Sendable {
-}
-#endif
-
-#if !WIRE_REMOVE_REDACTABLE
-extension RedactedOneOf.A : Redactable {
-
-    public enum RedactedKeys : Swift.String, Wire.RedactedKey {
-
-        case c
-
     }
 
 }
@@ -139,6 +98,54 @@ extension RedactedOneOf : Codable {
         case .c(let c): try container.encode(c, forKey: "c")
         case Swift.Optional.none: break
         }
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within RedactedOneOf
+ */
+extension RedactedOneOf {
+
+    public enum A {
+
+        case b(Swift.Int32)
+        case c(Swift.String)
+
+        fileprivate func encode(to protoWriter: Wire.ProtoWriter) throws {
+            switch self {
+            case .b(let b): try protoWriter.encode(tag: 1, value: b)
+            case .c(let c): try protoWriter.encode(tag: 2, value: c)
+            }
+        }
+
+    }
+
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension RedactedOneOf.A : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension RedactedOneOf.A : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension RedactedOneOf.A : Sendable {
+}
+#endif
+
+#if !WIRE_REMOVE_REDACTABLE
+extension RedactedOneOf.A : Redactable {
+
+    public enum RedactedKeys : Swift.String, Wire.RedactedKey {
+
+        case c
+
     }
 
 }

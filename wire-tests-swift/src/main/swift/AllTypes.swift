@@ -8,6 +8,8 @@ public struct AllTypes {
 
     @Heap
     private var storage: AllTypes.Storage
+    /**
+     * Access the underlying storage */
     public subscript<Property>(dynamicMember keyPath: WritableKeyPath<AllTypes.Storage, Property>) -> Property {
         get {
             storage[keyPath: keyPath]
@@ -15,6 +17,1175 @@ public struct AllTypes {
         set {
             copyStorage()
             storage[keyPath: keyPath] = newValue
+        }
+    }
+    public var opt_int32: Int32? {
+        get {
+            self[dynamicMember: \.opt_int32]
+        }
+        set {
+            self[dynamicMember: \.opt_int32] = newValue
+        }
+    }
+    public var opt_uint32: UInt32? {
+        get {
+            self[dynamicMember: \.opt_uint32]
+        }
+        set {
+            self[dynamicMember: \.opt_uint32] = newValue
+        }
+    }
+    public var opt_sint32: Int32? {
+        get {
+            self[dynamicMember: \.opt_sint32]
+        }
+        set {
+            self[dynamicMember: \.opt_sint32] = newValue
+        }
+    }
+    public var opt_fixed32: UInt32? {
+        get {
+            self[dynamicMember: \.opt_fixed32]
+        }
+        set {
+            self[dynamicMember: \.opt_fixed32] = newValue
+        }
+    }
+    public var opt_sfixed32: Int32? {
+        get {
+            self[dynamicMember: \.opt_sfixed32]
+        }
+        set {
+            self[dynamicMember: \.opt_sfixed32] = newValue
+        }
+    }
+    public var opt_int64: Int64? {
+        get {
+            self[dynamicMember: \.opt_int64]
+        }
+        set {
+            self[dynamicMember: \.opt_int64] = newValue
+        }
+    }
+    public var opt_uint64: UInt64? {
+        get {
+            self[dynamicMember: \.opt_uint64]
+        }
+        set {
+            self[dynamicMember: \.opt_uint64] = newValue
+        }
+    }
+    public var opt_sint64: Int64? {
+        get {
+            self[dynamicMember: \.opt_sint64]
+        }
+        set {
+            self[dynamicMember: \.opt_sint64] = newValue
+        }
+    }
+    public var opt_fixed64: UInt64? {
+        get {
+            self[dynamicMember: \.opt_fixed64]
+        }
+        set {
+            self[dynamicMember: \.opt_fixed64] = newValue
+        }
+    }
+    public var opt_sfixed64: Int64? {
+        get {
+            self[dynamicMember: \.opt_sfixed64]
+        }
+        set {
+            self[dynamicMember: \.opt_sfixed64] = newValue
+        }
+    }
+    public var opt_bool: Bool? {
+        get {
+            self[dynamicMember: \.opt_bool]
+        }
+        set {
+            self[dynamicMember: \.opt_bool] = newValue
+        }
+    }
+    public var opt_float: Float? {
+        get {
+            self[dynamicMember: \.opt_float]
+        }
+        set {
+            self[dynamicMember: \.opt_float] = newValue
+        }
+    }
+    public var opt_double: Double? {
+        get {
+            self[dynamicMember: \.opt_double]
+        }
+        set {
+            self[dynamicMember: \.opt_double] = newValue
+        }
+    }
+    public var opt_string: String? {
+        get {
+            self[dynamicMember: \.opt_string]
+        }
+        set {
+            self[dynamicMember: \.opt_string] = newValue
+        }
+    }
+    public var opt_bytes: Foundation.Data? {
+        get {
+            self[dynamicMember: \.opt_bytes]
+        }
+        set {
+            self[dynamicMember: \.opt_bytes] = newValue
+        }
+    }
+    public var opt_nested_enum: AllTypes.NestedEnum? {
+        get {
+            self[dynamicMember: \.opt_nested_enum]
+        }
+        set {
+            self[dynamicMember: \.opt_nested_enum] = newValue
+        }
+    }
+    public var opt_nested_message: AllTypes.NestedMessage? {
+        get {
+            self[dynamicMember: \.opt_nested_message]
+        }
+        set {
+            self[dynamicMember: \.opt_nested_message] = newValue
+        }
+    }
+    public var req_int32: Int32 {
+        get {
+            self[dynamicMember: \.req_int32]
+        }
+        set {
+            self[dynamicMember: \.req_int32] = newValue
+        }
+    }
+    public var req_uint32: UInt32 {
+        get {
+            self[dynamicMember: \.req_uint32]
+        }
+        set {
+            self[dynamicMember: \.req_uint32] = newValue
+        }
+    }
+    public var req_sint32: Int32 {
+        get {
+            self[dynamicMember: \.req_sint32]
+        }
+        set {
+            self[dynamicMember: \.req_sint32] = newValue
+        }
+    }
+    public var req_fixed32: UInt32 {
+        get {
+            self[dynamicMember: \.req_fixed32]
+        }
+        set {
+            self[dynamicMember: \.req_fixed32] = newValue
+        }
+    }
+    public var req_sfixed32: Int32 {
+        get {
+            self[dynamicMember: \.req_sfixed32]
+        }
+        set {
+            self[dynamicMember: \.req_sfixed32] = newValue
+        }
+    }
+    public var req_int64: Int64 {
+        get {
+            self[dynamicMember: \.req_int64]
+        }
+        set {
+            self[dynamicMember: \.req_int64] = newValue
+        }
+    }
+    public var req_uint64: UInt64 {
+        get {
+            self[dynamicMember: \.req_uint64]
+        }
+        set {
+            self[dynamicMember: \.req_uint64] = newValue
+        }
+    }
+    public var req_sint64: Int64 {
+        get {
+            self[dynamicMember: \.req_sint64]
+        }
+        set {
+            self[dynamicMember: \.req_sint64] = newValue
+        }
+    }
+    public var req_fixed64: UInt64 {
+        get {
+            self[dynamicMember: \.req_fixed64]
+        }
+        set {
+            self[dynamicMember: \.req_fixed64] = newValue
+        }
+    }
+    public var req_sfixed64: Int64 {
+        get {
+            self[dynamicMember: \.req_sfixed64]
+        }
+        set {
+            self[dynamicMember: \.req_sfixed64] = newValue
+        }
+    }
+    public var req_bool: Bool {
+        get {
+            self[dynamicMember: \.req_bool]
+        }
+        set {
+            self[dynamicMember: \.req_bool] = newValue
+        }
+    }
+    public var req_float: Float {
+        get {
+            self[dynamicMember: \.req_float]
+        }
+        set {
+            self[dynamicMember: \.req_float] = newValue
+        }
+    }
+    public var req_double: Double {
+        get {
+            self[dynamicMember: \.req_double]
+        }
+        set {
+            self[dynamicMember: \.req_double] = newValue
+        }
+    }
+    public var req_string: String {
+        get {
+            self[dynamicMember: \.req_string]
+        }
+        set {
+            self[dynamicMember: \.req_string] = newValue
+        }
+    }
+    public var req_bytes: Foundation.Data {
+        get {
+            self[dynamicMember: \.req_bytes]
+        }
+        set {
+            self[dynamicMember: \.req_bytes] = newValue
+        }
+    }
+    public var req_nested_enum: AllTypes.NestedEnum {
+        get {
+            self[dynamicMember: \.req_nested_enum]
+        }
+        set {
+            self[dynamicMember: \.req_nested_enum] = newValue
+        }
+    }
+    public var req_nested_message: AllTypes.NestedMessage {
+        get {
+            self[dynamicMember: \.req_nested_message]
+        }
+        set {
+            self[dynamicMember: \.req_nested_message] = newValue
+        }
+    }
+    public var rep_int32: [Int32] {
+        get {
+            self[dynamicMember: \.rep_int32]
+        }
+        set {
+            self[dynamicMember: \.rep_int32] = newValue
+        }
+    }
+    public var rep_uint32: [UInt32] {
+        get {
+            self[dynamicMember: \.rep_uint32]
+        }
+        set {
+            self[dynamicMember: \.rep_uint32] = newValue
+        }
+    }
+    public var rep_sint32: [Int32] {
+        get {
+            self[dynamicMember: \.rep_sint32]
+        }
+        set {
+            self[dynamicMember: \.rep_sint32] = newValue
+        }
+    }
+    public var rep_fixed32: [UInt32] {
+        get {
+            self[dynamicMember: \.rep_fixed32]
+        }
+        set {
+            self[dynamicMember: \.rep_fixed32] = newValue
+        }
+    }
+    public var rep_sfixed32: [Int32] {
+        get {
+            self[dynamicMember: \.rep_sfixed32]
+        }
+        set {
+            self[dynamicMember: \.rep_sfixed32] = newValue
+        }
+    }
+    public var rep_int64: [Int64] {
+        get {
+            self[dynamicMember: \.rep_int64]
+        }
+        set {
+            self[dynamicMember: \.rep_int64] = newValue
+        }
+    }
+    public var rep_uint64: [UInt64] {
+        get {
+            self[dynamicMember: \.rep_uint64]
+        }
+        set {
+            self[dynamicMember: \.rep_uint64] = newValue
+        }
+    }
+    public var rep_sint64: [Int64] {
+        get {
+            self[dynamicMember: \.rep_sint64]
+        }
+        set {
+            self[dynamicMember: \.rep_sint64] = newValue
+        }
+    }
+    public var rep_fixed64: [UInt64] {
+        get {
+            self[dynamicMember: \.rep_fixed64]
+        }
+        set {
+            self[dynamicMember: \.rep_fixed64] = newValue
+        }
+    }
+    public var rep_sfixed64: [Int64] {
+        get {
+            self[dynamicMember: \.rep_sfixed64]
+        }
+        set {
+            self[dynamicMember: \.rep_sfixed64] = newValue
+        }
+    }
+    public var rep_bool: [Bool] {
+        get {
+            self[dynamicMember: \.rep_bool]
+        }
+        set {
+            self[dynamicMember: \.rep_bool] = newValue
+        }
+    }
+    public var rep_float: [Float] {
+        get {
+            self[dynamicMember: \.rep_float]
+        }
+        set {
+            self[dynamicMember: \.rep_float] = newValue
+        }
+    }
+    public var rep_double: [Double] {
+        get {
+            self[dynamicMember: \.rep_double]
+        }
+        set {
+            self[dynamicMember: \.rep_double] = newValue
+        }
+    }
+    public var rep_string: [String] {
+        get {
+            self[dynamicMember: \.rep_string]
+        }
+        set {
+            self[dynamicMember: \.rep_string] = newValue
+        }
+    }
+    public var rep_bytes: [Foundation.Data] {
+        get {
+            self[dynamicMember: \.rep_bytes]
+        }
+        set {
+            self[dynamicMember: \.rep_bytes] = newValue
+        }
+    }
+    public var rep_nested_enum: [AllTypes.NestedEnum] {
+        get {
+            self[dynamicMember: \.rep_nested_enum]
+        }
+        set {
+            self[dynamicMember: \.rep_nested_enum] = newValue
+        }
+    }
+    public var rep_nested_message: [AllTypes.NestedMessage] {
+        get {
+            self[dynamicMember: \.rep_nested_message]
+        }
+        set {
+            self[dynamicMember: \.rep_nested_message] = newValue
+        }
+    }
+    public var pack_int32: [Int32] {
+        get {
+            self[dynamicMember: \.pack_int32]
+        }
+        set {
+            self[dynamicMember: \.pack_int32] = newValue
+        }
+    }
+    public var pack_uint32: [UInt32] {
+        get {
+            self[dynamicMember: \.pack_uint32]
+        }
+        set {
+            self[dynamicMember: \.pack_uint32] = newValue
+        }
+    }
+    public var pack_sint32: [Int32] {
+        get {
+            self[dynamicMember: \.pack_sint32]
+        }
+        set {
+            self[dynamicMember: \.pack_sint32] = newValue
+        }
+    }
+    public var pack_fixed32: [UInt32] {
+        get {
+            self[dynamicMember: \.pack_fixed32]
+        }
+        set {
+            self[dynamicMember: \.pack_fixed32] = newValue
+        }
+    }
+    public var pack_sfixed32: [Int32] {
+        get {
+            self[dynamicMember: \.pack_sfixed32]
+        }
+        set {
+            self[dynamicMember: \.pack_sfixed32] = newValue
+        }
+    }
+    public var pack_int64: [Int64] {
+        get {
+            self[dynamicMember: \.pack_int64]
+        }
+        set {
+            self[dynamicMember: \.pack_int64] = newValue
+        }
+    }
+    public var pack_uint64: [UInt64] {
+        get {
+            self[dynamicMember: \.pack_uint64]
+        }
+        set {
+            self[dynamicMember: \.pack_uint64] = newValue
+        }
+    }
+    public var pack_sint64: [Int64] {
+        get {
+            self[dynamicMember: \.pack_sint64]
+        }
+        set {
+            self[dynamicMember: \.pack_sint64] = newValue
+        }
+    }
+    public var pack_fixed64: [UInt64] {
+        get {
+            self[dynamicMember: \.pack_fixed64]
+        }
+        set {
+            self[dynamicMember: \.pack_fixed64] = newValue
+        }
+    }
+    public var pack_sfixed64: [Int64] {
+        get {
+            self[dynamicMember: \.pack_sfixed64]
+        }
+        set {
+            self[dynamicMember: \.pack_sfixed64] = newValue
+        }
+    }
+    public var pack_bool: [Bool] {
+        get {
+            self[dynamicMember: \.pack_bool]
+        }
+        set {
+            self[dynamicMember: \.pack_bool] = newValue
+        }
+    }
+    public var pack_float: [Float] {
+        get {
+            self[dynamicMember: \.pack_float]
+        }
+        set {
+            self[dynamicMember: \.pack_float] = newValue
+        }
+    }
+    public var pack_double: [Double] {
+        get {
+            self[dynamicMember: \.pack_double]
+        }
+        set {
+            self[dynamicMember: \.pack_double] = newValue
+        }
+    }
+    public var pack_nested_enum: [AllTypes.NestedEnum] {
+        get {
+            self[dynamicMember: \.pack_nested_enum]
+        }
+        set {
+            self[dynamicMember: \.pack_nested_enum] = newValue
+        }
+    }
+    public var default_int32: Int32? {
+        get {
+            self[dynamicMember: \.default_int32]
+        }
+        set {
+            self[dynamicMember: \.default_int32] = newValue
+        }
+    }
+    public var default_uint32: UInt32? {
+        get {
+            self[dynamicMember: \.default_uint32]
+        }
+        set {
+            self[dynamicMember: \.default_uint32] = newValue
+        }
+    }
+    public var default_sint32: Int32? {
+        get {
+            self[dynamicMember: \.default_sint32]
+        }
+        set {
+            self[dynamicMember: \.default_sint32] = newValue
+        }
+    }
+    public var default_fixed32: UInt32? {
+        get {
+            self[dynamicMember: \.default_fixed32]
+        }
+        set {
+            self[dynamicMember: \.default_fixed32] = newValue
+        }
+    }
+    public var default_sfixed32: Int32? {
+        get {
+            self[dynamicMember: \.default_sfixed32]
+        }
+        set {
+            self[dynamicMember: \.default_sfixed32] = newValue
+        }
+    }
+    public var default_int64: Int64? {
+        get {
+            self[dynamicMember: \.default_int64]
+        }
+        set {
+            self[dynamicMember: \.default_int64] = newValue
+        }
+    }
+    public var default_uint64: UInt64? {
+        get {
+            self[dynamicMember: \.default_uint64]
+        }
+        set {
+            self[dynamicMember: \.default_uint64] = newValue
+        }
+    }
+    public var default_sint64: Int64? {
+        get {
+            self[dynamicMember: \.default_sint64]
+        }
+        set {
+            self[dynamicMember: \.default_sint64] = newValue
+        }
+    }
+    public var default_fixed64: UInt64? {
+        get {
+            self[dynamicMember: \.default_fixed64]
+        }
+        set {
+            self[dynamicMember: \.default_fixed64] = newValue
+        }
+    }
+    public var default_sfixed64: Int64? {
+        get {
+            self[dynamicMember: \.default_sfixed64]
+        }
+        set {
+            self[dynamicMember: \.default_sfixed64] = newValue
+        }
+    }
+    public var default_bool: Bool? {
+        get {
+            self[dynamicMember: \.default_bool]
+        }
+        set {
+            self[dynamicMember: \.default_bool] = newValue
+        }
+    }
+    public var default_float: Float? {
+        get {
+            self[dynamicMember: \.default_float]
+        }
+        set {
+            self[dynamicMember: \.default_float] = newValue
+        }
+    }
+    public var default_double: Double? {
+        get {
+            self[dynamicMember: \.default_double]
+        }
+        set {
+            self[dynamicMember: \.default_double] = newValue
+        }
+    }
+    public var default_string: String? {
+        get {
+            self[dynamicMember: \.default_string]
+        }
+        set {
+            self[dynamicMember: \.default_string] = newValue
+        }
+    }
+    public var default_bytes: Foundation.Data? {
+        get {
+            self[dynamicMember: \.default_bytes]
+        }
+        set {
+            self[dynamicMember: \.default_bytes] = newValue
+        }
+    }
+    public var default_nested_enum: AllTypes.NestedEnum? {
+        get {
+            self[dynamicMember: \.default_nested_enum]
+        }
+        set {
+            self[dynamicMember: \.default_nested_enum] = newValue
+        }
+    }
+    public var map_int32_int32: [Int32 : Int32] {
+        get {
+            self[dynamicMember: \.map_int32_int32]
+        }
+        set {
+            self[dynamicMember: \.map_int32_int32] = newValue
+        }
+    }
+    public var map_string_string: [String : String] {
+        get {
+            self[dynamicMember: \.map_string_string]
+        }
+        set {
+            self[dynamicMember: \.map_string_string] = newValue
+        }
+    }
+    public var map_string_message: [String : AllTypes.NestedMessage] {
+        get {
+            self[dynamicMember: \.map_string_message]
+        }
+        set {
+            self[dynamicMember: \.map_string_message] = newValue
+        }
+    }
+    public var map_string_enum: [String : AllTypes.NestedEnum] {
+        get {
+            self[dynamicMember: \.map_string_enum]
+        }
+        set {
+            self[dynamicMember: \.map_string_enum] = newValue
+        }
+    }
+    public var array_int32: [Int32] {
+        get {
+            self[dynamicMember: \.array_int32]
+        }
+        set {
+            self[dynamicMember: \.array_int32] = newValue
+        }
+    }
+    public var array_uint32: [UInt32] {
+        get {
+            self[dynamicMember: \.array_uint32]
+        }
+        set {
+            self[dynamicMember: \.array_uint32] = newValue
+        }
+    }
+    public var array_sint32: [Int32] {
+        get {
+            self[dynamicMember: \.array_sint32]
+        }
+        set {
+            self[dynamicMember: \.array_sint32] = newValue
+        }
+    }
+    public var array_fixed32: [UInt32] {
+        get {
+            self[dynamicMember: \.array_fixed32]
+        }
+        set {
+            self[dynamicMember: \.array_fixed32] = newValue
+        }
+    }
+    public var array_sfixed32: [Int32] {
+        get {
+            self[dynamicMember: \.array_sfixed32]
+        }
+        set {
+            self[dynamicMember: \.array_sfixed32] = newValue
+        }
+    }
+    public var array_int64: [Int64] {
+        get {
+            self[dynamicMember: \.array_int64]
+        }
+        set {
+            self[dynamicMember: \.array_int64] = newValue
+        }
+    }
+    public var array_uint64: [UInt64] {
+        get {
+            self[dynamicMember: \.array_uint64]
+        }
+        set {
+            self[dynamicMember: \.array_uint64] = newValue
+        }
+    }
+    public var array_sint64: [Int64] {
+        get {
+            self[dynamicMember: \.array_sint64]
+        }
+        set {
+            self[dynamicMember: \.array_sint64] = newValue
+        }
+    }
+    public var array_fixed64: [UInt64] {
+        get {
+            self[dynamicMember: \.array_fixed64]
+        }
+        set {
+            self[dynamicMember: \.array_fixed64] = newValue
+        }
+    }
+    public var array_sfixed64: [Int64] {
+        get {
+            self[dynamicMember: \.array_sfixed64]
+        }
+        set {
+            self[dynamicMember: \.array_sfixed64] = newValue
+        }
+    }
+    public var array_float: [Float] {
+        get {
+            self[dynamicMember: \.array_float]
+        }
+        set {
+            self[dynamicMember: \.array_float] = newValue
+        }
+    }
+    public var array_double: [Double] {
+        get {
+            self[dynamicMember: \.array_double]
+        }
+        set {
+            self[dynamicMember: \.array_double] = newValue
+        }
+    }
+    public var ext_opt_int32: Int32? {
+        get {
+            self[dynamicMember: \.ext_opt_int32]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_int32] = newValue
+        }
+    }
+    public var ext_opt_uint32: UInt32? {
+        get {
+            self[dynamicMember: \.ext_opt_uint32]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_uint32] = newValue
+        }
+    }
+    public var ext_opt_sint32: Int32? {
+        get {
+            self[dynamicMember: \.ext_opt_sint32]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_sint32] = newValue
+        }
+    }
+    public var ext_opt_fixed32: UInt32? {
+        get {
+            self[dynamicMember: \.ext_opt_fixed32]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_fixed32] = newValue
+        }
+    }
+    public var ext_opt_sfixed32: Int32? {
+        get {
+            self[dynamicMember: \.ext_opt_sfixed32]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_sfixed32] = newValue
+        }
+    }
+    public var ext_opt_int64: Int64? {
+        get {
+            self[dynamicMember: \.ext_opt_int64]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_int64] = newValue
+        }
+    }
+    public var ext_opt_uint64: UInt64? {
+        get {
+            self[dynamicMember: \.ext_opt_uint64]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_uint64] = newValue
+        }
+    }
+    public var ext_opt_sint64: Int64? {
+        get {
+            self[dynamicMember: \.ext_opt_sint64]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_sint64] = newValue
+        }
+    }
+    public var ext_opt_fixed64: UInt64? {
+        get {
+            self[dynamicMember: \.ext_opt_fixed64]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_fixed64] = newValue
+        }
+    }
+    public var ext_opt_sfixed64: Int64? {
+        get {
+            self[dynamicMember: \.ext_opt_sfixed64]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_sfixed64] = newValue
+        }
+    }
+    public var ext_opt_bool: Bool? {
+        get {
+            self[dynamicMember: \.ext_opt_bool]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_bool] = newValue
+        }
+    }
+    public var ext_opt_float: Float? {
+        get {
+            self[dynamicMember: \.ext_opt_float]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_float] = newValue
+        }
+    }
+    public var ext_opt_double: Double? {
+        get {
+            self[dynamicMember: \.ext_opt_double]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_double] = newValue
+        }
+    }
+    public var ext_opt_string: String? {
+        get {
+            self[dynamicMember: \.ext_opt_string]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_string] = newValue
+        }
+    }
+    public var ext_opt_bytes: Foundation.Data? {
+        get {
+            self[dynamicMember: \.ext_opt_bytes]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_bytes] = newValue
+        }
+    }
+    public var ext_opt_nested_enum: AllTypes.NestedEnum? {
+        get {
+            self[dynamicMember: \.ext_opt_nested_enum]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_nested_enum] = newValue
+        }
+    }
+    public var ext_opt_nested_message: AllTypes.NestedMessage? {
+        get {
+            self[dynamicMember: \.ext_opt_nested_message]
+        }
+        set {
+            self[dynamicMember: \.ext_opt_nested_message] = newValue
+        }
+    }
+    public var ext_rep_int32: [Int32] {
+        get {
+            self[dynamicMember: \.ext_rep_int32]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_int32] = newValue
+        }
+    }
+    public var ext_rep_uint32: [UInt32] {
+        get {
+            self[dynamicMember: \.ext_rep_uint32]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_uint32] = newValue
+        }
+    }
+    public var ext_rep_sint32: [Int32] {
+        get {
+            self[dynamicMember: \.ext_rep_sint32]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_sint32] = newValue
+        }
+    }
+    public var ext_rep_fixed32: [UInt32] {
+        get {
+            self[dynamicMember: \.ext_rep_fixed32]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_fixed32] = newValue
+        }
+    }
+    public var ext_rep_sfixed32: [Int32] {
+        get {
+            self[dynamicMember: \.ext_rep_sfixed32]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_sfixed32] = newValue
+        }
+    }
+    public var ext_rep_int64: [Int64] {
+        get {
+            self[dynamicMember: \.ext_rep_int64]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_int64] = newValue
+        }
+    }
+    public var ext_rep_uint64: [UInt64] {
+        get {
+            self[dynamicMember: \.ext_rep_uint64]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_uint64] = newValue
+        }
+    }
+    public var ext_rep_sint64: [Int64] {
+        get {
+            self[dynamicMember: \.ext_rep_sint64]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_sint64] = newValue
+        }
+    }
+    public var ext_rep_fixed64: [UInt64] {
+        get {
+            self[dynamicMember: \.ext_rep_fixed64]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_fixed64] = newValue
+        }
+    }
+    public var ext_rep_sfixed64: [Int64] {
+        get {
+            self[dynamicMember: \.ext_rep_sfixed64]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_sfixed64] = newValue
+        }
+    }
+    public var ext_rep_bool: [Bool] {
+        get {
+            self[dynamicMember: \.ext_rep_bool]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_bool] = newValue
+        }
+    }
+    public var ext_rep_float: [Float] {
+        get {
+            self[dynamicMember: \.ext_rep_float]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_float] = newValue
+        }
+    }
+    public var ext_rep_double: [Double] {
+        get {
+            self[dynamicMember: \.ext_rep_double]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_double] = newValue
+        }
+    }
+    public var ext_rep_string: [String] {
+        get {
+            self[dynamicMember: \.ext_rep_string]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_string] = newValue
+        }
+    }
+    public var ext_rep_bytes: [Foundation.Data] {
+        get {
+            self[dynamicMember: \.ext_rep_bytes]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_bytes] = newValue
+        }
+    }
+    public var ext_rep_nested_enum: [AllTypes.NestedEnum] {
+        get {
+            self[dynamicMember: \.ext_rep_nested_enum]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_nested_enum] = newValue
+        }
+    }
+    public var ext_rep_nested_message: [AllTypes.NestedMessage] {
+        get {
+            self[dynamicMember: \.ext_rep_nested_message]
+        }
+        set {
+            self[dynamicMember: \.ext_rep_nested_message] = newValue
+        }
+    }
+    public var ext_pack_int32: [Int32] {
+        get {
+            self[dynamicMember: \.ext_pack_int32]
+        }
+        set {
+            self[dynamicMember: \.ext_pack_int32] = newValue
+        }
+    }
+    public var ext_pack_uint32: [UInt32] {
+        get {
+            self[dynamicMember: \.ext_pack_uint32]
+        }
+        set {
+            self[dynamicMember: \.ext_pack_uint32] = newValue
+        }
+    }
+    public var ext_pack_sint32: [Int32] {
+        get {
+            self[dynamicMember: \.ext_pack_sint32]
+        }
+        set {
+            self[dynamicMember: \.ext_pack_sint32] = newValue
+        }
+    }
+    public var ext_pack_fixed32: [UInt32] {
+        get {
+            self[dynamicMember: \.ext_pack_fixed32]
+        }
+        set {
+            self[dynamicMember: \.ext_pack_fixed32] = newValue
+        }
+    }
+    public var ext_pack_sfixed32: [Int32] {
+        get {
+            self[dynamicMember: \.ext_pack_sfixed32]
+        }
+        set {
+            self[dynamicMember: \.ext_pack_sfixed32] = newValue
+        }
+    }
+    public var ext_pack_int64: [Int64] {
+        get {
+            self[dynamicMember: \.ext_pack_int64]
+        }
+        set {
+            self[dynamicMember: \.ext_pack_int64] = newValue
+        }
+    }
+    public var ext_pack_uint64: [UInt64] {
+        get {
+            self[dynamicMember: \.ext_pack_uint64]
+        }
+        set {
+            self[dynamicMember: \.ext_pack_uint64] = newValue
+        }
+    }
+    public var ext_pack_sint64: [Int64] {
+        get {
+            self[dynamicMember: \.ext_pack_sint64]
+        }
+        set {
+            self[dynamicMember: \.ext_pack_sint64] = newValue
+        }
+    }
+    public var ext_pack_fixed64: [UInt64] {
+        get {
+            self[dynamicMember: \.ext_pack_fixed64]
+        }
+        set {
+            self[dynamicMember: \.ext_pack_fixed64] = newValue
+        }
+    }
+    public var ext_pack_sfixed64: [Int64] {
+        get {
+            self[dynamicMember: \.ext_pack_sfixed64]
+        }
+        set {
+            self[dynamicMember: \.ext_pack_sfixed64] = newValue
+        }
+    }
+    public var ext_pack_bool: [Bool] {
+        get {
+            self[dynamicMember: \.ext_pack_bool]
+        }
+        set {
+            self[dynamicMember: \.ext_pack_bool] = newValue
+        }
+    }
+    public var ext_pack_float: [Float] {
+        get {
+            self[dynamicMember: \.ext_pack_float]
+        }
+        set {
+            self[dynamicMember: \.ext_pack_float] = newValue
+        }
+    }
+    public var ext_pack_double: [Double] {
+        get {
+            self[dynamicMember: \.ext_pack_double]
+        }
+        set {
+            self[dynamicMember: \.ext_pack_double] = newValue
+        }
+    }
+    public var ext_pack_nested_enum: [AllTypes.NestedEnum] {
+        get {
+            self[dynamicMember: \.ext_pack_nested_enum]
+        }
+        set {
+            self[dynamicMember: \.ext_pack_nested_enum] = newValue
+        }
+    }
+    public var unknownFields: Foundation.Data {
+        get {
+            storage.unknownFields
+        }
+        set {
+            copyStorage()
+            storage.unknownFields = newValue
         }
     }
 
@@ -64,31 +1235,6 @@ public struct AllTypes {
         if !isKnownUniquelyReferenced(&_storage) {
             _storage = Heap(wrappedValue: storage)
         }
-    }
-
-    public enum NestedEnum : UInt32, CaseIterable, ProtoEnum {
-
-        case UNKNOWN = 0
-        case A = 1
-
-        public var description: String {
-            switch self {
-            case .UNKNOWN: return "UNKNOWN"
-            case .A: return "A"
-            }
-        }
-
-    }
-
-    public struct NestedMessage {
-
-        public var a: Int32?
-        public var unknownFields: Foundation.Data = .init()
-
-        public init(configure: (inout Self) -> Void = { _ in }) {
-            configure(&self)
-        }
-
     }
 
 }
@@ -397,6 +1543,81 @@ extension AllTypes {
 }
 #endif
 
+#if !WIRE_REMOVE_EQUATABLE
+extension AllTypes : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension AllTypes : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension AllTypes : @unchecked Sendable {
+}
+#endif
+
+extension AllTypes : Proto2Codable {
+
+    public init(from protoReader: Wire.ProtoReader) throws {
+        self.storage = try Storage(from: protoReader)
+    }
+
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try storage.encode(to: protoWriter)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension AllTypes : Codable {
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.storage = try container.decode(Storage.self)
+    }
+
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(storage)
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within AllTypes
+ */
+extension AllTypes {
+
+    public enum NestedEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
+
+        case UNKNOWN = 0
+        case A = 1
+
+        public var description: Swift.String {
+            switch self {
+            case .UNKNOWN: return "UNKNOWN"
+            case .A: return "A"
+            }
+        }
+
+    }
+
+    public struct NestedMessage {
+
+        public var a: Swift.Int32?
+        public var unknownFields: Foundation.Data = .init()
+
+        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
+            configure(&self)
+        }
+
+    }
+
+}
+
 #if swift(>=5.5)
 extension AllTypes.NestedEnum : Sendable {
 }
@@ -475,21 +1696,6 @@ extension AllTypes.NestedMessage : Codable {
         try container.encodeIfPresent(self.a, forKey: "a")
     }
 
-}
-#endif
-
-#if !WIRE_REMOVE_EQUATABLE
-extension AllTypes : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension AllTypes : Hashable {
-}
-#endif
-
-#if swift(>=5.5)
-extension AllTypes : @unchecked Sendable {
 }
 #endif
 
@@ -797,6 +2003,9 @@ extension AllTypes.Storage {
 
 extension AllTypes {
 
+    /**
+     * Underlying storage for AllTypes
+     */
     public struct Storage {
 
         public var opt_int32: Swift.Int32?
@@ -1006,17 +2215,20 @@ extension AllTypes {
 
 }
 
-extension AllTypes : Proto2Codable {
-
-    public init(from protoReader: Wire.ProtoReader) throws {
-        self.storage = try Storage(from: protoReader)
-    }
-
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
-        try storage.encode(to: protoWriter)
-    }
-
+#if !WIRE_REMOVE_EQUATABLE
+extension AllTypes.Storage : Equatable {
 }
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension AllTypes.Storage : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension AllTypes.Storage : Sendable {
+}
+#endif
 
 extension AllTypes.Storage : ProtoMessage {
 
@@ -1627,22 +2839,6 @@ extension AllTypes.Storage : Proto2Codable {
 }
 
 #if !WIRE_REMOVE_CODABLE
-extension AllTypes : Codable {
-
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        self.storage = try container.decode(Storage.self)
-    }
-
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(storage)
-    }
-
-}
-#endif
-
-#if !WIRE_REMOVE_CODABLE
 extension AllTypes.Storage : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
@@ -2134,20 +3330,5 @@ extension AllTypes.Storage : Codable {
         }
     }
 
-}
-#endif
-
-#if !WIRE_REMOVE_EQUATABLE
-extension AllTypes.Storage : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension AllTypes.Storage : Hashable {
-}
-#endif
-
-#if swift(>=5.5)
-extension AllTypes.Storage : Sendable {
 }
 #endif

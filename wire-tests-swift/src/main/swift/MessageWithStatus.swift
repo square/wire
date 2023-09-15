@@ -10,24 +10,7 @@ public struct MessageWithStatus {
     public init() {
     }
 
-    public enum Status : UInt32, CaseIterable, ProtoEnum {
-
-        case A = 1
-
-        public var description: String {
-            switch self {
-            case .A: return "A"
-            }
-        }
-
-    }
-
 }
-
-#if swift(>=5.5)
-extension MessageWithStatus.Status : Sendable {
-}
-#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension MessageWithStatus : Equatable {
@@ -77,5 +60,29 @@ extension MessageWithStatus : Codable {
     public enum CodingKeys : Swift.CodingKey {
     }
 
+}
+#endif
+
+/**
+ * Subtypes within MessageWithStatus
+ */
+extension MessageWithStatus {
+
+    public enum Status : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
+
+        case A = 1
+
+        public var description: Swift.String {
+            switch self {
+            case .A: return "A"
+            }
+        }
+
+    }
+
+}
+
+#if swift(>=5.5)
+extension MessageWithStatus.Status : Sendable {
 }
 #endif

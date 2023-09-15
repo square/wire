@@ -10,24 +10,7 @@ public struct OtherMessageWithStatus {
     public init() {
     }
 
-    public enum Status : UInt32, CaseIterable, ProtoEnum {
-
-        case A = 1
-
-        public var description: String {
-            switch self {
-            case .A: return "A"
-            }
-        }
-
-    }
-
 }
-
-#if swift(>=5.5)
-extension OtherMessageWithStatus.Status : Sendable {
-}
-#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension OtherMessageWithStatus : Equatable {
@@ -77,5 +60,29 @@ extension OtherMessageWithStatus : Codable {
     public enum CodingKeys : Swift.CodingKey {
     }
 
+}
+#endif
+
+/**
+ * Subtypes within OtherMessageWithStatus
+ */
+extension OtherMessageWithStatus {
+
+    public enum Status : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
+
+        case A = 1
+
+        public var description: Swift.String {
+            switch self {
+            case .A: return "A"
+            }
+        }
+
+    }
+
+}
+
+#if swift(>=5.5)
+extension OtherMessageWithStatus.Status : Sendable {
 }
 #endif
