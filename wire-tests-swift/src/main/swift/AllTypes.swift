@@ -9,7 +9,8 @@ public struct AllTypes {
     @Heap
     private var storage: AllTypes.Storage
     /**
-     * Access the underlying storage */
+     * Access the underlying storage
+     */
     public subscript<Property>(dynamicMember keyPath: WritableKeyPath<AllTypes.Storage, Property>) -> Property {
         get {
             storage[keyPath: keyPath]
@@ -1181,11 +1182,10 @@ public struct AllTypes {
     }
     public var unknownFields: Foundation.Data {
         get {
-            storage.unknownFields
+            self[dynamicMember: \.unknownFields]
         }
         set {
-            copyStorage()
-            storage.unknownFields = newValue
+            self[dynamicMember: \.unknownFields] = newValue
         }
     }
 

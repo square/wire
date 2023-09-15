@@ -1336,7 +1336,7 @@ class SwiftGenerator private constructor(
       .build()
 
     val subscript = PropertySpec.subscriptBuilder(signature)
-      .addDoc("Access the underlying storage")
+      .addDoc("Access the underlying storage\n")
       .addModifiers(PUBLIC)
       .getter(
         FunctionSpec.getterBuilder()
@@ -1404,13 +1404,12 @@ class SwiftGenerator private constructor(
       PropertySpec.varBuilder("unknownFields", FOUNDATION_DATA, PUBLIC)
         .getter(
           FunctionSpec.getterBuilder()
-            .addStatement("%N.unknownFields", storageName)
+            .addStatement("self[dynamicMember: \\.unknownFields]")
             .build(),
         )
         .setter(
           FunctionSpec.setterBuilder()
-            .addStatement("copyStorage()")
-            .addStatement("%N.unknownFields = newValue", storageName)
+            .addStatement("self[dynamicMember: \\.unknownFields] = newValue")
             .build(),
         )
         .build(),
