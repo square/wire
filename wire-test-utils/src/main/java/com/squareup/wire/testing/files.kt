@@ -26,7 +26,6 @@ import okio.Path.Companion.toPath
 import okio.buffer
 import okio.sink
 import org.assertj.core.api.IterableAssert
-import org.assertj.core.api.ListAssert
 
 fun FileSystem.add(
   pathString: String,
@@ -91,17 +90,7 @@ fun String.withPlatformSlashes(): String {
  * This asserts that [this] contains exactly in any order all [values] regardless of the slash they
  * may contain. This is useful to write one assertion which can be run on both macOS and Windows.
  */
-fun IterableAssert<String>.containsRelativePaths(vararg values: String): IterableAssert<String> {
-  @Suppress("NAME_SHADOWING")
-  val values = values.map { it.withPlatformSlashes() }
-  return containsExactlyInAnyOrder(*values.toTypedArray())
-}
-
-/**
- * This asserts that [this] contains exactly in any order all [values] regardless of the slash they
- * may contain. This is useful to write one assertion which can be run on both macOS and Windows.
- */
-fun ListAssert<String>.containsRelativePaths(vararg values: String): ListAssert<String> {
+fun IterableAssert<String>.containsExactlyInAnyOrderAsRelativePaths(vararg values: String): IterableAssert<String> {
   @Suppress("NAME_SHADOWING")
   val values = values.map { it.withPlatformSlashes() }
   return containsExactlyInAnyOrder(*values.toTypedArray())

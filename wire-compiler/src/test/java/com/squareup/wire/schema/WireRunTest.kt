@@ -23,7 +23,7 @@ import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.WireRun.Module
 import com.squareup.wire.schema.internal.TypeMover.Move
 import com.squareup.wire.testing.add
-import com.squareup.wire.testing.containsRelativePaths
+import com.squareup.wire.testing.containsExactlyInAnyOrderAsRelativePaths
 import com.squareup.wire.testing.findFiles
 import com.squareup.wire.testing.readUtf8
 import kotlin.test.assertFailsWith
@@ -53,7 +53,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/java/squareup/colors/Blue.java",
       "generated/java/squareup/colors/Red.java",
     )
@@ -76,7 +76,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/kt/squareup/colors/Blue.kt",
       "generated/kt/squareup/colors/Red.kt",
     )
@@ -103,7 +103,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/kt/squareup/routes/RouteClient.kt",
       "generated/kt/squareup/routes/GrpcRouteClient.kt",
     )
@@ -142,7 +142,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/kt/squareup/routes/RouteBlockingServer.kt",
     )
     assertThat(fs.readUtf8("generated/kt/squareup/routes/RouteBlockingServer.kt"))
@@ -172,7 +172,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/kt/squareup/routes/RouteGetUpdatedBlueClient.kt",
       "generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt",
       "generated/kt/squareup/routes/GrpcRouteGetUpdatedBlueClient.kt",
@@ -207,7 +207,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/proto/squareup/colors/blue.proto",
       "generated/proto/squareup/colors/red.proto",
     )
@@ -215,6 +215,28 @@ class WireRunTest {
       .contains("message Blue {")
     assertThat(fs.readUtf8("generated/proto/squareup/colors/red.proto"))
       .contains("message Red {")
+  }
+
+  @Test
+  fun protoTargetNeverEmitsGoogleProtobufDescriptor() {
+    writeSquareProto()
+    writeMinimalGoogleProtobufProtos()
+    writeMinimalWireProtos()
+
+    val wireRun = WireRun(
+      sourcePath = listOf(
+        Location.get("polygons/src/main/proto"),
+        Location.get("google/src/main/proto"),
+        Location.get("wire/src/main/proto"),
+      ),
+      targets = listOf(ProtoTarget(outDirectory = "generated/proto")),
+    )
+    wireRun.execute(fs, logger)
+
+    // We're happy if google.protobuf.descriptor isn't here.
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/proto/squareup/polygons/square.proto",
+    )
   }
 
   @Test
@@ -238,7 +260,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/java/squareup/colors/Red.java",
       "generated/kt/squareup/colors/Blue.kt",
     )
@@ -427,7 +449,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/java/squareup/colors/Blue.java",
       "generated/kt/squareup/colors/Red.kt",
     )
@@ -460,7 +482,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/kt/squareup/colors/Blue.kt",
       "generated/java/squareup/colors/Red.java",
       "generated/kt/squareup/polygons/Triangle.kt",
@@ -496,7 +518,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/java/squareup/colors/Blue.java",
       "generated/java/squareup/colors/Red.java",
       "generated/kt/squareup/polygons/Triangle.kt",
@@ -523,7 +545,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/kt/squareup/colors/Blue.kt",
     )
   }
@@ -625,7 +647,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/kt/squareup/colors/Blue.kt",
     )
   }
@@ -649,7 +671,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/java/com/squareup/polygons/Square.java",
       "generated/kt/com/squareup/polygons/Rhombus.kt",
     )
@@ -675,7 +697,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/java/com/squareup/polygons/Square.java",
       "generated/java/com/squareup/polygons/Rhombus.java",
       "generated/kt/com/squareup/polygons/Square.kt",
@@ -704,7 +726,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/kt/squareup/colors/Blue.kt",
       "generated/kt/squareup/colors/Red.kt",
     )
@@ -736,7 +758,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/java/squareup/colors/Blue.java",
     )
     assertThat(fs.readUtf8("generated/java/squareup/colors/Blue.java"))
@@ -762,7 +784,7 @@ class WireRunTest {
       targets = listOf(JavaTarget(outDirectory = "generated/java")),
     )
     wireRun.execute(fs, logger)
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/java/squareup/colors/Blue.java",
     )
     assertThat(fs.readUtf8("generated/java/squareup/colors/Blue.java"))
@@ -787,7 +809,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/markdown/squareup/colors/Blue.md",
       "generated/markdown/squareup/colors/Red.md",
     )
@@ -854,7 +876,8 @@ class WireRunTest {
 
         override fun handle(service: Service, context: SchemaHandler.Context): List<Path> = listOf()
 
-        override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? = null
+        override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? =
+          null
       }
     }
   }
@@ -923,7 +946,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/kt/squareup/colors/Orange.kt",
     )
     assertThat(fs.readUtf8("generated/kt/squareup/colors/Orange.kt"))
@@ -943,7 +966,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/kt/squareup/colors/Orange.kt",
     )
     assertThat(fs.readUtf8("generated/kt/squareup/colors/Orange.kt"))
@@ -975,8 +998,8 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.findFiles("gen/a")).containsRelativePaths("gen/a/A.java")
-    assertThat(fs.findFiles("gen/b")).containsRelativePaths("gen/b/B.java")
+    assertThat(fs.findFiles("gen/a")).containsExactlyInAnyOrderAsRelativePaths("gen/a/A.java")
+    assertThat(fs.findFiles("gen/b")).containsExactlyInAnyOrderAsRelativePaths("gen/b/B.java")
   }
 
   @Test
@@ -1023,12 +1046,12 @@ class WireRunTest {
     wireRun.execute(fs, logger)
 
     // TODO(jwilson): fix modules to treat extension fields as first-class objects.
-    assertThat(fs.findFiles("gen/a")).containsRelativePaths(
+    assertThat(fs.findFiles("gen/a")).containsExactlyInAnyOrderAsRelativePaths(
       "gen/a/example/A.java",
       "gen/a/example/MapsToOption.java",
       "gen/a/example/TypeOption.java",
     )
-    assertThat(fs.findFiles("gen/b")).containsRelativePaths(
+    assertThat(fs.findFiles("gen/b")).containsExactlyInAnyOrderAsRelativePaths(
       "gen/b/example/B.java",
       "gen/b/example/MapsToOption.java",
       "gen/b/example/TypeOption.java",
@@ -1225,7 +1248,7 @@ class WireRunTest {
       ),
     )
     wireRun.execute(fs, logger)
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/java/squareup/options/DocumentationUrlOption.java",
       "generated/kt/squareup/options/DocumentationUrlOption.kt",
     )
@@ -1254,7 +1277,7 @@ class WireRunTest {
       ),
     )
     wireRun.execute(fs, logger)
-    assertThat(fs.findFiles("generated")).containsRelativePaths()
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths()
   }
 
   @Test
@@ -1278,7 +1301,7 @@ class WireRunTest {
       ),
     )
     wireRun.execute(fs, logger)
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/java/squareup/polygons/Octagon.java",
       "generated/kt/squareup/polygons/Octagon.kt",
     )
@@ -1309,7 +1332,7 @@ class WireRunTest {
       ),
     )
     wireRun.execute(fs, logger)
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/java/squareup/polygons/Octagon.java",
       "generated/kt/squareup/polygons/Octagon.kt",
     )
@@ -1375,7 +1398,7 @@ class WireRunTest {
       targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
     )
     wireRun.execute(fs, logger)
-    assertThat(fs.findFiles("generated")).containsRelativePaths(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/kt/com/squareup/polygons/Square.kt",
       "generated/kt/squareup/polygons/Triangle.kt",
     )
@@ -1506,6 +1529,76 @@ class WireRunTest {
         |  option (options.documentation_url) = "https://en.wikipedia.org/wiki/Octagon";
         |  optional bool stop = 1;
         |}
+      """.trimMargin(),
+    )
+  }
+
+  private fun writeMinimalGoogleProtobufProtos() {
+    fs.add(
+      "google/src/main/proto/google/protobuf/descriptor.proto",
+      """
+        |syntax = "proto2";
+        |package google.protobuf;
+        |message descriptor {}
+      """.trimMargin(),
+    )
+    fs.add(
+      "google/src/main/proto/google/protobuf/any.proto",
+      """
+        |syntax = "proto2";
+        |package google.protobuf;
+        |message Any {}
+      """.trimMargin(),
+    )
+    fs.add(
+      "google/src/main/proto/google/protobuf/duration.proto",
+      """
+        |syntax = "proto2";
+        |package google.protobuf;
+        |message Duration {}
+      """.trimMargin(),
+    )
+    fs.add(
+      "google/src/main/proto/google/protobuf/empty.proto",
+      """
+        |syntax = "proto2";
+        |package google.protobuf;
+        |message Empty {}
+      """.trimMargin(),
+    )
+    fs.add(
+      "google/src/main/proto/google/protobuf/struct.proto",
+      """
+        |syntax = "proto2";
+        |package google.protobuf;
+        |message Struct {}
+      """.trimMargin(),
+    )
+    fs.add(
+      "google/src/main/proto/google/protobuf/timestamp.proto",
+      """
+        |syntax = "proto2";
+        |package google.protobuf;
+        |message Timestamp {}
+      """.trimMargin(),
+    )
+    fs.add(
+      "google/src/main/proto/google/protobuf/wrappers.proto",
+      """
+        |syntax = "proto2";
+        |package google.protobuf;
+        |message Wrappers {}
+      """.trimMargin(),
+    )
+  }
+
+  private fun writeMinimalWireProtos() {
+    fs.add(
+      "wire/src/main/proto/wire/extensions.proto",
+      """
+        |syntax = "proto2";
+        |package google.protobuf;
+        |message extensions {}
       """.trimMargin(),
     )
   }
