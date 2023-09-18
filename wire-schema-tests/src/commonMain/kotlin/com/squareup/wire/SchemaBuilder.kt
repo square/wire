@@ -91,3 +91,18 @@ class SchemaBuilder {
 inline fun buildSchema(builderAction: SchemaBuilder.() -> Unit): Schema {
   return SchemaBuilder().apply(builderAction).build()
 }
+
+/**
+ * Wire loads runtime protos such as `google/protobuf/descriptor.proto` when it needs to load a
+ * schema. This method adds empty protos to please Wire. However, if the proto schema getting loaded
+ * relies on those runtime protos' types like `FieldOptions` or `wire_package`, you will have to
+ * provide the original content of those files.
+ *
+ * Note that this isn't a problem on the JVM and this is only required for JavaScript and native
+ * platforms.
+ */
+fun SchemaBuilder.addFakeRuntimeProtos(): SchemaBuilder {
+  add("google/protobuf/descriptor.proto".toPath(), "")
+  add("wire/extensions.proto".toPath(), "")
+  return this
+}

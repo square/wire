@@ -69,10 +69,7 @@ class MarkdownHandlerTest {
                   |}
         """.trimMargin(),
       )
-      // We manually add fake runtime protos to please Wire when running on a non-JVM platforms.
-      // This isn't required if the code is to run on the JVM only.
-      add("google/protobuf/descriptor.proto".toPath(), "")
-      add("wire/extensions.proto".toPath(), "")
+      addFakeRuntimeProtos()
     }
 
     val fileSystem = FakeFileSystem()
