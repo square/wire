@@ -15,11 +15,16 @@
  */
 package com.squareup.wire.schema
 
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.containsExactly
+import assertk.assertions.doesNotContain
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.WireRun.Module
+import kotlin.test.Test
 import okio.Path.Companion.toPath
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 
 class ManifestPartitionTest {
   @Test fun upstreamPruneIsNotGeneratedDownstream() {

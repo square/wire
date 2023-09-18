@@ -15,9 +15,13 @@
  */
 package com.squareup.wire.schema
 
+import assertk.assertThat
+import assertk.assertions.hasMessage
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
+import kotlin.test.Test
 import kotlin.test.fail
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 
 class PruningRulesTest {
   @Test

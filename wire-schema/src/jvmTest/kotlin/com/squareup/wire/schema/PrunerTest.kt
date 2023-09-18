@@ -17,12 +17,21 @@
 
 package com.squareup.wire.schema
 
+import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.hasSize
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotEmpty
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.MESSAGE_OPTIONS
+import kotlin.test.Test
 import okio.Path.Companion.toPath
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 
 class PrunerTest {
   @Test
@@ -116,8 +125,8 @@ class PrunerTest {
         .addRoot("A.B")
         .build(),
     )
-    assertThat(pruned.getType("A")).isInstanceOf(EnclosingType::class.java)
-    assertThat(pruned.getType("A.B")).isInstanceOf(MessageType::class.java)
+    assertThat(pruned.getType("A")!!).isInstanceOf<EnclosingType>()
+    assertThat(pruned.getType("A.B")!!).isInstanceOf<MessageType>()
     assertThat(pruned.getType("A.B.C")).isNull()
     assertThat(pruned.getType("A.D")).isNull()
   }

@@ -15,14 +15,16 @@
  */
 package com.squareup.wire.schema.internal.parser
 
+import assertk.assertThat
+import assertk.assertions.hasSize
+import assertk.assertions.isEqualTo
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.parser.OptionElement.Companion.PACKED_OPTION_ELEMENT
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import kotlin.test.Test
 
 class ProtoFileElementTest {
   internal var location = Location.get("some/folder", "file.proto")

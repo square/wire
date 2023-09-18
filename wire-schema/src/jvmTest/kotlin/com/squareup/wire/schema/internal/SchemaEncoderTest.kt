@@ -15,6 +15,9 @@
  */
 package com.squareup.wire.schema.internal
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.DescriptorProtos.DescriptorProto
 import com.google.protobuf.DescriptorProtos.DescriptorProto.ExtensionRange
@@ -27,9 +30,8 @@ import com.google.protobuf.DescriptorProtos.MethodOptions
 import com.google.protobuf.DescriptorProtos.ServiceDescriptorProto
 import com.google.protobuf.UnknownFieldSet
 import com.squareup.wire.buildSchema
+import kotlin.test.Test
 import okio.Path.Companion.toPath
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 
 class SchemaEncoderTest {
   @Test fun `encode schema`() {
@@ -283,7 +285,7 @@ class SchemaEncoderTest {
     val encoded = SchemaEncoder(schema).encode(handleServiceProto)
 
     val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
-    assertThat(fileDescriptorProto).isNotNull
+    assertThat(fileDescriptorProto).isNotNull()
     assertThat(fileDescriptorProto).isEqualTo(
       FileDescriptorProto.newBuilder()
         .setName("test.proto")

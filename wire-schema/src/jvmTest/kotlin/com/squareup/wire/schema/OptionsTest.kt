@@ -15,10 +15,13 @@
  */
 package com.squareup.wire.schema
 
+import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import com.squareup.wire.buildSchema
+import kotlin.test.Test
 import okio.Path.Companion.toPath
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 
 class OptionsTest {
   @Test
@@ -244,31 +247,31 @@ class OptionsTest {
 
   @Test
   fun resolveFieldPathMatchesLeadingDotFirstSegment() {
-    assertThat(Options.resolveFieldPath(".a.b.c.d", setOf("a", "z", "y")))
+    assertThat(Options.resolveFieldPath(".a.b.c.d", setOf("a", "z", "y"))!!)
       .containsExactly("a", "b", "c", "d")
   }
 
   @Test
   fun resolveFieldPathMatchesFirstSegment() {
-    assertThat(Options.resolveFieldPath("a.b.c.d", setOf("a", "z", "y")))
+    assertThat(Options.resolveFieldPath("a.b.c.d", setOf("a", "z", "y"))!!)
       .containsExactly("a", "b", "c", "d")
   }
 
   @Test
   fun resolveFieldPathMatchesMultipleSegments() {
-    assertThat(Options.resolveFieldPath("a.b.c.d", setOf("a.b", "z.b", "y.b")))
+    assertThat(Options.resolveFieldPath("a.b.c.d", setOf("a.b", "z.b", "y.b"))!!)
       .containsExactly("a.b", "c", "d")
   }
 
   @Test
   fun resolveFieldPathMatchesAllSegments() {
-    assertThat(Options.resolveFieldPath("a.b.c.d", setOf("a.b.c.d", "z.b.c.d")))
+    assertThat(Options.resolveFieldPath("a.b.c.d", setOf("a.b.c.d", "z.b.c.d"))!!)
       .containsExactly("a.b.c.d")
   }
 
   @Test
   fun resolveFieldPathMatchesOnlySegment() {
-    assertThat(Options.resolveFieldPath("a", setOf("a", "b"))).containsExactly("a")
+    assertThat(Options.resolveFieldPath("a", setOf("a", "b"))!!).containsExactly("a")
   }
 
   @Test

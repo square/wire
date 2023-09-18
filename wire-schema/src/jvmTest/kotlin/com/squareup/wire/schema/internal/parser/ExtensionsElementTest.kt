@@ -15,10 +15,11 @@
  */
 package com.squareup.wire.schema.internal.parser
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.MAX_TAG_VALUE
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import kotlin.test.Test
 
 class ExtensionsElementTest {
   internal var location = Location.get("file.proto")

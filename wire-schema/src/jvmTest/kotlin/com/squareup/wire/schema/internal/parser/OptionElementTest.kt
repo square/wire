@@ -15,13 +15,14 @@
  */
 package com.squareup.wire.schema.internal.parser
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.BOOLEAN
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.LIST
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.MAP
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.OPTION
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import kotlin.test.Test
 
 class OptionElementTest {
   @Test

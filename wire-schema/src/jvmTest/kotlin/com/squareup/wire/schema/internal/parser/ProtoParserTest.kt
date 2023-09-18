@@ -15,6 +15,12 @@
  */
 package com.squareup.wire.schema.internal.parser
 
+import assertk.assertThat
+import assertk.assertions.containsOnly
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
+import assertk.assertions.messageContains
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.schema.Field.Label.OPTIONAL
 import com.squareup.wire.schema.Field.Label.REPEATED
@@ -24,9 +30,8 @@ import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
 import java.util.Arrays
 import java.util.LinkedHashMap
-import org.assertj.core.api.Assertions.assertThat
+import kotlin.test.Test
 import org.junit.Assert.fail
-import org.junit.Test
 
 class ProtoParserTest {
   internal var location = Location.get("file.proto")
@@ -3073,7 +3078,7 @@ class ProtoParserTest {
       fail()
     } catch (expected: IllegalStateException) {
       assertThat(expected)
-        .hasMessageContaining("Syntax error in file.proto:2:3: too many syntax definitions")
+        .messageContains("Syntax error in file.proto:2:3: too many syntax definitions")
     }
   }
 

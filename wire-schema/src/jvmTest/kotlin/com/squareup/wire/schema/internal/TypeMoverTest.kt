@@ -15,12 +15,14 @@
  */
 package com.squareup.wire.schema.internal
 
+import assertk.assertThat
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.ProtoType
+import kotlin.test.Test
 import okio.Path.Companion.toPath
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
-import org.junit.Test
 
 class TypeMoverTest {
   /**

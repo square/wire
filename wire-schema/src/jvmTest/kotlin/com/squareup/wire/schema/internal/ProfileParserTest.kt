@@ -15,11 +15,13 @@
  */
 package com.squareup.wire.schema.internal
 
+import assertk.assertThat
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.parser.OptionElement
-import org.assertj.core.api.Assertions.assertThat
+import kotlin.test.Test
 import org.junit.Assert.fail
-import org.junit.Test
 
 class ProfileParserTest {
   private var location = Location.get("android.wire")

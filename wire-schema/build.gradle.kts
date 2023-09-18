@@ -69,8 +69,6 @@ kotlin {
         implementation(projects.wireTestUtils)
         implementation(libs.assertj)
         implementation(libs.jimfs)
-        implementation(libs.junit)
-        implementation(libs.kotlin.test.junit)
         implementation(libs.protobuf.java)
         implementation(libs.okio.fakefilesystem)
       }

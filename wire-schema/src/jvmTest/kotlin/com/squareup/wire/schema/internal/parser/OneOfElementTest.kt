@@ -15,10 +15,11 @@
  */
 package com.squareup.wire.schema.internal.parser
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import kotlin.test.Test
 
 class OneOfElementTest {
   internal var location = Location.get("file.proto")

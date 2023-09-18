@@ -15,8 +15,11 @@
  */
 package com.squareup.wire.schema.internal
 
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
+import com.squareup.wire.schema.containsExactly
+import kotlin.test.Test
 
 class DagCheckerTest {
   @Test fun `empty graph has no cycles`() {
