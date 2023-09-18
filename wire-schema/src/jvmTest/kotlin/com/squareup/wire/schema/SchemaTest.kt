@@ -31,10 +31,10 @@ import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.ONEOF_OPTIONS
 import com.squareup.wire.schema.internal.isValidTag
 import com.squareup.wire.schema.internal.parser.OptionElement
+import kotlin.test.Ignore
 import kotlin.test.Test
+import kotlin.test.fail
 import okio.Path.Companion.toPath
-import org.junit.Assert.fail
-import org.junit.Ignore
 
 class SchemaTest {
   @Test
@@ -105,7 +105,7 @@ class SchemaTest {
     assertThat(bars.valueType).isEqualTo(schema.getType("foo_package.Bar")!!.type)
   }
 
-  @Ignore("Resolution happens from the root not from inside Outer and so this fails.")
+  @Ignore // Resolution happens from the root not from inside Outer and so this fails.
   @Test
   fun linkExtendTypeInOuterMessage() {
     val schema = buildSchema {

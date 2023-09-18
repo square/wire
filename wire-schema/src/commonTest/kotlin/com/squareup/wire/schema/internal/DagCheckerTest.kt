@@ -22,70 +22,70 @@ import com.squareup.wire.schema.containsExactly
 import kotlin.test.Test
 
 class DagCheckerTest {
-  @Test fun `empty graph has no cycles`() {
+  @Test fun emptyGraphHasNoCycles() {
     val nodes = listOf<String>()
     val edges = listOf<String>()
     val cycleFinder = DagChecker(nodes) { it.targets(edges) }
     assertThat(cycleFinder.check()).isEmpty()
   }
 
-  @Test fun `single node has no cycles`() {
+  @Test fun singleNodeHasNoCycles() {
     val nodes = listOf("a")
     val edges = listOf<String>()
     val cycleFinder = DagChecker(nodes) { it.targets(edges) }
     assertThat(cycleFinder.check()).isEmpty()
   }
 
-  @Test fun `single node pointing to itself has a cycle`() {
+  @Test fun singleNodePointingToItselfHasACycle() {
     val nodes = listOf("a")
     val edges = listOf("aa")
     val cycleFinder = DagChecker(nodes) { it.targets(edges) }
     assertThat(cycleFinder.check()).containsExactly(listOf("a"))
   }
 
-  @Test fun `two node dag has no cycle`() {
+  @Test fun twoNodeDagHasNoCycle() {
     val nodes = listOf("a", "b")
     val edges = listOf("ab")
     val cycleFinder = DagChecker(nodes) { it.targets(edges) }
     assertThat(cycleFinder.check()).isEmpty()
   }
 
-  @Test fun `two node loop has a cycle`() {
+  @Test fun twoNodeLoopHasACycle() {
     val nodes = listOf("a", "b")
     val edges = listOf("ab", "ba")
     val cycleFinder = DagChecker(nodes) { it.targets(edges) }
     assertThat(cycleFinder.check()).containsExactly(listOf("a", "b"))
   }
 
-  @Test fun `three node dag has no cycle`() {
+  @Test fun threeNodeDagHasNoCycle() {
     val nodes = listOf("a", "b", "c")
     val edges = listOf("ab", "bc", "ac")
     val cycleFinder = DagChecker(nodes) { it.targets(edges) }
     assertThat(cycleFinder.check()).isEmpty()
   }
 
-  @Test fun `three node cycle`() {
+  @Test fun threeNodeCycle() {
     val nodes = listOf("a", "b", "c")
     val edges = listOf("ab", "bc", "ca")
     val cycleFinder = DagChecker(nodes) { it.targets(edges) }
     assertThat(cycleFinder.check()).containsExactly(listOf("a", "b", "c"))
   }
 
-  @Test fun `two node cycle with not strongly connected extra node`() {
+  @Test fun twoNodeCycleWithNotStronglyConnectedExtraNode() {
     val nodes = listOf("a", "b", "c")
     val edges = listOf("ab", "ac", "ca")
     val cycleFinder = DagChecker(nodes) { it.targets(edges) }
     assertThat(cycleFinder.check()).containsExactly(listOf("a", "c"))
   }
 
-  @Test fun `three node cycle with self edges`() {
+  @Test fun threeNodeCycleWithSelfEdges() {
     val nodes = listOf("a", "b", "c")
     val edges = listOf("ab", "bc", "ca", "bb", "cc")
     val cycleFinder = DagChecker(nodes) { it.targets(edges) }
     assertThat(cycleFinder.check()).containsExactly(listOf("a", "b", "c"))
   }
 
-  @Test fun `two independent strongly connected components`() {
+  @Test fun twoIndependentStronglyConnectedComponents() {
     val nodes = listOf("a", "b", "c")
     val edges = listOf("ab", "ba", "cc")
     val cycleFinder = DagChecker(nodes) { it.targets(edges) }
@@ -105,7 +105,7 @@ class DagCheckerTest {
    *    ↓ ↗
    *    E     F ↔ G     H ↫
    */
-  @Test fun `wikipedia example`() {
+  @Test fun wikipediaExample() {
     val nodes = listOf("a", "b", "c", "d", "e", "f", "g", "h")
     val edges = listOf(
       "ae", "ba", "cb", "cd", "dc", "eb",
@@ -131,7 +131,7 @@ class DagCheckerTest {
    *    ↓   ↑   ↓
    *    G   H ← I
    */
-  @Test fun `cojoined cycles`() {
+  @Test fun cojoinedCycles() {
     val nodes = listOf("a", "b", "c", "d", "e", "f", "g", "h", "i")
     val edges = listOf(
       "ad", "ba", "cb",

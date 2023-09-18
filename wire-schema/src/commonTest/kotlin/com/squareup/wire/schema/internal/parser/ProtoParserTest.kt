@@ -28,10 +28,8 @@ import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
-import java.util.Arrays
-import java.util.LinkedHashMap
 import kotlin.test.Test
-import org.junit.Assert.fail
+import kotlin.test.fail
 
 class ProtoParserTest {
   internal var location = Location.get("file.proto")
@@ -1975,10 +1973,10 @@ class ProtoParserTest {
     val option_two_a_map = LinkedHashMap<String, Any>()
     option_two_a_map["[squareup.options.type]"] = OptionElement.OptionPrimitive(Kind.ENUM, "EXOTIC")
     val option_two_b_map = LinkedHashMap<String, List<String>>()
-    option_two_b_map["names"] = Arrays.asList("Foo", "Bar")
+    option_two_b_map["names"] = listOf("Foo", "Bar")
     val option_three_map = LinkedHashMap<String, Map<String, *>>()
     val option_three_nested_map = LinkedHashMap<String, Any>()
-    option_three_nested_map["y"] = Arrays.asList(OptionElement.OptionPrimitive(Kind.NUMBER, "1"), OptionElement.OptionPrimitive(Kind.NUMBER, "2"))
+    option_three_nested_map["y"] = listOf(OptionElement.OptionPrimitive(Kind.NUMBER, "1"), OptionElement.OptionPrimitive(Kind.NUMBER, "2"))
     option_three_map["x"] = option_three_nested_map
 
     val option_four_map = LinkedHashMap<String, Map<String, *>>()

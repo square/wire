@@ -16,7 +16,7 @@
 package com.squareup.wire.java;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.squareup.wire.schema.SchemaHelpersKt.addFromTest;
+import static com.squareup.wire.schema.SchemaHelpersJvmKt.addFromTest;
 import static org.junit.Assert.fail;
 
 import com.squareup.javapoet.JavaFile;

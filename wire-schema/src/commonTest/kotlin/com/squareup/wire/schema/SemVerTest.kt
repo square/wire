@@ -20,7 +20,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThan
 import assertk.assertions.isLessThan
 import kotlin.test.Test
-import org.junit.Assert.fail
+import kotlin.test.fail
 
 internal class SemVerTest {
   @Test
@@ -111,8 +111,7 @@ internal class SemVerTest {
     }
   }
 
-  @Test
-  fun `semver dot org examples`() {
+  @Test fun semverDotOrgExamples() {
     assertSorted(
       "1.9.0",
       "1.10.0",

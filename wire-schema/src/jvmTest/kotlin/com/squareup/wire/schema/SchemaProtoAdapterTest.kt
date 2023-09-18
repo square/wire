@@ -19,15 +19,15 @@ import assertk.assertThat
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import com.squareup.wire.buildSchema
-import java.io.EOFException
-import java.io.IOException
-import java.net.ProtocolException
 import kotlin.test.Test
+import kotlin.test.fail
 import okio.Buffer
 import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.toByteString
+import okio.EOFException
+import okio.IOException
 import okio.Path.Companion.toPath
-import org.junit.Assert.fail
+import okio.ProtocolException
 
 class SchemaProtoAdapterTest {
   private val coffeeSchema = buildSchema {

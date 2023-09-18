@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Square, Inc.
+ * Copyright (C) 2023 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import assertk.assertions.doesNotContain
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import com.squareup.wire.buildSchema
-import com.squareup.wire.schema.WireRun.Module
 import kotlin.test.Test
 import okio.Path.Companion.toPath
 
@@ -48,13 +47,13 @@ class ManifestPartitionTest {
     }
 
     val modules = mapOf(
-      "common" to Module(
+      "common" to WireRun.Module(
         pruningRules = PruningRules.Builder()
           .addRoot("B")
           .prune("C")
           .build(),
       ),
-      "feature" to Module(
+      "feature" to WireRun.Module(
         dependencies = setOf("common"),
         pruningRules = PruningRules.Builder()
           .addRoot("A")
@@ -97,13 +96,13 @@ class ManifestPartitionTest {
     }
 
     val modules = mapOf(
-      "common" to Module(
+      "common" to WireRun.Module(
         pruningRules = PruningRules.Builder()
           .addRoot("B")
           .prune("C")
           .build(),
       ),
-      "feature" to Module(
+      "feature" to WireRun.Module(
         dependencies = setOf("common"),
         pruningRules = PruningRules.Builder()
           .addRoot("A")
@@ -148,19 +147,19 @@ class ManifestPartitionTest {
     }
 
     val modules = mapOf(
-      "common" to Module(
+      "common" to WireRun.Module(
         pruningRules = PruningRules.Builder()
           .addRoot("B")
           .prune("C")
           .build(),
       ),
-      "feature1" to Module(
+      "feature1" to WireRun.Module(
         dependencies = setOf("common"),
         pruningRules = PruningRules.Builder()
           .addRoot("A")
           .build(),
       ),
-      "feature2" to Module(
+      "feature2" to WireRun.Module(
         dependencies = setOf("common"),
         pruningRules = PruningRules.Builder()
           .addRoot("A")

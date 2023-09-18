@@ -21,8 +21,8 @@ import assertk.assertions.isEqualTo
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.ProtoType
 import kotlin.test.Test
+import kotlin.test.fail
 import okio.Path.Companion.toPath
-import org.junit.Assert.fail
 
 class TypeMoverTest {
   /**
@@ -34,7 +34,7 @@ class TypeMoverTest {
    *  * Removing an import from the source file that was only used by the target type. (roast.proto)
    *  * Adding an import to the target file required by the target type (roast.proto).
    */
-  @Test fun `move type to new file`() {
+  @Test fun moveTypeToNewFile() {
     val oldSchema = buildSchema {
       add(
         "cafe/cafe.proto".toPath(),
@@ -116,7 +116,7 @@ class TypeMoverTest {
     )
   }
 
-  @Test fun `move type to existing file`() {
+  @Test fun moveTypeToExistingFile() {
     val oldSchema = buildSchema {
       add(
         "cafe/cafe.proto".toPath(),
@@ -201,7 +201,7 @@ class TypeMoverTest {
     )
   }
 
-  @Test fun `multiple moves from single source`() {
+  @Test fun multipleMovesFromSingleSource() {
     val oldSchema = buildSchema {
       add(
         "abc.proto".toPath(),
@@ -290,7 +290,7 @@ class TypeMoverTest {
     )
   }
 
-  @Test fun `move with service dependency`() {
+  @Test fun moveWithServiceDependency() {
     val oldSchema = buildSchema {
       add(
         "abc.proto".toPath(),
@@ -336,7 +336,7 @@ class TypeMoverTest {
     )
   }
 
-  @Test fun `swap types`() {
+  @Test fun swapTypes() {
     val oldSchema = buildSchema {
       add(
         "a.proto".toPath(),
@@ -397,7 +397,7 @@ class TypeMoverTest {
     )
   }
 
-  @Test fun `unrelated unused imports not pruned`() {
+  @Test fun unrelatedUnusedImportsNotPruned() {
     val oldSchema = buildSchema {
       add(
         "a.proto".toPath(),
@@ -439,7 +439,7 @@ class TypeMoverTest {
     )
   }
 
-  @Test fun `move inexistent type`() {
+  @Test fun moveInexistentType() {
     val oldSchema = buildSchema {
       add(
         "a.proto".toPath(),

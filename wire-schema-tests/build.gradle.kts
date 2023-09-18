@@ -59,6 +59,7 @@ kotlin {
         implementation(libs.kotlin.test.common)
         implementation(libs.kotlin.test.annotations)
         implementation(libs.kotlin.test)
+        implementation(projects.wireTestUtils)
         implementation(libs.assertk)
       }
     }
