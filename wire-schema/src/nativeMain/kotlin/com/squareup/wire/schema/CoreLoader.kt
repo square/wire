@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Square, Inc.
+ * Copyright (C) 2023 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package com.squareup.wire.schema
 
 actual object CoreLoader : Loader {
   override fun load(path: String): ProtoFile {
-    error("Wire cannot load $path on JavaScript. Please manually add it to the proto path.")
+    error("Wire cannot load $path on native. Please manually add it to the proto path.")
   }
 
   override fun withErrors(errors: ErrorCollector) = this

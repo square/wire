@@ -15,6 +15,10 @@
  */
 package com.squareup.wire.schema
 
+/**
+ * A specific [Loader] which loads Wire's runtime proto files such as
+ * `google/protobuf/descriptor.proto` or `wire/extensions.proto`.
+ */
 expect object CoreLoader : Loader
 
 fun isWireRuntimeProto(location: Location): Boolean {
