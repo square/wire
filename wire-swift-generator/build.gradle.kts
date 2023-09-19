@@ -1,6 +1,3 @@
-import com.vanniktech.maven.publish.JavadocJar.Dokka
-import com.vanniktech.maven.publish.KotlinJvm
-import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
 plugins {
   id("java-library")
@@ -16,12 +13,4 @@ if (project.rootProject.name == "wire") {
 dependencies {
   api(libs.swiftpoet)
   api(projects.wireSchema)
-}
-
-if (project.rootProject.name == "wire") {
-  configure<MavenPublishBaseExtension> {
-    configure(
-      KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
-    )
-  }
 }

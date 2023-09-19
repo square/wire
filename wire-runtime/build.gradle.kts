@@ -6,12 +6,6 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 plugins {
   kotlin("multiplatform")
   id("com.github.gmazzo.buildconfig")
-  id("com.vanniktech.maven.publish.base").apply(false)
-}
-
-if (project.rootProject.name == "wire") {
-  apply(plugin = "com.vanniktech.maven.publish.base")
-  apply(plugin = "binary-compatibility-validator")
 }
 
 kotlin {
@@ -153,12 +147,6 @@ buildConfig {
 }
 
 if (project.rootProject.name == "wire") {
-  configure<MavenPublishBaseExtension> {
-    configure(
-      KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
-    )
-  }
-
   configure<SpotlessExtension> {
     kotlin {
       targetExclude(

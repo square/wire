@@ -1,16 +1,5 @@
-import com.vanniktech.maven.publish.JavadocJar.Dokka
-import com.vanniktech.maven.publish.KotlinJvm
-import com.vanniktech.maven.publish.KotlinMultiplatform
-import com.vanniktech.maven.publish.MavenPublishBaseExtension
-
 plugins {
   kotlin("multiplatform")
-  id("com.vanniktech.maven.publish.base").apply(false)
-}
-
-if (project.rootProject.name == "wire") {
-  apply(plugin = "com.vanniktech.maven.publish.base")
-  apply(plugin = "binary-compatibility-validator")
 }
 
 kotlin {
@@ -107,13 +96,5 @@ kotlin {
         it.dependsOn(nativeTest)
       }
     }
-  }
-}
-
-if (project.rootProject.name == "wire") {
-  configure<MavenPublishBaseExtension> {
-    configure(
-      KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
-    )
   }
 }

@@ -1,6 +1,3 @@
-import com.vanniktech.maven.publish.JavadocJar.Dokka
-import com.vanniktech.maven.publish.KotlinJvm
-import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
 plugins {
   id("java-library")
@@ -31,13 +28,5 @@ dependencies {
 sourceSets {
   val test by getting {
     java.srcDir("src/test/proto")
-  }
-}
-
-if (project.rootProject.name == "wire") {
-  configure<MavenPublishBaseExtension> {
-    configure(
-      KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
-    )
   }
 }
