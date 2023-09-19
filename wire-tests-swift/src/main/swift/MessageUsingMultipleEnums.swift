@@ -12,7 +12,7 @@ public struct MessageUsingMultipleEnums {
     public var b: OtherMessageWithStatus.Status?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(configure: (inout Self) -> Void = { _ in }) {
+    public init(configure: (inout Self) -> Swift.Void = { _ in }) {
         configure(&self)
     }
 

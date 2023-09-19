@@ -1206,7 +1206,7 @@ public struct AllTypes {
         req_bytes: Foundation.Data,
         req_nested_enum: AllTypes.NestedEnum,
         req_nested_message: AllTypes.NestedMessage,
-        configure: (inout Self.Storage) -> Void = { _ in }
+        configure: (inout Self.Storage) -> Swift.Void = { _ in }
     ) {
         self.storage = AllTypes.Storage(
                 req_int32: req_int32,

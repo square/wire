@@ -66,7 +66,6 @@ import io.outfoxx.swiftpoet.TypeSpec
 import io.outfoxx.swiftpoet.TypeVariableName
 import io.outfoxx.swiftpoet.UINT32
 import io.outfoxx.swiftpoet.UINT64
-import io.outfoxx.swiftpoet.VOID
 import io.outfoxx.swiftpoet.joinToCode
 import io.outfoxx.swiftpoet.parameterizedBy
 import okio.ByteString.Companion.encode
@@ -94,6 +93,7 @@ class SwiftGenerator private constructor(
   private val equatable = DeclaredTypeName.typeName("Swift.Equatable")
   private val hashable = DeclaredTypeName.typeName("Swift.Hashable")
   private val sendable = DeclaredTypeName.typeName("Swift.Sendable")
+  private val void = DeclaredTypeName.typeName("Swift.Void", true)
 
   private val codable = DeclaredTypeName.typeName("Swift.Codable")
   private val codingKey = DeclaredTypeName.typeName("Swift.CodingKey")
@@ -1018,7 +1018,7 @@ class SwiftGenerator private constructor(
           if (needsConfigure) {
             val closureType = FunctionTypeName.get(
               TypeVariableName.typeVariable("inout Self.${storageType.simpleName}"),
-              returnType = VOID,
+              returnType = void,
             )
 
             addParameter(
@@ -1114,7 +1114,7 @@ class SwiftGenerator private constructor(
           if (needsConfigure) {
             val closureType = FunctionTypeName.get(
               TypeVariableName.typeVariable("inout Self"),
-              returnType = VOID,
+              returnType = void,
             )
 
             addParameter(
