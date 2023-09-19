@@ -18,6 +18,7 @@ package com.squareup.wire.recipes
 import assertk.assertThat
 import assertk.assertions.startsWith
 import com.squareup.wire.WireTestLogger
+import com.squareup.wire.addFakeRuntimeProtos
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.ErrorCollector
 import com.squareup.wire.schema.SchemaException
