@@ -30,10 +30,6 @@ public struct CopyOnWrite<Value> {
         }
 
         set {
-            if isEqual(self.wrappedValue, newValue) {
-                return
-            }
-
             if isKnownUniquelyReferenced(&storage) {
                 storage.value = newValue
             } else {
@@ -45,34 +41,15 @@ public struct CopyOnWrite<Value> {
     /// The reference type which holds onto our data.
     private var storage: Storage
 
-#if swift(>=5.5)
-    /// Closure used to compare the equality of elements. Differs based on type of `Value`.
-    private let isEqual: @Sendable (Value, Value) -> Bool
-#else
-    /// Closure used to compare the equality of elements. Differs based on type of `Value`.
-    private let isEqual: (Value, Value) -> Bool
-#endif
-
     /// Creates a new property wrapper with the provided value.
     public init(wrappedValue: Value) {
         storage = Storage(wrappedValue)
-        isEqual = { _, _ in false }
     }
 }
 
 // MARK: - Equatable
 
 extension CopyOnWrite : Equatable where Value : Equatable {
-
-    /// Creates a new property wrapper with the provided value.
-    ///
-    /// For `Equatable` values, copy-on-write won't occur if
-    /// the new value being set is the same as the old value.
-    public init(wrappedValue: Value) {
-        storage = Storage(wrappedValue)
-        isEqual = { $0 == $1 }
-    }
-
     public static func == (lhs: CopyOnWrite, rhs: CopyOnWrite) -> Bool {
         lhs.wrappedValue == rhs.wrappedValue
     }
@@ -81,11 +58,9 @@ extension CopyOnWrite : Equatable where Value : Equatable {
 // MARK: - Hashable
 
 extension CopyOnWrite : Hashable where Value : Hashable {
-
     public func hash(into hasher: inout Hasher) {
         wrappedValue.hash(into: &hasher)
     }
-
 }
 
 #if swift(>=5.5)
