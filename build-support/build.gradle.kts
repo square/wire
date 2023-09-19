@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -25,31 +23,45 @@ buildscript {
 plugins {
   `kotlin-dsl`
   `java-gradle-plugin`
+  kotlin("jvm") version "1.9.10"
 }
 
 repositories {
   mavenCentral()
+  google()
+  gradlePluginPortal()
 }
 
 dependencies {
-  add("compileOnly", kotlin("gradle-plugin"))
-  add("compileOnly", kotlin("gradle-plugin-api"))
+  compileOnly(libs.kotlin.gradleApi)
+  implementation(libs.pluginz.android)
+  implementation(libs.pluginz.binaryCompatibilityValidator)
+  // TODO(Benoit) See what can be removed. START
   implementation(libs.pluginz.kotlin)
+  implementation(libs.vanniktechPublishPlugin)
+  implementation(libs.pluginz.dokka)
+  implementation(libs.kotlin.serialization)
+  implementation(libs.pluginz.buildConfig)
+  implementation(libs.pluginz.spotless)
+  implementation(libs.pluginz.kotlinSerialization)
+  implementation(libs.pluginz.shadow)
+  implementation(libs.pluginz.buildConfig)
+  implementation(libs.guava)
+  // TODO(Benoit) See what can be removed. END
+
+  // Expose the generated version catalog API to the plugin.
+  implementation(files(libs::class.java.superclass.protectionDomain.codeSource.location))
 }
 
 gradlePlugin {
   plugins {
-    create("com.squareup.wire.build.logic") {
-      id = "com.squareup.wire.build.logic"
-      implementationClass = "BuildLogic"
+    create("wireBuild") {
+      id = "com.squareup.wire.build"
+      displayName = "Wire Build plugin"
+      description = "Gradle plugin for Wire build things"
+      implementationClass = "com.squareup.wire.buildsupport.WireBuildPlugin"
     }
   }
-}
-
-rootProject.plugins.withType(NodeJsRootPlugin::class) {
-  // 16+ required for Apple Silicon support
-  // https://youtrack.jetbrains.com/issue/KT-49109#focus=Comments-27-5259190.0-0
-  rootProject.extensions.getByType(NodeJsRootExtension::class).nodeVersion = "16.15.1"
 }
 
 allprojects {
@@ -75,11 +87,5 @@ allprojects {
       // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
       freeCompilerArgs += "-progressive"
     }
-  }
-
-  tasks.withType<JavaCompile>().configureEach {
-    sourceCompatibility = JavaVersion.VERSION_11.toString()
-    targetCompatibility = JavaVersion.VERSION_11.toString()
-    options.encoding = Charsets.UTF_8.toString()
   }
 }
