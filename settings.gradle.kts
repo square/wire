@@ -1,5 +1,20 @@
 rootProject.name = "wire"
 
+pluginManagement {
+  includeBuild("build-support/settings")
+
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+    google()
+  }
+}
+
+plugins {
+  // id("com.gradle.enterprise").version("3.15")
+  id("com.squareup.wire.settings")
+}
+
 include(":wire-bom")
 include(":wire-compiler")
 include(":wire-gradle-plugin")
@@ -27,6 +42,7 @@ if (startParameter.projectProperties.get("swift") != "false") {
 
 includeBuild("build-support") {
   dependencySubstitution {
+    substitute(module("com.squareup.wire.build:gradle-plugin")).using(project(":"))
     substitute(module("com.squareup.wire:wire-gradle-plugin")).using(project(":wire-gradle-plugin"))
     substitute(module("com.squareup.wire:wire-runtime")).using(project(":wire-runtime"))
     substitute(module("com.squareup.wire:wire-kotlin-generator")).using(project(":wire-kotlin-generator"))
@@ -62,11 +78,3 @@ include(":wire-grpc-tests")
 include(":wire-protoc-compatibility-tests")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
-pluginManagement {
-  repositories {
-    mavenCentral()
-    gradlePluginPortal()
-    google()
-  }
-}
