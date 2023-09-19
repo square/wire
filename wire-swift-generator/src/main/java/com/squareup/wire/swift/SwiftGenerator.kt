@@ -52,7 +52,6 @@ import io.outfoxx.swiftpoet.INT32
 import io.outfoxx.swiftpoet.INT64
 import io.outfoxx.swiftpoet.Modifier
 import io.outfoxx.swiftpoet.Modifier.FILEPRIVATE
-import io.outfoxx.swiftpoet.Modifier.MUTATING
 import io.outfoxx.swiftpoet.Modifier.PRIVATE
 import io.outfoxx.swiftpoet.Modifier.PUBLIC
 import io.outfoxx.swiftpoet.Modifier.STATIC
