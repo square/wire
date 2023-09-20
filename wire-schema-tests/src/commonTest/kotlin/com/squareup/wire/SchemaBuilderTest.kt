@@ -60,10 +60,7 @@ class SchemaBuilderTest {
         |
         """.trimMargin(),
       )
-      // We manually add fake runtime protos to please Wire when running on a non-JVM platforms.
-      // This isn't required if the code is to run on the JVM only.
-      add("google/protobuf/descriptor.proto".toPath(), "")
-      add("wire/extensions.proto".toPath(), "")
+      addFakeRuntimeProtos()
     }
     assertThat(schema.protoFiles.map { it.location }).containsExactlyInAnyOrder(
       Location.get("/sourcePath", "example1.proto"),
