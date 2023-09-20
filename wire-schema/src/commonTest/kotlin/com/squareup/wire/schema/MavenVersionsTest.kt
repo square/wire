@@ -19,21 +19,10 @@
 package com.squareup.wire.schema
 
 import assertk.assertThat
-import assertk.assertions.isEmpty
-
-import com.squareup.wire.schema.containsExactly
-import assertk.assertions.isTrue
-import assertk.assertions.isFalse
-import assertk.assertions.isNotNull
-import assertk.assertions.isNull
-import assertk.assertions.hasMessage
-import assertk.assertions.containsOnly
-import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThan
 import assertk.assertions.isLessThan
 import kotlin.test.Test
-import java.util.Locale
 
 /**
  * This is Maven's `ComparableVersionTest` ported to our [SemVer] class and with several tests
@@ -111,8 +100,8 @@ internal class MavenVersionsTest {
   }
 
   private fun checkVersionsOrder(aString: String, bString: String) {
-    val a = SemVer(aString.toLowerCase(Locale.US))
-    val b = SemVer(bString.toLowerCase(Locale.US))
+    val a = SemVer(aString.lowercase())
+    val b = SemVer(bString.lowercase())
     assertThat(a.compareTo(a), displayActual = { "$a == $a" }).isEqualTo(0)
     assertThat(b.compareTo(b), displayActual = { "$b == $b" }).isEqualTo(0)
     assertThat(a.compareTo(b), displayActual = { "$a > $b" }).isLessThan(0)

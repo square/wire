@@ -23,7 +23,7 @@ import assertk.assertions.isNull
 import assertk.assertions.isSameAs
 import assertk.assertions.isTrue
 import kotlin.test.Test
-import org.junit.Assert.fail
+import kotlin.test.fail
 
 class ProtoTypeTest {
   @Test

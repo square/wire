@@ -21,7 +21,6 @@ import java.util.zip.ZipOutputStream
 import kotlin.text.Charsets.UTF_8
 import okio.ByteString
 import okio.FileSystem
-import okio.Path
 import okio.Path.Companion.toPath
 import okio.buffer
 import okio.sink
@@ -43,20 +42,6 @@ fun FileSystem.add(
   }
 }
 
-fun FileSystem.readUtf8(pathString: String): String {
-  read(pathString.toPath()) {
-    return readUtf8()
-  }
-}
-
-// We return an Iterable instead of a Set to please ambiguous APIs for Assertj.
-fun FileSystem.findFiles(path: String): Iterable<String> {
-  return listRecursively(path.withPlatformSlashes().toPath())
-    .filter { !metadata(it).isDirectory }
-    .map { it.toString() }
-    .toSet()
-}
-
 fun FileSystem.addZip(pathString: String, vararg contents: Pair<String, String>) {
   val path = pathString.toPath()
   if (path.parent != null) {
@@ -73,17 +58,6 @@ fun FileSystem.addZip(pathString: String, vararg contents: Pair<String, String>)
       }
     }
   }
-}
-
-private val slash = Path.DIRECTORY_SEPARATOR
-private val otherSlash = if (slash == "/") "\\" else "/"
-
-/**
- * This returns a string where all other slashes are replaced with the slash of the local platform.
- * On Windows, `/` will be replaced with `\`. On other platforms, `\` will be replaced with `/`.
- */
-fun String.withPlatformSlashes(): String {
-  return replace(otherSlash, slash)
 }
 
 /**

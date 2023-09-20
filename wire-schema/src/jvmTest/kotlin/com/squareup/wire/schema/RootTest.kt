@@ -29,7 +29,6 @@ import kotlin.test.assertFailsWith
 import okio.Path
 import okio.fakefilesystem.FakeFileSystem
 
-// TODO(Benoit) Move to `commonTest`.
 class RootTest {
   private val fs = FakeFileSystem().apply {
     if (Path.DIRECTORY_SEPARATOR == "\\") emulateWindows() else emulateUnix()

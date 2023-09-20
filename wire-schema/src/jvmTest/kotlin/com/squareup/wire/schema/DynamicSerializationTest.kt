@@ -17,13 +17,13 @@ package com.squareup.wire.schema
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.squareup.wire.Duration
-import com.squareup.wire.Instant
 import com.squareup.wire.buildSchema
+import com.squareup.wire.durationOfSeconds
+import com.squareup.wire.ofEpochSecond
+import kotlin.test.Ignore
 import kotlin.test.Test
 import okio.ByteString.Companion.encodeUtf8
 import okio.Path.Companion.toPath
-import org.junit.Ignore
 
 class DynamicSerializationTest {
   @Test
@@ -64,8 +64,8 @@ class DynamicSerializationTest {
 
     val adapter = schema.protoAdapter(typeName = "Message", includeUnknown = true)
     val expected = mapOf(
-      "duration_field" to Duration.ofDays(2),
-      "timestamp_field" to Instant.ofEpochSecond(123131234L, 23432423L),
+      "duration_field" to durationOfSeconds(seconds = 60 * 60 * 48L, nano = 0L), // 2 days.
+      "timestamp_field" to ofEpochSecond(epochSecond = 123131234L, nano = 23432423L),
       "empty_field" to Unit,
       "struct_field" to mapOf("one" to 1.0, "two" to 2.0),
       "value_field" to "Can be Anything",
@@ -83,7 +83,7 @@ class DynamicSerializationTest {
     assertThat(adapter.decode(adapter.encode(expected))).isEqualTo(expected)
   }
 
-  @Ignore("Not supported.")
+  @Ignore // Not supported.
   @Test
   fun mapTest() {
     val schema = buildSchema {

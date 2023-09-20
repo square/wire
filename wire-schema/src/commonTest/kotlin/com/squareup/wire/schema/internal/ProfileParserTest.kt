@@ -21,7 +21,7 @@ import assertk.assertions.isEqualTo
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.parser.OptionElement
 import kotlin.test.Test
-import org.junit.Assert.fail
+import kotlin.test.fail
 
 class ProfileParserTest {
   private var location = Location.get("android.wire")

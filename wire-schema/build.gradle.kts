@@ -54,6 +54,8 @@ kotlin {
         implementation(libs.kotlin.test)
         implementation(libs.assertk)
         implementation(projects.wireSchemaTests)
+        implementation(libs.okio.fakefilesystem)
+        implementation(projects.wireTestUtils)
       }
     }
     val jvmMain by getting {
@@ -66,11 +68,9 @@ kotlin {
     }
     val jvmTest by getting {
       dependencies {
-        implementation(projects.wireTestUtils)
         implementation(libs.assertj)
         implementation(libs.jimfs)
         implementation(libs.protobuf.java)
-        implementation(libs.okio.fakefilesystem)
       }
     }
     if (System.getProperty("kjs", "true").toBoolean()) {
@@ -131,7 +131,7 @@ if (project.rootProject.name == "wire") {
     kotlin {
       targetExclude(
         // Apache 2-licensed file from Apache.
-        "src/jvmTest/kotlin/com/squareup/wire/schema/MavenVersionsTest.kt",
+        "src/commonTest/kotlin/com/squareup/wire/schema/MavenVersionsTest.kt",
       )
     }
   }
