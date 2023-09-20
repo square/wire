@@ -15,14 +15,15 @@
  */
 package com.squareup.wire.schema
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.Duration
 import com.squareup.wire.Instant
 import com.squareup.wire.buildSchema
+import kotlin.test.Test
 import okio.ByteString.Companion.encodeUtf8
 import okio.Path.Companion.toPath
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Ignore
-import org.junit.Test
 
 class DynamicSerializationTest {
   @Test

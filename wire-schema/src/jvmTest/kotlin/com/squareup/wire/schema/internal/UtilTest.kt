@@ -15,8 +15,9 @@
  */
 package com.squareup.wire.schema.internal
 
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import kotlin.test.Test
 
 class UtilTest {
   @Test

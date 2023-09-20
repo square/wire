@@ -15,9 +15,17 @@
  */
 package com.squareup.wire.schema
 
+import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.containsExactlyInAnyOrder
+import assertk.assertions.hasMessage
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import com.squareup.wire.schema.internal.CommonSchemaLoader
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
+import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.text.Charsets.UTF_16BE
 import kotlin.text.Charsets.UTF_16LE
@@ -28,8 +36,6 @@ import okio.ByteString.Companion.decodeHex
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 
 // TODO(Benoit) Move this class to commonTest, and test `SchemaLoader` instead of `CommonSchemaLoader`.
 class SchemaLoaderTest {
@@ -259,8 +265,8 @@ class SchemaLoaderTest {
       protoPath = listOf(Location.get(fs.workingDirectory.toString())),
     )
     val schema = loader.loadSchema()
-    assertThat(schema.getType(ProtoType.get("Address"))).isInstanceOf(MessageType::class.java)
-    assertThat(schema.getType(ProtoType.get("Customer"))).isInstanceOf(MessageType::class.java)
+    assertThat(schema.getType(ProtoType.get("Address"))!!).isInstanceOf<MessageType>()
+    assertThat(schema.getType(ProtoType.get("Customer"))!!).isInstanceOf<MessageType>()
   }
 
   @Test

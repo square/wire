@@ -18,8 +18,21 @@
  */
 package com.squareup.wire.schema
 
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import assertk.assertThat
+import assertk.assertions.isEmpty
+
+import com.squareup.wire.schema.containsExactly
+import assertk.assertions.isTrue
+import assertk.assertions.isFalse
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
+import assertk.assertions.hasMessage
+import assertk.assertions.containsOnly
+import assertk.assertions.hasSize
+import assertk.assertions.isEqualTo
+import assertk.assertions.isGreaterThan
+import assertk.assertions.isLessThan
+import kotlin.test.Test
 import java.util.Locale
 
 /**
@@ -100,9 +113,9 @@ internal class MavenVersionsTest {
   private fun checkVersionsOrder(aString: String, bString: String) {
     val a = SemVer(aString.toLowerCase(Locale.US))
     val b = SemVer(bString.toLowerCase(Locale.US))
-    assertThat(a.compareTo(a)).overridingErrorMessage("$a == $a").isEqualTo(0)
-    assertThat(b.compareTo(b)).overridingErrorMessage("$b == $b").isEqualTo(0)
-    assertThat(a.compareTo(b)).overridingErrorMessage("$a > $b").isLessThan(0)
-    assertThat(b.compareTo(a)).overridingErrorMessage("$b < $a").isGreaterThan(0)
+    assertThat(a.compareTo(a), displayActual = { "$a == $a" }).isEqualTo(0)
+    assertThat(b.compareTo(b), displayActual = { "$b == $b" }).isEqualTo(0)
+    assertThat(a.compareTo(b), displayActual = { "$a > $b" }).isLessThan(0)
+    assertThat(b.compareTo(a), displayActual = { "$b < $a" }).isGreaterThan(0)
   }
 }

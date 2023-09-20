@@ -15,9 +15,12 @@
  */
 package com.squareup.wire.schema
 
-import org.assertj.core.api.Assertions.assertThat
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isGreaterThan
+import assertk.assertions.isLessThan
+import kotlin.test.Test
 import org.junit.Assert.fail
-import org.junit.Test
 
 internal class SemVerTest {
   @Test
@@ -161,10 +164,10 @@ internal class SemVerTest {
     for (i in 1 until semVers.size) {
       val a = semVers[i - 1]
       val b = semVers[i]
-      assertThat(a.compareTo(a)).overridingErrorMessage("$a == $a").isEqualTo(0)
-      assertThat(b.compareTo(b)).overridingErrorMessage("$b == $b").isEqualTo(0)
-      assertThat(a.compareTo(b)).overridingErrorMessage("$a > $b").isLessThan(0)
-      assertThat(b.compareTo(a)).overridingErrorMessage("$b < $a").isGreaterThan(0)
+      assertThat(a.compareTo(a), displayActual = { "$a == $a" }).isEqualTo(0)
+      assertThat(b.compareTo(b), displayActual = { "$b == $b" }).isEqualTo(0)
+      assertThat(a.compareTo(b), displayActual = { "$a > $b" }).isLessThan(0)
+      assertThat(b.compareTo(a), displayActual = { "$b < $a" }).isGreaterThan(0)
     }
   }
 }

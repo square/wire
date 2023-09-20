@@ -17,16 +17,24 @@
 
 package com.squareup.wire.schema
 
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.hasMessage
+import assertk.assertions.hasSize
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.ONEOF_OPTIONS
 import com.squareup.wire.schema.internal.isValidTag
 import com.squareup.wire.schema.internal.parser.OptionElement
+import kotlin.test.Test
 import okio.Path.Companion.toPath
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Ignore
-import org.junit.Test
 
 class SchemaTest {
   @Test
@@ -1881,10 +1889,10 @@ class SchemaTest {
       )
     }
     val enum = schema.getType("Period") as EnumType
-    assertThat(enum.constant("ZERO")).isNotNull
-    assertThat(enum.constant("CRETACEOUS")).isNotNull
-    assertThat(enum.constant("JURASSIC")).isNotNull
-    assertThat(enum.constant("TRIASSIC")).isNotNull
+    assertThat(enum.constant("ZERO")).isNotNull()
+    assertThat(enum.constant("CRETACEOUS")).isNotNull()
+    assertThat(enum.constant("JURASSIC")).isNotNull()
+    assertThat(enum.constant("TRIASSIC")).isNotNull()
   }
 
   @Test
@@ -1990,9 +1998,9 @@ class SchemaTest {
     }
     val enum = schema.getType("Period") as EnumType
     assertThat(enum.constant("ZERO")).isNull()
-    assertThat(enum.constant("CRETACEOUS")).isNotNull
-    assertThat(enum.constant("JURASSIC")).isNotNull
-    assertThat(enum.constant("TRIASSIC")).isNotNull
+    assertThat(enum.constant("CRETACEOUS")).isNotNull()
+    assertThat(enum.constant("JURASSIC")).isNotNull()
+    assertThat(enum.constant("TRIASSIC")).isNotNull()
   }
 
   @Test
@@ -2012,9 +2020,9 @@ class SchemaTest {
     }
     val enum = schema.getType("Period") as EnumType
     assertThat(enum.constant("ZERO")).isNull()
-    assertThat(enum.constant("CRETACEOUS")).isNotNull
-    assertThat(enum.constant("JURASSIC")).isNotNull
-    assertThat(enum.constant("TRIASSIC")).isNotNull
+    assertThat(enum.constant("CRETACEOUS")).isNotNull()
+    assertThat(enum.constant("JURASSIC")).isNotNull()
+    assertThat(enum.constant("TRIASSIC")).isNotNull()
   }
 
   @Test

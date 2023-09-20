@@ -15,9 +15,15 @@
  */
 package com.squareup.wire.schema
 
-import org.assertj.core.api.Assertions.assertThat
+import assertk.assertThat
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isNull
+import assertk.assertions.isSameAs
+import assertk.assertions.isTrue
+import kotlin.test.Test
 import org.junit.Assert.fail
-import org.junit.Test
 
 class ProtoTypeTest {
   @Test

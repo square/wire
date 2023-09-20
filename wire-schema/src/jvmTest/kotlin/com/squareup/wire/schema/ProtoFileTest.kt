@@ -15,6 +15,8 @@
  */
 package com.squareup.wire.schema
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.schema.internal.parser.ExtendElement
 import com.squareup.wire.schema.internal.parser.FieldElement
 import com.squareup.wire.schema.internal.parser.MessageElement
@@ -22,8 +24,7 @@ import com.squareup.wire.schema.internal.parser.OptionElement
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
 import com.squareup.wire.schema.internal.parser.RpcElement
 import com.squareup.wire.schema.internal.parser.ServiceElement
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import kotlin.test.Test
 
 class ProtoFileTest {
   internal var location = Location.get("file.proto")
@@ -123,6 +124,6 @@ class ProtoFileTest {
     """.trimMargin()
 
     assertThat(file.toSchema()).isEqualTo(expected)
-    assertThat(file.toElement()).isEqualToComparingFieldByField(fileElement)
+    assertThat(file.toElement()).isEqualTo(fileElement)
   }
 }

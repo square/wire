@@ -15,13 +15,19 @@
  */
 package com.squareup.wire.schema
 
+import assertk.assertThat
+import assertk.assertions.containsExactlyInAnyOrder
+import assertk.assertions.containsOnly
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
+import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import okio.Path
 import okio.fakefilesystem.FakeFileSystem
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 
 // TODO(Benoit) Move to `commonTest`.
 class RootTest {
