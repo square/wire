@@ -16,6 +16,12 @@
 import Foundation
 
 /// A property wrapper which allows easily implementing Copy-on-Write for value types.
+///
+/// When applied to a field, the corresponding value will always be heap-allocated.
+// This happens because this wrapper is a class and classes are always heap-allocated.
+///
+/// Use of this wrapper is required on large value types
+/// because they can overflow the Swift runtime stack.
 @propertyWrapper
 public struct CopyOnWrite<Value> {
 
