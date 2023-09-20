@@ -22,6 +22,7 @@ import Foundation
  Use of this wrapper is required on large protobuf messages because large (and especially
  recursive) structs can overflow the Swift runtime stack.
  */
+@available(*, deprecated, message: "Replace with CopyOnWrite. Note that property wrapper has different semantics")
 @propertyWrapper
 public final class Heap<T> {
 

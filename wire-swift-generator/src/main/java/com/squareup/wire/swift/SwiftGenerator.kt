@@ -52,7 +52,6 @@ import io.outfoxx.swiftpoet.INT32
 import io.outfoxx.swiftpoet.INT64
 import io.outfoxx.swiftpoet.Modifier
 import io.outfoxx.swiftpoet.Modifier.FILEPRIVATE
-import io.outfoxx.swiftpoet.Modifier.MUTATING
 import io.outfoxx.swiftpoet.Modifier.PRIVATE
 import io.outfoxx.swiftpoet.Modifier.PUBLIC
 import io.outfoxx.swiftpoet.Modifier.STATIC
@@ -67,7 +66,6 @@ import io.outfoxx.swiftpoet.TypeSpec
 import io.outfoxx.swiftpoet.TypeVariableName
 import io.outfoxx.swiftpoet.UINT32
 import io.outfoxx.swiftpoet.UINT64
-import io.outfoxx.swiftpoet.VOID
 import io.outfoxx.swiftpoet.joinToCode
 import io.outfoxx.swiftpoet.parameterizedBy
 import okio.ByteString.Companion.encode
@@ -84,7 +82,7 @@ class SwiftGenerator private constructor(
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
   private val protoEnum = DeclaredTypeName.typeName("Wire.ProtoEnum")
 
-  private val heap = DeclaredTypeName.typeName("Wire.Heap")
+  private val heap = DeclaredTypeName.typeName("Wire.CopyOnWrite")
   private val indirect = DeclaredTypeName.typeName("Wire.Indirect")
   private val redactable = DeclaredTypeName.typeName("Wire.Redactable")
   private val redactedKey = DeclaredTypeName.typeName("Wire.RedactedKey")
@@ -95,7 +93,7 @@ class SwiftGenerator private constructor(
   private val equatable = DeclaredTypeName.typeName("Swift.Equatable")
   private val hashable = DeclaredTypeName.typeName("Swift.Hashable")
   private val sendable = DeclaredTypeName.typeName("Swift.Sendable")
-  private val uncheckedSendable = TypeVariableName.typeVariable("@unchecked Sendable")
+  private val void = DeclaredTypeName.typeName("Swift.Void", true)
 
   private val codable = DeclaredTypeName.typeName("Swift.Codable")
   private val codingKey = DeclaredTypeName.typeName("Swift.CodingKey")
@@ -294,15 +292,6 @@ class SwiftGenerator private constructor(
 
           generateMessageStoragePropertyDelegates(type, storageName, storageType, oneOfEnumNames)
           generateMessageStorageDelegateConstructor(type, storageName, structType, storageType, oneOfEnumNames, fileMembers)
-
-          addFunction(
-            FunctionSpec.builder("copyStorage")
-              .addModifiers(PRIVATE, MUTATING)
-              .beginControlFlow("if", "!isKnownUniquelyReferenced(&_%N)", storageName)
-              .addStatement("_%1N = %2T(wrappedValue: %1N)", storageName, heap)
-              .endControlFlow("if")
-              .build(),
-          )
         } else {
           generateMessageProperties(type, oneOfEnumNames)
           generateMessageConstructor(type, structType, oneOfEnumNames, fileMembers)
@@ -325,13 +314,8 @@ class SwiftGenerator private constructor(
       .addGuard("!$FLAG_REMOVE_HASHABLE")
       .build()
 
-    val structSendableType = if (type.isHeapAllocated) {
-      uncheckedSendable
-    } else {
-      sendable
-    }
     val structSendableExtension = ExtensionSpec.builder(structType)
-      .addSuperType(structSendableType)
+      .addSuperType(sendable)
       .build()
     fileMembers += FileMemberSpec.builder(structSendableExtension)
       .addGuard("swift(>=5.5)")
@@ -1034,7 +1018,7 @@ class SwiftGenerator private constructor(
           if (needsConfigure) {
             val closureType = FunctionTypeName.get(
               TypeVariableName.typeVariable("inout Self.${storageType.simpleName}"),
-              returnType = VOID,
+              returnType = void,
             )
 
             addParameter(
@@ -1130,7 +1114,7 @@ class SwiftGenerator private constructor(
           if (needsConfigure) {
             val closureType = FunctionTypeName.get(
               TypeVariableName.typeVariable("inout Self"),
-              returnType = VOID,
+              returnType = void,
             )
 
             addParameter(
@@ -1345,7 +1329,6 @@ class SwiftGenerator private constructor(
       )
       .setter(
         FunctionSpec.setterBuilder()
-          .addStatement("copyStorage()")
           .addStatement("%N[keyPath: keyPath] = newValue", storageName)
           .build(),
       )
@@ -1356,12 +1339,12 @@ class SwiftGenerator private constructor(
       val property = PropertySpec.varBuilder(field.name, field.typeName, PUBLIC)
         .getter(
           FunctionSpec.getterBuilder()
-            .addStatement("self[dynamicMember: \\.%N]", field.name)
+            .addStatement("%N.%N", storageName, field.name)
             .build(),
         )
         .setter(
           FunctionSpec.setterBuilder()
-            .addStatement("self[dynamicMember: \\.%N] = newValue", field.name)
+            .addStatement("%N.%N = newValue", storageName, field.name)
             .build(),
         )
 
@@ -1387,7 +1370,6 @@ class SwiftGenerator private constructor(
           )
           .setter(
             FunctionSpec.setterBuilder()
-              .addStatement("copyStorage()")
               .addStatement("%N.%N = newValue", storageName, oneOf.name)
               .build(),
           )
@@ -1404,12 +1386,12 @@ class SwiftGenerator private constructor(
       PropertySpec.varBuilder("unknownFields", FOUNDATION_DATA, PUBLIC)
         .getter(
           FunctionSpec.getterBuilder()
-            .addStatement("self[dynamicMember: \\.unknownFields]")
+            .addStatement("%N.unknownFields", storageName)
             .build(),
         )
         .setter(
           FunctionSpec.setterBuilder()
-            .addStatement("self[dynamicMember: \\.unknownFields] = newValue")
+            .addStatement("%N.unknownFields = newValue", storageName)
             .build(),
         )
         .build(),

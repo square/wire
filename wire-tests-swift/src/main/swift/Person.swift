@@ -30,7 +30,7 @@ public struct Person {
     public init(
         id: Int32,
         name: String,
-        configure: (inout Self) -> Void = { _ in }
+        configure: (inout Self) -> Swift.Void = { _ in }
     ) {
         self.id = id
         self.name = name
