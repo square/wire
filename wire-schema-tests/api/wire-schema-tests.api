@@ -7,6 +7,7 @@ public final class com/squareup/wire/SchemaBuilder {
 }
 
 public final class com/squareup/wire/SchemaBuilderKt {
+	public static final fun addFakeRuntimeProtos (Lcom/squareup/wire/SchemaBuilder;)Lcom/squareup/wire/SchemaBuilder;
 	public static final fun buildSchema (Lkotlin/jvm/functions/Function1;)Lcom/squareup/wire/schema/Schema;
 }
 
