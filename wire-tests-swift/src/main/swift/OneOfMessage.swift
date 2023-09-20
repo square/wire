@@ -11,36 +11,11 @@ public struct OneOfMessage {
     /**
      * Must have a foo or a bar or a baz.
      */
-    public var choice: Choice?
+    public var choice: OneOfMessage.Choice?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(configure: (inout Self) -> Void = { _ in }) {
+    public init(configure: (inout Self) -> Swift.Void = { _ in }) {
         configure(&self)
-    }
-
-    public enum Choice {
-
-        /**
-         * What foo.
-         */
-        case foo(Int32)
-        /**
-         * Such bar.
-         */
-        case bar(String)
-        /**
-         * Nice baz.
-         */
-        case baz(String)
-
-        fileprivate func encode(to protoWriter: ProtoWriter) throws {
-            switch self {
-            case .foo(let foo): try protoWriter.encode(tag: 1, value: foo)
-            case .bar(let bar): try protoWriter.encode(tag: 3, value: bar)
-            case .baz(let baz): try protoWriter.encode(tag: 4, value: baz)
-            }
-        }
-
     }
 
 }
@@ -54,21 +29,6 @@ extension OneOfMessage {
         self.choice = choice
     }
 
-}
-#endif
-
-#if !WIRE_REMOVE_EQUATABLE
-extension OneOfMessage.Choice : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension OneOfMessage.Choice : Hashable {
-}
-#endif
-
-#if swift(>=5.5)
-extension OneOfMessage.Choice : Sendable {
 }
 #endif
 
@@ -150,5 +110,52 @@ extension OneOfMessage : Codable {
         }
     }
 
+}
+#endif
+
+/**
+ * Subtypes within OneOfMessage
+ */
+extension OneOfMessage {
+
+    public enum Choice {
+
+        /**
+         * What foo.
+         */
+        case foo(Swift.Int32)
+        /**
+         * Such bar.
+         */
+        case bar(Swift.String)
+        /**
+         * Nice baz.
+         */
+        case baz(Swift.String)
+
+        fileprivate func encode(to protoWriter: Wire.ProtoWriter) throws {
+            switch self {
+            case .foo(let foo): try protoWriter.encode(tag: 1, value: foo)
+            case .bar(let bar): try protoWriter.encode(tag: 3, value: bar)
+            case .baz(let baz): try protoWriter.encode(tag: 4, value: baz)
+            }
+        }
+
+    }
+
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension OneOfMessage.Choice : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension OneOfMessage.Choice : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension OneOfMessage.Choice : Sendable {
 }
 #endif

@@ -50,8 +50,8 @@ import io.outfoxx.swiftpoet.FunctionTypeName
 import io.outfoxx.swiftpoet.INT
 import io.outfoxx.swiftpoet.INT32
 import io.outfoxx.swiftpoet.INT64
+import io.outfoxx.swiftpoet.Modifier
 import io.outfoxx.swiftpoet.Modifier.FILEPRIVATE
-import io.outfoxx.swiftpoet.Modifier.MUTATING
 import io.outfoxx.swiftpoet.Modifier.PRIVATE
 import io.outfoxx.swiftpoet.Modifier.PUBLIC
 import io.outfoxx.swiftpoet.Modifier.STATIC
@@ -66,7 +66,6 @@ import io.outfoxx.swiftpoet.TypeSpec
 import io.outfoxx.swiftpoet.TypeVariableName
 import io.outfoxx.swiftpoet.UINT32
 import io.outfoxx.swiftpoet.UINT64
-import io.outfoxx.swiftpoet.VOID
 import io.outfoxx.swiftpoet.joinToCode
 import io.outfoxx.swiftpoet.parameterizedBy
 import okio.ByteString.Companion.encode
@@ -83,7 +82,7 @@ class SwiftGenerator private constructor(
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
   private val protoEnum = DeclaredTypeName.typeName("Wire.ProtoEnum")
 
-  private val heap = DeclaredTypeName.typeName("Wire.Heap")
+  private val heap = DeclaredTypeName.typeName("Wire.CopyOnWrite")
   private val indirect = DeclaredTypeName.typeName("Wire.Indirect")
   private val redactable = DeclaredTypeName.typeName("Wire.Redactable")
   private val redactedKey = DeclaredTypeName.typeName("Wire.RedactedKey")
@@ -94,7 +93,7 @@ class SwiftGenerator private constructor(
   private val equatable = DeclaredTypeName.typeName("Swift.Equatable")
   private val hashable = DeclaredTypeName.typeName("Swift.Hashable")
   private val sendable = DeclaredTypeName.typeName("Swift.Sendable")
-  private val uncheckedSendable = TypeVariableName.typeVariable("@unchecked Sendable")
+  private val void = DeclaredTypeName.typeName("Swift.Void", true)
 
   private val codable = DeclaredTypeName.typeName("Swift.Codable")
   private val codingKey = DeclaredTypeName.typeName("Swift.CodingKey")
@@ -103,6 +102,8 @@ class SwiftGenerator private constructor(
   private val writableKeyPath = DeclaredTypeName.typeName("Swift.WritableKeyPath")
 
   private val deprecated = AttributeSpec.builder("available").addArguments("*", "deprecated").build()
+
+  private val storageVisibility: Modifier = PUBLIC
 
   private val ProtoType.typeName
     get() = nameToTypeName.getValue(this)
@@ -289,32 +290,16 @@ class SwiftGenerator private constructor(
               .build(),
           )
 
-          generateMessageStoragePropertyDelegates(type, storageName, storageType)
+          generateMessageStoragePropertyDelegates(type, storageName, storageType, oneOfEnumNames)
           generateMessageStorageDelegateConstructor(type, storageName, structType, storageType, oneOfEnumNames, fileMembers)
-
-          addFunction(
-            FunctionSpec.builder("copyStorage")
-              .addModifiers(PRIVATE, MUTATING)
-              .beginControlFlow("if", "!isKnownUniquelyReferenced(&_%N)", storageName)
-              .addStatement("_%1N = %2T(wrappedValue: %1N)", storageName, heap)
-              .endControlFlow("if")
-              .build(),
-          )
         } else {
           generateMessageProperties(type, oneOfEnumNames)
           generateMessageConstructor(type, structType, oneOfEnumNames, fileMembers)
         }
-
-        generateMessageOneOfs(type, oneOfEnumNames, fileMembers)
-
-        type.nestedTypes.forEach { nestedType ->
-          generateType(nestedType, fileMembers).forEach {
-            addType(it)
-          }
-        }
       }
       .build()
 
+    // Generate common Foundation types
     val structEquatableExtension = ExtensionSpec.builder(structType)
       .addSuperType(equatable)
       .build()
@@ -329,20 +314,18 @@ class SwiftGenerator private constructor(
       .addGuard("!$FLAG_REMOVE_HASHABLE")
       .build()
 
-    val structSendableType = if (type.isHeapAllocated) {
-      uncheckedSendable
-    } else {
-      sendable
-    }
     val structSendableExtension = ExtensionSpec.builder(structType)
-      .addSuperType(structSendableType)
+      .addSuperType(sendable)
       .build()
     fileMembers += FileMemberSpec.builder(structSendableExtension)
       .addGuard("swift(>=5.5)")
       .build()
 
-    val redactionExtension = if (type.fields.any { it.isRedacted }) {
-      ExtensionSpec.builder(structType)
+    // Add redaction, which is potentially delegated
+    val requiresRedaction = type.fields.any { it.isRedacted }
+
+    if (requiresRedaction) {
+      val redactionExtension = ExtensionSpec.builder(structType)
         .addSuperType(redactable)
         .addType(
           TypeSpec.enumBuilder("RedactedKeys")
@@ -358,24 +341,27 @@ class SwiftGenerator private constructor(
             }
             .build(),
         )
-    } else {
-      null
-    }
 
-    if (type.isHeapAllocated) {
-      val storageExtension = ExtensionSpec.builder(structType)
-        .addType(
-          TypeSpec.structBuilder(storageType)
+      if (type.isHeapAllocated) {
+        redactionExtension.addProperty(
+          PropertySpec.varBuilder("description", STRING)
             .addModifiers(PUBLIC)
-            .apply {
-              generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
-              generateMessageConstructor(type, storageType, oneOfEnumNames, fileMembers, includeMemberwiseDefaults = false)
-            }
+            .getter(
+              FunctionSpec.getterBuilder()
+                .addStatement("return %N.description", storageName)
+                .build(),
+            )
             .build(),
         )
-        .build()
-      fileMembers += FileMemberSpec.builder(storageExtension).build()
+      }
 
+      fileMembers += FileMemberSpec.builder(redactionExtension.build())
+        .addGuard("!$FLAG_REMOVE_REDACTABLE")
+        .build()
+    }
+
+    // Add {Proto/Foundation} Codable methods, which may delegate to Storage
+    if (type.isHeapAllocated) {
       val structProtoCodableExtension = ExtensionSpec.builder(structType)
         .addSuperType(type.protoCodableType)
         .addFunction(
@@ -397,26 +383,67 @@ class SwiftGenerator private constructor(
         .build()
       fileMembers += FileMemberSpec.builder(structProtoCodableExtension).build()
 
-      val storageMessageConformanceExtension = ExtensionSpec.builder(storageType)
-        .messageConformanceExtension(type)
-        .build()
-      fileMembers += FileMemberSpec.builder(storageMessageConformanceExtension).build()
-
-      val storageProtoCodableExtension = ExtensionSpec.builder(storageType)
-        .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames)
-        .build()
-      fileMembers += FileMemberSpec.builder(storageProtoCodableExtension).build()
-
       val structCodableExtension = heapCodableExtension(structType, storageName, storageType)
       fileMembers += FileMemberSpec.builder(structCodableExtension)
         .addGuard("!$FLAG_REMOVE_CODABLE")
         .build()
+    } else {
+      val messageConformanceExtension = ExtensionSpec.builder(structType)
+        .messageConformanceExtension(type)
+        .build()
+      fileMembers += FileMemberSpec.builder(messageConformanceExtension).build()
 
-      val storageCodableExtension = messageCodableExtension(type, storageType)
-      fileMembers += FileMemberSpec.builder(storageCodableExtension)
-        .addGuard("!$FLAG_REMOVE_CODABLE")
+      val protoCodableExtension = ExtensionSpec.builder(structType)
+        .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames)
+        .build()
+      fileMembers += FileMemberSpec.builder(protoCodableExtension).build()
+
+      if (!type.needsCustomCodable) {
+        fileMembers += FileMemberSpec.builder(messageCodableExtension(type, structType))
+          .addGuard("!$FLAG_REMOVE_CODABLE")
+          .build()
+      }
+    }
+
+    // Generate One-Ofs and Nested Types
+    if (type.oneOfs.isNotEmpty() || type.nestedTypes.isNotEmpty()) {
+      val nestedFileMembers = mutableListOf<FileMemberSpec>()
+
+      val nestedExtension = ExtensionSpec.builder(structType)
+        .addDoc("Subtypes within %T\n", structType)
+        .apply {
+          generateMessageOneOfs(type, oneOfEnumNames, nestedFileMembers)
+        }
+        .apply {
+          type.nestedTypes.forEach { nestedType ->
+            generateType(nestedType, nestedFileMembers).forEach {
+              addType(it)
+            }
+          }
+        }
         .build()
 
+      fileMembers += FileMemberSpec.builder(nestedExtension).build()
+      fileMembers += nestedFileMembers
+    }
+
+    // Generate Storage
+    if (type.isHeapAllocated) {
+      val storageExtension = ExtensionSpec.builder(structType)
+        .addType(
+          TypeSpec.structBuilder(storageType)
+            .addDoc("Underlying storage for %T\n", structType)
+            .addModifiers(storageVisibility)
+            .apply {
+              generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
+              generateMessageConstructor(type, storageType, oneOfEnumNames, fileMembers, forStorageType = true)
+            }
+            .build(),
+        )
+        .build()
+      fileMembers += FileMemberSpec.builder(storageExtension).build()
+
+      // Generate common Foundation types
       val storageEquatableExtension = ExtensionSpec.builder(storageType)
         .addSuperType(equatable)
         .build()
@@ -438,23 +465,13 @@ class SwiftGenerator private constructor(
         .addGuard("swift(>=5.5)")
         .build()
 
-      if (redactionExtension != null) {
-        redactionExtension.addProperty(
-          PropertySpec.varBuilder("description", STRING)
-            .addModifiers(PUBLIC)
-            .getter(
-              FunctionSpec.getterBuilder()
-                .addStatement("return %N.description", storageName)
-                .build(),
-            )
-            .build(),
-        )
-
+      // Add redaction
+      if (requiresRedaction) {
         val storageRedactableExtension = ExtensionSpec.builder(storageType)
           .addSuperType(redactable)
           .addType(
             TypeAliasSpec.builder("RedactedKeys", structType.nestedType("RedactedKeys"))
-              .addModifiers(PUBLIC)
+              .addModifiers(storageVisibility)
               .build(),
           )
           .build()
@@ -462,27 +479,21 @@ class SwiftGenerator private constructor(
           .addGuard("!$FLAG_REMOVE_REDACTABLE")
           .build()
       }
-    } else {
-      val messageConformanceExtension = ExtensionSpec.builder(structType)
-        .messageConformanceExtension(type)
+
+      // Add {Proto/Foundation} Codable methods
+      val storageMessageConformanceExtension = ExtensionSpec.builder(storageType)
+        .messageConformanceExtension(type, forStorageType = true)
         .build()
-      fileMembers += FileMemberSpec.builder(messageConformanceExtension).build()
+      fileMembers += FileMemberSpec.builder(storageMessageConformanceExtension).build()
 
-      val protoCodableExtension = ExtensionSpec.builder(structType)
-        .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames)
+      val storageProtoCodableExtension = ExtensionSpec.builder(storageType)
+        .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames, forStorageType = true)
         .build()
-      fileMembers += FileMemberSpec.builder(protoCodableExtension).build()
+      fileMembers += FileMemberSpec.builder(storageProtoCodableExtension).build()
 
-      if (!type.needsCustomCodable) {
-        fileMembers += FileMemberSpec.builder(messageCodableExtension(type, structType))
-          .addGuard("!$FLAG_REMOVE_CODABLE")
-          .build()
-      }
-    }
-
-    if (redactionExtension != null) {
-      fileMembers += FileMemberSpec.builder(redactionExtension.build())
-        .addGuard("!$FLAG_REMOVE_REDACTABLE")
+      val storageCodableExtension = messageCodableExtension(type, storageType, forStorageType = true)
+      fileMembers += FileMemberSpec.builder(storageCodableExtension)
+        .addGuard("!$FLAG_REMOVE_CODABLE")
         .build()
     }
 
@@ -494,7 +505,14 @@ class SwiftGenerator private constructor(
     structType: DeclaredTypeName,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
     propertyNames: Collection<String>,
+    forStorageType: Boolean = false,
   ): ExtensionSpec.Builder = apply {
+    val visibility: Modifier = if (forStorageType) {
+      storageVisibility
+    } else {
+      PUBLIC
+    }
+
     addSuperType(type.protoCodableType)
 
     val reader = if ("protoReader" in propertyNames) "_protoReader" else "protoReader"
@@ -502,7 +520,7 @@ class SwiftGenerator private constructor(
     val tag = if ("tag" in propertyNames) "_tag" else "tag"
     addFunction(
       FunctionSpec.constructorBuilder()
-        .addModifiers(PUBLIC)
+        .addModifiers(visibility)
         .addParameter("from", reader, protoReader)
         .throws(true)
         .apply {
@@ -629,7 +647,7 @@ class SwiftGenerator private constructor(
     val writer = if ("protoWriter" in propertyNames) "_protoWriter" else "protoWriter"
     addFunction(
       FunctionSpec.builder("encode")
-        .addModifiers(PUBLIC)
+        .addModifiers(visibility)
         .addParameter("to", writer, protoWriter)
         .throws(true)
         .apply {
@@ -667,12 +685,19 @@ class SwiftGenerator private constructor(
 
   private fun ExtensionSpec.Builder.messageConformanceExtension(
     type: MessageType,
+    forStorageType: Boolean = false,
   ): ExtensionSpec.Builder = apply {
+    val visibility: Modifier = if (forStorageType) {
+      storageVisibility
+    } else {
+      PUBLIC
+    }
+
     addSuperType(protoMessage)
     addFunction(
       FunctionSpec.builder("protoMessageTypeURL")
         .returns(STRING)
-        .addModifiers(PUBLIC)
+        .addModifiers(visibility)
         .addModifiers(STATIC)
         .addStatement("return \"%N\"", type.type.typeUrl!!)
         .build(),
@@ -718,7 +743,14 @@ class SwiftGenerator private constructor(
   private fun messageCodableExtension(
     type: MessageType,
     structType: DeclaredTypeName,
+    forStorageType: Boolean = false,
   ): ExtensionSpec {
+    val visibility: Modifier = if (forStorageType) {
+      storageVisibility
+    } else {
+      PUBLIC
+    }
+
     return ExtensionSpec.builder(structType)
       .addSuperType(codable)
       .apply {
@@ -735,7 +767,7 @@ class SwiftGenerator private constructor(
             // in order to compile.
 
             TypeSpec.enumBuilder(codingKeys)
-              .addModifiers(PUBLIC)
+              .addModifiers(visibility)
               .addSuperType(codingKey)
               .build(),
           )
@@ -746,7 +778,7 @@ class SwiftGenerator private constructor(
           addFunction(
             FunctionSpec.constructorBuilder()
               .addParameter("from", "decoder", decoder)
-              .addModifiers(PUBLIC)
+              .addModifiers(visibility)
               .throws(true)
               .addStatement("let container = try decoder.container(keyedBy: %T.self)", codingKeys)
               .apply {
@@ -830,7 +862,7 @@ class SwiftGenerator private constructor(
           addFunction(
             FunctionSpec.builder("encode")
               .addParameter("to", "encoder", encoder)
-              .addModifiers(PUBLIC)
+              .addModifiers(visibility)
               .throws(true)
               .addStatement("var container = encoder.container(keyedBy: %T.self)", codingKeys)
               .apply {
@@ -986,7 +1018,7 @@ class SwiftGenerator private constructor(
           if (needsConfigure) {
             val closureType = FunctionTypeName.get(
               TypeVariableName.typeVariable("inout Self.${storageType.simpleName}"),
-              returnType = VOID,
+              returnType = void,
             )
 
             addParameter(
@@ -1057,13 +1089,20 @@ class SwiftGenerator private constructor(
     structType: DeclaredTypeName,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
     fileMembers: MutableList<FileMemberSpec>,
-    includeMemberwiseDefaults: Boolean = true,
+    forStorageType: Boolean = false,
   ) {
+    val includeMemberwiseDefaults = !forStorageType
     val needsConfigure = type.fields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty()
+
+    val visibility: Modifier = if (forStorageType) {
+      storageVisibility
+    } else {
+      PUBLIC
+    }
 
     addFunction(
       FunctionSpec.constructorBuilder()
-        .addModifiers(PUBLIC)
+        .addModifiers(visibility)
         .addParameters(
           type,
           oneOfEnumNames,
@@ -1075,7 +1114,7 @@ class SwiftGenerator private constructor(
           if (needsConfigure) {
             val closureType = FunctionTypeName.get(
               TypeVariableName.typeVariable("inout Self"),
-              returnType = VOID,
+              returnType = void,
             )
 
             addParameter(
@@ -1107,7 +1146,7 @@ class SwiftGenerator private constructor(
     val memberwiseExtension = ExtensionSpec.builder(structType)
       .addFunction(
         FunctionSpec.constructorBuilder()
-          .addModifiers(PUBLIC)
+          .addModifiers(visibility)
           .addParameters(type, oneOfEnumNames, includeDefaults = includeMemberwiseDefaults)
           .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
           .addAttribute(deprecated)
@@ -1136,8 +1175,14 @@ class SwiftGenerator private constructor(
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
     forStorageType: Boolean = false,
   ) {
+    val visibility: Modifier = if (forStorageType) {
+      storageVisibility
+    } else {
+      PUBLIC
+    }
+
     type.fields.forEach { field ->
-      val property = PropertySpec.varBuilder(field.name, field.typeName, PUBLIC)
+      val property = PropertySpec.varBuilder(field.name, field.typeName, visibility)
       if (!forStorageType && field.documentation.isNotBlank()) {
         property.addDoc("%L\n", field.documentation.sanitizeDoc())
       }
@@ -1166,7 +1211,7 @@ class SwiftGenerator private constructor(
       val enumName = oneOfEnumNames.getValue(oneOf)
 
       addProperty(
-        PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
+        PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), visibility)
           .apply {
             if (oneOf.documentation.isNotBlank()) {
               addDoc("%N\n", oneOf.documentation.sanitizeDoc())
@@ -1177,7 +1222,7 @@ class SwiftGenerator private constructor(
     }
 
     addProperty(
-      PropertySpec.varBuilder("unknownFields", FOUNDATION_DATA, PUBLIC)
+      PropertySpec.varBuilder("unknownFields", FOUNDATION_DATA, visibility)
         .initializer(".init()")
         .build(),
     )
@@ -1257,24 +1302,25 @@ class SwiftGenerator private constructor(
     type: MessageType,
     storageName: String,
     storageType: DeclaredTypeName,
+    oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
   ) {
     if (!type.isHeapAllocated) {
       println("Generating storage property delegates for a non-heap allocated type?!")
     }
 
     val propertyVariable = TypeVariableName.typeVariable("Property")
+    val signature = FunctionSignatureSpec.builder()
+      .addTypeVariable(propertyVariable)
+      .addParameter(
+        "dynamicMember",
+        "keyPath",
+        writableKeyPath.parameterizedBy(storageType, propertyVariable),
+      )
+      .returns(propertyVariable)
+      .build()
 
-    val subscript = PropertySpec.subscriptBuilder(
-      FunctionSignatureSpec.builder()
-        .addTypeVariable(propertyVariable)
-        .addParameter(
-          "dynamicMember",
-          "keyPath",
-          writableKeyPath.parameterizedBy(storageType, propertyVariable),
-        )
-        .returns(propertyVariable)
-        .build(),
-    )
+    val subscript = PropertySpec.subscriptBuilder(signature)
+      .addDoc("Access the underlying storage\n")
       .addModifiers(PUBLIC)
       .getter(
         FunctionSpec.getterBuilder()
@@ -1283,16 +1329,76 @@ class SwiftGenerator private constructor(
       )
       .setter(
         FunctionSpec.setterBuilder()
-          .addStatement("copyStorage()")
           .addStatement("%N[keyPath: keyPath] = newValue", storageName)
           .build(),
       )
       .build()
-
     addProperty(subscript)
+
+    type.fields.forEach { field ->
+      val property = PropertySpec.varBuilder(field.name, field.typeName, PUBLIC)
+        .getter(
+          FunctionSpec.getterBuilder()
+            .addStatement("%N.%N", storageName, field.name)
+            .build(),
+        )
+        .setter(
+          FunctionSpec.setterBuilder()
+            .addStatement("%N.%N = newValue", storageName, field.name)
+            .build(),
+        )
+
+      if (field.documentation.isNotBlank()) {
+        property.addDoc("%L\n", field.documentation.sanitizeDoc())
+      }
+      if (field.isDeprecated) {
+        property.addAttribute(deprecated)
+      }
+
+      addProperty(property.build())
+    }
+
+    type.oneOfs.forEach { oneOf ->
+      val enumName = oneOfEnumNames.getValue(oneOf)
+
+      addProperty(
+        PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
+          .getter(
+            FunctionSpec.getterBuilder()
+              .addStatement("%N.%N", storageName, oneOf.name)
+              .build(),
+          )
+          .setter(
+            FunctionSpec.setterBuilder()
+              .addStatement("%N.%N = newValue", storageName, oneOf.name)
+              .build(),
+          )
+          .apply {
+            if (oneOf.documentation.isNotBlank()) {
+              addDoc("%N\n", oneOf.documentation.sanitizeDoc())
+            }
+          }
+          .build(),
+      )
+    }
+
+    addProperty(
+      PropertySpec.varBuilder("unknownFields", FOUNDATION_DATA, PUBLIC)
+        .getter(
+          FunctionSpec.getterBuilder()
+            .addStatement("%N.unknownFields", storageName)
+            .build(),
+        )
+        .setter(
+          FunctionSpec.setterBuilder()
+            .addStatement("%N.unknownFields = newValue", storageName)
+            .build(),
+        )
+        .build(),
+    )
   }
 
-  private fun TypeSpec.Builder.generateMessageOneOfs(
+  private fun ExtensionSpec.Builder.generateMessageOneOfs(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
     fileMembers: MutableList<FileMemberSpec>,

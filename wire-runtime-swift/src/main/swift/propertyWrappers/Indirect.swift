@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 @propertyWrapper
-public enum Indirect<T : ProtoCodable> {
+public enum Indirect<Value : ProtoCodable> {
     // Dedicated .none case for nil means the runtime size of this case is equal to a single
     // pointer rather than the two for the .some case.
     case none
 
-    indirect case some(T)
+    indirect case some(Value)
 
-    public init(wrappedValue: T?) {
+    public init(wrappedValue: Value?) {
         if let value = wrappedValue {
           self = .some(value)
         } else {
@@ -29,7 +29,7 @@ public enum Indirect<T : ProtoCodable> {
         }
     }
 
-    public var wrappedValue: T? {
+    public var wrappedValue: Value? {
         get {
             switch self {
             case .none: return nil
@@ -46,10 +46,10 @@ public enum Indirect<T : ProtoCodable> {
     }
 }
 
-extension Indirect : Codable where T : Codable {
+extension Indirect : Codable where Value : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        self.init(wrappedValue: try container.decode(T.self))
+        self.init(wrappedValue: try container.decode(Value.self))
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -57,13 +57,15 @@ extension Indirect : Codable where T : Codable {
     }
 }
 
-extension Indirect : Equatable where T : Equatable {
+extension Indirect : Equatable where Value : Equatable {
 }
 
-extension Indirect : Hashable where T : Hashable {
+extension Indirect : Hashable where Value : Hashable {
 }
 
 #if swift(>=5.5)
-extension Indirect : Sendable where T : Sendable {
+
+extension Indirect : Sendable where Value : Sendable {
 }
+
 #endif

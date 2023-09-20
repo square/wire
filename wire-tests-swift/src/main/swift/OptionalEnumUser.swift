@@ -8,22 +8,8 @@ public struct OptionalEnumUser {
     public var optional_enum: OptionalEnumUser.OptionalEnum?
     public var unknownFields: Foundation.Data = .init()
 
-    public init(configure: (inout Self) -> Void = { _ in }) {
+    public init(configure: (inout Self) -> Swift.Void = { _ in }) {
         configure(&self)
-    }
-
-    public enum OptionalEnum : UInt32, CaseIterable, ProtoEnum {
-
-        case FOO = 1
-        case BAR = 2
-
-        public var description: String {
-            switch self {
-            case .FOO: return "FOO"
-            case .BAR: return "BAR"
-            }
-        }
-
     }
 
 }
@@ -37,11 +23,6 @@ extension OptionalEnumUser {
         self.optional_enum = optional_enum
     }
 
-}
-#endif
-
-#if swift(>=5.5)
-extension OptionalEnumUser.OptionalEnum : Sendable {
 }
 #endif
 
@@ -107,5 +88,31 @@ extension OptionalEnumUser : Codable {
         try container.encodeIfPresent(self.optional_enum, forKey: preferCamelCase ? "optionalEnum" : "optional_enum")
     }
 
+}
+#endif
+
+/**
+ * Subtypes within OptionalEnumUser
+ */
+extension OptionalEnumUser {
+
+    public enum OptionalEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
+
+        case FOO = 1
+        case BAR = 2
+
+        public var description: Swift.String {
+            switch self {
+            case .FOO: return "FOO"
+            case .BAR: return "BAR"
+            }
+        }
+
+    }
+
+}
+
+#if swift(>=5.5)
+extension OptionalEnumUser.OptionalEnum : Sendable {
 }
 #endif

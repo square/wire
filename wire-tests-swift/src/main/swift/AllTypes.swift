@@ -6,15 +6,1185 @@ import Wire
 @dynamicMemberLookup
 public struct AllTypes {
 
-    @Heap
+    @CopyOnWrite
     private var storage: AllTypes.Storage
+    /**
+     * Access the underlying storage
+     */
     public subscript<Property>(dynamicMember keyPath: WritableKeyPath<AllTypes.Storage, Property>) -> Property {
         get {
             storage[keyPath: keyPath]
         }
         set {
-            copyStorage()
             storage[keyPath: keyPath] = newValue
+        }
+    }
+    public var opt_int32: Int32? {
+        get {
+            storage.opt_int32
+        }
+        set {
+            storage.opt_int32 = newValue
+        }
+    }
+    public var opt_uint32: UInt32? {
+        get {
+            storage.opt_uint32
+        }
+        set {
+            storage.opt_uint32 = newValue
+        }
+    }
+    public var opt_sint32: Int32? {
+        get {
+            storage.opt_sint32
+        }
+        set {
+            storage.opt_sint32 = newValue
+        }
+    }
+    public var opt_fixed32: UInt32? {
+        get {
+            storage.opt_fixed32
+        }
+        set {
+            storage.opt_fixed32 = newValue
+        }
+    }
+    public var opt_sfixed32: Int32? {
+        get {
+            storage.opt_sfixed32
+        }
+        set {
+            storage.opt_sfixed32 = newValue
+        }
+    }
+    public var opt_int64: Int64? {
+        get {
+            storage.opt_int64
+        }
+        set {
+            storage.opt_int64 = newValue
+        }
+    }
+    public var opt_uint64: UInt64? {
+        get {
+            storage.opt_uint64
+        }
+        set {
+            storage.opt_uint64 = newValue
+        }
+    }
+    public var opt_sint64: Int64? {
+        get {
+            storage.opt_sint64
+        }
+        set {
+            storage.opt_sint64 = newValue
+        }
+    }
+    public var opt_fixed64: UInt64? {
+        get {
+            storage.opt_fixed64
+        }
+        set {
+            storage.opt_fixed64 = newValue
+        }
+    }
+    public var opt_sfixed64: Int64? {
+        get {
+            storage.opt_sfixed64
+        }
+        set {
+            storage.opt_sfixed64 = newValue
+        }
+    }
+    public var opt_bool: Bool? {
+        get {
+            storage.opt_bool
+        }
+        set {
+            storage.opt_bool = newValue
+        }
+    }
+    public var opt_float: Float? {
+        get {
+            storage.opt_float
+        }
+        set {
+            storage.opt_float = newValue
+        }
+    }
+    public var opt_double: Double? {
+        get {
+            storage.opt_double
+        }
+        set {
+            storage.opt_double = newValue
+        }
+    }
+    public var opt_string: String? {
+        get {
+            storage.opt_string
+        }
+        set {
+            storage.opt_string = newValue
+        }
+    }
+    public var opt_bytes: Foundation.Data? {
+        get {
+            storage.opt_bytes
+        }
+        set {
+            storage.opt_bytes = newValue
+        }
+    }
+    public var opt_nested_enum: AllTypes.NestedEnum? {
+        get {
+            storage.opt_nested_enum
+        }
+        set {
+            storage.opt_nested_enum = newValue
+        }
+    }
+    public var opt_nested_message: AllTypes.NestedMessage? {
+        get {
+            storage.opt_nested_message
+        }
+        set {
+            storage.opt_nested_message = newValue
+        }
+    }
+    public var req_int32: Int32 {
+        get {
+            storage.req_int32
+        }
+        set {
+            storage.req_int32 = newValue
+        }
+    }
+    public var req_uint32: UInt32 {
+        get {
+            storage.req_uint32
+        }
+        set {
+            storage.req_uint32 = newValue
+        }
+    }
+    public var req_sint32: Int32 {
+        get {
+            storage.req_sint32
+        }
+        set {
+            storage.req_sint32 = newValue
+        }
+    }
+    public var req_fixed32: UInt32 {
+        get {
+            storage.req_fixed32
+        }
+        set {
+            storage.req_fixed32 = newValue
+        }
+    }
+    public var req_sfixed32: Int32 {
+        get {
+            storage.req_sfixed32
+        }
+        set {
+            storage.req_sfixed32 = newValue
+        }
+    }
+    public var req_int64: Int64 {
+        get {
+            storage.req_int64
+        }
+        set {
+            storage.req_int64 = newValue
+        }
+    }
+    public var req_uint64: UInt64 {
+        get {
+            storage.req_uint64
+        }
+        set {
+            storage.req_uint64 = newValue
+        }
+    }
+    public var req_sint64: Int64 {
+        get {
+            storage.req_sint64
+        }
+        set {
+            storage.req_sint64 = newValue
+        }
+    }
+    public var req_fixed64: UInt64 {
+        get {
+            storage.req_fixed64
+        }
+        set {
+            storage.req_fixed64 = newValue
+        }
+    }
+    public var req_sfixed64: Int64 {
+        get {
+            storage.req_sfixed64
+        }
+        set {
+            storage.req_sfixed64 = newValue
+        }
+    }
+    public var req_bool: Bool {
+        get {
+            storage.req_bool
+        }
+        set {
+            storage.req_bool = newValue
+        }
+    }
+    public var req_float: Float {
+        get {
+            storage.req_float
+        }
+        set {
+            storage.req_float = newValue
+        }
+    }
+    public var req_double: Double {
+        get {
+            storage.req_double
+        }
+        set {
+            storage.req_double = newValue
+        }
+    }
+    public var req_string: String {
+        get {
+            storage.req_string
+        }
+        set {
+            storage.req_string = newValue
+        }
+    }
+    public var req_bytes: Foundation.Data {
+        get {
+            storage.req_bytes
+        }
+        set {
+            storage.req_bytes = newValue
+        }
+    }
+    public var req_nested_enum: AllTypes.NestedEnum {
+        get {
+            storage.req_nested_enum
+        }
+        set {
+            storage.req_nested_enum = newValue
+        }
+    }
+    public var req_nested_message: AllTypes.NestedMessage {
+        get {
+            storage.req_nested_message
+        }
+        set {
+            storage.req_nested_message = newValue
+        }
+    }
+    public var rep_int32: [Int32] {
+        get {
+            storage.rep_int32
+        }
+        set {
+            storage.rep_int32 = newValue
+        }
+    }
+    public var rep_uint32: [UInt32] {
+        get {
+            storage.rep_uint32
+        }
+        set {
+            storage.rep_uint32 = newValue
+        }
+    }
+    public var rep_sint32: [Int32] {
+        get {
+            storage.rep_sint32
+        }
+        set {
+            storage.rep_sint32 = newValue
+        }
+    }
+    public var rep_fixed32: [UInt32] {
+        get {
+            storage.rep_fixed32
+        }
+        set {
+            storage.rep_fixed32 = newValue
+        }
+    }
+    public var rep_sfixed32: [Int32] {
+        get {
+            storage.rep_sfixed32
+        }
+        set {
+            storage.rep_sfixed32 = newValue
+        }
+    }
+    public var rep_int64: [Int64] {
+        get {
+            storage.rep_int64
+        }
+        set {
+            storage.rep_int64 = newValue
+        }
+    }
+    public var rep_uint64: [UInt64] {
+        get {
+            storage.rep_uint64
+        }
+        set {
+            storage.rep_uint64 = newValue
+        }
+    }
+    public var rep_sint64: [Int64] {
+        get {
+            storage.rep_sint64
+        }
+        set {
+            storage.rep_sint64 = newValue
+        }
+    }
+    public var rep_fixed64: [UInt64] {
+        get {
+            storage.rep_fixed64
+        }
+        set {
+            storage.rep_fixed64 = newValue
+        }
+    }
+    public var rep_sfixed64: [Int64] {
+        get {
+            storage.rep_sfixed64
+        }
+        set {
+            storage.rep_sfixed64 = newValue
+        }
+    }
+    public var rep_bool: [Bool] {
+        get {
+            storage.rep_bool
+        }
+        set {
+            storage.rep_bool = newValue
+        }
+    }
+    public var rep_float: [Float] {
+        get {
+            storage.rep_float
+        }
+        set {
+            storage.rep_float = newValue
+        }
+    }
+    public var rep_double: [Double] {
+        get {
+            storage.rep_double
+        }
+        set {
+            storage.rep_double = newValue
+        }
+    }
+    public var rep_string: [String] {
+        get {
+            storage.rep_string
+        }
+        set {
+            storage.rep_string = newValue
+        }
+    }
+    public var rep_bytes: [Foundation.Data] {
+        get {
+            storage.rep_bytes
+        }
+        set {
+            storage.rep_bytes = newValue
+        }
+    }
+    public var rep_nested_enum: [AllTypes.NestedEnum] {
+        get {
+            storage.rep_nested_enum
+        }
+        set {
+            storage.rep_nested_enum = newValue
+        }
+    }
+    public var rep_nested_message: [AllTypes.NestedMessage] {
+        get {
+            storage.rep_nested_message
+        }
+        set {
+            storage.rep_nested_message = newValue
+        }
+    }
+    public var pack_int32: [Int32] {
+        get {
+            storage.pack_int32
+        }
+        set {
+            storage.pack_int32 = newValue
+        }
+    }
+    public var pack_uint32: [UInt32] {
+        get {
+            storage.pack_uint32
+        }
+        set {
+            storage.pack_uint32 = newValue
+        }
+    }
+    public var pack_sint32: [Int32] {
+        get {
+            storage.pack_sint32
+        }
+        set {
+            storage.pack_sint32 = newValue
+        }
+    }
+    public var pack_fixed32: [UInt32] {
+        get {
+            storage.pack_fixed32
+        }
+        set {
+            storage.pack_fixed32 = newValue
+        }
+    }
+    public var pack_sfixed32: [Int32] {
+        get {
+            storage.pack_sfixed32
+        }
+        set {
+            storage.pack_sfixed32 = newValue
+        }
+    }
+    public var pack_int64: [Int64] {
+        get {
+            storage.pack_int64
+        }
+        set {
+            storage.pack_int64 = newValue
+        }
+    }
+    public var pack_uint64: [UInt64] {
+        get {
+            storage.pack_uint64
+        }
+        set {
+            storage.pack_uint64 = newValue
+        }
+    }
+    public var pack_sint64: [Int64] {
+        get {
+            storage.pack_sint64
+        }
+        set {
+            storage.pack_sint64 = newValue
+        }
+    }
+    public var pack_fixed64: [UInt64] {
+        get {
+            storage.pack_fixed64
+        }
+        set {
+            storage.pack_fixed64 = newValue
+        }
+    }
+    public var pack_sfixed64: [Int64] {
+        get {
+            storage.pack_sfixed64
+        }
+        set {
+            storage.pack_sfixed64 = newValue
+        }
+    }
+    public var pack_bool: [Bool] {
+        get {
+            storage.pack_bool
+        }
+        set {
+            storage.pack_bool = newValue
+        }
+    }
+    public var pack_float: [Float] {
+        get {
+            storage.pack_float
+        }
+        set {
+            storage.pack_float = newValue
+        }
+    }
+    public var pack_double: [Double] {
+        get {
+            storage.pack_double
+        }
+        set {
+            storage.pack_double = newValue
+        }
+    }
+    public var pack_nested_enum: [AllTypes.NestedEnum] {
+        get {
+            storage.pack_nested_enum
+        }
+        set {
+            storage.pack_nested_enum = newValue
+        }
+    }
+    public var default_int32: Int32? {
+        get {
+            storage.default_int32
+        }
+        set {
+            storage.default_int32 = newValue
+        }
+    }
+    public var default_uint32: UInt32? {
+        get {
+            storage.default_uint32
+        }
+        set {
+            storage.default_uint32 = newValue
+        }
+    }
+    public var default_sint32: Int32? {
+        get {
+            storage.default_sint32
+        }
+        set {
+            storage.default_sint32 = newValue
+        }
+    }
+    public var default_fixed32: UInt32? {
+        get {
+            storage.default_fixed32
+        }
+        set {
+            storage.default_fixed32 = newValue
+        }
+    }
+    public var default_sfixed32: Int32? {
+        get {
+            storage.default_sfixed32
+        }
+        set {
+            storage.default_sfixed32 = newValue
+        }
+    }
+    public var default_int64: Int64? {
+        get {
+            storage.default_int64
+        }
+        set {
+            storage.default_int64 = newValue
+        }
+    }
+    public var default_uint64: UInt64? {
+        get {
+            storage.default_uint64
+        }
+        set {
+            storage.default_uint64 = newValue
+        }
+    }
+    public var default_sint64: Int64? {
+        get {
+            storage.default_sint64
+        }
+        set {
+            storage.default_sint64 = newValue
+        }
+    }
+    public var default_fixed64: UInt64? {
+        get {
+            storage.default_fixed64
+        }
+        set {
+            storage.default_fixed64 = newValue
+        }
+    }
+    public var default_sfixed64: Int64? {
+        get {
+            storage.default_sfixed64
+        }
+        set {
+            storage.default_sfixed64 = newValue
+        }
+    }
+    public var default_bool: Bool? {
+        get {
+            storage.default_bool
+        }
+        set {
+            storage.default_bool = newValue
+        }
+    }
+    public var default_float: Float? {
+        get {
+            storage.default_float
+        }
+        set {
+            storage.default_float = newValue
+        }
+    }
+    public var default_double: Double? {
+        get {
+            storage.default_double
+        }
+        set {
+            storage.default_double = newValue
+        }
+    }
+    public var default_string: String? {
+        get {
+            storage.default_string
+        }
+        set {
+            storage.default_string = newValue
+        }
+    }
+    public var default_bytes: Foundation.Data? {
+        get {
+            storage.default_bytes
+        }
+        set {
+            storage.default_bytes = newValue
+        }
+    }
+    public var default_nested_enum: AllTypes.NestedEnum? {
+        get {
+            storage.default_nested_enum
+        }
+        set {
+            storage.default_nested_enum = newValue
+        }
+    }
+    public var map_int32_int32: [Int32 : Int32] {
+        get {
+            storage.map_int32_int32
+        }
+        set {
+            storage.map_int32_int32 = newValue
+        }
+    }
+    public var map_string_string: [String : String] {
+        get {
+            storage.map_string_string
+        }
+        set {
+            storage.map_string_string = newValue
+        }
+    }
+    public var map_string_message: [String : AllTypes.NestedMessage] {
+        get {
+            storage.map_string_message
+        }
+        set {
+            storage.map_string_message = newValue
+        }
+    }
+    public var map_string_enum: [String : AllTypes.NestedEnum] {
+        get {
+            storage.map_string_enum
+        }
+        set {
+            storage.map_string_enum = newValue
+        }
+    }
+    public var array_int32: [Int32] {
+        get {
+            storage.array_int32
+        }
+        set {
+            storage.array_int32 = newValue
+        }
+    }
+    public var array_uint32: [UInt32] {
+        get {
+            storage.array_uint32
+        }
+        set {
+            storage.array_uint32 = newValue
+        }
+    }
+    public var array_sint32: [Int32] {
+        get {
+            storage.array_sint32
+        }
+        set {
+            storage.array_sint32 = newValue
+        }
+    }
+    public var array_fixed32: [UInt32] {
+        get {
+            storage.array_fixed32
+        }
+        set {
+            storage.array_fixed32 = newValue
+        }
+    }
+    public var array_sfixed32: [Int32] {
+        get {
+            storage.array_sfixed32
+        }
+        set {
+            storage.array_sfixed32 = newValue
+        }
+    }
+    public var array_int64: [Int64] {
+        get {
+            storage.array_int64
+        }
+        set {
+            storage.array_int64 = newValue
+        }
+    }
+    public var array_uint64: [UInt64] {
+        get {
+            storage.array_uint64
+        }
+        set {
+            storage.array_uint64 = newValue
+        }
+    }
+    public var array_sint64: [Int64] {
+        get {
+            storage.array_sint64
+        }
+        set {
+            storage.array_sint64 = newValue
+        }
+    }
+    public var array_fixed64: [UInt64] {
+        get {
+            storage.array_fixed64
+        }
+        set {
+            storage.array_fixed64 = newValue
+        }
+    }
+    public var array_sfixed64: [Int64] {
+        get {
+            storage.array_sfixed64
+        }
+        set {
+            storage.array_sfixed64 = newValue
+        }
+    }
+    public var array_float: [Float] {
+        get {
+            storage.array_float
+        }
+        set {
+            storage.array_float = newValue
+        }
+    }
+    public var array_double: [Double] {
+        get {
+            storage.array_double
+        }
+        set {
+            storage.array_double = newValue
+        }
+    }
+    public var ext_opt_int32: Int32? {
+        get {
+            storage.ext_opt_int32
+        }
+        set {
+            storage.ext_opt_int32 = newValue
+        }
+    }
+    public var ext_opt_uint32: UInt32? {
+        get {
+            storage.ext_opt_uint32
+        }
+        set {
+            storage.ext_opt_uint32 = newValue
+        }
+    }
+    public var ext_opt_sint32: Int32? {
+        get {
+            storage.ext_opt_sint32
+        }
+        set {
+            storage.ext_opt_sint32 = newValue
+        }
+    }
+    public var ext_opt_fixed32: UInt32? {
+        get {
+            storage.ext_opt_fixed32
+        }
+        set {
+            storage.ext_opt_fixed32 = newValue
+        }
+    }
+    public var ext_opt_sfixed32: Int32? {
+        get {
+            storage.ext_opt_sfixed32
+        }
+        set {
+            storage.ext_opt_sfixed32 = newValue
+        }
+    }
+    public var ext_opt_int64: Int64? {
+        get {
+            storage.ext_opt_int64
+        }
+        set {
+            storage.ext_opt_int64 = newValue
+        }
+    }
+    public var ext_opt_uint64: UInt64? {
+        get {
+            storage.ext_opt_uint64
+        }
+        set {
+            storage.ext_opt_uint64 = newValue
+        }
+    }
+    public var ext_opt_sint64: Int64? {
+        get {
+            storage.ext_opt_sint64
+        }
+        set {
+            storage.ext_opt_sint64 = newValue
+        }
+    }
+    public var ext_opt_fixed64: UInt64? {
+        get {
+            storage.ext_opt_fixed64
+        }
+        set {
+            storage.ext_opt_fixed64 = newValue
+        }
+    }
+    public var ext_opt_sfixed64: Int64? {
+        get {
+            storage.ext_opt_sfixed64
+        }
+        set {
+            storage.ext_opt_sfixed64 = newValue
+        }
+    }
+    public var ext_opt_bool: Bool? {
+        get {
+            storage.ext_opt_bool
+        }
+        set {
+            storage.ext_opt_bool = newValue
+        }
+    }
+    public var ext_opt_float: Float? {
+        get {
+            storage.ext_opt_float
+        }
+        set {
+            storage.ext_opt_float = newValue
+        }
+    }
+    public var ext_opt_double: Double? {
+        get {
+            storage.ext_opt_double
+        }
+        set {
+            storage.ext_opt_double = newValue
+        }
+    }
+    public var ext_opt_string: String? {
+        get {
+            storage.ext_opt_string
+        }
+        set {
+            storage.ext_opt_string = newValue
+        }
+    }
+    public var ext_opt_bytes: Foundation.Data? {
+        get {
+            storage.ext_opt_bytes
+        }
+        set {
+            storage.ext_opt_bytes = newValue
+        }
+    }
+    public var ext_opt_nested_enum: AllTypes.NestedEnum? {
+        get {
+            storage.ext_opt_nested_enum
+        }
+        set {
+            storage.ext_opt_nested_enum = newValue
+        }
+    }
+    public var ext_opt_nested_message: AllTypes.NestedMessage? {
+        get {
+            storage.ext_opt_nested_message
+        }
+        set {
+            storage.ext_opt_nested_message = newValue
+        }
+    }
+    public var ext_rep_int32: [Int32] {
+        get {
+            storage.ext_rep_int32
+        }
+        set {
+            storage.ext_rep_int32 = newValue
+        }
+    }
+    public var ext_rep_uint32: [UInt32] {
+        get {
+            storage.ext_rep_uint32
+        }
+        set {
+            storage.ext_rep_uint32 = newValue
+        }
+    }
+    public var ext_rep_sint32: [Int32] {
+        get {
+            storage.ext_rep_sint32
+        }
+        set {
+            storage.ext_rep_sint32 = newValue
+        }
+    }
+    public var ext_rep_fixed32: [UInt32] {
+        get {
+            storage.ext_rep_fixed32
+        }
+        set {
+            storage.ext_rep_fixed32 = newValue
+        }
+    }
+    public var ext_rep_sfixed32: [Int32] {
+        get {
+            storage.ext_rep_sfixed32
+        }
+        set {
+            storage.ext_rep_sfixed32 = newValue
+        }
+    }
+    public var ext_rep_int64: [Int64] {
+        get {
+            storage.ext_rep_int64
+        }
+        set {
+            storage.ext_rep_int64 = newValue
+        }
+    }
+    public var ext_rep_uint64: [UInt64] {
+        get {
+            storage.ext_rep_uint64
+        }
+        set {
+            storage.ext_rep_uint64 = newValue
+        }
+    }
+    public var ext_rep_sint64: [Int64] {
+        get {
+            storage.ext_rep_sint64
+        }
+        set {
+            storage.ext_rep_sint64 = newValue
+        }
+    }
+    public var ext_rep_fixed64: [UInt64] {
+        get {
+            storage.ext_rep_fixed64
+        }
+        set {
+            storage.ext_rep_fixed64 = newValue
+        }
+    }
+    public var ext_rep_sfixed64: [Int64] {
+        get {
+            storage.ext_rep_sfixed64
+        }
+        set {
+            storage.ext_rep_sfixed64 = newValue
+        }
+    }
+    public var ext_rep_bool: [Bool] {
+        get {
+            storage.ext_rep_bool
+        }
+        set {
+            storage.ext_rep_bool = newValue
+        }
+    }
+    public var ext_rep_float: [Float] {
+        get {
+            storage.ext_rep_float
+        }
+        set {
+            storage.ext_rep_float = newValue
+        }
+    }
+    public var ext_rep_double: [Double] {
+        get {
+            storage.ext_rep_double
+        }
+        set {
+            storage.ext_rep_double = newValue
+        }
+    }
+    public var ext_rep_string: [String] {
+        get {
+            storage.ext_rep_string
+        }
+        set {
+            storage.ext_rep_string = newValue
+        }
+    }
+    public var ext_rep_bytes: [Foundation.Data] {
+        get {
+            storage.ext_rep_bytes
+        }
+        set {
+            storage.ext_rep_bytes = newValue
+        }
+    }
+    public var ext_rep_nested_enum: [AllTypes.NestedEnum] {
+        get {
+            storage.ext_rep_nested_enum
+        }
+        set {
+            storage.ext_rep_nested_enum = newValue
+        }
+    }
+    public var ext_rep_nested_message: [AllTypes.NestedMessage] {
+        get {
+            storage.ext_rep_nested_message
+        }
+        set {
+            storage.ext_rep_nested_message = newValue
+        }
+    }
+    public var ext_pack_int32: [Int32] {
+        get {
+            storage.ext_pack_int32
+        }
+        set {
+            storage.ext_pack_int32 = newValue
+        }
+    }
+    public var ext_pack_uint32: [UInt32] {
+        get {
+            storage.ext_pack_uint32
+        }
+        set {
+            storage.ext_pack_uint32 = newValue
+        }
+    }
+    public var ext_pack_sint32: [Int32] {
+        get {
+            storage.ext_pack_sint32
+        }
+        set {
+            storage.ext_pack_sint32 = newValue
+        }
+    }
+    public var ext_pack_fixed32: [UInt32] {
+        get {
+            storage.ext_pack_fixed32
+        }
+        set {
+            storage.ext_pack_fixed32 = newValue
+        }
+    }
+    public var ext_pack_sfixed32: [Int32] {
+        get {
+            storage.ext_pack_sfixed32
+        }
+        set {
+            storage.ext_pack_sfixed32 = newValue
+        }
+    }
+    public var ext_pack_int64: [Int64] {
+        get {
+            storage.ext_pack_int64
+        }
+        set {
+            storage.ext_pack_int64 = newValue
+        }
+    }
+    public var ext_pack_uint64: [UInt64] {
+        get {
+            storage.ext_pack_uint64
+        }
+        set {
+            storage.ext_pack_uint64 = newValue
+        }
+    }
+    public var ext_pack_sint64: [Int64] {
+        get {
+            storage.ext_pack_sint64
+        }
+        set {
+            storage.ext_pack_sint64 = newValue
+        }
+    }
+    public var ext_pack_fixed64: [UInt64] {
+        get {
+            storage.ext_pack_fixed64
+        }
+        set {
+            storage.ext_pack_fixed64 = newValue
+        }
+    }
+    public var ext_pack_sfixed64: [Int64] {
+        get {
+            storage.ext_pack_sfixed64
+        }
+        set {
+            storage.ext_pack_sfixed64 = newValue
+        }
+    }
+    public var ext_pack_bool: [Bool] {
+        get {
+            storage.ext_pack_bool
+        }
+        set {
+            storage.ext_pack_bool = newValue
+        }
+    }
+    public var ext_pack_float: [Float] {
+        get {
+            storage.ext_pack_float
+        }
+        set {
+            storage.ext_pack_float = newValue
+        }
+    }
+    public var ext_pack_double: [Double] {
+        get {
+            storage.ext_pack_double
+        }
+        set {
+            storage.ext_pack_double = newValue
+        }
+    }
+    public var ext_pack_nested_enum: [AllTypes.NestedEnum] {
+        get {
+            storage.ext_pack_nested_enum
+        }
+        set {
+            storage.ext_pack_nested_enum = newValue
+        }
+    }
+    public var unknownFields: Foundation.Data {
+        get {
+            storage.unknownFields
+        }
+        set {
+            storage.unknownFields = newValue
         }
     }
 
@@ -36,7 +1206,7 @@ public struct AllTypes {
         req_bytes: Foundation.Data,
         req_nested_enum: AllTypes.NestedEnum,
         req_nested_message: AllTypes.NestedMessage,
-        configure: (inout Self.Storage) -> Void = { _ in }
+        configure: (inout Self.Storage) -> Swift.Void = { _ in }
     ) {
         self.storage = AllTypes.Storage(
                 req_int32: req_int32,
@@ -58,37 +1228,6 @@ public struct AllTypes {
                 req_nested_message: req_nested_message,
                 configure: configure
                 )
-    }
-
-    private mutating func copyStorage() {
-        if !isKnownUniquelyReferenced(&_storage) {
-            _storage = Heap(wrappedValue: storage)
-        }
-    }
-
-    public enum NestedEnum : UInt32, CaseIterable, ProtoEnum {
-
-        case UNKNOWN = 0
-        case A = 1
-
-        public var description: String {
-            switch self {
-            case .UNKNOWN: return "UNKNOWN"
-            case .A: return "A"
-            }
-        }
-
-    }
-
-    public struct NestedMessage {
-
-        public var a: Int32?
-        public var unknownFields: Foundation.Data = .init()
-
-        public init(configure: (inout Self) -> Void = { _ in }) {
-            configure(&self)
-        }
-
     }
 
 }
@@ -397,6 +1536,81 @@ extension AllTypes {
 }
 #endif
 
+#if !WIRE_REMOVE_EQUATABLE
+extension AllTypes : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension AllTypes : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension AllTypes : Sendable {
+}
+#endif
+
+extension AllTypes : Proto2Codable {
+
+    public init(from protoReader: Wire.ProtoReader) throws {
+        self.storage = try Storage(from: protoReader)
+    }
+
+    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+        try storage.encode(to: protoWriter)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension AllTypes : Codable {
+
+    public init(from decoder: Swift.Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.storage = try container.decode(Storage.self)
+    }
+
+    public func encode(to encoder: Swift.Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(storage)
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within AllTypes
+ */
+extension AllTypes {
+
+    public enum NestedEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
+
+        case UNKNOWN = 0
+        case A = 1
+
+        public var description: Swift.String {
+            switch self {
+            case .UNKNOWN: return "UNKNOWN"
+            case .A: return "A"
+            }
+        }
+
+    }
+
+    public struct NestedMessage {
+
+        public var a: Swift.Int32?
+        public var unknownFields: Foundation.Data = .init()
+
+        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
+            configure(&self)
+        }
+
+    }
+
+}
+
 #if swift(>=5.5)
 extension AllTypes.NestedEnum : Sendable {
 }
@@ -475,21 +1689,6 @@ extension AllTypes.NestedMessage : Codable {
         try container.encodeIfPresent(self.a, forKey: "a")
     }
 
-}
-#endif
-
-#if !WIRE_REMOVE_EQUATABLE
-extension AllTypes : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension AllTypes : Hashable {
-}
-#endif
-
-#if swift(>=5.5)
-extension AllTypes : @unchecked Sendable {
 }
 #endif
 
@@ -797,6 +1996,9 @@ extension AllTypes.Storage {
 
 extension AllTypes {
 
+    /**
+     * Underlying storage for AllTypes
+     */
     public struct Storage {
 
         public var opt_int32: Swift.Int32?
@@ -1006,17 +2208,20 @@ extension AllTypes {
 
 }
 
-extension AllTypes : Proto2Codable {
-
-    public init(from protoReader: Wire.ProtoReader) throws {
-        self.storage = try Storage(from: protoReader)
-    }
-
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
-        try storage.encode(to: protoWriter)
-    }
-
+#if !WIRE_REMOVE_EQUATABLE
+extension AllTypes.Storage : Equatable {
 }
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension AllTypes.Storage : Hashable {
+}
+#endif
+
+#if swift(>=5.5)
+extension AllTypes.Storage : Sendable {
+}
+#endif
 
 extension AllTypes.Storage : ProtoMessage {
 
@@ -1627,22 +2832,6 @@ extension AllTypes.Storage : Proto2Codable {
 }
 
 #if !WIRE_REMOVE_CODABLE
-extension AllTypes : Codable {
-
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        self.storage = try container.decode(Storage.self)
-    }
-
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(storage)
-    }
-
-}
-#endif
-
-#if !WIRE_REMOVE_CODABLE
 extension AllTypes.Storage : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
@@ -2134,20 +3323,5 @@ extension AllTypes.Storage : Codable {
         }
     }
 
-}
-#endif
-
-#if !WIRE_REMOVE_EQUATABLE
-extension AllTypes.Storage : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension AllTypes.Storage : Hashable {
-}
-#endif
-
-#if swift(>=5.5)
-extension AllTypes.Storage : Sendable {
 }
 #endif

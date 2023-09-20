@@ -11,24 +11,8 @@ public struct MappyTwo {
     public var int_things_two: [Int32 : Thing] = [:]
     public var unknownFields: Foundation.Data = .init()
 
-    public init(configure: (inout Self) -> Void = { _ in }) {
+    public init(configure: (inout Self) -> Swift.Void = { _ in }) {
         configure(&self)
-    }
-
-    public enum ValueEnum : UInt32, CaseIterable, ProtoEnum {
-
-        case DEFAULT = 0
-        case FOO = 1
-        case BAR = 2
-
-        public var description: String {
-            switch self {
-            case .DEFAULT: return "DEFAULT"
-            case .FOO: return "FOO"
-            case .BAR: return "BAR"
-            }
-        }
-
     }
 
 }
@@ -50,11 +34,6 @@ extension MappyTwo {
         self.int_things_two = int_things_two
     }
 
-}
-#endif
-
-#if swift(>=5.5)
-extension MappyTwo.ValueEnum : Sendable {
 }
 #endif
 
@@ -147,5 +126,33 @@ extension MappyTwo : Codable {
         }
     }
 
+}
+#endif
+
+/**
+ * Subtypes within MappyTwo
+ */
+extension MappyTwo {
+
+    public enum ValueEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
+
+        case DEFAULT = 0
+        case FOO = 1
+        case BAR = 2
+
+        public var description: Swift.String {
+            switch self {
+            case .DEFAULT: return "DEFAULT"
+            case .FOO: return "FOO"
+            case .BAR: return "BAR"
+            }
+        }
+
+    }
+
+}
+
+#if swift(>=5.5)
+extension MappyTwo.ValueEnum : Sendable {
 }
 #endif
