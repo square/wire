@@ -1,5 +1,4 @@
 plugins {
-  id("com.vanniktech.maven.publish.base")
   id("java-platform")
 }
 
@@ -30,7 +29,7 @@ dependencies {
 }
 
 extensions.configure<PublishingExtension> {
-  publications.create("maven", MavenPublication::class) {
+  publications.create("maven-java-platform", MavenPublication::class) {
     from(project.components.getByName("javaPlatform"))
   }
 }

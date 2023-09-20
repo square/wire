@@ -1,5 +1,6 @@
 [versions]
 android = "4.1.1.4"
+asm = "9.5"
 assertj = "3.24.2"
 checkerQual = "3.39.0"
 coroutines = "1.7.3"
@@ -29,6 +30,7 @@ androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1
 androidx-compose = { module = "androidx.activity:activity-compose", version = "1.7.2" }
 androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4" }
 androidx-ktx = { module = "androidx.core:core-ktx", version = "1.10.1" }
+asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 assertk = "com.willowtreeapps.assertk:assertk:0.27.0"
 checker-qual = { module = "org.checkerframework:checker-qual", version.ref = "checkerQual" }
@@ -87,18 +89,3 @@ protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protob
 swiftpoet = { module = "io.outfoxx:swiftpoet", version = "1.5.0" }
 truth = { module = "com.google.truth:truth", version = "1.1.5" }
 vanniktechPublishPlugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.25.3" }
-
-wire-buildGradlePlugin = { module = "com.squareup.wire.build:gradle-plugin" }
-wire-compiler = { module = "com.squareup.wire:wire-compiler" }
-wire-gradlePlugin = { module = "com.squareup.wire:wire-gradle-plugin" }
-wire-grpcClient = { module = "com.squareup.wire:wire-grpc-client" }
-wire-grpcMockWebServer = { module = "com.squareup.wire:wire-grpc-mockwebserver" }
-wire-grpcServer = { module = "com.squareup.wire:wire-grpc-server" }
-wire-gsonSupport = { module = "com.squareup.wire:wire-gson-support" }
-wire-javaGenerator = { module = "com.squareup.wire:wire-java-generator" }
-wire-kotlinGenerator = { module = "com.squareup.wire:wire-kotlin-generator" }
-wire-moshiAdapter = { module = "com.squareup.wire:wire-moshi-adapter" }
-wire-runtime = { module = "com.squareup.wire:wire-runtime" }
-wire-schema = { module = "com.squareup.wire:wire-schema" }
-wire-schemaHandlerTests = { module = "com.squareup.wire:wire-schema-tests" }
-wire-testUtils = { module = "com.squareup.wire:wire-test-utils" }

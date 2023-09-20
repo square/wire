@@ -1,24 +1,20 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
-// This module is included in two projects:
-// - In the root project where it's released as one of our artifacts
-// - In build-support project where we can use it for the test-schema and samples.
-//
-// We only want to publish when it's being built in the root project.
-
 plugins {
   kotlin("jvm")
   id("com.github.gmazzo.buildconfig")
   id("java-gradle-plugin")
   id("com.gradle.plugin-publish").version("1.2.1").apply(false)
-  id("com.vanniktech.maven.publish.base").apply(false)
 }
 
+// This module is included in two projects:
+// - In the root project where it's released as one of our artifacts
+// - In build-support project where we can use it for the test-schema and samples.
+//
+// We only want to publish when it's being built in the root project.
 if (project.rootProject.name == "wire") {
   apply(plugin = "com.gradle.plugin-publish")
-  apply(plugin = "com.vanniktech.maven.publish.base")
-  apply(plugin = "binary-compatibility-validator")
 }
 
 gradlePlugin {
@@ -37,14 +33,13 @@ gradlePlugin {
 }
 
 dependencies {
+  compileOnly(gradleApi())
+  compileOnly(libs.pluginz.android)
+
   implementation(projects.wireCompiler)
   implementation(projects.wireKotlinGenerator)
   implementation(libs.swiftpoet)
-  implementation(libs.okio.fakefilesystem)
-
-  compileOnly(gradleApi())
   implementation(libs.pluginz.kotlin)
-  compileOnly(libs.pluginz.android)
 
   testImplementation(libs.junit)
   testImplementation(libs.assertj)

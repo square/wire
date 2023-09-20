@@ -25,3 +25,7 @@ wire {
     out = "src/main/kotlin"
   }
 }
+
+tasks.getByName("spotlessJava").dependsOn("generateMainProtos")
+tasks.getByName("spotlessKotlin").dependsOn("generateMainProtos")
+tasks.getByName("spotlessSwift").dependsOn("generateMainProtos")

@@ -36,7 +36,6 @@ dependencies {
   compileOnly(libs.kotlin.gradleApi)
   implementation(libs.pluginz.android)
   implementation(libs.pluginz.binaryCompatibilityValidator)
-  // TODO(Benoit) See what can be removed. START
   implementation(libs.pluginz.kotlin)
   implementation(libs.vanniktechPublishPlugin)
   implementation(libs.pluginz.dokka)
@@ -47,7 +46,6 @@ dependencies {
   implementation(libs.pluginz.shadow)
   implementation(libs.pluginz.buildConfig)
   implementation(libs.guava)
-  // TODO(Benoit) See what can be removed. END
 
   // Expose the generated version catalog API to the plugin.
   implementation(files(libs::class.java.superclass.protectionDomain.codeSource.location))
