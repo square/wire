@@ -1,6 +1,23 @@
 Change Log
 ==========
 
+Version ???
+-----------
+
+_Unreleased_
+
+* Fix: Missing Swift imports
+
+Version 4.9.0
+-------------
+
+_2023-09-20_
+
+* Fix: Swift generates all Storage properties. This mitigates performance issues with dynamicMemberLookup
+* Change: Swift codegen was reordered for readability
+* New: Swift propertyWrapper @CopyOnWrite. @Heap is now deprecated and will be removed in November 2024.
+* Change: Several dependency updates
+
 Version 4.8.1
 -------------
 
