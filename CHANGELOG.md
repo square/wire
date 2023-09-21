@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version ???
+-----------
+
+_Unreleased_
+
+* Fix: Missing Swift imports
+
 Version 4.9.0
 -------------
 
