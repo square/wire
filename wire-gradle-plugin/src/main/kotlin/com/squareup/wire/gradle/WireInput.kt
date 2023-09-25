@@ -28,7 +28,6 @@ import org.gradle.api.artifacts.FileCollectionDependency
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.gradle.api.internal.file.FileOrUriNotationConverter
-import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
 
 /**
@@ -141,16 +140,6 @@ internal class WireInput(var configuration: Configuration) {
     } catch (e: Exception) {
       false
     }
-
-  fun debug(logger: Logger) {
-    configuration.dependencies.forEach { dep ->
-      val srcDirs = ((dep as? FileCollectionDependency)?.files as? SourceDirectorySet)?.srcDirs
-      val includes = dependencyFilters[dep] ?: listOf()
-      logger.debug("dep: $dep -> $srcDirs")
-      logger.debug("$name.files for dep: ${configuration.files(dep)}")
-      logger.debug("$name.includes for dep: $includes")
-    }
-  }
 
   fun toLocations(project: Project): Provider<List<InputLocation>> {
     // We create a provider to support lazily created locations which do not exist at
