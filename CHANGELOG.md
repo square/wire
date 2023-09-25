@@ -15,8 +15,16 @@ _2023-09-20_
 
 * Fix: Swift generates all Storage properties. This mitigates performance issues with dynamicMemberLookup
 * Change: Swift codegen was reordered for readability
+* Change: the type of the Wire option `use_array` has been changed from `string` to `bool`, and its tag has changed from 1180 to 1185.
 * New: Swift propertyWrapper @CopyOnWrite. @Heap is now deprecated and will be removed in November 2024.
-* Change: Several dependency updates
+* New: Wildcards are supported when pruning members such as `my.namespace.Type#another.namespace.*`. This is handy if one wants to prune extension fields.
+* New: Adds warning when one defines a protoLibrary without source sets, which happens on native and JavaScript platforms.
+* New: `project(..)` dependencies are now explicitly limited to the JVM, for otherwise Wire isn't able to pick the correct platform to resolve them.
+* New: Wire runtime proto files, such as `google/protobuf/descriptor.proto` or `wire/extensions.proto` will not be emitted anymore when `protoLibrary = true`.
+* New: A custom logger can now be configured via the WireCompiler.
+* New: `wire-schema`, and `wire-schema-tests` are now available on JavaScript and native platforms.
+* Update: Okio to `3.5.0`. All `java.nio` file systems should now be supported when using Wire.
+* Update: Kotlin to `1.9.10`, Gradle to `8.x`, and many others to most recent versions.
 
 Version 4.8.1
 -------------
