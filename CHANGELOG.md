@@ -1,12 +1,12 @@
 Change Log
 ==========
 
-Version ???
+Version 4.9.1
 -----------
 
-_Unreleased_
+_2023-09-26_
 
-* Fix: Missing Swift imports
+* Fix: Missing Swift imports.
 
 Version 4.9.0
 -------------
