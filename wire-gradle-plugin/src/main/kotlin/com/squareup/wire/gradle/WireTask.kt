@@ -148,13 +148,6 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
     }
     if (includes.isEmpty() && excludes.isEmpty()) logger.info("NO INCLUDES OR EXCLUDES")
 
-    if (logger.isDebugEnabled) {
-      logger.debug("roots: ${roots.orNull}")
-      logger.debug("prunes: ${prunes.orNull}")
-      logger.debug("rules: ${rules.orNull}")
-      logger.debug("targets: ${targets.orNull}")
-    }
-
     inputFiles.forEach { fileObj ->
       check(fileObj.exists()) {
         "Invalid path string: \"${fileObj.path}\". Path does not exist."

@@ -220,10 +220,6 @@ class WirePlugin : Plugin<Project> {
         task.description = "Generate protobuf implementation for ${source.name}"
         task.source(protoSourceInput.configuration)
 
-        if (task.logger.isDebugEnabled) {
-          protoSourceInput.debug(task.logger)
-          protoPathInput.debug(task.logger)
-        }
         val outputDirectories: List<String> = buildList {
           addAll(
             targets
