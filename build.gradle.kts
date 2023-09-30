@@ -28,7 +28,7 @@ buildscript {
     classpath(libs.pluginz.buildConfig)
     classpath(libs.wire.gradlePlugin)
     classpath(libs.guava)
-    classpath("org.ow2.asm:asm:9.5")
+    classpath("org.ow2.asm:asm:9.6")
   }
 
   repositories {
