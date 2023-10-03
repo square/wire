@@ -1206,6 +1206,13 @@ class SwiftGenerator private constructor(
       if (typeName is DeclaredTypeName) {
         imports.add(typeName.moduleName)
       }
+      if (typeName is ParameterizedTypeName) {
+        typeName.typeArguments.forEach { declaredTypeName ->
+          if (declaredTypeName is DeclaredTypeName) {
+            imports.add(declaredTypeName.moduleName)
+          }
+        }
+      }
 
       val property = PropertySpec.varBuilder(field.name, field.typeName, visibility)
       if (!forStorageType && field.documentation.isNotBlank()) {
