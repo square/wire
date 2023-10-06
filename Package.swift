@@ -31,12 +31,12 @@ let package = Package(
         .target(
             name: "WireTests",
             dependencies: ["Wire"],
-            path: "wire-tests-swift/src/main/swift"
+            path: "wire-tests-swift/no-manifest/src/main/swift"
         ),
         .testTarget(
             name: "WireCompilerTests",
             dependencies: ["WireTests"],
-            path: "wire-tests-swift/src/test/swift"
+            path: "wire-tests-swift/no-manifest/src/test/swift"
         ),
     ],
     swiftLanguageVersions: [.v5]

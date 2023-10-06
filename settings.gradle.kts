@@ -22,6 +22,10 @@ include(":wire-tests")
 if (startParameter.projectProperties.get("swift") != "false") {
   include(":wire-runtime-swift")
   include(":wire-tests-swift")
+  include(":wire-tests-swift:no-manifest")
+  include(":wire-tests-swift:manifest:module_one")
+  include(":wire-tests-swift:manifest:module_two")
+  include(":wire-tests-swift:manifest:module_three")
   include(":wire-tests-proto3-swift")
 }
 

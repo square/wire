@@ -20,6 +20,9 @@ gradlew.bat
 # Maven
 plugin*.xml
 
+# SPM
+.build
+
 # Special Mkdocs files
 docs/3.x
 docs/changelog.md

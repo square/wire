@@ -414,8 +414,25 @@ val generateSwiftProto3Tests by tasks.creating(JavaExec::class) {
   )
 }
 
+val generateSwiftProto2ManifestTests by tasks.creating(JavaExec::class) {
+  val swiftOut = "wire-tests-swift/manifest"
+
+  group = "Generate Tests"
+  description = "Generates Swift classes from the test protos using a manifest"
+  classpath = wire
+  mainClass.set("com.squareup.wire.WireCompiler")
+  args = listOf(
+    "--proto_path=wire-tests/src/commonTest/proto/kotlin",
+    "--swift_out=$swiftOut",
+    "--experimental-module-manifest=wire-tests/src/commonTest/proto/kotlin/swift_modules_manifest.yaml",
+    "swift_module_one.proto",
+    "swift_module_two.proto",
+    "swift_module_three.proto",
+  )
+}
+
 val generateSwiftProto2Tests by tasks.creating(JavaExec::class) {
-  val swiftOut = "wire-tests-swift/src/main/swift/"
+  val swiftOut = "wire-tests-swift/no-manifest/src/main/swift"
   doFirst {
     val outFile = file(swiftOut)
     outFile.deleteRecursively()
@@ -461,6 +478,7 @@ val generateSwiftTests by tasks.creating {
   group = "Generate Tests"
   description = "Generates Swift classes from the test protos"
   dependsOn(
+    generateSwiftProto2ManifestTests,
     generateSwiftProto2Tests,
     generateSwiftProto3Tests,
     ":wire-runtime-swift:generateTestProtos"

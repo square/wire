@@ -60,7 +60,11 @@ allprojects {
 subprojects {
   if (name != "wire-golden-files" &&
         name != "wire-tests-proto3-swift" &&
-        name != "wire-tests-swift"
+        name != "wire-tests-swift" &&
+        name != "no-manifest" &&
+        name != "module_one" &&
+        name != "module_two" &&
+        name != "module_three"
   ) {
     apply(plugin = "com.diffplug.spotless")
     configure<SpotlessExtension> {
@@ -143,7 +147,8 @@ subprojects {
          project.name.endsWith("-benchmarks") ||
          project.name.contains("golden") ||
          project.name.contains("protoc") ||
-         project.displayName.contains("sample")
+         project.displayName.contains("sample") ||
+         project.displayName.contains("wire-tests-swift")
       )
   ) {
     apply(plugin = "checkstyle")

@@ -150,7 +150,7 @@ jobs:
         run: |
           ./gradlew generateSwiftTests --stacktrace --warning-mode all
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nGenerated files changed. Did you run ./gradlew generateSwiftProtos and generateSwiftTests?"; exit 1; fi
-          ./gradlew :wire-tests-swift:build --stacktrace --warning-mode all
+          ./gradlew -p wire-tests-swift build --stacktrace --warning-mode all
 
       - name: Test Swift Package Manager
         run: swift test
