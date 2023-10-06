@@ -38,6 +38,12 @@ actual class SchemaLoader : Loader, ProfileLoader {
       delegate.permitPackageCycles = value
     }
 
+  actual var opaqueTypes: List<ProtoType>
+    get() = delegate.opaqueTypes
+    set(value) {
+      delegate.opaqueTypes = value
+    }
+
   /**
    * If true, the schema loader will load the whole graph, including files and types not used by
    * anything in the source path.

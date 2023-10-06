@@ -16,6 +16,7 @@
 package com.squareup.wire
 
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.SchemaLoader
 import okio.FileSystem
@@ -29,6 +30,7 @@ class SchemaBuilder {
   private val sourcePath: Path = "/sourcePath".toPath()
   private val protoPath: Path = "/protoPath".toPath()
   private val fileSystem: FileSystem = FakeFileSystem()
+  private var opaqueTypes = mutableListOf<ProtoType>()
 
   init {
     fileSystem.createDirectories(sourcePath)
@@ -77,8 +79,15 @@ class SchemaBuilder {
     return add(name, protoFile, protoPath)
   }
 
+  /** See [SchemaLoader.opaqueTypes]. */
+  fun addOpaqueTypes(vararg opaqueTypes: ProtoType): SchemaBuilder {
+    this.opaqueTypes.addAll(opaqueTypes)
+    return this
+  }
+
   fun build(): Schema {
     val schemaLoader = SchemaLoader(fileSystem)
+    schemaLoader.opaqueTypes = opaqueTypes.toList()
     schemaLoader.initRoots(
       sourcePath = listOf(Location.get(sourcePath.toString())),
       protoPath = listOf(Location.get(protoPath.toString())),

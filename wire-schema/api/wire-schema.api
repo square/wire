@@ -370,6 +370,7 @@ public final class com/squareup/wire/schema/LinkedOptionEntry {
 
 public final class com/squareup/wire/schema/Linker {
 	public fun <init> (Lcom/squareup/wire/schema/Loader;Lcom/squareup/wire/schema/ErrorCollector;ZZ)V
+	public fun <init> (Lcom/squareup/wire/schema/Loader;Lcom/squareup/wire/schema/ErrorCollector;ZZLjava/util/List;)V
 	public final fun addType (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Type;)V
 	public final fun dereference (Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;)Lcom/squareup/wire/schema/Field;
 	public final fun get (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/wire/schema/Type;
@@ -883,6 +884,7 @@ public final class com/squareup/wire/schema/SchemaLoader : com/squareup/wire/sch
 	public fun <init> (Ljava/nio/file/FileSystem;)V
 	public fun <init> (Lokio/FileSystem;)V
 	public final fun getLoadExhaustively ()Z
+	public final fun getOpaqueTypes ()Ljava/util/List;
 	public final fun getPermitPackageCycles ()Z
 	public final fun getSourcePathFiles ()Ljava/util/List;
 	public final fun initRoots (Ljava/util/List;Ljava/util/List;)V
@@ -891,6 +893,7 @@ public final class com/squareup/wire/schema/SchemaLoader : com/squareup/wire/sch
 	public fun loadProfile (Ljava/lang/String;Lcom/squareup/wire/schema/Schema;)Lcom/squareup/wire/schema/Profile;
 	public final fun loadSchema ()Lcom/squareup/wire/schema/Schema;
 	public final fun setLoadExhaustively (Z)V
+	public final fun setOpaqueTypes (Ljava/util/List;)V
 	public final fun setPermitPackageCycles (Z)V
 	public synthetic fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/Loader;
 	public fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/SchemaLoader;
@@ -985,13 +988,14 @@ public final class com/squareup/wire/schema/WireLoggersKt {
 }
 
 public final class com/squareup/wire/schema/WireRun {
-	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ZLjava/util/List;Z)V
-	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ZLjava/util/List;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ZLjava/util/List;ZLjava/util/List;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ZLjava/util/List;ZLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun execute (Lokio/FileSystem;Lcom/squareup/wire/WireLogger;)V
 	public final fun getEventListeners ()Ljava/util/List;
 	public final fun getModules ()Ljava/util/Map;
 	public final fun getMoves ()Ljava/util/List;
 	public final fun getOnlyVersion ()Ljava/lang/String;
+	public final fun getOpaqueTypes ()Ljava/util/List;
 	public final fun getPermitPackageCycles ()Z
 	public final fun getProtoPath ()Ljava/util/List;
 	public final fun getRejectUnusedRootsOrPrunes ()Z

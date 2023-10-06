@@ -45,7 +45,7 @@ data class Field(
 
   val default: String?,
 
-  private val elementType: String,
+  private var elementType: String,
 
   val options: Options,
 
@@ -122,6 +122,10 @@ data class Field(
 
   fun link(linker: Linker) {
     type = linker.withContext(this).resolveType(elementType)
+    if (type == ProtoType.BYTES && elementType != "bytes") {
+      // The type has been opaqued, we update its proto definition as well.
+      elementType = "bytes"
+    }
   }
 
   fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean) {

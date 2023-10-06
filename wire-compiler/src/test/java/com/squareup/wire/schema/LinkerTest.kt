@@ -18,7 +18,9 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.testing.add
+import kotlin.test.assertFailsWith
 import okio.Path
+import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -26,6 +28,7 @@ import org.junit.Test
 class LinkerTest {
   private val fs = FakeFileSystem().apply {
     if (Path.DIRECTORY_SEPARATOR == "\\") emulateWindows() else emulateUnix()
+    createDirectories("proto-path".toPath())
   }
 
   @Test
@@ -53,6 +56,252 @@ class LinkerTest {
       Location.get("proto-path", "b.proto"),
       Location.get("google/protobuf/descriptor.proto"),
       Location.get("wire/extensions.proto"),
+    )
+  }
+
+  @Test fun opaqueMessageDeclaredField() {
+    fs.add(
+      "source-path/cafe/cafe.proto",
+      """
+          |syntax = "proto2";
+          |
+          |package cafe;
+          |
+          |message CafeDrink {
+          |  optional int32 size_ounces = 1;
+          |  repeated EspressoShot shots = 2;
+          |}
+          |
+          |message EspressoShot {
+          |  optional Roast roast = 1;
+          |  optional bool decaf = 2;
+          |}
+          |
+          |enum Roast {
+          |  MEDIUM = 1;
+          |  DARK = 2;
+          |}
+      """.trimMargin(),
+    )
+    val schema = loadAndLinkSchema(opaqueTypes = listOf(ProtoType.get("cafe.EspressoShot")))
+    assertThat((schema.getType("cafe.CafeDrink") as MessageType).field("shots")!!.type!!)
+      .isEqualTo(ProtoType.BYTES)
+    assertThat(schema.protoFile("cafe/cafe.proto")!!.toSchema()).isEqualTo(
+      """
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: cafe/cafe.proto
+        |
+        |syntax = "proto2";
+        |
+        |package cafe;
+        |
+        |message CafeDrink {
+        |  optional int32 size_ounces = 1;
+        |
+        |  repeated bytes shots = 2;
+        |}
+        |
+        |message EspressoShot {
+        |  optional Roast roast = 1;
+        |
+        |  optional bool decaf = 2;
+        |}
+        |
+        |enum Roast {
+        |  MEDIUM = 1;
+        |  DARK = 2;
+        |}
+    |
+      """.trimMargin(),
+    )
+  }
+
+  @Test fun enumsCannotBeOpaqued() {
+    fs.add(
+      "source-path/cafe/cafe.proto",
+      """
+          |syntax = "proto2";
+          |
+          |package cafe;
+          |
+          |message CafeDrink {
+          |  optional int32 size_ounces = 1;
+          |  repeated EspressoShot shots = 2;
+          |}
+          |
+          |message EspressoShot {
+          |  optional Roast roast = 1;
+          |  optional bool decaf = 2;
+          |}
+          |
+          |enum Roast {
+          |  MEDIUM = 1;
+          |  DARK = 2;
+          |}
+      """.trimMargin(),
+    )
+    val exception = assertFailsWith<SchemaException> {
+      loadAndLinkSchema(opaqueTypes = listOf(ProtoType.get("cafe.Roast")))
+    }
+    assertThat(exception).hasMessageContaining(
+      """
+      |Enums like cafe.Roast cannot be opaqued
+      |  for field roast (source-path/cafe/cafe.proto:11:3)
+      |  in message cafe.EspressoShot (source-path/cafe/cafe.proto:10:1)
+      """.trimMargin(),
+    )
+  }
+
+  @Test fun opaqueExtensionField() {
+    fs.add(
+      "source-path/cafe/cafe.proto",
+      """
+          |syntax = "proto2";
+          |
+          |package cafe;
+          |
+          |message CafeDrink {
+          |  optional int32 size_ounces = 1;
+          |}
+          |
+          |extend CafeDrink {
+          |  repeated EspressoShot shots = 2;
+          |}
+          |
+          |message EspressoShot {
+          |  optional Roast roast = 1;
+          |  optional bool decaf = 2;
+          |}
+          |
+          |enum Roast {
+          |  MEDIUM = 1;
+          |  DARK = 2;
+          |}
+      """.trimMargin(),
+    )
+    val schema = loadAndLinkSchema(opaqueTypes = listOf(ProtoType.get("cafe.EspressoShot")))
+    assertThat((schema.getType("cafe.CafeDrink") as MessageType).extensionField("cafe.shots")!!.type!!)
+      .isEqualTo(ProtoType.BYTES)
+    assertThat(schema.protoFile("cafe/cafe.proto")!!.toSchema()).isEqualTo(
+      """
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: cafe/cafe.proto
+        |
+        |syntax = "proto2";
+        |
+        |package cafe;
+        |
+        |message CafeDrink {
+        |  optional int32 size_ounces = 1;
+        |}
+        |
+        |message EspressoShot {
+        |  optional Roast roast = 1;
+        |
+        |  optional bool decaf = 2;
+        |}
+        |
+        |enum Roast {
+        |  MEDIUM = 1;
+        |  DARK = 2;
+        |}
+        |
+        |extend CafeDrink {
+        |  repeated bytes shots = 2;
+        |}
+    |
+      """.trimMargin(),
+    )
+  }
+
+  @Test fun opaqueMultipleFields() {
+    fs.add(
+      "source-path/cafe/cafe.proto",
+      """
+          |syntax = "proto2";
+          |
+          |package cafe;
+          |
+          |message CafeDrink {
+          |  optional int32 size_ounces = 1;
+          |  repeated EspressoShot shots = 2;
+          |}
+          |
+          |message EspressoShot {
+          |  optional Roast roast = 1;
+          |  optional bool decaf = 2;
+          |}
+          |
+          |message Roast {
+          |  optional int32 id = 1;
+          |  optional string name = 2;
+          |}
+      """.trimMargin(),
+    )
+    val schema = loadAndLinkSchema(
+      opaqueTypes = listOf(
+        ProtoType.get("cafe.EspressoShot"),
+        ProtoType.get("cafe.Roast"),
+      ),
+    )
+    assertThat((schema.getType("cafe.CafeDrink") as MessageType).field("shots")!!.type!!)
+      .isEqualTo(ProtoType.BYTES)
+    assertThat((schema.getType("cafe.EspressoShot") as MessageType).field("roast")!!.type!!)
+      .isEqualTo(ProtoType.BYTES)
+    assertThat(schema.protoFile("cafe/cafe.proto")!!.toSchema()).isEqualTo(
+      """
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: cafe/cafe.proto
+        |
+        |syntax = "proto2";
+        |
+        |package cafe;
+        |
+        |message CafeDrink {
+        |  optional int32 size_ounces = 1;
+        |
+        |  repeated bytes shots = 2;
+        |}
+        |
+        |message EspressoShot {
+        |  optional bytes roast = 1;
+        |
+        |  optional bool decaf = 2;
+        |}
+        |
+        |message Roast {
+        |  optional int32 id = 1;
+        |
+        |  optional string name = 2;
+        |}
+        |
+      """.trimMargin(),
+    )
+  }
+
+  @Test fun opaqueScalarTypeThrows() {
+    fs.add(
+      "source-path/cafe/cafe.proto",
+      """
+          |syntax = "proto2";
+          |
+          |package cafe;
+          |
+          |message CafeDrink {
+          |  optional int32 size_ounces = 1;
+          |}
+      """.trimMargin(),
+    )
+
+    val exception = assertFailsWith<SchemaException> {
+      loadAndLinkSchema(opaqueTypes = listOf(ProtoType.INT32))
+    }
+    assertThat(exception).hasMessageContaining(
+      """
+      |Scalar types like int32 cannot be opaqued
+      |  for field size_ounces (source-path/cafe/cafe.proto:6:3)
+      |  in message cafe.CafeDrink (source-path/cafe/cafe.proto:5:1)
+      """.trimMargin(),
     )
   }
 
@@ -225,15 +474,17 @@ class LinkerTest {
       |}
       """.trimMargin(),
     )
-    fs.add("proto-path/b.proto", "")
     val schema = loadAndLinkSchema()
 
     val enumValueDeprecated = schema.getField(Options.ENUM_VALUE_OPTIONS, "deprecated")
     assertThat(enumValueDeprecated!!.encodeMode).isNotNull()
   }
 
-  private fun loadAndLinkSchema(): Schema {
+  private fun loadAndLinkSchema(
+    opaqueTypes: List<ProtoType> = listOf(),
+  ): Schema {
     val loader = SchemaLoader(fs)
+    loader.opaqueTypes = opaqueTypes
     loader.initRoots(
       sourcePath = listOf(Location.get("source-path")),
       protoPath = listOf(Location.get("proto-path")),

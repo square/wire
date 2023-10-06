@@ -2,6 +2,7 @@ public final class com/squareup/wire/SchemaBuilder {
 	public fun <init> ()V
 	public final fun add (Lokio/Path;Ljava/lang/String;)Lcom/squareup/wire/SchemaBuilder;
 	public final fun add (Lokio/Path;Ljava/lang/String;Lokio/Path;)Lcom/squareup/wire/SchemaBuilder;
+	public final fun addOpaqueTypes ([Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/wire/SchemaBuilder;
 	public final fun addProtoPath (Lokio/Path;Ljava/lang/String;)Lcom/squareup/wire/SchemaBuilder;
 	public final fun build ()Lcom/squareup/wire/schema/Schema;
 }
