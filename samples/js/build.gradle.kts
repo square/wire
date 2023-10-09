@@ -20,6 +20,14 @@ kotlin {
     nodejs {
     }
   }
+
+  sourceSets {
+    val main by getting {
+      dependencies {
+        implementation(projects.wireGrpcClient)
+      }
+    }
+  }
 }
 
 wire {

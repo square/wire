@@ -25,7 +25,11 @@ kotlin {
     }
   }
   sourceSets {
-    val commonMain by getting
+    val commonMain by getting {
+      dependencies {
+        implementation(projects.wireGrpcClient)
+      }
+    }
     val nativeMain by getting
     val nativeTest by getting
   }
