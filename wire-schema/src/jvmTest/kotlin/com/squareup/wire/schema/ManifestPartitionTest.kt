@@ -177,6 +177,62 @@ class ManifestPartitionTest {
       """.trimMargin(),
     )
   }
+
+  @Test fun includesSubTypesWithinPartition() {
+    val schema = buildSchema {
+      add(
+        "first.proto".toPath(),
+        """
+          |syntax = "proto2";
+          |package com.squareup.wire.first;
+          |
+          |message Card {
+          |  enum Brand {
+          |     DO_NOT_USE = 1;
+          |  }
+          |  optional string name = 1;
+          |}
+          |
+        """.trimMargin(),
+      )
+
+        add(
+          "second.proto".toPath(),
+          """
+          |syntax = "proto2";
+          |package com.squareup.wire.second;
+          |
+          |import "first.proto";
+          |
+          |message Details {
+          |  optional com.squareup.wire.first.Card.Brand brand = 1;
+          |}
+          |
+        """.trimMargin(),
+        )
+    }
+
+    val modules = mapOf(
+      "first" to WireRun.Module(
+        pruningRules = PruningRules.Builder()
+          .addRoot("com.squareup.wire.first.Card")
+          .build(),
+      ),
+      "second" to WireRun.Module(
+        dependencies = setOf("first"),
+        pruningRules = PruningRules.Builder()
+          .addRoot("com.squareup.wire.second.Details")
+          .build(),
+      ),
+    )
+
+    val partitionedSchema = schema.partition(modules)
+
+    val firstPartition = partitionedSchema.partitions.getValue("first")
+
+    assertThat(firstPartition.types).contains(ProtoType.get("com.squareup.wire.first.Card"))
+    assertThat(firstPartition.types).contains(ProtoType.get("com.squareup.wire.first.Card.Brand"))
+  }
 }
 
 private fun Schema.getMessage(name: String): MessageType {
