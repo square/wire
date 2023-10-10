@@ -484,6 +484,7 @@ public final class com/squareup/wire/schema/MessageType : com/squareup/wire/sche
 	public final fun isDeprecated ()Z
 	public fun linkMembers (Lcom/squareup/wire/schema/Linker;)V
 	public fun linkOptions (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;Z)V
+	public final fun oneOf (Ljava/lang/String;)Lcom/squareup/wire/schema/OneOf;
 	public fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;)Lcom/squareup/wire/schema/Type;
 	public fun retainLinked (Ljava/util/Set;Ljava/util/Set;)Lcom/squareup/wire/schema/Type;
 	public final fun toElement ()Lcom/squareup/wire/schema/internal/parser/MessageElement;
