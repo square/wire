@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+package cafe;
+
+message CafeDrink {
+  optional int32 size_ounces = 1;
+  repeated EspressoShot shots = 2;
+}
+
+message EspressoShot {
+  optional Roast roast = 1;
+  optional bool decaf = 2;
+}
+
+enum Roast {
+  MEDIUM = 1;
+  DARK = 2;
+}

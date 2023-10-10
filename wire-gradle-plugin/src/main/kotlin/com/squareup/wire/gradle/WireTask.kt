@@ -78,6 +78,9 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
   abstract val moves: ListProperty<Move>
 
   @get:Input
+  abstract val opaques: ListProperty<String>
+
+  @get:Input
   @get:Optional
   abstract val sinceVersion: Property<String>
 
@@ -171,6 +174,7 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
       permitPackageCycles = permitPackageCycles.get(),
       rejectUnusedRootsOrPrunes = rejectUnusedRootsOrPrunes.get(),
       eventListeners = eventListenerFactories.get().map(EventListener.Factory::create),
+      opaqueTypes = opaques.get(),
     )
 
     val buildDir = buildDirProperty.get()

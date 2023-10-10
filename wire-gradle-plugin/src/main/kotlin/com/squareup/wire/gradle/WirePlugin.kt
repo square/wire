@@ -240,6 +240,7 @@ class WirePlugin : Plugin<Project> {
         task.roots.set(extension.roots.toList())
         task.prunes.set(extension.prunes.toList())
         task.moves.set(extension.moves.toList())
+        task.opaques.set(extension.opaques.toList())
         task.sinceVersion.set(extension.sinceVersion)
         task.untilVersion.set(extension.untilVersion)
         task.onlyVersion.set(extension.onlyVersion)
