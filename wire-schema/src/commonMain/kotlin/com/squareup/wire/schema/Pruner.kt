@@ -185,8 +185,7 @@ class Pruner(
             result.add(field.type)
             options = field.options
           } else {
-            val oneOf = type.oneOf(member)
-            checkNotNull(oneOf) { "unexpected member: $member" }
+            val oneOf = checkNotNull(type.oneOf(member)) { "unexpected member: $member" }
             options = oneOf.options
           }
         } else if (type is EnumType) {
