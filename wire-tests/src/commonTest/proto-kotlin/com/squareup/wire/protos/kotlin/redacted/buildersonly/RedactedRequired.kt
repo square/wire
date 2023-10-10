@@ -16,6 +16,7 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.UnsupportedOperationException
 import okio.ByteString
 
@@ -124,5 +125,8 @@ public class RedactedRequired private constructor(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): RedactedRequired =
+        Builder().apply(body).build()
   }
 }

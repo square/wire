@@ -16,6 +16,7 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import okio.ByteString
 
 public class VersionOne(
@@ -184,5 +185,7 @@ public class VersionOne(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): VersionOne = Builder().apply(body).build()
   }
 }

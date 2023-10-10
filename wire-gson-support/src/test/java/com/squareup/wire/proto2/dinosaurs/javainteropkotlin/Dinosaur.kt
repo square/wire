@@ -21,6 +21,7 @@ import kotlin.Double
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import okio.ByteString
 
@@ -259,5 +260,7 @@ public class Dinosaur(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): Dinosaur = Builder().apply(body).build()
   }
 }

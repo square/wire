@@ -18,6 +18,7 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import okio.ByteString
 
 public class OtherMessageWithStatus(
@@ -86,6 +87,9 @@ public class OtherMessageWithStatus(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): OtherMessageWithStatus =
+        Builder().apply(body).build()
   }
 
   public enum class Status(

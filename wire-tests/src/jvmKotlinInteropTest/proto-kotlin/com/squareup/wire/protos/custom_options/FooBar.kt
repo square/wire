@@ -26,6 +26,7 @@ import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.`annotation`.AnnotationRetention
 import kotlin.`annotation`.AnnotationTarget
 import kotlin.`annotation`.Retention
@@ -432,6 +433,8 @@ public class FooBar(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): FooBar = Builder().apply(body).build()
   }
 
   public class Nested(
@@ -544,6 +547,8 @@ public class FooBar(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): Nested = Builder().apply(body).build()
     }
   }
 
@@ -656,6 +661,8 @@ public class FooBar(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): More = Builder().apply(body).build()
     }
   }
 

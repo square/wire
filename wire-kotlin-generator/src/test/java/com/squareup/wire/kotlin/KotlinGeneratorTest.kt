@@ -1961,6 +1961,32 @@ class KotlinGeneratorTest {
   }
 
   @Test
+  fun buildersOnlyOrJavaInteropGeneratesKotlinBuildClosure() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message SomeMessage {
+        |  optional string a = 1;
+        |  optional string b = 2;
+        |}
+        |
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("SomeMessage", buildersOnly = false, javaInterop = false)
+    assertThat(code).doesNotContain("inline fun build(body: Builder.() -> Unit): SomeMessage")
+    val buildersOnlyCode = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("SomeMessage", buildersOnly = true)
+    assertThat(buildersOnlyCode).contains("inline fun build(body: Builder.() -> Unit): SomeMessage")
+    val javaInteropCode = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("SomeMessage", javaInterop = true)
+    assertThat(javaInteropCode).contains("inline fun build(body: Builder.() -> Unit): SomeMessage")
+  }
+
+  @Test
   fun javaInteropAndBuildersOnly() {
     val schema = buildSchema {
       add(
