@@ -86,6 +86,10 @@ data class MessageType(
   fun extensionField(qualifiedName: String): Field? =
     extensionFields.firstOrNull { it.qualifiedName == qualifiedName }
 
+  /** Returns the oneOf named [name], or null if this type has no such oneOf. */
+  fun oneOf(name: String): OneOf? =
+    oneOfs.firstOrNull { it.name == name }
+
   /** Returns the field tagged [tag], or null if this type has no such field.  */
   fun field(tag: Int): Field? {
     for (field in declaredFields) {

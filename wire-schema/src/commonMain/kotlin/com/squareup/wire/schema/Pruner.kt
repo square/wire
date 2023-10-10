@@ -105,8 +105,12 @@ class Pruner(
     val member = protoMember.member
     return when (val type = schema.getType(protoMember.type)) {
       is MessageType -> {
-        val field = type.field(member) ?: type.extensionField(member)!!
-        pruningRules.isFieldRetainedVersion(field.options)
+        val field = type.field(member) ?: type.extensionField(member)
+        if (field != null) {
+          pruningRules.isFieldRetainedVersion(field.options)
+        } else {
+          pruningRules.isFieldRetainedVersion(type.oneOf(member)!!.options)
+        }
       }
       is EnumType -> {
         val enumConstant = type.constant(member)!!
@@ -177,9 +181,13 @@ class Pruner(
 
         if (type is MessageType) {
           val field = type.field(member) ?: type.extensionField(member)
-          checkNotNull(field) { "unexpected member: $member" }
-          result.add(field.type)
-          options = field.options
+          if (field != null) {
+            result.add(field.type)
+            options = field.options
+          } else {
+            val oneOf = checkNotNull(type.oneOf(member)) { "unexpected member: $member" }
+            options = oneOf.options
+          }
         } else if (type is EnumType) {
           val constant = type.constant(member)
             ?: throw IllegalStateException("unexpected member: $member")
@@ -218,6 +226,7 @@ class Pruner(
             result.add(get(root, field.qualifiedName))
           }
           for (oneOf in type.oneOfs) {
+            result.add(get(root, oneOf.name))
             for (field in oneOf.fields) {
               result.add(get(root, field.name))
             }

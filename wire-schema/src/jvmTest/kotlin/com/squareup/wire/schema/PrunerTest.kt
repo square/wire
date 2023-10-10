@@ -57,6 +57,135 @@ class PrunerTest {
   }
 
   @Test
+  fun oneOfOptionsAreNotArbitrarilyPruned() {
+    val schema = buildSchema {
+      add(
+        "test_event.proto".toPath(),
+        """
+          |syntax = "proto3";
+          |
+          |import "test_event_custom_option.proto";
+          |
+          |package test.oneOf.options.test;
+          |
+          |message TestMessage {
+          |  oneof element {
+          |    option (my_custom_oneOf_option) = true;
+          |    string one = 1;
+          |    string two = 2;
+          |  }
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "test_event_custom_option.proto".toPath(),
+        """
+          |syntax = "proto3";
+          |
+          |import "google/protobuf/descriptor.proto";
+          |
+          |package test.oneOf.options;
+          |
+          |extend google.protobuf.OneofOptions {
+          |  bool my_custom_oneOf_option = 101400;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("test.oneOf.options.test.TestMessage")
+        .build(),
+    )
+    assertThat(pruned.protoFile("test_event.proto")!!.toSchema())
+      .isEqualTo(
+        // spotless:off because spotless will remove the indents (trailing spaces) in the oneof block.
+        """
+          |// Proto schema formatted by Wire, do not edit.
+          |// Source: test_event.proto
+          |
+          |syntax = "proto3";
+          |
+          |package test.oneOf.options.test;
+          |
+          |import "test_event_custom_option.proto";
+          |
+          |message TestMessage {
+          |  oneof element {
+          |    option (my_custom_oneOf_option) = true;
+          |  
+          |    string one = 1;
+          |    string two = 2;
+          |  }
+          |}
+          |""".trimMargin(),
+        // spotless:on
+      )
+  }
+
+  @Test
+  fun oneOfOptionsArePruned() {
+    val schema = buildSchema {
+      add(
+        "test_event.proto".toPath(),
+        """
+          |syntax = "proto3";
+          |
+          |import "test_event_custom_option.proto";
+          |
+          |package test.oneOf.options.test;
+          |
+          |message TestMessage {
+          |  oneof element {
+          |    option (my_custom_oneOf_option) = true;
+          |    string one = 1;
+          |    string two = 2;
+          |  }
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "test_event_custom_option.proto".toPath(),
+        """
+          |syntax = "proto3";
+          |
+          |import "google/protobuf/descriptor.proto";
+          |
+          |package test.oneOf.options;
+          |
+          |extend google.protobuf.OneofOptions {
+          |  bool my_custom_oneOf_option = 101400;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .prune("google.protobuf.OneofOptions#test.oneOf.options.my_custom_oneOf_option")
+        .build(),
+    )
+    assertThat(pruned.protoFile("test_event.proto")!!.toSchema())
+      .isEqualTo(
+        """
+          |// Proto schema formatted by Wire, do not edit.
+          |// Source: test_event.proto
+          |
+          |syntax = "proto3";
+          |
+          |package test.oneOf.options.test;
+          |
+          |message TestMessage {
+          |  oneof element {
+          |    string one = 1;
+          |    string two = 2;
+          |  }
+          |}
+          |
+        """.trimMargin(),
+      )
+  }
+
+  @Test
   fun retainMap() {
     val schema = buildSchema {
       add(
