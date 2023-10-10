@@ -56,6 +56,51 @@ class PrunerTest {
     assertThat(pruned.getType("MessageB")).isNull()
   }
 
+  /**
+   * We test that all references of an opaque type are getting pruned correctly.
+   */
+  @Test
+  fun opaqueTypePrunesItsReferences() {
+    val schema = buildSchema {
+      add(
+        "source-path/cafe/cafe.proto".toPath(),
+        """
+          |syntax = "proto2";
+          |
+          |package cafe;
+          |
+          |message CafeDrink {
+          |  optional int32 size_ounces = 1;
+          |  repeated EspressoShot shots = 2;
+          |}
+          |
+          |message EspressoShot {
+          |  optional Roast roast = 1;
+          |  optional bool decaf = 2;
+          |}
+          |
+          |enum Roast {
+          |  MEDIUM = 1;
+          |  DARK = 2;
+          |}
+        """.trimMargin(),
+      )
+      addOpaqueTypes(ProtoType.get("cafe.EspressoShot"))
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("cafe.CafeDrink")
+        .build(),
+    )
+    assertThat(pruned.getType("cafe.CafeDrink")).isNotNull()
+    // The field should not be pruned, and is of the opaque type `bytes`.
+    assertThat(pruned.getField("cafe.CafeDrink", "shots")!!.type)
+      .isEqualTo(ProtoType.BYTES)
+    // Types which were originally referred by `shots` are now pruned since the field is opaqued.
+    assertThat(pruned.getType("cafe.EspressoShot")).isNull()
+    assertThat(pruned.getType("cafe.Roast")).isNull()
+  }
+
   @Test
   fun oneOfOptionsAreNotArbitrarilyPruned() {
     val schema = buildSchema {

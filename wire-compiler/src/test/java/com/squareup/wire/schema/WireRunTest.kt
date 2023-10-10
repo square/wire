@@ -271,6 +271,32 @@ class WireRunTest {
   }
 
   @Test
+  fun opaqueBeforeGeneratingKtThenJava() {
+    writeBlueProto()
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      protoPath = listOf(Location.get("polygons/src/main/proto")),
+      opaqueTypes = listOf("squareup.polygons.Triangle"),
+      targets = listOf(
+        KotlinTarget(
+          outDirectory = "generated/kt",
+        ),
+      ),
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/kt/squareup/colors/Blue.kt",
+    )
+    assertThat(fs.readUtf8("generated/kt/squareup/colors/Blue.kt"))
+      .contains("class Blue")
+      // The type `Triangle` has been opaqued.
+      .contains("public val triangle: ByteString? = null")
+  }
+
+  @Test
   fun noSuchClassEventListener() {
     assertThat(
       assertFailsWith<IllegalArgumentException> {

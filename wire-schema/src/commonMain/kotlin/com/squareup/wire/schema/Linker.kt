@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.schema.ProtoType.Companion.BYTES
 import com.squareup.wire.schema.ProtoType.Companion.get
 import com.squareup.wire.schema.internal.MutableQueue
 import com.squareup.wire.schema.internal.isValidTag
@@ -30,6 +31,7 @@ class Linker {
   private val requestedTypes: MutableSet<ProtoType>
   private val requestedFields: MutableSet<Field>
   private val permitPackageCycles: Boolean
+  private val opaqueTypes: List<ProtoType>
   val loadExhaustively: Boolean
 
   /** Errors accumulated by this load. */
@@ -40,6 +42,7 @@ class Linker {
     errors: ErrorCollector,
     permitPackageCycles: Boolean,
     loadExhaustively: Boolean,
+    opaqueTypes: List<ProtoType>,
   ) {
     this.loader = loader
     this.fileLinkers = mutableMapOf()
@@ -51,7 +54,21 @@ class Linker {
     this.errors = errors
     this.permitPackageCycles = permitPackageCycles
     this.loadExhaustively = loadExhaustively
+    this.opaqueTypes = opaqueTypes
   }
+
+  constructor(
+    loader: Loader,
+    errors: ErrorCollector,
+    permitPackageCycles: Boolean,
+    loadExhaustively: Boolean,
+  ) : this(
+    loader = loader,
+    errors = errors,
+    permitPackageCycles = permitPackageCycles,
+    loadExhaustively = loadExhaustively,
+    opaqueTypes = listOf(),
+  )
 
   private constructor(
     enclosing: Linker,
@@ -67,6 +84,7 @@ class Linker {
     this.errors = enclosing.errors.at(additionalContext)
     this.permitPackageCycles = false
     this.loadExhaustively = enclosing.loadExhaustively
+    this.opaqueTypes = enclosing.opaqueTypes
   }
 
   /** Returns a linker for [path], loading the file if necessary. */
@@ -209,6 +227,9 @@ class Linker {
       if (messageOnly) {
         errors += "expected a message but was $name"
       }
+      if (type in opaqueTypes) {
+        errors += "Scalar types like $type cannot be opaqued"
+      }
       return type
     }
 
@@ -232,17 +253,30 @@ class Linker {
 
     if (resolved == null) {
       errors += "unable to resolve $name"
-      return ProtoType.BYTES // Just return any placeholder.
+      return BYTES // Just return any placeholder.
     }
 
     if (messageOnly && resolved !is MessageType) {
       errors += "expected a message but was $name"
-      return ProtoType.BYTES // Just return any placeholder.
+      return BYTES // Just return any placeholder.
     }
 
-    requestedTypes.add(resolved.type)
+    when (resolved.type) {
+      in opaqueTypes -> {
+        when (resolved) {
+          is EnumType -> {
+            errors += "Enums like ${resolved.type} cannot be opaqued"
+            return resolved.type
+          }
 
-    return resolved.type
+          else -> return BYTES
+        }
+      }
+      else -> {
+        requestedTypes.add(resolved.type)
+        return resolved.type
+      }
+    }
   }
 
   fun <T> resolve(
@@ -492,7 +526,6 @@ class Linker {
     }
   }
 
-  @Suppress("MoveLambdaOutsideParentheses")
   fun validateEnumConstantNameUniqueness(nestedTypes: Iterable<Type>) {
     val nameToType = mutableMapOf<String, MutableSet<EnumType>>()
     for (type in nestedTypes) {

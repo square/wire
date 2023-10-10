@@ -194,6 +194,14 @@ class WireRun(
    * If false, unused [treeShakingRoots] and [treeShakingRubbish] will be printed as warnings.
    */
   val rejectUnusedRootsOrPrunes: Boolean = false,
+
+  /**
+   * All qualified named Protobuf types in [opaqueTypes] will be evaluated as being of type `bytes`.
+   * On code generation, the fields of such types will be using the platform equivalent of `bytes`,
+   * like [okio.ByteString] for the JVM. Note that scalar types cannot be opaqued.
+   * The opaque step will happen before the tree shaking one.
+   */
+  val opaqueTypes: List<String> = listOf(),
 ) {
   data class Module(
     val dependencies: Set<String> = emptySet(),
@@ -227,6 +235,7 @@ class WireRun(
     checkForModuleCycles()
 
     schemaLoader.permitPackageCycles = permitPackageCycles
+    schemaLoader.opaqueTypes = opaqueTypes.map(ProtoType::get)
     schemaLoader.initRoots(sourcePath, protoPath)
 
     // Validate the schema and resolve references

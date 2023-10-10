@@ -27,6 +27,13 @@ expect class SchemaLoader(fileSystem: FileSystem) : Loader, ProfileLoader {
   var permitPackageCycles: Boolean
 
   /**
+   * All qualified named Protobuf types in [opaqueTypes] will be evaluated as being of type `bytes`.
+   * On code generation, the fields of such types will be using the platform equivalent of `bytes`,
+   * like [okio.ByteString] for the JVM. Note that scalar types cannot be opaqued.
+   */
+  var opaqueTypes: List<ProtoType>
+
+  /**
    * If true, the schema loader will load the whole graph, including files and types not used by
    * anything in the source path.
    */

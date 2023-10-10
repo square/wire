@@ -53,6 +53,8 @@ internal class CommonSchemaLoader : Loader, ProfileLoader {
   /** Strict by default. Note that golang cannot build protos with package cycles. */
   var permitPackageCycles = false
 
+  var opaqueTypes: List<ProtoType> = listOf()
+
   /**
    * If true, the schema loader will load the whole graph, including files and types not used by
    * anything in the source path.
@@ -99,7 +101,7 @@ internal class CommonSchemaLoader : Loader, ProfileLoader {
   @Throws(IOException::class)
   fun loadSchema(): Schema {
     sourcePathFiles = loadSourcePathFiles()
-    val linker = Linker(this, errors, permitPackageCycles, loadExhaustively)
+    val linker = Linker(this, errors, permitPackageCycles, loadExhaustively, opaqueTypes)
     val result = linker.link(sourcePathFiles)
     errors.throwIfNonEmpty()
     return result
