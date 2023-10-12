@@ -1238,6 +1238,25 @@ class WirePluginTest {
   }
 
   @Test
+  fun opaqueMessage() {
+    val fixtureRoot = File("src/test/projects/opaque-message")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull
+    assertThat(result.output)
+      .contains("Writing cafe/cafe.proto")
+
+    val outputRoot = File(fixtureRoot, "build/generated/source/wire")
+
+    val cafeProto = File(outputRoot, "cafe/cafe.proto").readText()
+    assertThat(cafeProto)
+      .contains("repeated bytes shots")
+      .doesNotContain("repeated EspressoShot shots")
+  }
+
+  @Test
   fun emitJavaOptions() {
     val fixtureRoot = File("src/test/projects/emit-java-options")
 

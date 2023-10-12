@@ -124,8 +124,11 @@ public class com/squareup/wire/gradle/WireExtension {
 	public final fun java (Lorg/gradle/api/Action;)V
 	public final fun kotlin (Lorg/gradle/api/Action;)V
 	public final fun move (Lorg/gradle/api/Action;)V
+	public final fun moves ()Ljava/util/List;
 	public final fun onlyVersion ()Ljava/lang/String;
 	public final fun onlyVersion (Ljava/lang/String;)V
+	public final fun opaque ([Ljava/lang/String;)V
+	public final fun opaques ()Ljava/util/Set;
 	public final fun permitPackageCycles ()Z
 	public final fun permitPackageCycles (Z)V
 	public final fun proto (Lorg/gradle/api/Action;)V
@@ -196,6 +199,7 @@ public abstract class com/squareup/wire/gradle/WireTask : org/gradle/api/tasks/S
 	public abstract fun getInputFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	public abstract fun getMoves ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getOnlyVersion ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOpaques ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getOutputDirectories ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	public final fun getPermitPackageCycles ()Lorg/gradle/api/provider/Property;
 	public final fun getPluginVersion ()Lorg/gradle/api/provider/Property;

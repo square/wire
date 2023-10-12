@@ -40,6 +40,7 @@ open class WireExtension(project: Project) {
   internal val roots = mutableSetOf<String>()
   internal val prunes = mutableSetOf<String>()
   internal val moves = mutableListOf<Move>()
+  internal val opaques = mutableSetOf<String>()
   internal val eventListenerFactories = mutableSetOf<EventListener.Factory>()
   internal val eventListenerFactoryClasses = mutableSetOf<String>()
   internal var onlyVersion: String? = null
@@ -291,10 +292,22 @@ open class WireExtension(project: Project) {
     outputs += customOutput
   }
 
+  @Input
+  @Optional
+  fun moves() = moves.toList()
+
   fun move(action: Action<Move>) {
     val move = objectFactory.newInstance(Move::class.java)
     action.execute(move)
     moves += move
+  }
+
+  @Input
+  @Optional
+  fun opaques() = opaques.toSet()
+
+  fun opaque(vararg opaques: String) {
+    this.opaques.addAll(opaques)
   }
 
   // TODO(Benoit) See how we can make this class better, it's a mess and doesn't scale nicely.
