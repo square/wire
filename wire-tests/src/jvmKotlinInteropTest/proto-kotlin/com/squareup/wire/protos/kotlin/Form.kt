@@ -22,6 +22,7 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.Set
+import kotlin.jvm.JvmSynthetic
 import okio.ByteString
 
 public class Form(
@@ -258,6 +259,7 @@ public class Form(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): Form = Builder().apply(body).build()
   }
 
@@ -327,6 +329,7 @@ public class Form(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): ButtonElement =
           Builder().apply(body).build()
     }
@@ -399,6 +402,7 @@ public class Form(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): LocalImageElement =
           Builder().apply(body).build()
     }
@@ -471,6 +475,7 @@ public class Form(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): RemoteImageElement =
           Builder().apply(body).build()
     }
@@ -542,6 +547,7 @@ public class Form(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): MoneyElement =
           Builder().apply(body).build()
     }
@@ -613,6 +619,7 @@ public class Form(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): SpacerElement =
           Builder().apply(body).build()
     }
@@ -724,6 +731,7 @@ public class Form(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): TextElement = Builder().apply(body).build()
     }
   }
@@ -795,6 +803,7 @@ public class Form(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): CustomizedCardElement =
           Builder().apply(body).build()
     }
@@ -866,6 +875,7 @@ public class Form(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): AddressElement =
           Builder().apply(body).build()
     }
@@ -937,6 +947,7 @@ public class Form(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): TextInputElement =
           Builder().apply(body).build()
     }
@@ -1009,6 +1020,7 @@ public class Form(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): OptionPickerElement =
           Builder().apply(body).build()
     }
@@ -1080,6 +1092,7 @@ public class Form(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): DetailRowElement =
           Builder().apply(body).build()
     }
@@ -1154,6 +1167,7 @@ public class Form(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): CurrencyConversionFlagsElement =
           Builder().apply(body).build()
     }

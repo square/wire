@@ -550,7 +550,7 @@ class KotlinGenerator private constructor(
 
     addDefaultFields(type, companionBuilder, nameAllocator)
     addAdapter(type, companionBuilder)
-    if (buildersOnly || javaInterOp) addBuildClosure(type, companionBuilder, builderClassName)
+    if (buildersOnly || javaInterOp) addBuildFunction(type, companionBuilder, builderClassName)
 
     val classBuilder = TypeSpec.classBuilder(className)
       .apply {
@@ -1971,9 +1971,21 @@ class KotlinGenerator private constructor(
     }
   }
 
-  private fun addBuildClosure(type: MessageType, companionBuilder: TypeSpec.Builder, builderClassName: ClassName) {
+  /**
+   * Adds a closure into the [companionBuilder] allowing the creation of an instance via the Kotlin
+   * DSL.
+   *
+   * Example
+   * ```
+   * companion object {
+   *   public inline fun build(body: Builder.() -> Unit): AllTypes = Builder().apply(body).build()
+   * }
+   * ```
+   */
+  private fun addBuildFunction(type: MessageType, companionBuilder: TypeSpec.Builder, builderClassName: ClassName) {
     val buildFn = FunSpec.builder("build")
       .addModifiers(INLINE)
+      .addAnnotation(JvmSynthetic::class)
       .addParameter(
         "body",
         LambdaTypeName.get(

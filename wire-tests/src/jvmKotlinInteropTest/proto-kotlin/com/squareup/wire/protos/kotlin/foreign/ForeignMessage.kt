@@ -17,6 +17,7 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
+import kotlin.jvm.JvmSynthetic
 import okio.ByteString
 
 public class ForeignMessage(
@@ -157,6 +158,7 @@ public class ForeignMessage(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): ForeignMessage =
         Builder().apply(body).build()
   }

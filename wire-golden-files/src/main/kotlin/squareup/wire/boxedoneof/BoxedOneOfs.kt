@@ -19,6 +19,7 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.Set
+import kotlin.jvm.JvmSynthetic
 import okio.ByteString
 
 public class BoxedOneOfs(
@@ -152,6 +153,7 @@ public class BoxedOneOfs(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): BoxedOneOfs = Builder().apply(body).build()
   }
 }

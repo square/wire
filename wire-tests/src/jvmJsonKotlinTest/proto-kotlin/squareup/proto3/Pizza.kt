@@ -21,6 +21,7 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
+import kotlin.jvm.JvmSynthetic
 import okio.ByteString
 
 public class Pizza(
@@ -133,6 +134,7 @@ public class Pizza(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): Pizza = Builder().apply(body).build()
   }
 }

@@ -22,6 +22,7 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
+import kotlin.jvm.JvmSynthetic
 import kotlin.lazy
 import okio.ByteString
 
@@ -867,6 +868,7 @@ public class All32(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): All32 = Builder().apply(body).build()
   }
 }

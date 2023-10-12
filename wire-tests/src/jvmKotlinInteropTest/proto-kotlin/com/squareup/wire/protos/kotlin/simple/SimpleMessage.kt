@@ -28,6 +28,7 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
+import kotlin.jvm.JvmSynthetic
 import okio.ByteString
 
 /**
@@ -543,6 +544,7 @@ public class SimpleMessage(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): SimpleMessage = Builder().apply(body).build()
   }
 
@@ -658,6 +660,7 @@ public class SimpleMessage(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): NestedMessage =
           Builder().apply(body).build()
     }

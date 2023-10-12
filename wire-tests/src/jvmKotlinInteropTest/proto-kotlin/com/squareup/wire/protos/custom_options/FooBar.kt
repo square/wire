@@ -32,6 +32,7 @@ import kotlin.`annotation`.AnnotationTarget
 import kotlin.`annotation`.Retention
 import kotlin.`annotation`.Target
 import kotlin.collections.List
+import kotlin.jvm.JvmSynthetic
 import okio.ByteString
 
 public class FooBar(
@@ -434,6 +435,7 @@ public class FooBar(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): FooBar = Builder().apply(body).build()
   }
 
@@ -548,6 +550,7 @@ public class FooBar(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): Nested = Builder().apply(body).build()
     }
   }
@@ -662,6 +665,7 @@ public class FooBar(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): More = Builder().apply(body).build()
     }
   }

@@ -30,6 +30,7 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
+import kotlin.jvm.JvmSynthetic
 import kotlin.lazy
 import okio.ByteString
 import okio.ByteString.Companion.decodeBase64
@@ -4586,6 +4587,7 @@ public class AllTypes(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): AllTypes = Builder().apply(body).build()
   }
 
@@ -4721,6 +4723,7 @@ public class AllTypes(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): NestedMessage =
           Builder().apply(body).build()
     }

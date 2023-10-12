@@ -20,6 +20,7 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.Map
+import kotlin.jvm.JvmSynthetic
 import kotlin.lazy
 import okio.ByteString
 
@@ -136,6 +137,7 @@ public class Mappy(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): Mappy = Builder().apply(body).build()
   }
 }

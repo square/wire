@@ -17,6 +17,7 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
+import kotlin.jvm.JvmSynthetic
 import okio.ByteString
 
 public class NestedVersionOne(
@@ -125,6 +126,7 @@ public class NestedVersionOne(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): NestedVersionOne =
         Builder().apply(body).build()
   }

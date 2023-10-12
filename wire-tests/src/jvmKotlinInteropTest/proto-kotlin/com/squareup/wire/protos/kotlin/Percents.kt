@@ -18,6 +18,7 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
+import kotlin.jvm.JvmSynthetic
 import okio.ByteString
 
 public class Percents(
@@ -132,6 +133,7 @@ public class Percents(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): Percents = Builder().apply(body).build()
   }
 }

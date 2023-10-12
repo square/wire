@@ -18,6 +18,7 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
+import kotlin.jvm.JvmSynthetic
 import okio.ByteString
 
 public class Thing(
@@ -126,6 +127,7 @@ public class Thing(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): Thing = Builder().apply(body).build()
   }
 }

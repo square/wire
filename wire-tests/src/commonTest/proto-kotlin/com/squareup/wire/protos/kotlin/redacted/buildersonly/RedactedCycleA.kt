@@ -17,6 +17,7 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
+import kotlin.jvm.JvmSynthetic
 import okio.ByteString
 
 public class RedactedCycleA private constructor(
@@ -126,6 +127,7 @@ public class RedactedCycleA private constructor(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): RedactedCycleA =
         Builder().apply(body).build()
   }

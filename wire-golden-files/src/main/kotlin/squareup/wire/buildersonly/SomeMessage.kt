@@ -17,6 +17,7 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
+import kotlin.jvm.JvmSynthetic
 import okio.ByteString
 
 public class SomeMessage private constructor(
@@ -125,6 +126,7 @@ public class SomeMessage private constructor(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): SomeMessage = Builder().apply(body).build()
   }
 
@@ -234,6 +236,7 @@ public class SomeMessage private constructor(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): NestedMessage =
           Builder().apply(body).build()
     }

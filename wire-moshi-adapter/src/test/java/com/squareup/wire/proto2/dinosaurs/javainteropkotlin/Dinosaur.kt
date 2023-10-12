@@ -23,6 +23,7 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
+import kotlin.jvm.JvmSynthetic
 import okio.ByteString
 
 public class Dinosaur(
@@ -261,6 +262,7 @@ public class Dinosaur(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): Dinosaur = Builder().apply(body).build()
   }
 }
