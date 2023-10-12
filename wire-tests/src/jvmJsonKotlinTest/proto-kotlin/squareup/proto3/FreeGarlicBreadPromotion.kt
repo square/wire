@@ -16,6 +16,7 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import okio.ByteString
 
 public class FreeGarlicBreadPromotion(
@@ -131,5 +132,8 @@ public class FreeGarlicBreadPromotion(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): FreeGarlicBreadPromotion =
+        Builder().apply(body).build()
   }
 }

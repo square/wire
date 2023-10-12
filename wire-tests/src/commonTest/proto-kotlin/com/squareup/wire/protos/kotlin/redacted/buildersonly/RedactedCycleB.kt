@@ -16,6 +16,7 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import okio.ByteString
 
 public class RedactedCycleB private constructor(
@@ -124,5 +125,8 @@ public class RedactedCycleB private constructor(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): RedactedCycleB =
+        Builder().apply(body).build()
   }
 }

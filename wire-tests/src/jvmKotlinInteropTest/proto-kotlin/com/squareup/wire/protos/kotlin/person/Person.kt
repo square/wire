@@ -24,6 +24,7 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import okio.ByteString
 
@@ -280,6 +281,8 @@ public class Person(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): Person = Builder().apply(body).build()
   }
 
   /**
@@ -470,6 +473,8 @@ public class Person(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): PhoneNumber = Builder().apply(body).build()
     }
   }
 }

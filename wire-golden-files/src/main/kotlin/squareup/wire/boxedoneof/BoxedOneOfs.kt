@@ -151,5 +151,7 @@ public class BoxedOneOfs(
         VALUE_VALUE)
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): BoxedOneOfs = Builder().apply(body).build()
   }
 }

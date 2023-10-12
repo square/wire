@@ -16,6 +16,7 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import okio.ByteString
 
 @MyMessageOptionTwoOption(91011.0f)
@@ -96,5 +97,8 @@ public class MessageWithOptions(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): MessageWithOptions =
+        Builder().apply(body).build()
   }
 }

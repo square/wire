@@ -21,6 +21,7 @@ import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.lazy
@@ -1042,5 +1043,7 @@ public class AllWrappers(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): AllWrappers = Builder().apply(body).build()
   }
 }

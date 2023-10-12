@@ -18,6 +18,7 @@ import kotlin.Double
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.Map
 import kotlin.lazy
 import okio.ByteString
@@ -205,5 +206,8 @@ public class ModelEvaluation(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): ModelEvaluation =
+        Builder().apply(body).build()
   }
 }

@@ -15,6 +15,7 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import okio.ByteString
 
 public class SomeResponse private constructor(
@@ -84,5 +85,7 @@ public class SomeResponse private constructor(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): SomeResponse = Builder().apply(body).build()
   }
 }

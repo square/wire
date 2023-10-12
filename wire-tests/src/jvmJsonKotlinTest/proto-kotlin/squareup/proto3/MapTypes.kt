@@ -17,6 +17,7 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.Map
 import kotlin.lazy
 import okio.ByteString
@@ -489,5 +490,7 @@ public class MapTypes(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): MapTypes = Builder().apply(body).build()
   }
 }

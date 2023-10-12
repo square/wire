@@ -28,10 +28,12 @@ import com.squareup.kotlinpoet.INT
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.KModifier.ABSTRACT
 import com.squareup.kotlinpoet.KModifier.CONST
+import com.squareup.kotlinpoet.KModifier.INLINE
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.KModifier.PUBLIC
 import com.squareup.kotlinpoet.LONG
+import com.squareup.kotlinpoet.LambdaTypeName
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.MemberName.Companion.member
 import com.squareup.kotlinpoet.NOTHING
@@ -548,6 +550,7 @@ class KotlinGenerator private constructor(
 
     addDefaultFields(type, companionBuilder, nameAllocator)
     addAdapter(type, companionBuilder)
+    if (buildersOnly || javaInterOp) addBuildClosure(type, companionBuilder, builderClassName)
 
     val classBuilder = TypeSpec.classBuilder(className)
       .apply {
@@ -1966,6 +1969,23 @@ class KotlinGenerator private constructor(
       // us the maximum possible number of elements in the list.
       else -> 1
     }
+  }
+
+  private fun addBuildClosure(type: MessageType, companionBuilder: TypeSpec.Builder, builderClassName: ClassName) {
+    val buildFn = FunSpec.builder("build")
+      .addModifiers(INLINE)
+      .addParameter(
+        "body",
+        LambdaTypeName.get(
+          receiver = builderClassName,
+          returnType = Unit::class.asClassName(),
+        ),
+      )
+      .addStatement("return %T().apply(body).build()", builderClassName)
+      .returns(generatedTypeName(type))
+      .build()
+
+    companionBuilder.addFunction(buildFn)
   }
 
   private fun redactFun(message: MessageType): FunSpec {

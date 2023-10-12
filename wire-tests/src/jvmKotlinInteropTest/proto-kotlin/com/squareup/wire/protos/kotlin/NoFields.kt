@@ -16,6 +16,7 @@ import kotlin.Deprecated
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import okio.ByteString
 
 @Deprecated(message = "NoFields is deprecated")
@@ -84,5 +85,7 @@ public class NoFields(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): NoFields = Builder().apply(body).build()
   }
 }

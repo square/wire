@@ -18,6 +18,7 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import okio.ByteString
 
 /**
@@ -217,5 +218,7 @@ public class OneOfMessage(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): OneOfMessage = Builder().apply(body).build()
   }
 }

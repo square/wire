@@ -257,6 +257,8 @@ public class Form(
         DECISION_D, DECISION_E, DECISION_F, DECISION_G, DECISION_H)
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): Form = Builder().apply(body).build()
   }
 
   public class ButtonElement(
@@ -324,6 +326,9 @@ public class Form(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): ButtonElement =
+          Builder().apply(body).build()
     }
   }
 
@@ -393,6 +398,9 @@ public class Form(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): LocalImageElement =
+          Builder().apply(body).build()
     }
   }
 
@@ -462,6 +470,9 @@ public class Form(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): RemoteImageElement =
+          Builder().apply(body).build()
     }
   }
 
@@ -530,6 +541,9 @@ public class Form(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): MoneyElement =
+          Builder().apply(body).build()
     }
   }
 
@@ -598,6 +612,9 @@ public class Form(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): SpacerElement =
+          Builder().apply(body).build()
     }
   }
 
@@ -706,6 +723,8 @@ public class Form(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): TextElement = Builder().apply(body).build()
     }
   }
 
@@ -775,6 +794,9 @@ public class Form(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): CustomizedCardElement =
+          Builder().apply(body).build()
     }
   }
 
@@ -843,6 +865,9 @@ public class Form(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): AddressElement =
+          Builder().apply(body).build()
     }
   }
 
@@ -911,6 +936,9 @@ public class Form(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): TextInputElement =
+          Builder().apply(body).build()
     }
   }
 
@@ -980,6 +1008,9 @@ public class Form(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): OptionPickerElement =
+          Builder().apply(body).build()
     }
   }
 
@@ -1048,6 +1079,9 @@ public class Form(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): DetailRowElement =
+          Builder().apply(body).build()
     }
   }
 
@@ -1119,6 +1153,9 @@ public class Form(
       }
 
       private const val serialVersionUID: Long = 0L
+
+      public inline fun build(body: Builder.() -> Unit): CurrencyConversionFlagsElement =
+          Builder().apply(body).build()
     }
   }
 }

@@ -249,6 +249,7 @@ val generateKotlinBuildersOnlyTests by tasks.creating(JavaExec::class) {
     "--kotlin_out=wire-tests/src/commonTest/proto-kotlin",
     "--kotlin_builders_only",
     "redacted_test_builders_only.proto",
+    "simple_message_builders_only.proto",
   )
 }
 

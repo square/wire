@@ -17,6 +17,7 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import okio.ByteString
 
 public class NotRedacted private constructor(
@@ -148,5 +149,7 @@ public class NotRedacted private constructor(
     }
 
     private const val serialVersionUID: Long = 0L
+
+    public inline fun build(body: Builder.() -> Unit): NotRedacted = Builder().apply(body).build()
   }
 }
