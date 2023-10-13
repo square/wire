@@ -195,7 +195,6 @@ class SwiftGenerator private constructor(
 
   // see https://protobuf.dev/programming-guides/proto3/#default
   private val Field.proto3InitialValue: String
-    // TODO: Defaults: REMOVE ME! :)
     get() = when {
       isMap -> "[:]"
       isRepeated -> "[]"
@@ -292,7 +291,7 @@ class SwiftGenerator private constructor(
    */
   @Throws(NoSuchElementException::class)
   private fun validateProto3DefaultsExist(type: MessageType) {
-    // TODO: Defaults: REMOVE ME! :)
+    // TODO: Remove when we support unknown cases
     if (type.syntax == PROTO_2) { return }
 
     // validate each enum field
