@@ -43,6 +43,13 @@ extension Form : Sendable {
 }
 #endif
 
+extension Form : ProtoDefaultedValue {
+
+    public static var defaultedValue: Form {
+        Form()
+    }
+}
+
 extension Form : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {
@@ -326,6 +333,7 @@ extension Form {
 
     public struct TextElement {
 
+        @Wire.ProtoDefaulted
         public var text: Swift.String?
         public var unknownFields: Foundation.Data = .init()
 
@@ -448,6 +456,13 @@ extension Form.ButtonElement : Sendable {
 }
 #endif
 
+extension Form.ButtonElement : ProtoDefaultedValue {
+
+    public static var defaultedValue: Form.ButtonElement {
+        Form.ButtonElement()
+    }
+}
+
 extension Form.ButtonElement : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {
@@ -498,6 +513,13 @@ extension Form.LocalImageElement : Hashable {
 extension Form.LocalImageElement : Sendable {
 }
 #endif
+
+extension Form.LocalImageElement : ProtoDefaultedValue {
+
+    public static var defaultedValue: Form.LocalImageElement {
+        Form.LocalImageElement()
+    }
+}
 
 extension Form.LocalImageElement : ProtoMessage {
 
@@ -550,6 +572,13 @@ extension Form.RemoteImageElement : Sendable {
 }
 #endif
 
+extension Form.RemoteImageElement : ProtoDefaultedValue {
+
+    public static var defaultedValue: Form.RemoteImageElement {
+        Form.RemoteImageElement()
+    }
+}
+
 extension Form.RemoteImageElement : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {
@@ -600,6 +629,13 @@ extension Form.MoneyElement : Hashable {
 extension Form.MoneyElement : Sendable {
 }
 #endif
+
+extension Form.MoneyElement : ProtoDefaultedValue {
+
+    public static var defaultedValue: Form.MoneyElement {
+        Form.MoneyElement()
+    }
+}
 
 extension Form.MoneyElement : ProtoMessage {
 
@@ -652,6 +688,13 @@ extension Form.SpacerElement : Sendable {
 }
 #endif
 
+extension Form.SpacerElement : ProtoDefaultedValue {
+
+    public static var defaultedValue: Form.SpacerElement {
+        Form.SpacerElement()
+    }
+}
+
 extension Form.SpacerElement : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {
@@ -694,7 +737,7 @@ extension Form.TextElement {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(text: Swift.String? = nil) {
-        self.text = text
+        self._text.wrappedValue = text
     }
 
 }
@@ -714,6 +757,13 @@ extension Form.TextElement : Hashable {
 extension Form.TextElement : Sendable {
 }
 #endif
+
+extension Form.TextElement : ProtoDefaultedValue {
+
+    public static var defaultedValue: Form.TextElement {
+        Form.TextElement()
+    }
+}
 
 extension Form.TextElement : ProtoMessage {
 
@@ -737,7 +787,7 @@ extension Form.TextElement : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.text = text
+        self._text.wrappedValue = text
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -752,7 +802,7 @@ extension Form.TextElement : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.text = try container.decodeIfPresent(Swift.String.self, forKey: "text")
+        self._text.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "text")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {
@@ -778,6 +828,13 @@ extension Form.CustomizedCardElement : Hashable {
 extension Form.CustomizedCardElement : Sendable {
 }
 #endif
+
+extension Form.CustomizedCardElement : ProtoDefaultedValue {
+
+    public static var defaultedValue: Form.CustomizedCardElement {
+        Form.CustomizedCardElement()
+    }
+}
 
 extension Form.CustomizedCardElement : ProtoMessage {
 
@@ -830,6 +887,13 @@ extension Form.AddressElement : Sendable {
 }
 #endif
 
+extension Form.AddressElement : ProtoDefaultedValue {
+
+    public static var defaultedValue: Form.AddressElement {
+        Form.AddressElement()
+    }
+}
+
 extension Form.AddressElement : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {
@@ -880,6 +944,13 @@ extension Form.TextInputElement : Hashable {
 extension Form.TextInputElement : Sendable {
 }
 #endif
+
+extension Form.TextInputElement : ProtoDefaultedValue {
+
+    public static var defaultedValue: Form.TextInputElement {
+        Form.TextInputElement()
+    }
+}
 
 extension Form.TextInputElement : ProtoMessage {
 
@@ -932,6 +1003,13 @@ extension Form.OptionPickerElement : Sendable {
 }
 #endif
 
+extension Form.OptionPickerElement : ProtoDefaultedValue {
+
+    public static var defaultedValue: Form.OptionPickerElement {
+        Form.OptionPickerElement()
+    }
+}
+
 extension Form.OptionPickerElement : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {
@@ -983,6 +1061,13 @@ extension Form.DetailRowElement : Sendable {
 }
 #endif
 
+extension Form.DetailRowElement : ProtoDefaultedValue {
+
+    public static var defaultedValue: Form.DetailRowElement {
+        Form.DetailRowElement()
+    }
+}
+
 extension Form.DetailRowElement : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {
@@ -1033,6 +1118,13 @@ extension Form.CurrencyConversionFlagsElement : Hashable {
 extension Form.CurrencyConversionFlagsElement : Sendable {
 }
 #endif
+
+extension Form.CurrencyConversionFlagsElement : ProtoDefaultedValue {
+
+    public static var defaultedValue: Form.CurrencyConversionFlagsElement {
+        Form.CurrencyConversionFlagsElement()
+    }
+}
 
 extension Form.CurrencyConversionFlagsElement : ProtoMessage {
 

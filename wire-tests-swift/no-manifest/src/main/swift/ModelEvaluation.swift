@@ -20,7 +20,9 @@ import Wire
  */
 public struct ModelEvaluation {
 
+    @ProtoDefaulted
     public var name: String?
+    @ProtoDefaulted
     public var score: Double?
     public var models: [String : ModelEvaluation] = [:]
     public var unknownFields: Foundation.Data = .init()
@@ -41,8 +43,8 @@ extension ModelEvaluation {
         score: Swift.Double? = nil,
         models: [Swift.String : ModelEvaluation] = [:]
     ) {
-        self.name = name
-        self.score = score
+        self._name.wrappedValue = name
+        self._score.wrappedValue = score
         self.models = models
     }
 
@@ -63,6 +65,13 @@ extension ModelEvaluation : Hashable {
 extension ModelEvaluation : Sendable {
 }
 #endif
+
+extension ModelEvaluation : ProtoDefaultedValue {
+
+    public static var defaultedValue: ModelEvaluation {
+        ModelEvaluation()
+    }
+}
 
 extension ModelEvaluation : ProtoMessage {
 
@@ -90,8 +99,8 @@ extension ModelEvaluation : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.name = name
-        self.score = score
+        self._name.wrappedValue = name
+        self._score.wrappedValue = score
         self.models = models
     }
 
@@ -109,8 +118,8 @@ extension ModelEvaluation : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.name = try container.decodeIfPresent(Swift.String.self, forKey: "name")
-        self.score = try container.decodeIfPresent(Swift.Double.self, forKey: "score")
+        self._name.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "name")
+        self._score.wrappedValue = try container.decodeIfPresent(Swift.Double.self, forKey: "score")
         self.models = try container.decodeProtoMap([Swift.String : ModelEvaluation].self, forKey: "models")
     }
 

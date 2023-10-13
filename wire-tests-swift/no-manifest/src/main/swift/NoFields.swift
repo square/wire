@@ -27,6 +27,13 @@ extension NoFields : Sendable {
 }
 #endif
 
+extension NoFields : ProtoDefaultedValue {
+
+    public static var defaultedValue: NoFields {
+        NoFields()
+    }
+}
+
 extension NoFields : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {

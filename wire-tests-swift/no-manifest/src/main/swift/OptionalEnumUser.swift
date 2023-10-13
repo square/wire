@@ -41,6 +41,13 @@ extension OptionalEnumUser : Sendable {
 }
 #endif
 
+extension OptionalEnumUser : ProtoDefaultedValue {
+
+    public static var defaultedValue: OptionalEnumUser {
+        OptionalEnumUser()
+    }
+}
+
 extension OptionalEnumUser : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {

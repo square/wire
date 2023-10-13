@@ -22,6 +22,7 @@ plugin*.xml
 
 # SPM
 .build
+.swiftpm
 
 # Special Mkdocs files
 docs/3.x

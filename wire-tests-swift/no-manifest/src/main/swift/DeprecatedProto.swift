@@ -6,6 +6,7 @@ import Wire
 public struct DeprecatedProto {
 
     @available(*, deprecated)
+    @ProtoDefaulted
     public var foo: String?
     public var unknownFields: Foundation.Data = .init()
 
@@ -21,7 +22,7 @@ extension DeprecatedProto {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(foo: Swift.String? = nil) {
-        self.foo = foo
+        self._foo.wrappedValue = foo
     }
 
 }
@@ -41,6 +42,13 @@ extension DeprecatedProto : Hashable {
 extension DeprecatedProto : Sendable {
 }
 #endif
+
+extension DeprecatedProto : ProtoDefaultedValue {
+
+    public static var defaultedValue: DeprecatedProto {
+        DeprecatedProto()
+    }
+}
 
 extension DeprecatedProto : ProtoMessage {
 
@@ -64,7 +72,7 @@ extension DeprecatedProto : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.foo = foo
+        self._foo.wrappedValue = foo
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -79,7 +87,7 @@ extension DeprecatedProto : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.foo = try container.decodeIfPresent(Swift.String.self, forKey: "foo")
+        self._foo.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "foo")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {

@@ -8,6 +8,7 @@ import Wire
  */
 public struct VeryLongProtoNameCausingBrokenLineBreaks {
 
+    @ProtoDefaulted
     public var foo: String?
     public var unknownFields: Foundation.Data = .init()
 
@@ -23,7 +24,7 @@ extension VeryLongProtoNameCausingBrokenLineBreaks {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(foo: Swift.String? = nil) {
-        self.foo = foo
+        self._foo.wrappedValue = foo
     }
 
 }
@@ -43,6 +44,13 @@ extension VeryLongProtoNameCausingBrokenLineBreaks : Hashable {
 extension VeryLongProtoNameCausingBrokenLineBreaks : Sendable {
 }
 #endif
+
+extension VeryLongProtoNameCausingBrokenLineBreaks : ProtoDefaultedValue {
+
+    public static var defaultedValue: VeryLongProtoNameCausingBrokenLineBreaks {
+        VeryLongProtoNameCausingBrokenLineBreaks()
+    }
+}
 
 extension VeryLongProtoNameCausingBrokenLineBreaks : ProtoMessage {
 
@@ -66,7 +74,7 @@ extension VeryLongProtoNameCausingBrokenLineBreaks : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.foo = foo
+        self._foo.wrappedValue = foo
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -81,7 +89,7 @@ extension VeryLongProtoNameCausingBrokenLineBreaks : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.foo = try container.decodeIfPresent(Swift.String.self, forKey: "foo")
+        self._foo.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "foo")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {

@@ -26,6 +26,13 @@ extension OneofOptions : Sendable {
 }
 #endif
 
+extension OneofOptions : ProtoDefaultedValue {
+
+    public static var defaultedValue: OneofOptions {
+        OneofOptions()
+    }
+}
+
 extension OneofOptions : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {

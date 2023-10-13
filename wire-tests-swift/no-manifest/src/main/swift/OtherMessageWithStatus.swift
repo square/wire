@@ -27,6 +27,13 @@ extension OtherMessageWithStatus : Sendable {
 }
 #endif
 
+extension OtherMessageWithStatus : ProtoDefaultedValue {
+
+    public static var defaultedValue: OtherMessageWithStatus {
+        OtherMessageWithStatus()
+    }
+}
+
 extension OtherMessageWithStatus : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {

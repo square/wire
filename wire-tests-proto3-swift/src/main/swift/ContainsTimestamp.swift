@@ -41,6 +41,13 @@ extension ContainsTimestamp : Sendable {
 }
 #endif
 
+extension ContainsTimestamp : ProtoDefaultedValue {
+
+    public static var defaultedValue: ContainsTimestamp {
+        ContainsTimestamp()
+    }
+}
+
 extension ContainsTimestamp : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {

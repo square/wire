@@ -46,6 +46,13 @@ extension MessageUsingMultipleEnums : Sendable {
 }
 #endif
 
+extension MessageUsingMultipleEnums : ProtoDefaultedValue {
+
+    public static var defaultedValue: MessageUsingMultipleEnums {
+        MessageUsingMultipleEnums()
+    }
+}
+
 extension MessageUsingMultipleEnums : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {

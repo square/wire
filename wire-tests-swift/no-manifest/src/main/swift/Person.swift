@@ -19,6 +19,7 @@ public struct Person {
     /**
      * Email address for the customer.
      */
+    @ProtoDefaulted
     public var email: String?
     /**
      * A list of the customer's phone numbers.
@@ -53,7 +54,7 @@ extension Person {
     ) {
         self.id = id
         self.name = name
-        self.email = email
+        self._email.wrappedValue = email
         self.phone = phone
         self.aliases = aliases
     }
@@ -108,7 +109,7 @@ extension Person : Proto2Codable {
 
         self.id = try Person.checkIfMissing(id, "id")
         self.name = try Person.checkIfMissing(name, "name")
-        self.email = email
+        self._email.wrappedValue = email
         self.phone = phone
         self.aliases = aliases
     }
@@ -131,7 +132,7 @@ extension Person : Codable {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         self.id = try container.decode(Swift.Int32.self, forKey: "id")
         self.name = try container.decode(Swift.String.self, forKey: "name")
-        self.email = try container.decodeIfPresent(Swift.String.self, forKey: "email")
+        self._email.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "email")
         self.phone = try container.decodeProtoArray(Person.PhoneNumber.self, forKey: "phone")
         self.aliases = try container.decodeProtoArray(Swift.String.self, forKey: "aliases")
     }
@@ -166,7 +167,8 @@ extension Person {
     /**
      * Represents the type of the phone number: mobile, home or work.
      */
-    public enum PhoneType : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
+    public enum PhoneType : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum,
+            Wire.ProtoDefaultedValue {
 
         case MOBILE = 0
         case HOME = 1
@@ -175,6 +177,9 @@ extension Person {
          */
         case WORK = 2
 
+        public static var defaultedValue: Person.PhoneType {
+            Person.PhoneType.MOBILE
+        }
         public var description: Swift.String {
             switch self {
             case .MOBILE: return "MOBILE"
@@ -194,7 +199,7 @@ extension Person {
         /**
          * The type of phone stored here.
          */
-        @Wire.Defaulted(defaultValue: Person.PhoneType.HOME)
+        @Wire.CustomDefaulted(defaultValue: Person.PhoneType.HOME)
         public var type: Person.PhoneType?
         public var unknownFields: Foundation.Data = .init()
 
@@ -219,7 +224,7 @@ extension Person.PhoneNumber {
     @available(*, deprecated)
     public init(number: Swift.String, type: Person.PhoneType? = nil) {
         self.number = number
-        _type.wrappedValue = type
+        self._type.wrappedValue = type
     }
 
 }
@@ -265,7 +270,7 @@ extension Person.PhoneNumber : Proto2Codable {
         self.unknownFields = try protoReader.endMessage(token: token)
 
         self.number = try Person.PhoneNumber.checkIfMissing(number, "number")
-        _type.wrappedValue = type
+        self._type.wrappedValue = type
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -282,7 +287,7 @@ extension Person.PhoneNumber : Codable {
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         self.number = try container.decode(Swift.String.self, forKey: "number")
-        _type.wrappedValue = try container.decodeIfPresent(Person.PhoneType.self, forKey: "type")
+        self._type.wrappedValue = try container.decodeIfPresent(Person.PhoneType.self, forKey: "type")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {

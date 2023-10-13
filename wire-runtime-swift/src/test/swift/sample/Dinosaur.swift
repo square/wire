@@ -8,12 +8,15 @@ public struct Dinosaur {
     /**
      * Common name of this dinosaur, like "Stegosaurus".
      */
+    @ProtoDefaulted
     public var name: String?
     /**
      * URLs with images of this dinosaur.
      */
     public var picture_urls: [String] = []
+    @ProtoDefaulted
     public var length_meters: Double?
+    @ProtoDefaulted
     public var mass_kilograms: Double?
     public var period: Period?
     public var unknownFields: Foundation.Data = .init()
@@ -36,10 +39,10 @@ extension Dinosaur {
         mass_kilograms: Swift.Double? = nil,
         period: Period? = nil
     ) {
-        self.name = name
+        self._name.wrappedValue = name
         self.picture_urls = picture_urls
-        self.length_meters = length_meters
-        self.mass_kilograms = mass_kilograms
+        self._length_meters.wrappedValue = length_meters
+        self._mass_kilograms.wrappedValue = mass_kilograms
         self.period = period
     }
 
@@ -60,6 +63,13 @@ extension Dinosaur : Hashable {
 extension Dinosaur : Sendable {
 }
 #endif
+
+extension Dinosaur : ProtoDefaultedValue {
+
+    public static var defaultedValue: Dinosaur {
+        Dinosaur()
+    }
+}
 
 extension Dinosaur : ProtoMessage {
 
@@ -91,10 +101,10 @@ extension Dinosaur : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.name = name
+        self._name.wrappedValue = name
         self.picture_urls = picture_urls
-        self.length_meters = length_meters
-        self.mass_kilograms = mass_kilograms
+        self._length_meters.wrappedValue = length_meters
+        self._mass_kilograms.wrappedValue = mass_kilograms
         self.period = period
     }
 
@@ -114,10 +124,10 @@ extension Dinosaur : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.name = try container.decodeIfPresent(Swift.String.self, forKey: "name")
+        self._name.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "name")
         self.picture_urls = try container.decodeProtoArray(Swift.String.self, firstOfKeys: "pictureUrls", "picture_urls")
-        self.length_meters = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "lengthMeters", "length_meters")
-        self.mass_kilograms = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "massKilograms", "mass_kilograms")
+        self._length_meters.wrappedValue = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "lengthMeters", "length_meters")
+        self._mass_kilograms.wrappedValue = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "massKilograms", "mass_kilograms")
         self.period = try container.decodeIfPresent(Period.self, forKey: "period")
     }
 

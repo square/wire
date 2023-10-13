@@ -41,6 +41,13 @@ extension Mappy : Sendable {
 }
 #endif
 
+extension Mappy : ProtoDefaultedValue {
+
+    public static var defaultedValue: Mappy {
+        Mappy()
+    }
+}
+
 extension Mappy : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {

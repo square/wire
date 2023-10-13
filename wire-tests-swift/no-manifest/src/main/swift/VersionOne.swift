@@ -5,7 +5,9 @@ import Wire
 
 public struct VersionOne {
 
+    @ProtoDefaulted
     public var i: Int32?
+    @ProtoDefaulted
     public var obj: NestedVersionOne?
     public var en: EnumVersionOne?
     public var unknownFields: Foundation.Data = .init()
@@ -26,8 +28,8 @@ extension VersionOne {
         obj: NestedVersionOne? = nil,
         en: EnumVersionOne? = nil
     ) {
-        self.i = i
-        self.obj = obj
+        self._i.wrappedValue = i
+        self._obj.wrappedValue = obj
         self.en = en
     }
 
@@ -48,6 +50,13 @@ extension VersionOne : Hashable {
 extension VersionOne : Sendable {
 }
 #endif
+
+extension VersionOne : ProtoDefaultedValue {
+
+    public static var defaultedValue: VersionOne {
+        VersionOne()
+    }
+}
 
 extension VersionOne : ProtoMessage {
 
@@ -75,8 +84,8 @@ extension VersionOne : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.i = i
-        self.obj = obj
+        self._i.wrappedValue = i
+        self._obj.wrappedValue = obj
         self.en = en
     }
 
@@ -94,8 +103,8 @@ extension VersionOne : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.i = try container.decodeIfPresent(Swift.Int32.self, forKey: "i")
-        self.obj = try container.decodeIfPresent(NestedVersionOne.self, forKey: "obj")
+        self._i.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, forKey: "i")
+        self._obj.wrappedValue = try container.decodeIfPresent(NestedVersionOne.self, forKey: "obj")
         self.en = try container.decodeIfPresent(EnumVersionOne.self, forKey: "en")
     }
 

@@ -47,6 +47,13 @@ extension OneOfMessage : Sendable {
 }
 #endif
 
+extension OneOfMessage : ProtoDefaultedValue {
+
+    public static var defaultedValue: OneOfMessage {
+        OneOfMessage()
+    }
+}
+
 extension OneOfMessage : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {

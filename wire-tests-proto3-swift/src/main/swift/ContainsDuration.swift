@@ -41,6 +41,13 @@ extension ContainsDuration : Sendable {
 }
 #endif
 
+extension ContainsDuration : ProtoDefaultedValue {
+
+    public static var defaultedValue: ContainsDuration {
+        ContainsDuration()
+    }
+}
+
 extension ContainsDuration : ProtoMessage {
 
     public static func protoMessageTypeURL() -> Swift.String {
