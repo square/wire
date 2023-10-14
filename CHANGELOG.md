@@ -1,8 +1,19 @@
 Change Log
 ==========
 
+Version XXXXX
+-------------
+
+_Unreleased_
+
+* Change: Swift `Defaulted` has been renamed `CustomDefaulted`
+* New: Swift `ProtoDefaulted` property wrapper and `ProtoDefaultedValue` protocol
+    * Similar to `CustomDefaulted, this adds as projection of the protocol defined default value
+    * This should not take up any additional storage
+    * This is attached to optional scalar values and messages with entirely optional values
+
 Version 4.9.1
------------
+-------------
 
 _2023-09-26_
 
