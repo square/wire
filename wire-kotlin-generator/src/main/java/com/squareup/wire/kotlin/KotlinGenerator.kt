@@ -550,7 +550,7 @@ class KotlinGenerator private constructor(
 
     addDefaultFields(type, companionBuilder, nameAllocator)
     addAdapter(type, companionBuilder)
-    if (buildersOnly || javaInterOp) addBuildClosure(type, companionBuilder, builderClassName)
+    if (buildersOnly || javaInterOp) addBuildFunction(type, companionBuilder, builderClassName)
 
     val classBuilder = TypeSpec.classBuilder(className)
       .apply {
@@ -1971,9 +1971,23 @@ class KotlinGenerator private constructor(
     }
   }
 
-  private fun addBuildClosure(type: MessageType, companionBuilder: TypeSpec.Builder, builderClassName: ClassName) {
-    val buildFn = FunSpec.builder("build")
+  /**
+   * Adds a closure into the [companionBuilder] allowing the creation of an instance via the Kotlin
+   * DSL.
+   *
+   * Example
+   * ```
+   * companion object {
+   *   @JvmSynthetic
+   *   public inline fun build(body: Builder.() -> Unit): AllTypes = Builder().apply(body).build()
+   * }
+   * ```
+   */
+  private fun addBuildFunction(type: MessageType, companionBuilder: TypeSpec.Builder, builderClassName: ClassName) {
+    val buildFunction = FunSpec.builder("build")
       .addModifiers(INLINE)
+      // We hide it to Java callers.
+      .addAnnotation(ClassName("com.squareup.wire.internal", "JvmSynthetic"))
       .addParameter(
         "body",
         LambdaTypeName.get(
@@ -1985,7 +1999,7 @@ class KotlinGenerator private constructor(
       .returns(generatedTypeName(type))
       .build()
 
-    companionBuilder.addFunction(buildFn)
+    companionBuilder.addFunction(buildFunction)
   }
 
   private fun redactFun(message: MessageType): FunSpec {

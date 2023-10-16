@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.`internal`.JvmField
+import com.squareup.wire.`internal`.JvmSynthetic
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -86,6 +87,7 @@ public class SomeRequest private constructor(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): SomeRequest = Builder().apply(body).build()
   }
 }

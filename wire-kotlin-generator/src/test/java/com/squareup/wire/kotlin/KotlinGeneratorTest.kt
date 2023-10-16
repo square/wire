@@ -1979,11 +1979,14 @@ class KotlinGeneratorTest {
       .generateKotlin("SomeMessage", buildersOnly = false, javaInterop = false)
     assertThat(code).doesNotContain("inline fun build(body: Builder.() -> Unit): SomeMessage")
     val buildersOnlyCode = KotlinWithProfilesGenerator(schema)
-      .generateKotlin("SomeMessage", buildersOnly = true)
-    assertThat(buildersOnlyCode).contains("inline fun build(body: Builder.() -> Unit): SomeMessage")
+      .generateKotlin("SomeMessage", buildersOnly = true, javaInterop = false)
+    assertThat(buildersOnlyCode).contains("@JvmSynthetic\n    public inline fun build(body: Builder.() -> Unit): SomeMessage")
     val javaInteropCode = KotlinWithProfilesGenerator(schema)
-      .generateKotlin("SomeMessage", javaInterop = true)
-    assertThat(javaInteropCode).contains("inline fun build(body: Builder.() -> Unit): SomeMessage")
+      .generateKotlin("SomeMessage", buildersOnly = false, javaInterop = true)
+    assertThat(javaInteropCode).contains("@JvmSynthetic\n    public inline fun build(body: Builder.() -> Unit): SomeMessage")
+    val bothCode = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("SomeMessage", buildersOnly = true, javaInterop = true)
+    assertThat(bothCode).contains("@JvmSynthetic\n    public inline fun build(body: Builder.() -> Unit): SomeMessage")
   }
 
   @Test

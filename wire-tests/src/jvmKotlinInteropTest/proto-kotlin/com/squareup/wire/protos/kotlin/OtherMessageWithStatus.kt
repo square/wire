@@ -13,6 +13,7 @@ import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmStatic
+import com.squareup.wire.`internal`.JvmSynthetic
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -88,6 +89,7 @@ public class OtherMessageWithStatus(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): OtherMessageWithStatus =
         Builder().apply(body).build()
   }

@@ -11,6 +11,7 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
+import com.squareup.wire.`internal`.JvmSynthetic
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -168,6 +169,7 @@ public class MessageUsingMultipleEnums(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): MessageUsingMultipleEnums =
         Builder().apply(body).build()
   }

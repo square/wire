@@ -23,6 +23,9 @@ actual interface Serializable
 actual annotation class JvmField
 
 /** This annotation is an empty placeholder. */
+actual annotation class JvmSynthetic
+
+/** This annotation is an empty placeholder. */
 actual annotation class JvmStatic
 
 actual abstract class ObjectStreamException : IOException()

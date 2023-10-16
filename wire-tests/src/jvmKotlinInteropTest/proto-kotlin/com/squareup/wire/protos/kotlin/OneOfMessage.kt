@@ -11,6 +11,7 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
+import com.squareup.wire.`internal`.JvmSynthetic
 import com.squareup.wire.`internal`.countNonNull
 import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
@@ -219,6 +220,7 @@ public class OneOfMessage(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): OneOfMessage = Builder().apply(body).build()
   }
 }

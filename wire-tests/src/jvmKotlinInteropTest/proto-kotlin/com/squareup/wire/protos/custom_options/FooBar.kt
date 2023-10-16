@@ -14,6 +14,7 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmStatic
+import com.squareup.wire.`internal`.JvmSynthetic
 import com.squareup.wire.`internal`.checkElementsNotNull
 import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.sanitize
@@ -434,6 +435,7 @@ public class FooBar(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): FooBar = Builder().apply(body).build()
   }
 
@@ -548,6 +550,7 @@ public class FooBar(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): Nested = Builder().apply(body).build()
     }
   }
@@ -662,6 +665,7 @@ public class FooBar(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): More = Builder().apply(body).build()
     }
   }

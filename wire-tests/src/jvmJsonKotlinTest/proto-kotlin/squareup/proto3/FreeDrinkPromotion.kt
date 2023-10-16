@@ -14,6 +14,7 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmStatic
+import com.squareup.wire.`internal`.JvmSynthetic
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -134,6 +135,7 @@ public class FreeDrinkPromotion(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): FreeDrinkPromotion =
         Builder().apply(body).build()
   }

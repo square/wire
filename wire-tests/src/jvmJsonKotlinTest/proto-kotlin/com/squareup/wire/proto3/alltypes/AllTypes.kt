@@ -14,6 +14,7 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmStatic
+import com.squareup.wire.`internal`.JvmSynthetic
 import com.squareup.wire.`internal`.checkElementsNotNull
 import com.squareup.wire.`internal`.countNonNull
 import com.squareup.wire.`internal`.immutableCopyOf
@@ -2425,6 +2426,7 @@ public class AllTypes(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): AllTypes = Builder().apply(body).build()
   }
 
@@ -2561,6 +2563,7 @@ public class AllTypes(
 
       private const val serialVersionUID: Long = 0L
 
+      @JvmSynthetic
       public inline fun build(body: Builder.() -> Unit): NestedMessage =
           Builder().apply(body).build()
     }

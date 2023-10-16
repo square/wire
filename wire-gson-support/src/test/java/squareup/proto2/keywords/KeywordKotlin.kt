@@ -15,6 +15,7 @@ import com.squareup.wire.WireEnumConstant
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmStatic
+import com.squareup.wire.`internal`.JvmSynthetic
 import com.squareup.wire.`internal`.checkElementsNotNull
 import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.missingRequiredFields
@@ -269,6 +270,7 @@ public class KeywordKotlin(
 
     private const val serialVersionUID: Long = 0L
 
+    @JvmSynthetic
     public inline fun build(body: Builder.() -> Unit): KeywordKotlin = Builder().apply(body).build()
   }
 
