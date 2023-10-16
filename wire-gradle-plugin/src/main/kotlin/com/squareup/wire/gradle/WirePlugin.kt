@@ -17,6 +17,7 @@
 
 package com.squareup.wire.gradle
 
+import java.lang.reflect.Array as JavaArray
 import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
@@ -26,8 +27,8 @@ import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.newEventListenerFactory
 import java.io.File
-import java.lang.reflect.Array as JavaArray
 import java.util.concurrent.atomic.AtomicBoolean
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ProjectDependency
@@ -142,11 +143,16 @@ class WirePlugin : Plugin<Project> {
     protoPathInput.addPaths(project, extension.protoPaths)
 
     sources.forEach { source ->
-      val protoSourceInput = WireInput(
-        configuration = project.configurations.getByName("protoSource").copy().also {
-          it.isCanBeConsumed = false
-        },
-      )
+      val protoSourceCopy = project.configurations.getByName("protoSource").copy()
+      try {
+        protoSourceCopy.isCanBeConsumed = false
+      } catch (ignored: GradleException) {
+        // There's a bug in Configurations.copy() that marks the copy's usageCanBeMutated to false
+        // if the source's usageCanBeMutated is true. Just leave the consumable state as-is when
+        // this happens.
+      }
+
+      val protoSourceInput = WireInput(configuration = protoSourceCopy)
       protoSourceInput.addTrees(project, extension.sourceTrees)
       protoSourceInput.addJars(project, extension.sourceJars)
       protoSourceInput.addPaths(project, extension.sourcePaths)
