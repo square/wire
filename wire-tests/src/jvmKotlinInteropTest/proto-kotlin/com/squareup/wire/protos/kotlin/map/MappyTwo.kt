@@ -14,6 +14,7 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmStatic
+import com.squareup.wire.`internal`.JvmSynthetic
 import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.redactElements
 import kotlin.Any
@@ -23,7 +24,6 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.Map
-import kotlin.jvm.JvmSynthetic
 import kotlin.lazy
 import okio.ByteString
 

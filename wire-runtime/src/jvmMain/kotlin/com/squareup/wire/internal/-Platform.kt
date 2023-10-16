@@ -25,6 +25,8 @@ actual typealias JvmDefaultWithCompatibility = kotlin.jvm.JvmDefaultWithCompatib
 
 actual typealias JvmField = kotlin.jvm.JvmField
 
+actual typealias JvmSynthetic = kotlin.jvm.JvmSynthetic
+
 actual typealias JvmStatic = kotlin.jvm.JvmStatic
 
 actual typealias ObjectStreamException = java.io.ObjectStreamException

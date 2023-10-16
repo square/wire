@@ -1978,14 +1978,16 @@ class KotlinGenerator private constructor(
    * Example
    * ```
    * companion object {
+   *   @JvmSynthetic
    *   public inline fun build(body: Builder.() -> Unit): AllTypes = Builder().apply(body).build()
    * }
    * ```
    */
   private fun addBuildFunction(type: MessageType, companionBuilder: TypeSpec.Builder, builderClassName: ClassName) {
-    val buildFn = FunSpec.builder("build")
+    val buildFunction = FunSpec.builder("build")
       .addModifiers(INLINE)
-      .addAnnotation(JvmSynthetic::class)
+      // We hide it to Java callers.
+      .addAnnotation(ClassName("com.squareup.wire.internal", "JvmSynthetic"))
       .addParameter(
         "body",
         LambdaTypeName.get(
@@ -1997,7 +1999,7 @@ class KotlinGenerator private constructor(
       .returns(generatedTypeName(type))
       .build()
 
-    companionBuilder.addFunction(buildFn)
+    companionBuilder.addFunction(buildFunction)
   }
 
   private fun redactFun(message: MessageType): FunSpec {

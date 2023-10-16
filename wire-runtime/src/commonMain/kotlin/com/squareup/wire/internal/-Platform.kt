@@ -31,6 +31,8 @@ expect annotation class JvmDefaultWithCompatibility()
 
 expect annotation class JvmField()
 
+expect annotation class JvmSynthetic()
+
 expect annotation class JvmStatic()
 
 expect abstract class ObjectStreamException : IOException
