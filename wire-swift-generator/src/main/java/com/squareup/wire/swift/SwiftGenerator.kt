@@ -169,7 +169,14 @@ class SwiftGenerator private constructor(
     }
 
   private val EnumType.supportsEmptyInitialization: Boolean
-    get() = constants.any { it.tag == 0 }
+    get() = protoDefaultedName != null
+
+  private val EnumType.protoDefaultedName: String?
+    get() = constants.takeIf {
+      // Proto2 allows for non-zero default values
+      // We can only handle them if the enum has no pruned values
+      syntax == PROTO_3
+    }?.firstOrNull { it.tag == 0 }?.name
 
   private val Field.isProtoDefaulted: Boolean
     get() {
@@ -299,8 +306,8 @@ class SwiftGenerator private constructor(
       .fields
       .mapNotNull { schema.getType(it.type!!) as? EnumType }
       .forEach { enum ->
-        // ensure that a 0 case exists
-        if (enum.constants.filter { it.tag == 0 }.isEmpty()) {
+        // ensure that a protoDefaultedName case exists
+        if (enum.protoDefaultedName == null) {
           throw NoSuchElementException("Missing a zero value for ${enum.name}")
         }
       }
@@ -1625,12 +1632,12 @@ class SwiftGenerator private constructor(
       .addSuperType(CASE_ITERABLE)
       .addSuperType(protoEnum)
       .apply {
-        if (type.supportsEmptyInitialization) {
+        type.protoDefaultedName?.let { protoDefaultedName ->
           addSuperType(protoDefaultedValue)
           addProperty(
             PropertySpec.varBuilder("defaultedValue", enumName, PUBLIC, STATIC).getter(
               FunctionSpec.getterBuilder().addCode(
-                CodeBlock.of("%T.%L\n", type.typeName.makeNonOptional(), type.constants.first { it.tag == 0 }.name),
+                CodeBlock.of("%T.%L\n", type.typeName.makeNonOptional(), protoDefaultedName),
               ).build(),
             ).build(),
           )

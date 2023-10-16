@@ -3,14 +3,11 @@
 import Foundation
 import Wire
 
-public enum ForeignEnum : UInt32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+public enum ForeignEnum : UInt32, CaseIterable, ProtoEnum {
 
     case BAV = 0
     case BAX = 1
 
-    public static var defaultedValue: ForeignEnum {
-        ForeignEnum.BAV
-    }
     public var description: String {
         switch self {
         case .BAV: return "BAV"
