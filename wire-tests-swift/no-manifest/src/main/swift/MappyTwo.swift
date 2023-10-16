@@ -141,16 +141,12 @@ extension MappyTwo : Codable {
  */
 extension MappyTwo {
 
-    public enum ValueEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum,
-            Wire.ProtoDefaultedValue {
+    public enum ValueEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
 
         case DEFAULT = 0
         case FOO = 1
         case BAR = 2
 
-        public static var defaultedValue: MappyTwo.ValueEnum {
-            MappyTwo.ValueEnum.DEFAULT
-        }
         public var description: Swift.String {
             switch self {
             case .DEFAULT: return "DEFAULT"

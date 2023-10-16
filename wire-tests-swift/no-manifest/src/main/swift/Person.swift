@@ -167,8 +167,7 @@ extension Person {
     /**
      * Represents the type of the phone number: mobile, home or work.
      */
-    public enum PhoneType : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum,
-            Wire.ProtoDefaultedValue {
+    public enum PhoneType : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
 
         case MOBILE = 0
         case HOME = 1
@@ -177,9 +176,6 @@ extension Person {
          */
         case WORK = 2
 
-        public static var defaultedValue: Person.PhoneType {
-            Person.PhoneType.MOBILE
-        }
         public var description: Swift.String {
             switch self {
             case .MOBILE: return "MOBILE"
