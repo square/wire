@@ -58,7 +58,7 @@ public final class ProtoDecoder {
         case unexpectedFieldNumberInMap(_: UInt32)
         case unexpectedFieldNumberInBoxedValue(_: UInt32)
         case unparsableString(type: Any.Type, value: String)
-        case unknownEnumCase(type: Any.Type, fieldNumber: UInt32)
+        case unknownEnumCase(type: Any.Type, fieldNumber: Int32)
         case unknownEnumString(type: Any.Type, string: String)
         case unterminatedGroup(fieldNumber: UInt32)
 

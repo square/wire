@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public enum DeprecatedEnum : UInt32, CaseIterable, ProtoEnum {
+public enum DeprecatedEnum : Int32, CaseIterable, ProtoEnum {
 
     @available(*, deprecated)
     case DISABLED = 1

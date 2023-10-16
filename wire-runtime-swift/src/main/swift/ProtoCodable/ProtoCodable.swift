@@ -107,7 +107,7 @@ extension ProtoDecodable {
 
 }
 
-extension ProtoEnum where Self : RawRepresentable, RawValue == UInt32 {
+extension ProtoEnum where Self : RawRepresentable, RawValue == Int32 {
 
     /**
      A convenience function used with enum fields that throws an error if the field is null

@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public enum ForeignEnum : UInt32, CaseIterable, ProtoEnum {
+public enum ForeignEnum : Int32, CaseIterable, ProtoEnum {
 
     case BAV = 0
     case BAX = 1

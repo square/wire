@@ -116,16 +116,17 @@ public final class ProtoWriter {
     }
 
     /** Encode a required `enum` field */
-    public func encode<T: RawRepresentable>(tag: UInt32, value: T) throws where T.RawValue == UInt32 {
+    public func encode<T: RawRepresentable>(tag: UInt32, value: T) throws where T.RawValue == Int32 {
         if value.rawValue == 0 && isProto3 { return }
         try encode(tag: tag, value: value as T?)
     }
 
     /** Encode an optional `enum` field */
-    public func encode<T: RawRepresentable>(tag: UInt32, value: T?) throws where T.RawValue == UInt32 {
+    public func encode<T: RawRepresentable>(tag: UInt32, value: T?) throws where T.RawValue == Int32 {
         guard let value = value else { return }
         encode(tag: tag, wireType: .varint, value: value) {
-            writeVarint($0.rawValue)
+            let uintValue = UInt32(bitPattern: $0.rawValue)
+            writeVarint(uintValue)
         }
     }
 
@@ -386,11 +387,12 @@ public final class ProtoWriter {
     }
 
     /** Encoded a repeated `enum` field */
-    public func encode<T: RawRepresentable>(tag: UInt32, value: [T], packed: Bool? = nil) throws where T.RawValue == UInt32 {
+    public func encode<T: RawRepresentable>(tag: UInt32, value: [T], packed: Bool? = nil) throws where T.RawValue == Int32 {
         guard !value.isEmpty else { return }
 
         encode(tag: tag, wireType: .varint, value: value, packed: packed) {
-            writeVarint($0.rawValue)
+            let uintValue = UInt32(bitPattern: $0.rawValue)
+            writeVarint(uintValue)
         }
     }
 
@@ -484,7 +486,7 @@ public final class ProtoWriter {
         }
     }
 
-    public func encode<V: RawRepresentable>(tag: UInt32, value: [String: V]) throws where V.RawValue == UInt32 {
+    public func encode<V: RawRepresentable>(tag: UInt32, value: [String: V]) throws where V.RawValue == Int32 {
         guard !value.isEmpty else { return }
 
         try encode(tag: tag, value: value) { key, item in
@@ -510,7 +512,7 @@ public final class ProtoWriter {
         tag: UInt32,
         value: [K: V],
         keyEncoding: ProtoIntEncoding = .variable
-    ) throws where V.RawValue == UInt32 {
+    ) throws where V.RawValue == Int32 {
         guard !value.isEmpty else { return }
 
         try encode(tag: tag, value: value) { key, item in

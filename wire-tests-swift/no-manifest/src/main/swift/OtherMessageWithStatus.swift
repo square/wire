@@ -75,7 +75,7 @@ extension OtherMessageWithStatus : Codable {
  */
 extension OtherMessageWithStatus {
 
-    public enum Status : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
+    public enum Status : Swift.Int32, Swift.CaseIterable, Wire.ProtoEnum {
 
         case A = 1
 

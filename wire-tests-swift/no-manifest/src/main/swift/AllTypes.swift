@@ -1584,7 +1584,7 @@ extension AllTypes : Codable {
  */
 extension AllTypes {
 
-    public enum NestedEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
+    public enum NestedEnum : Swift.Int32, Swift.CaseIterable, Wire.ProtoEnum {
 
         case UNKNOWN = 0
         case A = 1

@@ -233,7 +233,7 @@ extension FooBar {
 
     }
 
-    public enum FooBarBazEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
+    public enum FooBarBazEnum : Swift.Int32, Swift.CaseIterable, Wire.ProtoEnum {
 
         case FOO = 1
         case BAR = 2
