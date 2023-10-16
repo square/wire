@@ -35,7 +35,12 @@ public struct ProtoDefaulted<Value: ProtoDefaultedValue> {
     }
 
     public var projectedValue: Value {
-        wrappedValue ?? Value.defaultedValue
+        get  {
+            wrappedValue ?? Value.defaultedValue
+        }
+        set {
+            wrappedValue = newValue
+        }
     }
 }
 

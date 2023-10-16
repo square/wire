@@ -1160,7 +1160,7 @@ class SwiftGenerator private constructor(
       .build()
 
     fileMembers += FileMemberSpec.builder(memberwiseExtension)
-      .addGuard("$FLAG_INCLUDE_MEMBERWISE_INITIALIZER")
+      .addGuard(FLAG_INCLUDE_MEMBERWISE_INITIALIZER)
       .build()
   }
 
@@ -1256,7 +1256,7 @@ class SwiftGenerator private constructor(
       .build()
 
     fileMembers += FileMemberSpec.builder(memberwiseExtension)
-      .addGuard("$FLAG_INCLUDE_MEMBERWISE_INITIALIZER")
+      .addGuard(FLAG_INCLUDE_MEMBERWISE_INITIALIZER)
       .build()
   }
 

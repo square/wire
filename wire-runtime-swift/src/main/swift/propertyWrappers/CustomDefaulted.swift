@@ -33,7 +33,12 @@ public struct CustomDefaulted<Value> {
     }
 
     public var projectedValue: Value {
-        wrappedValue ?? defaultValue
+        get  {
+            wrappedValue ?? defaultValue
+        }
+        set {
+            wrappedValue = newValue
+        }
     }
 }
 
