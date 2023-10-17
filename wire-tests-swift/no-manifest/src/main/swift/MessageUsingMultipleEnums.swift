@@ -8,7 +8,9 @@ import Wire
  */
 public struct MessageUsingMultipleEnums {
 
+    @ProtoDefaulted
     public var a: MessageWithStatus.Status?
+    @ProtoDefaulted
     public var b: OtherMessageWithStatus.Status?
     public var unknownFields: Foundation.Data = .init()
 
@@ -24,8 +26,8 @@ extension MessageUsingMultipleEnums {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(a: MessageWithStatus.Status? = nil, b: OtherMessageWithStatus.Status? = nil) {
-        self.a = a
-        self.b = b
+        self._a.wrappedValue = a
+        self._b.wrappedValue = b
     }
 
 }
@@ -77,8 +79,8 @@ extension MessageUsingMultipleEnums : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.a = a
-        self.b = b
+        self._a.wrappedValue = a
+        self._b.wrappedValue = b
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -94,8 +96,8 @@ extension MessageUsingMultipleEnums : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.a = try container.decodeIfPresent(MessageWithStatus.Status.self, forKey: "a")
-        self.b = try container.decodeIfPresent(OtherMessageWithStatus.Status.self, forKey: "b")
+        self._a.wrappedValue = try container.decodeIfPresent(MessageWithStatus.Status.self, forKey: "a")
+        self._b.wrappedValue = try container.decodeIfPresent(OtherMessageWithStatus.Status.self, forKey: "b")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {

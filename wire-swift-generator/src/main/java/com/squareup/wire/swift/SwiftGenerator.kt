@@ -172,11 +172,7 @@ class SwiftGenerator private constructor(
     get() = protoDefaultedName != null
 
   private val EnumType.protoDefaultedName: String?
-    get() = constants.takeIf {
-      // Proto2 allows for non-zero default values
-      // We can only handle them if the enum has no pruned values
-      syntax == PROTO_3
-    }?.firstOrNull { it.tag == 0 }?.name
+    get() = constants.firstOrNull { it.tag == defaultConstantValue }?.name
 
   private val Field.isProtoDefaulted: Boolean
     get() {

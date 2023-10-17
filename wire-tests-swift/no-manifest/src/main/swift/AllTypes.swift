@@ -1584,11 +1584,15 @@ extension AllTypes : Codable {
  */
 extension AllTypes {
 
-    public enum NestedEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
+    public enum NestedEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum,
+            Wire.ProtoDefaultedValue {
 
         case UNKNOWN = 0
         case A = 1
 
+        public static var defaultedValue: AllTypes.NestedEnum {
+            AllTypes.NestedEnum.UNKNOWN
+        }
         public var description: Swift.String {
             switch self {
             case .UNKNOWN: return "UNKNOWN"
@@ -1867,7 +1871,7 @@ extension AllTypes.Storage {
         self._opt_double.wrappedValue = opt_double
         self._opt_string.wrappedValue = opt_string
         self._opt_bytes.wrappedValue = opt_bytes
-        self.opt_nested_enum = opt_nested_enum
+        self._opt_nested_enum.wrappedValue = opt_nested_enum
         self._opt_nested_message.wrappedValue = opt_nested_message
         self.req_int32 = req_int32
         self.req_uint32 = req_uint32
@@ -1964,7 +1968,7 @@ extension AllTypes.Storage {
         self._ext_opt_double.wrappedValue = ext_opt_double
         self._ext_opt_string.wrappedValue = ext_opt_string
         self._ext_opt_bytes.wrappedValue = ext_opt_bytes
-        self.ext_opt_nested_enum = ext_opt_nested_enum
+        self._ext_opt_nested_enum.wrappedValue = ext_opt_nested_enum
         self._ext_opt_nested_message.wrappedValue = ext_opt_nested_message
         self.ext_rep_int32 = ext_rep_int32
         self.ext_rep_uint32 = ext_rep_uint32
@@ -2039,6 +2043,7 @@ extension AllTypes {
         public var opt_string: Swift.String?
         @Wire.ProtoDefaulted
         public var opt_bytes: Foundation.Data?
+        @Wire.ProtoDefaulted
         public var opt_nested_enum: AllTypes.NestedEnum?
         @Wire.ProtoDefaulted
         public var opt_nested_message: AllTypes.NestedMessage?
@@ -2168,6 +2173,7 @@ extension AllTypes {
         public var ext_opt_string: Swift.String?
         @Wire.ProtoDefaulted
         public var ext_opt_bytes: Foundation.Data?
+        @Wire.ProtoDefaulted
         public var ext_opt_nested_enum: AllTypes.NestedEnum?
         @Wire.ProtoDefaulted
         public var ext_opt_nested_message: AllTypes.NestedMessage?
@@ -2588,7 +2594,7 @@ extension AllTypes.Storage : Proto2Codable {
         self._opt_double.wrappedValue = opt_double
         self._opt_string.wrappedValue = opt_string
         self._opt_bytes.wrappedValue = opt_bytes
-        self.opt_nested_enum = opt_nested_enum
+        self._opt_nested_enum.wrappedValue = opt_nested_enum
         self._opt_nested_message.wrappedValue = opt_nested_message
         self.req_int32 = try AllTypes.checkIfMissing(req_int32, "req_int32")
         self.req_uint32 = try AllTypes.checkIfMissing(req_uint32, "req_uint32")
@@ -2685,7 +2691,7 @@ extension AllTypes.Storage : Proto2Codable {
         self._ext_opt_double.wrappedValue = ext_opt_double
         self._ext_opt_string.wrappedValue = ext_opt_string
         self._ext_opt_bytes.wrappedValue = ext_opt_bytes
-        self.ext_opt_nested_enum = ext_opt_nested_enum
+        self._ext_opt_nested_enum.wrappedValue = ext_opt_nested_enum
         self._ext_opt_nested_message.wrappedValue = ext_opt_nested_message
         self.ext_rep_int32 = ext_rep_int32
         self.ext_rep_uint32 = ext_rep_uint32
@@ -2891,7 +2897,7 @@ extension AllTypes.Storage : Codable {
         self._opt_double.wrappedValue = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "optDouble", "opt_double")
         self._opt_string.wrappedValue = try container.decodeIfPresent(Swift.String.self, firstOfKeys: "optString", "opt_string")
         self._opt_bytes.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, firstOfKeys: "optBytes", "opt_bytes")
-        self.opt_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, firstOfKeys: "optNestedEnum", "opt_nested_enum")
+        self._opt_nested_enum.wrappedValue = try container.decodeIfPresent(AllTypes.NestedEnum.self, firstOfKeys: "optNestedEnum", "opt_nested_enum")
         self._opt_nested_message.wrappedValue = try container.decodeIfPresent(AllTypes.NestedMessage.self, firstOfKeys: "optNestedMessage", "opt_nested_message")
         self.req_int32 = try container.decode(Swift.Int32.self, firstOfKeys: "reqInt32", "req_int32")
         self.req_uint32 = try container.decode(Swift.UInt32.self, firstOfKeys: "reqUint32", "req_uint32")
@@ -2988,7 +2994,7 @@ extension AllTypes.Storage : Codable {
         self._ext_opt_double.wrappedValue = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "extOptDouble", "ext_opt_double")
         self._ext_opt_string.wrappedValue = try container.decodeIfPresent(Swift.String.self, firstOfKeys: "extOptString", "ext_opt_string")
         self._ext_opt_bytes.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, firstOfKeys: "extOptBytes", "ext_opt_bytes")
-        self.ext_opt_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, firstOfKeys: "extOptNestedEnum", "ext_opt_nested_enum")
+        self._ext_opt_nested_enum.wrappedValue = try container.decodeIfPresent(AllTypes.NestedEnum.self, firstOfKeys: "extOptNestedEnum", "ext_opt_nested_enum")
         self._ext_opt_nested_message.wrappedValue = try container.decodeIfPresent(AllTypes.NestedMessage.self, firstOfKeys: "extOptNestedMessage", "ext_opt_nested_message")
         self.ext_rep_int32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "extRepInt32", "ext_rep_int32")
         self.ext_rep_uint32 = try container.decodeProtoArray(Swift.UInt32.self, firstOfKeys: "extRepUint32", "ext_rep_uint32")

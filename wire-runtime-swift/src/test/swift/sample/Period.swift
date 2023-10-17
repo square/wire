@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public enum Period : UInt32, CaseIterable, ProtoEnum {
+public enum Period : UInt32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
 
     /**
      * 145.5 million years ago — 66.0 million years ago.
@@ -18,6 +18,9 @@ public enum Period : UInt32, CaseIterable, ProtoEnum {
      */
     case TRIASSIC = 3
 
+    public static var defaultedValue: Period {
+        Period.CRETACEOUS
+    }
     public var description: String {
         switch self {
         case .CRETACEOUS: return "CRETACEOUS"

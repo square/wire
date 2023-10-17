@@ -5,6 +5,7 @@ import Wire
 
 public struct OptionalEnumUser {
 
+    @ProtoDefaulted
     public var optional_enum: OptionalEnumUser.OptionalEnum?
     public var unknownFields: Foundation.Data = .init()
 
@@ -20,7 +21,7 @@ extension OptionalEnumUser {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(optional_enum: OptionalEnumUser.OptionalEnum? = nil) {
-        self.optional_enum = optional_enum
+        self._optional_enum.wrappedValue = optional_enum
     }
 
 }
@@ -70,7 +71,7 @@ extension OptionalEnumUser : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.optional_enum = optional_enum
+        self._optional_enum.wrappedValue = optional_enum
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -85,7 +86,7 @@ extension OptionalEnumUser : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.optional_enum = try container.decodeIfPresent(OptionalEnumUser.OptionalEnum.self, firstOfKeys: "optionalEnum", "optional_enum")
+        self._optional_enum.wrappedValue = try container.decodeIfPresent(OptionalEnumUser.OptionalEnum.self, firstOfKeys: "optionalEnum", "optional_enum")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {
@@ -103,11 +104,15 @@ extension OptionalEnumUser : Codable {
  */
 extension OptionalEnumUser {
 
-    public enum OptionalEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
+    public enum OptionalEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum,
+            Wire.ProtoDefaultedValue {
 
         case FOO = 1
         case BAR = 2
 
+        public static var defaultedValue: OptionalEnumUser.OptionalEnum {
+            OptionalEnumUser.OptionalEnum.FOO
+        }
         public var description: Swift.String {
             switch self {
             case .FOO: return "FOO"

@@ -17,6 +17,7 @@ public struct FooBar {
     @ProtoDefaulted
     public var daisy: Double?
     public var nested: [FooBar] = []
+    @ProtoDefaulted
     public var ext: FooBar.FooBarBazEnum?
     public var rep: [FooBar.FooBarBazEnum] = []
     @ProtoDefaulted
@@ -53,7 +54,7 @@ extension FooBar {
         self.fred = fred
         self._daisy.wrappedValue = daisy
         self.nested = nested
-        self.ext = ext
+        self._ext.wrappedValue = ext
         self.rep = rep
         self._more_string.wrappedValue = more_string
     }
@@ -142,7 +143,7 @@ extension FooBar : Proto2Codable {
         self.fred = fred
         self._daisy.wrappedValue = daisy
         self.nested = nested
-        self.ext = ext
+        self._ext.wrappedValue = ext
         self.rep = rep
         self._more_string.wrappedValue = more_string
     }
@@ -175,7 +176,7 @@ extension FooBar : Codable {
         self.fred = try container.decodeProtoArray(Swift.Float.self, forKey: "fred")
         self._daisy.wrappedValue = try container.decodeIfPresent(Swift.Double.self, forKey: "daisy")
         self.nested = try container.decodeProtoArray(FooBar.self, forKey: "nested")
-        self.ext = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "ext")
+        self._ext.wrappedValue = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "ext")
         self.rep = try container.decodeProtoArray(FooBar.FooBarBazEnum.self, forKey: "rep")
         self._more_string.wrappedValue = try container.decodeIfPresent(Swift.String.self, firstOfKeys: "moreString", "more_string")
     }
@@ -213,6 +214,7 @@ extension FooBar {
 
     public struct Nested {
 
+        @Wire.ProtoDefaulted
         public var value: FooBar.FooBarBazEnum?
         public var unknownFields: Foundation.Data = .init()
 
@@ -233,12 +235,16 @@ extension FooBar {
 
     }
 
-    public enum FooBarBazEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
+    public enum FooBarBazEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum,
+            Wire.ProtoDefaultedValue {
 
         case FOO = 1
         case BAR = 2
         case BAZ = 3
 
+        public static var defaultedValue: FooBar.FooBarBazEnum {
+            FooBar.FooBarBazEnum.FOO
+        }
         public var description: Swift.String {
             switch self {
             case .FOO: return "FOO"
@@ -257,7 +263,7 @@ extension FooBar.Nested {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(value: FooBar.FooBarBazEnum? = nil) {
-        self.value = value
+        self._value.wrappedValue = value
     }
 
 }
@@ -307,7 +313,7 @@ extension FooBar.Nested : Proto2Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.value = value
+        self._value.wrappedValue = value
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -322,7 +328,7 @@ extension FooBar.Nested : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.value = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "value")
+        self._value.wrappedValue = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "value")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {

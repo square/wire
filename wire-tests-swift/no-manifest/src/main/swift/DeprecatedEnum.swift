@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public enum DeprecatedEnum : UInt32, CaseIterable, ProtoEnum {
+public enum DeprecatedEnum : UInt32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
 
     @available(*, deprecated)
     case DISABLED = 1
@@ -12,6 +12,9 @@ public enum DeprecatedEnum : UInt32, CaseIterable, ProtoEnum {
     case ON = 3
     case OFF = 4
 
+    public static var defaultedValue: DeprecatedEnum {
+        DeprecatedEnum.DISABLED
+    }
     public var description: String {
         switch self {
         case .DISABLED: return "DISABLED"

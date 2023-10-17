@@ -75,10 +75,14 @@ extension MessageWithStatus : Codable {
  */
 extension MessageWithStatus {
 
-    public enum Status : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum {
+    public enum Status : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum,
+            Wire.ProtoDefaultedValue {
 
         case A = 1
 
+        public static var defaultedValue: MessageWithStatus.Status {
+            MessageWithStatus.Status.A
+        }
         public var description: Swift.String {
             switch self {
             case .A: return "A"

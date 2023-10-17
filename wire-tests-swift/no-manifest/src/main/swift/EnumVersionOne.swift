@@ -3,12 +3,15 @@
 import Foundation
 import Wire
 
-public enum EnumVersionOne : UInt32, CaseIterable, ProtoEnum {
+public enum EnumVersionOne : UInt32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
 
     case SHREK_V1 = 1
     case DONKEY_V1 = 2
     case FIONA_V1 = 3
 
+    public static var defaultedValue: EnumVersionOne {
+        EnumVersionOne.SHREK_V1
+    }
     public var description: String {
         switch self {
         case .SHREK_V1: return "SHREK_V1"

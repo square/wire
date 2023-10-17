@@ -3,12 +3,15 @@
 import Foundation
 import Wire
 
-public enum SwiftModuleOneType : UInt32, CaseIterable, ProtoEnum {
+public enum SwiftModuleOneType : UInt32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
 
     case DO_NOT_USE = 0
     case ONE = 1
     case TWO = 2
 
+    public static var defaultedValue: SwiftModuleOneType {
+        SwiftModuleOneType.DO_NOT_USE
+    }
     public var description: String {
         switch self {
         case .DO_NOT_USE: return "DO_NOT_USE"

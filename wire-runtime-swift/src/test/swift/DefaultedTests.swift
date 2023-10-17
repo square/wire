@@ -22,7 +22,11 @@ final class DefaultedTests: XCTestCase {
         let d: D = D()
         XCTAssertNotNil(d.$a)
     }
-    
+
+    func testEnumIdentityValue() {
+        XCTAssertEqual(Period.defaultedValue, .CRETACEOUS)
+    }
+
     func testProjectedValueIsDefaultValue() throws {
         let phoneNumber = Person.PhoneNumber(number: "1234567890")
         XCTAssertNil(phoneNumber.type)

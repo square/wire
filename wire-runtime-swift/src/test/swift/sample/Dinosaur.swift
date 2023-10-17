@@ -18,6 +18,7 @@ public struct Dinosaur {
     public var length_meters: Double?
     @ProtoDefaulted
     public var mass_kilograms: Double?
+    @ProtoDefaulted
     public var period: Period?
     public var unknownFields: Foundation.Data = .init()
 
@@ -43,7 +44,7 @@ extension Dinosaur {
         self.picture_urls = picture_urls
         self._length_meters.wrappedValue = length_meters
         self._mass_kilograms.wrappedValue = mass_kilograms
-        self.period = period
+        self._period.wrappedValue = period
     }
 
 }
@@ -105,7 +106,7 @@ extension Dinosaur : Proto2Codable {
         self.picture_urls = picture_urls
         self._length_meters.wrappedValue = length_meters
         self._mass_kilograms.wrappedValue = mass_kilograms
-        self.period = period
+        self._period.wrappedValue = period
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -128,7 +129,7 @@ extension Dinosaur : Codable {
         self.picture_urls = try container.decodeProtoArray(Swift.String.self, firstOfKeys: "pictureUrls", "picture_urls")
         self._length_meters.wrappedValue = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "lengthMeters", "length_meters")
         self._mass_kilograms.wrappedValue = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "massKilograms", "mass_kilograms")
-        self.period = try container.decodeIfPresent(Period.self, forKey: "period")
+        self._period.wrappedValue = try container.decodeIfPresent(Period.self, forKey: "period")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {
