@@ -245,9 +245,9 @@ public final class ProtoReader {
      Decode enums. Note that the enums themselves do not need to be `ProtoDecodable`
      so long as they're RawRepresentable as `UInt32`
      */
-    public func decode<T: RawRepresentable>(_ type: T.Type) throws -> T? where T.RawValue == UInt32 {
+    public func decode<T: RawRepresentable>(_ type: T.Type) throws -> T? where T.RawValue == Int32 {
         // Pop the enum int value and pass in to initializer
-        let intValue = try readVarint32()
+        let intValue = try Int32(bitPattern: readVarint32())
         guard let enumValue = T(rawValue: intValue) else {
             switch enumDecodingStrategy {
             case .returnNil:
@@ -432,9 +432,9 @@ public final class ProtoReader {
     }
 
     /** Decode a repeated `enum` field. */
-    public func decode<T: RawRepresentable>(into array: inout [T]) throws where T.RawValue == UInt32 {
+    public func decode<T: RawRepresentable>(into array: inout [T]) throws where T.RawValue == Int32 {
         try decode(into: &array) {
-            let intValue = try readVarint32()
+            let intValue = try Int32(bitPattern: readVarint32())
             guard let enumValue = T(rawValue: intValue) else {
                 switch enumDecodingStrategy {
                 case .returnNil:
@@ -512,7 +512,7 @@ public final class ProtoReader {
     /**
     Decode a single key-value pair from a map of values keyed by a `string` with an `enum` value type.
     */
-    public func decode<V: RawRepresentable>(into dictionary: inout [String: V]) throws where V.RawValue == UInt32 {
+    public func decode<V: RawRepresentable>(into dictionary: inout [String: V]) throws where V.RawValue == Int32 {
         try decode(
             into: &dictionary,
             decodeKey: { try String(from: self) },
@@ -812,10 +812,10 @@ public final class ProtoReader {
         into dictionary: inout [K: V],
         decodeKey: () throws -> K,
         addUnknownPair: (UInt32, K, V.RawValue) throws -> ()
-    ) throws where V.RawValue == UInt32 {
+    ) throws where V.RawValue == Int32 {
         var key: K?
         var value: V?
-        var rawValue: UInt32?
+        var rawValue: Int32?
 
         guard let startTag = currentTag else {
             fatalError("Decoding enum map but current tag is not set.")
@@ -826,7 +826,7 @@ public final class ProtoReader {
             switch tag {
             case 1: key = try decodeKey()
             case 2:
-                let intValue = try readVarint32()
+                let intValue = try Int32(bitPattern: readVarint32())
                 let enumValue = V(rawValue: intValue)
                 if enumValue == nil {
                     if enumDecodingStrategy == .throwError {

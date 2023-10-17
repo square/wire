@@ -30,7 +30,7 @@ extension ProtoEnum where Self : CaseIterable {
     }
 }
 
-extension ProtoEnum where Self : RawRepresentable, RawValue == UInt32 {
+extension ProtoEnum where Self : RawRepresentable, RawValue == Int32 {
     public init(from decoder: Decoder) throws {
         // We support decoding from either the string value or the field number.
         let container = try decoder.singleValueContainer()
@@ -42,7 +42,7 @@ extension ProtoEnum where Self : RawRepresentable, RawValue == UInt32 {
             self = value
         } else {
             // If the value wasn't a string, then look for the field index instead.
-            let fieldNumber = try container.decode(UInt32.self)
+            let fieldNumber = try container.decode(Int32.self)
             guard let value = Self(rawValue: fieldNumber) else {
                 throw ProtoDecoder.Error.unknownEnumCase(type: Self.self, fieldNumber: fieldNumber)
             }

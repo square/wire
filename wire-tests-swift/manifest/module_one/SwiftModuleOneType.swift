@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public enum SwiftModuleOneType : UInt32, CaseIterable, ProtoEnum {
+public enum SwiftModuleOneType : Int32, CaseIterable, ProtoEnum {
 
     case DO_NOT_USE = 0
     case ONE = 1
