@@ -17,14 +17,9 @@ syntax = "proto2";
 
 package squareup.protos.kotlin.swift_modules;
 
-enum SwiftModuleOneType {
-  DO_NOT_USE = 0;
-  ONE = 1;
-  TWO = 2;
-}
+import "swift_module_one.proto";
 
-enum SwiftModuleOneSecondType {
-  DEFAULT = 0;
-  ALPHA = 1;
-  BETA = 2;
+message SwiftModuleFourMessage {
+  optional SwiftModuleOneType numeric = 1;
+  optional SwiftModuleOneSecondType alpha = 2;
 }

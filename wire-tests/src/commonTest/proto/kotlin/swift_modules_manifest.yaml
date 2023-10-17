@@ -20,6 +20,8 @@
 module_one:
   roots:
   - squareup.protos.kotlin.swift_modules.SwiftModuleOneType
+  prunes:
+  - squareup.protos.kotlin.swift_modules.SwiftModuleOneType#DO_NOT_USE
 module_two:
   roots:
   - squareup.protos.kotlin.swift_modules.SwiftModuleTwoMessage
@@ -30,5 +32,10 @@ module_three:
   roots:
   - squareup.protos.kotlin.swift_modules.SwiftModuleThreeMessage
   - squareup.protos.kotlin.swift_modules.SwiftModuleThreeMessage.NestedMessage
+  dependencies:
+  - module_one
+module_four:
+  roots:
+  - squareup.protos.kotlin.swift_modules.SwiftModuleFourMessage
   dependencies:
   - module_one

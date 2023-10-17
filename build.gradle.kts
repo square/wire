@@ -64,7 +64,8 @@ subprojects {
         name != "no-manifest" &&
         name != "module_one" &&
         name != "module_two" &&
-        name != "module_three"
+        name != "module_three" &&
+        name != "module_four"
   ) {
     apply(plugin = "com.diffplug.spotless")
     configure<SpotlessExtension> {

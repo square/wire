@@ -26,6 +26,7 @@ if (startParameter.projectProperties.get("swift") != "false") {
   include(":wire-tests-swift:manifest:module_one")
   include(":wire-tests-swift:manifest:module_two")
   include(":wire-tests-swift:manifest:module_three")
+  include(":wire-tests-swift:manifest:module_four")
   include(":wire-tests-proto3-swift")
 }
 
