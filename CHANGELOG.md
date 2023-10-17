@@ -11,7 +11,7 @@ _Unreleased_
     * Similar to `CustomDefaulted, this adds as projection of the protocol defined default value
     * This should not take up any additional storage
     * This is attached to optional scalar values and messages with entirely optional values
-* New: `ProtoDefaulted` and `CustomDefaulted` include setter support
+* New: Swift `ProtoDefaulted` and `CustomDefaulted` include setter support
     * This enables you to do something like `Foo().$bar.$baz += 1`
 * Change: Swift `ProtoEnum` types now have a raw value of `Int32`.
     * The runtime and generated code both need to be updated to reflect this.
