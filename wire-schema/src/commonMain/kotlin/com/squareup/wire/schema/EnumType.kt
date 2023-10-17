@@ -29,11 +29,13 @@ data class EnumType(
   override val documentation: String,
   override val name: String,
   val constants: List<EnumConstant>,
-  val defaultConstantValue: Int,
   private val reserveds: List<Reserved>,
   override val options: Options,
   override val syntax: Syntax,
 ) : Type() {
+  var defaultConstantValue: Int = constants.firstOrNull()?.tag ?: 0
+    private set
+
   private var allowAlias: Any? = null
 
   private var deprecated: Any? = null
@@ -157,11 +159,11 @@ data class EnumType(
       documentation = documentation,
       name = name,
       constants = retainedConstants,
-      defaultConstantValue = defaultConstantValue,
       options = options.retainAll(schema, markSet),
       syntax = syntax,
       reserveds = reserveds,
     )
+    result.defaultConstantValue = defaultConstantValue
     result.allowAlias = allowAlias
     return result
   }
@@ -173,17 +175,18 @@ data class EnumType(
 
     val retainedConstants = constants.map { it.retainLinked() }
 
-    return EnumType(
+    val result = EnumType(
       type = type,
       location = location,
       documentation = documentation,
       name = name,
       constants = retainedConstants,
-      defaultConstantValue = defaultConstantValue,
       options = options.retainLinked(),
       syntax = syntax,
       reserveds = reserveds,
     )
+    result.defaultConstantValue = defaultConstantValue
+    return result
   }
 
   fun toElement(): EnumElement {
@@ -213,7 +216,6 @@ data class EnumType(
         documentation = enumElement.documentation,
         name = enumElement.name,
         constants = EnumConstant.fromElements(enumElement.constants),
-        defaultConstantValue = enumElement.constants.firstOrNull()?.tag ?: 0,
         options = Options(ENUM_OPTIONS, enumElement.options),
         syntax = syntax,
         reserveds = fromElements(enumElement.reserveds),
