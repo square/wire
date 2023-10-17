@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public enum SwiftModuleOneSecondType : UInt32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+public enum SwiftModuleOneSecondType : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
 
     case DEFAULT = 0
     case ALPHA = 1

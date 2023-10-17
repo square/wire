@@ -18,7 +18,7 @@ import XCTest
 @testable import Wire
 
 final class ProtoEnumCodableTests: XCTestCase {
-    enum EnumType : UInt32, CaseIterable, ProtoEnum {
+    enum EnumType : Int32, CaseIterable, ProtoEnum {
         case DO_NOT_USE = 0
         case ONE = 1
         case TWO = 2
@@ -93,6 +93,27 @@ extension ProtoEnumCodableTests {
         XCTAssertEqual(expectedStruct, actualStruct)
     }
 
+    func testEncodingNegativeValueEnum() throws {
+        let expectedStruct = NegativeValueMessage { $0.value = NegativeValueEnum.DO_NOT_USE }
+
+        let expectedJson = """
+        {\
+        "value":-1\
+        }
+        """
+
+        let encoder = JSONEncoder()
+        encoder.protoEnumEncodingStrategy = .integer
+        encoder.outputFormatting = .sortedKeys // For deterministic output.
+
+        let jsonData = try! encoder.encode(expectedStruct)
+        let actualJson = String(data: jsonData, encoding: .utf8)!
+        XCTAssertEqual(expectedJson, actualJson)
+
+        let actualStruct = try! JSONDecoder().decode(NegativeValueMessage.self, from: jsonData)
+        XCTAssertEqual(expectedStruct, actualStruct)
+    }
+
     func testDecoding() throws {
         let expectedStruct = SupportedTypes(
             a: .ONE,
@@ -160,6 +181,23 @@ extension ProtoEnumCodableTests {
 
             XCTAssertEqual(fieldNumber, 7)
         }
+    }
+
+    func testDecodingNegativeValueEnum() throws {
+        let expectedStruct = NegativeValueMessage { $0.value = NegativeValueEnum.DO_NOT_USE }
+
+        let json = """
+        {\
+        "value":-1\
+        }
+        """
+        let jsonData = json.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        decoder.protoEnumDecodingStrategy = .returnNil
+
+        let decoded = try decoder.decode(NegativeValueMessage.self, from: jsonData)
+        XCTAssertEqual(decoded, expectedStruct)
     }
 }
 

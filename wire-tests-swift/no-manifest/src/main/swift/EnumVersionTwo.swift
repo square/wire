@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public enum EnumVersionTwo : UInt32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+public enum EnumVersionTwo : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
 
     case SHREK_V2 = 1
     case DONKEY_V2 = 2

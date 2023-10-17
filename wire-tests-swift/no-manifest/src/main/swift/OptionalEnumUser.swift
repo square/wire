@@ -104,7 +104,7 @@ extension OptionalEnumUser : Codable {
  */
 extension OptionalEnumUser {
 
-    public enum OptionalEnum : Swift.UInt32, Swift.CaseIterable, Wire.ProtoEnum,
+    public enum OptionalEnum : Swift.Int32, Swift.CaseIterable, Wire.ProtoEnum,
             Wire.ProtoDefaultedValue {
 
         case FOO = 1

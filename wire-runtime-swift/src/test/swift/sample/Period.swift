@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public enum Period : UInt32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+public enum Period : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
 
     /**
      * 145.5 million years ago — 66.0 million years ago.

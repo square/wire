@@ -1624,7 +1624,7 @@ class SwiftGenerator private constructor(
     val enumName = type.typeName
     return TypeSpec.enumBuilder(enumName)
       .addModifiers(PUBLIC)
-      .addSuperType(UINT32)
+      .addSuperType(INT32)
       .addSuperType(CASE_ITERABLE)
       .addSuperType(protoEnum)
       .apply {
