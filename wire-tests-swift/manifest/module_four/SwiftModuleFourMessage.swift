@@ -7,7 +7,6 @@ import module_one
 public struct SwiftModuleFourMessage {
 
     public var numeric: SwiftModuleOneType?
-    @ProtoDefaulted
     public var alpha: SwiftModuleOneSecondType?
     public var unknownFields: Foundation.Data = .init()
 
@@ -22,9 +21,9 @@ extension SwiftModuleFourMessage {
 
     @_disfavoredOverload
     @available(*, deprecated)
-    public init(numeric: module_one.SwiftModuleOneType? = nil, alpha: SwiftModuleOneSecondType? = nil) {
+    public init(numeric: module_one.SwiftModuleOneType? = nil, alpha: module_one.SwiftModuleOneSecondType? = nil) {
         self.numeric = numeric
-        self._alpha.wrappedValue = alpha
+        self.alpha = alpha
     }
 
 }
@@ -64,20 +63,20 @@ extension SwiftModuleFourMessage : Proto2Codable {
 
     public init(from protoReader: Wire.ProtoReader) throws {
         var numeric: module_one.SwiftModuleOneType? = nil
-        var alpha: SwiftModuleOneSecondType? = nil
+        var alpha: module_one.SwiftModuleOneSecondType? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: numeric = try protoReader.decode(module_one.SwiftModuleOneType.self)
-            case 2: alpha = try protoReader.decode(SwiftModuleOneSecondType.self)
+            case 2: alpha = try protoReader.decode(module_one.SwiftModuleOneSecondType.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
         self.numeric = numeric
-        self._alpha.wrappedValue = alpha
+        self.alpha = alpha
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
@@ -94,7 +93,7 @@ extension SwiftModuleFourMessage : Codable {
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
         self.numeric = try container.decodeIfPresent(module_one.SwiftModuleOneType.self, forKey: "numeric")
-        self._alpha.wrappedValue = try container.decodeIfPresent(SwiftModuleOneSecondType.self, forKey: "alpha")
+        self.alpha = try container.decodeIfPresent(module_one.SwiftModuleOneSecondType.self, forKey: "alpha")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {

@@ -20,6 +20,7 @@
 module_one:
   roots:
   - squareup.protos.kotlin.swift_modules.SwiftModuleOneType
+  - squareup.protos.kotlin.swift_modules.SwiftModuleOneSecondType
   prunes:
   - squareup.protos.kotlin.swift_modules.SwiftModuleOneType#DO_NOT_USE
 module_two:
