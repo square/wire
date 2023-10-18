@@ -24,7 +24,7 @@ public final class com/squareup/wire/GrpcCalls {
 }
 
 public abstract class com/squareup/wire/GrpcClient {
-	public synthetic fun <init> (Lokhttp3/Call$Factory;Lokhttp3/HttpUrl;JLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> ()V
 	public final fun create (Lkotlin/reflect/KClass;)Lcom/squareup/wire/Service;
 	public final fun newBuilder ()Lcom/squareup/wire/GrpcClient$Builder;
 	public abstract fun newCall (Lcom/squareup/wire/GrpcMethod;)Lcom/squareup/wire/GrpcCall;

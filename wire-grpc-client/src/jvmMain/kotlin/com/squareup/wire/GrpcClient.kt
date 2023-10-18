@@ -23,11 +23,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol.H2_PRIOR_KNOWLEDGE
 import okhttp3.Protocol.HTTP_2
 
-actual abstract class GrpcClient private constructor(
-  internal val client: Call.Factory,
-  internal val baseUrl: GrpcHttpUrl,
-  internal val minMessageToCompress: Long,
-) {
+actual abstract class GrpcClient actual constructor() {
+  actual abstract fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R>
+
+  actual abstract fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R>
+
   /** Returns a [T] that makes gRPC calls using this client. */
   inline fun <reified T : Service> create(): T = create(T::class)
 
@@ -54,11 +54,8 @@ actual abstract class GrpcClient private constructor(
     return Class.forName(implementationName)
   }
 
-  actual abstract fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R>
-
-  actual abstract fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R>
-
   fun newBuilder(): Builder {
+    check(this is WireGrpcClient) { "newBuilder is not available for custom implementation of GrpcClient" }
     return Builder()
       .callFactory(client)
       .baseUrl(baseUrl)
@@ -70,6 +67,7 @@ actual abstract class GrpcClient private constructor(
     requestMetadata: Map<String, String>,
     requestBody: GrpcRequestBody,
   ): Call {
+    check(this is WireGrpcClient) { "newCall is not available for custom implementation of GrpcClient" }
     return client.newCall(
       GrpcRequestBuilder()
         .url(baseUrl.resolve(method.path)!!)
@@ -129,18 +127,24 @@ actual abstract class GrpcClient private constructor(
       this.minMessageToCompress = bytes
     }
 
-    fun build(): GrpcClient = object : GrpcClient(
+    fun build(): GrpcClient = WireGrpcClient(
       client = client ?: throw IllegalArgumentException("client is not set"),
       baseUrl = baseUrl ?: throw IllegalArgumentException("baseUrl is not set"),
       minMessageToCompress = minMessageToCompress,
-    ) {
-      override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
-        return RealGrpcCall(this, method)
-      }
+    )
+  }
+}
 
-      override fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> {
-        return RealGrpcStreamingCall(this, method)
-      }
-    }
+internal class WireGrpcClient internal constructor(
+  internal val client: Call.Factory,
+  internal val baseUrl: GrpcHttpUrl,
+  internal val minMessageToCompress: Long,
+) : GrpcClient() {
+  override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
+    return RealGrpcCall(this, method)
+  }
+
+  override fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> {
+    return RealGrpcStreamingCall(this, method)
   }
 }
