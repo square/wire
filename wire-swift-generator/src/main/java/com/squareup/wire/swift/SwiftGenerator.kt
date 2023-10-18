@@ -712,13 +712,14 @@ class SwiftGenerator private constructor(
               }
             }
 
+            val fieldName = if (hasPropertyWrapper) { "_${field.name}" } else { field.name }
             addStatement(
               if (hasPropertyWrapper) {
-                "self._%N.wrappedValue = %L"
+                "self.%N.wrappedValue = %L"
               } else {
                 "self.%N = %L"
               },
-              field.name,
+              fieldName,
               initializer,
             )
           }
@@ -899,10 +900,11 @@ class SwiftGenerator private constructor(
                     .map { CodeBlock.of("%S", it) }
                     .joinToCode()
 
-                  val prefix = if (hasPropertyWrapper) { "self._%1N.wrappedValue" } else { "self.%1N" }
+                  val fieldName = if (hasPropertyWrapper) { "_${field.name}" } else { field.name }
+                  val prefix = if (hasPropertyWrapper) { "self.%1N.wrappedValue" } else { "self.%1N" }
                   addStatement(
                     "$prefix = try container.$decode($typeArg%2T.self, $forKeys: $keys)",
-                    field.name,
+                    fieldName,
                     typeName,
                   )
                 }
@@ -1214,12 +1216,14 @@ class SwiftGenerator private constructor(
         .apply {
           type.fields.filter { it.isRequiredParameter }.forEach { field ->
             val hasPropertyWrapper = !isIndirect(type, field) && (field.defaultedValue != null || field.isProtoDefaulted)
+            val fieldName = if (hasPropertyWrapper) { "_${field.name}" } else { field.name }
             addStatement(
               if (hasPropertyWrapper) {
-                "self._%1N.wrappedValue = %1N"
+                "self.%1N.wrappedValue = %2N"
               } else {
-                "self.%1N = %1N"
+                "self.%1N = %2N"
               },
+              fieldName,
               field.name,
             )
           }
@@ -1245,12 +1249,14 @@ class SwiftGenerator private constructor(
           .apply {
             type.fields.forEach { field ->
               val hasPropertyWrapper = !isIndirect(type, field) && (field.defaultedValue != null || field.isProtoDefaulted)
+              val fieldName = if (hasPropertyWrapper) { "_${field.name}" } else { field.name }
               addStatement(
                 if (hasPropertyWrapper) {
-                  "self._%1N.wrappedValue = %1N"
+                  "self.%1N.wrappedValue = %2N"
                 } else {
-                  "self.%1N = %1N"
+                  "self.%1N = %2N"
                 },
+                fieldName,
                 field.name,
               )
             }
