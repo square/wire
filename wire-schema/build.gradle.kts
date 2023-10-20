@@ -1,16 +1,7 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
-import com.vanniktech.maven.publish.JavadocJar.Dokka
-import com.vanniktech.maven.publish.KotlinMultiplatform
-import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
 plugins {
   kotlin("multiplatform")
-  id("com.vanniktech.maven.publish.base").apply(false)
-}
-
-if (project.rootProject.name == "wire") {
-  apply(plugin = "com.vanniktech.maven.publish.base")
-  apply(plugin = "binary-compatibility-validator")
 }
 
 kotlin {
@@ -109,11 +100,33 @@ kotlin {
       val tvosArm64Test by getting
       val tvosSimulatorArm64Test by getting
 
-      for (it in listOf(iosX64Main, iosArm64Main, iosSimulatorArm64Main, linuxX64Main, macosX64Main, macosArm64Main, mingwX64Main, tvosX64Main, tvosArm64Main, tvosSimulatorArm64Main)) {
+      for (it in listOf(
+        iosX64Main,
+        iosArm64Main,
+        iosSimulatorArm64Main,
+        linuxX64Main,
+        macosX64Main,
+        macosArm64Main,
+        mingwX64Main,
+        tvosX64Main,
+        tvosArm64Main,
+        tvosSimulatorArm64Main,
+      )) {
         it.dependsOn(nativeMain)
       }
 
-      for (it in listOf(iosX64Test, iosArm64Test, iosSimulatorArm64Test, linuxX64Test, macosX64Test, macosArm64Test, mingwX64Test, tvosX64Test, tvosArm64Test, tvosSimulatorArm64Test)) {
+      for (it in listOf(
+        iosX64Test,
+        iosArm64Test,
+        iosSimulatorArm64Test,
+        linuxX64Test,
+        macosX64Test,
+        macosArm64Test,
+        mingwX64Test,
+        tvosX64Test,
+        tvosArm64Test,
+        tvosSimulatorArm64Test,
+      )) {
         it.dependsOn(nativeTest)
       }
     }
@@ -121,12 +134,6 @@ kotlin {
 }
 
 if (project.rootProject.name == "wire") {
-  configure<MavenPublishBaseExtension> {
-    configure(
-      KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
-    )
-  }
-
   configure<SpotlessExtension> {
     kotlin {
       targetExclude(
