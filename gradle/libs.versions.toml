@@ -29,7 +29,7 @@ androidx-annotations = { module = "androidx.annotation:annotation", version = "1
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
 androidx-compose = { module = "androidx.activity:activity-compose", version = "1.7.2" }
 androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4" }
-androidx-ktx = { module = "androidx.core:core-ktx", version = "1.10.1" }
+androidx-ktx = { module = "androidx.core:core-ktx", version = "1.12.0" }
 asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 assertk = "com.willowtreeapps.assertk:assertk:0.27.0"
