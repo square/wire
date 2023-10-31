@@ -23,6 +23,7 @@ markdown_extensions:
   - codehilite:
       guess_lang: false
   - footnotes
+  - md_in_html
   - meta
   - toc:
       permalink: true

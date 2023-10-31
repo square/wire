@@ -25,7 +25,7 @@ Protocol Buffers
 
  * It's focused. Proto schemas describe your data models. That's it.
 
-<details>
+<details markdown="1">
 <summary>Protocol Buffer Examples</summary>
 
 Here's a [sample message][dinosaur_proto] definition:
@@ -137,7 +137,7 @@ That said, there are some interesting design decisions in Wire:
    due to schema evolution: if tomorrow we add a `carnivore` boolean to our message definition,
    today's data won’t have a value for that field.
 
-<details>
+<details markdown="1">
 <summary>Generated Java Code</summary>
 
 Here's the compact [generated code][dinosaur_java] for the `Dinosaur` message defined above:
@@ -350,7 +350,7 @@ how we used Kotlin to model Protocol Buffers messages:
    * `emptyList()` for `repeated` fields,
    * `emptyMap()` for `map` fields.
 
-<details>
+<details markdown="1">
 <summary>Generated Kotlin Code</summary>
 
 Here's the compact [generated code][dinosaur_kotlin] for the `Dinosaur` message defined above:
@@ -555,7 +555,7 @@ Here's how we used Swift to model Protocol Buffers messages:
  * The nullability of each field's type depends on its label: `required`, `repeated` and `map`
    fields get non-nullable types, whereas `optional` fields are of nullable types.
 
-<details>
+<details markdown="1">
 <summary>Generated Swift Code</summary>
 
 Here's the compact [generated code][dinosaur_swift] for the `Dinosaur` message defined above:
@@ -801,8 +801,8 @@ See [Google's excellent documentation][schema_docs] on the structure and syntax 
  [compiler_docs_swift]: docs/wire_compiler.md#swift-support
  [grpc_docs]: docs/wire_grpc.md
 
- [dinosaur_proto]: samples/simple-sample/src/main/proto/squareup/dinosaurs/dinosaur.proto
- [period_proto]: samples/simple-sample/src/main/proto/squareup/geology/period.proto
- [dinosaur_java]: samples/simple-sample/src/main/java/com/squareup/dinosaurs/Sample.java
- [dinosaur_kotlin]: wire-tests/src/commonTest/proto-kotlin/com/squareup/dinosaurs/Dinosaur.kt
- [dinosaur_swift]: wire-runtime-swift/src/test/swift/sample/Dinosaur.swift
+ [dinosaur_proto]: https://github.com/square/wire/blob/master/samples/simple-sample/src/main/proto/squareup/dinosaurs/dinosaur.proto
+ [period_proto]: https://github.com/square/wire/blob/master/samples/simple-sample/src/main/proto/squareup/geology/period.proto
+ [dinosaur_java]: https://github.com/square/wire/blob/master/samples/simple-sample/src/main/java/com/squareup/dinosaurs/Sample.java
+ [dinosaur_kotlin]: https://github.com/square/wire/blob/master/wire-tests/src/commonTest/proto-kotlin/com/squareup/dinosaurs/Dinosaur.kt
+ [dinosaur_swift]: https://github.com/square/wire/blob/master/wire-runtime-swift/src/test/swift/sample/Dinosaur.swift
