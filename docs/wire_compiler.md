@@ -385,22 +385,22 @@ Here's an exhaustive Java configuration. Booleans are shown with their default b
 wire {
   java {
     // Proto types to include generated sources for. Types listed here will be
-    // generated for this/ target and not for subsequent targets in the task.
+    // generated for this target and not for subsequent targets in the task.
     //
-    // This list should contain package names (suffixed with `.*`) and type names
-    // only. It should not contain member names.
+    // This list should contain package names (suffixed with `.*`) and type
+    // names only. It should not contain member names.
     includes = ['com.example.pizza.*']
 
-    // Proto types to excluded generated sources for. Types listed here will not
-    // be generated for this target.
+    // Proto types to excluded generated sources for. Types listed here will
+    // not be generated for this target.
     //
-    // This list should contain package names (suffixed with `.*`) and type names
-    // only. It should not contain member names.
+    // This list should contain package names (suffixed with `.*`) and type
+    // names only. It should not contain member names.
     excludes = ['com.example.sales.*']
 
-    // True if types emitted for this target should not also be emitted for other
-    // targets. Use this to cause multiple outputs to be emitted for the same input
-    // type.
+    // True if types emitted for this target should not also be emitted for
+    // other targets. Use this to cause multiple outputs to be emitted for the
+    // same input type.
     exclusive = true
 
     // Directory to emit to.
@@ -409,14 +409,16 @@ wire {
     // True for emitted types to implement android.os.Parcelable.
     android = false
 
-    // True to enable the androidx.annotation.Nullable annotation where applicable.
+    // True to enable the androidx.annotation. Nullable annotation
+    // where applicable.
     androidAnnotations = false
 
     // True to emit code that uses reflection for reading, writing, and toString
     // methods which are normally implemented with generated code.
     compact = false
 
-    // True to turn visibility of all generated types' constructors to non-public.
+    // True to turn visibility of all generated types' constructors
+    // to non-public.
     buildersOnly = false
 
     // True to emit types for options declared on messages, fields, etc.
@@ -436,22 +438,22 @@ Here's an exhaustive Kotlin configuration. Booleans and enums are shown with the
 wire {
   kotlin {
     // Proto types to include generated sources for. Types listed here will be
-    // generated for this/ target and not for subsequent targets in the task.
+    // generated for this target and not for subsequent targets in the task.
     //
-    // This list should contain package names (suffixed with `.*`) and type names
-    // only. It should not contain member names.
+    // This list should contain package names (suffixed with `.*`) and type
+    // names only. It should not contain member names.
     includes = ['com.example.pizza.*']
 
     // Proto types to excluded generated sources for. Types listed here will not
     // be generated for this target.
     //
-    // This list should contain package names (suffixed with `.*`) and type names
-    // only. It should not contain member names.
+    // This list should contain package names (suffixed with `.*`) and type
+    // names only. It should not contain member names.
     excludes = ['com.example.sales.*']
 
-    // True if types emitted for this target should not also be emitted for other
-    // targets. Use this to cause multiple outputs to be emitted for the same input
-    // type.
+    // True if types emitted for this target should not also be emitted for
+    // other targets. Use this to cause multiple outputs to be emitted for the
+    // same input type.
     exclusive = true
 
     // Directory to emit to.
@@ -460,11 +462,12 @@ wire {
     // True for emitted types to implement android.os.Parcelable.
     android = false
 
-    // True for emitted types to implement APIs for easier migration from the Java
-    // target.
+    // True for emitted types to implement APIs for easier migration from the
+    // Java target.
     javaInterop = false
 
-    // True to turn visibility of all generated types' constructors to non-public.
+    // True to turn visibility of all generated types' constructors
+    // to non-public.
     buildersOnly = false
 
     // True to emit types for options declared on messages, fields, etc.
@@ -473,7 +476,8 @@ wire {
     // True to emit annotations for options applied on messages, fields, etc.
     emitAppliedOptions = true
 
-    // `suspending` to generate coroutines APIs that require a Kotlin coroutines context.
+    // `suspending` to generate coroutines APIs that require a Kotlin
+    // coroutines context.
     // `blocking` to generate blocking APIs callable by Java and Kotlin.
     rpcCallStyle = 'blocking'
 
@@ -482,8 +486,8 @@ wire {
     // `none` to not generate services.
     rpcRole = 'server'
 
-    // If set, the value will be appended to generated service type names. If null, their rpcRole
-    // will be used as a suffix instead.
+    // If set, the value will be appended to generated service type names. If
+    // null, their rpcRole will be used as a suffix instead.
     nameSuffix = "Suffix"
 
     // True for emitted services to implement one interface per RPC.
