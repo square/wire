@@ -9,7 +9,7 @@ plugins {
   id("com.google.protobuf")
   id("com.squareup.wire")
   id("com.github.johnrengelman.shadow")
-  id("me.champeau.jmh").version("0.7.1")
+  id("me.champeau.jmh").version("0.7.2")
 }
 
 sourceSets {
