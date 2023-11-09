@@ -2,7 +2,7 @@
 android = "4.1.1.4"
 asm = "9.6"
 assertj = "3.24.2"
-checkerQual = "3.39.0"
+checkerQual = "3.40.0"
 coroutines = "1.7.3"
 dokka = "1.9.10"
 grpc = "1.59.0"
