@@ -1,20 +1,29 @@
 Change Log
 ==========
 
-Version XXXXX
+Version 4.9.2
 -------------
 
-_Unreleased_
+_2023-11-13_
+
+* New: Opaque types. You can now specify types you want Wire to evaluate as being of type `bytes`.
+    On code generation, the fields of such types will be using the platform equivalent of `bytes`,
+    like `okio.ByteString` for the JVM. Use this if there's a dependency heavy type which you do
+    not use. Note that scalar types cannot be opaqued.
+* New: Adds a closure into generate types allowing the creation of an instance via the Kotlin DSL.
+* Fix: Don't arbitrarily prune `oneOf` options.
+
+### Swift
 
 * Change: Swift `Defaulted` has been renamed `CustomDefaulted`
 * New: Swift `ProtoDefaulted` property wrapper and `ProtoDefaultedValue` protocol
-    * Similar to `CustomDefaulted, this adds as projection of the protocol defined default value
-    * This should not take up any additional storage
-    * This is attached to optional scalar values and messages with entirely optional values
+  * Similar to `CustomDefaulted, this adds as projection of the protocol defined default value
+  * This should not take up any additional storage
+  * This is attached to optional scalar values and messages with entirely optional values
 * New: `ProtoDefaulted` and `CustomDefaulted` include setter support
-    * This enables you to do something like `Foo().$bar.$baz += 1`
+  * This enables you to do something like `Foo().$bar.$baz += 1`
 * Change: Swift `ProtoEnum` types now have a raw value of `Int32`.
-    * The runtime and generated code both need to be updated to reflect this.
+  * The runtime and generated code both need to be updated to reflect this.
 
 Version 4.9.1
 -------------
