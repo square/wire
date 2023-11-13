@@ -29,10 +29,43 @@ final class ProtoEnumTests: XCTestCase {
             let message = NegativeValueMessage {
                 $0.value = value
             }
+
             let data = try encoder.encode(message)
             let decodedMessage = try decoder.decode(NegativeValueMessage.self, from: data)
 
             XCTAssertEqual(decodedMessage, message, "Could not roundtrip \(value)")
+        }
+    }
+
+    func testEnumValuesDecodeAsInt32() throws {
+        let encoder = ProtoEncoder()
+        let decoder = ProtoDecoder()
+
+        for value in NegativeValueEnum.allCases {
+            let message = NegativeValueMessage {
+                $0.value = value
+            }
+
+            let data = try encoder.encode(message)
+            let decodedMessage = try decoder.decode(RawNegativeValueMessage.self, from: data)
+
+            XCTAssertEqual(decodedMessage.value, value.rawValue, "Could not roundtrip \(value)")
+        }
+    }
+
+    func testInt32ValuesDecodeAsEnumValues() throws {
+        let encoder = ProtoEncoder()
+        let decoder = ProtoDecoder()
+
+        for value in NegativeValueEnum.allCases {
+            let message = RawNegativeValueMessage {
+                $0.value = value.rawValue
+            }
+
+            let data = try encoder.encode(message)
+            let decodedMessage = try decoder.decode(NegativeValueMessage.self, from: data)
+
+            XCTAssertEqual(decodedMessage.value, value, "Could not roundtrip \(value)")
         }
     }
 

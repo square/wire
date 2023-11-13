@@ -26,3 +26,7 @@ enum NegativeValueEnum {
   ZERO_VALUE = 0;
   POSITIVE_VALUE = 1;
 }
+
+message RawNegativeValueMessage {
+    optional int32 value = 1;
+}
