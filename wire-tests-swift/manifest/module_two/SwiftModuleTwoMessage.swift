@@ -106,7 +106,8 @@ extension SwiftModuleTwoMessage {
 
     public struct NestedMessage {
 
-        public var types: [module_one.SwiftModuleOneType] = []
+        public var array_types: [module_one.SwiftModuleOneEnum] = []
+        public var module_type: module_one.SwiftModuleOneMessage?
         public var unknownFields: Foundation.Data = .init()
 
         public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -122,8 +123,9 @@ extension SwiftModuleTwoMessage.NestedMessage {
 
     @_disfavoredOverload
     @available(*, deprecated)
-    public init(types: [module_one.SwiftModuleOneType] = []) {
-        self.types = types
+    public init(array_types: [module_one.SwiftModuleOneEnum] = [], module_type: module_one.SwiftModuleOneMessage? = nil) {
+        self.array_types = array_types
+        self.module_type = module_type
     }
 
 }
@@ -162,22 +164,26 @@ extension SwiftModuleTwoMessage.NestedMessage : ProtoMessage {
 extension SwiftModuleTwoMessage.NestedMessage : Proto2Codable {
 
     public init(from protoReader: Wire.ProtoReader) throws {
-        var types: [module_one.SwiftModuleOneType] = []
+        var array_types: [module_one.SwiftModuleOneEnum] = []
+        var module_type: module_one.SwiftModuleOneMessage? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 2: try protoReader.decode(into: &types)
+            case 1: try protoReader.decode(into: &array_types)
+            case 2: module_type = try protoReader.decode(module_one.SwiftModuleOneMessage.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.types = types
+        self.array_types = array_types
+        self.module_type = module_type
     }
 
     public func encode(to protoWriter: Wire.ProtoWriter) throws {
-        try protoWriter.encode(tag: 2, value: self.types)
+        try protoWriter.encode(tag: 1, value: self.array_types)
+        try protoWriter.encode(tag: 2, value: self.module_type)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -188,16 +194,19 @@ extension SwiftModuleTwoMessage.NestedMessage : Codable {
 
     public init(from decoder: Swift.Decoder) throws {
         let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.types = try container.decodeProtoArray(module_one.SwiftModuleOneType.self, forKey: "types")
+        self.array_types = try container.decodeProtoArray(module_one.SwiftModuleOneEnum.self, firstOfKeys: "arrayTypes", "array_types")
+        self.module_type = try container.decodeIfPresent(module_one.SwiftModuleOneMessage.self, firstOfKeys: "moduleType", "module_type")
     }
 
     public func encode(to encoder: Swift.Encoder) throws {
         var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+        let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || !self.types.isEmpty {
-            try container.encodeProtoArray(self.types, forKey: "types")
+        if includeDefaults || !self.array_types.isEmpty {
+            try container.encodeProtoArray(self.array_types, forKey: preferCamelCase ? "arrayTypes" : "array_types")
         }
+        try container.encodeIfPresent(self.module_type, forKey: preferCamelCase ? "moduleType" : "module_type")
     }
 
 }

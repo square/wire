@@ -17,8 +17,12 @@ syntax = "proto2";
 
 package squareup.protos.kotlin.swift_modules;
 
-enum SwiftModuleOneType {
+enum SwiftModuleOneEnum {
   DO_NOT_USE = 0;
   ONE = 1;
   TWO = 2;
+}
+
+message SwiftModuleOneMessage {
+    required string name = 1;
 }
