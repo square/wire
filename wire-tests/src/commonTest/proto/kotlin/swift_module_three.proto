@@ -23,6 +23,7 @@ message SwiftModuleThreeMessage {
   optional string name = 1;
 
   message NestedMessage {
-    map<string, SwiftModuleOneType> map_string_types = 2;
+    map<string, SwiftModuleOneEnum> map_string_types = 1;
+    optional SwiftModuleOneMessage module_type = 2;
   }
 }

@@ -94,7 +94,9 @@ extension ProtoEnumCodableTests {
     }
 
     func testEncodingNegativeValueEnum() throws {
-        let expectedStruct = NegativeValueMessage { $0.value = NegativeValueEnum.DO_NOT_USE }
+        let expectedStruct = NegativeValueMessage {
+            $0.value = NegativeValueEnum.NEGATIVE_VALUE
+        }
 
         let expectedJson = """
         {\
@@ -184,7 +186,9 @@ extension ProtoEnumCodableTests {
     }
 
     func testDecodingNegativeValueEnum() throws {
-        let expectedStruct = NegativeValueMessage { $0.value = NegativeValueEnum.DO_NOT_USE }
+        let expectedStruct = NegativeValueMessage {
+            $0.value = NegativeValueEnum.NEGATIVE_VALUE
+        }
 
         let json = """
         {\

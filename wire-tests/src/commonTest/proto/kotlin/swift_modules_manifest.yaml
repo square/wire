@@ -19,7 +19,8 @@
 ---
 module_one:
   roots:
-  - squareup.protos.kotlin.swift_modules.SwiftModuleOneType
+  - squareup.protos.kotlin.swift_modules.SwiftModuleOneEnum
+  - squareup.protos.kotlin.swift_modules.SwiftModuleOneMessage
 module_two:
   roots:
   - squareup.protos.kotlin.swift_modules.SwiftModuleTwoMessage

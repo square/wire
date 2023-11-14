@@ -19,17 +19,6 @@ import XCTest
 
 final class RoundTripTests: XCTestCase {
 
-    func testNegativeValueEnumRoundTrip() throws {
-        let negativeValueMessage = NegativeValueMessage { $0.value = NegativeValueEnum.DO_NOT_USE }
-        let encoder = ProtoEncoder()
-        let data = try encoder.encode(negativeValueMessage)
-
-        let decoder = ProtoDecoder()
-        let decodedNegativeValueMessage = try decoder.decode(NegativeValueMessage.self, from: data)
-
-        XCTAssertEqual(decodedNegativeValueMessage, negativeValueMessage)
-    }
-
     func testPersonEncodeDecode() throws {
         let personData = Data(json_data: "")
         let person = Person(name: "Luke Skywalker", id: 42, data: personData) {

@@ -23,6 +23,7 @@ message SwiftModuleTwoMessage {
   optional string name = 1;
 
   message NestedMessage {
-    repeated SwiftModuleOneType types = 2;
+    repeated SwiftModuleOneEnum array_types = 1;
+    optional SwiftModuleOneMessage module_type = 2;
   }
 }

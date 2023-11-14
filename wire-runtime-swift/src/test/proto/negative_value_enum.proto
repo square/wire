@@ -22,5 +22,11 @@ message NegativeValueMessage {
 }
 
 enum NegativeValueEnum {
-  DO_NOT_USE = -1;
+  NEGATIVE_VALUE = -1;
+  ZERO_VALUE = 0;
+  POSITIVE_VALUE = 1;
+}
+
+message RawNegativeValueMessage {
+    optional int32 value = 1;
 }

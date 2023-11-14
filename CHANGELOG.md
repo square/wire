@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 4.9.3
+-------------
+
+_Unreleased_
+
+* Fix: Swift `ProtoDefaulted` was incorrectly applied in cross-module contexts
+
 Version 4.9.2
 -------------
 
@@ -12,9 +19,6 @@ _2023-11-13_
     not use. Note that scalar types cannot be opaqued.
 * New: Adds a closure into generate types allowing the creation of an instance via the Kotlin DSL.
 * Fix: Don't arbitrarily prune `oneOf` options.
-
-### Swift
-
 * Change: Swift `Defaulted` has been renamed `CustomDefaulted`
 * New: Swift `ProtoDefaulted` property wrapper and `ProtoDefaultedValue` protocol
   * Similar to `CustomDefaulted, this adds as projection of the protocol defined default value

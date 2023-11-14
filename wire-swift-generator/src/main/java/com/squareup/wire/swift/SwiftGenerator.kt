@@ -186,7 +186,8 @@ class SwiftGenerator private constructor(
       if (type == ProtoType.ANY) return false
       if (isMessage) {
         val messageType = schema.getType(type!!) as MessageType
-        return messageType.supportsEmptyInitialization
+
+        return messageType.supportsEmptyInitialization && messageType.fields.isNotEmpty()
       }
       if (isEnum) {
         val enumType = schema.getType(type!!) as EnumType
