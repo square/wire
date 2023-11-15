@@ -1,11 +1,11 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   kotlin("multiplatform")
 }
 
 kotlin {
-  jvm {
-    withJava()
-  }
+  jvm().withJava()
   if (System.getProperty("kjs", "true").toBoolean()) {
     js(IR) {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
