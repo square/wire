@@ -71,9 +71,12 @@ allprojects {
   plugins.withId("java") {
     configure<JavaPluginExtension> {
       withSourcesJar()
-      sourceCompatibility = JavaVersion.VERSION_11
-      targetCompatibility = JavaVersion.VERSION_11
     }
+  }
+
+  tasks.withType<JavaCompile>().configureEach {
+    sourceCompatibility = JavaVersion.VERSION_11.toString()
+    targetCompatibility = JavaVersion.VERSION_11.toString()
   }
 
   tasks.withType<KotlinCompile>().configureEach {
