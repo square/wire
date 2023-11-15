@@ -48,6 +48,7 @@ actual abstract class EnumAdapter<E : WireEnum> protected actual constructor(
     commonEncode(writer, value)
   }
 
+  @Throws(IOException::class)
   actual override fun encode(writer: ReverseProtoWriter, value: E) {
     commonEncode(writer, value)
   }

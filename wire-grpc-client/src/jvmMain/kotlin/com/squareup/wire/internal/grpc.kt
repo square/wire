@@ -16,10 +16,8 @@
 package com.squareup.wire.internal
 
 import com.squareup.wire.GrpcException
-import com.squareup.wire.GrpcResponse
 import com.squareup.wire.GrpcStatus
 import com.squareup.wire.ProtoAdapter
-import com.squareup.wire.use
 import java.io.Closeable
 import java.util.Base64
 import kotlinx.coroutines.CancellationException
@@ -33,6 +31,7 @@ import okhttp3.Headers.Companion.headersOf
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
+import okhttp3.Response
 import okio.BufferedSink
 import okio.IOException
 
@@ -79,7 +78,7 @@ internal fun <S : Any> PipeDuplexRequestBody.messageSink(
   sink = createSink(),
   minMessageToCompress = minMessageToCompress,
   messageAdapter = requestAdapter,
-  callForCancel = callForCancel,
+  callForCancel = callForCancel.toWireCall(),
   grpcEncoding = "gzip",
 )
 
@@ -94,7 +93,7 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
       close(e)
     }
 
-    override fun onResponse(call: Call, response: GrpcResponse) {
+    override fun onResponse(call: Call, response: Response) {
       grpcCall.responseMetadata = response.headers.toMap()
       runBlocking {
         response.use {
@@ -167,7 +166,7 @@ internal suspend fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
 }
 
 /** Reads messages from the response body. */
-internal fun <R : Any> GrpcResponse.messageSource(
+internal fun <R : Any> Response.messageSource(
   protoAdapter: ProtoAdapter<R>,
 ): GrpcMessageSource<R> {
   checkGrpcResponse()
@@ -177,7 +176,7 @@ internal fun <R : Any> GrpcResponse.messageSource(
 }
 
 /** Returns an exception if the response does not follow the protocol. */
-private fun GrpcResponse.checkGrpcResponse() {
+private fun Response.checkGrpcResponse() {
   val contentType = body!!.contentType()
   if (code != 200 ||
     contentType == null ||
@@ -189,7 +188,7 @@ private fun GrpcResponse.checkGrpcResponse() {
 }
 
 /** Returns an exception if the gRPC call didn't have a grpc-status of 0. */
-internal fun GrpcResponse.grpcResponseToException(suppressed: IOException? = null): IOException? {
+internal fun Response.grpcResponseToException(suppressed: IOException? = null): IOException? {
   var trailers = headersOf()
   var transportException = suppressed
   try {

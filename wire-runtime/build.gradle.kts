@@ -2,6 +2,7 @@ import com.diffplug.gradle.spotless.SpotlessExtension
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   kotlin("multiplatform")
@@ -9,9 +10,7 @@ plugins {
 }
 
 kotlin {
-  jvm {
-    withJava()
-  }
+  jvm().withJava()
   if (System.getProperty("kjs", "true").toBoolean()) {
     js(IR) {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {

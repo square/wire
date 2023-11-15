@@ -15,4 +15,19 @@
  */
 package com.squareup.wire
 
-actual typealias GrpcResponse = okhttp3.Response
+import java.io.IOException
+import okhttp3.Response
+import okhttp3.ResponseBody
+
+actual class GrpcResponse(private val response: Response) {
+
+  actual val body: ResponseBody?
+    get() = response.body
+
+  actual fun header(name: String, defaultValue: String?): String? = response.header(name, defaultValue)
+
+  @Throws(IOException::class)
+  actual fun trailers(): GrpcHeaders = response.trailers()
+
+  actual fun close() = response.close()
+}

@@ -39,7 +39,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
   private val requestBody = newDuplexRequestBody()
 
   /** Non-null once this is executed. */
-  private var call: Call? = null
+  private var call: okhttp3.Call? = null
   private var canceled = false
 
   override val timeout: Timeout = LateInitTimeout()
@@ -126,7 +126,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
     return result
   }
 
-  private fun initCall(): Call {
+  private fun initCall(): okhttp3.Call {
     check(this.call == null) { "already executed" }
 
     val result = grpcClient.newCall(method, requestMetadata, requestBody)
