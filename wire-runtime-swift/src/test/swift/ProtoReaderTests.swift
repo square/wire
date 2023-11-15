@@ -70,7 +70,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeVarintInt32() throws {
-        let data = Foundation.Data(hexEncoded: "08_FBFFFFFF0F")!
+        let data = Foundation.Data(hexEncoded: "08_FBFFFFFFFFFFFFFFFF01")!
         try test(data: data) { reader in
             let value = try reader.decode(tag: 1) { try reader.decode(Int32.self, encoding: .variable) }
             XCTAssertEqual(value, -5)
@@ -1100,7 +1100,7 @@ final class ProtoReaderTests: XCTestCase {
         try test(data: data) { reader in
             let unknownFields = try reader.forEachTag { tag in
                 switch tag {
-                case 2: XCTAssertEqual(try reader.readVarint32(), 300)
+                case 2: XCTAssertEqual(try UInt32(truncatingIfNeeded: reader.readVarint()), 300)
                 default: try reader.readUnknownField(tag: tag)
                 }
             }
@@ -1138,7 +1138,7 @@ final class ProtoReaderTests: XCTestCase {
         try test(data: data) { reader in
             let unknownFields = try reader.forEachTag { tag in
                 switch tag {
-                case 1: XCTAssertEqual(try reader.readVarint32(), 5)
+                case 1: XCTAssertEqual(try UInt32(truncatingIfNeeded: reader.readVarint()), 5)
                 case 2:
                     let nestedMessage = try reader.decode(NestedMessage.self)
                     XCTAssertEqual(nestedMessage.unknownFields, Foundation.Data(hexEncoded: "0D_05000000_15_FFFFFFFF"))
@@ -1200,9 +1200,9 @@ final class ProtoReaderTests: XCTestCase {
         try test(data: data) { reader in
             let _ = try reader.forEachTag { tag in
                 switch tag {
-                case 1: XCTAssertEqual(try reader.readVarint32(), 5)
-                case 2: XCTAssertEqual(try reader.readVarint32(), 300)
-                case 3: XCTAssertEqual(try reader.readVarint32(), .max)
+                case 1: XCTAssertEqual(try UInt32(truncatingIfNeeded: reader.readVarint()), 5)
+                case 2: XCTAssertEqual(try UInt32(truncatingIfNeeded: reader.readVarint()), 300)
+                case 3: XCTAssertEqual(try UInt32(truncatingIfNeeded: reader.readVarint()), .max)
                 default: XCTFail("Unexpected field")
                 }
             }
@@ -1221,9 +1221,9 @@ final class ProtoReaderTests: XCTestCase {
         try test(data: data) { reader in
             let _ = try reader.forEachTag { tag in
                 switch tag {
-                case 1: XCTAssertEqual(try reader.readVarint64(), 5)
-                case 2: XCTAssertEqual(try reader.readVarint64(), 300)
-                case 3: XCTAssertEqual(try reader.readVarint64(), .max)
+                case 1: XCTAssertEqual(try reader.readVarint(), 5)
+                case 2: XCTAssertEqual(try reader.readVarint(), 300)
+                case 3: XCTAssertEqual(try reader.readVarint(), .max)
                 default: XCTFail("Unexpected field")
                 }
             }

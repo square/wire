@@ -30,7 +30,7 @@ extension Bool : ProtoCodable, ProtoDefaultedValue {
     public static var protoSyntax: ProtoSyntax? { nil }
 
     public init(from reader: ProtoReader) throws {
-        self = try reader.readVarint32() == 0 ? false : true
+        self = try reader.readVarint() == 0 ? false : true
     }
 
     // MARK: - ProtoEncodable

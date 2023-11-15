@@ -6,6 +6,10 @@ Version 4.9.3
 
 _Unreleased_
 
+* Breaking: Encoding and decoding of negative `Int32`s was broken in Swift and did not match protobuf spec.
+    Negative `Int32`s are now correctly encoded as unsigned `Int64`s. Prior versions of Wire that have
+    serialized a proto containing negative `Int32` fields will not be correctly decoded using this
+    version onwards.
 * Fix: Swift `ProtoDefaulted` was incorrectly applied in cross-module contexts
 
 Version 4.9.2
