@@ -314,7 +314,7 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
       if (!project.isWireGradlePlugin && !project.isWireBom) {
         // TODO(Benoit) Fix, this is failing with
         //  `SoftwareComponent with name 'java' not found.`
-        // configure(KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true))
+        // configure(KotlinJvm(javadocJar = Dokka("dokkaHtml"), sourcesJar = true))
       }
 
       publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)

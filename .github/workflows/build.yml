@@ -190,12 +190,44 @@ jobs:
           GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
           GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
 
-      # TODO(egorand): Publish website
-      #
-      # - name: Prep mkdocs
-      #   run: .buildscript/prepare_mkdocs.sh
-      #
-      # - name: Deploy docs
-      #   uses: mhausenblas/mkdocs-deploy-gh-pages@master
-      #   env:
-      #     PERSONAL_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+  publish-website:
+    runs-on: ubuntu-latest
+    if: github.repository == 'square/wire' && github.ref == 'refs/heads/master'
+    needs: [jvm, multiplatform, swift]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 19
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: Prepare docs
+        run: .buildscript/prepare_mkdocs.sh
+
+      - name: Build mkdocs
+        run: |
+          pip3 install mkdocs-material mkdocs-macros-plugin
+          mkdocs build
+
+      - name: Restore 2.x docs
+        run: .buildscript/restore_v2_docs.sh
+
+      - name: Deploy docs
+        if: success()
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GH_CLIPPY_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: docs
+          SINGLE_COMMIT: true
