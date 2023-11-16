@@ -63,7 +63,7 @@ protected actual constructor(
   /**
    * Superclass for protocol buffer message builders.
    */
-  actual abstract class Builder<M : Message<M, B>, B : Builder<M, B>> protected constructor() {
+  actual abstract class Builder<M : Message<M, B>, B : Builder<M, B>> protected actual constructor() {
     internal actual var unknownFieldsByteString = ByteString.EMPTY
     internal actual var unknownFieldsBuffer: Buffer? = null
     internal actual var unknownFieldsWriter: ProtoWriter? = null

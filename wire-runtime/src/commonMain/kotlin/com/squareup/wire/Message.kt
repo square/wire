@@ -53,7 +53,7 @@ expect abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> prot
   /**
    * Superclass for protocol buffer message builders.
    */
-  abstract class Builder<M : Message<M, B>, B : Builder<M, B>> {
+  abstract class Builder<M : Message<M, B>, B : Builder<M, B>> protected constructor() {
     /**
      * Caches unknown fields as a [ByteString] when [buildUnknownFields] is called.
      * When the caller adds an additional unknown field after that, it will be written to the new
