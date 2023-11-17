@@ -56,7 +56,7 @@ class WirePlugin : Plugin<Project> {
     project.configurations.create("protoPath")
       .also {
         it.isCanBeConsumed = false
-        it.isTransitive = false
+        it.isTransitive = true
       }
 
     val androidPluginHandler = { _: Plugin<*> ->

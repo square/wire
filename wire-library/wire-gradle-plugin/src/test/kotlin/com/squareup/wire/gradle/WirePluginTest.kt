@@ -380,6 +380,20 @@ class WirePluginTest {
   }
 
   @Test
+  fun protoPathTransitive() {
+    val fixtureRoot = File("src/test/projects/protopath-transitive")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+      .doesNotContain("Writing com.squareup.dinosaurs.Dino")
+      .doesNotContain("Writing com.squareup.geology.Period")
+      .contains("Writing com.squareup.dinosaurs.Dig")
+      .contains("src/test/projects/protopath-transitive/build/generated/source/wire".withPlatformSlashes())
+  }
+
+  @Test
   fun differentJavaOutputDir() {
     val fixtureRoot = File("src/test/projects/different-java-out")
 
