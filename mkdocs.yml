@@ -90,7 +90,3 @@ nav:
   - 'Contributing': contributing.md
   - 'Code of Conduct': code_of_conduct.md
   - 'Protocol Buffers ⏏': https://developers.google.com/protocol-buffers/docs/proto
-
-not_in_nav: |
-  security.md
-  3.x/**

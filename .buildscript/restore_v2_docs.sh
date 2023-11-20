@@ -19,8 +19,8 @@ cd $DIR
 
 # Restore docs from 2.x
 git checkout 0e1192aaa1d074c9703748fae100daef707218d4
-mkdir -p ../docs
-mv ./2.x ../docs/2.x
+mkdir -p ../site
+mv ./2.x ../site/2.x
 
 # Delete our temp folder
 cd ..

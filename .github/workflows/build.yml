@@ -229,5 +229,5 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GH_CLIPPY_TOKEN }}
           BRANCH: gh-pages
-          FOLDER: docs
+          FOLDER: site
           SINGLE_COMMIT: true
