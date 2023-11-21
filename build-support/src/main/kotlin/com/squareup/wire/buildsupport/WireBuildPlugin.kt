@@ -38,6 +38,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.gradle.kotlin.dsl.attributes
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -359,7 +360,7 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
 
     // DokkaTaskPartial configures subprojects for multimodule docs
     // All options: https://kotlinlang.org/docs/dokka-gradle.html#configuration-options
-    project.tasks.withType(DokkaTaskPartial::class.java) {
+    project.tasks.withType(DokkaTask::class.java) {
       outputDirectory.set(project.file("${project.rootDir}/docs/3.x"))
       dokkaSourceSets.configureEach {
         reportUndocumented.set(false)
