@@ -357,10 +357,8 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
 
     if (project.isWireBom) return
 
-    // DokkaTaskPartial configures subprojects for multimodule docs
-    // All options: https://kotlinlang.org/docs/dokka-gradle.html#configuration-options
     project.tasks.withType(DokkaTask::class.java) {
-      outputDirectory.set(project.file("${project.rootDir}/docs/3.x"))
+      outputDirectory.set(project.file("${project.rootDir}/docs/3.x/${project.name}"))
       dokkaSourceSets.configureEach {
         reportUndocumented.set(false)
         skipDeprecated.set(true)
