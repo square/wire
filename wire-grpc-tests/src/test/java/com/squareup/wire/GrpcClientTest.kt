@@ -1592,6 +1592,35 @@ class GrpcClientTest {
     }
   }
 
+  @Test
+  fun streamingRequestFailureWithUnexpectedHttpCode() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueueSendError(StatusException(Status.FAILED_PRECONDITION))
+    interceptor = Interceptor { chain ->
+      chain
+        .proceed(chain.request())
+        .newBuilder()
+        .code(520)
+        .header("content-type", "text/plain")
+        .build()
+    }
+
+    val call = routeGuideService.RouteChat()
+    runBlocking {
+      val (requests, responses) = call.executeIn(this@runBlocking)
+      try {
+        requests.send(RouteNote(message = "marco"))
+        responses.receive()
+        fail()
+      } catch (expected: IOException) {
+        assertThat(expected).isInstanceOf(IOException::class.java)
+        assertThat(expected.message).isEqualTo("expected gRPC but was HTTP status=520, content-type=text/plain")
+        assertThat(call.isCanceled()).isTrue()
+      }
+    }
+  }
+
   private fun removeGrpcStatusInterceptor(): Interceptor {
     val noTrailersResponse = noTrailersResponse()
     assertThat(noTrailersResponse.trailers().size).isEqualTo(0)
