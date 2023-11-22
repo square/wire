@@ -98,7 +98,18 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
       grpcCall.responseMetadata = response.headers.toMap()
       runBlocking {
         response.use {
-          response.messageSource(responseAdapter).use { reader ->
+          val messageSource = try {
+            response.messageSource(responseAdapter)
+          } catch (exception: IOException) {
+            try {
+              close(exception)
+            } catch (e: CancellationException) {
+              // If it's already canceled, there's nothing more to do.
+            }
+            return@use
+          }
+
+          messageSource.use { reader ->
             var exception: Exception? = null
             try {
               while (true) {
@@ -113,7 +124,7 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
             } finally {
               try {
                 close(exception)
-              } catch (_: CancellationException) {
+              } catch (e: CancellationException) {
                 // If it's already canceled, there's nothing more to do.
               }
             }

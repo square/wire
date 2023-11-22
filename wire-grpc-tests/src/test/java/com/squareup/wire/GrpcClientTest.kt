@@ -1602,7 +1602,6 @@ class GrpcClientTest {
         .proceed(chain.request())
         .newBuilder()
         .code(520)
-        .header("content-type", "text/plain")
         .build()
     }
 
@@ -1615,7 +1614,7 @@ class GrpcClientTest {
         fail()
       } catch (expected: IOException) {
         assertThat(expected).isInstanceOf(IOException::class.java)
-        assertThat(expected.message).isEqualTo("expected gRPC but was HTTP status=520, content-type=text/plain")
+        assertThat(expected.message).isEqualTo("expected gRPC but was HTTP status=520, content-type=application/grpc")
         assertThat(call.isCanceled()).isTrue()
       }
     }
