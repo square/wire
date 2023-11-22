@@ -38,7 +38,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.gradle.kotlin.dsl.attributes
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -357,7 +357,7 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
 
     if (project.isWireBom) return
 
-    project.tasks.withType(DokkaTaskPartial::class.java).configureEach {
+    project.tasks.withType(DokkaTask::class.java).configureEach {
       outputDirectory.set(project.file("${project.rootDir}/docs/3.x/${project.name}"))
       dokkaSourceSets.configureEach {
         reportUndocumented.set(false)

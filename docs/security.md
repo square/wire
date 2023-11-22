@@ -4,7 +4,8 @@ Security Policy
 ## Supported Versions
 
 | Version | Supported  |
-| ------- | ---------- |
+|---------| ---------- |
+| 4.x     | ✅         |
 | 3.x     | ✅         |
 | 2.x     |            |
 | 1.x     |            |
