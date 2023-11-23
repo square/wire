@@ -4,9 +4,11 @@ Change Log
 Version 4.9.3
 -------------
 
-_Unreleased_
+_2023-11-23_
 
 * Fix: Swift `ProtoDefaulted` was incorrectly applied in cross-module contexts
+* Fix: Message's Builder won't break compilation on multiplatform projects.
+* Fix: No hanging anymore on gRPC when receiving an unexpected response.
 
 Version 4.9.2
 -------------
