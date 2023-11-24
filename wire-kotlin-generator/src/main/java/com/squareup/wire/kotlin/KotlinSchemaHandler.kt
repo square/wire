@@ -15,6 +15,8 @@
  */
 package com.squareup.wire.kotlin
 
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.AnnotationSpec.UseSiteTarget.FILE
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -153,6 +155,14 @@ class KotlinSchemaHandler(
     val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
       .addFileComment(CODE_GENERATED_BY_WIRE)
       .addFileComment("\nSource: %L in %L", source, location.withPathOnly())
+      // If a file contains deprecation, we don't want to pollute the consumer's logs with something
+      // they might not be able to control.
+      .addAnnotation(
+        AnnotationSpec.builder(Suppress::class)
+          .useSiteTarget(FILE)
+          .addMember("%S", "DEPRECATION")
+          .build(),
+      )
       .addType(typeSpec)
       .build()
     val filePath = modulePath /
