@@ -14,18 +14,6 @@ public struct Mappy {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension Mappy {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(things: [Swift.String : Thing] = [:]) {
-        self.things = things
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension Mappy : Equatable {
 }

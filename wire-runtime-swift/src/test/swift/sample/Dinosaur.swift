@@ -27,28 +27,6 @@ public struct Dinosaur {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension Dinosaur {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(
-        name: Swift.String? = nil,
-        picture_urls: [Swift.String] = [],
-        length_meters: Swift.Double? = nil,
-        mass_kilograms: Swift.Double? = nil,
-        period: Period? = nil
-    ) {
-        self._name.wrappedValue = name
-        self.picture_urls = picture_urls
-        self._length_meters.wrappedValue = length_meters
-        self._mass_kilograms.wrappedValue = mass_kilograms
-        self.period = period
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension Dinosaur : Equatable {
 }

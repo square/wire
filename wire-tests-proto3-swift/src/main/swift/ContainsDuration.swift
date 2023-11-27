@@ -14,18 +14,6 @@ public struct ContainsDuration {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension ContainsDuration {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(duration: Duration? = nil) {
-        self.duration = duration
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension ContainsDuration : Equatable {
 }

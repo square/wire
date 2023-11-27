@@ -15,9 +15,6 @@
  */
 import Foundation
 
-@available(*, deprecated, message: "Replace with CustomDefaulted")
-public typealias Defaulted = CustomDefaulted
-
 /**
  When applied to field a projected value is provided for accessing the real value
  or the default value set.

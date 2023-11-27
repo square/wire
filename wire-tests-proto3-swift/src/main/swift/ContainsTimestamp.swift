@@ -14,18 +14,6 @@ public struct ContainsTimestamp {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension ContainsTimestamp {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(timestamp: Timestamp? = nil) {
-        self.timestamp = timestamp
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension ContainsTimestamp : Equatable {
 }

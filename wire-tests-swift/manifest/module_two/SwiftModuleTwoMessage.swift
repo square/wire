@@ -16,18 +16,6 @@ public struct SwiftModuleTwoMessage {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension SwiftModuleTwoMessage {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(name: Swift.String? = nil) {
-        self._name.wrappedValue = name
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension SwiftModuleTwoMessage : Equatable {
 }
@@ -117,19 +105,6 @@ extension SwiftModuleTwoMessage {
     }
 
 }
-
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension SwiftModuleTwoMessage.NestedMessage {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(array_types: [module_one.SwiftModuleOneEnum] = [], module_type: module_one.SwiftModuleOneMessage? = nil) {
-        self.array_types = array_types
-        self.module_type = module_type
-    }
-
-}
-#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension SwiftModuleTwoMessage.NestedMessage : Equatable {

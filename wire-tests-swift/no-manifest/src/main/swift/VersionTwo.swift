@@ -27,34 +27,6 @@ public struct VersionTwo {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension VersionTwo {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(
-        i: Swift.Int32? = nil,
-        v2_i: Swift.Int32? = nil,
-        v2_s: Swift.String? = nil,
-        v2_f32: Swift.UInt32? = nil,
-        v2_f64: Swift.UInt64? = nil,
-        v2_rs: [Swift.String] = [],
-        obj: NestedVersionTwo? = nil,
-        en: EnumVersionTwo? = nil
-    ) {
-        self._i.wrappedValue = i
-        self._v2_i.wrappedValue = v2_i
-        self._v2_s.wrappedValue = v2_s
-        self._v2_f32.wrappedValue = v2_f32
-        self._v2_f64.wrappedValue = v2_f64
-        self.v2_rs = v2_rs
-        self._obj.wrappedValue = obj
-        self.en = en
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension VersionTwo : Equatable {
 }

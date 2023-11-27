@@ -15,18 +15,6 @@ public struct SwiftEdgeCases {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension SwiftEdgeCases {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(`return`: Swift.String? = nil) {
-        self._return.wrappedValue = `return`
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension SwiftEdgeCases : Equatable {
 }

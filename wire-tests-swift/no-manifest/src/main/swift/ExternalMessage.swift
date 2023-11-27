@@ -15,18 +15,6 @@ public struct ExternalMessage {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension ExternalMessage {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(f: Swift.Float? = nil) {
-        self._f.wrappedValue = f
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension ExternalMessage : Equatable {
 }

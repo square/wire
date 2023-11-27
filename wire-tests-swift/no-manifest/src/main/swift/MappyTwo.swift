@@ -17,26 +17,6 @@ public struct MappyTwo {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension MappyTwo {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(
-        string_enums: [Swift.String : MappyTwo.ValueEnum] = [:],
-        int_things: [Swift.Int64 : Thing] = [:],
-        string_ints: [Swift.String : Swift.Int64] = [:],
-        int_things_two: [Swift.Int32 : Thing] = [:]
-    ) {
-        self.string_enums = string_enums
-        self.int_things = int_things
-        self.string_ints = string_ints
-        self.int_things_two = int_things_two
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension MappyTwo : Equatable {
 }

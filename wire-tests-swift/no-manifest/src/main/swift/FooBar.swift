@@ -29,38 +29,6 @@ public struct FooBar {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension FooBar {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(
-        foo: Swift.Int32? = nil,
-        bar: Swift.String? = nil,
-        baz: FooBar.Nested? = nil,
-        qux: Swift.UInt64? = nil,
-        fred: [Swift.Float] = [],
-        daisy: Swift.Double? = nil,
-        nested: [FooBar] = [],
-        ext: FooBar.FooBarBazEnum? = nil,
-        rep: [FooBar.FooBarBazEnum] = [],
-        more_string: Swift.String? = nil
-    ) {
-        self._foo.wrappedValue = foo
-        self._bar.wrappedValue = bar
-        self._baz.wrappedValue = baz
-        self._qux.wrappedValue = qux
-        self.fred = fred
-        self._daisy.wrappedValue = daisy
-        self.nested = nested
-        self.ext = ext
-        self.rep = rep
-        self._more_string.wrappedValue = more_string
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension FooBar : Equatable {
 }
@@ -251,18 +219,6 @@ extension FooBar {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension FooBar.Nested {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(value: FooBar.FooBarBazEnum? = nil) {
-        self.value = value
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension FooBar.Nested : Equatable {
 }
@@ -329,18 +285,6 @@ extension FooBar.Nested : Codable {
         var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
 
         try container.encodeIfPresent(self.value, forKey: "value")
-    }
-
-}
-#endif
-
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension FooBar.More {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(serial: [Swift.Int32] = []) {
-        self.serial = serial
     }
 
 }

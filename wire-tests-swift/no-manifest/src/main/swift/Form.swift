@@ -15,19 +15,6 @@ public struct Form {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension Form {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(choice: Choice? = nil, decision: Decision? = nil) {
-        self.choice = choice
-        self.decision = decision
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension Form : Equatable {
 }
@@ -726,18 +713,6 @@ extension Form.SpacerElement : Proto2Codable {
 extension Form.SpacerElement : Codable {
 
     public enum CodingKeys : Swift.CodingKey {
-    }
-
-}
-#endif
-
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension Form.TextElement {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(text: Swift.String? = nil) {
-        self._text.wrappedValue = text
     }
 
 }

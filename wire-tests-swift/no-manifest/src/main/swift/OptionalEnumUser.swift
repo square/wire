@@ -14,18 +14,6 @@ public struct OptionalEnumUser {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension OptionalEnumUser {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(optional_enum: OptionalEnumUser.OptionalEnum? = nil) {
-        self.optional_enum = optional_enum
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension OptionalEnumUser : Equatable {
 }

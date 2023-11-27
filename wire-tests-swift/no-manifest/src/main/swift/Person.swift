@@ -40,28 +40,6 @@ public struct Person {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension Person {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(
-        id: Swift.Int32,
-        name: Swift.String,
-        email: Swift.String? = nil,
-        phone: [Person.PhoneNumber] = [],
-        aliases: [Swift.String] = []
-    ) {
-        self.id = id
-        self.name = name
-        self._email.wrappedValue = email
-        self.phone = phone
-        self.aliases = aliases
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension Person : Equatable {
 }
@@ -210,19 +188,6 @@ extension Person {
 
 #if swift(>=5.5)
 extension Person.PhoneType : Sendable {
-}
-#endif
-
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension Person.PhoneNumber {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(number: Swift.String, type: Person.PhoneType? = nil) {
-        self.number = number
-        self._type.wrappedValue = type
-    }
-
 }
 #endif
 

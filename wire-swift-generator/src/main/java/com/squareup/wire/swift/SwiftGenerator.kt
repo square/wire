@@ -1137,41 +1137,6 @@ class SwiftGenerator private constructor(
         }
         .build(),
     )
-
-    if (!needsConfigure) {
-      return
-    }
-
-    // These will be removed in November 2023
-    val memberwiseExtension = ExtensionSpec.builder(structType)
-      .addFunction(
-        FunctionSpec.constructorBuilder()
-          .addModifiers(PUBLIC)
-          .addParameters(type, oneOfEnumNames, includeDefaults = true)
-          .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
-          .addAttribute(deprecated)
-          .apply {
-            val storageParams = mutableListOf<CodeBlock>()
-            type.fields.forEach { field ->
-              storageParams += CodeBlock.of("%1N: %1N", field.name)
-            }
-            type.oneOfs.forEach { oneOf ->
-              storageParams += CodeBlock.of("%1N: %1N", oneOf.name)
-            }
-            addStatement(
-              "self.%N = %T(\n%L\n)",
-              storageName,
-              storageType,
-              storageParams.joinToCode(separator = ",\n"),
-            )
-          }
-          .build(),
-      )
-      .build()
-
-    fileMembers += FileMemberSpec.builder(memberwiseExtension)
-      .addGuard(FLAG_INCLUDE_MEMBERWISE_INITIALIZER)
-      .build()
   }
 
   private fun TypeSpec.Builder.generateMessageConstructor(
@@ -1234,44 +1199,6 @@ class SwiftGenerator private constructor(
         }
         .build(),
     )
-
-    if (!needsConfigure) {
-      return
-    }
-
-    // These will be removed in November 2023
-    val memberwiseExtension = ExtensionSpec.builder(structType)
-      .addFunction(
-        FunctionSpec.constructorBuilder()
-          .addModifiers(visibility)
-          .addParameters(type, oneOfEnumNames, includeDefaults = includeMemberwiseDefaults)
-          .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
-          .addAttribute(deprecated)
-          .apply {
-            type.fields.forEach { field ->
-              val hasPropertyWrapper = !isIndirect(type, field) && (field.defaultedValue != null || field.isProtoDefaulted)
-              val fieldName = if (hasPropertyWrapper) { "_${field.name}" } else { field.name }
-              addStatement(
-                if (hasPropertyWrapper) {
-                  "self.%1N.wrappedValue = %2N"
-                } else {
-                  "self.%1N = %2N"
-                },
-                fieldName,
-                field.name,
-              )
-            }
-            type.oneOfs.forEach { oneOf ->
-              addStatement("self.%1N = %1N", oneOf.name)
-            }
-          }
-          .build(),
-      )
-      .build()
-
-    fileMembers += FileMemberSpec.builder(memberwiseExtension)
-      .addGuard(FLAG_INCLUDE_MEMBERWISE_INITIALIZER)
-      .build()
   }
 
   private fun TypeSpec.Builder.generateMessageProperties(
@@ -1774,7 +1701,6 @@ class SwiftGenerator private constructor(
     private const val FLAG_REMOVE_EQUATABLE = "WIRE_REMOVE_EQUATABLE"
     private const val FLAG_REMOVE_HASHABLE = "WIRE_REMOVE_HASHABLE"
     private const val FLAG_REMOVE_REDACTABLE = "WIRE_REMOVE_REDACTABLE"
-    private const val FLAG_INCLUDE_MEMBERWISE_INITIALIZER = "WIRE_INCLUDE_MEMBERWISE_INITIALIZER"
 
     private val NEEDS_CUSTOM_CODABLE = setOf("Duration", "Timestamp")
 

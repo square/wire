@@ -18,18 +18,6 @@ public struct Percents {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension Percents {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(text: Swift.String? = nil) {
-        self._text.wrappedValue = text
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension Percents : Equatable {
 }

@@ -16,18 +16,6 @@ public struct SwiftModuleThreeMessage {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension SwiftModuleThreeMessage {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(name: Swift.String? = nil) {
-        self._name.wrappedValue = name
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension SwiftModuleThreeMessage : Equatable {
 }
@@ -117,19 +105,6 @@ extension SwiftModuleThreeMessage {
     }
 
 }
-
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension SwiftModuleThreeMessage.NestedMessage {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(map_string_types: [Swift.String : module_one.SwiftModuleOneEnum] = [:], module_type: module_one.SwiftModuleOneMessage? = nil) {
-        self.map_string_types = map_string_types
-        self.module_type = module_type
-    }
-
-}
-#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension SwiftModuleThreeMessage.NestedMessage : Equatable {
