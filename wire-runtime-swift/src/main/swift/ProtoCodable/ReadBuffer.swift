@@ -116,44 +116,8 @@ extension ReadBuffer {
         return UInt64(littleEndian: value)
     }
 
-    /**
-     * Reads a raw varint from the stream. If larger than 32 bits, discard the upper bits.
-     */
-    func readVarint32() throws -> UInt32 {
-        var shift = 0
-        var result: UInt32 = 0
-        while shift < 32 {
-            let byte = pointer.pointee
-            pointer = pointer.advanced(by: 1)
-
-            result |= UInt32(byte & 0x7f) << shift
-            if byte < 0x80 {
-                // If the high bit of the byte is unset then this is
-                // the last byte in the value.
-                return result
-            }
-            shift += 7
-
-            try verifyAdditional(count: 1)
-        }
-
-        // Discard upper 32 bits.
-        for _ in 0 ..< 4 {
-            let byte = pointer.pointee
-            pointer = pointer.advanced(by: 1)
-
-            if byte < 0x80 {
-                return result
-            }
-
-            try verifyAdditional(count: 1)
-        }
-
-        throw ProtoDecoder.Error.malformedVarint
-    }
-
     /** Reads a raw varint up to 64 bits in length from the stream.  */
-    func readVarint64() throws -> UInt64 {
+    func readVarint() throws -> UInt64 {
         var shift = 0
         var result: UInt64 = 0
 
