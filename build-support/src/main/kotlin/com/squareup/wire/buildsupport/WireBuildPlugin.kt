@@ -147,7 +147,7 @@ class WireBuildPlugin : Plugin<Project> {
         endWithNewline()
         toggleOffOn()
         lineEndings = LineEnding.UNIX
-        ktlint(libs.versions.ktlint.get())
+        ktlint(libs.versions.ktlint.get()).editorConfigOverride(mapOf("ktlint_standard_filename" to "disabled"))
         licenseHeaderFile(licenseHeaderFile)
       }
       if (path != ":") {
