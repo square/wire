@@ -23,10 +23,10 @@ extension MappyTwo {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(
-        string_enums: [Swift.String : MappyTwo.ValueEnum] = [:],
-        int_things: [Swift.Int64 : Thing] = [:],
-        string_ints: [Swift.String : Swift.Int64] = [:],
-        int_things_two: [Swift.Int32 : Thing] = [:]
+        string_enums: [String : MappyTwo.ValueEnum] = [:],
+        int_things: [Int64 : Thing] = [:],
+        string_ints: [String : Int64] = [:],
+        int_things_two: [Int32 : Thing] = [:]
     ) {
         self.string_enums = string_enums
         self.int_things = int_things
@@ -61,7 +61,7 @@ extension MappyTwo : ProtoDefaultedValue {
 
 extension MappyTwo : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/com.squareup.wire.protos.kotlin.map.MappyTwo"
     }
 
@@ -69,11 +69,11 @@ extension MappyTwo : ProtoMessage {
 
 extension MappyTwo : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
-        var string_enums: [Swift.String : MappyTwo.ValueEnum] = [:]
-        var int_things: [Swift.Int64 : Thing] = [:]
-        var string_ints: [Swift.String : Swift.Int64] = [:]
-        var int_things_two: [Swift.Int32 : Thing] = [:]
+    public init(from protoReader: ProtoReader) throws {
+        var string_enums: [String : MappyTwo.ValueEnum] = [:]
+        var int_things: [Int64 : Thing] = [:]
+        var string_ints: [String : Int64] = [:]
+        var int_things_two: [Int32 : Thing] = [:]
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -93,7 +93,7 @@ extension MappyTwo : Proto2Codable {
         self.int_things_two = int_things_two
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.string_enums)
         try protoWriter.encode(tag: 2, value: self.int_things, keyEncoding: .signed)
         try protoWriter.encode(tag: 3, value: self.string_ints, valueEncoding: .signed)
@@ -106,16 +106,16 @@ extension MappyTwo : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension MappyTwo : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.string_enums = try container.decodeProtoMap([Swift.String : MappyTwo.ValueEnum].self, firstOfKeys: "stringEnums", "string_enums")
-        self.int_things = try container.decodeProtoMap([Swift.Int64 : Thing].self, firstOfKeys: "intThings", "int_things")
-        self.string_ints = try container.decodeProtoMap([Swift.String : Swift.Int64].self, firstOfKeys: "stringInts", "string_ints")
-        self.int_things_two = try container.decodeProtoMap([Swift.Int32 : Thing].self, firstOfKeys: "intThingsTwo", "int_things_two")
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.string_enums = try container.decodeProtoMap([String : MappyTwo.ValueEnum].self, firstOfKeys: "stringEnums", "string_enums")
+        self.int_things = try container.decodeProtoMap([Int64 : Thing].self, firstOfKeys: "intThings", "int_things")
+        self.string_ints = try container.decodeProtoMap([String : Int64].self, firstOfKeys: "stringInts", "string_ints")
+        self.int_things_two = try container.decodeProtoMap([Int32 : Thing].self, firstOfKeys: "intThingsTwo", "int_things_two")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
@@ -141,13 +141,13 @@ extension MappyTwo : Codable {
  */
 extension MappyTwo {
 
-    public enum ValueEnum : Swift.Int32, Swift.CaseIterable, Wire.ProtoEnum {
+    public enum ValueEnum : Int32, CaseIterable, ProtoEnum {
 
         case DEFAULT = 0
         case FOO = 1
         case BAR = 2
 
-        public var description: Swift.String {
+        public var description: String {
             switch self {
             case .DEFAULT: return "DEFAULT"
             case .FOO: return "FOO"

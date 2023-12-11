@@ -1312,7 +1312,7 @@ class SwiftGenerator private constructor(
         val defaultedValue = field.defaultedValue
 
         if (defaultedValue != null) {
-          property.addAttribute(AttributeSpec.builder(customDefaulted).addArgument("defaultValue: $defaultedValue").build())
+          property.addAttribute(AttributeSpec.builder(customDefaulted).addArgument(CodeBlock.of("defaultValue: %L", defaultedValue)).build())
         } else if (field.isProtoDefaulted) {
           property.addAttribute(AttributeSpec.builder(protoDefaulted).build())
         }
@@ -1364,7 +1364,7 @@ class SwiftGenerator private constructor(
       typeName == UINT64 -> defaultValue.toUInt64FieldInitializer()
       typeName == FLOAT -> defaultValue.toFloatFieldInitializer()
       typeName == DOUBLE -> defaultValue.toDoubleFieldInitializer()
-      typeName == STRING -> CodeBlock.of("%S", stringLiteralWithQuotes2(defaultValue.toString()))
+      typeName == STRING -> CodeBlock.of("%S", defaultValue)
       typeName == DATA -> CodeBlock.of(
         "%T(base64Encoded: %S)!",
         FOUNDATION_DATA,
@@ -1873,49 +1873,4 @@ class SwiftGenerator private constructor(
       return indirections
     }
   }
-
-  //region Temporary SwiftPoet bug fix see: https://github.com/outfoxx/swiftpoet/pull/86
-
-  private val Char.isIsoControl: Boolean
-    get() {
-      return this in '\u0000'..'\u001F' || this in '\u007F'..'\u009F'
-    }
-
-  // see https://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6
-  private fun characterLiteralWithoutSingleQuotes(c: Char) = when {
-    c == '\b' -> "\\b" // \u0008: backspace (BS)
-    c == '\t' -> "\\t" // \u0009: horizontal tab (HT)
-    c == '\n' -> "\\n" // \u000a: linefeed (LF)
-    c == '\r' -> "\\r" // \u000d: carriage return (CR)
-    c == '\"' -> "\"" // \u0022: double quote (")
-    c == '\'' -> "\\'" // \u0027: single quote (')
-    c == '\\' -> "\\\\" // \u005c: backslash (\)
-    c.isIsoControl -> String.format("\\u%04x", c.code)
-    else -> Character.toString(c)
-  }
-
-  private fun stringLiteralWithQuotes2(value: String): String {
-    val result = StringBuilder(value.length + 32)
-    result.append('"')
-    for (i in 0 until value.length) {
-      val c = value[i]
-      // Trivial case: single quote must not be escaped.
-      if (c == '\'') {
-        result.append("'")
-        continue
-      }
-      // Trivial case: double quotes must be escaped.
-      if (c == '\"') {
-        result.append("\\\"")
-        continue
-      }
-      // Default case: just let character literal do its work.
-      result.append(characterLiteralWithoutSingleQuotes(c))
-      // Need to append indent after linefeed?
-    }
-    result.append('"')
-    return result.toString()
-  }
-
-  //endregion
 }

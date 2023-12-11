@@ -50,7 +50,7 @@ extension OptionalEnumUser : ProtoDefaultedValue {
 
 extension OptionalEnumUser : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.OptionalEnumUser"
     }
 
@@ -58,7 +58,7 @@ extension OptionalEnumUser : ProtoMessage {
 
 extension OptionalEnumUser : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
+    public init(from protoReader: ProtoReader) throws {
         var optional_enum: OptionalEnumUser.OptionalEnum? = nil
 
         let token = try protoReader.beginMessage()
@@ -73,7 +73,7 @@ extension OptionalEnumUser : Proto2Codable {
         self.optional_enum = optional_enum
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.optional_enum)
         try protoWriter.writeUnknownFields(unknownFields)
     }
@@ -83,13 +83,13 @@ extension OptionalEnumUser : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension OptionalEnumUser : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.optional_enum = try container.decodeIfPresent(OptionalEnumUser.OptionalEnum.self, firstOfKeys: "optionalEnum", "optional_enum")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
 
         try container.encodeIfPresent(self.optional_enum, forKey: preferCamelCase ? "optionalEnum" : "optional_enum")
@@ -103,12 +103,12 @@ extension OptionalEnumUser : Codable {
  */
 extension OptionalEnumUser {
 
-    public enum OptionalEnum : Swift.Int32, Swift.CaseIterable, Wire.ProtoEnum {
+    public enum OptionalEnum : Int32, CaseIterable, ProtoEnum {
 
         case FOO = 1
         case BAR = 2
 
-        public var description: Swift.String {
+        public var description: String {
             switch self {
             case .FOO: return "FOO"
             case .BAR: return "BAR"

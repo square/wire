@@ -19,7 +19,7 @@ extension Mappy {
 
     @_disfavoredOverload
     @available(*, deprecated)
-    public init(things: [Swift.String : Thing] = [:]) {
+    public init(things: [String : Thing] = [:]) {
         self.things = things
     }
 
@@ -50,7 +50,7 @@ extension Mappy : ProtoDefaultedValue {
 
 extension Mappy : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Mappy"
     }
 
@@ -58,8 +58,8 @@ extension Mappy : ProtoMessage {
 
 extension Mappy : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
-        var things: [Swift.String : Thing] = [:]
+    public init(from protoReader: ProtoReader) throws {
+        var things: [String : Thing] = [:]
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -73,7 +73,7 @@ extension Mappy : Proto2Codable {
         self.things = things
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.things)
         try protoWriter.writeUnknownFields(unknownFields)
     }
@@ -83,13 +83,13 @@ extension Mappy : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension Mappy : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.things = try container.decodeProtoMap([Swift.String : Thing].self, forKey: "things")
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.things = try container.decodeProtoMap([String : Thing].self, forKey: "things")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || !self.things.isEmpty {
