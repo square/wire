@@ -165,7 +165,7 @@ class SwiftGenerator private constructor(
       // These types' fields aren't properly loaded
       false
     } else {
-      fields.isEmpty() || fields.all { !it.isRequiredParameter }
+      fields.isEmpty() || fields.all { it.encodeMode != null && !it.isRequiredParameter }
     }
 
   private val EnumType.supportsEmptyInitialization: Boolean
