@@ -275,6 +275,7 @@ public final class com/squareup/wire/ProtoReader {
 	public final fun endMessage (J)V
 	public final fun endMessageAndGetUnknownFields (J)Lokio/ByteString;
 	public final fun nextFieldMinLengthInBytes ()J
+	public final fun nextLengthDelimited ()I
 	public final fun nextTag ()I
 	public final fun peekFieldEncoding ()Lcom/squareup/wire/FieldEncoding;
 	public final fun readBytes ()Lokio/ByteString;

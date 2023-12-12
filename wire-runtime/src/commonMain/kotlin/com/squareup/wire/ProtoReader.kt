@@ -131,6 +131,28 @@ class ProtoReader(private val source: BufferedSource) {
     endMessageAndGetUnknownFields(token)
   }
 
+  /** Reads and returns the length of the next message in a length-delimited stream. */
+  @Throws(IOException::class)
+  fun nextLengthDelimited(): Int {
+    check(state == STATE_TAG || state == STATE_LENGTH_DELIMITED) {
+      "Unexpected call to nextDelimited()"
+    }
+    return internalNextLengthDelimited()
+  }
+
+  private fun internalNextLengthDelimited(): Int {
+    nextFieldEncoding = FieldEncoding.LENGTH_DELIMITED
+    state = STATE_LENGTH_DELIMITED
+    val length = internalReadVarint32()
+    if (length < 0) throw ProtocolException("Negative length: $length")
+    if (pushedLimit != -1L) throw IllegalStateException()
+    // Push the current limit, and set a new limit to the length of this value.
+    pushedLimit = limit
+    limit = pos + length
+    if (limit > pushedLimit) throw EOFException()
+    return length
+  }
+
   /**
    * Reads and returns the next tag of the message, or -1 if there are no further tags. Use
    * [peekFieldEncoding] after calling this method to query its encoding. This silently skips
@@ -159,15 +181,7 @@ class ProtoReader(private val source: BufferedSource) {
         STATE_END_GROUP -> throw ProtocolException("Unexpected end group")
 
         STATE_LENGTH_DELIMITED -> {
-          nextFieldEncoding = FieldEncoding.LENGTH_DELIMITED
-          state = STATE_LENGTH_DELIMITED
-          val length = internalReadVarint32()
-          if (length < 0) throw ProtocolException("Negative length: $length")
-          if (pushedLimit != -1L) throw IllegalStateException()
-          // Push the current limit, and set a new limit to the length of this value.
-          pushedLimit = limit
-          limit = pos + length
-          if (limit > pushedLimit) throw EOFException()
+          internalNextLengthDelimited()
           return tag
         }
 
