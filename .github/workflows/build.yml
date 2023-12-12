@@ -1,6 +1,13 @@
 name: build
 
-on: [push, pull_request]
+on:
+  pull_request: {}
+  workflow_dispatch: {}
+  push:
+    branches:
+      - 'master'
+    tags-ignore:
+      - '**'
 
 env:
   GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
@@ -20,9 +27,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
 
       - name: Configure JDK
         uses: actions/setup-java@v4
@@ -49,9 +53,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
 
       - name: Configure JDK
         uses: actions/setup-java@v4
@@ -87,9 +88,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
-
       - name: Configure JDK
         uses: actions/setup-java@v4
         with:
@@ -120,9 +118,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
 
       - name: Configure JDK
         uses: actions/setup-java@v4
@@ -155,7 +150,7 @@ jobs:
       - name: Test Swift Package Manager
         run: swift test
 
-  publish:
+  publish-snapshot:
     runs-on: macos-latest
     if: github.repository == 'square/wire' && github.ref == 'refs/heads/master'
     needs: [jvm, multiplatform, swift]
@@ -177,57 +172,8 @@ jobs:
 
       - name: Upload Artifacts
         run: |
-          ./gradlew publish --stacktrace --warning-mode all --no-parallel --no-daemon
+          ./gradlew publish --stacktrace --warning-mode all --no-daemon
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ARTIFACT_SIGNING_PRIVATE_KEY }}
-
-      - name: Plublish plugin to Gradle portal
-        run: |
-          ./gradlew publishPluginToGradlePortalIfRelease --stacktrace --warning-mode all
-        env:
-          GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
-          GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
-
-  publish-website:
-    runs-on: ubuntu-latest
-    if: github.repository == 'square/wire' && github.ref == 'refs/heads/master'
-    needs: [jvm, multiplatform, swift]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Configure JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: 19
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.8
-
-      - name: Prepare docs
-        run: .buildscript/prepare_mkdocs.sh
-
-      - name: Build mkdocs
-        run: |
-          pip3 install mkdocs-material mkdocs-macros-plugin
-          mkdocs build
-
-      - name: Restore 2.x docs
-        run: .buildscript/restore_v2_docs.sh
-
-      - name: Deploy docs
-        if: success()
-        uses: JamesIves/github-pages-deploy-action@releases/v3
-        with:
-          GITHUB_TOKEN: ${{ secrets.GH_CLIPPY_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: site
-          SINGLE_COMMIT: true
