@@ -27,7 +27,7 @@ android = { module = "com.google.android:android", version.ref = "android" }
 androidMaterial = {module = "com.google.android.material:material", version = "1.10.0" }
 androidx-annotations = { module = "androidx.annotation:annotation", version = "1.7.1" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
-androidx-compose = { module = "androidx.activity:activity-compose", version = "1.8.1" }
+androidx-compose = { module = "androidx.activity:activity-compose", version = "1.8.2" }
 androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4" }
 androidx-ktx = { module = "androidx.core:core-ktx", version = "1.12.0" }
 asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
