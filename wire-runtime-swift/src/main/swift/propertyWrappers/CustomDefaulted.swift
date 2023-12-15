@@ -45,9 +45,5 @@ extension CustomDefaulted : Equatable where Value : Equatable {
 extension CustomDefaulted : Hashable where Value : Hashable {
 }
 
-#if swift(>=5.5)
-
 extension CustomDefaulted : Sendable where Value : Sendable {
 }
-
-#endif

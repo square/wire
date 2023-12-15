@@ -54,7 +54,5 @@ extension StringEncoded : Equatable where Value : Equatable {
 extension StringEncoded : Hashable where Value : Hashable {
 }
 
-#if swift(>=5.5)
 extension StringEncoded : Sendable where Value : Sendable {
 }
-#endif

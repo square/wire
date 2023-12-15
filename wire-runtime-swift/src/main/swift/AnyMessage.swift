@@ -72,10 +72,8 @@ extension AnyMessage: Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension AnyMessage: Sendable {
 }
-#endif
 
 extension AnyMessage: Proto3Codable {
     public init(from reader: ProtoReader) throws {

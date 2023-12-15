@@ -381,7 +381,6 @@ class SwiftGenerator private constructor(
       .addSuperType(sendable)
       .build()
     fileMembers += FileMemberSpec.builder(structSendableExtension)
-      .addGuard("swift(>=5.5)")
       .build()
 
     // Add proto defaulted value
@@ -541,7 +540,6 @@ class SwiftGenerator private constructor(
         .addSuperType(sendable)
         .build()
       fileMembers += FileMemberSpec.builder(storageSendableExtension)
-        .addGuard("swift(>=5.5)")
         .build()
 
       // Add redaction
@@ -1514,7 +1512,6 @@ class SwiftGenerator private constructor(
         .addSuperType(sendable)
         .build()
       fileMembers += FileMemberSpec.builder(sendableExtension)
-        .addGuard("swift(>=5.5)")
         .build()
 
       if (oneOf.fields.any { it.isRedacted }) {
@@ -1577,7 +1574,6 @@ class SwiftGenerator private constructor(
           .addSuperType(sendable)
           .build()
         fileMembers += FileMemberSpec.builder(sendableExtension)
-          .addGuard("swift(>=5.5)")
           .build()
 
         if (type.documentation.isNotBlank()) {

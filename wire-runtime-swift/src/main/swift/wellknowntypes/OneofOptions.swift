@@ -21,10 +21,8 @@ extension OneofOptions : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension OneofOptions : Sendable {
 }
-#endif
 
 extension OneofOptions : ProtoDefaultedValue {
 
