@@ -39,9 +39,9 @@ extension ModelEvaluation {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(
-        name: Swift.String? = nil,
-        score: Swift.Double? = nil,
-        models: [Swift.String : ModelEvaluation] = [:]
+        name: String? = nil,
+        score: Double? = nil,
+        models: [String : ModelEvaluation] = [:]
     ) {
         self._name.wrappedValue = name
         self._score.wrappedValue = score
@@ -75,7 +75,7 @@ extension ModelEvaluation : ProtoDefaultedValue {
 
 extension ModelEvaluation : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/ModelEvaluation"
     }
 
@@ -83,16 +83,16 @@ extension ModelEvaluation : ProtoMessage {
 
 extension ModelEvaluation : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
-        var name: Swift.String? = nil
-        var score: Swift.Double? = nil
-        var models: [Swift.String : ModelEvaluation] = [:]
+    public init(from protoReader: ProtoReader) throws {
+        var name: String? = nil
+        var score: Double? = nil
+        var models: [String : ModelEvaluation] = [:]
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: name = try protoReader.decode(Swift.String.self)
-            case 2: score = try protoReader.decode(Swift.Double.self)
+            case 1: name = try protoReader.decode(String.self)
+            case 2: score = try protoReader.decode(Double.self)
             case 3: try protoReader.decode(into: &models)
             default: try protoReader.readUnknownField(tag: tag)
             }
@@ -104,7 +104,7 @@ extension ModelEvaluation : Proto2Codable {
         self.models = models
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.name)
         try protoWriter.encode(tag: 2, value: self.score)
         try protoWriter.encode(tag: 3, value: self.models)
@@ -116,15 +116,15 @@ extension ModelEvaluation : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension ModelEvaluation : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self._name.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "name")
-        self._score.wrappedValue = try container.decodeIfPresent(Swift.Double.self, forKey: "score")
-        self.models = try container.decodeProtoMap([Swift.String : ModelEvaluation].self, forKey: "models")
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self._name.wrappedValue = try container.decodeIfPresent(String.self, forKey: "name")
+        self._score.wrappedValue = try container.decodeIfPresent(Double.self, forKey: "score")
+        self.models = try container.decodeProtoMap([String : ModelEvaluation].self, forKey: "models")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encodeIfPresent(self.name, forKey: "name")

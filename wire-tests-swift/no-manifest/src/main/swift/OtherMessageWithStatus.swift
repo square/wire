@@ -36,7 +36,7 @@ extension OtherMessageWithStatus : ProtoDefaultedValue {
 
 extension OtherMessageWithStatus : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.OtherMessageWithStatus"
     }
 
@@ -44,7 +44,7 @@ extension OtherMessageWithStatus : ProtoMessage {
 
 extension OtherMessageWithStatus : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
+    public init(from protoReader: ProtoReader) throws {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
@@ -55,7 +55,7 @@ extension OtherMessageWithStatus : Proto2Codable {
 
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -64,7 +64,7 @@ extension OtherMessageWithStatus : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension OtherMessageWithStatus : Codable {
 
-    public enum CodingKeys : Swift.CodingKey {
+    public enum CodingKeys : CodingKey {
     }
 
 }
@@ -75,11 +75,11 @@ extension OtherMessageWithStatus : Codable {
  */
 extension OtherMessageWithStatus {
 
-    public enum Status : Swift.Int32, Swift.CaseIterable, Wire.ProtoEnum {
+    public enum Status : Int32, CaseIterable, ProtoEnum {
 
         case A = 1
 
-        public var description: Swift.String {
+        public var description: String {
             switch self {
             case .A: return "A"
             }

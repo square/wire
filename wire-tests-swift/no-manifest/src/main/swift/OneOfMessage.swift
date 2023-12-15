@@ -25,7 +25,7 @@ extension OneOfMessage {
 
     @_disfavoredOverload
     @available(*, deprecated)
-    public init(choice: Choice? = nil) {
+    public init(choice: OneOfMessage.Choice? = nil) {
         self.choice = choice
     }
 
@@ -56,7 +56,7 @@ extension OneOfMessage : ProtoDefaultedValue {
 
 extension OneOfMessage : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.oneof.OneOfMessage"
     }
 
@@ -64,15 +64,15 @@ extension OneOfMessage : ProtoMessage {
 
 extension OneOfMessage : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
-        var choice: Choice? = nil
+    public init(from protoReader: ProtoReader) throws {
+        var choice: OneOfMessage.Choice? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: choice = .foo(try protoReader.decode(Swift.Int32.self))
-            case 3: choice = .bar(try protoReader.decode(Swift.String.self))
-            case 4: choice = .baz(try protoReader.decode(Swift.String.self))
+            case 1: choice = .foo(try protoReader.decode(Int32.self))
+            case 3: choice = .bar(try protoReader.decode(String.self))
+            case 4: choice = .baz(try protoReader.decode(String.self))
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -81,7 +81,7 @@ extension OneOfMessage : Proto2Codable {
         self.choice = choice
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         if let choice = self.choice {
             try choice.encode(to: protoWriter)
         }
@@ -93,27 +93,27 @@ extension OneOfMessage : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension OneOfMessage : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        if let foo = try container.decodeIfPresent(Swift.Int32.self, forKey: "foo") {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        if let foo = try container.decodeIfPresent(Int32.self, forKey: "foo") {
             self.choice = .foo(foo)
-        } else if let bar = try container.decodeIfPresent(Swift.String.self, forKey: "bar") {
+        } else if let bar = try container.decodeIfPresent(String.self, forKey: "bar") {
             self.choice = .bar(bar)
-        } else if let baz = try container.decodeIfPresent(Swift.String.self, forKey: "baz") {
+        } else if let baz = try container.decodeIfPresent(String.self, forKey: "baz") {
             self.choice = .baz(baz)
         } else {
             self.choice = nil
         }
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
 
         switch self.choice {
         case .foo(let foo): try container.encode(foo, forKey: "foo")
         case .bar(let bar): try container.encode(bar, forKey: "bar")
         case .baz(let baz): try container.encode(baz, forKey: "baz")
-        case Swift.Optional.none: break
+        case Optional.none: break
         }
     }
 
@@ -130,17 +130,17 @@ extension OneOfMessage {
         /**
          * What foo.
          */
-        case foo(Swift.Int32)
+        case foo(Int32)
         /**
          * Such bar.
          */
-        case bar(Swift.String)
+        case bar(String)
         /**
          * Nice baz.
          */
-        case baz(Swift.String)
+        case baz(String)
 
-        fileprivate func encode(to protoWriter: Wire.ProtoWriter) throws {
+        fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
             case .foo(let foo): try protoWriter.encode(tag: 1, value: foo)
             case .bar(let bar): try protoWriter.encode(tag: 3, value: bar)

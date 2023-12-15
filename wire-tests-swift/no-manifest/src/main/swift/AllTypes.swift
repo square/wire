@@ -1238,153 +1238,153 @@ extension AllTypes {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(
-        opt_int32: Swift.Int32? = nil,
-        opt_uint32: Swift.UInt32? = nil,
-        opt_sint32: Swift.Int32? = nil,
-        opt_fixed32: Swift.UInt32? = nil,
-        opt_sfixed32: Swift.Int32? = nil,
-        opt_int64: Swift.Int64? = nil,
-        opt_uint64: Swift.UInt64? = nil,
-        opt_sint64: Swift.Int64? = nil,
-        opt_fixed64: Swift.UInt64? = nil,
-        opt_sfixed64: Swift.Int64? = nil,
-        opt_bool: Swift.Bool? = nil,
-        opt_float: Swift.Float? = nil,
-        opt_double: Swift.Double? = nil,
-        opt_string: Swift.String? = nil,
+        opt_int32: Int32? = nil,
+        opt_uint32: UInt32? = nil,
+        opt_sint32: Int32? = nil,
+        opt_fixed32: UInt32? = nil,
+        opt_sfixed32: Int32? = nil,
+        opt_int64: Int64? = nil,
+        opt_uint64: UInt64? = nil,
+        opt_sint64: Int64? = nil,
+        opt_fixed64: UInt64? = nil,
+        opt_sfixed64: Int64? = nil,
+        opt_bool: Bool? = nil,
+        opt_float: Float? = nil,
+        opt_double: Double? = nil,
+        opt_string: String? = nil,
         opt_bytes: Foundation.Data? = nil,
         opt_nested_enum: AllTypes.NestedEnum? = nil,
         opt_nested_message: AllTypes.NestedMessage? = nil,
-        req_int32: Swift.Int32,
-        req_uint32: Swift.UInt32,
-        req_sint32: Swift.Int32,
-        req_fixed32: Swift.UInt32,
-        req_sfixed32: Swift.Int32,
-        req_int64: Swift.Int64,
-        req_uint64: Swift.UInt64,
-        req_sint64: Swift.Int64,
-        req_fixed64: Swift.UInt64,
-        req_sfixed64: Swift.Int64,
-        req_bool: Swift.Bool,
-        req_float: Swift.Float,
-        req_double: Swift.Double,
-        req_string: Swift.String,
+        req_int32: Int32,
+        req_uint32: UInt32,
+        req_sint32: Int32,
+        req_fixed32: UInt32,
+        req_sfixed32: Int32,
+        req_int64: Int64,
+        req_uint64: UInt64,
+        req_sint64: Int64,
+        req_fixed64: UInt64,
+        req_sfixed64: Int64,
+        req_bool: Bool,
+        req_float: Float,
+        req_double: Double,
+        req_string: String,
         req_bytes: Foundation.Data,
         req_nested_enum: AllTypes.NestedEnum,
         req_nested_message: AllTypes.NestedMessage,
-        rep_int32: [Swift.Int32] = [],
-        rep_uint32: [Swift.UInt32] = [],
-        rep_sint32: [Swift.Int32] = [],
-        rep_fixed32: [Swift.UInt32] = [],
-        rep_sfixed32: [Swift.Int32] = [],
-        rep_int64: [Swift.Int64] = [],
-        rep_uint64: [Swift.UInt64] = [],
-        rep_sint64: [Swift.Int64] = [],
-        rep_fixed64: [Swift.UInt64] = [],
-        rep_sfixed64: [Swift.Int64] = [],
-        rep_bool: [Swift.Bool] = [],
-        rep_float: [Swift.Float] = [],
-        rep_double: [Swift.Double] = [],
-        rep_string: [Swift.String] = [],
+        rep_int32: [Int32] = [],
+        rep_uint32: [UInt32] = [],
+        rep_sint32: [Int32] = [],
+        rep_fixed32: [UInt32] = [],
+        rep_sfixed32: [Int32] = [],
+        rep_int64: [Int64] = [],
+        rep_uint64: [UInt64] = [],
+        rep_sint64: [Int64] = [],
+        rep_fixed64: [UInt64] = [],
+        rep_sfixed64: [Int64] = [],
+        rep_bool: [Bool] = [],
+        rep_float: [Float] = [],
+        rep_double: [Double] = [],
+        rep_string: [String] = [],
         rep_bytes: [Foundation.Data] = [],
         rep_nested_enum: [AllTypes.NestedEnum] = [],
         rep_nested_message: [AllTypes.NestedMessage] = [],
-        pack_int32: [Swift.Int32] = [],
-        pack_uint32: [Swift.UInt32] = [],
-        pack_sint32: [Swift.Int32] = [],
-        pack_fixed32: [Swift.UInt32] = [],
-        pack_sfixed32: [Swift.Int32] = [],
-        pack_int64: [Swift.Int64] = [],
-        pack_uint64: [Swift.UInt64] = [],
-        pack_sint64: [Swift.Int64] = [],
-        pack_fixed64: [Swift.UInt64] = [],
-        pack_sfixed64: [Swift.Int64] = [],
-        pack_bool: [Swift.Bool] = [],
-        pack_float: [Swift.Float] = [],
-        pack_double: [Swift.Double] = [],
+        pack_int32: [Int32] = [],
+        pack_uint32: [UInt32] = [],
+        pack_sint32: [Int32] = [],
+        pack_fixed32: [UInt32] = [],
+        pack_sfixed32: [Int32] = [],
+        pack_int64: [Int64] = [],
+        pack_uint64: [UInt64] = [],
+        pack_sint64: [Int64] = [],
+        pack_fixed64: [UInt64] = [],
+        pack_sfixed64: [Int64] = [],
+        pack_bool: [Bool] = [],
+        pack_float: [Float] = [],
+        pack_double: [Double] = [],
         pack_nested_enum: [AllTypes.NestedEnum] = [],
-        default_int32: Swift.Int32? = nil,
-        default_uint32: Swift.UInt32? = nil,
-        default_sint32: Swift.Int32? = nil,
-        default_fixed32: Swift.UInt32? = nil,
-        default_sfixed32: Swift.Int32? = nil,
-        default_int64: Swift.Int64? = nil,
-        default_uint64: Swift.UInt64? = nil,
-        default_sint64: Swift.Int64? = nil,
-        default_fixed64: Swift.UInt64? = nil,
-        default_sfixed64: Swift.Int64? = nil,
-        default_bool: Swift.Bool? = nil,
-        default_float: Swift.Float? = nil,
-        default_double: Swift.Double? = nil,
-        default_string: Swift.String? = nil,
+        default_int32: Int32? = nil,
+        default_uint32: UInt32? = nil,
+        default_sint32: Int32? = nil,
+        default_fixed32: UInt32? = nil,
+        default_sfixed32: Int32? = nil,
+        default_int64: Int64? = nil,
+        default_uint64: UInt64? = nil,
+        default_sint64: Int64? = nil,
+        default_fixed64: UInt64? = nil,
+        default_sfixed64: Int64? = nil,
+        default_bool: Bool? = nil,
+        default_float: Float? = nil,
+        default_double: Double? = nil,
+        default_string: String? = nil,
         default_bytes: Foundation.Data? = nil,
         default_nested_enum: AllTypes.NestedEnum? = nil,
-        map_int32_int32: [Swift.Int32 : Swift.Int32] = [:],
-        map_string_string: [Swift.String : Swift.String] = [:],
-        map_string_message: [Swift.String : AllTypes.NestedMessage] = [:],
-        map_string_enum: [Swift.String : AllTypes.NestedEnum] = [:],
-        array_int32: [Swift.Int32] = [],
-        array_uint32: [Swift.UInt32] = [],
-        array_sint32: [Swift.Int32] = [],
-        array_fixed32: [Swift.UInt32] = [],
-        array_sfixed32: [Swift.Int32] = [],
-        array_int64: [Swift.Int64] = [],
-        array_uint64: [Swift.UInt64] = [],
-        array_sint64: [Swift.Int64] = [],
-        array_fixed64: [Swift.UInt64] = [],
-        array_sfixed64: [Swift.Int64] = [],
-        array_float: [Swift.Float] = [],
-        array_double: [Swift.Double] = [],
-        ext_opt_int32: Swift.Int32? = nil,
-        ext_opt_uint32: Swift.UInt32? = nil,
-        ext_opt_sint32: Swift.Int32? = nil,
-        ext_opt_fixed32: Swift.UInt32? = nil,
-        ext_opt_sfixed32: Swift.Int32? = nil,
-        ext_opt_int64: Swift.Int64? = nil,
-        ext_opt_uint64: Swift.UInt64? = nil,
-        ext_opt_sint64: Swift.Int64? = nil,
-        ext_opt_fixed64: Swift.UInt64? = nil,
-        ext_opt_sfixed64: Swift.Int64? = nil,
-        ext_opt_bool: Swift.Bool? = nil,
-        ext_opt_float: Swift.Float? = nil,
-        ext_opt_double: Swift.Double? = nil,
-        ext_opt_string: Swift.String? = nil,
+        map_int32_int32: [Int32 : Int32] = [:],
+        map_string_string: [String : String] = [:],
+        map_string_message: [String : AllTypes.NestedMessage] = [:],
+        map_string_enum: [String : AllTypes.NestedEnum] = [:],
+        array_int32: [Int32] = [],
+        array_uint32: [UInt32] = [],
+        array_sint32: [Int32] = [],
+        array_fixed32: [UInt32] = [],
+        array_sfixed32: [Int32] = [],
+        array_int64: [Int64] = [],
+        array_uint64: [UInt64] = [],
+        array_sint64: [Int64] = [],
+        array_fixed64: [UInt64] = [],
+        array_sfixed64: [Int64] = [],
+        array_float: [Float] = [],
+        array_double: [Double] = [],
+        ext_opt_int32: Int32? = nil,
+        ext_opt_uint32: UInt32? = nil,
+        ext_opt_sint32: Int32? = nil,
+        ext_opt_fixed32: UInt32? = nil,
+        ext_opt_sfixed32: Int32? = nil,
+        ext_opt_int64: Int64? = nil,
+        ext_opt_uint64: UInt64? = nil,
+        ext_opt_sint64: Int64? = nil,
+        ext_opt_fixed64: UInt64? = nil,
+        ext_opt_sfixed64: Int64? = nil,
+        ext_opt_bool: Bool? = nil,
+        ext_opt_float: Float? = nil,
+        ext_opt_double: Double? = nil,
+        ext_opt_string: String? = nil,
         ext_opt_bytes: Foundation.Data? = nil,
         ext_opt_nested_enum: AllTypes.NestedEnum? = nil,
         ext_opt_nested_message: AllTypes.NestedMessage? = nil,
-        ext_rep_int32: [Swift.Int32] = [],
-        ext_rep_uint32: [Swift.UInt32] = [],
-        ext_rep_sint32: [Swift.Int32] = [],
-        ext_rep_fixed32: [Swift.UInt32] = [],
-        ext_rep_sfixed32: [Swift.Int32] = [],
-        ext_rep_int64: [Swift.Int64] = [],
-        ext_rep_uint64: [Swift.UInt64] = [],
-        ext_rep_sint64: [Swift.Int64] = [],
-        ext_rep_fixed64: [Swift.UInt64] = [],
-        ext_rep_sfixed64: [Swift.Int64] = [],
-        ext_rep_bool: [Swift.Bool] = [],
-        ext_rep_float: [Swift.Float] = [],
-        ext_rep_double: [Swift.Double] = [],
-        ext_rep_string: [Swift.String] = [],
+        ext_rep_int32: [Int32] = [],
+        ext_rep_uint32: [UInt32] = [],
+        ext_rep_sint32: [Int32] = [],
+        ext_rep_fixed32: [UInt32] = [],
+        ext_rep_sfixed32: [Int32] = [],
+        ext_rep_int64: [Int64] = [],
+        ext_rep_uint64: [UInt64] = [],
+        ext_rep_sint64: [Int64] = [],
+        ext_rep_fixed64: [UInt64] = [],
+        ext_rep_sfixed64: [Int64] = [],
+        ext_rep_bool: [Bool] = [],
+        ext_rep_float: [Float] = [],
+        ext_rep_double: [Double] = [],
+        ext_rep_string: [String] = [],
         ext_rep_bytes: [Foundation.Data] = [],
         ext_rep_nested_enum: [AllTypes.NestedEnum] = [],
         ext_rep_nested_message: [AllTypes.NestedMessage] = [],
-        ext_pack_int32: [Swift.Int32] = [],
-        ext_pack_uint32: [Swift.UInt32] = [],
-        ext_pack_sint32: [Swift.Int32] = [],
-        ext_pack_fixed32: [Swift.UInt32] = [],
-        ext_pack_sfixed32: [Swift.Int32] = [],
-        ext_pack_int64: [Swift.Int64] = [],
-        ext_pack_uint64: [Swift.UInt64] = [],
-        ext_pack_sint64: [Swift.Int64] = [],
-        ext_pack_fixed64: [Swift.UInt64] = [],
-        ext_pack_sfixed64: [Swift.Int64] = [],
-        ext_pack_bool: [Swift.Bool] = [],
-        ext_pack_float: [Swift.Float] = [],
-        ext_pack_double: [Swift.Double] = [],
+        ext_pack_int32: [Int32] = [],
+        ext_pack_uint32: [UInt32] = [],
+        ext_pack_sint32: [Int32] = [],
+        ext_pack_fixed32: [UInt32] = [],
+        ext_pack_sfixed32: [Int32] = [],
+        ext_pack_int64: [Int64] = [],
+        ext_pack_uint64: [UInt64] = [],
+        ext_pack_sint64: [Int64] = [],
+        ext_pack_fixed64: [UInt64] = [],
+        ext_pack_sfixed64: [Int64] = [],
+        ext_pack_bool: [Bool] = [],
+        ext_pack_float: [Float] = [],
+        ext_pack_double: [Double] = [],
         ext_pack_nested_enum: [AllTypes.NestedEnum] = []
     ) {
-        self.storage = Storage(
+        self.storage = AllTypes.Storage(
                 opt_int32: opt_int32,
                 opt_uint32: opt_uint32,
                 opt_sint32: opt_sint32,
@@ -1553,11 +1553,11 @@ extension AllTypes : Sendable {
 
 extension AllTypes : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
-        self.storage = try Storage(from: protoReader)
+    public init(from protoReader: ProtoReader) throws {
+        self.storage = try AllTypes.Storage(from: protoReader)
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try storage.encode(to: protoWriter)
     }
 
@@ -1566,12 +1566,12 @@ extension AllTypes : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension AllTypes : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        self.storage = try container.decode(Storage.self)
+        self.storage = try container.decode(AllTypes.Storage.self)
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(storage)
     }
@@ -1584,12 +1584,12 @@ extension AllTypes : Codable {
  */
 extension AllTypes {
 
-    public enum NestedEnum : Swift.Int32, Swift.CaseIterable, Wire.ProtoEnum {
+    public enum NestedEnum : Int32, CaseIterable, ProtoEnum {
 
         case UNKNOWN = 0
         case A = 1
 
-        public var description: Swift.String {
+        public var description: String {
             switch self {
             case .UNKNOWN: return "UNKNOWN"
             case .A: return "A"
@@ -1600,8 +1600,8 @@ extension AllTypes {
 
     public struct NestedMessage {
 
-        @Wire.ProtoDefaulted
-        public var a: Swift.Int32?
+        @ProtoDefaulted
+        public var a: Int32?
         public var unknownFields: Foundation.Data = .init()
 
         public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -1622,7 +1622,7 @@ extension AllTypes.NestedMessage {
 
     @_disfavoredOverload
     @available(*, deprecated)
-    public init(a: Swift.Int32? = nil) {
+    public init(a: Int32? = nil) {
         self._a.wrappedValue = a
     }
 
@@ -1653,7 +1653,7 @@ extension AllTypes.NestedMessage : ProtoDefaultedValue {
 
 extension AllTypes.NestedMessage : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes.NestedMessage"
     }
 
@@ -1661,13 +1661,13 @@ extension AllTypes.NestedMessage : ProtoMessage {
 
 extension AllTypes.NestedMessage : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
-        var a: Swift.Int32? = nil
+    public init(from protoReader: ProtoReader) throws {
+        var a: Int32? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: a = try protoReader.decode(Swift.Int32.self)
+            case 1: a = try protoReader.decode(Int32.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -1676,7 +1676,7 @@ extension AllTypes.NestedMessage : Proto2Codable {
         self._a.wrappedValue = a
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.a)
         try protoWriter.writeUnknownFields(unknownFields)
     }
@@ -1686,13 +1686,13 @@ extension AllTypes.NestedMessage : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension AllTypes.NestedMessage : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self._a.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, forKey: "a")
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self._a.wrappedValue = try container.decodeIfPresent(Int32.self, forKey: "a")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
 
         try container.encodeIfPresent(self.a, forKey: "a")
     }
@@ -1706,150 +1706,150 @@ extension AllTypes.Storage {
     @_disfavoredOverload
     @available(*, deprecated)
     public init(
-        opt_int32: Swift.Int32?,
-        opt_uint32: Swift.UInt32?,
-        opt_sint32: Swift.Int32?,
-        opt_fixed32: Swift.UInt32?,
-        opt_sfixed32: Swift.Int32?,
-        opt_int64: Swift.Int64?,
-        opt_uint64: Swift.UInt64?,
-        opt_sint64: Swift.Int64?,
-        opt_fixed64: Swift.UInt64?,
-        opt_sfixed64: Swift.Int64?,
-        opt_bool: Swift.Bool?,
-        opt_float: Swift.Float?,
-        opt_double: Swift.Double?,
-        opt_string: Swift.String?,
+        opt_int32: Int32?,
+        opt_uint32: UInt32?,
+        opt_sint32: Int32?,
+        opt_fixed32: UInt32?,
+        opt_sfixed32: Int32?,
+        opt_int64: Int64?,
+        opt_uint64: UInt64?,
+        opt_sint64: Int64?,
+        opt_fixed64: UInt64?,
+        opt_sfixed64: Int64?,
+        opt_bool: Bool?,
+        opt_float: Float?,
+        opt_double: Double?,
+        opt_string: String?,
         opt_bytes: Foundation.Data?,
         opt_nested_enum: AllTypes.NestedEnum?,
         opt_nested_message: AllTypes.NestedMessage?,
-        req_int32: Swift.Int32,
-        req_uint32: Swift.UInt32,
-        req_sint32: Swift.Int32,
-        req_fixed32: Swift.UInt32,
-        req_sfixed32: Swift.Int32,
-        req_int64: Swift.Int64,
-        req_uint64: Swift.UInt64,
-        req_sint64: Swift.Int64,
-        req_fixed64: Swift.UInt64,
-        req_sfixed64: Swift.Int64,
-        req_bool: Swift.Bool,
-        req_float: Swift.Float,
-        req_double: Swift.Double,
-        req_string: Swift.String,
+        req_int32: Int32,
+        req_uint32: UInt32,
+        req_sint32: Int32,
+        req_fixed32: UInt32,
+        req_sfixed32: Int32,
+        req_int64: Int64,
+        req_uint64: UInt64,
+        req_sint64: Int64,
+        req_fixed64: UInt64,
+        req_sfixed64: Int64,
+        req_bool: Bool,
+        req_float: Float,
+        req_double: Double,
+        req_string: String,
         req_bytes: Foundation.Data,
         req_nested_enum: AllTypes.NestedEnum,
         req_nested_message: AllTypes.NestedMessage,
-        rep_int32: [Swift.Int32],
-        rep_uint32: [Swift.UInt32],
-        rep_sint32: [Swift.Int32],
-        rep_fixed32: [Swift.UInt32],
-        rep_sfixed32: [Swift.Int32],
-        rep_int64: [Swift.Int64],
-        rep_uint64: [Swift.UInt64],
-        rep_sint64: [Swift.Int64],
-        rep_fixed64: [Swift.UInt64],
-        rep_sfixed64: [Swift.Int64],
-        rep_bool: [Swift.Bool],
-        rep_float: [Swift.Float],
-        rep_double: [Swift.Double],
-        rep_string: [Swift.String],
+        rep_int32: [Int32],
+        rep_uint32: [UInt32],
+        rep_sint32: [Int32],
+        rep_fixed32: [UInt32],
+        rep_sfixed32: [Int32],
+        rep_int64: [Int64],
+        rep_uint64: [UInt64],
+        rep_sint64: [Int64],
+        rep_fixed64: [UInt64],
+        rep_sfixed64: [Int64],
+        rep_bool: [Bool],
+        rep_float: [Float],
+        rep_double: [Double],
+        rep_string: [String],
         rep_bytes: [Foundation.Data],
         rep_nested_enum: [AllTypes.NestedEnum],
         rep_nested_message: [AllTypes.NestedMessage],
-        pack_int32: [Swift.Int32],
-        pack_uint32: [Swift.UInt32],
-        pack_sint32: [Swift.Int32],
-        pack_fixed32: [Swift.UInt32],
-        pack_sfixed32: [Swift.Int32],
-        pack_int64: [Swift.Int64],
-        pack_uint64: [Swift.UInt64],
-        pack_sint64: [Swift.Int64],
-        pack_fixed64: [Swift.UInt64],
-        pack_sfixed64: [Swift.Int64],
-        pack_bool: [Swift.Bool],
-        pack_float: [Swift.Float],
-        pack_double: [Swift.Double],
+        pack_int32: [Int32],
+        pack_uint32: [UInt32],
+        pack_sint32: [Int32],
+        pack_fixed32: [UInt32],
+        pack_sfixed32: [Int32],
+        pack_int64: [Int64],
+        pack_uint64: [UInt64],
+        pack_sint64: [Int64],
+        pack_fixed64: [UInt64],
+        pack_sfixed64: [Int64],
+        pack_bool: [Bool],
+        pack_float: [Float],
+        pack_double: [Double],
         pack_nested_enum: [AllTypes.NestedEnum],
-        default_int32: Swift.Int32?,
-        default_uint32: Swift.UInt32?,
-        default_sint32: Swift.Int32?,
-        default_fixed32: Swift.UInt32?,
-        default_sfixed32: Swift.Int32?,
-        default_int64: Swift.Int64?,
-        default_uint64: Swift.UInt64?,
-        default_sint64: Swift.Int64?,
-        default_fixed64: Swift.UInt64?,
-        default_sfixed64: Swift.Int64?,
-        default_bool: Swift.Bool?,
-        default_float: Swift.Float?,
-        default_double: Swift.Double?,
-        default_string: Swift.String?,
+        default_int32: Int32?,
+        default_uint32: UInt32?,
+        default_sint32: Int32?,
+        default_fixed32: UInt32?,
+        default_sfixed32: Int32?,
+        default_int64: Int64?,
+        default_uint64: UInt64?,
+        default_sint64: Int64?,
+        default_fixed64: UInt64?,
+        default_sfixed64: Int64?,
+        default_bool: Bool?,
+        default_float: Float?,
+        default_double: Double?,
+        default_string: String?,
         default_bytes: Foundation.Data?,
         default_nested_enum: AllTypes.NestedEnum?,
-        map_int32_int32: [Swift.Int32 : Swift.Int32],
-        map_string_string: [Swift.String : Swift.String],
-        map_string_message: [Swift.String : AllTypes.NestedMessage],
-        map_string_enum: [Swift.String : AllTypes.NestedEnum],
-        array_int32: [Swift.Int32],
-        array_uint32: [Swift.UInt32],
-        array_sint32: [Swift.Int32],
-        array_fixed32: [Swift.UInt32],
-        array_sfixed32: [Swift.Int32],
-        array_int64: [Swift.Int64],
-        array_uint64: [Swift.UInt64],
-        array_sint64: [Swift.Int64],
-        array_fixed64: [Swift.UInt64],
-        array_sfixed64: [Swift.Int64],
-        array_float: [Swift.Float],
-        array_double: [Swift.Double],
-        ext_opt_int32: Swift.Int32?,
-        ext_opt_uint32: Swift.UInt32?,
-        ext_opt_sint32: Swift.Int32?,
-        ext_opt_fixed32: Swift.UInt32?,
-        ext_opt_sfixed32: Swift.Int32?,
-        ext_opt_int64: Swift.Int64?,
-        ext_opt_uint64: Swift.UInt64?,
-        ext_opt_sint64: Swift.Int64?,
-        ext_opt_fixed64: Swift.UInt64?,
-        ext_opt_sfixed64: Swift.Int64?,
-        ext_opt_bool: Swift.Bool?,
-        ext_opt_float: Swift.Float?,
-        ext_opt_double: Swift.Double?,
-        ext_opt_string: Swift.String?,
+        map_int32_int32: [Int32 : Int32],
+        map_string_string: [String : String],
+        map_string_message: [String : AllTypes.NestedMessage],
+        map_string_enum: [String : AllTypes.NestedEnum],
+        array_int32: [Int32],
+        array_uint32: [UInt32],
+        array_sint32: [Int32],
+        array_fixed32: [UInt32],
+        array_sfixed32: [Int32],
+        array_int64: [Int64],
+        array_uint64: [UInt64],
+        array_sint64: [Int64],
+        array_fixed64: [UInt64],
+        array_sfixed64: [Int64],
+        array_float: [Float],
+        array_double: [Double],
+        ext_opt_int32: Int32?,
+        ext_opt_uint32: UInt32?,
+        ext_opt_sint32: Int32?,
+        ext_opt_fixed32: UInt32?,
+        ext_opt_sfixed32: Int32?,
+        ext_opt_int64: Int64?,
+        ext_opt_uint64: UInt64?,
+        ext_opt_sint64: Int64?,
+        ext_opt_fixed64: UInt64?,
+        ext_opt_sfixed64: Int64?,
+        ext_opt_bool: Bool?,
+        ext_opt_float: Float?,
+        ext_opt_double: Double?,
+        ext_opt_string: String?,
         ext_opt_bytes: Foundation.Data?,
         ext_opt_nested_enum: AllTypes.NestedEnum?,
         ext_opt_nested_message: AllTypes.NestedMessage?,
-        ext_rep_int32: [Swift.Int32],
-        ext_rep_uint32: [Swift.UInt32],
-        ext_rep_sint32: [Swift.Int32],
-        ext_rep_fixed32: [Swift.UInt32],
-        ext_rep_sfixed32: [Swift.Int32],
-        ext_rep_int64: [Swift.Int64],
-        ext_rep_uint64: [Swift.UInt64],
-        ext_rep_sint64: [Swift.Int64],
-        ext_rep_fixed64: [Swift.UInt64],
-        ext_rep_sfixed64: [Swift.Int64],
-        ext_rep_bool: [Swift.Bool],
-        ext_rep_float: [Swift.Float],
-        ext_rep_double: [Swift.Double],
-        ext_rep_string: [Swift.String],
+        ext_rep_int32: [Int32],
+        ext_rep_uint32: [UInt32],
+        ext_rep_sint32: [Int32],
+        ext_rep_fixed32: [UInt32],
+        ext_rep_sfixed32: [Int32],
+        ext_rep_int64: [Int64],
+        ext_rep_uint64: [UInt64],
+        ext_rep_sint64: [Int64],
+        ext_rep_fixed64: [UInt64],
+        ext_rep_sfixed64: [Int64],
+        ext_rep_bool: [Bool],
+        ext_rep_float: [Float],
+        ext_rep_double: [Double],
+        ext_rep_string: [String],
         ext_rep_bytes: [Foundation.Data],
         ext_rep_nested_enum: [AllTypes.NestedEnum],
         ext_rep_nested_message: [AllTypes.NestedMessage],
-        ext_pack_int32: [Swift.Int32],
-        ext_pack_uint32: [Swift.UInt32],
-        ext_pack_sint32: [Swift.Int32],
-        ext_pack_fixed32: [Swift.UInt32],
-        ext_pack_sfixed32: [Swift.Int32],
-        ext_pack_int64: [Swift.Int64],
-        ext_pack_uint64: [Swift.UInt64],
-        ext_pack_sint64: [Swift.Int64],
-        ext_pack_fixed64: [Swift.UInt64],
-        ext_pack_sfixed64: [Swift.Int64],
-        ext_pack_bool: [Swift.Bool],
-        ext_pack_float: [Swift.Float],
-        ext_pack_double: [Swift.Double],
+        ext_pack_int32: [Int32],
+        ext_pack_uint32: [UInt32],
+        ext_pack_sint32: [Int32],
+        ext_pack_fixed32: [UInt32],
+        ext_pack_sfixed32: [Int32],
+        ext_pack_int64: [Int64],
+        ext_pack_uint64: [UInt64],
+        ext_pack_sint64: [Int64],
+        ext_pack_fixed64: [UInt64],
+        ext_pack_sfixed64: [Int64],
+        ext_pack_bool: [Bool],
+        ext_pack_float: [Float],
+        ext_pack_double: [Double],
         ext_pack_nested_enum: [AllTypes.NestedEnum]
     ) {
         self._opt_int32.wrappedValue = opt_int32
@@ -2009,216 +2009,216 @@ extension AllTypes {
      */
     public struct Storage {
 
-        @Wire.ProtoDefaulted
-        public var opt_int32: Swift.Int32?
-        @Wire.ProtoDefaulted
-        public var opt_uint32: Swift.UInt32?
-        @Wire.ProtoDefaulted
-        public var opt_sint32: Swift.Int32?
-        @Wire.ProtoDefaulted
-        public var opt_fixed32: Swift.UInt32?
-        @Wire.ProtoDefaulted
-        public var opt_sfixed32: Swift.Int32?
-        @Wire.ProtoDefaulted
-        public var opt_int64: Swift.Int64?
-        @Wire.ProtoDefaulted
-        public var opt_uint64: Swift.UInt64?
-        @Wire.ProtoDefaulted
-        public var opt_sint64: Swift.Int64?
-        @Wire.ProtoDefaulted
-        public var opt_fixed64: Swift.UInt64?
-        @Wire.ProtoDefaulted
-        public var opt_sfixed64: Swift.Int64?
-        @Wire.ProtoDefaulted
-        public var opt_bool: Swift.Bool?
-        @Wire.ProtoDefaulted
-        public var opt_float: Swift.Float?
-        @Wire.ProtoDefaulted
-        public var opt_double: Swift.Double?
-        @Wire.ProtoDefaulted
-        public var opt_string: Swift.String?
-        @Wire.ProtoDefaulted
+        @ProtoDefaulted
+        public var opt_int32: Int32?
+        @ProtoDefaulted
+        public var opt_uint32: UInt32?
+        @ProtoDefaulted
+        public var opt_sint32: Int32?
+        @ProtoDefaulted
+        public var opt_fixed32: UInt32?
+        @ProtoDefaulted
+        public var opt_sfixed32: Int32?
+        @ProtoDefaulted
+        public var opt_int64: Int64?
+        @ProtoDefaulted
+        public var opt_uint64: UInt64?
+        @ProtoDefaulted
+        public var opt_sint64: Int64?
+        @ProtoDefaulted
+        public var opt_fixed64: UInt64?
+        @ProtoDefaulted
+        public var opt_sfixed64: Int64?
+        @ProtoDefaulted
+        public var opt_bool: Bool?
+        @ProtoDefaulted
+        public var opt_float: Float?
+        @ProtoDefaulted
+        public var opt_double: Double?
+        @ProtoDefaulted
+        public var opt_string: String?
+        @ProtoDefaulted
         public var opt_bytes: Foundation.Data?
         public var opt_nested_enum: AllTypes.NestedEnum?
-        @Wire.ProtoDefaulted
+        @ProtoDefaulted
         public var opt_nested_message: AllTypes.NestedMessage?
-        public var req_int32: Swift.Int32
-        public var req_uint32: Swift.UInt32
-        public var req_sint32: Swift.Int32
-        public var req_fixed32: Swift.UInt32
-        public var req_sfixed32: Swift.Int32
-        public var req_int64: Swift.Int64
-        public var req_uint64: Swift.UInt64
-        public var req_sint64: Swift.Int64
-        public var req_fixed64: Swift.UInt64
-        public var req_sfixed64: Swift.Int64
-        public var req_bool: Swift.Bool
-        public var req_float: Swift.Float
-        public var req_double: Swift.Double
-        public var req_string: Swift.String
+        public var req_int32: Int32
+        public var req_uint32: UInt32
+        public var req_sint32: Int32
+        public var req_fixed32: UInt32
+        public var req_sfixed32: Int32
+        public var req_int64: Int64
+        public var req_uint64: UInt64
+        public var req_sint64: Int64
+        public var req_fixed64: UInt64
+        public var req_sfixed64: Int64
+        public var req_bool: Bool
+        public var req_float: Float
+        public var req_double: Double
+        public var req_string: String
         public var req_bytes: Foundation.Data
         public var req_nested_enum: AllTypes.NestedEnum
         public var req_nested_message: AllTypes.NestedMessage
-        public var rep_int32: [Swift.Int32] = []
-        public var rep_uint32: [Swift.UInt32] = []
-        public var rep_sint32: [Swift.Int32] = []
-        public var rep_fixed32: [Swift.UInt32] = []
-        public var rep_sfixed32: [Swift.Int32] = []
-        public var rep_int64: [Swift.Int64] = []
-        public var rep_uint64: [Swift.UInt64] = []
-        public var rep_sint64: [Swift.Int64] = []
-        public var rep_fixed64: [Swift.UInt64] = []
-        public var rep_sfixed64: [Swift.Int64] = []
-        public var rep_bool: [Swift.Bool] = []
-        public var rep_float: [Swift.Float] = []
-        public var rep_double: [Swift.Double] = []
-        public var rep_string: [Swift.String] = []
+        public var rep_int32: [Int32] = []
+        public var rep_uint32: [UInt32] = []
+        public var rep_sint32: [Int32] = []
+        public var rep_fixed32: [UInt32] = []
+        public var rep_sfixed32: [Int32] = []
+        public var rep_int64: [Int64] = []
+        public var rep_uint64: [UInt64] = []
+        public var rep_sint64: [Int64] = []
+        public var rep_fixed64: [UInt64] = []
+        public var rep_sfixed64: [Int64] = []
+        public var rep_bool: [Bool] = []
+        public var rep_float: [Float] = []
+        public var rep_double: [Double] = []
+        public var rep_string: [String] = []
         public var rep_bytes: [Foundation.Data] = []
         public var rep_nested_enum: [AllTypes.NestedEnum] = []
         public var rep_nested_message: [AllTypes.NestedMessage] = []
-        public var pack_int32: [Swift.Int32] = []
-        public var pack_uint32: [Swift.UInt32] = []
-        public var pack_sint32: [Swift.Int32] = []
-        public var pack_fixed32: [Swift.UInt32] = []
-        public var pack_sfixed32: [Swift.Int32] = []
-        public var pack_int64: [Swift.Int64] = []
-        public var pack_uint64: [Swift.UInt64] = []
-        public var pack_sint64: [Swift.Int64] = []
-        public var pack_fixed64: [Swift.UInt64] = []
-        public var pack_sfixed64: [Swift.Int64] = []
-        public var pack_bool: [Swift.Bool] = []
-        public var pack_float: [Swift.Float] = []
-        public var pack_double: [Swift.Double] = []
+        public var pack_int32: [Int32] = []
+        public var pack_uint32: [UInt32] = []
+        public var pack_sint32: [Int32] = []
+        public var pack_fixed32: [UInt32] = []
+        public var pack_sfixed32: [Int32] = []
+        public var pack_int64: [Int64] = []
+        public var pack_uint64: [UInt64] = []
+        public var pack_sint64: [Int64] = []
+        public var pack_fixed64: [UInt64] = []
+        public var pack_sfixed64: [Int64] = []
+        public var pack_bool: [Bool] = []
+        public var pack_float: [Float] = []
+        public var pack_double: [Double] = []
         public var pack_nested_enum: [AllTypes.NestedEnum] = []
-        @Wire.CustomDefaulted(defaultValue: Swift.Int32.max)
-        public var default_int32: Swift.Int32?
-        @Wire.CustomDefaulted(defaultValue: Swift.UInt32.max)
-        public var default_uint32: Swift.UInt32?
-        @Wire.CustomDefaulted(defaultValue: Swift.Int32.min)
-        public var default_sint32: Swift.Int32?
-        @Wire.CustomDefaulted(defaultValue: Swift.UInt32.max)
-        public var default_fixed32: Swift.UInt32?
-        @Wire.CustomDefaulted(defaultValue: Swift.Int32.min)
-        public var default_sfixed32: Swift.Int32?
-        @Wire.CustomDefaulted(defaultValue: Swift.Int64.max)
-        public var default_int64: Swift.Int64?
-        @Wire.CustomDefaulted(defaultValue: Swift.UInt64.max)
-        public var default_uint64: Swift.UInt64?
-        @Wire.CustomDefaulted(defaultValue: Swift.Int64.min)
-        public var default_sint64: Swift.Int64?
-        @Wire.CustomDefaulted(defaultValue: Swift.UInt64.max)
-        public var default_fixed64: Swift.UInt64?
-        @Wire.CustomDefaulted(defaultValue: Swift.Int64.min)
-        public var default_sfixed64: Swift.Int64?
-        @Wire.CustomDefaulted(defaultValue: true)
-        public var default_bool: Swift.Bool?
-        @Wire.CustomDefaulted(defaultValue: 123.456e7)
-        public var default_float: Swift.Float?
-        @Wire.CustomDefaulted(defaultValue: 1.23456E80)
-        public var default_double: Swift.Double?
-        @Wire.CustomDefaulted(defaultValue: "\"çok\\u0007\\b\\u000c\\n\\r\\t\\u000b\\u0001\\u0001\\u0001\\u000f\\u000f~\\u0001\\u0001\\u0011\\u0001\\u0001\\u0011güzel\"")
-        public var default_string: Swift.String?
-        @Wire.CustomDefaulted(defaultValue: Foundation.Data(base64Encoded: "529rBwgMCg0JCwEBAQ8PfgEBEQEBEWf8emVs")!)
+        @CustomDefaulted(defaultValue: Int32.max)
+        public var default_int32: Int32?
+        @CustomDefaulted(defaultValue: UInt32.max)
+        public var default_uint32: UInt32?
+        @CustomDefaulted(defaultValue: Int32.min)
+        public var default_sint32: Int32?
+        @CustomDefaulted(defaultValue: UInt32.max)
+        public var default_fixed32: UInt32?
+        @CustomDefaulted(defaultValue: Int32.min)
+        public var default_sfixed32: Int32?
+        @CustomDefaulted(defaultValue: Int64.max)
+        public var default_int64: Int64?
+        @CustomDefaulted(defaultValue: UInt64.max)
+        public var default_uint64: UInt64?
+        @CustomDefaulted(defaultValue: Int64.min)
+        public var default_sint64: Int64?
+        @CustomDefaulted(defaultValue: UInt64.max)
+        public var default_fixed64: UInt64?
+        @CustomDefaulted(defaultValue: Int64.min)
+        public var default_sfixed64: Int64?
+        @CustomDefaulted(defaultValue: true)
+        public var default_bool: Bool?
+        @CustomDefaulted(defaultValue: 123.456e7)
+        public var default_float: Float?
+        @CustomDefaulted(defaultValue: 1.23456E80)
+        public var default_double: Double?
+        @CustomDefaulted(defaultValue: "çok\u{7}\u{8}\u{c}\n\r\t\u{b}\u{1}\u{1}\u{1}\u{f}\u{f}~\u{1}\u{1}\u{11}\u{1}\u{1}\u{11}güzel")
+        public var default_string: String?
+        @CustomDefaulted(defaultValue: Foundation.Data(base64Encoded: "529rBwgMCg0JCwEBAQ8PfgEBEQEBEWf8emVs")!)
         public var default_bytes: Foundation.Data?
-        @Wire.CustomDefaulted(defaultValue: AllTypes.NestedEnum.A)
+        @CustomDefaulted(defaultValue: AllTypes.NestedEnum.A)
         public var default_nested_enum: AllTypes.NestedEnum?
-        public var map_int32_int32: [Swift.Int32 : Swift.Int32] = [:]
-        public var map_string_string: [Swift.String : Swift.String] = [:]
-        public var map_string_message: [Swift.String : AllTypes.NestedMessage] = [:]
-        public var map_string_enum: [Swift.String : AllTypes.NestedEnum] = [:]
-        public var array_int32: [Swift.Int32] = []
-        public var array_uint32: [Swift.UInt32] = []
-        public var array_sint32: [Swift.Int32] = []
-        public var array_fixed32: [Swift.UInt32] = []
-        public var array_sfixed32: [Swift.Int32] = []
-        public var array_int64: [Swift.Int64] = []
-        public var array_uint64: [Swift.UInt64] = []
-        public var array_sint64: [Swift.Int64] = []
-        public var array_fixed64: [Swift.UInt64] = []
-        public var array_sfixed64: [Swift.Int64] = []
-        public var array_float: [Swift.Float] = []
-        public var array_double: [Swift.Double] = []
-        @Wire.ProtoDefaulted
-        public var ext_opt_int32: Swift.Int32?
-        @Wire.ProtoDefaulted
-        public var ext_opt_uint32: Swift.UInt32?
-        @Wire.ProtoDefaulted
-        public var ext_opt_sint32: Swift.Int32?
-        @Wire.ProtoDefaulted
-        public var ext_opt_fixed32: Swift.UInt32?
-        @Wire.ProtoDefaulted
-        public var ext_opt_sfixed32: Swift.Int32?
-        @Wire.ProtoDefaulted
-        public var ext_opt_int64: Swift.Int64?
-        @Wire.ProtoDefaulted
-        public var ext_opt_uint64: Swift.UInt64?
-        @Wire.ProtoDefaulted
-        public var ext_opt_sint64: Swift.Int64?
-        @Wire.ProtoDefaulted
-        public var ext_opt_fixed64: Swift.UInt64?
-        @Wire.ProtoDefaulted
-        public var ext_opt_sfixed64: Swift.Int64?
-        @Wire.ProtoDefaulted
-        public var ext_opt_bool: Swift.Bool?
-        @Wire.ProtoDefaulted
-        public var ext_opt_float: Swift.Float?
-        @Wire.ProtoDefaulted
-        public var ext_opt_double: Swift.Double?
-        @Wire.ProtoDefaulted
-        public var ext_opt_string: Swift.String?
-        @Wire.ProtoDefaulted
+        public var map_int32_int32: [Int32 : Int32] = [:]
+        public var map_string_string: [String : String] = [:]
+        public var map_string_message: [String : AllTypes.NestedMessage] = [:]
+        public var map_string_enum: [String : AllTypes.NestedEnum] = [:]
+        public var array_int32: [Int32] = []
+        public var array_uint32: [UInt32] = []
+        public var array_sint32: [Int32] = []
+        public var array_fixed32: [UInt32] = []
+        public var array_sfixed32: [Int32] = []
+        public var array_int64: [Int64] = []
+        public var array_uint64: [UInt64] = []
+        public var array_sint64: [Int64] = []
+        public var array_fixed64: [UInt64] = []
+        public var array_sfixed64: [Int64] = []
+        public var array_float: [Float] = []
+        public var array_double: [Double] = []
+        @ProtoDefaulted
+        public var ext_opt_int32: Int32?
+        @ProtoDefaulted
+        public var ext_opt_uint32: UInt32?
+        @ProtoDefaulted
+        public var ext_opt_sint32: Int32?
+        @ProtoDefaulted
+        public var ext_opt_fixed32: UInt32?
+        @ProtoDefaulted
+        public var ext_opt_sfixed32: Int32?
+        @ProtoDefaulted
+        public var ext_opt_int64: Int64?
+        @ProtoDefaulted
+        public var ext_opt_uint64: UInt64?
+        @ProtoDefaulted
+        public var ext_opt_sint64: Int64?
+        @ProtoDefaulted
+        public var ext_opt_fixed64: UInt64?
+        @ProtoDefaulted
+        public var ext_opt_sfixed64: Int64?
+        @ProtoDefaulted
+        public var ext_opt_bool: Bool?
+        @ProtoDefaulted
+        public var ext_opt_float: Float?
+        @ProtoDefaulted
+        public var ext_opt_double: Double?
+        @ProtoDefaulted
+        public var ext_opt_string: String?
+        @ProtoDefaulted
         public var ext_opt_bytes: Foundation.Data?
         public var ext_opt_nested_enum: AllTypes.NestedEnum?
-        @Wire.ProtoDefaulted
+        @ProtoDefaulted
         public var ext_opt_nested_message: AllTypes.NestedMessage?
-        public var ext_rep_int32: [Swift.Int32] = []
-        public var ext_rep_uint32: [Swift.UInt32] = []
-        public var ext_rep_sint32: [Swift.Int32] = []
-        public var ext_rep_fixed32: [Swift.UInt32] = []
-        public var ext_rep_sfixed32: [Swift.Int32] = []
-        public var ext_rep_int64: [Swift.Int64] = []
-        public var ext_rep_uint64: [Swift.UInt64] = []
-        public var ext_rep_sint64: [Swift.Int64] = []
-        public var ext_rep_fixed64: [Swift.UInt64] = []
-        public var ext_rep_sfixed64: [Swift.Int64] = []
-        public var ext_rep_bool: [Swift.Bool] = []
-        public var ext_rep_float: [Swift.Float] = []
-        public var ext_rep_double: [Swift.Double] = []
-        public var ext_rep_string: [Swift.String] = []
+        public var ext_rep_int32: [Int32] = []
+        public var ext_rep_uint32: [UInt32] = []
+        public var ext_rep_sint32: [Int32] = []
+        public var ext_rep_fixed32: [UInt32] = []
+        public var ext_rep_sfixed32: [Int32] = []
+        public var ext_rep_int64: [Int64] = []
+        public var ext_rep_uint64: [UInt64] = []
+        public var ext_rep_sint64: [Int64] = []
+        public var ext_rep_fixed64: [UInt64] = []
+        public var ext_rep_sfixed64: [Int64] = []
+        public var ext_rep_bool: [Bool] = []
+        public var ext_rep_float: [Float] = []
+        public var ext_rep_double: [Double] = []
+        public var ext_rep_string: [String] = []
         public var ext_rep_bytes: [Foundation.Data] = []
         public var ext_rep_nested_enum: [AllTypes.NestedEnum] = []
         public var ext_rep_nested_message: [AllTypes.NestedMessage] = []
-        public var ext_pack_int32: [Swift.Int32] = []
-        public var ext_pack_uint32: [Swift.UInt32] = []
-        public var ext_pack_sint32: [Swift.Int32] = []
-        public var ext_pack_fixed32: [Swift.UInt32] = []
-        public var ext_pack_sfixed32: [Swift.Int32] = []
-        public var ext_pack_int64: [Swift.Int64] = []
-        public var ext_pack_uint64: [Swift.UInt64] = []
-        public var ext_pack_sint64: [Swift.Int64] = []
-        public var ext_pack_fixed64: [Swift.UInt64] = []
-        public var ext_pack_sfixed64: [Swift.Int64] = []
-        public var ext_pack_bool: [Swift.Bool] = []
-        public var ext_pack_float: [Swift.Float] = []
-        public var ext_pack_double: [Swift.Double] = []
+        public var ext_pack_int32: [Int32] = []
+        public var ext_pack_uint32: [UInt32] = []
+        public var ext_pack_sint32: [Int32] = []
+        public var ext_pack_fixed32: [UInt32] = []
+        public var ext_pack_sfixed32: [Int32] = []
+        public var ext_pack_int64: [Int64] = []
+        public var ext_pack_uint64: [UInt64] = []
+        public var ext_pack_sint64: [Int64] = []
+        public var ext_pack_fixed64: [UInt64] = []
+        public var ext_pack_sfixed64: [Int64] = []
+        public var ext_pack_bool: [Bool] = []
+        public var ext_pack_float: [Float] = []
+        public var ext_pack_double: [Double] = []
         public var ext_pack_nested_enum: [AllTypes.NestedEnum] = []
         public var unknownFields: Foundation.Data = .init()
 
         public init(
-            req_int32: Swift.Int32,
-            req_uint32: Swift.UInt32,
-            req_sint32: Swift.Int32,
-            req_fixed32: Swift.UInt32,
-            req_sfixed32: Swift.Int32,
-            req_int64: Swift.Int64,
-            req_uint64: Swift.UInt64,
-            req_sint64: Swift.Int64,
-            req_fixed64: Swift.UInt64,
-            req_sfixed64: Swift.Int64,
-            req_bool: Swift.Bool,
-            req_float: Swift.Float,
-            req_double: Swift.Double,
-            req_string: Swift.String,
+            req_int32: Int32,
+            req_uint32: UInt32,
+            req_sint32: Int32,
+            req_fixed32: UInt32,
+            req_sfixed32: Int32,
+            req_int64: Int64,
+            req_uint64: UInt64,
+            req_sint64: Int64,
+            req_fixed64: UInt64,
+            req_sfixed64: Int64,
+            req_bool: Bool,
+            req_float: Float,
+            req_double: Double,
+            req_string: String,
             req_bytes: Foundation.Data,
             req_nested_enum: AllTypes.NestedEnum,
             req_nested_message: AllTypes.NestedMessage,
@@ -2265,7 +2265,7 @@ extension AllTypes.Storage : Sendable {
 
 extension AllTypes.Storage : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes"
     }
 
@@ -2273,187 +2273,187 @@ extension AllTypes.Storage : ProtoMessage {
 
 extension AllTypes.Storage : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
-        var opt_int32: Swift.Int32? = nil
-        var opt_uint32: Swift.UInt32? = nil
-        var opt_sint32: Swift.Int32? = nil
-        var opt_fixed32: Swift.UInt32? = nil
-        var opt_sfixed32: Swift.Int32? = nil
-        var opt_int64: Swift.Int64? = nil
-        var opt_uint64: Swift.UInt64? = nil
-        var opt_sint64: Swift.Int64? = nil
-        var opt_fixed64: Swift.UInt64? = nil
-        var opt_sfixed64: Swift.Int64? = nil
-        var opt_bool: Swift.Bool? = nil
-        var opt_float: Swift.Float? = nil
-        var opt_double: Swift.Double? = nil
-        var opt_string: Swift.String? = nil
+    public init(from protoReader: ProtoReader) throws {
+        var opt_int32: Int32? = nil
+        var opt_uint32: UInt32? = nil
+        var opt_sint32: Int32? = nil
+        var opt_fixed32: UInt32? = nil
+        var opt_sfixed32: Int32? = nil
+        var opt_int64: Int64? = nil
+        var opt_uint64: UInt64? = nil
+        var opt_sint64: Int64? = nil
+        var opt_fixed64: UInt64? = nil
+        var opt_sfixed64: Int64? = nil
+        var opt_bool: Bool? = nil
+        var opt_float: Float? = nil
+        var opt_double: Double? = nil
+        var opt_string: String? = nil
         var opt_bytes: Foundation.Data? = nil
         var opt_nested_enum: AllTypes.NestedEnum? = nil
         var opt_nested_message: AllTypes.NestedMessage? = nil
-        var req_int32: Swift.Int32? = nil
-        var req_uint32: Swift.UInt32? = nil
-        var req_sint32: Swift.Int32? = nil
-        var req_fixed32: Swift.UInt32? = nil
-        var req_sfixed32: Swift.Int32? = nil
-        var req_int64: Swift.Int64? = nil
-        var req_uint64: Swift.UInt64? = nil
-        var req_sint64: Swift.Int64? = nil
-        var req_fixed64: Swift.UInt64? = nil
-        var req_sfixed64: Swift.Int64? = nil
-        var req_bool: Swift.Bool? = nil
-        var req_float: Swift.Float? = nil
-        var req_double: Swift.Double? = nil
-        var req_string: Swift.String? = nil
+        var req_int32: Int32? = nil
+        var req_uint32: UInt32? = nil
+        var req_sint32: Int32? = nil
+        var req_fixed32: UInt32? = nil
+        var req_sfixed32: Int32? = nil
+        var req_int64: Int64? = nil
+        var req_uint64: UInt64? = nil
+        var req_sint64: Int64? = nil
+        var req_fixed64: UInt64? = nil
+        var req_sfixed64: Int64? = nil
+        var req_bool: Bool? = nil
+        var req_float: Float? = nil
+        var req_double: Double? = nil
+        var req_string: String? = nil
         var req_bytes: Foundation.Data? = nil
         var req_nested_enum: AllTypes.NestedEnum? = nil
         var req_nested_message: AllTypes.NestedMessage? = nil
-        var rep_int32: [Swift.Int32] = []
-        var rep_uint32: [Swift.UInt32] = []
-        var rep_sint32: [Swift.Int32] = []
-        var rep_fixed32: [Swift.UInt32] = []
-        var rep_sfixed32: [Swift.Int32] = []
-        var rep_int64: [Swift.Int64] = []
-        var rep_uint64: [Swift.UInt64] = []
-        var rep_sint64: [Swift.Int64] = []
-        var rep_fixed64: [Swift.UInt64] = []
-        var rep_sfixed64: [Swift.Int64] = []
-        var rep_bool: [Swift.Bool] = []
-        var rep_float: [Swift.Float] = []
-        var rep_double: [Swift.Double] = []
-        var rep_string: [Swift.String] = []
+        var rep_int32: [Int32] = []
+        var rep_uint32: [UInt32] = []
+        var rep_sint32: [Int32] = []
+        var rep_fixed32: [UInt32] = []
+        var rep_sfixed32: [Int32] = []
+        var rep_int64: [Int64] = []
+        var rep_uint64: [UInt64] = []
+        var rep_sint64: [Int64] = []
+        var rep_fixed64: [UInt64] = []
+        var rep_sfixed64: [Int64] = []
+        var rep_bool: [Bool] = []
+        var rep_float: [Float] = []
+        var rep_double: [Double] = []
+        var rep_string: [String] = []
         var rep_bytes: [Foundation.Data] = []
         var rep_nested_enum: [AllTypes.NestedEnum] = []
         var rep_nested_message: [AllTypes.NestedMessage] = []
-        var pack_int32: [Swift.Int32] = []
-        var pack_uint32: [Swift.UInt32] = []
-        var pack_sint32: [Swift.Int32] = []
-        var pack_fixed32: [Swift.UInt32] = []
-        var pack_sfixed32: [Swift.Int32] = []
-        var pack_int64: [Swift.Int64] = []
-        var pack_uint64: [Swift.UInt64] = []
-        var pack_sint64: [Swift.Int64] = []
-        var pack_fixed64: [Swift.UInt64] = []
-        var pack_sfixed64: [Swift.Int64] = []
-        var pack_bool: [Swift.Bool] = []
-        var pack_float: [Swift.Float] = []
-        var pack_double: [Swift.Double] = []
+        var pack_int32: [Int32] = []
+        var pack_uint32: [UInt32] = []
+        var pack_sint32: [Int32] = []
+        var pack_fixed32: [UInt32] = []
+        var pack_sfixed32: [Int32] = []
+        var pack_int64: [Int64] = []
+        var pack_uint64: [UInt64] = []
+        var pack_sint64: [Int64] = []
+        var pack_fixed64: [UInt64] = []
+        var pack_sfixed64: [Int64] = []
+        var pack_bool: [Bool] = []
+        var pack_float: [Float] = []
+        var pack_double: [Double] = []
         var pack_nested_enum: [AllTypes.NestedEnum] = []
-        var default_int32: Swift.Int32? = nil
-        var default_uint32: Swift.UInt32? = nil
-        var default_sint32: Swift.Int32? = nil
-        var default_fixed32: Swift.UInt32? = nil
-        var default_sfixed32: Swift.Int32? = nil
-        var default_int64: Swift.Int64? = nil
-        var default_uint64: Swift.UInt64? = nil
-        var default_sint64: Swift.Int64? = nil
-        var default_fixed64: Swift.UInt64? = nil
-        var default_sfixed64: Swift.Int64? = nil
-        var default_bool: Swift.Bool? = nil
-        var default_float: Swift.Float? = nil
-        var default_double: Swift.Double? = nil
-        var default_string: Swift.String? = nil
+        var default_int32: Int32? = nil
+        var default_uint32: UInt32? = nil
+        var default_sint32: Int32? = nil
+        var default_fixed32: UInt32? = nil
+        var default_sfixed32: Int32? = nil
+        var default_int64: Int64? = nil
+        var default_uint64: UInt64? = nil
+        var default_sint64: Int64? = nil
+        var default_fixed64: UInt64? = nil
+        var default_sfixed64: Int64? = nil
+        var default_bool: Bool? = nil
+        var default_float: Float? = nil
+        var default_double: Double? = nil
+        var default_string: String? = nil
         var default_bytes: Foundation.Data? = nil
         var default_nested_enum: AllTypes.NestedEnum? = nil
-        var map_int32_int32: [Swift.Int32 : Swift.Int32] = [:]
-        var map_string_string: [Swift.String : Swift.String] = [:]
-        var map_string_message: [Swift.String : AllTypes.NestedMessage] = [:]
-        var map_string_enum: [Swift.String : AllTypes.NestedEnum] = [:]
-        var array_int32: [Swift.Int32] = []
-        var array_uint32: [Swift.UInt32] = []
-        var array_sint32: [Swift.Int32] = []
-        var array_fixed32: [Swift.UInt32] = []
-        var array_sfixed32: [Swift.Int32] = []
-        var array_int64: [Swift.Int64] = []
-        var array_uint64: [Swift.UInt64] = []
-        var array_sint64: [Swift.Int64] = []
-        var array_fixed64: [Swift.UInt64] = []
-        var array_sfixed64: [Swift.Int64] = []
-        var array_float: [Swift.Float] = []
-        var array_double: [Swift.Double] = []
-        var ext_opt_int32: Swift.Int32? = nil
-        var ext_opt_uint32: Swift.UInt32? = nil
-        var ext_opt_sint32: Swift.Int32? = nil
-        var ext_opt_fixed32: Swift.UInt32? = nil
-        var ext_opt_sfixed32: Swift.Int32? = nil
-        var ext_opt_int64: Swift.Int64? = nil
-        var ext_opt_uint64: Swift.UInt64? = nil
-        var ext_opt_sint64: Swift.Int64? = nil
-        var ext_opt_fixed64: Swift.UInt64? = nil
-        var ext_opt_sfixed64: Swift.Int64? = nil
-        var ext_opt_bool: Swift.Bool? = nil
-        var ext_opt_float: Swift.Float? = nil
-        var ext_opt_double: Swift.Double? = nil
-        var ext_opt_string: Swift.String? = nil
+        var map_int32_int32: [Int32 : Int32] = [:]
+        var map_string_string: [String : String] = [:]
+        var map_string_message: [String : AllTypes.NestedMessage] = [:]
+        var map_string_enum: [String : AllTypes.NestedEnum] = [:]
+        var array_int32: [Int32] = []
+        var array_uint32: [UInt32] = []
+        var array_sint32: [Int32] = []
+        var array_fixed32: [UInt32] = []
+        var array_sfixed32: [Int32] = []
+        var array_int64: [Int64] = []
+        var array_uint64: [UInt64] = []
+        var array_sint64: [Int64] = []
+        var array_fixed64: [UInt64] = []
+        var array_sfixed64: [Int64] = []
+        var array_float: [Float] = []
+        var array_double: [Double] = []
+        var ext_opt_int32: Int32? = nil
+        var ext_opt_uint32: UInt32? = nil
+        var ext_opt_sint32: Int32? = nil
+        var ext_opt_fixed32: UInt32? = nil
+        var ext_opt_sfixed32: Int32? = nil
+        var ext_opt_int64: Int64? = nil
+        var ext_opt_uint64: UInt64? = nil
+        var ext_opt_sint64: Int64? = nil
+        var ext_opt_fixed64: UInt64? = nil
+        var ext_opt_sfixed64: Int64? = nil
+        var ext_opt_bool: Bool? = nil
+        var ext_opt_float: Float? = nil
+        var ext_opt_double: Double? = nil
+        var ext_opt_string: String? = nil
         var ext_opt_bytes: Foundation.Data? = nil
         var ext_opt_nested_enum: AllTypes.NestedEnum? = nil
         var ext_opt_nested_message: AllTypes.NestedMessage? = nil
-        var ext_rep_int32: [Swift.Int32] = []
-        var ext_rep_uint32: [Swift.UInt32] = []
-        var ext_rep_sint32: [Swift.Int32] = []
-        var ext_rep_fixed32: [Swift.UInt32] = []
-        var ext_rep_sfixed32: [Swift.Int32] = []
-        var ext_rep_int64: [Swift.Int64] = []
-        var ext_rep_uint64: [Swift.UInt64] = []
-        var ext_rep_sint64: [Swift.Int64] = []
-        var ext_rep_fixed64: [Swift.UInt64] = []
-        var ext_rep_sfixed64: [Swift.Int64] = []
-        var ext_rep_bool: [Swift.Bool] = []
-        var ext_rep_float: [Swift.Float] = []
-        var ext_rep_double: [Swift.Double] = []
-        var ext_rep_string: [Swift.String] = []
+        var ext_rep_int32: [Int32] = []
+        var ext_rep_uint32: [UInt32] = []
+        var ext_rep_sint32: [Int32] = []
+        var ext_rep_fixed32: [UInt32] = []
+        var ext_rep_sfixed32: [Int32] = []
+        var ext_rep_int64: [Int64] = []
+        var ext_rep_uint64: [UInt64] = []
+        var ext_rep_sint64: [Int64] = []
+        var ext_rep_fixed64: [UInt64] = []
+        var ext_rep_sfixed64: [Int64] = []
+        var ext_rep_bool: [Bool] = []
+        var ext_rep_float: [Float] = []
+        var ext_rep_double: [Double] = []
+        var ext_rep_string: [String] = []
         var ext_rep_bytes: [Foundation.Data] = []
         var ext_rep_nested_enum: [AllTypes.NestedEnum] = []
         var ext_rep_nested_message: [AllTypes.NestedMessage] = []
-        var ext_pack_int32: [Swift.Int32] = []
-        var ext_pack_uint32: [Swift.UInt32] = []
-        var ext_pack_sint32: [Swift.Int32] = []
-        var ext_pack_fixed32: [Swift.UInt32] = []
-        var ext_pack_sfixed32: [Swift.Int32] = []
-        var ext_pack_int64: [Swift.Int64] = []
-        var ext_pack_uint64: [Swift.UInt64] = []
-        var ext_pack_sint64: [Swift.Int64] = []
-        var ext_pack_fixed64: [Swift.UInt64] = []
-        var ext_pack_sfixed64: [Swift.Int64] = []
-        var ext_pack_bool: [Swift.Bool] = []
-        var ext_pack_float: [Swift.Float] = []
-        var ext_pack_double: [Swift.Double] = []
+        var ext_pack_int32: [Int32] = []
+        var ext_pack_uint32: [UInt32] = []
+        var ext_pack_sint32: [Int32] = []
+        var ext_pack_fixed32: [UInt32] = []
+        var ext_pack_sfixed32: [Int32] = []
+        var ext_pack_int64: [Int64] = []
+        var ext_pack_uint64: [UInt64] = []
+        var ext_pack_sint64: [Int64] = []
+        var ext_pack_fixed64: [UInt64] = []
+        var ext_pack_sfixed64: [Int64] = []
+        var ext_pack_bool: [Bool] = []
+        var ext_pack_float: [Float] = []
+        var ext_pack_double: [Double] = []
         var ext_pack_nested_enum: [AllTypes.NestedEnum] = []
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: opt_int32 = try protoReader.decode(Swift.Int32.self)
-            case 2: opt_uint32 = try protoReader.decode(Swift.UInt32.self)
-            case 3: opt_sint32 = try protoReader.decode(Swift.Int32.self, encoding: .signed)
-            case 4: opt_fixed32 = try protoReader.decode(Swift.UInt32.self, encoding: .fixed)
-            case 5: opt_sfixed32 = try protoReader.decode(Swift.Int32.self)
-            case 6: opt_int64 = try protoReader.decode(Swift.Int64.self)
-            case 7: opt_uint64 = try protoReader.decode(Swift.UInt64.self)
-            case 8: opt_sint64 = try protoReader.decode(Swift.Int64.self, encoding: .signed)
-            case 9: opt_fixed64 = try protoReader.decode(Swift.UInt64.self, encoding: .fixed)
-            case 10: opt_sfixed64 = try protoReader.decode(Swift.Int64.self)
-            case 11: opt_bool = try protoReader.decode(Swift.Bool.self)
-            case 12: opt_float = try protoReader.decode(Swift.Float.self)
-            case 13: opt_double = try protoReader.decode(Swift.Double.self)
-            case 14: opt_string = try protoReader.decode(Swift.String.self)
+            case 1: opt_int32 = try protoReader.decode(Int32.self)
+            case 2: opt_uint32 = try protoReader.decode(UInt32.self)
+            case 3: opt_sint32 = try protoReader.decode(Int32.self, encoding: .signed)
+            case 4: opt_fixed32 = try protoReader.decode(UInt32.self, encoding: .fixed)
+            case 5: opt_sfixed32 = try protoReader.decode(Int32.self)
+            case 6: opt_int64 = try protoReader.decode(Int64.self)
+            case 7: opt_uint64 = try protoReader.decode(UInt64.self)
+            case 8: opt_sint64 = try protoReader.decode(Int64.self, encoding: .signed)
+            case 9: opt_fixed64 = try protoReader.decode(UInt64.self, encoding: .fixed)
+            case 10: opt_sfixed64 = try protoReader.decode(Int64.self)
+            case 11: opt_bool = try protoReader.decode(Bool.self)
+            case 12: opt_float = try protoReader.decode(Float.self)
+            case 13: opt_double = try protoReader.decode(Double.self)
+            case 14: opt_string = try protoReader.decode(String.self)
             case 15: opt_bytes = try protoReader.decode(Foundation.Data.self)
             case 16: opt_nested_enum = try protoReader.decode(AllTypes.NestedEnum.self)
             case 17: opt_nested_message = try protoReader.decode(AllTypes.NestedMessage.self)
-            case 101: req_int32 = try protoReader.decode(Swift.Int32.self)
-            case 102: req_uint32 = try protoReader.decode(Swift.UInt32.self)
-            case 103: req_sint32 = try protoReader.decode(Swift.Int32.self, encoding: .signed)
-            case 104: req_fixed32 = try protoReader.decode(Swift.UInt32.self, encoding: .fixed)
-            case 105: req_sfixed32 = try protoReader.decode(Swift.Int32.self)
-            case 106: req_int64 = try protoReader.decode(Swift.Int64.self)
-            case 107: req_uint64 = try protoReader.decode(Swift.UInt64.self)
-            case 108: req_sint64 = try protoReader.decode(Swift.Int64.self, encoding: .signed)
-            case 109: req_fixed64 = try protoReader.decode(Swift.UInt64.self, encoding: .fixed)
-            case 110: req_sfixed64 = try protoReader.decode(Swift.Int64.self)
-            case 111: req_bool = try protoReader.decode(Swift.Bool.self)
-            case 112: req_float = try protoReader.decode(Swift.Float.self)
-            case 113: req_double = try protoReader.decode(Swift.Double.self)
-            case 114: req_string = try protoReader.decode(Swift.String.self)
+            case 101: req_int32 = try protoReader.decode(Int32.self)
+            case 102: req_uint32 = try protoReader.decode(UInt32.self)
+            case 103: req_sint32 = try protoReader.decode(Int32.self, encoding: .signed)
+            case 104: req_fixed32 = try protoReader.decode(UInt32.self, encoding: .fixed)
+            case 105: req_sfixed32 = try protoReader.decode(Int32.self)
+            case 106: req_int64 = try protoReader.decode(Int64.self)
+            case 107: req_uint64 = try protoReader.decode(UInt64.self)
+            case 108: req_sint64 = try protoReader.decode(Int64.self, encoding: .signed)
+            case 109: req_fixed64 = try protoReader.decode(UInt64.self, encoding: .fixed)
+            case 110: req_sfixed64 = try protoReader.decode(Int64.self)
+            case 111: req_bool = try protoReader.decode(Bool.self)
+            case 112: req_float = try protoReader.decode(Float.self)
+            case 113: req_double = try protoReader.decode(Double.self)
+            case 114: req_string = try protoReader.decode(String.self)
             case 115: req_bytes = try protoReader.decode(Foundation.Data.self)
             case 116: req_nested_enum = try protoReader.decode(AllTypes.NestedEnum.self)
             case 117: req_nested_message = try protoReader.decode(AllTypes.NestedMessage.self)
@@ -2488,20 +2488,20 @@ extension AllTypes.Storage : Proto2Codable {
             case 312: try protoReader.decode(into: &pack_float)
             case 313: try protoReader.decode(into: &pack_double)
             case 316: try protoReader.decode(into: &pack_nested_enum)
-            case 401: default_int32 = try protoReader.decode(Swift.Int32.self)
-            case 402: default_uint32 = try protoReader.decode(Swift.UInt32.self)
-            case 403: default_sint32 = try protoReader.decode(Swift.Int32.self, encoding: .signed)
-            case 404: default_fixed32 = try protoReader.decode(Swift.UInt32.self, encoding: .fixed)
-            case 405: default_sfixed32 = try protoReader.decode(Swift.Int32.self)
-            case 406: default_int64 = try protoReader.decode(Swift.Int64.self)
-            case 407: default_uint64 = try protoReader.decode(Swift.UInt64.self)
-            case 408: default_sint64 = try protoReader.decode(Swift.Int64.self, encoding: .signed)
-            case 409: default_fixed64 = try protoReader.decode(Swift.UInt64.self, encoding: .fixed)
-            case 410: default_sfixed64 = try protoReader.decode(Swift.Int64.self)
-            case 411: default_bool = try protoReader.decode(Swift.Bool.self)
-            case 412: default_float = try protoReader.decode(Swift.Float.self)
-            case 413: default_double = try protoReader.decode(Swift.Double.self)
-            case 414: default_string = try protoReader.decode(Swift.String.self)
+            case 401: default_int32 = try protoReader.decode(Int32.self)
+            case 402: default_uint32 = try protoReader.decode(UInt32.self)
+            case 403: default_sint32 = try protoReader.decode(Int32.self, encoding: .signed)
+            case 404: default_fixed32 = try protoReader.decode(UInt32.self, encoding: .fixed)
+            case 405: default_sfixed32 = try protoReader.decode(Int32.self)
+            case 406: default_int64 = try protoReader.decode(Int64.self)
+            case 407: default_uint64 = try protoReader.decode(UInt64.self)
+            case 408: default_sint64 = try protoReader.decode(Int64.self, encoding: .signed)
+            case 409: default_fixed64 = try protoReader.decode(UInt64.self, encoding: .fixed)
+            case 410: default_sfixed64 = try protoReader.decode(Int64.self)
+            case 411: default_bool = try protoReader.decode(Bool.self)
+            case 412: default_float = try protoReader.decode(Float.self)
+            case 413: default_double = try protoReader.decode(Double.self)
+            case 414: default_string = try protoReader.decode(String.self)
             case 415: default_bytes = try protoReader.decode(Foundation.Data.self)
             case 416: default_nested_enum = try protoReader.decode(AllTypes.NestedEnum.self)
             case 501: try protoReader.decode(into: &map_int32_int32)
@@ -2520,20 +2520,20 @@ extension AllTypes.Storage : Proto2Codable {
             case 610: try protoReader.decode(into: &array_sfixed64)
             case 611: try protoReader.decode(into: &array_float)
             case 612: try protoReader.decode(into: &array_double)
-            case 1001: ext_opt_int32 = try protoReader.decode(Swift.Int32.self)
-            case 1002: ext_opt_uint32 = try protoReader.decode(Swift.UInt32.self)
-            case 1003: ext_opt_sint32 = try protoReader.decode(Swift.Int32.self, encoding: .signed)
-            case 1004: ext_opt_fixed32 = try protoReader.decode(Swift.UInt32.self, encoding: .fixed)
-            case 1005: ext_opt_sfixed32 = try protoReader.decode(Swift.Int32.self)
-            case 1006: ext_opt_int64 = try protoReader.decode(Swift.Int64.self)
-            case 1007: ext_opt_uint64 = try protoReader.decode(Swift.UInt64.self)
-            case 1008: ext_opt_sint64 = try protoReader.decode(Swift.Int64.self, encoding: .signed)
-            case 1009: ext_opt_fixed64 = try protoReader.decode(Swift.UInt64.self, encoding: .fixed)
-            case 1010: ext_opt_sfixed64 = try protoReader.decode(Swift.Int64.self)
-            case 1011: ext_opt_bool = try protoReader.decode(Swift.Bool.self)
-            case 1012: ext_opt_float = try protoReader.decode(Swift.Float.self)
-            case 1013: ext_opt_double = try protoReader.decode(Swift.Double.self)
-            case 1014: ext_opt_string = try protoReader.decode(Swift.String.self)
+            case 1001: ext_opt_int32 = try protoReader.decode(Int32.self)
+            case 1002: ext_opt_uint32 = try protoReader.decode(UInt32.self)
+            case 1003: ext_opt_sint32 = try protoReader.decode(Int32.self, encoding: .signed)
+            case 1004: ext_opt_fixed32 = try protoReader.decode(UInt32.self, encoding: .fixed)
+            case 1005: ext_opt_sfixed32 = try protoReader.decode(Int32.self)
+            case 1006: ext_opt_int64 = try protoReader.decode(Int64.self)
+            case 1007: ext_opt_uint64 = try protoReader.decode(UInt64.self)
+            case 1008: ext_opt_sint64 = try protoReader.decode(Int64.self, encoding: .signed)
+            case 1009: ext_opt_fixed64 = try protoReader.decode(UInt64.self, encoding: .fixed)
+            case 1010: ext_opt_sfixed64 = try protoReader.decode(Int64.self)
+            case 1011: ext_opt_bool = try protoReader.decode(Bool.self)
+            case 1012: ext_opt_float = try protoReader.decode(Float.self)
+            case 1013: ext_opt_double = try protoReader.decode(Double.self)
+            case 1014: ext_opt_string = try protoReader.decode(String.self)
             case 1015: ext_opt_bytes = try protoReader.decode(Foundation.Data.self)
             case 1016: ext_opt_nested_enum = try protoReader.decode(AllTypes.NestedEnum.self)
             case 1017: ext_opt_nested_message = try protoReader.decode(AllTypes.NestedMessage.self)
@@ -2720,7 +2720,7 @@ extension AllTypes.Storage : Proto2Codable {
         self.ext_pack_nested_enum = ext_pack_nested_enum
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.opt_int32)
         try protoWriter.encode(tag: 2, value: self.opt_uint32)
         try protoWriter.encode(tag: 3, value: self.opt_sint32, encoding: .signed)
@@ -2874,157 +2874,157 @@ extension AllTypes.Storage : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension AllTypes.Storage : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self._opt_int32.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "optInt32", "opt_int32")
-        self._opt_uint32.wrappedValue = try container.decodeIfPresent(Swift.UInt32.self, firstOfKeys: "optUint32", "opt_uint32")
-        self._opt_sint32.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "optSint32", "opt_sint32")
-        self._opt_fixed32.wrappedValue = try container.decodeIfPresent(Swift.UInt32.self, firstOfKeys: "optFixed32", "opt_fixed32")
-        self._opt_sfixed32.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "optSfixed32", "opt_sfixed32")
-        self._opt_int64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "optInt64", "opt_int64")
-        self._opt_uint64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, firstOfKeys: "optUint64", "opt_uint64")
-        self._opt_sint64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "optSint64", "opt_sint64")
-        self._opt_fixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, firstOfKeys: "optFixed64", "opt_fixed64")
-        self._opt_sfixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "optSfixed64", "opt_sfixed64")
-        self._opt_bool.wrappedValue = try container.decodeIfPresent(Swift.Bool.self, firstOfKeys: "optBool", "opt_bool")
-        self._opt_float.wrappedValue = try container.decodeIfPresent(Swift.Float.self, firstOfKeys: "optFloat", "opt_float")
-        self._opt_double.wrappedValue = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "optDouble", "opt_double")
-        self._opt_string.wrappedValue = try container.decodeIfPresent(Swift.String.self, firstOfKeys: "optString", "opt_string")
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self._opt_int32.wrappedValue = try container.decodeIfPresent(Int32.self, firstOfKeys: "optInt32", "opt_int32")
+        self._opt_uint32.wrappedValue = try container.decodeIfPresent(UInt32.self, firstOfKeys: "optUint32", "opt_uint32")
+        self._opt_sint32.wrappedValue = try container.decodeIfPresent(Int32.self, firstOfKeys: "optSint32", "opt_sint32")
+        self._opt_fixed32.wrappedValue = try container.decodeIfPresent(UInt32.self, firstOfKeys: "optFixed32", "opt_fixed32")
+        self._opt_sfixed32.wrappedValue = try container.decodeIfPresent(Int32.self, firstOfKeys: "optSfixed32", "opt_sfixed32")
+        self._opt_int64.wrappedValue = try container.decodeIfPresent(stringEncoded: Int64.self, firstOfKeys: "optInt64", "opt_int64")
+        self._opt_uint64.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, firstOfKeys: "optUint64", "opt_uint64")
+        self._opt_sint64.wrappedValue = try container.decodeIfPresent(stringEncoded: Int64.self, firstOfKeys: "optSint64", "opt_sint64")
+        self._opt_fixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, firstOfKeys: "optFixed64", "opt_fixed64")
+        self._opt_sfixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: Int64.self, firstOfKeys: "optSfixed64", "opt_sfixed64")
+        self._opt_bool.wrappedValue = try container.decodeIfPresent(Bool.self, firstOfKeys: "optBool", "opt_bool")
+        self._opt_float.wrappedValue = try container.decodeIfPresent(Float.self, firstOfKeys: "optFloat", "opt_float")
+        self._opt_double.wrappedValue = try container.decodeIfPresent(Double.self, firstOfKeys: "optDouble", "opt_double")
+        self._opt_string.wrappedValue = try container.decodeIfPresent(String.self, firstOfKeys: "optString", "opt_string")
         self._opt_bytes.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, firstOfKeys: "optBytes", "opt_bytes")
         self.opt_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, firstOfKeys: "optNestedEnum", "opt_nested_enum")
         self._opt_nested_message.wrappedValue = try container.decodeIfPresent(AllTypes.NestedMessage.self, firstOfKeys: "optNestedMessage", "opt_nested_message")
-        self.req_int32 = try container.decode(Swift.Int32.self, firstOfKeys: "reqInt32", "req_int32")
-        self.req_uint32 = try container.decode(Swift.UInt32.self, firstOfKeys: "reqUint32", "req_uint32")
-        self.req_sint32 = try container.decode(Swift.Int32.self, firstOfKeys: "reqSint32", "req_sint32")
-        self.req_fixed32 = try container.decode(Swift.UInt32.self, firstOfKeys: "reqFixed32", "req_fixed32")
-        self.req_sfixed32 = try container.decode(Swift.Int32.self, firstOfKeys: "reqSfixed32", "req_sfixed32")
-        self.req_int64 = try container.decode(stringEncoded: Swift.Int64.self, firstOfKeys: "reqInt64", "req_int64")
-        self.req_uint64 = try container.decode(stringEncoded: Swift.UInt64.self, firstOfKeys: "reqUint64", "req_uint64")
-        self.req_sint64 = try container.decode(stringEncoded: Swift.Int64.self, firstOfKeys: "reqSint64", "req_sint64")
-        self.req_fixed64 = try container.decode(stringEncoded: Swift.UInt64.self, firstOfKeys: "reqFixed64", "req_fixed64")
-        self.req_sfixed64 = try container.decode(stringEncoded: Swift.Int64.self, firstOfKeys: "reqSfixed64", "req_sfixed64")
-        self.req_bool = try container.decode(Swift.Bool.self, firstOfKeys: "reqBool", "req_bool")
-        self.req_float = try container.decode(Swift.Float.self, firstOfKeys: "reqFloat", "req_float")
-        self.req_double = try container.decode(Swift.Double.self, firstOfKeys: "reqDouble", "req_double")
-        self.req_string = try container.decode(Swift.String.self, firstOfKeys: "reqString", "req_string")
+        self.req_int32 = try container.decode(Int32.self, firstOfKeys: "reqInt32", "req_int32")
+        self.req_uint32 = try container.decode(UInt32.self, firstOfKeys: "reqUint32", "req_uint32")
+        self.req_sint32 = try container.decode(Int32.self, firstOfKeys: "reqSint32", "req_sint32")
+        self.req_fixed32 = try container.decode(UInt32.self, firstOfKeys: "reqFixed32", "req_fixed32")
+        self.req_sfixed32 = try container.decode(Int32.self, firstOfKeys: "reqSfixed32", "req_sfixed32")
+        self.req_int64 = try container.decode(stringEncoded: Int64.self, firstOfKeys: "reqInt64", "req_int64")
+        self.req_uint64 = try container.decode(stringEncoded: UInt64.self, firstOfKeys: "reqUint64", "req_uint64")
+        self.req_sint64 = try container.decode(stringEncoded: Int64.self, firstOfKeys: "reqSint64", "req_sint64")
+        self.req_fixed64 = try container.decode(stringEncoded: UInt64.self, firstOfKeys: "reqFixed64", "req_fixed64")
+        self.req_sfixed64 = try container.decode(stringEncoded: Int64.self, firstOfKeys: "reqSfixed64", "req_sfixed64")
+        self.req_bool = try container.decode(Bool.self, firstOfKeys: "reqBool", "req_bool")
+        self.req_float = try container.decode(Float.self, firstOfKeys: "reqFloat", "req_float")
+        self.req_double = try container.decode(Double.self, firstOfKeys: "reqDouble", "req_double")
+        self.req_string = try container.decode(String.self, firstOfKeys: "reqString", "req_string")
         self.req_bytes = try container.decode(stringEncoded: Foundation.Data.self, firstOfKeys: "reqBytes", "req_bytes")
         self.req_nested_enum = try container.decode(AllTypes.NestedEnum.self, firstOfKeys: "reqNestedEnum", "req_nested_enum")
         self.req_nested_message = try container.decode(AllTypes.NestedMessage.self, firstOfKeys: "reqNestedMessage", "req_nested_message")
-        self.rep_int32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "repInt32", "rep_int32")
-        self.rep_uint32 = try container.decodeProtoArray(Swift.UInt32.self, firstOfKeys: "repUint32", "rep_uint32")
-        self.rep_sint32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "repSint32", "rep_sint32")
-        self.rep_fixed32 = try container.decodeProtoArray(Swift.UInt32.self, firstOfKeys: "repFixed32", "rep_fixed32")
-        self.rep_sfixed32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "repSfixed32", "rep_sfixed32")
-        self.rep_int64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "repInt64", "rep_int64")
-        self.rep_uint64 = try container.decodeProtoArray(Swift.UInt64.self, firstOfKeys: "repUint64", "rep_uint64")
-        self.rep_sint64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "repSint64", "rep_sint64")
-        self.rep_fixed64 = try container.decodeProtoArray(Swift.UInt64.self, firstOfKeys: "repFixed64", "rep_fixed64")
-        self.rep_sfixed64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "repSfixed64", "rep_sfixed64")
-        self.rep_bool = try container.decodeProtoArray(Swift.Bool.self, firstOfKeys: "repBool", "rep_bool")
-        self.rep_float = try container.decodeProtoArray(Swift.Float.self, firstOfKeys: "repFloat", "rep_float")
-        self.rep_double = try container.decodeProtoArray(Swift.Double.self, firstOfKeys: "repDouble", "rep_double")
-        self.rep_string = try container.decodeProtoArray(Swift.String.self, firstOfKeys: "repString", "rep_string")
+        self.rep_int32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "repInt32", "rep_int32")
+        self.rep_uint32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "repUint32", "rep_uint32")
+        self.rep_sint32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "repSint32", "rep_sint32")
+        self.rep_fixed32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "repFixed32", "rep_fixed32")
+        self.rep_sfixed32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "repSfixed32", "rep_sfixed32")
+        self.rep_int64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "repInt64", "rep_int64")
+        self.rep_uint64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "repUint64", "rep_uint64")
+        self.rep_sint64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "repSint64", "rep_sint64")
+        self.rep_fixed64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "repFixed64", "rep_fixed64")
+        self.rep_sfixed64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "repSfixed64", "rep_sfixed64")
+        self.rep_bool = try container.decodeProtoArray(Bool.self, firstOfKeys: "repBool", "rep_bool")
+        self.rep_float = try container.decodeProtoArray(Float.self, firstOfKeys: "repFloat", "rep_float")
+        self.rep_double = try container.decodeProtoArray(Double.self, firstOfKeys: "repDouble", "rep_double")
+        self.rep_string = try container.decodeProtoArray(String.self, firstOfKeys: "repString", "rep_string")
         self.rep_bytes = try container.decodeProtoArray(Foundation.Data.self, firstOfKeys: "repBytes", "rep_bytes")
         self.rep_nested_enum = try container.decodeProtoArray(AllTypes.NestedEnum.self, firstOfKeys: "repNestedEnum", "rep_nested_enum")
         self.rep_nested_message = try container.decodeProtoArray(AllTypes.NestedMessage.self, firstOfKeys: "repNestedMessage", "rep_nested_message")
-        self.pack_int32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "packInt32", "pack_int32")
-        self.pack_uint32 = try container.decodeProtoArray(Swift.UInt32.self, firstOfKeys: "packUint32", "pack_uint32")
-        self.pack_sint32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "packSint32", "pack_sint32")
-        self.pack_fixed32 = try container.decodeProtoArray(Swift.UInt32.self, firstOfKeys: "packFixed32", "pack_fixed32")
-        self.pack_sfixed32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "packSfixed32", "pack_sfixed32")
-        self.pack_int64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "packInt64", "pack_int64")
-        self.pack_uint64 = try container.decodeProtoArray(Swift.UInt64.self, firstOfKeys: "packUint64", "pack_uint64")
-        self.pack_sint64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "packSint64", "pack_sint64")
-        self.pack_fixed64 = try container.decodeProtoArray(Swift.UInt64.self, firstOfKeys: "packFixed64", "pack_fixed64")
-        self.pack_sfixed64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "packSfixed64", "pack_sfixed64")
-        self.pack_bool = try container.decodeProtoArray(Swift.Bool.self, firstOfKeys: "packBool", "pack_bool")
-        self.pack_float = try container.decodeProtoArray(Swift.Float.self, firstOfKeys: "packFloat", "pack_float")
-        self.pack_double = try container.decodeProtoArray(Swift.Double.self, firstOfKeys: "packDouble", "pack_double")
+        self.pack_int32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "packInt32", "pack_int32")
+        self.pack_uint32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "packUint32", "pack_uint32")
+        self.pack_sint32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "packSint32", "pack_sint32")
+        self.pack_fixed32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "packFixed32", "pack_fixed32")
+        self.pack_sfixed32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "packSfixed32", "pack_sfixed32")
+        self.pack_int64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "packInt64", "pack_int64")
+        self.pack_uint64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "packUint64", "pack_uint64")
+        self.pack_sint64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "packSint64", "pack_sint64")
+        self.pack_fixed64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "packFixed64", "pack_fixed64")
+        self.pack_sfixed64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "packSfixed64", "pack_sfixed64")
+        self.pack_bool = try container.decodeProtoArray(Bool.self, firstOfKeys: "packBool", "pack_bool")
+        self.pack_float = try container.decodeProtoArray(Float.self, firstOfKeys: "packFloat", "pack_float")
+        self.pack_double = try container.decodeProtoArray(Double.self, firstOfKeys: "packDouble", "pack_double")
         self.pack_nested_enum = try container.decodeProtoArray(AllTypes.NestedEnum.self, firstOfKeys: "packNestedEnum", "pack_nested_enum")
-        self._default_int32.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "defaultInt32", "default_int32")
-        self._default_uint32.wrappedValue = try container.decodeIfPresent(Swift.UInt32.self, firstOfKeys: "defaultUint32", "default_uint32")
-        self._default_sint32.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "defaultSint32", "default_sint32")
-        self._default_fixed32.wrappedValue = try container.decodeIfPresent(Swift.UInt32.self, firstOfKeys: "defaultFixed32", "default_fixed32")
-        self._default_sfixed32.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "defaultSfixed32", "default_sfixed32")
-        self._default_int64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "defaultInt64", "default_int64")
-        self._default_uint64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, firstOfKeys: "defaultUint64", "default_uint64")
-        self._default_sint64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "defaultSint64", "default_sint64")
-        self._default_fixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, firstOfKeys: "defaultFixed64", "default_fixed64")
-        self._default_sfixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "defaultSfixed64", "default_sfixed64")
-        self._default_bool.wrappedValue = try container.decodeIfPresent(Swift.Bool.self, firstOfKeys: "defaultBool", "default_bool")
-        self._default_float.wrappedValue = try container.decodeIfPresent(Swift.Float.self, firstOfKeys: "defaultFloat", "default_float")
-        self._default_double.wrappedValue = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "defaultDouble", "default_double")
-        self._default_string.wrappedValue = try container.decodeIfPresent(Swift.String.self, firstOfKeys: "defaultString", "default_string")
+        self._default_int32.wrappedValue = try container.decodeIfPresent(Int32.self, firstOfKeys: "defaultInt32", "default_int32")
+        self._default_uint32.wrappedValue = try container.decodeIfPresent(UInt32.self, firstOfKeys: "defaultUint32", "default_uint32")
+        self._default_sint32.wrappedValue = try container.decodeIfPresent(Int32.self, firstOfKeys: "defaultSint32", "default_sint32")
+        self._default_fixed32.wrappedValue = try container.decodeIfPresent(UInt32.self, firstOfKeys: "defaultFixed32", "default_fixed32")
+        self._default_sfixed32.wrappedValue = try container.decodeIfPresent(Int32.self, firstOfKeys: "defaultSfixed32", "default_sfixed32")
+        self._default_int64.wrappedValue = try container.decodeIfPresent(stringEncoded: Int64.self, firstOfKeys: "defaultInt64", "default_int64")
+        self._default_uint64.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, firstOfKeys: "defaultUint64", "default_uint64")
+        self._default_sint64.wrappedValue = try container.decodeIfPresent(stringEncoded: Int64.self, firstOfKeys: "defaultSint64", "default_sint64")
+        self._default_fixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, firstOfKeys: "defaultFixed64", "default_fixed64")
+        self._default_sfixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: Int64.self, firstOfKeys: "defaultSfixed64", "default_sfixed64")
+        self._default_bool.wrappedValue = try container.decodeIfPresent(Bool.self, firstOfKeys: "defaultBool", "default_bool")
+        self._default_float.wrappedValue = try container.decodeIfPresent(Float.self, firstOfKeys: "defaultFloat", "default_float")
+        self._default_double.wrappedValue = try container.decodeIfPresent(Double.self, firstOfKeys: "defaultDouble", "default_double")
+        self._default_string.wrappedValue = try container.decodeIfPresent(String.self, firstOfKeys: "defaultString", "default_string")
         self._default_bytes.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, firstOfKeys: "defaultBytes", "default_bytes")
         self._default_nested_enum.wrappedValue = try container.decodeIfPresent(AllTypes.NestedEnum.self, firstOfKeys: "defaultNestedEnum", "default_nested_enum")
-        self.map_int32_int32 = try container.decodeProtoMap([Swift.Int32 : Swift.Int32].self, firstOfKeys: "mapInt32Int32", "map_int32_int32")
-        self.map_string_string = try container.decodeProtoMap([Swift.String : Swift.String].self, firstOfKeys: "mapStringString", "map_string_string")
-        self.map_string_message = try container.decodeProtoMap([Swift.String : AllTypes.NestedMessage].self, firstOfKeys: "mapStringMessage", "map_string_message")
-        self.map_string_enum = try container.decodeProtoMap([Swift.String : AllTypes.NestedEnum].self, firstOfKeys: "mapStringEnum", "map_string_enum")
-        self.array_int32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "arrayInt32", "array_int32")
-        self.array_uint32 = try container.decodeProtoArray(Swift.UInt32.self, firstOfKeys: "arrayUint32", "array_uint32")
-        self.array_sint32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "arraySint32", "array_sint32")
-        self.array_fixed32 = try container.decodeProtoArray(Swift.UInt32.self, firstOfKeys: "arrayFixed32", "array_fixed32")
-        self.array_sfixed32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "arraySfixed32", "array_sfixed32")
-        self.array_int64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "arrayInt64", "array_int64")
-        self.array_uint64 = try container.decodeProtoArray(Swift.UInt64.self, firstOfKeys: "arrayUint64", "array_uint64")
-        self.array_sint64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "arraySint64", "array_sint64")
-        self.array_fixed64 = try container.decodeProtoArray(Swift.UInt64.self, firstOfKeys: "arrayFixed64", "array_fixed64")
-        self.array_sfixed64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "arraySfixed64", "array_sfixed64")
-        self.array_float = try container.decodeProtoArray(Swift.Float.self, firstOfKeys: "arrayFloat", "array_float")
-        self.array_double = try container.decodeProtoArray(Swift.Double.self, firstOfKeys: "arrayDouble", "array_double")
-        self._ext_opt_int32.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "extOptInt32", "ext_opt_int32")
-        self._ext_opt_uint32.wrappedValue = try container.decodeIfPresent(Swift.UInt32.self, firstOfKeys: "extOptUint32", "ext_opt_uint32")
-        self._ext_opt_sint32.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "extOptSint32", "ext_opt_sint32")
-        self._ext_opt_fixed32.wrappedValue = try container.decodeIfPresent(Swift.UInt32.self, firstOfKeys: "extOptFixed32", "ext_opt_fixed32")
-        self._ext_opt_sfixed32.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, firstOfKeys: "extOptSfixed32", "ext_opt_sfixed32")
-        self._ext_opt_int64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "extOptInt64", "ext_opt_int64")
-        self._ext_opt_uint64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, firstOfKeys: "extOptUint64", "ext_opt_uint64")
-        self._ext_opt_sint64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "extOptSint64", "ext_opt_sint64")
-        self._ext_opt_fixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, firstOfKeys: "extOptFixed64", "ext_opt_fixed64")
-        self._ext_opt_sfixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.Int64.self, firstOfKeys: "extOptSfixed64", "ext_opt_sfixed64")
-        self._ext_opt_bool.wrappedValue = try container.decodeIfPresent(Swift.Bool.self, firstOfKeys: "extOptBool", "ext_opt_bool")
-        self._ext_opt_float.wrappedValue = try container.decodeIfPresent(Swift.Float.self, firstOfKeys: "extOptFloat", "ext_opt_float")
-        self._ext_opt_double.wrappedValue = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "extOptDouble", "ext_opt_double")
-        self._ext_opt_string.wrappedValue = try container.decodeIfPresent(Swift.String.self, firstOfKeys: "extOptString", "ext_opt_string")
+        self.map_int32_int32 = try container.decodeProtoMap([Int32 : Int32].self, firstOfKeys: "mapInt32Int32", "map_int32_int32")
+        self.map_string_string = try container.decodeProtoMap([String : String].self, firstOfKeys: "mapStringString", "map_string_string")
+        self.map_string_message = try container.decodeProtoMap([String : AllTypes.NestedMessage].self, firstOfKeys: "mapStringMessage", "map_string_message")
+        self.map_string_enum = try container.decodeProtoMap([String : AllTypes.NestedEnum].self, firstOfKeys: "mapStringEnum", "map_string_enum")
+        self.array_int32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "arrayInt32", "array_int32")
+        self.array_uint32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "arrayUint32", "array_uint32")
+        self.array_sint32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "arraySint32", "array_sint32")
+        self.array_fixed32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "arrayFixed32", "array_fixed32")
+        self.array_sfixed32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "arraySfixed32", "array_sfixed32")
+        self.array_int64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "arrayInt64", "array_int64")
+        self.array_uint64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "arrayUint64", "array_uint64")
+        self.array_sint64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "arraySint64", "array_sint64")
+        self.array_fixed64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "arrayFixed64", "array_fixed64")
+        self.array_sfixed64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "arraySfixed64", "array_sfixed64")
+        self.array_float = try container.decodeProtoArray(Float.self, firstOfKeys: "arrayFloat", "array_float")
+        self.array_double = try container.decodeProtoArray(Double.self, firstOfKeys: "arrayDouble", "array_double")
+        self._ext_opt_int32.wrappedValue = try container.decodeIfPresent(Int32.self, firstOfKeys: "extOptInt32", "ext_opt_int32")
+        self._ext_opt_uint32.wrappedValue = try container.decodeIfPresent(UInt32.self, firstOfKeys: "extOptUint32", "ext_opt_uint32")
+        self._ext_opt_sint32.wrappedValue = try container.decodeIfPresent(Int32.self, firstOfKeys: "extOptSint32", "ext_opt_sint32")
+        self._ext_opt_fixed32.wrappedValue = try container.decodeIfPresent(UInt32.self, firstOfKeys: "extOptFixed32", "ext_opt_fixed32")
+        self._ext_opt_sfixed32.wrappedValue = try container.decodeIfPresent(Int32.self, firstOfKeys: "extOptSfixed32", "ext_opt_sfixed32")
+        self._ext_opt_int64.wrappedValue = try container.decodeIfPresent(stringEncoded: Int64.self, firstOfKeys: "extOptInt64", "ext_opt_int64")
+        self._ext_opt_uint64.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, firstOfKeys: "extOptUint64", "ext_opt_uint64")
+        self._ext_opt_sint64.wrappedValue = try container.decodeIfPresent(stringEncoded: Int64.self, firstOfKeys: "extOptSint64", "ext_opt_sint64")
+        self._ext_opt_fixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, firstOfKeys: "extOptFixed64", "ext_opt_fixed64")
+        self._ext_opt_sfixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: Int64.self, firstOfKeys: "extOptSfixed64", "ext_opt_sfixed64")
+        self._ext_opt_bool.wrappedValue = try container.decodeIfPresent(Bool.self, firstOfKeys: "extOptBool", "ext_opt_bool")
+        self._ext_opt_float.wrappedValue = try container.decodeIfPresent(Float.self, firstOfKeys: "extOptFloat", "ext_opt_float")
+        self._ext_opt_double.wrappedValue = try container.decodeIfPresent(Double.self, firstOfKeys: "extOptDouble", "ext_opt_double")
+        self._ext_opt_string.wrappedValue = try container.decodeIfPresent(String.self, firstOfKeys: "extOptString", "ext_opt_string")
         self._ext_opt_bytes.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, firstOfKeys: "extOptBytes", "ext_opt_bytes")
         self.ext_opt_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, firstOfKeys: "extOptNestedEnum", "ext_opt_nested_enum")
         self._ext_opt_nested_message.wrappedValue = try container.decodeIfPresent(AllTypes.NestedMessage.self, firstOfKeys: "extOptNestedMessage", "ext_opt_nested_message")
-        self.ext_rep_int32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "extRepInt32", "ext_rep_int32")
-        self.ext_rep_uint32 = try container.decodeProtoArray(Swift.UInt32.self, firstOfKeys: "extRepUint32", "ext_rep_uint32")
-        self.ext_rep_sint32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "extRepSint32", "ext_rep_sint32")
-        self.ext_rep_fixed32 = try container.decodeProtoArray(Swift.UInt32.self, firstOfKeys: "extRepFixed32", "ext_rep_fixed32")
-        self.ext_rep_sfixed32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "extRepSfixed32", "ext_rep_sfixed32")
-        self.ext_rep_int64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "extRepInt64", "ext_rep_int64")
-        self.ext_rep_uint64 = try container.decodeProtoArray(Swift.UInt64.self, firstOfKeys: "extRepUint64", "ext_rep_uint64")
-        self.ext_rep_sint64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "extRepSint64", "ext_rep_sint64")
-        self.ext_rep_fixed64 = try container.decodeProtoArray(Swift.UInt64.self, firstOfKeys: "extRepFixed64", "ext_rep_fixed64")
-        self.ext_rep_sfixed64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "extRepSfixed64", "ext_rep_sfixed64")
-        self.ext_rep_bool = try container.decodeProtoArray(Swift.Bool.self, firstOfKeys: "extRepBool", "ext_rep_bool")
-        self.ext_rep_float = try container.decodeProtoArray(Swift.Float.self, firstOfKeys: "extRepFloat", "ext_rep_float")
-        self.ext_rep_double = try container.decodeProtoArray(Swift.Double.self, firstOfKeys: "extRepDouble", "ext_rep_double")
-        self.ext_rep_string = try container.decodeProtoArray(Swift.String.self, firstOfKeys: "extRepString", "ext_rep_string")
+        self.ext_rep_int32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extRepInt32", "ext_rep_int32")
+        self.ext_rep_uint32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "extRepUint32", "ext_rep_uint32")
+        self.ext_rep_sint32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extRepSint32", "ext_rep_sint32")
+        self.ext_rep_fixed32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "extRepFixed32", "ext_rep_fixed32")
+        self.ext_rep_sfixed32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extRepSfixed32", "ext_rep_sfixed32")
+        self.ext_rep_int64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extRepInt64", "ext_rep_int64")
+        self.ext_rep_uint64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "extRepUint64", "ext_rep_uint64")
+        self.ext_rep_sint64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extRepSint64", "ext_rep_sint64")
+        self.ext_rep_fixed64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "extRepFixed64", "ext_rep_fixed64")
+        self.ext_rep_sfixed64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extRepSfixed64", "ext_rep_sfixed64")
+        self.ext_rep_bool = try container.decodeProtoArray(Bool.self, firstOfKeys: "extRepBool", "ext_rep_bool")
+        self.ext_rep_float = try container.decodeProtoArray(Float.self, firstOfKeys: "extRepFloat", "ext_rep_float")
+        self.ext_rep_double = try container.decodeProtoArray(Double.self, firstOfKeys: "extRepDouble", "ext_rep_double")
+        self.ext_rep_string = try container.decodeProtoArray(String.self, firstOfKeys: "extRepString", "ext_rep_string")
         self.ext_rep_bytes = try container.decodeProtoArray(Foundation.Data.self, firstOfKeys: "extRepBytes", "ext_rep_bytes")
         self.ext_rep_nested_enum = try container.decodeProtoArray(AllTypes.NestedEnum.self, firstOfKeys: "extRepNestedEnum", "ext_rep_nested_enum")
         self.ext_rep_nested_message = try container.decodeProtoArray(AllTypes.NestedMessage.self, firstOfKeys: "extRepNestedMessage", "ext_rep_nested_message")
-        self.ext_pack_int32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "extPackInt32", "ext_pack_int32")
-        self.ext_pack_uint32 = try container.decodeProtoArray(Swift.UInt32.self, firstOfKeys: "extPackUint32", "ext_pack_uint32")
-        self.ext_pack_sint32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "extPackSint32", "ext_pack_sint32")
-        self.ext_pack_fixed32 = try container.decodeProtoArray(Swift.UInt32.self, firstOfKeys: "extPackFixed32", "ext_pack_fixed32")
-        self.ext_pack_sfixed32 = try container.decodeProtoArray(Swift.Int32.self, firstOfKeys: "extPackSfixed32", "ext_pack_sfixed32")
-        self.ext_pack_int64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "extPackInt64", "ext_pack_int64")
-        self.ext_pack_uint64 = try container.decodeProtoArray(Swift.UInt64.self, firstOfKeys: "extPackUint64", "ext_pack_uint64")
-        self.ext_pack_sint64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "extPackSint64", "ext_pack_sint64")
-        self.ext_pack_fixed64 = try container.decodeProtoArray(Swift.UInt64.self, firstOfKeys: "extPackFixed64", "ext_pack_fixed64")
-        self.ext_pack_sfixed64 = try container.decodeProtoArray(Swift.Int64.self, firstOfKeys: "extPackSfixed64", "ext_pack_sfixed64")
-        self.ext_pack_bool = try container.decodeProtoArray(Swift.Bool.self, firstOfKeys: "extPackBool", "ext_pack_bool")
-        self.ext_pack_float = try container.decodeProtoArray(Swift.Float.self, firstOfKeys: "extPackFloat", "ext_pack_float")
-        self.ext_pack_double = try container.decodeProtoArray(Swift.Double.self, firstOfKeys: "extPackDouble", "ext_pack_double")
+        self.ext_pack_int32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extPackInt32", "ext_pack_int32")
+        self.ext_pack_uint32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "extPackUint32", "ext_pack_uint32")
+        self.ext_pack_sint32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extPackSint32", "ext_pack_sint32")
+        self.ext_pack_fixed32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "extPackFixed32", "ext_pack_fixed32")
+        self.ext_pack_sfixed32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extPackSfixed32", "ext_pack_sfixed32")
+        self.ext_pack_int64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extPackInt64", "ext_pack_int64")
+        self.ext_pack_uint64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "extPackUint64", "ext_pack_uint64")
+        self.ext_pack_sint64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extPackSint64", "ext_pack_sint64")
+        self.ext_pack_fixed64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "extPackFixed64", "ext_pack_fixed64")
+        self.ext_pack_sfixed64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extPackSfixed64", "ext_pack_sfixed64")
+        self.ext_pack_bool = try container.decodeProtoArray(Bool.self, firstOfKeys: "extPackBool", "ext_pack_bool")
+        self.ext_pack_float = try container.decodeProtoArray(Float.self, firstOfKeys: "extPackFloat", "ext_pack_float")
+        self.ext_pack_double = try container.decodeProtoArray(Double.self, firstOfKeys: "extPackDouble", "ext_pack_double")
         self.ext_pack_nested_enum = try container.decodeProtoArray(AllTypes.NestedEnum.self, firstOfKeys: "extPackNestedEnum", "ext_pack_nested_enum")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
