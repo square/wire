@@ -25,10 +25,8 @@ extension ForeignMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension ForeignMessage : Sendable {
 }
-#endif
 
 extension ForeignMessage : ProtoDefaultedValue {
 

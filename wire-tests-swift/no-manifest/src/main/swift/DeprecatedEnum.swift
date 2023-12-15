@@ -26,7 +26,5 @@ public enum DeprecatedEnum : Int32, CaseIterable, ProtoEnum {
 
 }
 
-#if swift(>=5.5)
 extension DeprecatedEnum : Sendable {
 }
-#endif

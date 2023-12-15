@@ -24,10 +24,8 @@ extension ContainsTimestamp : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension ContainsTimestamp : Sendable {
 }
-#endif
 
 extension ContainsTimestamp : ProtoDefaultedValue {
 

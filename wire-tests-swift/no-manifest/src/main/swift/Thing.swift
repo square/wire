@@ -25,10 +25,8 @@ extension Thing : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Thing : Sendable {
 }
-#endif
 
 extension Thing : ProtoDefaultedValue {
 

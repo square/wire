@@ -37,10 +37,8 @@ extension VersionTwo : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension VersionTwo : Sendable {
 }
-#endif
 
 extension VersionTwo : ProtoDefaultedValue {
 

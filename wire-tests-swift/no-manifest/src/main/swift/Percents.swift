@@ -28,10 +28,8 @@ extension Percents : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Percents : Sendable {
 }
-#endif
 
 extension Percents : ProtoDefaultedValue {
 

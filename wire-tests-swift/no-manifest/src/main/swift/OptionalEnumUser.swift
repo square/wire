@@ -24,10 +24,8 @@ extension OptionalEnumUser : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension OptionalEnumUser : Sendable {
 }
-#endif
 
 extension OptionalEnumUser : ProtoDefaultedValue {
 
@@ -107,7 +105,5 @@ extension OptionalEnumUser {
 
 }
 
-#if swift(>=5.5)
 extension OptionalEnumUser.OptionalEnum : Sendable {
 }
-#endif

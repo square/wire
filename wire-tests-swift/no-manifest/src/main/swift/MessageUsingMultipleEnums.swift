@@ -28,10 +28,8 @@ extension MessageUsingMultipleEnums : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension MessageUsingMultipleEnums : Sendable {
 }
-#endif
 
 extension MessageUsingMultipleEnums : ProtoDefaultedValue {
 

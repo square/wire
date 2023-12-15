@@ -21,7 +21,5 @@ public enum EnumVersionTwo : Int32, CaseIterable, ProtoEnum {
 
 }
 
-#if swift(>=5.5)
 extension EnumVersionTwo : Sendable {
 }
-#endif

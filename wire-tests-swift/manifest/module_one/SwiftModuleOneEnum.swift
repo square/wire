@@ -19,7 +19,5 @@ public enum SwiftModuleOneEnum : Int32, CaseIterable, ProtoEnum {
 
 }
 
-#if swift(>=5.5)
 extension SwiftModuleOneEnum : Sendable {
 }
-#endif

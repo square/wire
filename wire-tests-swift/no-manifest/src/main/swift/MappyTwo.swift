@@ -27,10 +27,8 @@ extension MappyTwo : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension MappyTwo : Sendable {
 }
-#endif
 
 extension MappyTwo : ProtoDefaultedValue {
 
@@ -139,7 +137,5 @@ extension MappyTwo {
 
 }
 
-#if swift(>=5.5)
 extension MappyTwo.ValueEnum : Sendable {
 }
-#endif

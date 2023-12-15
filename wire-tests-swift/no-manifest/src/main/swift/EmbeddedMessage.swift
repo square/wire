@@ -26,10 +26,8 @@ extension EmbeddedMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension EmbeddedMessage : Sendable {
 }
-#endif
 
 extension EmbeddedMessage : ProtoDefaultedValue {
 

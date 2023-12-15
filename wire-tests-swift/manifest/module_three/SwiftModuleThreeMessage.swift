@@ -26,10 +26,8 @@ extension SwiftModuleThreeMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension SwiftModuleThreeMessage : Sendable {
 }
-#endif
 
 extension SwiftModuleThreeMessage : ProtoDefaultedValue {
 
@@ -116,10 +114,8 @@ extension SwiftModuleThreeMessage.NestedMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension SwiftModuleThreeMessage.NestedMessage : Sendable {
 }
-#endif
 
 extension SwiftModuleThreeMessage.NestedMessage : ProtoDefaultedValue {
 

@@ -1242,10 +1242,8 @@ extension AllTypes : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension AllTypes : Sendable {
 }
-#endif
 
 extension AllTypes : Proto2Codable {
 
@@ -1308,10 +1306,8 @@ extension AllTypes {
 
 }
 
-#if swift(>=5.5)
 extension AllTypes.NestedEnum : Sendable {
 }
-#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension AllTypes.NestedMessage : Equatable {
@@ -1323,10 +1319,8 @@ extension AllTypes.NestedMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension AllTypes.NestedMessage : Sendable {
 }
-#endif
 
 extension AllTypes.NestedMessage : ProtoDefaultedValue {
 
@@ -1640,10 +1634,8 @@ extension AllTypes.Storage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension AllTypes.Storage : Sendable {
 }
-#endif
 
 extension AllTypes.Storage : ProtoMessage {
 

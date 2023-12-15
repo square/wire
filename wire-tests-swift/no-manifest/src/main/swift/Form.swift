@@ -25,10 +25,8 @@ extension Form : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form : Sendable {
 }
-#endif
 
 extension Form : ProtoDefaultedValue {
 
@@ -396,10 +394,8 @@ extension Form.Choice : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form.Choice : Sendable {
 }
-#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension Form.Decision : Equatable {
@@ -411,10 +407,8 @@ extension Form.Decision : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form.Decision : Sendable {
 }
-#endif
 
 #if !WIRE_REMOVE_REDACTABLE
 extension Form.Decision : Redactable {
@@ -438,10 +432,8 @@ extension Form.ButtonElement : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form.ButtonElement : Sendable {
 }
-#endif
 
 extension Form.ButtonElement : ProtoDefaultedValue {
 
@@ -496,10 +488,8 @@ extension Form.LocalImageElement : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form.LocalImageElement : Sendable {
 }
-#endif
 
 extension Form.LocalImageElement : ProtoDefaultedValue {
 
@@ -554,10 +544,8 @@ extension Form.RemoteImageElement : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form.RemoteImageElement : Sendable {
 }
-#endif
 
 extension Form.RemoteImageElement : ProtoDefaultedValue {
 
@@ -612,10 +600,8 @@ extension Form.MoneyElement : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form.MoneyElement : Sendable {
 }
-#endif
 
 extension Form.MoneyElement : ProtoDefaultedValue {
 
@@ -670,10 +656,8 @@ extension Form.SpacerElement : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form.SpacerElement : Sendable {
 }
-#endif
 
 extension Form.SpacerElement : ProtoDefaultedValue {
 
@@ -728,10 +712,8 @@ extension Form.TextElement : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form.TextElement : Sendable {
 }
-#endif
 
 extension Form.TextElement : ProtoDefaultedValue {
 
@@ -799,10 +781,8 @@ extension Form.CustomizedCardElement : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form.CustomizedCardElement : Sendable {
 }
-#endif
 
 extension Form.CustomizedCardElement : ProtoDefaultedValue {
 
@@ -857,10 +837,8 @@ extension Form.AddressElement : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form.AddressElement : Sendable {
 }
-#endif
 
 extension Form.AddressElement : ProtoDefaultedValue {
 
@@ -915,10 +893,8 @@ extension Form.TextInputElement : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form.TextInputElement : Sendable {
 }
-#endif
 
 extension Form.TextInputElement : ProtoDefaultedValue {
 
@@ -973,10 +949,8 @@ extension Form.OptionPickerElement : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form.OptionPickerElement : Sendable {
 }
-#endif
 
 extension Form.OptionPickerElement : ProtoDefaultedValue {
 
@@ -1031,10 +1005,8 @@ extension Form.DetailRowElement : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form.DetailRowElement : Sendable {
 }
-#endif
 
 extension Form.DetailRowElement : ProtoDefaultedValue {
 
@@ -1089,10 +1061,8 @@ extension Form.CurrencyConversionFlagsElement : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Form.CurrencyConversionFlagsElement : Sendable {
 }
-#endif
 
 extension Form.CurrencyConversionFlagsElement : ProtoDefaultedValue {
 

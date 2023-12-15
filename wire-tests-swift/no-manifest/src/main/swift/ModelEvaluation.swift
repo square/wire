@@ -43,10 +43,8 @@ extension ModelEvaluation : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension ModelEvaluation : Sendable {
 }
-#endif
 
 extension ModelEvaluation : ProtoDefaultedValue {
 

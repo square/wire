@@ -37,10 +37,8 @@ extension Dinosaur : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Dinosaur : Sendable {
 }
-#endif
 
 extension Dinosaur : ProtoDefaultedValue {
 

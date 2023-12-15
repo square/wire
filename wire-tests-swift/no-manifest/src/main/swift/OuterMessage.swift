@@ -27,10 +27,8 @@ extension OuterMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension OuterMessage : Sendable {
 }
-#endif
 
 extension OuterMessage : ProtoDefaultedValue {
 

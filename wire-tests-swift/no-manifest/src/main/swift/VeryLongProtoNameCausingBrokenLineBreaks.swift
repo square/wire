@@ -28,10 +28,8 @@ extension VeryLongProtoNameCausingBrokenLineBreaks : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension VeryLongProtoNameCausingBrokenLineBreaks : Sendable {
 }
-#endif
 
 extension VeryLongProtoNameCausingBrokenLineBreaks : ProtoDefaultedValue {
 

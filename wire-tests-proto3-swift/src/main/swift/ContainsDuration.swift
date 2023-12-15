@@ -24,10 +24,8 @@ extension ContainsDuration : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension ContainsDuration : Sendable {
 }
-#endif
 
 extension ContainsDuration : ProtoDefaultedValue {
 

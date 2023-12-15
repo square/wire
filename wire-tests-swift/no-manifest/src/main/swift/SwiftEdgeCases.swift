@@ -25,10 +25,8 @@ extension SwiftEdgeCases : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension SwiftEdgeCases : Sendable {
 }
-#endif
 
 extension SwiftEdgeCases : ProtoDefaultedValue {
 

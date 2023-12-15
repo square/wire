@@ -24,10 +24,8 @@ extension NegativeValueMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension NegativeValueMessage : Sendable {
 }
-#endif
 
 extension NegativeValueMessage : ProtoDefaultedValue {
 

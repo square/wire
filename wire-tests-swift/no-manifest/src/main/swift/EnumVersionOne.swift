@@ -19,7 +19,5 @@ public enum EnumVersionOne : Int32, CaseIterable, ProtoEnum {
 
 }
 
-#if swift(>=5.5)
 extension EnumVersionOne : Sendable {
 }
-#endif

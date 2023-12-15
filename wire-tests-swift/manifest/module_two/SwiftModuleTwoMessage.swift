@@ -26,10 +26,8 @@ extension SwiftModuleTwoMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension SwiftModuleTwoMessage : Sendable {
 }
-#endif
 
 extension SwiftModuleTwoMessage : ProtoDefaultedValue {
 
@@ -116,10 +114,8 @@ extension SwiftModuleTwoMessage.NestedMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension SwiftModuleTwoMessage.NestedMessage : Sendable {
 }
-#endif
 
 extension SwiftModuleTwoMessage.NestedMessage : ProtoDefaultedValue {
 

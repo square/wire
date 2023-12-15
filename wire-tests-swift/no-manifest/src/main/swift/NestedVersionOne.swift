@@ -25,10 +25,8 @@ extension NestedVersionOne : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension NestedVersionOne : Sendable {
 }
-#endif
 
 extension NestedVersionOne : ProtoDefaultedValue {
 
