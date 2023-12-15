@@ -354,10 +354,10 @@ class SwiftGenerator private constructor(
           )
 
           generateMessageStoragePropertyDelegates(type, storageName, storageType, oneOfEnumNames)
-          generateMessageStorageDelegateConstructor(type, storageName, structType, storageType, oneOfEnumNames, fileMembers)
+          generateMessageStorageDelegateConstructor(type, storageName, storageType, oneOfEnumNames)
         } else {
           generateMessageProperties(type, oneOfEnumNames, imports)
-          generateMessageConstructor(type, structType, oneOfEnumNames, fileMembers)
+          generateMessageConstructor(type, oneOfEnumNames)
         }
       }
       .build()
@@ -515,7 +515,7 @@ class SwiftGenerator private constructor(
             .addModifiers(storageVisibility)
             .apply {
               generateMessageProperties(type, oneOfEnumNames, imports, forStorageType = true)
-              generateMessageConstructor(type, storageType, oneOfEnumNames, fileMembers, forStorageType = true)
+              generateMessageConstructor(type, oneOfEnumNames, forStorageType = true)
             }
             .build(),
         )
@@ -1087,10 +1087,8 @@ class SwiftGenerator private constructor(
   private fun TypeSpec.Builder.generateMessageStorageDelegateConstructor(
     type: MessageType,
     storageName: String,
-    structType: DeclaredTypeName,
     storageType: DeclaredTypeName,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
-    fileMembers: MutableList<FileMemberSpec>,
   ) {
     val needsConfigure = type.fields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty()
 
@@ -1141,12 +1139,9 @@ class SwiftGenerator private constructor(
 
   private fun TypeSpec.Builder.generateMessageConstructor(
     type: MessageType,
-    structType: DeclaredTypeName,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
-    fileMembers: MutableList<FileMemberSpec>,
     forStorageType: Boolean = false,
   ) {
-    val includeMemberwiseDefaults = !forStorageType
     val needsConfigure = type.fields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty()
 
     val visibility: Modifier = if (forStorageType) {
