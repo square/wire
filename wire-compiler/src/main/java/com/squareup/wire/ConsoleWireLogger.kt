@@ -62,14 +62,14 @@ internal class ConsoleWireLogger : WireLogger {
   }
 
   override fun artifactHandled(outputPath: Path, qualifiedName: String, targetName: String) {
-    if (quiet) {
-      println(qualifiedName)
-    } else {
-      println("Writing $qualifiedName to $outputPath (target=$targetName)")
-    }
+    if (quiet) return
+
+    println("Writing $qualifiedName to $outputPath (target=$targetName)")
   }
 
   override fun artifactSkipped(type: ProtoType, targetName: String) {
+    if (quiet) return
+
     println("Skipping $type (target=$targetName)")
   }
 }
