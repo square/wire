@@ -28,10 +28,10 @@ extension Int32: ProtoIntCodable, ProtoDefaultedValue {
             self = try Int32(bitPattern: reader.readFixed32())
         case .signed:
             // sint32 fields
-            self = try reader.readVarint32().zigZagDecoded()
+            self = try UInt32(truncatingIfNeeded: reader.readVarint()).zigZagDecoded()
         case .variable:
             // int32 fields
-            self = try Int32(bitPattern: reader.readVarint32())
+            self = try Int32(truncatingIfNeeded: reader.readVarint())
         }
     }
 
@@ -48,7 +48,12 @@ extension Int32: ProtoIntCodable, ProtoDefaultedValue {
             writer.writeVarint(zigZagEncoded())
         case .variable:
             // int32 fields
-            writer.writeVarint(UInt32(bitPattern: self))
+            if (self >= 0) {
+                writer.writeVarint(UInt32(bitPattern: self))
+            } else {
+                // Must sign-extend.
+                writer.writeVarint(UInt64(bitPattern: Int64(self)))
+            }
         }
     }
 
@@ -69,7 +74,7 @@ extension UInt32: ProtoIntCodable, ProtoDefaultedValue {
             fatalError("Unsupported")
         case .variable:
              // uint32 fields
-            self = try reader.readVarint32()
+            self = try UInt32(truncatingIfNeeded: reader.readVarint())
         }
     }
 
@@ -104,10 +109,10 @@ extension Int64: ProtoIntCodable, ProtoDefaultedValue {
             self = try Int64(bitPattern: reader.readFixed64())
         case .signed:
             // sint64 fields
-            self = try reader.readVarint64().zigZagDecoded()
+            self = try reader.readVarint().zigZagDecoded()
         case .variable:
             // int64 fields
-            self = try Int64(bitPattern: reader.readVarint64())
+            self = try Int64(bitPattern: reader.readVarint())
         }
     }
 
@@ -145,7 +150,7 @@ extension UInt64: ProtoIntCodable, ProtoDefaultedValue {
             fatalError("Unsupported")
         case .variable:
             // uint64 fields
-            self = try reader.readVarint64()
+            self = try reader.readVarint()
         }
     }
 

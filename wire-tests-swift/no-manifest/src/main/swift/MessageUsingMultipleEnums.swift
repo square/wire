@@ -40,7 +40,7 @@ extension MessageUsingMultipleEnums : ProtoDefaultedValue {
 
 extension MessageUsingMultipleEnums : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.MessageUsingMultipleEnums"
     }
 
@@ -48,7 +48,7 @@ extension MessageUsingMultipleEnums : ProtoMessage {
 
 extension MessageUsingMultipleEnums : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
+    public init(from protoReader: ProtoReader) throws {
         var a: MessageWithStatus.Status? = nil
         var b: OtherMessageWithStatus.Status? = nil
 
@@ -66,7 +66,7 @@ extension MessageUsingMultipleEnums : Proto2Codable {
         self.b = b
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.a)
         try protoWriter.encode(tag: 2, value: self.b)
         try protoWriter.writeUnknownFields(unknownFields)
@@ -77,14 +77,14 @@ extension MessageUsingMultipleEnums : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension MessageUsingMultipleEnums : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.a = try container.decodeIfPresent(MessageWithStatus.Status.self, forKey: "a")
         self.b = try container.decodeIfPresent(OtherMessageWithStatus.Status.self, forKey: "b")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
 
         try container.encodeIfPresent(self.a, forKey: "a")
         try container.encodeIfPresent(self.b, forKey: "b")

@@ -71,13 +71,21 @@ final class ProtoWriterTests: XCTestCase {
 
     func testEncodeVarintInt32() throws {
         let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: Int32(5), encoding: .variable)
+
+        // 08 is (tag 1 << 3 | .varint)
+        assertBufferEqual(writer, "08_05")
+    }
+
+    func testEncodeVarintNegativeInt32() throws {
+        let writer = ProtoWriter()
         try writer.encode(tag: 1, value: Int32(-5), encoding: .variable)
 
         // 08 is (tag 1 << 3 | .varint)
-        assertBufferEqual(writer, "08_FBFFFFFF0F")
+        assertBufferEqual(writer, "08_FBFFFFFFFFFFFFFFFF01")
     }
 
-    func testEncodeVarintInt64() throws {
+    func testEncodeVarintNegativeInt64() throws {
         let writer = ProtoWriter()
         try writer.encode(tag: 1, value: Int64(-5), encoding: .variable)
 
@@ -352,10 +360,10 @@ final class ProtoWriterTests: XCTestCase {
         try writer.encode(tag: 1, value: Int32(-5), boxed: true)
 
         assertBufferEqual(writer, """
-            0A         // (Tag 1 | Length Delimited)
-            06         // Length 6
-            08         // (Tag 1 | Varint)
-            FBFFFFFF0F // Value -5
+            0A                   // (Tag 1 | Length Delimited)
+            0B                   // Length 11
+            08                   // (Tag 1 | Varint)
+            FBFFFFFFFFFFFFFFFF01 // Value -5
         """)
     }
 

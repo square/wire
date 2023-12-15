@@ -183,7 +183,7 @@ public final class ProtoReader {
                 throw ProtoDecoder.Error.unexpectedEndGroupFieldNumber(expected: nil, found: tag)
 
             case .lengthDelimited:
-                let length = try buffer.readVarint32()
+                let length = try Int32(truncatingIfNeeded: buffer.readVarint())
                 state = .lengthDelimited(length: Int(length))
                 currentTag = tag
                 return tag
@@ -247,7 +247,7 @@ public final class ProtoReader {
      */
     public func decode<T: RawRepresentable>(_ type: T.Type) throws -> T? where T.RawValue == Int32 {
         // Pop the enum int value and pass in to initializer
-        let intValue = try Int32(bitPattern: readVarint32())
+        let intValue = try Int32(truncatingIfNeeded: readVarint())
         guard let enumValue = T(rawValue: intValue) else {
             switch enumDecodingStrategy {
             case .returnNil:
@@ -434,7 +434,7 @@ public final class ProtoReader {
     /** Decode a repeated `enum` field. */
     public func decode<T: RawRepresentable>(into array: inout [T]) throws where T.RawValue == Int32 {
         try decode(into: &array) {
-            let intValue = try Int32(bitPattern: readVarint32())
+            let intValue = try Int32(truncatingIfNeeded: readVarint())
             guard let enumValue = T(rawValue: intValue) else {
                 switch enumDecodingStrategy {
                 case .returnNil:
@@ -579,7 +579,7 @@ public final class ProtoReader {
             let value = try readData()
             try addUnknownField(tag: tag, value: value)
         case .varint:
-            let value = try readVarint64()
+            let value = try readVarint()
             try addUnknownField(tag: tag, value: value, encoding: .variable)
         case .startGroup, .endGroup:
             fatalError("Groups are unsupported and shouldn't be our current wire type.")
@@ -621,20 +621,12 @@ public final class ProtoReader {
         return try buffer.readFixed64()
     }
 
-    /** Reads a raw varint from the stream. If larger than 32 bits, discard the upper bits. */
-    func readVarint32() throws -> UInt32 {
-        precondition(state == .varint || state == .packedValue)
-        state = .tag
-
-        return try buffer.readVarint32()
-    }
-
     /** Reads a raw varint up to 64 bits in length from the stream.  */
-    func readVarint64() throws -> UInt64 {
+    func readVarint() throws -> UInt64 {
         precondition(state == .varint || state == .packedValue)
         state = .tag
 
-        return try buffer.readVarint64()
+        return try buffer.readVarint()
     }
 
     // MARK: - Private Methods - Groups
@@ -665,7 +657,7 @@ public final class ProtoReader {
                 return
 
             case .lengthDelimited:
-                let length = try buffer.readVarint32()
+                let length = try Int32(truncatingIfNeeded: buffer.readVarint())
                 state = .lengthDelimited(length: Int(length))
                 let data = try readData()
                 try unknownFieldsWriter.encode(tag: tag, value: data)
@@ -680,7 +672,7 @@ public final class ProtoReader {
 
             case .varint:
                 state = .varint
-                try unknownFieldsWriter.encode(tag: tag, value: try readVarint64(), encoding: .variable)
+                try unknownFieldsWriter.encode(tag: tag, value: try readVarint(), encoding: .variable)
             }
         }
         throw ProtoDecoder.Error.unterminatedGroup(fieldNumber: expectedEndTag)
@@ -715,7 +707,7 @@ public final class ProtoReader {
     }
 
     private func readFieldKey() throws -> (UInt32, FieldWireType) {
-        let tagAndWireType = try buffer.readVarint32()
+        let tagAndWireType = try UInt32(truncatingIfNeeded: buffer.readVarint())
         if tagAndWireType == 0 {
             throw ProtoDecoder.Error.fieldKeyValueZero
         }
@@ -826,7 +818,7 @@ public final class ProtoReader {
             switch tag {
             case 1: key = try decodeKey()
             case 2:
-                let intValue = try Int32(bitPattern: readVarint32())
+                let intValue = try Int32(truncatingIfNeeded: readVarint())
                 let enumValue = V(rawValue: intValue)
                 if enumValue == nil {
                     if enumDecodingStrategy == .throwError {

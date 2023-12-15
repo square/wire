@@ -37,7 +37,7 @@ extension ExternalMessage : ProtoDefaultedValue {
 
 extension ExternalMessage : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.simple.ExternalMessage"
     }
 
@@ -45,13 +45,13 @@ extension ExternalMessage : ProtoMessage {
 
 extension ExternalMessage : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
-        var f: Swift.Float? = nil
+    public init(from protoReader: ProtoReader) throws {
+        var f: Float? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: f = try protoReader.decode(Swift.Float.self)
+            case 1: f = try protoReader.decode(Float.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -60,7 +60,7 @@ extension ExternalMessage : Proto2Codable {
         self._f.wrappedValue = f
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.f)
         try protoWriter.writeUnknownFields(unknownFields)
     }
@@ -70,13 +70,13 @@ extension ExternalMessage : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension ExternalMessage : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self._f.wrappedValue = try container.decodeIfPresent(Swift.Float.self, forKey: "f")
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self._f.wrappedValue = try container.decodeIfPresent(Float.self, forKey: "f")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
 
         try container.encodeIfPresent(self.f, forKey: "f")
     }

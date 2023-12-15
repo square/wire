@@ -32,4 +32,30 @@ class ProtoReaderTest {
     assertEquals(-1, reader.nextTag())
     reader.endMessageAndGetUnknownFields(token)
   }
+
+  @Test fun lengthDelimited() {
+    val encoded = (
+      "02" + // varint32 length = 2
+        "0802" + // 1: int32 = 2
+        "06" + // varint32 length = 6
+        "08ffffffff07" // 1: int32 = 2,147,483,647
+      ).decodeHex()
+    val reader = ProtoReader(Buffer().write(encoded))
+
+    assertEquals(2, reader.nextLengthDelimited())
+
+    val firstToken = reader.beginMessage()
+    assertEquals(1, reader.nextTag())
+    assertEquals(2, ProtoAdapter.INT32.decode(reader))
+    assertEquals(-1, reader.nextTag())
+    reader.endMessageAndGetUnknownFields(firstToken)
+
+    assertEquals(6, reader.nextLengthDelimited())
+
+    val secondToken = reader.beginMessage()
+    assertEquals(1, reader.nextTag())
+    assertEquals(Int.MAX_VALUE, ProtoAdapter.INT32.decode(reader))
+    assertEquals(-1, reader.nextTag())
+    reader.endMessageAndGetUnknownFields(secondToken)
+  }
 }

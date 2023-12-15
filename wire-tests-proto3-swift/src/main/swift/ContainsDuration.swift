@@ -36,7 +36,7 @@ extension ContainsDuration : ProtoDefaultedValue {
 
 extension ContainsDuration : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos3.kotlin.contains_duration.ContainsDuration"
     }
 
@@ -44,7 +44,7 @@ extension ContainsDuration : ProtoMessage {
 
 extension ContainsDuration : Proto3Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
+    public init(from protoReader: ProtoReader) throws {
         var duration: Duration? = nil
 
         let token = try protoReader.beginMessage()
@@ -59,7 +59,7 @@ extension ContainsDuration : Proto3Codable {
         self.duration = duration
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.duration)
         try protoWriter.writeUnknownFields(unknownFields)
     }
@@ -69,13 +69,13 @@ extension ContainsDuration : Proto3Codable {
 #if !WIRE_REMOVE_CODABLE
 extension ContainsDuration : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.duration = try container.decodeIfPresent(Duration.self, forKey: "duration")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
 
         try container.encodeIfPresent(self.duration, forKey: "duration")
     }

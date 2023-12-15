@@ -34,7 +34,7 @@ extension NoFields : ProtoDefaultedValue {
 
 extension NoFields : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.NoFields"
     }
 
@@ -42,7 +42,7 @@ extension NoFields : ProtoMessage {
 
 extension NoFields : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
+    public init(from protoReader: ProtoReader) throws {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
@@ -53,7 +53,7 @@ extension NoFields : Proto2Codable {
 
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -62,7 +62,7 @@ extension NoFields : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension NoFields : Codable {
 
-    public enum CodingKeys : Swift.CodingKey {
+    public enum CodingKeys : CodingKey {
     }
 
 }

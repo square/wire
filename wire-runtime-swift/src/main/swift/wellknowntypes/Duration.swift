@@ -103,7 +103,7 @@ extension Duration : Sendable {
 
 extension Duration : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/google.protobuf.Duration"
     }
 
@@ -111,15 +111,15 @@ extension Duration : ProtoMessage {
 
 extension Duration : Proto3Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
-        var seconds: Swift.Int64 = 0
-        var nanos: Swift.Int32 = 0
+    public init(from protoReader: ProtoReader) throws {
+        var seconds: Int64 = 0
+        var nanos: Int32 = 0
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: seconds = try protoReader.decode(Swift.Int64.self)
-            case 2: nanos = try protoReader.decode(Swift.Int32.self)
+            case 1: seconds = try protoReader.decode(Int64.self)
+            case 2: nanos = try protoReader.decode(Int32.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -129,7 +129,7 @@ extension Duration : Proto3Codable {
         self.nanos = nanos
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.seconds)
         try protoWriter.encode(tag: 2, value: self.nanos)
         try protoWriter.writeUnknownFields(unknownFields)

@@ -38,7 +38,7 @@ extension SwiftModuleTwoMessage : ProtoDefaultedValue {
 
 extension SwiftModuleTwoMessage : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.swift_modules.SwiftModuleTwoMessage"
     }
 
@@ -46,13 +46,13 @@ extension SwiftModuleTwoMessage : ProtoMessage {
 
 extension SwiftModuleTwoMessage : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
-        var name: Swift.String? = nil
+    public init(from protoReader: ProtoReader) throws {
+        var name: String? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: name = try protoReader.decode(Swift.String.self)
+            case 1: name = try protoReader.decode(String.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -61,7 +61,7 @@ extension SwiftModuleTwoMessage : Proto2Codable {
         self._name.wrappedValue = name
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.name)
         try protoWriter.writeUnknownFields(unknownFields)
     }
@@ -71,13 +71,13 @@ extension SwiftModuleTwoMessage : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension SwiftModuleTwoMessage : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self._name.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "name")
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self._name.wrappedValue = try container.decodeIfPresent(String.self, forKey: "name")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
 
         try container.encodeIfPresent(self.name, forKey: "name")
     }
@@ -92,8 +92,8 @@ extension SwiftModuleTwoMessage {
 
     public struct NestedMessage {
 
-        public var array_types: [module_one.SwiftModuleOneEnum] = []
-        public var module_type: module_one.SwiftModuleOneMessage?
+        public var array_types: [SwiftModuleOneEnum] = []
+        public var module_type: SwiftModuleOneMessage?
         public var unknownFields: Foundation.Data = .init()
 
         public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -126,7 +126,7 @@ extension SwiftModuleTwoMessage.NestedMessage : ProtoDefaultedValue {
 
 extension SwiftModuleTwoMessage.NestedMessage : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.kotlin.swift_modules.SwiftModuleTwoMessage.NestedMessage"
     }
 
@@ -134,15 +134,15 @@ extension SwiftModuleTwoMessage.NestedMessage : ProtoMessage {
 
 extension SwiftModuleTwoMessage.NestedMessage : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
-        var array_types: [module_one.SwiftModuleOneEnum] = []
-        var module_type: module_one.SwiftModuleOneMessage? = nil
+    public init(from protoReader: ProtoReader) throws {
+        var array_types: [SwiftModuleOneEnum] = []
+        var module_type: SwiftModuleOneMessage? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: try protoReader.decode(into: &array_types)
-            case 2: module_type = try protoReader.decode(module_one.SwiftModuleOneMessage.self)
+            case 2: module_type = try protoReader.decode(SwiftModuleOneMessage.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -152,7 +152,7 @@ extension SwiftModuleTwoMessage.NestedMessage : Proto2Codable {
         self.module_type = module_type
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.array_types)
         try protoWriter.encode(tag: 2, value: self.module_type)
         try protoWriter.writeUnknownFields(unknownFields)
@@ -163,14 +163,14 @@ extension SwiftModuleTwoMessage.NestedMessage : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension SwiftModuleTwoMessage.NestedMessage : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.array_types = try container.decodeProtoArray(module_one.SwiftModuleOneEnum.self, firstOfKeys: "arrayTypes", "array_types")
-        self.module_type = try container.decodeIfPresent(module_one.SwiftModuleOneMessage.self, firstOfKeys: "moduleType", "module_type")
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.array_types = try container.decodeProtoArray(SwiftModuleOneEnum.self, firstOfKeys: "arrayTypes", "array_types")
+        self.module_type = try container.decodeIfPresent(SwiftModuleOneMessage.self, firstOfKeys: "moduleType", "module_type")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 

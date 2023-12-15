@@ -52,7 +52,7 @@ extension FooBar : ProtoDefaultedValue {
 #if !WIRE_REMOVE_REDACTABLE
 extension FooBar : Redactable {
 
-    public enum RedactedKeys : Swift.String, Wire.RedactedKey {
+    public enum RedactedKeys : String, RedactedKey {
 
         case nested
 
@@ -63,7 +63,7 @@ extension FooBar : Redactable {
 
 extension FooBar : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.custom_options.FooBar"
     }
 
@@ -71,31 +71,31 @@ extension FooBar : ProtoMessage {
 
 extension FooBar : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
-        var foo: Swift.Int32? = nil
-        var bar: Swift.String? = nil
+    public init(from protoReader: ProtoReader) throws {
+        var foo: Int32? = nil
+        var bar: String? = nil
         var baz: FooBar.Nested? = nil
-        var qux: Swift.UInt64? = nil
-        var fred: [Swift.Float] = []
-        var daisy: Swift.Double? = nil
+        var qux: UInt64? = nil
+        var fred: [Float] = []
+        var daisy: Double? = nil
         var nested: [FooBar] = []
         var ext: FooBar.FooBarBazEnum? = nil
         var rep: [FooBar.FooBarBazEnum] = []
-        var more_string: Swift.String? = nil
+        var more_string: String? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: foo = try protoReader.decode(Swift.Int32.self)
-            case 2: bar = try protoReader.decode(Swift.String.self)
+            case 1: foo = try protoReader.decode(Int32.self)
+            case 2: bar = try protoReader.decode(String.self)
             case 3: baz = try protoReader.decode(FooBar.Nested.self)
-            case 4: qux = try protoReader.decode(Swift.UInt64.self)
+            case 4: qux = try protoReader.decode(UInt64.self)
             case 5: try protoReader.decode(into: &fred)
-            case 6: daisy = try protoReader.decode(Swift.Double.self)
+            case 6: daisy = try protoReader.decode(Double.self)
             case 7: try protoReader.decode(into: &nested)
             case 101: ext = try protoReader.decode(FooBar.FooBarBazEnum.self)
             case 102: try protoReader.decode(into: &rep)
-            case 150: more_string = try protoReader.decode(Swift.String.self)
+            case 150: more_string = try protoReader.decode(String.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -113,7 +113,7 @@ extension FooBar : Proto2Codable {
         self._more_string.wrappedValue = more_string
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.foo)
         try protoWriter.encode(tag: 2, value: self.bar)
         try protoWriter.encode(tag: 3, value: self.baz)
@@ -132,22 +132,22 @@ extension FooBar : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension FooBar : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self._foo.wrappedValue = try container.decodeIfPresent(Swift.Int32.self, forKey: "foo")
-        self._bar.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "bar")
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self._foo.wrappedValue = try container.decodeIfPresent(Int32.self, forKey: "foo")
+        self._bar.wrappedValue = try container.decodeIfPresent(String.self, forKey: "bar")
         self._baz.wrappedValue = try container.decodeIfPresent(FooBar.Nested.self, forKey: "baz")
-        self._qux.wrappedValue = try container.decodeIfPresent(stringEncoded: Swift.UInt64.self, forKey: "qux")
-        self.fred = try container.decodeProtoArray(Swift.Float.self, forKey: "fred")
-        self._daisy.wrappedValue = try container.decodeIfPresent(Swift.Double.self, forKey: "daisy")
+        self._qux.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "qux")
+        self.fred = try container.decodeProtoArray(Float.self, forKey: "fred")
+        self._daisy.wrappedValue = try container.decodeIfPresent(Double.self, forKey: "daisy")
         self.nested = try container.decodeProtoArray(FooBar.self, forKey: "nested")
         self.ext = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "ext")
         self.rep = try container.decodeProtoArray(FooBar.FooBarBazEnum.self, forKey: "rep")
-        self._more_string.wrappedValue = try container.decodeIfPresent(Swift.String.self, firstOfKeys: "moreString", "more_string")
+        self._more_string.wrappedValue = try container.decodeIfPresent(String.self, firstOfKeys: "moreString", "more_string")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
@@ -190,7 +190,7 @@ extension FooBar {
 
     public struct More {
 
-        public var serial: [Swift.Int32] = []
+        public var serial: [Int32] = []
         public var unknownFields: Foundation.Data = .init()
 
         public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -199,13 +199,13 @@ extension FooBar {
 
     }
 
-    public enum FooBarBazEnum : Swift.Int32, Swift.CaseIterable, Wire.ProtoEnum {
+    public enum FooBarBazEnum : Int32, CaseIterable, ProtoEnum {
 
         case FOO = 1
         case BAR = 2
         case BAZ = 3
 
-        public var description: Swift.String {
+        public var description: String {
             switch self {
             case .FOO: return "FOO"
             case .BAR: return "BAR"
@@ -239,7 +239,7 @@ extension FooBar.Nested : ProtoDefaultedValue {
 
 extension FooBar.Nested : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.custom_options.FooBar.Nested"
     }
 
@@ -247,7 +247,7 @@ extension FooBar.Nested : ProtoMessage {
 
 extension FooBar.Nested : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
+    public init(from protoReader: ProtoReader) throws {
         var value: FooBar.FooBarBazEnum? = nil
 
         let token = try protoReader.beginMessage()
@@ -262,7 +262,7 @@ extension FooBar.Nested : Proto2Codable {
         self.value = value
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.value)
         try protoWriter.writeUnknownFields(unknownFields)
     }
@@ -272,13 +272,13 @@ extension FooBar.Nested : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension FooBar.Nested : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.value = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "value")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
 
         try container.encodeIfPresent(self.value, forKey: "value")
     }
@@ -308,7 +308,7 @@ extension FooBar.More : ProtoDefaultedValue {
 
 extension FooBar.More : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.protos.custom_options.FooBar.More"
     }
 
@@ -316,8 +316,8 @@ extension FooBar.More : ProtoMessage {
 
 extension FooBar.More : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
-        var serial: [Swift.Int32] = []
+    public init(from protoReader: ProtoReader) throws {
+        var serial: [Int32] = []
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -331,7 +331,7 @@ extension FooBar.More : Proto2Codable {
         self.serial = serial
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.serial)
         try protoWriter.writeUnknownFields(unknownFields)
     }
@@ -341,13 +341,13 @@ extension FooBar.More : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension FooBar.More : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self.serial = try container.decodeProtoArray(Swift.Int32.self, forKey: "serial")
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.serial = try container.decodeProtoArray(Int32.self, forKey: "serial")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || !self.serial.isEmpty {

@@ -53,17 +53,7 @@ Cutting a JVM Release
     git push
     ```
 
-7. Wait for [GitHub Actions][github_actions] to build and publish releases for both Windows and
-   Non-Windows.
-
-8. Visit [Sonatype Nexus][sonatype_nexus] to promote (close then release) the releases. Or drop it
-   if there is a problem!
-
-9. Deploy the documentation website.
-
-    ```
-    ./deploy_website.sh
-    ```
+7. CI will release the artifacts and publish the website.
 
  [sonatype_issues]: https://issues.sonatype.org/
  [sonatype_nexus]: https://s01.oss.sonatype.org/
