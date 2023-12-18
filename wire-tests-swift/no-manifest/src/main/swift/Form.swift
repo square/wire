@@ -5,8 +5,8 @@ import Wire
 
 public struct Form {
 
-    public var choice: Form.Choice?
-    public var decision: Form.Decision?
+    public var choice: Choice?
+    public var decision: Decision?
     public var unknownFields: Foundation.Data = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -46,8 +46,8 @@ extension Form : ProtoMessage {
 extension Form : Proto2Codable {
 
     public init(from protoReader: ProtoReader) throws {
-        var choice: Form.Choice? = nil
-        var decision: Form.Decision? = nil
+        var choice: Choice? = nil
+        var decision: Decision? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {

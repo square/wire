@@ -11,7 +11,7 @@ public struct OneOfMessage {
     /**
      * Must have a foo or a bar or a baz.
      */
-    public var choice: OneOfMessage.Choice?
+    public var choice: Choice?
     public var unknownFields: Foundation.Data = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -51,7 +51,7 @@ extension OneOfMessage : ProtoMessage {
 extension OneOfMessage : Proto2Codable {
 
     public init(from protoReader: ProtoReader) throws {
-        var choice: OneOfMessage.Choice? = nil
+        var choice: Choice? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {

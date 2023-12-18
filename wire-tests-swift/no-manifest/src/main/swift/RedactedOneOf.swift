@@ -5,7 +5,7 @@ import Wire
 
 public struct RedactedOneOf {
 
-    public var a: RedactedOneOf.A?
+    public var a: A?
     public var unknownFields: Foundation.Data = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -45,7 +45,7 @@ extension RedactedOneOf : ProtoMessage {
 extension RedactedOneOf : Proto2Codable {
 
     public init(from protoReader: ProtoReader) throws {
-        var a: RedactedOneOf.A? = nil
+        var a: A? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {

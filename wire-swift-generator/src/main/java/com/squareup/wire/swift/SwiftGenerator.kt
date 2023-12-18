@@ -238,20 +238,9 @@ class SwiftGenerator private constructor(
 
   fun generateTypeTo(type: Type, builder: FileSpec.Builder) {
     val fileMembers = mutableListOf<FileMemberSpec>()
-    val imports = mutableSetOf<String>("Foundation")
 
-    generateType(type, fileMembers, imports).forEach {
+    generateType(type, fileMembers).forEach {
       builder.addType(it)
-    }
-
-    imports.asSequence().filter {
-      it.isNotEmpty()
-    }.filter {
-      it != "Swift"
-    }.filter {
-      it != "Wire"
-    }.forEach {
-      builder.addImport(it)
     }
 
     for (extension in fileMembers) {
@@ -262,11 +251,10 @@ class SwiftGenerator private constructor(
   private fun generateType(
     type: Type,
     fileMembers: MutableList<FileMemberSpec>,
-    imports: MutableSet<String>,
   ) = when (type) {
-    is MessageType -> generateMessage(type, fileMembers, imports)
-    is EnumType -> listOf(generateEnum(type, fileMembers, imports))
-    is EnclosingType -> listOf(generateEnclosing(type, fileMembers, imports))
+    is MessageType -> generateMessage(type, fileMembers)
+    is EnumType -> listOf(generateEnum(type, fileMembers))
+    is EnclosingType -> listOf(generateEnclosing(type, fileMembers))
     else -> error("Unknown type $type")
   }
 
@@ -318,7 +306,6 @@ class SwiftGenerator private constructor(
   private fun generateMessage(
     type: MessageType,
     fileMembers: MutableList<FileMemberSpec>,
-    imports: MutableSet<String>,
   ): List<TypeSpec> {
     val structType = type.typeName
     val oneOfEnumNames = type.oneOfs.associateWith {
@@ -356,7 +343,7 @@ class SwiftGenerator private constructor(
           generateMessageStoragePropertyDelegates(type, storageName, storageType, oneOfEnumNames)
           generateMessageStorageDelegateConstructor(type, storageName, storageType, oneOfEnumNames)
         } else {
-          generateMessageProperties(type, oneOfEnumNames, imports)
+          generateMessageProperties(type, oneOfEnumNames)
           generateMessageConstructor(type, oneOfEnumNames)
         }
       }
@@ -490,11 +477,11 @@ class SwiftGenerator private constructor(
       val nestedExtension = ExtensionSpec.builder(structType)
         .addDoc("Subtypes within %T\n", structType)
         .apply {
-          generateMessageOneOfs(type, oneOfEnumNames, nestedFileMembers, imports)
+          generateMessageOneOfs(type, oneOfEnumNames, nestedFileMembers)
         }
         .apply {
           type.nestedTypes.forEach { nestedType ->
-            generateType(nestedType, nestedFileMembers, imports).forEach {
+            generateType(nestedType, nestedFileMembers).forEach {
               addType(it)
             }
           }
@@ -513,7 +500,7 @@ class SwiftGenerator private constructor(
             .addDoc("Underlying storage for %T\n", structType)
             .addModifiers(storageVisibility)
             .apply {
-              generateMessageProperties(type, oneOfEnumNames, imports, forStorageType = true)
+              generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
               generateMessageConstructor(type, oneOfEnumNames, forStorageType = true)
             }
             .build(),
@@ -1197,7 +1184,6 @@ class SwiftGenerator private constructor(
   private fun TypeSpec.Builder.generateMessageProperties(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
-    imports: MutableSet<String>,
     forStorageType: Boolean = false,
   ) {
     val visibility: Modifier = if (forStorageType) {
@@ -1207,18 +1193,6 @@ class SwiftGenerator private constructor(
     }
 
     type.fields.forEach { field ->
-      val typeName: TypeName = field.typeName.makeNonOptional()
-      if (typeName is DeclaredTypeName) {
-        imports.add(typeName.moduleName)
-      }
-      if (typeName is ParameterizedTypeName) {
-        typeName.typeArguments.forEach { declaredTypeName ->
-          if (declaredTypeName is DeclaredTypeName) {
-            imports.add(declaredTypeName.moduleName)
-          }
-        }
-      }
-
       val property = PropertySpec.varBuilder(field.name, field.typeName, visibility)
       if (!forStorageType && field.documentation.isNotBlank()) {
         property.addDoc("%L\n", field.documentation.sanitizeDoc())
@@ -1249,8 +1223,6 @@ class SwiftGenerator private constructor(
 
     type.oneOfs.forEach { oneOf ->
       val enumName = oneOfEnumNames.getValue(oneOf)
-
-      imports.add(enumName.moduleName)
 
       addProperty(
         PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), visibility)
@@ -1445,12 +1417,9 @@ class SwiftGenerator private constructor(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
     fileMembers: MutableList<FileMemberSpec>,
-    imports: MutableSet<String>,
   ) {
     type.oneOfs.forEach { oneOf ->
       val enumName = oneOfEnumNames.getValue(oneOf)
-
-      imports.add(enumName.moduleName)
 
       // TODO use a NameAllocator
       val writer = if (oneOf.fields.any { it.name == "protoWriter" }) "_protoWriter" else "protoWriter"
@@ -1549,7 +1518,6 @@ class SwiftGenerator private constructor(
   private fun generateEnum(
     type: EnumType,
     fileMembers: MutableList<FileMemberSpec>,
-    imports: MutableSet<String>,
   ): TypeSpec {
     val enumName = type.typeName
     return TypeSpec.enumBuilder(enumName)
@@ -1630,7 +1598,7 @@ class SwiftGenerator private constructor(
           )
         }
         type.nestedTypes.forEach { nestedType ->
-          generateType(nestedType, fileMembers, imports).forEach {
+          generateType(nestedType, fileMembers).forEach {
             addType(it)
           }
         }
@@ -1641,7 +1609,6 @@ class SwiftGenerator private constructor(
   private fun generateEnclosing(
     type: EnclosingType,
     fileMembers: MutableList<FileMemberSpec>,
-    imports: MutableSet<String>,
   ): TypeSpec {
     return TypeSpec.enumBuilder(type.typeName)
       .addModifiers(PUBLIC)
@@ -1652,7 +1619,7 @@ class SwiftGenerator private constructor(
       )
       .apply {
         type.nestedTypes.forEach { nestedType ->
-          generateType(nestedType, fileMembers, imports).forEach {
+          generateType(nestedType, fileMembers).forEach {
             addType(it)
           }
         }
