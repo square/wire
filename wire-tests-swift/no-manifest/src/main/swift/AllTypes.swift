@@ -7,11 +7,11 @@ import Wire
 public struct AllTypes {
 
     @CopyOnWrite
-    private var storage: AllTypes.Storage
+    private var storage: Storage
     /**
      * Access the underlying storage
      */
-    public subscript<Property>(dynamicMember keyPath: WritableKeyPath<AllTypes.Storage, Property>) -> Property {
+    public subscript<Property>(dynamicMember keyPath: WritableKeyPath<Storage, Property>) -> Property {
         get {
             storage[keyPath: keyPath]
         }
@@ -1208,7 +1208,7 @@ public struct AllTypes {
         req_nested_message: AllTypes.NestedMessage,
         configure: (inout Self.Storage) -> Swift.Void = { _ in }
     ) {
-        self.storage = AllTypes.Storage(
+        self.storage = Storage(
                 req_int32: req_int32,
                 req_uint32: req_uint32,
                 req_sint32: req_sint32,
@@ -1384,7 +1384,7 @@ extension AllTypes {
         ext_pack_double: [Double] = [],
         ext_pack_nested_enum: [AllTypes.NestedEnum] = []
     ) {
-        self.storage = AllTypes.Storage(
+        self.storage = Storage(
                 opt_int32: opt_int32,
                 opt_uint32: opt_uint32,
                 opt_sint32: opt_sint32,
@@ -1554,7 +1554,7 @@ extension AllTypes : Sendable {
 extension AllTypes : Proto2Codable {
 
     public init(from protoReader: ProtoReader) throws {
-        self.storage = try AllTypes.Storage(from: protoReader)
+        self.storage = try Storage(from: protoReader)
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -1568,7 +1568,7 @@ extension AllTypes : Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        self.storage = try container.decode(AllTypes.Storage.self)
+        self.storage = try container.decode(Storage.self)
     }
 
     public func encode(to encoder: Encoder) throws {
