@@ -14,18 +14,6 @@ public struct NegativeValueMessage {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension NegativeValueMessage {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(value: NegativeValueEnum? = nil) {
-        self.value = value
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension NegativeValueMessage : Equatable {
 }
@@ -36,10 +24,8 @@ extension NegativeValueMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension NegativeValueMessage : Sendable {
 }
-#endif
 
 extension NegativeValueMessage : ProtoDefaultedValue {
 

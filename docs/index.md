@@ -598,10 +598,8 @@ extension Dinosaur : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Dinosaur : Sendable {
 }
-#endif
 
 extension Dinosaur : ProtoDefaultedValue {
 
@@ -612,7 +610,7 @@ extension Dinosaur : ProtoDefaultedValue {
 
 extension Dinosaur : ProtoMessage {
 
-    public static func protoMessageTypeURL() -> Swift.String {
+    public static func protoMessageTypeURL() -> String {
         return "type.googleapis.com/squareup.dinosaurs.Dinosaur"
     }
 
@@ -620,20 +618,20 @@ extension Dinosaur : ProtoMessage {
 
 extension Dinosaur : Proto2Codable {
 
-    public init(from protoReader: Wire.ProtoReader) throws {
-        var name: Swift.String? = nil
-        var picture_urls: [Swift.String] = []
-        var length_meters: Swift.Double? = nil
-        var mass_kilograms: Swift.Double? = nil
+    public init(from protoReader: ProtoReader) throws {
+        var name: String? = nil
+        var picture_urls: [String] = []
+        var length_meters: Double? = nil
+        var mass_kilograms: Double? = nil
         var period: Period? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: name = try protoReader.decode(Swift.String.self)
+            case 1: name = try protoReader.decode(String.self)
             case 2: try protoReader.decode(into: &picture_urls)
-            case 3: length_meters = try protoReader.decode(Swift.Double.self)
-            case 4: mass_kilograms = try protoReader.decode(Swift.Double.self)
+            case 3: length_meters = try protoReader.decode(Double.self)
+            case 4: mass_kilograms = try protoReader.decode(Double.self)
             case 5: period = try protoReader.decode(Period.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
@@ -647,7 +645,7 @@ extension Dinosaur : Proto2Codable {
         self.period = period
     }
 
-    public func encode(to protoWriter: Wire.ProtoWriter) throws {
+    public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.name)
         try protoWriter.encode(tag: 2, value: self.picture_urls)
         try protoWriter.encode(tag: 3, value: self.length_meters)
@@ -661,17 +659,17 @@ extension Dinosaur : Proto2Codable {
 #if !WIRE_REMOVE_CODABLE
 extension Dinosaur : Codable {
 
-    public init(from decoder: Swift.Decoder) throws {
-        let container = try decoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
-        self._name.wrappedValue = try container.decodeIfPresent(Swift.String.self, forKey: "name")
-        self.picture_urls = try container.decodeProtoArray(Swift.String.self, firstOfKeys: "pictureUrls", "picture_urls")
-        self._length_meters.wrappedValue = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "lengthMeters", "length_meters")
-        self._mass_kilograms.wrappedValue = try container.decodeIfPresent(Swift.Double.self, firstOfKeys: "massKilograms", "mass_kilograms")
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self._name.wrappedValue = try container.decodeIfPresent(String.self, forKey: "name")
+        self.picture_urls = try container.decodeProtoArray(String.self, firstOfKeys: "pictureUrls", "picture_urls")
+        self._length_meters.wrappedValue = try container.decodeIfPresent(Double.self, firstOfKeys: "lengthMeters", "length_meters")
+        self._mass_kilograms.wrappedValue = try container.decodeIfPresent(Double.self, firstOfKeys: "massKilograms", "mass_kilograms")
         self.period = try container.decodeIfPresent(Period.self, forKey: "period")
     }
 
-    public func encode(to encoder: Swift.Encoder) throws {
-        var container = encoder.container(keyedBy: Wire.StringLiteralCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 

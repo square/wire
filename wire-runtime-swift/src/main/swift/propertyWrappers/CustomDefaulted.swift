@@ -15,9 +15,6 @@
  */
 import Foundation
 
-@available(*, deprecated, message: "Replace with CustomDefaulted")
-public typealias Defaulted = CustomDefaulted
-
 /**
  When applied to field a projected value is provided for accessing the real value
  or the default value set.
@@ -48,9 +45,5 @@ extension CustomDefaulted : Equatable where Value : Equatable {
 extension CustomDefaulted : Hashable where Value : Hashable {
 }
 
-#if swift(>=5.5)
-
 extension CustomDefaulted : Sendable where Value : Sendable {
 }
-
-#endif

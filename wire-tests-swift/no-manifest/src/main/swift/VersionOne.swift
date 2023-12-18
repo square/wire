@@ -18,24 +18,6 @@ public struct VersionOne {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension VersionOne {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(
-        i: Int32? = nil,
-        obj: NestedVersionOne? = nil,
-        en: EnumVersionOne? = nil
-    ) {
-        self._i.wrappedValue = i
-        self._obj.wrappedValue = obj
-        self.en = en
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension VersionOne : Equatable {
 }
@@ -46,10 +28,8 @@ extension VersionOne : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension VersionOne : Sendable {
 }
-#endif
 
 extension VersionOne : ProtoDefaultedValue {
 

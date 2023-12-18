@@ -18,18 +18,6 @@ public struct VeryLongProtoNameCausingBrokenLineBreaks {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension VeryLongProtoNameCausingBrokenLineBreaks {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(foo: String? = nil) {
-        self._foo.wrappedValue = foo
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension VeryLongProtoNameCausingBrokenLineBreaks : Equatable {
 }
@@ -40,10 +28,8 @@ extension VeryLongProtoNameCausingBrokenLineBreaks : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension VeryLongProtoNameCausingBrokenLineBreaks : Sendable {
 }
-#endif
 
 extension VeryLongProtoNameCausingBrokenLineBreaks : ProtoDefaultedValue {
 

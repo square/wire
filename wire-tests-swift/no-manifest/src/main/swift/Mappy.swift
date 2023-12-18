@@ -14,18 +14,6 @@ public struct Mappy {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension Mappy {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(things: [String : Thing] = [:]) {
-        self.things = things
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension Mappy : Equatable {
 }
@@ -36,10 +24,8 @@ extension Mappy : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Mappy : Sendable {
 }
-#endif
 
 extension Mappy : ProtoDefaultedValue {
 

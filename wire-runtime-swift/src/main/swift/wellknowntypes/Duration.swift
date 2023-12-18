@@ -98,10 +98,8 @@ extension Duration : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Duration : Sendable {
 }
-#endif
 
 extension Duration : ProtoMessage {
 

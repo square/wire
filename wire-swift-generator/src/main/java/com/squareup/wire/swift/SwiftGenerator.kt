@@ -341,10 +341,10 @@ class SwiftGenerator private constructor(
           )
 
           generateMessageStoragePropertyDelegates(type, storageName, storageType, oneOfEnumNames)
-          generateMessageStorageDelegateConstructor(type, storageName, structType, storageType, oneOfEnumNames, fileMembers)
+          generateMessageStorageDelegateConstructor(type, storageName, storageType, oneOfEnumNames)
         } else {
           generateMessageProperties(type, oneOfEnumNames)
-          generateMessageConstructor(type, structType, oneOfEnumNames, fileMembers)
+          generateMessageConstructor(type, oneOfEnumNames)
         }
       }
       .build()
@@ -368,7 +368,6 @@ class SwiftGenerator private constructor(
       .addSuperType(sendable)
       .build()
     fileMembers += FileMemberSpec.builder(structSendableExtension)
-      .addGuard("swift(>=5.5)")
       .build()
 
     // Add proto defaulted value
@@ -502,7 +501,7 @@ class SwiftGenerator private constructor(
             .addModifiers(storageVisibility)
             .apply {
               generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
-              generateMessageConstructor(type, storageType, oneOfEnumNames, fileMembers, forStorageType = true)
+              generateMessageConstructor(type, oneOfEnumNames, forStorageType = true)
             }
             .build(),
         )
@@ -528,7 +527,6 @@ class SwiftGenerator private constructor(
         .addSuperType(sendable)
         .build()
       fileMembers += FileMemberSpec.builder(storageSendableExtension)
-        .addGuard("swift(>=5.5)")
         .build()
 
       // Add redaction
@@ -1074,10 +1072,8 @@ class SwiftGenerator private constructor(
   private fun TypeSpec.Builder.generateMessageStorageDelegateConstructor(
     type: MessageType,
     storageName: String,
-    structType: DeclaredTypeName,
     storageType: DeclaredTypeName,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
-    fileMembers: MutableList<FileMemberSpec>,
   ) {
     val needsConfigure = type.fields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty()
 
@@ -1124,51 +1120,13 @@ class SwiftGenerator private constructor(
         }
         .build(),
     )
-
-    if (!needsConfigure) {
-      return
-    }
-
-    // These will be removed in November 2023
-    val memberwiseExtension = ExtensionSpec.builder(structType)
-      .addFunction(
-        FunctionSpec.constructorBuilder()
-          .addModifiers(PUBLIC)
-          .addParameters(type, oneOfEnumNames, includeDefaults = true)
-          .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
-          .addAttribute(deprecated)
-          .apply {
-            val storageParams = mutableListOf<CodeBlock>()
-            type.fields.forEach { field ->
-              storageParams += CodeBlock.of("%1N: %1N", field.name)
-            }
-            type.oneOfs.forEach { oneOf ->
-              storageParams += CodeBlock.of("%1N: %1N", oneOf.name)
-            }
-            addStatement(
-              "self.%N = %T(\n%L\n)",
-              storageName,
-              storageType,
-              storageParams.joinToCode(separator = ",\n"),
-            )
-          }
-          .build(),
-      )
-      .build()
-
-    fileMembers += FileMemberSpec.builder(memberwiseExtension)
-      .addGuard(FLAG_INCLUDE_MEMBERWISE_INITIALIZER)
-      .build()
   }
 
   private fun TypeSpec.Builder.generateMessageConstructor(
     type: MessageType,
-    structType: DeclaredTypeName,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
-    fileMembers: MutableList<FileMemberSpec>,
     forStorageType: Boolean = false,
   ) {
-    val includeMemberwiseDefaults = !forStorageType
     val needsConfigure = type.fields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty()
 
     val visibility: Modifier = if (forStorageType) {
@@ -1221,44 +1179,6 @@ class SwiftGenerator private constructor(
         }
         .build(),
     )
-
-    if (!needsConfigure) {
-      return
-    }
-
-    // These will be removed in November 2023
-    val memberwiseExtension = ExtensionSpec.builder(structType)
-      .addFunction(
-        FunctionSpec.constructorBuilder()
-          .addModifiers(visibility)
-          .addParameters(type, oneOfEnumNames, includeDefaults = includeMemberwiseDefaults)
-          .addAttribute(AttributeSpec.builder("_disfavoredOverload").build())
-          .addAttribute(deprecated)
-          .apply {
-            type.fields.forEach { field ->
-              val hasPropertyWrapper = !isIndirect(type, field) && (field.defaultedValue != null || field.isProtoDefaulted)
-              val fieldName = if (hasPropertyWrapper) { "_${field.name}" } else { field.name }
-              addStatement(
-                if (hasPropertyWrapper) {
-                  "self.%1N.wrappedValue = %2N"
-                } else {
-                  "self.%1N = %2N"
-                },
-                fieldName,
-                field.name,
-              )
-            }
-            type.oneOfs.forEach { oneOf ->
-              addStatement("self.%1N = %1N", oneOf.name)
-            }
-          }
-          .build(),
-      )
-      .build()
-
-    fileMembers += FileMemberSpec.builder(memberwiseExtension)
-      .addGuard(FLAG_INCLUDE_MEMBERWISE_INITIALIZER)
-      .build()
   }
 
   private fun TypeSpec.Builder.generateMessageProperties(
@@ -1561,7 +1481,6 @@ class SwiftGenerator private constructor(
         .addSuperType(sendable)
         .build()
       fileMembers += FileMemberSpec.builder(sendableExtension)
-        .addGuard("swift(>=5.5)")
         .build()
 
       if (oneOf.fields.any { it.isRedacted }) {
@@ -1623,7 +1542,6 @@ class SwiftGenerator private constructor(
           .addSuperType(sendable)
           .build()
         fileMembers += FileMemberSpec.builder(sendableExtension)
-          .addGuard("swift(>=5.5)")
           .build()
 
         if (type.documentation.isNotBlank()) {
@@ -1741,7 +1659,6 @@ class SwiftGenerator private constructor(
     private const val FLAG_REMOVE_EQUATABLE = "WIRE_REMOVE_EQUATABLE"
     private const val FLAG_REMOVE_HASHABLE = "WIRE_REMOVE_HASHABLE"
     private const val FLAG_REMOVE_REDACTABLE = "WIRE_REMOVE_REDACTABLE"
-    private const val FLAG_INCLUDE_MEMBERWISE_INITIALIZER = "WIRE_INCLUDE_MEMBERWISE_INITIALIZER"
 
     private val NEEDS_CUSTOM_CODABLE = setOf("Duration", "Timestamp")
 

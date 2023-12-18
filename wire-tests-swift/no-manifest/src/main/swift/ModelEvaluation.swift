@@ -33,24 +33,6 @@ public struct ModelEvaluation {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension ModelEvaluation {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(
-        name: String? = nil,
-        score: Double? = nil,
-        models: [String : ModelEvaluation] = [:]
-    ) {
-        self._name.wrappedValue = name
-        self._score.wrappedValue = score
-        self.models = models
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension ModelEvaluation : Equatable {
 }
@@ -61,10 +43,8 @@ extension ModelEvaluation : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension ModelEvaluation : Sendable {
 }
-#endif
 
 extension ModelEvaluation : ProtoDefaultedValue {
 

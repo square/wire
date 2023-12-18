@@ -16,18 +16,6 @@ public struct SwiftModuleThreeMessage {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension SwiftModuleThreeMessage {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(name: String? = nil) {
-        self._name.wrappedValue = name
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension SwiftModuleThreeMessage : Equatable {
 }
@@ -38,10 +26,8 @@ extension SwiftModuleThreeMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension SwiftModuleThreeMessage : Sendable {
 }
-#endif
 
 extension SwiftModuleThreeMessage : ProtoDefaultedValue {
 
@@ -118,19 +104,6 @@ extension SwiftModuleThreeMessage {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension SwiftModuleThreeMessage.NestedMessage {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(map_string_types: [String : SwiftModuleOneEnum] = [:], module_type: SwiftModuleOneMessage? = nil) {
-        self.map_string_types = map_string_types
-        self.module_type = module_type
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension SwiftModuleThreeMessage.NestedMessage : Equatable {
 }
@@ -141,10 +114,8 @@ extension SwiftModuleThreeMessage.NestedMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension SwiftModuleThreeMessage.NestedMessage : Sendable {
 }
-#endif
 
 extension SwiftModuleThreeMessage.NestedMessage : ProtoDefaultedValue {
 

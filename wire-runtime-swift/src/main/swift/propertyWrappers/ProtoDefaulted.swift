@@ -50,9 +50,5 @@ extension ProtoDefaulted : Equatable where Value : Equatable {
 extension ProtoDefaulted : Hashable where Value : Hashable {
 }
 
-#if swift(>=5.5)
-
 extension ProtoDefaulted : Sendable where Value : Sendable {
 }
-
-#endif

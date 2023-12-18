@@ -69,7 +69,5 @@ extension ProtoMap : Equatable where Value : Equatable {
 extension ProtoMap : Hashable where Value : Hashable {
 }
 
-#if swift(>=5.5)
 extension ProtoMap : Sendable where Key : Sendable, Value : Sendable {
 }
-#endif

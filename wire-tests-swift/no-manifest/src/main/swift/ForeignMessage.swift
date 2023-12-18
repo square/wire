@@ -15,18 +15,6 @@ public struct ForeignMessage {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension ForeignMessage {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(i: Int32? = nil) {
-        self._i.wrappedValue = i
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension ForeignMessage : Equatable {
 }
@@ -37,10 +25,8 @@ extension ForeignMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension ForeignMessage : Sendable {
 }
-#endif
 
 extension ForeignMessage : ProtoDefaultedValue {
 

@@ -15,18 +15,6 @@ public struct SwiftEdgeCases {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension SwiftEdgeCases {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(`return`: String? = nil) {
-        self._return.wrappedValue = `return`
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension SwiftEdgeCases : Equatable {
 }
@@ -37,10 +25,8 @@ extension SwiftEdgeCases : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension SwiftEdgeCases : Sendable {
 }
-#endif
 
 extension SwiftEdgeCases : ProtoDefaultedValue {
 

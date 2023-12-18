@@ -17,26 +17,6 @@ public struct MappyTwo {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension MappyTwo {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(
-        string_enums: [String : MappyTwo.ValueEnum] = [:],
-        int_things: [Int64 : Thing] = [:],
-        string_ints: [String : Int64] = [:],
-        int_things_two: [Int32 : Thing] = [:]
-    ) {
-        self.string_enums = string_enums
-        self.int_things = int_things
-        self.string_ints = string_ints
-        self.int_things_two = int_things_two
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension MappyTwo : Equatable {
 }
@@ -47,10 +27,8 @@ extension MappyTwo : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension MappyTwo : Sendable {
 }
-#endif
 
 extension MappyTwo : ProtoDefaultedValue {
 
@@ -159,7 +137,5 @@ extension MappyTwo {
 
 }
 
-#if swift(>=5.5)
 extension MappyTwo.ValueEnum : Sendable {
 }
-#endif

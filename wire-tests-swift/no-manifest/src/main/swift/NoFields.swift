@@ -22,10 +22,8 @@ extension NoFields : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension NoFields : Sendable {
 }
-#endif
 
 extension NoFields : ProtoDefaultedValue {
 

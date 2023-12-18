@@ -14,18 +14,6 @@ public struct RedactedOneOf {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension RedactedOneOf {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(a: A? = nil) {
-        self.a = a
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension RedactedOneOf : Equatable {
 }
@@ -36,10 +24,8 @@ extension RedactedOneOf : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension RedactedOneOf : Sendable {
 }
-#endif
 
 extension RedactedOneOf : ProtoDefaultedValue {
 
@@ -141,10 +127,8 @@ extension RedactedOneOf.A : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension RedactedOneOf.A : Sendable {
 }
-#endif
 
 #if !WIRE_REMOVE_REDACTABLE
 extension RedactedOneOf.A : Redactable {

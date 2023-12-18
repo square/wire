@@ -17,19 +17,6 @@ public struct OuterMessage {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension OuterMessage {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(outer_number_before: Int32? = nil, embedded_message: EmbeddedMessage? = nil) {
-        self._outer_number_before.wrappedValue = outer_number_before
-        self._embedded_message.wrappedValue = embedded_message
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension OuterMessage : Equatable {
 }
@@ -40,10 +27,8 @@ extension OuterMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension OuterMessage : Sendable {
 }
-#endif
 
 extension OuterMessage : ProtoDefaultedValue {
 

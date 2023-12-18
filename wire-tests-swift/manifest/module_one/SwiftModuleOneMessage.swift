@@ -24,10 +24,8 @@ extension SwiftModuleOneMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension SwiftModuleOneMessage : Sendable {
 }
-#endif
 
 extension SwiftModuleOneMessage : ProtoMessage {
 

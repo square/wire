@@ -16,19 +16,6 @@ public struct EmbeddedMessage {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension EmbeddedMessage {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(inner_repeated_number: [Int32] = [], inner_number_after: Int32? = nil) {
-        self.inner_repeated_number = inner_repeated_number
-        self._inner_number_after.wrappedValue = inner_number_after
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension EmbeddedMessage : Equatable {
 }
@@ -39,10 +26,8 @@ extension EmbeddedMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension EmbeddedMessage : Sendable {
 }
-#endif
 
 extension EmbeddedMessage : ProtoDefaultedValue {
 

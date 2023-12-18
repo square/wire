@@ -18,19 +18,6 @@ public struct MessageUsingMultipleEnums {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension MessageUsingMultipleEnums {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(a: MessageWithStatus.Status? = nil, b: OtherMessageWithStatus.Status? = nil) {
-        self.a = a
-        self.b = b
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension MessageUsingMultipleEnums : Equatable {
 }
@@ -41,10 +28,8 @@ extension MessageUsingMultipleEnums : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension MessageUsingMultipleEnums : Sendable {
 }
-#endif
 
 extension MessageUsingMultipleEnums : ProtoDefaultedValue {
 

@@ -15,18 +15,6 @@ public struct NestedVersionOne {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension NestedVersionOne {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(i: Int32? = nil) {
-        self._i.wrappedValue = i
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension NestedVersionOne : Equatable {
 }
@@ -37,10 +25,8 @@ extension NestedVersionOne : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension NestedVersionOne : Sendable {
 }
-#endif
 
 extension NestedVersionOne : ProtoDefaultedValue {
 

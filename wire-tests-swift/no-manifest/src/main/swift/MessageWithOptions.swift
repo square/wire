@@ -22,10 +22,8 @@ extension MessageWithOptions : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension MessageWithOptions : Sendable {
 }
-#endif
 
 extension MessageWithOptions : ProtoDefaultedValue {
 

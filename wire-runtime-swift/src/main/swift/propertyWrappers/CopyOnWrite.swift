@@ -69,12 +69,10 @@ extension CopyOnWrite : Hashable where Value : Hashable {
     }
 }
 
-#if swift(>=5.5)
+// MARK: - Sendable
 
 extension CopyOnWrite : Sendable where Value : Sendable {
 }
-
-#endif
 
 // MARK: - Storage
 
@@ -88,9 +86,5 @@ private extension CopyOnWrite {
     }
 }
 
-#if swift(>=5.5)
-
 extension CopyOnWrite.Storage : @unchecked Sendable where Value : Sendable {
 }
-
-#endif

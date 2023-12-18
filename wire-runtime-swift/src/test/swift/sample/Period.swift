@@ -27,7 +27,5 @@ public enum Period : Int32, CaseIterable, ProtoEnum {
 
 }
 
-#if swift(>=5.5)
 extension Period : Sendable {
 }
-#endif

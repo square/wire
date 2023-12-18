@@ -20,18 +20,6 @@ public struct OneOfMessage {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension OneOfMessage {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(choice: Choice? = nil) {
-        self.choice = choice
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension OneOfMessage : Equatable {
 }
@@ -42,10 +30,8 @@ extension OneOfMessage : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension OneOfMessage : Sendable {
 }
-#endif
 
 extension OneOfMessage : ProtoDefaultedValue {
 
@@ -162,7 +148,5 @@ extension OneOfMessage.Choice : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension OneOfMessage.Choice : Sendable {
 }
-#endif

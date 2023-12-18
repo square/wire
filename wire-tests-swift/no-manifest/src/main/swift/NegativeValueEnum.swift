@@ -14,7 +14,5 @@ public enum NegativeValueEnum : Int32, CaseIterable, ProtoEnum {
 
 }
 
-#if swift(>=5.5)
 extension NegativeValueEnum : Sendable {
 }
-#endif

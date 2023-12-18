@@ -15,18 +15,6 @@ public struct Thing {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension Thing {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(name: String? = nil) {
-        self._name.wrappedValue = name
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension Thing : Equatable {
 }
@@ -37,10 +25,8 @@ extension Thing : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Thing : Sendable {
 }
-#endif
 
 extension Thing : ProtoDefaultedValue {
 

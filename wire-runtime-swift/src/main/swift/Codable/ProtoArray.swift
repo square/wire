@@ -73,7 +73,5 @@ extension ProtoArray : Equatable where Value : Equatable {
 extension ProtoArray : Hashable where Value : Hashable {
 }
 
-#if swift(>=5.5)
 extension ProtoArray : Sendable where Value : Sendable {
 }
-#endif

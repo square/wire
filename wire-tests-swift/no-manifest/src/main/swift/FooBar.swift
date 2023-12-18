@@ -29,38 +29,6 @@ public struct FooBar {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension FooBar {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(
-        foo: Int32? = nil,
-        bar: String? = nil,
-        baz: FooBar.Nested? = nil,
-        qux: UInt64? = nil,
-        fred: [Float] = [],
-        daisy: Double? = nil,
-        nested: [FooBar] = [],
-        ext: FooBar.FooBarBazEnum? = nil,
-        rep: [FooBar.FooBarBazEnum] = [],
-        more_string: String? = nil
-    ) {
-        self._foo.wrappedValue = foo
-        self._bar.wrappedValue = bar
-        self._baz.wrappedValue = baz
-        self._qux.wrappedValue = qux
-        self.fred = fred
-        self._daisy.wrappedValue = daisy
-        self.nested = nested
-        self.ext = ext
-        self.rep = rep
-        self._more_string.wrappedValue = more_string
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension FooBar : Equatable {
 }
@@ -71,10 +39,8 @@ extension FooBar : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension FooBar : Sendable {
 }
-#endif
 
 extension FooBar : ProtoDefaultedValue {
 
@@ -251,18 +217,6 @@ extension FooBar {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension FooBar.Nested {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(value: FooBar.FooBarBazEnum? = nil) {
-        self.value = value
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension FooBar.Nested : Equatable {
 }
@@ -273,10 +227,8 @@ extension FooBar.Nested : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension FooBar.Nested : Sendable {
 }
-#endif
 
 extension FooBar.Nested : ProtoDefaultedValue {
 
@@ -334,18 +286,6 @@ extension FooBar.Nested : Codable {
 }
 #endif
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension FooBar.More {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(serial: [Int32] = []) {
-        self.serial = serial
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension FooBar.More : Equatable {
 }
@@ -356,10 +296,8 @@ extension FooBar.More : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension FooBar.More : Sendable {
 }
-#endif
 
 extension FooBar.More : ProtoDefaultedValue {
 
@@ -420,7 +358,5 @@ extension FooBar.More : Codable {
 }
 #endif
 
-#if swift(>=5.5)
 extension FooBar.FooBarBazEnum : Sendable {
 }
-#endif

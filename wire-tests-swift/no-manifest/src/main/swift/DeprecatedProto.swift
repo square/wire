@@ -16,18 +16,6 @@ public struct DeprecatedProto {
 
 }
 
-#if WIRE_INCLUDE_MEMBERWISE_INITIALIZER
-extension DeprecatedProto {
-
-    @_disfavoredOverload
-    @available(*, deprecated)
-    public init(foo: String? = nil) {
-        self._foo.wrappedValue = foo
-    }
-
-}
-#endif
-
 #if !WIRE_REMOVE_EQUATABLE
 extension DeprecatedProto : Equatable {
 }
@@ -38,10 +26,8 @@ extension DeprecatedProto : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension DeprecatedProto : Sendable {
 }
-#endif
 
 extension DeprecatedProto : ProtoDefaultedValue {
 

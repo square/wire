@@ -127,10 +127,8 @@ extension Timestamp : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension Timestamp : Sendable {
 }
-#endif
 
 extension Timestamp : ProtoMessage {
 

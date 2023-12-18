@@ -16,7 +16,5 @@ public enum ForeignEnum : Int32, CaseIterable, ProtoEnum {
 
 }
 
-#if swift(>=5.5)
 extension ForeignEnum : Sendable {
 }
-#endif

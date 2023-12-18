@@ -22,10 +22,8 @@ extension MessageWithStatus : Hashable {
 }
 #endif
 
-#if swift(>=5.5)
 extension MessageWithStatus : Sendable {
 }
-#endif
 
 extension MessageWithStatus : ProtoDefaultedValue {
 
@@ -89,7 +87,5 @@ extension MessageWithStatus {
 
 }
 
-#if swift(>=5.5)
 extension MessageWithStatus.Status : Sendable {
 }
-#endif
