@@ -8,6 +8,7 @@ public struct SwiftModuleTwoMessage {
 
     @ProtoDefaulted
     public var name: String?
+    public var order: module_one.SortOrder?
     public var unknownFields: Foundation.Data = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -48,21 +49,25 @@ extension SwiftModuleTwoMessage : Proto2Codable {
 
     public init(from protoReader: ProtoReader) throws {
         var name: String? = nil
+        var order: module_one.SortOrder? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: name = try protoReader.decode(String.self)
+            case 2: order = try protoReader.decode(module_one.SortOrder.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
         self._name.wrappedValue = name
+        self.order = order
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.name)
+        try protoWriter.encode(tag: 2, value: self.order)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -74,12 +79,14 @@ extension SwiftModuleTwoMessage : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self._name.wrappedValue = try container.decodeIfPresent(String.self, forKey: "name")
+        self.order = try container.decodeIfPresent(module_one.SortOrder.self, forKey: "order")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
 
         try container.encodeIfPresent(self.name, forKey: "name")
+        try container.encodeIfPresent(self.order, forKey: "order")
     }
 
 }

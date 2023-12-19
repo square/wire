@@ -23,6 +23,12 @@ enum SwiftModuleOneEnum {
   TWO = 2;
 }
 
+// Collides with Foundation.SortOrder
+enum SortOrder {
+  DESC = 0;
+  ASC = 1;
+}
+
 message SwiftModuleOneMessage {
     required string name = 1;
 }
