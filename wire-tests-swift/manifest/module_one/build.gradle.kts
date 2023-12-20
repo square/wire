@@ -14,8 +14,8 @@ library {
   source.from(file("."))
 }
 
-tasks.matching { it.name == "compileReleaseSwift" }.configureEach {
-  dependsOn("compileDebugSwift")
+tasks.matching { it.name == "compileDebugSwift" }.configureEach {
+  dependsOn("compileReleaseSwift", "linkRelease")
 }
 tasks.getByName("spotlessJava").dependsOn("compileDebugSwift")
 tasks.getByName("spotlessKotlin").dependsOn("compileDebugSwift")
