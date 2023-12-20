@@ -1633,6 +1633,40 @@ class SwiftGenerator private constructor(
 
     fun builtInType(protoType: ProtoType): Boolean = protoType in BUILT_IN_TYPES.keys
 
+    private val SWIFT_COMMON_TYPES = setOf(
+      "Any",
+      "AnyClass",
+      "AnyObject",
+      "Array",
+      "Bool",
+      "Character",
+      "ClosedRange",
+      "Closure",
+      "Collection",
+      "Data",
+      "DataProtocol",
+      "Date",
+      "Decimal",
+      "Dictionary",
+      "Double",
+      "Error",
+      "Float",
+      "Int",
+      "NumberFormatter",
+      "Optional",
+      "Protocol",
+      "Range",
+      "Result",
+      "Sequence",
+      "Set",
+      "SortOrder",
+      "String",
+      "Tuple",
+      "URL",
+      "URLComponents",
+      "UUID",
+    )
+
     private val BUILT_IN_TYPES: Map<out ProtoType, DeclaredTypeName> = mapOf(
       ProtoType.BOOL to BOOL,
       ProtoType.BYTES to FOUNDATION_DATA,
@@ -1682,8 +1716,13 @@ class SwiftGenerator private constructor(
             enclosingClassName.nestedType(safeName, alwaysQualify = true)
           } else {
             val moduleName = existingTypeModuleName[protoType] ?: ""
-
-            DeclaredTypeName(moduleName, name)
+            // In some cases a proto declares a message that collides with built-in Foundation and Swift stdlib
+            // types. For those we always qualify the type name to disambiguate.
+            if (name in SWIFT_COMMON_TYPES) {
+              DeclaredTypeName.qualifiedTypeName("$moduleName.$name")
+            } else {
+              DeclaredTypeName(moduleName, name)
+            }
           }
 
           nameToTypeName[protoType] = className

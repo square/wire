@@ -21,6 +21,7 @@ module_one:
   roots:
   - squareup.protos.kotlin.swift_modules.SwiftModuleOneEnum
   - squareup.protos.kotlin.swift_modules.SwiftModuleOneMessage
+  - squareup.protos.kotlin.swift_modules.SortOrder
 module_two:
   roots:
   - squareup.protos.kotlin.swift_modules.SwiftModuleTwoMessage

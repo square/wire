@@ -21,6 +21,7 @@ import "swift_module_one.proto";
 
 message SwiftModuleTwoMessage {
   optional string name = 1;
+  optional SortOrder order = 2;
 
   message NestedMessage {
     repeated SwiftModuleOneEnum array_types = 1;
