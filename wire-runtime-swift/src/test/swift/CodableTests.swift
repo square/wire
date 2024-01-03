@@ -358,6 +358,19 @@ extension CodableTests {
         try assertEncode(proto: proto, expected: json)
     }
 
+    func testRedactedLargeMessageRoundTrip() throws {
+        let json = """
+        {"description":"foo"}
+        """
+
+        let proto = RedactedLargeMessage {
+            $0.description_ = "foo"
+        }
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
     func testDurationConversion() {
         guard #available(macOS 13, iOS 16, watchOS 9, tvOS 16, *) else {
             return

@@ -68,4 +68,31 @@ message RedactedLargeMessage {
   optional string x = 24;
   optional string y = 25;
   optional string z = 26;
+
+  // A large message with a redacted description causes a Swift compiler error.
+  optional string description = 27 [(squareup.protos.redacted_option.redacted) = true];
+
+  message RedactedLargeOneOf {
+    oneof action {
+      string value1 = 1;
+      string value2 = 2;
+      string value3 = 3;
+      string value4 = 4;
+      string value5 = 5;
+      string value6 = 6;
+      string value7 = 7;
+      string value8 = 8;
+      string value9 = 9;
+      string value10 = 10;
+      string value11 = 11;
+      string value12 = 12;
+      string value13 = 13;
+      string value14 = 14;
+      string value15 = 15;
+      string value16 = 16;
+
+      // A large message with a redacted description causes a Swift compiler error.
+      string description = 17 [(squareup.protos.redacted_option.redacted) = true];
+    }
+  }
 }

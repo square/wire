@@ -150,6 +150,13 @@ class SwiftGenerator private constructor(
       else -> isMap || isRepeated
     }
 
+  // TODO use a NameAllocator
+  private val Field.safeName: String
+    get() = when (name) {
+      "description" -> "description_"
+      else -> name
+    }
+
   private val Field.codableDefaultValue: String?
     get() = default?.let {
       return it
@@ -612,7 +619,7 @@ class SwiftGenerator private constructor(
               PROTO_3 -> field.proto3InitialValue
             }
 
-            addStatement("var %N: %T = %L", field.name, localType, initializer)
+            addStatement("var %N: %T = %L", field.safeName, localType, initializer)
           }
           type.oneOfs.forEach { oneOf ->
             val enumName = oneOfEnumNames.getValue(oneOf)
@@ -628,7 +635,7 @@ class SwiftGenerator private constructor(
           type.fields.forEach { field ->
             val decoder = CodeBlock.Builder()
             if (field.isMap) {
-              decoder.add("try $reader.decode(into: &%N", field.name)
+              decoder.add("try $reader.decode(into: &%N", field.safeName)
               field.keyType.encoding?.let { keyEncoding ->
                 decoder.add(", keyEncoding: .%N", keyEncoding)
               }
@@ -637,11 +644,11 @@ class SwiftGenerator private constructor(
               }
             } else {
               if (field.isRepeated) {
-                decoder.add("try $reader.decode(into: &%N", field.name)
+                decoder.add("try $reader.decode(into: &%N", field.safeName)
               } else {
                 val typeName = field.typeName.makeNonOptional()
 
-                decoder.add("%N = try $reader.decode(%T.self", field.name, typeName)
+                decoder.add("%N = try $reader.decode(%T.self", field.safeName, typeName)
               }
               field.type!!.encoding?.let { encoding ->
                 decoder.add(", encoding: .%N", encoding)
@@ -659,7 +666,7 @@ class SwiftGenerator private constructor(
                     "case %1L: %2N = (try $reader.decode(%4T.self)).flatMap { .%3N(\$0) }",
                     field.tag,
                     oneOf.name,
-                    field.name,
+                    field.safeName,
                     field.typeName.makeNonOptional(),
                   )
                 }
@@ -668,7 +675,7 @@ class SwiftGenerator private constructor(
                     "case %1L: %2N = .%3N(try $reader.decode(%4T.self))",
                     field.tag,
                     oneOf.name,
-                    field.name,
+                    field.safeName,
                     field.typeName.makeNonOptional(),
                   )
                 }
@@ -687,18 +694,18 @@ class SwiftGenerator private constructor(
 
             val initializer = when (type.syntax) {
               PROTO_2 -> if (field.isOptional || field.isRepeated || field.isMap) {
-                CodeBlock.of("%N", field.name)
+                CodeBlock.of("%N", field.safeName)
               } else {
-                CodeBlock.of("try %1T.checkIfMissing(%2N, %2S)", structType, field.name)
+                CodeBlock.of("try %1T.checkIfMissing(%2N, %3S)", structType, field.safeName, field.name)
               }
               PROTO_3 -> if (field.isEnum && !field.isRepeated) {
-                CodeBlock.of("try %1T.defaultIfMissing(%2N)", field.typeName.makeNonOptional(), field.name)
+                CodeBlock.of("try %1T.defaultIfMissing(%2N)", field.typeName.makeNonOptional(), field.safeName)
               } else {
-                CodeBlock.of("%N", field.name)
+                CodeBlock.of("%N", field.safeName)
               }
             }
 
-            val fieldName = if (hasPropertyWrapper) { "_${field.name}" } else { field.name }
+            val fieldName = if (hasPropertyWrapper) { "_${field.safeName}" } else { field.safeName }
             addStatement(
               if (hasPropertyWrapper) {
                 "self.%N.wrappedValue = %L"
@@ -725,7 +732,7 @@ class SwiftGenerator private constructor(
         .apply {
           type.fields.forEach { field ->
             if (field.isMap) {
-              addCode("try $writer.encode(tag: %L, value: self.%N", field.tag, field.name)
+              addCode("try $writer.encode(tag: %L, value: self.%N", field.tag, field.safeName)
               field.keyType.encoding?.let { keyEncoding ->
                 addCode(", keyEncoding: .%N", keyEncoding)
               }
@@ -734,7 +741,7 @@ class SwiftGenerator private constructor(
               }
               addCode(")\n")
             } else {
-              addCode("try $writer.encode(tag: %L, value: self.%N", field.tag, field.name)
+              addCode("try $writer.encode(tag: %L, value: self.%N", field.tag, field.safeName)
               field.type!!.encoding?.let { encoding ->
                 addCode(", encoding: .%N", encoding)
               }
@@ -886,7 +893,7 @@ class SwiftGenerator private constructor(
                     .map { CodeBlock.of("%S", it) }
                     .joinToCode()
 
-                  val fieldName = if (hasPropertyWrapper) { "_${field.name}" } else { field.name }
+                  val fieldName = if (hasPropertyWrapper) { "_${field.safeName}" } else { field.safeName }
                   val prefix = if (hasPropertyWrapper) { "self.%1N.wrappedValue" } else { "self.%1N" }
                   addStatement(
                     "$prefix = try container.$decode($typeArg%2T.self, $forKeys: $keys)",
@@ -912,7 +919,7 @@ class SwiftGenerator private constructor(
                       beginControlFlow(
                         "if",
                         "let %1N = try container.decodeIfPresent(%2T.self, forKey: %3S)",
-                        field.name,
+                        field.safeName,
                         typeName,
                         keyName,
                       )
@@ -920,12 +927,12 @@ class SwiftGenerator private constructor(
                       nextControlFlow(
                         "else if",
                         "let %1N = try container.decodeIfPresent(%2T.self, forKey: %3S)",
-                        field.name,
+                        field.safeName,
                         typeName,
                         keyName,
                       )
                     }
-                    addStatement("self.%1N = .%2N(%2N)", oneOf.name, field.name)
+                    addStatement("self.%1N = .%2N(%2N)", oneOf.name, field.safeName)
                   }
                   nextControlFlow("else", "")
                   addStatement("self.%N = nil", oneOf.name)
@@ -968,13 +975,14 @@ class SwiftGenerator private constructor(
 
                     val (keys, args) = field.codableName?.let { codableName ->
                       Pair(
-                        "preferCamelCase ? %2S : %1S",
+                        "preferCamelCase ? %3S : %2S",
                         arrayOf(field.name, codableName),
                       )
-                    } ?: Pair("%1S", arrayOf(field.name))
+                    } ?: Pair("%2S", arrayOf(field.name))
 
                     addStatement(
                       "try container.$encode(${typeArg}self.%1N, forKey: $keys)",
+                      field.safeName,
                       *args,
                     )
                   }
@@ -987,15 +995,15 @@ class SwiftGenerator private constructor(
                     // in the JSON-encoded output, even if it is the default value.
                     addEncode()
                   } else if (field.isCollection) {
-                    beginControlFlow("if", "includeDefaults || !self.%N.isEmpty", field.name)
+                    beginControlFlow("if", "includeDefaults || !self.%N.isEmpty", field.safeName)
                     addEncode()
                     endControlFlow("if")
                   } else if (field.isEnum) {
-                    beginControlFlow("if", "includeDefaults || self.%N.rawValue != 0", field.name)
+                    beginControlFlow("if", "includeDefaults || self.%N.rawValue != 0", field.safeName)
                     addEncode()
                     endControlFlow("if")
                   } else if (defaultValue != null) {
-                    beginControlFlow("if", "includeDefaults || self.%N != $defaultValue", field.name)
+                    beginControlFlow("if", "includeDefaults || self.%N != $defaultValue", field.safeName)
                     addEncode()
                     endControlFlow("if")
                   } else {
@@ -1010,13 +1018,14 @@ class SwiftGenerator private constructor(
                   oneOf.fields.forEach { field ->
                     val (keys, args) = field.codableName?.let { codableName ->
                       Pair(
-                        "preferCamelCase ? %2S : %1S",
+                        "preferCamelCase ? %3S : %2S",
                         arrayOf(field.name, codableName),
                       )
-                    } ?: Pair("%1S", arrayOf(field.name))
+                    } ?: Pair("%2S", arrayOf(field.name))
 
                     addStatement(
                       "case .%1N(let %1N): try container.encode(%1N, forKey: $keys)",
+                      field.safeName,
                       *args,
                     )
                   }
@@ -1048,7 +1057,7 @@ class SwiftGenerator private constructor(
   ) = apply {
     type.fields.filter(fieldsFilter).forEach { field ->
       addParameter(
-        ParameterSpec.builder(field.name, field.typeName)
+        ParameterSpec.builder(field.safeName, field.typeName)
           .apply {
             if (includeDefaults) {
               withFieldDefault(field)
@@ -1104,7 +1113,7 @@ class SwiftGenerator private constructor(
         .apply {
           val storageParams = mutableListOf<CodeBlock>()
           type.fields.filter { it.isRequiredParameter }.forEach { field ->
-            storageParams += CodeBlock.of("%1N: %1N", field.name)
+            storageParams += CodeBlock.of("%1N: %1N", field.safeName)
           }
 
           if (needsConfigure) {
@@ -1162,7 +1171,7 @@ class SwiftGenerator private constructor(
         .apply {
           type.fields.filter { it.isRequiredParameter }.forEach { field ->
             val hasPropertyWrapper = !isIndirect(type, field) && (field.defaultedValue != null || field.isProtoDefaulted)
-            val fieldName = if (hasPropertyWrapper) { "_${field.name}" } else { field.name }
+            val fieldName = if (hasPropertyWrapper) { "_${field.safeName}" } else { field.safeName }
             addStatement(
               if (hasPropertyWrapper) {
                 "self.%1N.wrappedValue = %2N"
@@ -1170,7 +1179,7 @@ class SwiftGenerator private constructor(
                 "self.%1N = %2N"
               },
               fieldName,
-              field.name,
+              field.safeName,
             )
           }
           if (needsConfigure) {
@@ -1193,7 +1202,7 @@ class SwiftGenerator private constructor(
     }
 
     type.fields.forEach { field ->
-      val property = PropertySpec.varBuilder(field.name, field.typeName, visibility)
+      val property = PropertySpec.varBuilder(field.safeName, field.typeName, visibility)
       if (!forStorageType && field.documentation.isNotBlank()) {
         property.addDoc("%L\n", field.documentation.sanitizeDoc())
       }
@@ -1351,15 +1360,15 @@ class SwiftGenerator private constructor(
     addProperty(subscript)
 
     type.fields.forEach { field ->
-      val property = PropertySpec.varBuilder(field.name, field.typeName, PUBLIC)
+      val property = PropertySpec.varBuilder(field.safeName, field.typeName, PUBLIC)
         .getter(
           FunctionSpec.getterBuilder()
-            .addStatement("%N.%N", storageName, field.name)
+            .addStatement("%N.%N", storageName, field.safeName)
             .build(),
         )
         .setter(
           FunctionSpec.setterBuilder()
-            .addStatement("%N.%N = newValue", storageName, field.name)
+            .addStatement("%N.%N = newValue", storageName, field.safeName)
             .build(),
         )
 
@@ -1429,7 +1438,7 @@ class SwiftGenerator private constructor(
           .apply {
             oneOf.fields.forEach { oneOfField ->
               addEnumCase(
-                EnumerationCaseSpec.builder(oneOfField.name, oneOfField.typeName.makeNonOptional())
+                EnumerationCaseSpec.builder(oneOfField.safeName, oneOfField.typeName.makeNonOptional())
                   .apply {
                     if (oneOfField.documentation.isNotBlank()) {
                       addDoc("%L\n", oneOfField.documentation.sanitizeDoc())
@@ -1452,7 +1461,7 @@ class SwiftGenerator private constructor(
                 oneOf.fields.forEach { field ->
                   addStatement(
                     "case .%1N(let %1N): try $writer.encode(tag: %2L, value: %1N)",
-                    field.name,
+                    field.safeName,
                     field.tag,
                   )
                 }
