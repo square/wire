@@ -28,7 +28,7 @@ import io.grpc.stub.ClientCalls.asyncUnaryCall as clientCallsAsyncUnaryCall
 import io.grpc.stub.ServerCalls.asyncUnaryCall as serverCallsAsyncUnaryCall
 
 public object FooServiceWireGrpc {
-  public val SERVICE_NAME: String = "foo.FooService"
+  public const val SERVICE_NAME: String = "foo.FooService"
 
   @Volatile
   private var serviceDescriptor: ServiceDescriptor? = null

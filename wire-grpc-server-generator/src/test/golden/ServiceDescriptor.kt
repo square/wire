@@ -12,7 +12,7 @@ import kotlin.collections.Set
 import kotlin.jvm.Volatile
 
 public class RouteGuideWireGrpc {
-  public val SERVICE_NAME: String = "routeguide.RouteGuide"
+  public const val SERVICE_NAME: String = "routeguide.RouteGuide"
 
   @Volatile
   private var serviceDescriptor: ServiceDescriptor? = null

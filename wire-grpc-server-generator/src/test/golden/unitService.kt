@@ -25,7 +25,7 @@ import kotlin.jvm.JvmOverloads
 import kotlin.jvm.Volatile
 
 public object MyServiceWireGrpc {
-  public val SERVICE_NAME: String = "MyService"
+  public const val SERVICE_NAME: String = "MyService"
 
   @Volatile
   private var serviceDescriptor: ServiceDescriptor? = null
