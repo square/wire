@@ -16,6 +16,7 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.WireLogger
+import okio.Path
 
 /**
  * Create and return an instance of [WireLogger.Factory].
@@ -25,6 +26,26 @@ import com.squareup.wire.WireLogger
  */
 fun newLoggerFactory(loggerFactoryClass: String): WireLogger.Factory {
   return ClassNameLoggerFactory(loggerFactoryClass)
+}
+
+class EmptyWireLoggerFactory : WireLogger.Factory {
+  override fun create(): WireLogger {
+    return EmptyWireLogger()
+  }
+}
+
+class EmptyWireLogger : WireLogger {
+  override fun artifactHandled(
+    outputPath: Path,
+    qualifiedName: String,
+    targetName: String,
+  ) = Unit
+
+  override fun artifactSkipped(type: ProtoType, targetName: String) = Unit
+  override fun unusedRoots(unusedRoots: Set<String>) = Unit
+  override fun unusedPrunes(unusedPrunes: Set<String>) = Unit
+  override fun unusedIncludesInTarget(unusedIncludes: Set<String>) = Unit
+  override fun unusedExcludesInTarget(unusedExcludes: Set<String>) = Unit
 }
 
 /**
