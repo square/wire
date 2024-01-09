@@ -72,4 +72,24 @@ final class RedactableTests: XCTestCase {
             RedactedLargeMessage.RedactedKeys.a
         )
     }
+    
+    func testLargeMessageRedactedUnsafeNameField() {
+        let redacted = RedactedLargeMessage {
+            $0.description_ = "foo"
+        }
+        XCTAssertEqual(
+            redacted.description,
+            "Storage(a: <redacted>, b: ProtoDefaulted<String>(wrappedValue: nil), c: ProtoDefaulted<String>(wrappedValue: nil), d: ProtoDefaulted<String>(wrappedValue: nil), e: ProtoDefaulted<String>(wrappedValue: nil), f: ProtoDefaulted<String>(wrappedValue: nil), g: ProtoDefaulted<String>(wrappedValue: nil), h: ProtoDefaulted<String>(wrappedValue: nil), i: ProtoDefaulted<String>(wrappedValue: nil), j: ProtoDefaulted<String>(wrappedValue: nil), k: ProtoDefaulted<String>(wrappedValue: nil), l: ProtoDefaulted<String>(wrappedValue: nil), m: ProtoDefaulted<String>(wrappedValue: nil), n: ProtoDefaulted<String>(wrappedValue: nil), o: ProtoDefaulted<String>(wrappedValue: nil), p: ProtoDefaulted<String>(wrappedValue: nil), q: ProtoDefaulted<String>(wrappedValue: nil), r: ProtoDefaulted<String>(wrappedValue: nil), s: ProtoDefaulted<String>(wrappedValue: nil), t: ProtoDefaulted<String>(wrappedValue: nil), u: ProtoDefaulted<String>(wrappedValue: nil), v: ProtoDefaulted<String>(wrappedValue: nil), w: ProtoDefaulted<String>(wrappedValue: nil), x: ProtoDefaulted<String>(wrappedValue: nil), y: ProtoDefaulted<String>(wrappedValue: nil), z: ProtoDefaulted<String>(wrappedValue: nil), description: <redacted>, unknownFields: 0 bytes)"
+        )
+    }
+
+    func testLargeMessageRedactedUnsafeOneOfField() {
+        let redacted = RedactedLargeMessage.RedactedLargeOneOf() {
+            $0.action = .description_("foo")
+        }
+        XCTAssertEqual(
+            redacted.action!.description,
+            "Action(description: <redacted>)"
+        )
+    }
 }

@@ -48,6 +48,9 @@ extension Redactable {
             if (label.hasPrefix("_")) {
                 strippedLabel = String(label.dropFirst(1))
             }
+            if (strippedLabel.hasSuffix("_")) {
+                strippedLabel = String(strippedLabel.dropLast(1))
+            }
             if RedactedKeys(rawValue: strippedLabel) != nil {
                 // This is a redacted field, but if it's nil then that's ok to print
                 if "\(value)" != "nil" {
