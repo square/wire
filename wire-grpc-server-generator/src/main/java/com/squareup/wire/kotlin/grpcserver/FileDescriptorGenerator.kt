@@ -81,17 +81,20 @@ object FileDescriptorGenerator {
   ) {
 
     val descriptorMapInitializer = CodeBlock.builder()
+    val initLines = mutableListOf<String>()
     val encodedListChunked: List<List<Pair<String, String>>> =
       encoded.toList().chunked(DM_CHUNK_SIZE)
     encodedListChunked.forEachIndexed { index: Int, subEncodedList: List<Pair<String, String>> ->
       subDescriptorMapCodeBlock(builder, subEncodedList, index)
+      if (index > 0) {
+        initLines.add(" +\n")
+      }
+      initLines.add("$DESCRIPTOR_MAP_FUNCTION_PREFIX$index()")
+    }
+
+    initLines.forEach { line ->
       descriptorMapInitializer.withIndent {
-        val plusSign = if (index > 0) {
-          "+ "
-        } else {
-          ""
-        }
-        this.addStatement("$plusSign$DESCRIPTOR_MAP_FUNCTION_PREFIX$index")
+        addStatement(line)
       }
     }
 
