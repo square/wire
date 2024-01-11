@@ -79,7 +79,6 @@ object FileDescriptorGenerator {
     builder: TypeSpec.Builder,
     encoded: MutableMap<String, String>,
   ) {
-    val descriptorMapInitializer = CodeBlock.builder()
     val initLines = mutableListOf<String>()
     val encodedListChunked: List<List<Pair<String, String>>> =
       encoded.toList().chunked(DM_CHUNK_SIZE)
@@ -91,12 +90,6 @@ object FileDescriptorGenerator {
       initLines.add("$DESCRIPTOR_MAP_FUNCTION_PREFIX$index()")
     }
 
-    descriptorMapInitializer.withIndent {
-      initLines.forEach { line ->
-        addStatement(line)
-      }
-    }
-
     builder.addProperty(
       PropertySpec
         .builder(
@@ -105,7 +98,11 @@ object FileDescriptorGenerator {
         )
         .addModifiers(KModifier.PRIVATE)
         .initializer(
-          descriptorMapInitializer.build(),
+          CodeBlock.builder().withIndent {
+            initLines.forEach { line ->
+              addStatement(line)
+            }
+          }.build(),
         ).build(),
     )
   }
