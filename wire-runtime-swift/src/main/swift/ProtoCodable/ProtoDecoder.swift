@@ -124,6 +124,12 @@ public final class ProtoDecoder {
 
     // MARK: - Public Methods
 
+    /// Decodes the provided data into an instance of the requested type.
+    ///
+    /// - Parameters:
+    ///   - type: the type to decode
+    ///   - data: the serialized data for the message
+    /// - Returns: the decoded message
     public func decode<T: ProtoDecodable>(_ type: T.Type, from data: Data) throws -> T {
         var value: T?
         try data.withUnsafeBytes { buffer in
@@ -147,5 +153,50 @@ public final class ProtoDecoder {
         return unwrappedValue
     }
 
-}
+    /// Decodes the provided size-delimited data into instances of the requested type.
+    ///
+    /// A size-delimited collection of messages is a sequence of varint + message pairs
+    /// where the varint indicates the size of the subsequent message.
+    ///
+    /// - Parameters:
+    ///   - type: the type to decode
+    ///   - data: the serialized size-delimited data for the messages
+    /// - Returns: an array of the decoded messages
+    public func decodeSizeDelimited<T: ProtoDecodable>(_ type: T.Type, from data: Foundation.Data) throws -> [T] {
+        var values: [T] = []
 
+        try data.withUnsafeBytes { buffer in
+            // Handle the empty-data case.
+            guard let baseAddress = buffer.baseAddress, buffer.count > 0 else {
+                return
+            }
+
+            let fullBuffer = ReadBuffer(
+                storage: baseAddress.bindMemory(to: UInt8.self, capacity: buffer.count),
+                count: buffer.count
+            )
+
+            while fullBuffer.isDataRemaining, let size = try? fullBuffer.readVarint64() {
+                if size == 0 { break }
+
+                let messageBuffer = ReadBuffer(
+                    storage: fullBuffer.pointer,
+                    count: Int(size)
+                )
+
+                let reader = ProtoReader(
+                    buffer: messageBuffer,
+                    enumDecodingStrategy: enumDecodingStrategy
+                )
+
+                values.append(try reader.decode(type))
+
+                // Advance the buffer before reading the next item in the stream
+                _ = try fullBuffer.readBuffer(count: Int(size))
+            }
+        }
+
+        return values
+    }
+
+}
