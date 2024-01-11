@@ -119,9 +119,11 @@ object FileDescriptorGenerator {
         .addModifiers(KModifier.PRIVATE)
         .returns(descriptorMapClass)
         .addCode(
-          encodedList.fold(CodeBlock.builder().addStatement("return mapOf(")) { b, (name, data) ->
+          encodedList.fold(
+            CodeBlock.builder().addStatement("val subMap = mapOf(")
+          ) { b, (name, data) ->
             b.withIndent {
-              this.addStatement("\"$name\" to descriptorFor(arrayOf(")
+              addStatement("\"$name\" to descriptorFor(arrayOf(")
                 // Split the string to chunks because max string length in a class file is 64k bytes
                 .withIndent {
                   data.chunked(FDS_CHUNK_SIZE).fold(this) { b, c ->
@@ -129,8 +131,10 @@ object FileDescriptorGenerator {
                   }
                 }.addStatement(")),")
             }
-          }.addStatement(")").build(),
-        ).build(),
+          }.addStatement(")")
+            .addStatement("return subMap")
+            .build(),
+        ).build()
     )
   }
 
