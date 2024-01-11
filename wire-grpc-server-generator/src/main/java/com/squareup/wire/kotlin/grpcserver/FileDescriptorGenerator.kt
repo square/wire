@@ -79,7 +79,6 @@ object FileDescriptorGenerator {
     builder: TypeSpec.Builder,
     encoded: MutableMap<String, String>,
   ) {
-
     val descriptorMapInitializer = CodeBlock.builder()
     val initLines = mutableListOf<String>()
     val encodedListChunked: List<List<Pair<String, String>>> =
@@ -92,8 +91,8 @@ object FileDescriptorGenerator {
       initLines.add("$DESCRIPTOR_MAP_FUNCTION_PREFIX$index()")
     }
 
-    initLines.forEach { line ->
-      descriptorMapInitializer.withIndent {
+    descriptorMapInitializer.withIndent {
+      initLines.forEach { line ->
         addStatement(line)
       }
     }
@@ -122,7 +121,7 @@ object FileDescriptorGenerator {
         .addModifiers(KModifier.PRIVATE)
         .returns(descriptorMapClass)
         .addCode(
-          encodedList.fold(CodeBlock.builder().addStatement("return mapOf(")) { b, (name, data) ->
+          encodedList.fold(CodeBlock.builder().add("return mapOf(")) { b, (name, data) ->
             b.withIndent {
               this.addStatement("\"$name\" to descriptorFor(arrayOf(")
                 // Split the string to chunks because max string length in a class file is 64k bytes
