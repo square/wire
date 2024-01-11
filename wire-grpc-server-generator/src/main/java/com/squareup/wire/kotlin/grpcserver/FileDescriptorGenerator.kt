@@ -86,7 +86,7 @@ object FileDescriptorGenerator {
     encodedListChunked.forEachIndexed { index: Int, subEncodedList: List<Pair<String, String>> ->
       subDescriptorMapCodeBlock(builder, subEncodedList, index)
       if (index > 0) {
-        initLines.add(" +\n")
+        initLines[index - 1] += " +\n"
       }
       initLines.add("$DESCRIPTOR_MAP_FUNCTION_PREFIX$index()")
     }
