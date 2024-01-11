@@ -29,6 +29,7 @@ import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.internal.SchemaEncoder
 
 object FileDescriptorGenerator {
+
   private val descriptorMapClass = Map::class.parameterizedBy(
     String::class,
     DescriptorProtos.FileDescriptorProto::class,
@@ -100,7 +101,7 @@ object FileDescriptorGenerator {
         .initializer(
           CodeBlock.builder().withIndent {
             initLines.forEach { line ->
-              addStatement(line)
+              this.addStatement(line)
             }
           }.build(),
         ).build(),
@@ -118,7 +119,7 @@ object FileDescriptorGenerator {
         .addModifiers(KModifier.PRIVATE)
         .returns(descriptorMapClass)
         .addCode(
-          encodedList.fold(CodeBlock.builder().add("return mapOf(")) { b, (name, data) ->
+          encodedList.fold(CodeBlock.builder().addStatement("return mapOf(")) { b, (name, data) ->
             b.withIndent {
               this.addStatement("\"$name\" to descriptorFor(arrayOf(")
                 // Split the string to chunks because max string length in a class file is 64k bytes
