@@ -172,6 +172,6 @@ object FileDescriptorGenerator {
   }
 
   private const val FDS_CHUNK_SIZE = 80
-  private const val DM_CHUNK_SIZE = 100
+  private const val DM_CHUNK_SIZE = 20
   private const val DESCRIPTOR_MAP_FUNCTION_PREFIX = "createDescriptorMap"
 }
