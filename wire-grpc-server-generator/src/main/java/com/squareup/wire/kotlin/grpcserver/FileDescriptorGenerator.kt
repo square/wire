@@ -91,6 +91,13 @@ object FileDescriptorGenerator {
       initLines.add("$DESCRIPTOR_MAP_FUNCTION_PREFIX$index()")
     }
 
+    val initializerBuilder = CodeBlock.builder()
+    initLines.forEach { line ->
+      initializerBuilder.withIndent {
+        addStatement(line)
+      }
+    }
+
     builder.addProperty(
       PropertySpec
         .builder(
@@ -99,11 +106,7 @@ object FileDescriptorGenerator {
         )
         .addModifiers(KModifier.PRIVATE)
         .initializer(
-          CodeBlock.builder().withIndent {
-            initLines.forEach { line ->
-              this.addStatement(line)
-            }
-          }.build(),
+          initializerBuilder.build(),
         ).build(),
     )
   }
@@ -120,7 +123,7 @@ object FileDescriptorGenerator {
         .returns(descriptorMapClass)
         .addCode(
           encodedList.fold(
-            CodeBlock.builder().addStatement("val subMap = mapOf(")
+            CodeBlock.builder().addStatement("val subMap = mapOf("),
           ) { b, (name, data) ->
             b.withIndent {
               addStatement("\"$name\" to descriptorFor(arrayOf(")
@@ -134,7 +137,7 @@ object FileDescriptorGenerator {
           }.addStatement(")")
             .addStatement("return subMap")
             .build(),
-        ).build()
+        ).build(),
     )
   }
 

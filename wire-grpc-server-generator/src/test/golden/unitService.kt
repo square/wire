@@ -30,17 +30,8 @@ public object MyServiceWireGrpc {
   @Volatile
   private var serviceDescriptor: ServiceDescriptor? = null
 
-  private val descriptorMap: Map<String, DescriptorProtos.FileDescriptorProto> = mapOf(
-    "service.proto" to descriptorFor(arrayOf(
-      "Cg1zZXJ2aWNlLnByb3RvGhtnb29nbGUvcHJvdG9idWYvZW1wdHkucHJvdG8ySgoJTXlTZXJ2aWNlEj0K",
-      "C2RvU29tZXRoaW5nEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5",
-      "YgZwcm90bzM=",
-    )),
-    "google/protobuf/empty.proto" to descriptorFor(arrayOf(
-      "Chtnb29nbGUvcHJvdG9idWYvZW1wdHkucHJvdG8SD2dvb2dsZS5wcm90b2J1ZiIHCgVFbXB0eWIGcHJv",
-      "dG8z",
-    )),
-  )
+  private val descriptorMap: Map<String, DescriptorProtos.FileDescriptorProto> =
+      createDescriptorMap0()
 
 
   @Volatile
@@ -57,6 +48,21 @@ public object MyServiceWireGrpc {
     val deps = proto.dependencyList.filter { !visited.contains(it) }.map { fileDescriptor(it,
         visited + path) }
     return Descriptors.FileDescriptor.buildFrom(proto, deps.toTypedArray())
+  }
+
+  private fun createDescriptorMap0(): Map<String, DescriptorProtos.FileDescriptorProto> {
+    val subMap = mapOf(
+      "service.proto" to descriptorFor(arrayOf(
+        "Cg1zZXJ2aWNlLnByb3RvGhtnb29nbGUvcHJvdG9idWYvZW1wdHkucHJvdG8ySgoJTXlTZXJ2aWNlEj0K",
+        "C2RvU29tZXRoaW5nEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5",
+        "YgZwcm90bzM=",
+      )),
+      "google/protobuf/empty.proto" to descriptorFor(arrayOf(
+        "Chtnb29nbGUvcHJvdG9idWYvZW1wdHkucHJvdG8SD2dvb2dsZS5wcm90b2J1ZiIHCgVFbXB0eWIGcHJv",
+        "dG8z",
+      )),
+    )
+    return subMap
   }
 
   public fun getServiceDescriptor(): ServiceDescriptor? {
