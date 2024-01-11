@@ -113,7 +113,7 @@ object FileDescriptorGenerator {
   private fun subDescriptorMapCodeBlock(
     builder: TypeSpec.Builder,
     encodedList: List<Pair<String, String>>,
-    index: Int = 0,
+    index: Int,
   ) {
     builder.addFunction(
       FunSpec
