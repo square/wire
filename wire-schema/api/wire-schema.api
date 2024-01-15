@@ -89,6 +89,21 @@ public final class com/squareup/wire/schema/EmittingRules$Builder {
 public final class com/squareup/wire/schema/EmittingRules$Companion {
 }
 
+public final class com/squareup/wire/schema/EmptyWireLogger : com/squareup/wire/WireLogger {
+	public fun <init> ()V
+	public fun artifactHandled (Lokio/Path;Ljava/lang/String;Ljava/lang/String;)V
+	public fun artifactSkipped (Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;)V
+	public fun unusedExcludesInTarget (Ljava/util/Set;)V
+	public fun unusedIncludesInTarget (Ljava/util/Set;)V
+	public fun unusedPrunes (Ljava/util/Set;)V
+	public fun unusedRoots (Ljava/util/Set;)V
+}
+
+public final class com/squareup/wire/schema/EmptyWireLoggerFactory : com/squareup/wire/WireLogger$Factory {
+	public fun <init> ()V
+	public fun create ()Lcom/squareup/wire/WireLogger;
+}
+
 public final class com/squareup/wire/schema/EnclosingType : com/squareup/wire/schema/Type {
 	public fun <init> (Lcom/squareup/wire/schema/Location;Lcom/squareup/wire/schema/ProtoType;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lcom/squareup/wire/Syntax;)V
 	public final fun component1 ()Lcom/squareup/wire/schema/Location;

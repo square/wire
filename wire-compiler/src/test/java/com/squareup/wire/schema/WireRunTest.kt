@@ -937,7 +937,7 @@ class WireRunTest {
       context = SchemaHandler.Context(
         fileSystem = fs,
         outDirectory = "out".toPath(),
-        logger = NULL_LOGGER,
+        logger = EmptyWireLogger(),
         errorCollector = errorCollector,
         claimedPaths = ClaimedPaths(),
       ),
@@ -1715,26 +1715,6 @@ class WireRunTest {
 
     override fun unusedExcludesInTarget(unusedExcludes: Set<String>) {
       logs.add("unusedExcludesInTarget: $unusedExcludes")
-    }
-  }
-
-  class CustomLoggerFactory : WireLogger.Factory {
-    override fun create(): WireLogger = CustomLogger()
-  }
-
-  companion object {
-    private val NULL_LOGGER = object : WireLogger {
-      override fun artifactHandled(
-        outputPath: Path,
-        qualifiedName: String,
-        targetName: String,
-      ) = Unit
-
-      override fun artifactSkipped(type: ProtoType, targetName: String) = Unit
-      override fun unusedRoots(unusedRoots: Set<String>) = Unit
-      override fun unusedPrunes(unusedPrunes: Set<String>) = Unit
-      override fun unusedIncludesInTarget(unusedIncludes: Set<String>) = Unit
-      override fun unusedExcludesInTarget(unusedExcludes: Set<String>) = Unit
     }
   }
 }
