@@ -37,7 +37,7 @@ object ServiceDescriptorGenerator {
       PropertySpec.builder(
         name = "SERVICE_NAME",
         type = String::class,
-        modifiers = emptyList(),
+        modifiers = listOf(KModifier.CONST),
       )
         .initializer("\"${service.type}\"")
         .build(),

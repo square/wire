@@ -38,7 +38,7 @@ import io.grpc.stub.ServerCalls.asyncServerStreamingCall as serverCallsAsyncServ
 import io.grpc.stub.ServerCalls.asyncUnaryCall as serverCallsAsyncUnaryCall
 
 public object RouteGuideWireGrpc {
-  public val SERVICE_NAME: String = "routeguide.RouteGuide"
+  public const val SERVICE_NAME: String = "routeguide.RouteGuide"
 
   @Volatile
   private var serviceDescriptor: ServiceDescriptor? = null
