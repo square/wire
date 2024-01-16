@@ -17,6 +17,8 @@ package com.squareup.wire
 
 import com.squareup.wire.internal.NANOS_PER_SECOND
 import com.squareup.wire.internal.addExactLong
+import com.squareup.wire.internal.commonEquals
+import com.squareup.wire.internal.commonHashCode
 import com.squareup.wire.internal.floorDivLong
 import com.squareup.wire.internal.floorModLong
 
@@ -26,6 +28,10 @@ actual class Instant internal constructor(
 ) {
   actual fun getEpochSecond(): Long = epochSeconds
   actual fun getNano(): Int = nanos
+
+  override fun equals(other: Any?): Boolean = commonEquals(other)
+
+  override fun hashCode(): Int = commonHashCode()
 }
 
 actual fun ofEpochSecond(epochSecond: Long, nano: Long): Instant {
