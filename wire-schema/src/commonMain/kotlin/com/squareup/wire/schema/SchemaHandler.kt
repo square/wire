@@ -192,7 +192,7 @@ abstract class SchemaHandler {
   /** Implementations of this interface must have a no-arguments public constructor. */
   @JvmDefaultWithCompatibility
   interface Factory : Serializable {
-    @Deprecated("Wire does not call this method anymore. Implement the other 'create' method to receive the payload associated with the schema handler.")
+    @Deprecated("Wire does not call this method anymore. Implement the other 'create' method to receive the payload associated with the schema handler. This method will be removed in Wire 5.")
     fun create(): SchemaHandler
 
     // TODO(Benoit) At some point, let's make this method without any defaults so that new consumers
