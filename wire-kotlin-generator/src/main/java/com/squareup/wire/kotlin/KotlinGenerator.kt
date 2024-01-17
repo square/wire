@@ -851,7 +851,7 @@ class KotlinGenerator private constructor(
       "return %L",
       fieldNames
         .map { CodeBlock.of("%N", it) }
-        .joinToString(prefix = className.simpleName + "(", postfix = ")"),
+        .joinToCode(prefix = className.simpleName + "(", suffix = ")"),
     )
     return result.build()
   }
