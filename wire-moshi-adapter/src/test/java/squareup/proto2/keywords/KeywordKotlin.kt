@@ -304,11 +304,11 @@ public class KeywordKotlin(
         KeywordKotlinEnum.object_
       ) {
         override fun fromValue(`value`: Int): KeywordKotlinEnum? =
-            KeywordKotlinEnum.fromValue(value)
+            KeywordKotlinEnum.fromValue(`value`)
       }
 
       @JvmStatic
-      public fun fromValue(`value`: Int): KeywordKotlinEnum? = when (value) {
+      public fun fromValue(`value`: Int): KeywordKotlinEnum? = when (`value`) {
         0 -> object_
         1 -> when_
         2 -> fun_

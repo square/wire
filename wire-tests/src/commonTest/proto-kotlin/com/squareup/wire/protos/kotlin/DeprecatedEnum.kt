@@ -32,11 +32,11 @@ public enum class DeprecatedEnum(
       PROTO_2, 
       null
     ) {
-      override fun fromValue(`value`: Int): DeprecatedEnum? = DeprecatedEnum.fromValue(value)
+      override fun fromValue(`value`: Int): DeprecatedEnum? = DeprecatedEnum.fromValue(`value`)
     }
 
     @JvmStatic
-    public fun fromValue(`value`: Int): DeprecatedEnum? = when (value) {
+    public fun fromValue(`value`: Int): DeprecatedEnum? = when (`value`) {
       1 -> @Suppress("DEPRECATION") DISABLED
       2 -> @Suppress("DEPRECATION") ENABLED
       3 -> ON

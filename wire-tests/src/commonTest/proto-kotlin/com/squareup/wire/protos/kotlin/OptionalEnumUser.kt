@@ -137,11 +137,11 @@ public class OptionalEnumUser(
         PROTO_2, 
         null
       ) {
-        override fun fromValue(`value`: Int): OptionalEnum? = OptionalEnum.fromValue(value)
+        override fun fromValue(`value`: Int): OptionalEnum? = OptionalEnum.fromValue(`value`)
       }
 
       @JvmStatic
-      public fun fromValue(`value`: Int): OptionalEnum? = when (value) {
+      public fun fromValue(`value`: Int): OptionalEnum? = when (`value`) {
         1 -> FOO
         2 -> BAR
         else -> null

@@ -26,11 +26,12 @@ public enum class NegativeValueEnum(
       PROTO_2, 
       null
     ) {
-      override fun fromValue(`value`: Int): NegativeValueEnum? = NegativeValueEnum.fromValue(value)
+      override fun fromValue(`value`: Int): NegativeValueEnum? =
+          NegativeValueEnum.fromValue(`value`)
     }
 
     @JvmStatic
-    public fun fromValue(`value`: Int): NegativeValueEnum? = when (value) {
+    public fun fromValue(`value`: Int): NegativeValueEnum? = when (`value`) {
       -1 -> DO_NOT_USE
       else -> null
     }

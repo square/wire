@@ -264,11 +264,11 @@ public class MappyTwo(
         PROTO_2, 
         ValueEnum.DEFAULT
       ) {
-        override fun fromValue(`value`: Int): ValueEnum? = ValueEnum.fromValue(value)
+        override fun fromValue(`value`: Int): ValueEnum? = ValueEnum.fromValue(`value`)
       }
 
       @JvmStatic
-      public fun fromValue(`value`: Int): ValueEnum? = when (value) {
+      public fun fromValue(`value`: Int): ValueEnum? = when (`value`) {
         0 -> DEFAULT
         1 -> FOO
         2 -> BAR

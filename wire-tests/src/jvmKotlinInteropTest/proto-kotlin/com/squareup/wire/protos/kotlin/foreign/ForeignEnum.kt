@@ -27,11 +27,11 @@ public enum class ForeignEnum(
       PROTO_2, 
       ForeignEnum.BAV
     ) {
-      override fun fromValue(`value`: Int): ForeignEnum? = ForeignEnum.fromValue(value)
+      override fun fromValue(`value`: Int): ForeignEnum? = ForeignEnum.fromValue(`value`)
     }
 
     @JvmStatic
-    public fun fromValue(`value`: Int): ForeignEnum? = when (value) {
+    public fun fromValue(`value`: Int): ForeignEnum? = when (`value`) {
       0 -> BAV
       1 -> BAX
       else -> null

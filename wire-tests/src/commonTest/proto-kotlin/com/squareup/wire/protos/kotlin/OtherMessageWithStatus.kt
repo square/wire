@@ -103,11 +103,11 @@ public class OtherMessageWithStatus(
         PROTO_2, 
         null
       ) {
-        override fun fromValue(`value`: Int): Status? = Status.fromValue(value)
+        override fun fromValue(`value`: Int): Status? = Status.fromValue(`value`)
       }
 
       @JvmStatic
-      public fun fromValue(`value`: Int): Status? = when (value) {
+      public fun fromValue(`value`: Int): Status? = when (`value`) {
         1 -> A
         else -> null
       }
