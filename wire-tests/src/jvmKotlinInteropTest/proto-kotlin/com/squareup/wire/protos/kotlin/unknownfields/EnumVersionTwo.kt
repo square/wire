@@ -29,11 +29,11 @@ public enum class EnumVersionTwo(
       PROTO_2, 
       null
     ) {
-      override fun fromValue(`value`: Int): EnumVersionTwo? = EnumVersionTwo.fromValue(value)
+      override fun fromValue(`value`: Int): EnumVersionTwo? = EnumVersionTwo.fromValue(`value`)
     }
 
     @JvmStatic
-    public fun fromValue(`value`: Int): EnumVersionTwo? = when (value) {
+    public fun fromValue(`value`: Int): EnumVersionTwo? = when (`value`) {
       1 -> SHREK_V2
       2 -> DONKEY_V2
       3 -> FIONA_V2

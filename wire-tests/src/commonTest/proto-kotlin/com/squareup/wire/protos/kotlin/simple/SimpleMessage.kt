@@ -486,11 +486,11 @@ public class SimpleMessage(
         PROTO_2, 
         null
       ) {
-        override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
+        override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(`value`)
       }
 
       @JvmStatic
-      public fun fromValue(`value`: Int): NestedEnum? = when (value) {
+      public fun fromValue(`value`: Int): NestedEnum? = when (`value`) {
         1 -> FOO
         2 -> BAR
         3 -> BAZ

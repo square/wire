@@ -159,11 +159,11 @@ public class FreeDrinkPromotion(
         PROTO_3, 
         Drink.UNKNOWN
       ) {
-        override fun fromValue(`value`: Int): Drink? = Drink.fromValue(value)
+        override fun fromValue(`value`: Int): Drink? = Drink.fromValue(`value`)
       }
 
       @JvmStatic
-      public fun fromValue(`value`: Int): Drink? = when (value) {
+      public fun fromValue(`value`: Int): Drink? = when (`value`) {
         0 -> UNKNOWN
         1 -> PEPSI
         2 -> MOUNTAIN_DEW

@@ -2192,7 +2192,7 @@ class KotlinGeneratorTest {
     )
     assertThat(code).contains(
       """
-       |    public fun fromValue(`value`: Int): ConflictingEnumConstants? = when (value) {
+       |    public fun fromValue(`value`: Int): ConflictingEnumConstants? = when (`value`) {
        |      0 -> hello
        |      1 -> name_
        |      2 -> ordinal_

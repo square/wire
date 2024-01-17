@@ -276,11 +276,11 @@ public class Person(
         PROTO_3, 
         PhoneType.MOBILE
       ) {
-        override fun fromValue(`value`: Int): PhoneType? = PhoneType.fromValue(value)
+        override fun fromValue(`value`: Int): PhoneType? = PhoneType.fromValue(`value`)
       }
 
       @JvmStatic
-      public fun fromValue(`value`: Int): PhoneType? = when (value) {
+      public fun fromValue(`value`: Int): PhoneType? = when (`value`) {
         0 -> MOBILE
         1 -> HOME
         2 -> WORK

@@ -37,11 +37,11 @@ public enum class Period(
       PROTO_2, 
       null
     ) {
-      override fun fromValue(`value`: Int): Period? = Period.fromValue(value)
+      override fun fromValue(`value`: Int): Period? = Period.fromValue(`value`)
     }
 
     @JvmStatic
-    public fun fromValue(`value`: Int): Period? = when (value) {
+    public fun fromValue(`value`: Int): Period? = when (`value`) {
       1 -> CRETACEOUS
       2 -> JURASSIC
       3 -> TRIASSIC

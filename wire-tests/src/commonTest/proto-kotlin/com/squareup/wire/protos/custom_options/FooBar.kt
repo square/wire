@@ -542,11 +542,11 @@ public class FooBar(
         PROTO_2, 
         null
       ) {
-        override fun fromValue(`value`: Int): FooBarBazEnum? = FooBarBazEnum.fromValue(value)
+        override fun fromValue(`value`: Int): FooBarBazEnum? = FooBarBazEnum.fromValue(`value`)
       }
 
       @JvmStatic
-      public fun fromValue(`value`: Int): FooBarBazEnum? = when (value) {
+      public fun fromValue(`value`: Int): FooBarBazEnum? = when (`value`) {
         1 -> FOO
         2 -> BAR
         3 -> BAZ

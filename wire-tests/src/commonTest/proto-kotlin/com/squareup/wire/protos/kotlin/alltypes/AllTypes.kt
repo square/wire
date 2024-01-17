@@ -3275,11 +3275,11 @@ public class AllTypes(
         PROTO_2, 
         NestedEnum.UNKNOWN
       ) {
-        override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
+        override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(`value`)
       }
 
       @JvmStatic
-      public fun fromValue(`value`: Int): NestedEnum? = when (value) {
+      public fun fromValue(`value`: Int): NestedEnum? = when (`value`) {
         0 -> UNKNOWN
         1 -> A
         else -> null
