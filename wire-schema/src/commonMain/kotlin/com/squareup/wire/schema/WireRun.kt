@@ -184,6 +184,11 @@ class WireRun(
    */
   val permitPackageCycles: Boolean = false,
 
+  /**
+   * If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix.
+   */
+  val escapeKotlinKeywords: Boolean = false,
+
   val eventListeners: List<EventListener> = listOf(),
 
   /**

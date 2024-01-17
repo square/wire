@@ -131,6 +131,7 @@ class KotlinGenerator private constructor(
   private val nameSuffix: String?,
   private val buildersOnly: Boolean,
   private val singleMethodServices: Boolean,
+  private val escapeKotlinKeywords: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -471,7 +472,7 @@ class KotlinGenerator private constructor(
 
   private fun nameAllocator(message: Type): NameAllocator {
     return nameAllocatorStore.getOrPut(message) {
-      NameAllocator().apply {
+      NameAllocator(preallocateKeywords = !escapeKotlinKeywords).apply {
         when (message) {
           is EnumType -> {
             newName("ADAPTER", "ADAPTER")
@@ -2905,6 +2906,7 @@ class KotlinGenerator private constructor(
       nameSuffix: String? = null,
       buildersOnly: Boolean = false,
       singleMethodServices: Boolean = false,
+      escapeKotlinKeywords: Boolean = false,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -2954,6 +2956,7 @@ class KotlinGenerator private constructor(
         nameSuffix = nameSuffix,
         buildersOnly = buildersOnly,
         singleMethodServices = singleMethodServices,
+        escapeKotlinKeywords = escapeKotlinKeywords,
       )
     }
 

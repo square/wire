@@ -131,6 +131,9 @@ data class KotlinTarget(
    * instantiable via their builders, regardless of the value of [javaInterop].
    */
   val buildersOnly: Boolean = false,
+
+  // If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix.
+  val escapeKotlinKeywords: Boolean = false,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
     return KotlinSchemaHandler(
@@ -146,6 +149,7 @@ data class KotlinTarget(
       grpcServerCompatible = grpcServerCompatible,
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
+      escapeKotlinKeywords = escapeKotlinKeywords,
     )
   }
 
