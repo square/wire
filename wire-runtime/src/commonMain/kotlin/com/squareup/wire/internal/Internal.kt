@@ -19,7 +19,9 @@
 
 package com.squareup.wire.internal
 
+import com.squareup.wire.Duration
 import com.squareup.wire.FieldEncoding
+import com.squareup.wire.Instant
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
@@ -364,3 +366,35 @@ fun decodePrimitive_float(reader: ProtoReader): Float =
   Float.fromBits(reader.readFixed32())
 fun decodePrimitive_double(reader: ProtoReader): Double =
   Double.fromBits(reader.readFixed64())
+
+internal fun Instant.commonEquals(other: Any?): Boolean {
+  if (this === other) return true
+  if (other == null || other !is Instant) return false
+
+  if (getEpochSecond() != other.getEpochSecond()) return false
+  if (getNano() != other.getNano()) return false
+
+  return true
+}
+
+internal fun Instant.commonHashCode(): Int {
+  var result = getEpochSecond().hashCode()
+  result = 31 * result + getNano().hashCode()
+  return result
+}
+
+internal fun Duration.commonEquals(other: Any?): Boolean {
+  if (this === other) return true
+  if (other == null || other !is Duration) return false
+
+  if (getSeconds() != other.getSeconds()) return false
+  if (getNano() != other.getNano()) return false
+
+  return true
+}
+
+internal fun Duration.commonHashCode(): Int {
+  var result = getSeconds().hashCode()
+  result = 31 * result + getNano().hashCode()
+  return result
+}

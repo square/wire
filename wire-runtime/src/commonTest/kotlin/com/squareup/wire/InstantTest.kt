@@ -42,4 +42,8 @@ class InstantTest {
     assertEquals(-2L, wireMessage.getEpochSecond())
     assertEquals(800_000_000, wireMessage.getNano())
   }
+
+  @Test fun equality() {
+    assertEquals(ofEpochSecond(0L, 0L), ofEpochSecond(0L, 0L))
+  }
 }

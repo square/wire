@@ -42,4 +42,8 @@ class DurationTest {
     assertEquals(-2L, wireMessage.getSeconds())
     assertEquals(800_000_000, wireMessage.getNano())
   }
+
+  @Test fun equality() {
+    assertEquals(durationOfSeconds(0L, 0L), durationOfSeconds(0L, 0L))
+  }
 }
