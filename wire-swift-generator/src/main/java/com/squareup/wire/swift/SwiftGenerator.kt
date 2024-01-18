@@ -386,6 +386,8 @@ class SwiftGenerator private constructor(
     fileMembers += FileMemberSpec.builder(structSendableExtension)
       .build()
 
+    // module_one/SwiftModuleOneMessage.swift
+    // module_three/SwiftModuleOneMessage.swift
     if (type.isExtendable) {
       val extensibleExtension = ExtensionSpec.builder(structType)
         .addSuperType(protoExtensible)
