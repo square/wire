@@ -2,13 +2,13 @@
 // Source: squareup.protos.kotlin.swift_modules.SwiftModuleOneMessage in swift_module_one.proto
 import Foundation
 import Wire
+import module_four
 
 public struct SwiftModuleOneMessage {
 
     public var name: String
-    @ProtoDefaulted
     public var extension_message: ExtensionMessage?
-    public var unknownFields: Foundation.Data = .init()
+    public var unknownFields: [UInt32 : Foundation.Data] = .init()
 
     public init(name: String, configure: (inout Self) -> Swift.Void = { _ in }) {
         self.name = name
@@ -28,6 +28,9 @@ extension SwiftModuleOneMessage : Hashable {
 #endif
 
 extension SwiftModuleOneMessage : Sendable {
+}
+
+extension SwiftModuleOneMessage : ProtoExtensible {
 }
 
 extension SwiftModuleOneMessage : ProtoMessage {
@@ -55,7 +58,7 @@ extension SwiftModuleOneMessage : Proto2Codable {
         self.unknownFields = try protoReader.endMessage(token: token)
 
         self.name = try SwiftModuleOneMessage.checkIfMissing(name, "name")
-        self._extension_message.wrappedValue = extension_message
+        self.extension_message = extension_message
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -72,7 +75,7 @@ extension SwiftModuleOneMessage : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.name = try container.decode(String.self, forKey: "name")
-        self._extension_message.wrappedValue = try container.decodeIfPresent(ExtensionMessage.self, firstOfKeys: "extensionMessage", "extension_message")
+        self.extension_message = try container.decodeIfPresent(ExtensionMessage.self, firstOfKeys: "extensionMessage", "extension_message")
     }
 
     public func encode(to encoder: Encoder) throws {

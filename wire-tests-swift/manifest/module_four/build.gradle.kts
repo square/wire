@@ -7,10 +7,9 @@ plugins {
 library {
   dependencies {
     api(projects.wireRuntimeSwift)
-    implementation(projects.wireTestsSwift.manifest.moduleFour)
   }
 
-  module.set("module_one")
+  module.set("module_four")
 
   source.from(file("."))
 }
@@ -21,3 +20,4 @@ tasks.matching { it.name == "compileDebugSwift" }.configureEach {
 tasks.getByName("spotlessJava").dependsOn("compileDebugSwift")
 tasks.getByName("spotlessKotlin").dependsOn("compileDebugSwift")
 tasks.getByName("spotlessSwift").dependsOn("compileDebugSwift")
+

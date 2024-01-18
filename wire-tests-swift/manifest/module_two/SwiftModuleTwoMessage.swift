@@ -9,7 +9,7 @@ public struct SwiftModuleTwoMessage {
     @ProtoDefaulted
     public var name: String?
     public var order: module_one.SortOrder?
-    public var unknownFields: Foundation.Data = .init()
+    public var unknownFields: [UInt32 : Foundation.Data] = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
         configure(&self)
@@ -101,7 +101,7 @@ extension SwiftModuleTwoMessage {
 
         public var array_types: [SwiftModuleOneEnum] = []
         public var module_type: SwiftModuleOneMessage?
-        public var unknownFields: Foundation.Data = .init()
+        public var unknownFields: [UInt32 : Foundation.Data] = .init()
 
         public init(configure: (inout Self) -> Swift.Void = { _ in }) {
             configure(&self)

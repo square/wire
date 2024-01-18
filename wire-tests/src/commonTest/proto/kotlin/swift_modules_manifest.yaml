@@ -22,6 +22,8 @@ module_one:
   - squareup.protos.kotlin.swift_modules.SwiftModuleOneEnum
   - squareup.protos.kotlin.swift_modules.SwiftModuleOneMessage
   - squareup.protos.kotlin.swift_modules.SortOrder
+  dependencies:
+  - module_four
 module_two:
   roots:
   - squareup.protos.kotlin.swift_modules.SwiftModuleTwoMessage
@@ -32,6 +34,8 @@ module_three:
   roots:
   - squareup.protos.kotlin.swift_modules.SwiftModuleThreeMessage
   - squareup.protos.kotlin.swift_modules.SwiftModuleThreeMessage.NestedMessage
-  - squareup.protos.kotlin.swift_modules.ExtensionMessage
   dependencies:
   - module_one
+module_four:
+  roots:
+  - squareup.protos.kotlin.swift_modules.ExtensionMessage

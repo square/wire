@@ -89,6 +89,7 @@ class SwiftGenerator private constructor(
   private val redactedKey = DeclaredTypeName.typeName("Wire.RedactedKey")
   private val customDefaulted = DeclaredTypeName.typeName("Wire.CustomDefaulted")
   private val protoDefaulted = DeclaredTypeName.typeName("Wire.ProtoDefaulted")
+  private val protoExtensible = DeclaredTypeName.typeName("Wire.ProtoExtensible")
 
   private val stringLiteralCodingKeys = DeclaredTypeName.typeName("Wire.StringLiteralCodingKeys")
 
@@ -349,6 +350,14 @@ class SwiftGenerator private constructor(
 
           generateMessageStoragePropertyDelegates(type, storageName, storageType, oneOfEnumNames)
           generateMessageStorageDelegateConstructor(type, storageName, storageType, oneOfEnumNames)
+
+          if (type.isExtendable) {
+            val extensibleExtension = ExtensionSpec.builder(storageType)
+              .addSuperType(protoExtensible)
+              .build()
+            fileMembers += FileMemberSpec.builder(extensibleExtension)
+              .build()
+          }
         } else {
           generateMessageProperties(type, oneOfEnumNames)
           generateMessageConstructor(type, oneOfEnumNames)
@@ -376,6 +385,14 @@ class SwiftGenerator private constructor(
       .build()
     fileMembers += FileMemberSpec.builder(structSendableExtension)
       .build()
+
+    if (type.isExtendable) {
+      val extensibleExtension = ExtensionSpec.builder(structType)
+        .addSuperType(protoExtensible)
+        .build()
+      fileMembers += FileMemberSpec.builder(extensibleExtension)
+        .build()
+    }
 
     // Add proto defaulted value
 
@@ -1244,8 +1261,9 @@ class SwiftGenerator private constructor(
       )
     }
 
+
     addProperty(
-      PropertySpec.varBuilder("unknownFields", FOUNDATION_DATA, visibility)
+      PropertySpec.varBuilder("unknownFields", DICTIONARY.parameterizedBy(UINT32, FOUNDATION_DATA), visibility)
         .initializer(".init()")
         .build(),
     )

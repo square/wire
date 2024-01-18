@@ -7,7 +7,7 @@ public struct ExtensionMessage {
 
     @ProtoDefaulted
     public var value: String?
-    public var unknownFields: Foundation.Data = .init()
+    public var unknownFields: [UInt32 : Foundation.Data] = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
         configure(&self)

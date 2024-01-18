@@ -32,6 +32,14 @@ message SwiftModuleThreeMessage {
   }
 }
 
-message ExtensionMessage {
+message ExtensionMessage /* module_three/ExtensionMessage.swift */ {
   optional string value = 1;
 }
+
+// ExtensionMessage.swift
+
+/* extension SwiftModuleOneMessage module_three/SwiftModuleOneMessage.swift at the bottom? {
+  // public var extension_message
+
+  /* serialization/
+} */
