@@ -25,6 +25,7 @@ public final class com/squareup/wire/WireCompiler {
 	public final fun getJavaOut ()Ljava/lang/String;
 	public final fun getKotlinBoxOneOfsMinSize ()I
 	public final fun getKotlinBuildersOnly ()Z
+	public final fun getKotlinEscapeKeywords ()Z
 	public final fun getKotlinExclusive ()Z
 	public final fun getKotlinGrpcServerCompatible ()Z
 	public final fun getKotlinNameSuffix ()Ljava/lang/String;
