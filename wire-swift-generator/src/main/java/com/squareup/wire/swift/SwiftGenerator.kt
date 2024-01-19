@@ -88,6 +88,7 @@ class SwiftGenerator private constructor(
   private val redactedKey = DeclaredTypeName.typeName("Wire.RedactedKey")
   private val customDefaulted = DeclaredTypeName.typeName("Wire.CustomDefaulted")
   private val protoDefaulted = DeclaredTypeName.typeName("Wire.ProtoDefaulted")
+  private val unknownFields = DeclaredTypeName.typeName("Wire.UnknownFields")
 
   private val stringLiteralCodingKeys = DeclaredTypeName.typeName("Wire.StringLiteralCodingKeys")
 
@@ -1207,7 +1208,7 @@ class SwiftGenerator private constructor(
     }
 
     addProperty(
-      PropertySpec.varBuilder("unknownFields", FOUNDATION_DATA, PUBLIC)
+      PropertySpec.varBuilder("unknownFields", unknownFields, PUBLIC)
         .initializer(".init()")
         .build(),
     )
@@ -1369,7 +1370,7 @@ class SwiftGenerator private constructor(
     }
 
     addProperty(
-      PropertySpec.varBuilder("unknownFields", FOUNDATION_DATA, PUBLIC)
+      PropertySpec.varBuilder("unknownFields", unknownFields, PUBLIC)
         .getter(
           FunctionSpec.getterBuilder()
             .addStatement("%N.unknownFields", storageName)
