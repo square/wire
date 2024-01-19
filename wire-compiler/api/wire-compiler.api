@@ -110,8 +110,8 @@ public final class com/squareup/wire/schema/JavaTarget : com/squareup/wire/schem
 }
 
 public final class com/squareup/wire/schema/KotlinTarget : com/squareup/wire/schema/Target {
-	public fun <init> (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZIZLjava/lang/String;Z)V
-	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZIZLjava/lang/String;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZIZLjava/lang/String;ZZ)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZIZLjava/lang/String;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/util/List;
 	public final fun component10 ()Lcom/squareup/wire/kotlin/RpcRole;
 	public final fun component11 ()Z
@@ -119,6 +119,7 @@ public final class com/squareup/wire/schema/KotlinTarget : com/squareup/wire/sch
 	public final fun component13 ()Z
 	public final fun component14 ()Ljava/lang/String;
 	public final fun component15 ()Z
+	public final fun component16 ()Z
 	public final fun component2 ()Ljava/util/List;
 	public final fun component3 ()Z
 	public final fun component4 ()Ljava/lang/String;
@@ -127,8 +128,8 @@ public final class com/squareup/wire/schema/KotlinTarget : com/squareup/wire/sch
 	public final fun component7 ()Z
 	public final fun component8 ()Z
 	public final fun component9 ()Lcom/squareup/wire/kotlin/RpcCallStyle;
-	public final fun copy (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZIZLjava/lang/String;Z)Lcom/squareup/wire/schema/KotlinTarget;
-	public static synthetic fun copy$default (Lcom/squareup/wire/schema/KotlinTarget;Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZIZLjava/lang/String;ZILjava/lang/Object;)Lcom/squareup/wire/schema/KotlinTarget;
+	public final fun copy (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZIZLjava/lang/String;ZZ)Lcom/squareup/wire/schema/KotlinTarget;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/KotlinTarget;Ljava/util/List;Ljava/util/List;ZLjava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZIZLjava/lang/String;ZZILjava/lang/Object;)Lcom/squareup/wire/schema/KotlinTarget;
 	public fun copyTarget (Ljava/util/List;Ljava/util/List;ZLjava/lang/String;)Lcom/squareup/wire/schema/Target;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAndroid ()Z
@@ -136,6 +137,7 @@ public final class com/squareup/wire/schema/KotlinTarget : com/squareup/wire/sch
 	public final fun getBuildersOnly ()Z
 	public final fun getEmitAppliedOptions ()Z
 	public final fun getEmitDeclaredOptions ()Z
+	public final fun getEscapeKotlinKeywords ()Z
 	public fun getExcludes ()Ljava/util/List;
 	public fun getExclusive ()Z
 	public final fun getGrpcServerCompatible ()Z
