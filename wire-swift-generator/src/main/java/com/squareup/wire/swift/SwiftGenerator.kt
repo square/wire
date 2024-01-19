@@ -50,7 +50,6 @@ import io.outfoxx.swiftpoet.FunctionTypeName
 import io.outfoxx.swiftpoet.INT
 import io.outfoxx.swiftpoet.INT32
 import io.outfoxx.swiftpoet.INT64
-import io.outfoxx.swiftpoet.Modifier
 import io.outfoxx.swiftpoet.Modifier.FILEPRIVATE
 import io.outfoxx.swiftpoet.Modifier.PRIVATE
 import io.outfoxx.swiftpoet.Modifier.PUBLIC
@@ -104,8 +103,6 @@ class SwiftGenerator private constructor(
   private val writableKeyPath = DeclaredTypeName.typeName("Swift.WritableKeyPath")
 
   private val deprecated = AttributeSpec.builder("available").addArguments("*", "deprecated").build()
-
-  private val storageVisibility: Modifier = PUBLIC
 
   private val ProtoType.typeName
     get() = nameToTypeName.getValue(this)
@@ -505,10 +502,10 @@ class SwiftGenerator private constructor(
         .addType(
           TypeSpec.structBuilder(storageType)
             .addDoc("Underlying storage for %T\n", structType)
-            .addModifiers(storageVisibility)
+            .addModifiers(PUBLIC)
             .apply {
               generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
-              generateMessageConstructor(type, oneOfEnumNames, forStorageType = true)
+              generateMessageConstructor(type, oneOfEnumNames)
             }
             .build(),
         )
@@ -542,7 +539,7 @@ class SwiftGenerator private constructor(
           .addSuperType(redactable)
           .addType(
             TypeAliasSpec.builder("RedactedKeys", structType.nestedType("RedactedKeys"))
-              .addModifiers(storageVisibility)
+              .addModifiers(PUBLIC)
               .build(),
           )
           .build()
@@ -553,16 +550,16 @@ class SwiftGenerator private constructor(
 
       // Add {Proto/Foundation} Codable methods
       val storageMessageConformanceExtension = ExtensionSpec.builder(storageType)
-        .messageConformanceExtension(type, forStorageType = true)
+        .messageConformanceExtension(type)
         .build()
       fileMembers += FileMemberSpec.builder(storageMessageConformanceExtension).build()
 
       val storageProtoCodableExtension = ExtensionSpec.builder(storageType)
-        .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames, forStorageType = true)
+        .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames)
         .build()
       fileMembers += FileMemberSpec.builder(storageProtoCodableExtension).build()
 
-      val storageCodableExtension = messageCodableExtension(type, storageType, forStorageType = true)
+      val storageCodableExtension = messageCodableExtension(type, storageType)
       fileMembers += FileMemberSpec.builder(storageCodableExtension)
         .addGuard("!$FLAG_REMOVE_CODABLE")
         .build()
@@ -576,14 +573,7 @@ class SwiftGenerator private constructor(
     structType: DeclaredTypeName,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
     propertyNames: Collection<String>,
-    forStorageType: Boolean = false,
   ): ExtensionSpec.Builder = apply {
-    val visibility: Modifier = if (forStorageType) {
-      storageVisibility
-    } else {
-      PUBLIC
-    }
-
     addSuperType(type.protoCodableType)
 
     val reader = if ("protoReader" in propertyNames) "_protoReader" else "protoReader"
@@ -591,7 +581,7 @@ class SwiftGenerator private constructor(
     val tag = if ("tag" in propertyNames) "_tag" else "tag"
     addFunction(
       FunctionSpec.constructorBuilder()
-        .addModifiers(visibility)
+        .addModifiers(PUBLIC)
         .addParameter("from", reader, protoReader)
         .throws(true)
         .apply {
@@ -726,7 +716,7 @@ class SwiftGenerator private constructor(
     val writer = if ("protoWriter" in propertyNames) "_protoWriter" else "protoWriter"
     addFunction(
       FunctionSpec.builder("encode")
-        .addModifiers(visibility)
+        .addModifiers(PUBLIC)
         .addParameter("to", writer, protoWriter)
         .throws(true)
         .apply {
@@ -764,20 +754,12 @@ class SwiftGenerator private constructor(
 
   private fun ExtensionSpec.Builder.messageConformanceExtension(
     type: MessageType,
-    forStorageType: Boolean = false,
   ): ExtensionSpec.Builder = apply {
-    val visibility: Modifier = if (forStorageType) {
-      storageVisibility
-    } else {
-      PUBLIC
-    }
-
     addSuperType(protoMessage)
     addFunction(
       FunctionSpec.builder("protoMessageTypeURL")
         .returns(STRING)
-        .addModifiers(visibility)
-        .addModifiers(STATIC)
+        .addModifiers(PUBLIC, STATIC)
         .addStatement("return \"%N\"", type.type.typeUrl!!)
         .build(),
     )
@@ -822,14 +804,7 @@ class SwiftGenerator private constructor(
   private fun messageCodableExtension(
     type: MessageType,
     structType: DeclaredTypeName,
-    forStorageType: Boolean = false,
   ): ExtensionSpec {
-    val visibility: Modifier = if (forStorageType) {
-      storageVisibility
-    } else {
-      PUBLIC
-    }
-
     return ExtensionSpec.builder(structType)
       .addSuperType(codable)
       .apply {
@@ -846,7 +821,7 @@ class SwiftGenerator private constructor(
             // in order to compile.
 
             TypeSpec.enumBuilder(codingKeys)
-              .addModifiers(visibility)
+              .addModifiers(PUBLIC)
               .addSuperType(codingKey)
               .build(),
           )
@@ -857,7 +832,7 @@ class SwiftGenerator private constructor(
           addFunction(
             FunctionSpec.constructorBuilder()
               .addParameter("from", "decoder", decoder)
-              .addModifiers(visibility)
+              .addModifiers(PUBLIC)
               .throws(true)
               .addStatement("let container = try decoder.container(keyedBy: %T.self)", codingKeys)
               .apply {
@@ -944,7 +919,7 @@ class SwiftGenerator private constructor(
           addFunction(
             FunctionSpec.builder("encode")
               .addParameter("to", "encoder", encoder)
-              .addModifiers(visibility)
+              .addModifiers(PUBLIC)
               .throws(true)
               .addStatement("var container = encoder.container(keyedBy: %T.self)", codingKeys)
               .apply {
@@ -1134,19 +1109,12 @@ class SwiftGenerator private constructor(
   private fun TypeSpec.Builder.generateMessageConstructor(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
-    forStorageType: Boolean = false,
   ) {
     val needsConfigure = type.fields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty()
 
-    val visibility: Modifier = if (forStorageType) {
-      storageVisibility
-    } else {
-      PUBLIC
-    }
-
     addFunction(
       FunctionSpec.constructorBuilder()
-        .addModifiers(visibility)
+        .addModifiers(PUBLIC)
         .addParameters(
           type,
           oneOfEnumNames,
@@ -1195,14 +1163,8 @@ class SwiftGenerator private constructor(
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
     forStorageType: Boolean = false,
   ) {
-    val visibility: Modifier = if (forStorageType) {
-      storageVisibility
-    } else {
-      PUBLIC
-    }
-
     type.fields.forEach { field ->
-      val property = PropertySpec.varBuilder(field.safeName, field.typeName, visibility)
+      val property = PropertySpec.varBuilder(field.safeName, field.typeName, PUBLIC)
       if (!forStorageType && field.documentation.isNotBlank()) {
         property.addDoc("%L\n", field.documentation.sanitizeDoc())
       }
@@ -1234,7 +1196,7 @@ class SwiftGenerator private constructor(
       val enumName = oneOfEnumNames.getValue(oneOf)
 
       addProperty(
-        PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), visibility)
+        PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
           .apply {
             if (oneOf.documentation.isNotBlank()) {
               addDoc("%N\n", oneOf.documentation.sanitizeDoc())
@@ -1245,7 +1207,7 @@ class SwiftGenerator private constructor(
     }
 
     addProperty(
-      PropertySpec.varBuilder("unknownFields", FOUNDATION_DATA, visibility)
+      PropertySpec.varBuilder("unknownFields", FOUNDATION_DATA, PUBLIC)
         .initializer(".init()")
         .build(),
     )
