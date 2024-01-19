@@ -267,6 +267,19 @@ val generateKotlinZipTests by tasks.creating(JavaExec::class) {
   )
 }
 
+val generateKotlinEscapeKeywordsTests by tasks.creating(JavaExec::class) {
+  group = "Generate Tests"
+  description = "Generates Kotlin classes from protos containing fields whose names clash with Kotlin keywords"
+  classpath = wire
+  mainClass.set("com.squareup.wire.WireCompiler")
+  args = listOf(
+      "--proto_path=wire-tests/src/commonTest/shared/proto/proto2",
+      "--kotlin_out=wire-tests/src/commonTest/proto-kotlin",
+      "--kotlin_escape_keywords",
+      "keyword_kotlin.proto",
+  )
+}
+
 // KOTLIN PROTO3
 
 val generateProto3KotlinTests by tasks.creating(JavaExec::class) {
@@ -657,6 +670,7 @@ val generateTests by tasks.creating {
     generateKotlinTests,
     generateKotlinBuildersOnlyTests,
     generateKotlinZipTests,
+    generateKotlinEscapeKeywordsTests,
     generateKotlinServicesTests,
     generateKotlinServicesAllFlagsTests,
     generateKotlinAndroidTests,

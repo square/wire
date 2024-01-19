@@ -128,6 +128,7 @@ class WireCompiler internal constructor(
   val kotlinGrpcServerCompatible: Boolean,
   val kotlinNameSuffix: String?,
   val kotlinBuildersOnly: Boolean,
+  val kotlinEscapeKeywords: Boolean,
   val eventListenerFactoryClasses: List<String>,
 ) {
 
@@ -158,6 +159,7 @@ class WireCompiler internal constructor(
         grpcServerCompatible = kotlinGrpcServerCompatible,
         nameSuffix = kotlinNameSuffix,
         buildersOnly = kotlinBuildersOnly,
+        escapeKotlinKeywords = kotlinEscapeKeywords,
       )
     } else if (swiftOut != null) {
       targets += SwiftTarget(
@@ -258,6 +260,7 @@ class WireCompiler internal constructor(
     private const val KOTLIN_GRPC_SERVER_COMPATIBLE = "--kotlin_grpc_server_compatible"
     private const val KOTLIN_NAME_SUFFIX = "--kotlin_name_suffix="
     private const val KOTLIN_BUILDERS_ONLY = "--kotlin_builders_only"
+    private const val KOTLIN_ESCAPE_KEYWORDS = "--kotlin_escape_keywords"
 
     @Throws(IOException::class)
     @JvmStatic
@@ -317,6 +320,7 @@ class WireCompiler internal constructor(
       var kotlinGrpcServerCompatible = false
       var kotlinNameSuffix: String? = null
       var kotlinBuildersOnly = false
+      var kotlinEscapeKeywords = false
       var dryRun = false
 
       for (arg in args) {
@@ -402,6 +406,7 @@ class WireCompiler internal constructor(
           arg == KOTLIN_SINGLE_METHOD_SERVICES -> kotlinSingleMethodServices = true
           arg == KOTLIN_GRPC_SERVER_COMPATIBLE -> kotlinGrpcServerCompatible = true
           arg == KOTLIN_BUILDERS_ONLY -> kotlinBuildersOnly = true
+          arg == KOTLIN_ESCAPE_KEYWORDS -> kotlinEscapeKeywords = true
           arg == ANDROID -> emitAndroid = true
           arg == ANDROID_ANNOTATIONS -> emitAndroidAnnotations = true
           arg == COMPACT -> emitCompact = true
@@ -457,6 +462,7 @@ class WireCompiler internal constructor(
         kotlinGrpcServerCompatible = kotlinGrpcServerCompatible,
         kotlinNameSuffix = kotlinNameSuffix,
         kotlinBuildersOnly = kotlinBuildersOnly,
+        kotlinEscapeKeywords = kotlinEscapeKeywords,
         eventListenerFactoryClasses = eventListenerFactoryClasses,
       )
     }
