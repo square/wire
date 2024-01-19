@@ -34,6 +34,9 @@ extension ExternalMessage : ProtoDefaultedValue {
     }
 }
 
+extension ExternalMessage : ProtoExtensible {
+}
+
 extension ExternalMessage : ProtoMessage {
 
     public static func protoMessageTypeURL() -> String {

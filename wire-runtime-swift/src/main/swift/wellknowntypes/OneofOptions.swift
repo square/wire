@@ -30,6 +30,9 @@ extension OneofOptions : ProtoDefaultedValue {
     }
 }
 
+extension OneofOptions : ProtoExtensible {
+}
+
 extension OneofOptions : ProtoMessage {
 
     public static func protoMessageTypeURL() -> String {

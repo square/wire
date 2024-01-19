@@ -89,6 +89,7 @@ class SwiftGenerator private constructor(
   private val customDefaulted = DeclaredTypeName.typeName("Wire.CustomDefaulted")
   private val protoDefaulted = DeclaredTypeName.typeName("Wire.ProtoDefaulted")
   private val unknownFields = DeclaredTypeName.typeName("Wire.UnknownFields")
+  private val protoExtensible = DeclaredTypeName.typeName("Wire.ProtoExtensible")
 
   private val stringLiteralCodingKeys = DeclaredTypeName.typeName("Wire.StringLiteralCodingKeys")
 
@@ -347,6 +348,14 @@ class SwiftGenerator private constructor(
 
           generateMessageStoragePropertyDelegates(type, storageName, storageType, oneOfEnumNames)
           generateMessageStorageDelegateConstructor(type, storageName, storageType, oneOfEnumNames)
+
+          if (type.isExtensible) {
+            val extensibleExtension = ExtensionSpec.builder(storageType)
+              .addSuperType(protoExtensible)
+              .build()
+            fileMembers += FileMemberSpec.builder(extensibleExtension)
+              .build()
+          }
         } else {
           generateMessageProperties(type, oneOfEnumNames)
           generateMessageConstructor(type, oneOfEnumNames)
@@ -389,6 +398,14 @@ class SwiftGenerator private constructor(
         ).build()
 
       fileMembers += FileMemberSpec.builder(defaultedValueExtension).build()
+    }
+
+    if (type.isExtensible) {
+      val extensibleExtension = ExtensionSpec.builder(structType)
+        .addSuperType(protoExtensible)
+        .build()
+      fileMembers += FileMemberSpec.builder(extensibleExtension)
+        .build()
     }
 
     // Add redaction, which is potentially delegated

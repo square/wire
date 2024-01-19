@@ -498,6 +498,7 @@ public final class com/squareup/wire/schema/MessageType : com/squareup/wire/sche
 	public fun getType ()Lcom/squareup/wire/schema/ProtoType;
 	public fun hashCode ()I
 	public final fun isDeprecated ()Z
+	public final fun isExtensible ()Z
 	public fun linkMembers (Lcom/squareup/wire/schema/Linker;)V
 	public fun linkOptions (Lcom/squareup/wire/schema/Linker;Lcom/squareup/wire/schema/SyntaxRules;Z)V
 	public final fun oneOf (Ljava/lang/String;)Lcom/squareup/wire/schema/OneOf;

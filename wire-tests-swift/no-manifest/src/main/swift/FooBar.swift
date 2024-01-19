@@ -48,6 +48,9 @@ extension FooBar : ProtoDefaultedValue {
     }
 }
 
+extension FooBar : ProtoExtensible {
+}
+
 #if !WIRE_REMOVE_REDACTABLE
 extension FooBar : Redactable {
 
