@@ -35,7 +35,6 @@ public extension ProtoExtensible {
     func setUnknownField<T: ProtoEncodable>(
         with protoEncoder: ProtoEncoder = .init(),
         fieldNumber: UInt32,
-        type: T.self,
         newValue: T
       ) {
         unknownFields[fieldNumber] = protoEncoder.encode(newValue)

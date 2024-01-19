@@ -7,6 +7,8 @@ public struct SwiftModuleOneMessage {
 
     public var name: String
     @ProtoDefaulted
+    public var extension_message_two: ExtensionMessage?
+    @ProtoDefaulted
     public var extension_message: ExtensionMessage?
     public var unknownFields: [UInt32 : Foundation.Data] = .init()
 
@@ -33,6 +35,26 @@ extension SwiftModuleOneMessage : Sendable {
 extension SwiftModuleOneMessage : ProtoExtensible {
 }
 
+extension SwiftModuleOneMessage {
+
+    public var extension_message_two: ExtensionMessage? {
+        get {
+            self.parseUnknownField(fieldNumber: 1001, type: ExtensionMessage?.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1001, newValue: newValue)
+        }
+    }
+    public var extension_message: ExtensionMessage? {
+        get {
+            self.parseUnknownField(fieldNumber: 1000, type: ExtensionMessage?.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1000, newValue: newValue)
+        }
+    }
+}
+
 extension SwiftModuleOneMessage : ProtoMessage {
 
     public static func protoMessageTypeURL() -> String {
@@ -45,12 +67,14 @@ extension SwiftModuleOneMessage : Proto2Codable {
 
     public init(from protoReader: ProtoReader) throws {
         var name: String? = nil
+        var extension_message_two: ExtensionMessage? = nil
         var extension_message: ExtensionMessage? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: name = try protoReader.decode(String.self)
+            case 1001: extension_message_two = try protoReader.decode(ExtensionMessage.self)
             case 1000: extension_message = try protoReader.decode(ExtensionMessage.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
@@ -58,11 +82,13 @@ extension SwiftModuleOneMessage : Proto2Codable {
         self.unknownFields = try protoReader.endMessage(token: token)
 
         self.name = try SwiftModuleOneMessage.checkIfMissing(name, "name")
+        self._extension_message_two.wrappedValue = extension_message_two
         self._extension_message.wrappedValue = extension_message
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.name)
+        try protoWriter.encode(tag: 1001, value: self.extension_message_two)
         try protoWriter.encode(tag: 1000, value: self.extension_message)
         try protoWriter.writeUnknownFields(unknownFields)
     }
@@ -75,6 +101,7 @@ extension SwiftModuleOneMessage : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.name = try container.decode(String.self, forKey: "name")
+        self._extension_message_two.wrappedValue = try container.decodeIfPresent(ExtensionMessage.self, firstOfKeys: "extensionMessageTwo", "extension_message_two")
         self._extension_message.wrappedValue = try container.decodeIfPresent(ExtensionMessage.self, firstOfKeys: "extensionMessage", "extension_message")
     }
 
@@ -86,6 +113,7 @@ extension SwiftModuleOneMessage : Codable {
         if includeDefaults || !self.name.isEmpty {
             try container.encode(self.name, forKey: "name")
         }
+        try container.encodeIfPresent(self.extension_message_two, forKey: preferCamelCase ? "extensionMessageTwo" : "extension_message_two")
         try container.encodeIfPresent(self.extension_message, forKey: preferCamelCase ? "extensionMessage" : "extension_message")
     }
 

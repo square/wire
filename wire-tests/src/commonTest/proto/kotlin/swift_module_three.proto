@@ -33,7 +33,7 @@ message SwiftModuleThreeMessage {
 }
 
 extend SwiftModuleOneMessage {
-  optional ExtensionMessage extension_message_two = 1001; '...SwiftModuleOneMessage#extension_message_two'
+  optional ExtensionMessage extension_message_two = 1001;
 }
 
 message ExtensionMessage /* module_three/ExtensionMessage.swift */ {
@@ -42,7 +42,10 @@ message ExtensionMessage /* module_three/ExtensionMessage.swift */ {
 
 // ExtensionMessage.swift
 
-/* extension SwiftModuleOneMessage module_three/SwiftModuleThreeMessage.swift or module_three/SwiftModuleOneMessage+SwiftModuleThreeMessage.swift at the bottom? {
+//module_three/SwiftModuleOneMessage+SwiftModuleThreeMessage.swift at the bottom? {
+//module_three/SwiftModuleThreeMessage.swift
+//module_one/SwiftModuleThreeMessage.swift
+/* extension SwiftModuleOneMessage  or
   public var extension_message: ExtensionMessage {
       get throws { self.parseUnknown...() }
       set throws { self.setUnknown...() }

@@ -51,8 +51,7 @@ data class MessageType(
   private var deprecated: Any? = null
 
   val isExtendable: Boolean
-    // THIS IS PROBABLY WRONG
-    get() = reserveds.isNotEmpty() || extensionsList.isNotEmpty()
+    get() = extensionsList.isNotEmpty()
 
   val isDeprecated: Boolean
     get() = "true" == deprecated
