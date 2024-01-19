@@ -22,6 +22,8 @@ wire {
   eventListenerFactory(MyEventListenerFactory())
 
   kotlin {
+    singleMethodServices = true
+    escapeKotlinKeywords = true
   }
 }
 

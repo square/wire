@@ -20,4 +20,7 @@ package squareup;
 message Player {
   optional string name = 1;
   optional int32 jersey_number = 2;
+  optional string class = 3;
+  optional string value = 4;
+  optional string object = 5;
 }

@@ -85,6 +85,9 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   var nameSuffix: String? = null
   var buildersOnly: Boolean = false
 
+  /** If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix. */
+  var escapeKotlinKeywords: Boolean = false
+
   override fun toTarget(outputDirectory: String): KotlinTarget {
     val rpcCallStyle = RpcCallStyle.values()
       .singleOrNull { it.toString().equals(rpcCallStyle, ignoreCase = true) }
@@ -113,6 +116,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       grpcServerCompatible = grpcServerCompatible,
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
+      escapeKotlinKeywords = escapeKotlinKeywords,
     )
   }
 }

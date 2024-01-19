@@ -74,6 +74,9 @@ class KotlinSchemaHandler(
    * instantiable via their builders, regardless of the value of [javaInterop].
    */
   private val buildersOnly: Boolean = false,
+
+  /** If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix. */
+  private val escapeKotlinKeywords: Boolean = false,
 ) : SchemaHandler() {
   private lateinit var kotlinGenerator: KotlinGenerator
 
@@ -94,6 +97,7 @@ class KotlinSchemaHandler(
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
       singleMethodServices = singleMethodServices,
+      escapeKotlinKeywords = escapeKotlinKeywords,
     )
     context.fileSystem.createDirectories(context.outDirectory)
     super.handle(schema, context)
