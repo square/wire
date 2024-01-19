@@ -30,6 +30,7 @@ import java.io.IOException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -272,6 +273,41 @@ class GrpcClientTest {
     requestChannel.write(Point(9, 6))
     requestChannel.close()
     assertThat(deferredResponse.read()).isEqualTo(RouteSummary(point_count = 2))
+  }
+
+  /**
+   * This is a regression test for a crash that occurred when OkHttp attempted to retry sending the
+   * request body of a gRPC streaming connection. This failed because our `PipeDuplexRequestBody`
+   * is a one shot request body, but didn't override `RequestBody.isOneShot()`.
+   *
+   * `java.lang.IllegalStateException: sink already folded`
+   */
+  @Test
+  fun streamingConnectionFailsAfterReusedConnection() {
+    // Make a basic request/response call to seed the connection pool.
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueue(SendCompleted)
+    val grpcCall = routeGuideService.GetFeature()
+    val feature = grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+    assertThat(feature).isEqualTo(Feature(name = "tree at 5,6"))
+
+    // Give the mock server invalid actions (SendCompleted with no response message), which will
+    // cause it to reset the socket connection.
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RecordRoute"))
+    mockService.enqueue(SendCompleted)
+
+    // Confirm we get an IOException from the broken connection and not an IllegalStateException
+    // from incorrectly attempting to recover.
+    val (requestChannel, deferredResponse) = routeGuideService.RecordRoute().executeBlocking()
+    val e = assertFailsWith<IOException> {
+      requestChannel.close()
+      deferredResponse.read()
+    }
+    assertThat(e).hasMessage("stream was reset: CANCEL")
+    assertThat(e.cause).isNull()
   }
 
   @Test
