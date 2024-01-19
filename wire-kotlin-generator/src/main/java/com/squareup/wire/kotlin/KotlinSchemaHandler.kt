@@ -75,7 +75,7 @@ class KotlinSchemaHandler(
    */
   private val buildersOnly: Boolean = false,
 
-  // If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix.
+  /** If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix. */
   private val escapeKotlinKeywords: Boolean = false,
 ) : SchemaHandler() {
   private lateinit var kotlinGenerator: KotlinGenerator
