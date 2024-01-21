@@ -442,7 +442,7 @@ final class ProtoReaderTests: XCTestCase {
                 08       // (tag 1 | Varint)
                 05       // Unknown enum
             """)!
-            XCTAssertEqual(fields, expectedData)
+            XCTAssertEqual(fields, [1: expectedData])
         }
     }
 
@@ -467,7 +467,7 @@ final class ProtoReaderTests: XCTestCase {
             }
 
             XCTAssertEqual(values, [])
-            XCTAssertEqual(fields, data)
+            XCTAssertEqual(fields, [1: data])
         }
     }
 
@@ -508,7 +508,7 @@ final class ProtoReaderTests: XCTestCase {
                    """)!
 
             XCTAssertEqual(values, [.HOME])
-            XCTAssertEqual(fields, expectedData)
+            XCTAssertEqual(fields, [1: expectedData])
         }
     }
 
@@ -543,7 +543,7 @@ final class ProtoReaderTests: XCTestCase {
                 05       // Unknown enum
             """)!
 
-            XCTAssertEqual(fields, expectedData)
+            XCTAssertEqual(fields, [1: expectedData])
         }
     }
 
@@ -836,7 +836,7 @@ final class ProtoReaderTests: XCTestCase {
                 10 // (Tag 2 | Varint)
                 05 // Value unknown
             """)!
-            XCTAssertEqual(unknownFields, expectedData)
+            XCTAssertEqual(unknownFields, [1: expectedData])
         }
     }
 
@@ -886,7 +886,7 @@ final class ProtoReaderTests: XCTestCase {
                     10 // (Tag 2 | Varint)
                     05 // Value unknown
                 """)!
-            XCTAssertEqual(unknownFields, expectedData)
+            XCTAssertEqual(unknownFields, [1: expectedData])
         }
     }
 
@@ -924,7 +924,7 @@ final class ProtoReaderTests: XCTestCase {
             }
 
             XCTAssertEqual(values, [:])
-            XCTAssertEqual(unknownFields, data)
+            XCTAssertEqual(unknownFields, [1: data])
         }
     }
 
@@ -1011,7 +1011,7 @@ final class ProtoReaderTests: XCTestCase {
             }
 
             // The entire data should have been skipped.
-            XCTAssertEqual(unknownFields, data)
+            XCTAssertEqual(unknownFields, [1: data])
         }
     }
 
@@ -1038,7 +1038,7 @@ final class ProtoReaderTests: XCTestCase {
                 XCTFail("The one group tag should have been skipped")
             }
 
-            XCTAssertEqual(unknownFields, data)
+            XCTAssertEqual(unknownFields, [1: data])
         }
     }
 
@@ -1063,7 +1063,7 @@ final class ProtoReaderTests: XCTestCase {
                 XCTFail("The one group tag should have been skipped")
             }
 
-            XCTAssertEqual(unknownFields, data)
+            XCTAssertEqual(unknownFields, [1: data])
         }
     }
 
@@ -1084,7 +1084,7 @@ final class ProtoReaderTests: XCTestCase {
                 }
             }
 
-            XCTAssertEqual(unknownFields, Foundation.Data(hexEncoded: "15_FFFFFFFF"))
+            XCTAssertEqual(unknownFields, [2: Foundation.Data(hexEncoded: "15_FFFFFFFF")])
         }
     }
 
@@ -1105,7 +1105,7 @@ final class ProtoReaderTests: XCTestCase {
                 }
             }
 
-            XCTAssertEqual(unknownFields, Foundation.Data(hexEncoded: "08_05_18_FFFFFFFF0F"))
+            XCTAssertEqual(unknownFields, [1: Foundation.Data(hexEncoded: "08_05"), 3: Foundation.Data(hexEncoded: "18_FFFFFFFF0F")])
         }
     }
 
@@ -1113,12 +1113,30 @@ final class ProtoReaderTests: XCTestCase {
 
         static var protoSyntax: ProtoSyntax? { .proto2 }
 
-        let unknownFields: Foundation.Data
+        let unknownFields: UnknownFields
 
         init(from reader: ProtoReader) throws {
             self.unknownFields = try reader.forEachTag { tag in
                 try reader.readUnknownField(tag: tag)
             }
+        }
+    }
+
+    func testNestedMessageUnknownFields() throws {
+        let data = Foundation.Data(hexEncoded: """
+            12       // (Tag 2 | Length Delimited)
+            0A       // Length 10
+              0D       // (Tag 1 | Fixed32)
+              05000000 // Value 5
+              15       // (Tag 2 | Fixed32)
+              FFFFFFFF // Value UInt32.max
+        """)!
+        try test(data: data) { reader in
+            let unknownFields = try reader.forEachTag { tag in
+                try reader.readUnknownField(tag: tag)
+            }
+
+            XCTAssertEqual(unknownFields, [2: Foundation.Data(hexEncoded: "120A0D0500000015FFFFFFFF")])
         }
     }
 
@@ -1141,12 +1159,12 @@ final class ProtoReaderTests: XCTestCase {
                 case 1: XCTAssertEqual(try UInt32(truncatingIfNeeded: reader.readVarint()), 5)
                 case 2:
                     let nestedMessage = try reader.decode(NestedMessage.self)
-                    XCTAssertEqual(nestedMessage.unknownFields, Foundation.Data(hexEncoded: "0D_05000000_15_FFFFFFFF"))
+                    XCTAssertEqual(nestedMessage.unknownFields, [1: Foundation.Data(hexEncoded: "0D_05000000"), 2: Foundation.Data(hexEncoded: "15_FFFFFFFF")])
                 default: try reader.readUnknownField(tag: tag)
                 }
             }
 
-            XCTAssertEqual(unknownFields, Foundation.Data(hexEncoded: "1D_FBFFFFFF"))
+            XCTAssertEqual(unknownFields, [3: Foundation.Data(hexEncoded: "1D_FBFFFFFF")])
         }
     }
 
@@ -1263,7 +1281,7 @@ extension ProtoReader {
         return value!
     }
 
-    func forEachTag(_ decode: (UInt32) throws -> Void) throws -> Foundation.Data {
+    func forEachTag(_ decode: (UInt32) throws -> Void) throws -> UnknownFields {
         let token = try beginMessage()
         while let tag = try nextTag(token: token) {
             try decode(tag)

@@ -1179,7 +1179,7 @@ public struct AllTypes {
             storage.ext_pack_nested_enum = newValue
         }
     }
-    public var unknownFields: Foundation.Data {
+    public var unknownFields: UnknownFields {
         get {
             storage.unknownFields
         }
@@ -1296,7 +1296,7 @@ extension AllTypes {
 
         @ProtoDefaulted
         public var a: Int32?
-        public var unknownFields: Foundation.Data = .init()
+        public var unknownFields: UnknownFields = .init()
 
         public init(configure: (inout Self) -> Swift.Void = { _ in }) {
             configure(&self)
@@ -1578,7 +1578,7 @@ extension AllTypes {
         public var ext_pack_float: [Float] = []
         public var ext_pack_double: [Double] = []
         public var ext_pack_nested_enum: [AllTypes.NestedEnum] = []
-        public var unknownFields: Foundation.Data = .init()
+        public var unknownFields: UnknownFields = .init()
 
         public init(
             req_int32: Int32,

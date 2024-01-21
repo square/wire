@@ -45,7 +45,7 @@ public final class ProtoReader {
     private struct MessageFrame {
         let isProto3: Bool
         let messageEnd: UnsafePointer<UInt8>
-        var unknownFields: WriteBuffer? = nil
+        var unknownFields: [UInt32: WriteBuffer] = [:]
     }
 
     // MARK: - Public Properties
@@ -106,7 +106,7 @@ public final class ProtoReader {
          //clean up that were not caught by the defer block in endMessage
         if messageStackIndex > 0 {
             for index in 0...messageStackIndex {
-                messageStack[index].unknownFields = nil
+                messageStack[index].unknownFields.removeAll()
             }
         }
         messageStack.deallocate()
@@ -136,7 +136,7 @@ public final class ProtoReader {
         if messageStackIndex + 1 >= messageStackCapacity {
             expandMessageStack()
         }
-        
+
         messageStackIndex += 1
 
         let frame = MessageFrame(
@@ -175,7 +175,7 @@ public final class ProtoReader {
 
             switch wireType {
             case .startGroup:
-                try addUnknownField { writer in
+                try addUnknownField(tag: tag) { writer in
                     try skipGroup(expectedEndTag: tag, unknownFieldsWriter: writer)
                 }
 
@@ -209,14 +209,14 @@ public final class ProtoReader {
         return nil
     }
 
-    public func endMessage(token: Int) throws -> Data {
+    public func endMessage(token: Int) throws -> UnknownFields {
         guard token != -1 else {
             // Special case the empty reader.
             // It's reused, so we don't want to mutate it.
             if self !== ProtoReader.empty {
                 state = .tag
             }
-            return Data()
+            return [:]
         }
 
         let frame = messageStack[token]
@@ -228,15 +228,15 @@ public final class ProtoReader {
                 message: "Expected to end message at at \(frame.messageEnd - buffer.start), but was at \(buffer.position)"
             )
         }
-        
-        //nil out unknownFields to avoid memory leaks caused by
+
+        //clear out unknownFields to avoid memory leaks caused by
         //UnsafeMutablePointer's inability to deallocate non-trivial types.
         //This is caused by unknownFields type, WriteBuffer, being a class/reference type.
         defer {
-            messageStack[token].unknownFields = nil
+            messageStack[token].unknownFields.removeAll()
         }
 
-        return frame.unknownFields.flatMap { Data($0, copyBytes: false) } ?? Data()
+        return frame.unknownFields.mapValues { Data($0, copyBytes: false) }
     }
 
     // MARK: - Public Methods - Decoding - Single Fields
@@ -517,7 +517,7 @@ public final class ProtoReader {
             into: &dictionary,
             decodeKey: { try String(from: self) },
             addUnknownPair: { (tag, key, rawValue) in
-                try addUnknownField { protoWriter in
+                try addUnknownField(tag: tag) { protoWriter in
                     try protoWriter.encode(tag: tag, value: [key: rawValue])
                 }
         })
@@ -870,20 +870,20 @@ public final class ProtoReader {
     // MARK: - Private Methods - Unknown Fields
 
     private func addUnknownField<T: ProtoIntEncodable>(tag: UInt32, value: T, encoding: ProtoIntEncoding) throws {
-        try addUnknownField { writer in
+        try addUnknownField(tag: tag) { writer in
             try writer.encode(tag: tag, value: value, encoding: encoding)
         }
     }
 
     private func addUnknownField(tag: UInt32, value: Data) throws {
-        try addUnknownField { try $0.encode(tag: tag, value: value) }
+        try addUnknownField(tag: tag) { try $0.encode(tag: tag, value: value) }
     }
 
-    private func addUnknownField(_ block: (ProtoWriter) throws -> Void) rethrows {
-        let buffer = messageStack[messageStackIndex].unknownFields ?? WriteBuffer()
+    private func addUnknownField(tag: UInt32, _ block: (ProtoWriter) throws -> Void) rethrows {
+        let buffer = messageStack[messageStackIndex].unknownFields[tag] ?? WriteBuffer()
         let unknownFieldsWriter = ProtoWriter(data: buffer)
         try block(unknownFieldsWriter)
-        messageStack[messageStackIndex].unknownFields = buffer
+        messageStack[messageStackIndex].unknownFields[tag] = buffer
     }
 
 }

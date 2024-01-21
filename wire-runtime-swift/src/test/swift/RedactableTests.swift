@@ -23,7 +23,7 @@ final class RedactableTests: XCTestCase {
         let redacted = Redacted(name: "Foo")
         XCTAssertEqual(
             redacted.description,
-            "Redacted(name: <redacted>, nested: nil, choice: nil, unknownFields: 0 bytes)"
+            "Redacted(name: <redacted>, nested: nil, choice: nil, unknownFields: [:])"
         )
     }
 
@@ -33,14 +33,14 @@ final class RedactableTests: XCTestCase {
         }
         XCTAssertEqual(
             redacted1.description,
-            "Redacted(name: <redacted>, nested: nil, choice: Optional(Choice(yes: \"yes\")), unknownFields: 0 bytes)"
+            "Redacted(name: <redacted>, nested: nil, choice: Optional(Choice(yes: \"yes\")), unknownFields: [:])"
         )
         let redacted2 = Redacted(name: "Foo") {
             $0.choice = .no("no")
         }
         XCTAssertEqual(
             redacted2.description,
-            "Redacted(name: <redacted>, nested: nil, choice: Optional(Choice(no: <redacted>)), unknownFields: 0 bytes)"
+            "Redacted(name: <redacted>, nested: nil, choice: Optional(Choice(no: <redacted>)), unknownFields: [:])"
         )
     }
 
@@ -50,7 +50,7 @@ final class RedactableTests: XCTestCase {
             redacted.description,
             // The *_redacted fields should show as `nil` and not redacted since `nil`
             // is still valuable data and can't expose sensitive information.
-            "Redacted2(name: \"foo\", fully_redacted: nil, partially_redacted: nil, unknownFields: 0 bytes)"
+            "Redacted2(name: \"foo\", fully_redacted: nil, partially_redacted: nil, unknownFields: [:])"
         )
     }
 
@@ -62,7 +62,7 @@ final class RedactableTests: XCTestCase {
         }
         XCTAssertEqual(
             redacted.description,
-            "Redacted2(name: \"foo\", fully_redacted: nil, partially_redacted: Optional(Redacted3(name: \"bar\", enabled: <redacted>, unknownFields: 0 bytes)), unknownFields: 0 bytes)"
+            "Redacted2(name: \"foo\", fully_redacted: nil, partially_redacted: Optional(Redacted3(name: \"bar\", enabled: <redacted>, unknownFields: [:])), unknownFields: [:])"
         )
     }
 
@@ -79,7 +79,7 @@ final class RedactableTests: XCTestCase {
         }
         XCTAssertEqual(
             redacted.description,
-            "Storage(a: <redacted>, b: ProtoDefaulted<String>(wrappedValue: nil), c: ProtoDefaulted<String>(wrappedValue: nil), d: ProtoDefaulted<String>(wrappedValue: nil), e: ProtoDefaulted<String>(wrappedValue: nil), f: ProtoDefaulted<String>(wrappedValue: nil), g: ProtoDefaulted<String>(wrappedValue: nil), h: ProtoDefaulted<String>(wrappedValue: nil), i: ProtoDefaulted<String>(wrappedValue: nil), j: ProtoDefaulted<String>(wrappedValue: nil), k: ProtoDefaulted<String>(wrappedValue: nil), l: ProtoDefaulted<String>(wrappedValue: nil), m: ProtoDefaulted<String>(wrappedValue: nil), n: ProtoDefaulted<String>(wrappedValue: nil), o: ProtoDefaulted<String>(wrappedValue: nil), p: ProtoDefaulted<String>(wrappedValue: nil), q: ProtoDefaulted<String>(wrappedValue: nil), r: ProtoDefaulted<String>(wrappedValue: nil), s: ProtoDefaulted<String>(wrappedValue: nil), t: ProtoDefaulted<String>(wrappedValue: nil), u: ProtoDefaulted<String>(wrappedValue: nil), v: ProtoDefaulted<String>(wrappedValue: nil), w: ProtoDefaulted<String>(wrappedValue: nil), x: ProtoDefaulted<String>(wrappedValue: nil), y: ProtoDefaulted<String>(wrappedValue: nil), z: ProtoDefaulted<String>(wrappedValue: nil), description: <redacted>, unknownFields: 0 bytes)"
+            "Storage(a: <redacted>, b: ProtoDefaulted<String>(wrappedValue: nil), c: ProtoDefaulted<String>(wrappedValue: nil), d: ProtoDefaulted<String>(wrappedValue: nil), e: ProtoDefaulted<String>(wrappedValue: nil), f: ProtoDefaulted<String>(wrappedValue: nil), g: ProtoDefaulted<String>(wrappedValue: nil), h: ProtoDefaulted<String>(wrappedValue: nil), i: ProtoDefaulted<String>(wrappedValue: nil), j: ProtoDefaulted<String>(wrappedValue: nil), k: ProtoDefaulted<String>(wrappedValue: nil), l: ProtoDefaulted<String>(wrappedValue: nil), m: ProtoDefaulted<String>(wrappedValue: nil), n: ProtoDefaulted<String>(wrappedValue: nil), o: ProtoDefaulted<String>(wrappedValue: nil), p: ProtoDefaulted<String>(wrappedValue: nil), q: ProtoDefaulted<String>(wrappedValue: nil), r: ProtoDefaulted<String>(wrappedValue: nil), s: ProtoDefaulted<String>(wrappedValue: nil), t: ProtoDefaulted<String>(wrappedValue: nil), u: ProtoDefaulted<String>(wrappedValue: nil), v: ProtoDefaulted<String>(wrappedValue: nil), w: ProtoDefaulted<String>(wrappedValue: nil), x: ProtoDefaulted<String>(wrappedValue: nil), y: ProtoDefaulted<String>(wrappedValue: nil), z: ProtoDefaulted<String>(wrappedValue: nil), description: <redacted>, unknownFields: [:])"
         )
     }
 

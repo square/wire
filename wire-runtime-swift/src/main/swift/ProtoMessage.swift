@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 import Foundation
- 
+
+public typealias UnknownFields = [UInt32: Data]
+
 /// Interface that every Protobuf `message` conforms to.
 public protocol ProtoMessage {
     /// - returns: The type URL for this message.
