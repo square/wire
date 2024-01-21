@@ -1232,6 +1232,9 @@ public struct AllTypes {
 
 }
 
+extension AllTypes.Storage : ProtoExtensible {
+}
+
 #if !WIRE_REMOVE_EQUATABLE
 extension AllTypes : Equatable {
 }
@@ -1243,6 +1246,9 @@ extension AllTypes : Hashable {
 #endif
 
 extension AllTypes : Sendable {
+}
+
+extension AllTypes : ProtoExtensible {
 }
 
 extension AllTypes : Proto2Codable {
