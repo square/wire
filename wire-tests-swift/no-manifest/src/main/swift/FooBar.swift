@@ -16,10 +16,6 @@ public struct FooBar {
     @ProtoDefaulted
     public var daisy: Double?
     public var nested: [FooBar] = []
-    public var ext: FooBar.FooBarBazEnum?
-    public var rep: [FooBar.FooBarBazEnum] = []
-    @ProtoDefaulted
-    public var more_string: String?
     public var unknownFields: UnknownFields = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -81,9 +77,6 @@ extension FooBar : Proto2Codable {
         var fred: [Float] = []
         var daisy: Double? = nil
         var nested: [FooBar] = []
-        var ext: FooBar.FooBarBazEnum? = nil
-        var rep: [FooBar.FooBarBazEnum] = []
-        var more_string: String? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -95,9 +88,6 @@ extension FooBar : Proto2Codable {
             case 5: try protoReader.decode(into: &fred)
             case 6: daisy = try protoReader.decode(Double.self)
             case 7: try protoReader.decode(into: &nested)
-            case 101: ext = try protoReader.decode(FooBar.FooBarBazEnum.self)
-            case 102: try protoReader.decode(into: &rep)
-            case 150: more_string = try protoReader.decode(String.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -110,9 +100,6 @@ extension FooBar : Proto2Codable {
         self.fred = fred
         self._daisy.wrappedValue = daisy
         self.nested = nested
-        self.ext = ext
-        self.rep = rep
-        self._more_string.wrappedValue = more_string
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -123,9 +110,6 @@ extension FooBar : Proto2Codable {
         try protoWriter.encode(tag: 5, value: self.fred)
         try protoWriter.encode(tag: 6, value: self.daisy)
         try protoWriter.encode(tag: 7, value: self.nested)
-        try protoWriter.encode(tag: 101, value: self.ext)
-        try protoWriter.encode(tag: 102, value: self.rep)
-        try protoWriter.encode(tag: 150, value: self.more_string)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -143,14 +127,10 @@ extension FooBar : Codable {
         self.fred = try container.decodeProtoArray(Float.self, forKey: "fred")
         self._daisy.wrappedValue = try container.decodeIfPresent(Double.self, forKey: "daisy")
         self.nested = try container.decodeProtoArray(FooBar.self, forKey: "nested")
-        self.ext = try container.decodeIfPresent(FooBar.FooBarBazEnum.self, forKey: "ext")
-        self.rep = try container.decodeProtoArray(FooBar.FooBarBazEnum.self, forKey: "rep")
-        self._more_string.wrappedValue = try container.decodeIfPresent(String.self, firstOfKeys: "moreString", "more_string")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
-        let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encodeIfPresent(self.foo, forKey: "foo")
@@ -164,11 +144,6 @@ extension FooBar : Codable {
         if includeDefaults || !self.nested.isEmpty {
             try container.encodeProtoArray(self.nested, forKey: "nested")
         }
-        try container.encodeIfPresent(self.ext, forKey: "ext")
-        if includeDefaults || !self.rep.isEmpty {
-            try container.encodeProtoArray(self.rep, forKey: "rep")
-        }
-        try container.encodeIfPresent(self.more_string, forKey: preferCamelCase ? "moreString" : "more_string")
     }
 
 }
