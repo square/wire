@@ -47,6 +47,21 @@ extension FooBar : ProtoDefaultedValue {
 extension FooBar : ProtoExtensible {
 }
 
+/**
+ * Extensions of FooBar
+ */
+extension FooBar {
+
+    public var more_string: String? {
+        get {
+            self.parseUnknownField(fieldNumber: 150, type: String.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 150, newValue: newValue)
+        }
+    }
+}
+
 #if !WIRE_REMOVE_REDACTABLE
 extension FooBar : Redactable {
 

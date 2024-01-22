@@ -410,6 +410,42 @@ class SwiftGenerator private constructor(
         .build()
     }
 
+    if (type.extensionFields.isNotEmpty()) {
+      // THIS IS IN A BAD PLACE / WRONG FILE
+      // TODO: Add DocC comments
+      // TODO: Add Heap extensions
+      val extendedFieldsExtension = ExtensionSpec.builder(structType)
+        .addDoc("Extensions of %T\n", structType)
+        .apply {
+          type.extensionFields.forEach { field ->
+            val typeName = field.type!!.typeName
+            // TODO add more types here.
+            if (typeName != STRING || field.isRepeated || field.isRedacted) {
+              return@forEach
+            }
+            val property = PropertySpec.varBuilder(field.safeName, field.typeName, PUBLIC)
+              .getter(
+                FunctionSpec.getterBuilder().addCode(
+                  "self.parseUnknownField(fieldNumber: %L, type: %T.self)\n",
+                  field.tag,
+                  field.typeName.makeNonOptional(),
+                ).build(),
+              )
+              .setter(
+                FunctionSpec.setterBuilder().addCode(
+                  "self.setUnknownField(fieldNumber: %L, newValue: newValue)\n", field.tag,
+                ).build(),
+              )
+              .build()
+            addProperty(property)
+          }
+        }
+        .build()
+
+      fileMembers += FileMemberSpec.builder(extendedFieldsExtension)
+        .build()
+    }
+
     // Add redaction, which is potentially delegated
     val requiresRedaction = type.declaredFields.any { it.isRedacted }
 
