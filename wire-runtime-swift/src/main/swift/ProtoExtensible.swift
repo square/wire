@@ -19,3 +19,29 @@ import Foundation
 public protocol ProtoExtensible {
     var unknownFields: UnknownFields { get set }
 }
+
+public extension ProtoExtensible {
+    func parseUnknownField<T: ProtoDecodable>(
+        with protoDecoder: ProtoDecoder = .init(),
+        fieldNumber: UInt32,
+        type: T.Type
+    ) -> T? {
+        guard let data = unknownFields[fieldNumber] else {
+            return nil
+        }
+        // We presumably need to parse out the fields first
+        // Right now it's effectively a Tuple(fieldNumber, data)
+        return try? protoDecoder.decode(T.self, from: data)
+    }
+
+    mutating func setUnknownField<T: ProtoEncodable>(
+        with protoEncoder: ProtoEncoder = .init(),
+        fieldNumber: UInt32,
+        newValue: T?
+    ) {
+        // We need to be encoding the field number here
+        unknownFields[fieldNumber] = newValue.flatMap { try? protoEncoder.encode($0) }
+    }
+
+    // TODO: Add support for ProtoIntCodable, ProtoEnum, Array, Dictionary, possibly others?
+}

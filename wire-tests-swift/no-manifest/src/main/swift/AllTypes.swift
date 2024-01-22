@@ -867,6 +867,21 @@ extension AllTypes : Sendable {
 extension AllTypes : ProtoExtensible {
 }
 
+/**
+ * Extensions of AllTypes
+ */
+extension AllTypes {
+
+    public var ext_opt_string: String? {
+        get {
+            self.parseUnknownField(fieldNumber: 1014, type: String.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1014, newValue: newValue)
+        }
+    }
+}
+
 extension AllTypes : Proto2Codable {
 
     public init(from protoReader: ProtoReader) throws {
