@@ -39,4 +39,7 @@ internal class PipeDuplexRequestBody(
   }
 
   override fun isDuplex() = true
+
+  /** [Pipe.fold] can only be called once. */
+  override fun isOneShot() = true
 }

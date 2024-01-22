@@ -67,6 +67,7 @@ dependencies {
   testImplementation(libs.grpc.netty)
   testImplementation(libs.grpc.protobuf)
   testImplementation(libs.grpc.stub)
+  testImplementation(libs.kotlin.test.junit)
 }
 
 val test by tasks.getting(Test::class) {
