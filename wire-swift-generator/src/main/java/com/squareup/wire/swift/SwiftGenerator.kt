@@ -1784,5 +1784,8 @@ class SwiftGenerator private constructor(
 
       return indirections
     }
+
+    private val MessageType.isExtensible: Boolean
+      get() = extensionsList.isNotEmpty()
   }
 }

@@ -50,9 +50,6 @@ data class MessageType(
 ) : Type() {
   private var deprecated: Any? = null
 
-  val isExtensible: Boolean
-    get() = extensionsList.isNotEmpty()
-
   val isDeprecated: Boolean
     get() = "true" == deprecated
 
