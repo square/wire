@@ -60,9 +60,6 @@ class KotlinSchemaHandler(
    */
   private val boxOneOfsMinSize: Int = 5_000,
 
-  /** True to also generate gRPC server-compatible classes. Experimental feature. */
-  private val grpcServerCompatible: Boolean = false,
-
   /**
    * If present, generated services classes will use this as a suffix instead of inferring one
    * from the [rpcRole].
@@ -93,10 +90,8 @@ class KotlinSchemaHandler(
       rpcCallStyle = rpcCallStyle,
       rpcRole = rpcRole,
       boxOneOfsMinSize = boxOneOfsMinSize,
-      grpcServerCompatible = grpcServerCompatible,
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
-      singleMethodServices = singleMethodServices,
       escapeKotlinKeywords = escapeKotlinKeywords,
     )
     context.fileSystem.createDirectories(context.outDirectory)
@@ -127,13 +122,6 @@ class KotlinSchemaHandler(
       }
     } else {
       val map = kotlinGenerator.generateServiceTypeSpecs(service, null)
-      for ((className, typeSpec) in map) {
-        generatedPaths.add(write(className, typeSpec, service.type, service.location, context))
-      }
-    }
-
-    if (grpcServerCompatible) {
-      val map = kotlinGenerator.generateGrpcServerAdapter(service)
       for ((className, typeSpec) in map) {
         generatedPaths.add(write(className, typeSpec, service.type, service.location, context))
       }
