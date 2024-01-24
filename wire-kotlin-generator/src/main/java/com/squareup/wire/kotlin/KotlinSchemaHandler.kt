@@ -77,6 +77,9 @@ class KotlinSchemaHandler(
 
   /** If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix. */
   private val escapeKotlinKeywords: Boolean = false,
+
+  /** Fully-qualified type names of annotations to be added to each generated type. */
+  private val extraTypeAnnotations: List<String>,
 ) : SchemaHandler() {
   private lateinit var kotlinGenerator: KotlinGenerator
 
@@ -98,6 +101,7 @@ class KotlinSchemaHandler(
       buildersOnly = buildersOnly,
       singleMethodServices = singleMethodServices,
       escapeKotlinKeywords = escapeKotlinKeywords,
+      extraTypeAnnotations = extraTypeAnnotations,
     )
     context.fileSystem.createDirectories(context.outDirectory)
     super.handle(schema, context)

@@ -134,6 +134,9 @@ data class KotlinTarget(
 
   /** If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix. */
   val escapeKotlinKeywords: Boolean = false,
+
+  /** Fully-qualified type names of annotations to be added to each generated type. */
+  val extraTypeAnnotations: List<String> = listOf(),
 ) : Target() {
   override fun newHandler(): SchemaHandler {
     return KotlinSchemaHandler(
@@ -150,6 +153,7 @@ data class KotlinTarget(
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,
+      extraTypeAnnotations = extraTypeAnnotations,
     )
   }
 

@@ -2258,6 +2258,36 @@ class KotlinGeneratorTest {
     assertThat(code).contains("import wire_package.Person")
   }
 
+  @Test
+  fun extraTypeAnnotations() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |message Person {
+        |	 optional string name = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val generator = KotlinWithProfilesGenerator(schema)
+    val code = generator.generateKotlin(
+      typeName = "Person",
+      extraTypeAnnotations = listOf("androidx.compose.runtime.Immutable"),
+    )
+    assertThat(code).contains(
+      """
+      |import androidx.compose.runtime.Immutable
+      |""".trimMargin(),
+    )
+    assertThat(code).contains(
+      """
+      |@Immutable
+      |public class Person(
+      |""".trimMargin(),
+    )
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {

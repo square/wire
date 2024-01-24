@@ -492,6 +492,9 @@ wire {
 
     // True for emitted services to implement one interface per RPC.
     singleMethodServices = false
+
+    // Fully-qualified type names of annotations to be added to each generated type.
+    extraTypeAnnotations = listOf<String>()
   }
 }
 ```

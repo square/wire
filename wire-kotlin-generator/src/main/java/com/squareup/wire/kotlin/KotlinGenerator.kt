@@ -132,6 +132,7 @@ class KotlinGenerator private constructor(
   private val buildersOnly: Boolean,
   private val singleMethodServices: Boolean,
   private val escapeKotlinKeywords: Boolean,
+  private val extraTypeAnnotations: List<AnnotationSpec>,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -336,7 +337,7 @@ class KotlinGenerator private constructor(
           addKdoc("%L\n", service.documentation.sanitizeKdoc())
         }
         if (!isImplementation) {
-          for (annotation in optionAnnotations(service.options)) {
+          for (annotation in optionAnnotations(service.options) + extraTypeAnnotations) {
             addAnnotation(annotation)
           }
         }
@@ -558,7 +559,7 @@ class KotlinGenerator private constructor(
         if (type.documentation.isNotBlank()) {
           addKdoc("%L\n", type.documentation.sanitizeKdoc())
         }
-        for (annotation in optionAnnotations(type.options)) {
+        for (annotation in optionAnnotations(type.options) + extraTypeAnnotations) {
           addAnnotation(annotation)
         }
         if (type.isDeprecated) {
@@ -2249,7 +2250,7 @@ class KotlinGenerator private constructor(
         if (enum.documentation.isNotBlank()) {
           addKdoc("%L\n", enum.documentation.sanitizeKdoc())
         }
-        for (annotation in optionAnnotations(enum.options)) {
+        for (annotation in optionAnnotations(enum.options) + extraTypeAnnotations) {
           addAnnotation(annotation)
         }
         if (enum.isDeprecated) {
@@ -2907,6 +2908,7 @@ class KotlinGenerator private constructor(
       buildersOnly: Boolean = false,
       singleMethodServices: Boolean = false,
       escapeKotlinKeywords: Boolean = false,
+      extraTypeAnnotations: List<String> = listOf(),
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -2940,6 +2942,10 @@ class KotlinGenerator private constructor(
 
       typeToKotlinName.putAll(BUILT_IN_TYPES)
 
+      val extraTypeAnnotationsTyped = extraTypeAnnotations.map {
+        AnnotationSpec.builder(ClassName.bestGuess(it)).build()
+      }
+
       return KotlinGenerator(
         schema = schema,
         profile = profile,
@@ -2957,6 +2963,7 @@ class KotlinGenerator private constructor(
         buildersOnly = buildersOnly,
         singleMethodServices = singleMethodServices,
         escapeKotlinKeywords = escapeKotlinKeywords,
+        extraTypeAnnotations = extraTypeAnnotationsTyped,
       )
     }
 

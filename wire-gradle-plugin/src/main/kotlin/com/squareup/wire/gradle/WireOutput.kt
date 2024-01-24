@@ -88,6 +88,9 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   /** If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix. */
   var escapeKotlinKeywords: Boolean = false
 
+  /** Fully-qualified type names of annotations to be added to each generated type. */
+  var extraTypeAnnotations: List<String> = listOf()
+
   override fun toTarget(outputDirectory: String): KotlinTarget {
     val rpcCallStyle = RpcCallStyle.values()
       .singleOrNull { it.toString().equals(rpcCallStyle, ignoreCase = true) }
@@ -117,6 +120,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,
+      extraTypeAnnotations = extraTypeAnnotations.toList(),
     )
   }
 }
