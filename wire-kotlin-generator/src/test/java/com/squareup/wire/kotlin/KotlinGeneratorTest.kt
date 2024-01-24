@@ -2278,13 +2278,15 @@ class KotlinGeneratorTest {
     assertThat(code).contains(
       """
       |import androidx.compose.runtime.Immutable
-      |""".trimMargin(),
+      |
+      """.trimMargin(),
     )
     assertThat(code).contains(
       """
       |@Immutable
       |public class Person(
-      |""".trimMargin(),
+      |
+      """.trimMargin(),
     )
   }
 
