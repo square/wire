@@ -81,7 +81,6 @@ class SwiftGenerator private constructor(
   private val protoMessage = DeclaredTypeName.typeName("Wire.ProtoMessage")
   private val protoReader = DeclaredTypeName.typeName("Wire.ProtoReader")
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
-  private val protoEnum = DeclaredTypeName.typeName("Wire.ProtoEnum")
   private val protoDefaultedValue = DeclaredTypeName.typeName("Wire.ProtoDefaultedValue")
 
   private val heap = DeclaredTypeName.typeName("Wire.CopyOnWrite")
@@ -91,6 +90,7 @@ class SwiftGenerator private constructor(
   private val customDefaulted = DeclaredTypeName.typeName("Wire.CustomDefaulted")
   private val protoDefaulted = DeclaredTypeName.typeName("Wire.ProtoDefaulted")
   private val unknownFields = DeclaredTypeName.typeName("Wire.UnknownFields")
+  private val extensibleUnknownFields = DeclaredTypeName.typeName("Wire.ExtensibleUnknownFields")
   private val protoExtensible = DeclaredTypeName.typeName("Wire.ProtoExtensible")
 
   private val stringLiteralCodingKeys = DeclaredTypeName.typeName("Wire.StringLiteralCodingKeys")
@@ -119,6 +119,13 @@ class SwiftGenerator private constructor(
 
   private val MessageType.needsCustomCodable: Boolean
     get() = type.enclosingTypeOrPackage == "google.protobuf" && NEEDS_CUSTOM_CODABLE.contains(type.simpleName)
+
+  private val MessageType.unknownFieldsType: DeclaredTypeName
+    get() = if (isExtensible) {
+      extensibleUnknownFields
+    } else {
+      unknownFields
+    }
 
   private val TypeName.isStringEncoded
     get() = when (this.makeNonOptional()) {
@@ -350,17 +357,11 @@ class SwiftGenerator private constructor(
 
           generateMessageStoragePropertyDelegates(type, storageName, storageType, oneOfEnumNames)
           generateMessageStorageDelegateConstructor(type, storageName, storageType, oneOfEnumNames)
-
-          if (type.isExtensible) {
-            val extensibleExtension = ExtensionSpec.builder(storageType)
-              .addSuperType(protoExtensible)
-              .build()
-            fileMembers += FileMemberSpec.builder(extensibleExtension)
-              .build()
-          }
+          generateMessageExtensions(type, storageType, fileMembers)
         } else {
           generateMessageProperties(type, oneOfEnumNames)
           generateMessageConstructor(type, oneOfEnumNames)
+          generateMessageExtensions(type, structType, fileMembers)
         }
       }
       .build()
@@ -402,52 +403,8 @@ class SwiftGenerator private constructor(
       fileMembers += FileMemberSpec.builder(defaultedValueExtension).build()
     }
 
-    if (type.isExtensible) {
-      val extensibleExtension = ExtensionSpec.builder(structType)
-        .addSuperType(protoExtensible)
-        .build()
-      fileMembers += FileMemberSpec.builder(extensibleExtension)
-        .build()
-    }
-
-    if (type.extensionFields.isNotEmpty()) {
-      // THIS IS IN A BAD PLACE / WRONG FILE
-      // TODO: Add DocC comments
-      // TODO: Add Heap extensions
-      val extendedFieldsExtension = ExtensionSpec.builder(structType)
-        .addDoc("Extensions of %T\n", structType)
-        .apply {
-          type.extensionFields.forEach { field ->
-            val typeName = field.type!!.typeName
-            // TODO add more types here.
-            if (typeName != STRING || field.isRepeated || field.isRedacted) {
-              return@forEach
-            }
-            val property = PropertySpec.varBuilder(field.safeName, field.typeName, PUBLIC)
-              .getter(
-                FunctionSpec.getterBuilder().addCode(
-                  "self.parseUnknownField(fieldNumber: %L, type: %T.self)\n",
-                  field.tag,
-                  field.typeName.makeNonOptional(),
-                ).build(),
-              )
-              .setter(
-                FunctionSpec.setterBuilder().addCode(
-                  "self.setUnknownField(fieldNumber: %L, newValue: newValue)\n", field.tag,
-                ).build(),
-              )
-              .build()
-            addProperty(property)
-          }
-        }
-        .build()
-
-      fileMembers += FileMemberSpec.builder(extendedFieldsExtension)
-        .build()
-    }
-
     // Add redaction, which is potentially delegated
-    val requiresRedaction = type.declaredFields.any { it.isRedacted }
+    val requiresRedaction = type.fields.any { it.isRedacted }
 
     if (requiresRedaction) {
       val redactionExtension = ExtensionSpec.builder(structType)
@@ -458,7 +415,7 @@ class SwiftGenerator private constructor(
             .addSuperType(STRING)
             .addSuperType(redactedKey)
             .apply {
-              type.declaredFields.forEach { field ->
+              type.fields.forEach { field ->
                 if (field.isRedacted) {
                   addEnumCase(field.name)
                 }
@@ -1121,7 +1078,7 @@ class SwiftGenerator private constructor(
     storageType: DeclaredTypeName,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
   ) {
-    val needsConfigure = type.declaredFields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty()
+    val needsConfigure = type.declaredFields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty() || type.isExtensible
 
     addFunction(
       FunctionSpec.constructorBuilder()
@@ -1172,7 +1129,7 @@ class SwiftGenerator private constructor(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
   ) {
-    val needsConfigure = type.declaredFields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty()
+    val needsConfigure = type.declaredFields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty() || type.isExtensible
 
     addFunction(
       FunctionSpec.constructorBuilder()
@@ -1218,6 +1175,85 @@ class SwiftGenerator private constructor(
         }
         .build(),
     )
+  }
+
+  private fun generateMessageExtensions(
+    type: MessageType,
+    structType: DeclaredTypeName,
+    fileMembers: MutableList<FileMemberSpec>,
+  ) {
+    if (type.isExtensible) {
+      val extensibleExtension = ExtensionSpec.builder(structType)
+        .addSuperType(protoExtensible)
+        .build()
+      fileMembers += FileMemberSpec.builder(extensibleExtension)
+        .build()
+    }
+
+    if (type.extensionFields.isNotEmpty()) {
+      val extendedFieldsExtension = ExtensionSpec.builder(structType)
+        .addDoc("Extensions of %T\n", structType)
+        .apply {
+          type.extensionFields.filter { !it.isMap }.forEach { field ->
+            val property = PropertySpec.varBuilder(field.safeName, field.typeName, PUBLIC)
+              .apply {
+                if (field.documentation.isNotBlank()) {
+                  addDoc("\n%L\n", field.documentation.sanitizeDoc())
+                }
+                addDoc("\nSource: %L\n", field.location.withPathOnly())
+              }
+              .apply {
+                val getterFunctionSpec = FunctionSpec.getterBuilder()
+                var parseMethod = "self.parseUnknownField(fieldNumber: %L"
+                val args = mutableListOf<Any>(field.tag)
+                if (!field.isRepeated) {
+                  parseMethod += ", type: %T.self"
+                  args.add(field.typeName.makeNonOptional())
+                }
+                val encoding = field.type!!.encoding
+                if (encoding != null) {
+                  parseMethod += ", encoding: .%N"
+                  args.add(encoding)
+                }
+                parseMethod += ")\n"
+                getterFunctionSpec.addCode(
+                  parseMethod,
+                  *args.toTypedArray(),
+                )
+                getter(getterFunctionSpec.build())
+
+                val setterFunctionSpec = FunctionSpec.setterBuilder()
+                if (encoding != null) {
+                  setterFunctionSpec.addCode(
+                    "self.setUnknownField(fieldNumber: %L, newValue: newValue, encoding: .%N)\n",
+                    field.tag,
+                    encoding,
+                  )
+                } else {
+                  setterFunctionSpec.addCode("self.setUnknownField(fieldNumber: %L, newValue: newValue)\n", field.tag)
+                }
+                setter(setterFunctionSpec.build())
+              }
+              .build()
+            addProperty(property)
+
+            if (!field.isMap && !field.isRepeated && (field.defaultedValue != null || field.isProtoDefaulted)) {
+              // Look into AccessorMacros in the future when CocoaPods has better support.
+              val defaultProperty =
+                PropertySpec.varBuilder("default_${field.safeName}", field.typeName.makeNonOptional(), PUBLIC, STATIC)
+                  .addDoc("Default value for %L extension field.\n", field.safeName)
+                  .mutable(false)
+                  .initializer(field.defaultedValue ?: CodeBlock.of(".defaultedValue"))
+                  .build()
+
+              addProperty(defaultProperty)
+            }
+          }
+        }
+        .build()
+      fileMembers += FileMemberSpec.builder(extendedFieldsExtension)
+        .build()
+    }
   }
 
   private fun TypeSpec.Builder.generateMessageProperties(
@@ -1269,7 +1305,7 @@ class SwiftGenerator private constructor(
     }
 
     addProperty(
-      PropertySpec.varBuilder("unknownFields", unknownFields, PUBLIC)
+      PropertySpec.varBuilder("unknownFields", type.unknownFieldsType, PUBLIC)
         .initializer(".init()")
         .build(),
     )
@@ -1431,7 +1467,7 @@ class SwiftGenerator private constructor(
     }
 
     addProperty(
-      PropertySpec.varBuilder("unknownFields", unknownFields, PUBLIC)
+      PropertySpec.varBuilder("unknownFields", type.unknownFieldsType, PUBLIC)
         .getter(
           FunctionSpec.getterBuilder()
             .addStatement("%N.unknownFields", storageName)
@@ -1558,7 +1594,7 @@ class SwiftGenerator private constructor(
     val enumName = type.typeName
     return TypeSpec.enumBuilder(enumName)
       .addModifiers(PUBLIC)
-      .addSuperTypes(listOf(INT32, CASE_ITERABLE, protoEnum, type.protoCodableType))
+      .addSuperTypes(listOf(INT32, CASE_ITERABLE, type.protoCodableType))
       .apply {
         type.protoDefaultedName?.let { protoDefaultedName ->
           addSuperType(protoDefaultedValue)

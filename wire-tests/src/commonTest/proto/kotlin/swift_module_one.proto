@@ -30,5 +30,7 @@ enum SortOrder {
 }
 
 message SwiftModuleOneMessage {
-    required string name = 1;
+  required string name = 1;
+
+  extensions 1000 to 1999;
 }

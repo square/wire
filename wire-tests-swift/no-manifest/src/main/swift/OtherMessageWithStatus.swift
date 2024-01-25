@@ -72,7 +72,7 @@ extension OtherMessageWithStatus : Codable {
  */
 extension OtherMessageWithStatus {
 
-    public enum Status : Int32, CaseIterable, ProtoEnum, Proto2Enum {
+    public enum Status : Int32, CaseIterable, Proto2Enum {
 
         case A = 1
 

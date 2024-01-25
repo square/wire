@@ -16,12 +16,62 @@ public struct FooBar {
     @ProtoDefaulted
     public var daisy: Double?
     public var nested: [FooBar] = []
-    public var unknownFields: UnknownFields = .init()
+    public var unknownFields: ExtensibleUnknownFields = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
         configure(&self)
     }
 
+}
+
+extension FooBar : ProtoExtensible {
+}
+
+/**
+ * Extensions of FooBar
+ */
+extension FooBar {
+
+    /**
+     *
+     * Source: custom_options.proto
+     */
+    public var ext: FooBar.FooBarBazEnum? {
+        get {
+            self.parseUnknownField(fieldNumber: 101, type: FooBar.FooBarBazEnum.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 101, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: custom_options.proto
+     */
+    public var rep: [FooBar.FooBarBazEnum] {
+        get {
+            self.parseUnknownField(fieldNumber: 102)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 102, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: custom_options.proto
+     */
+    public var more_string: String? {
+        get {
+            self.parseUnknownField(fieldNumber: 150, type: String.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 150, newValue: newValue)
+        }
+    }
+    /**
+     * Default value for more_string extension field.
+     */
+    public static let default_more_string: String = .defaultedValue
 }
 
 #if !WIRE_REMOVE_EQUATABLE
@@ -41,24 +91,6 @@ extension FooBar : ProtoDefaultedValue {
 
     public static var defaultedValue: FooBar {
         FooBar()
-    }
-}
-
-extension FooBar : ProtoExtensible {
-}
-
-/**
- * Extensions of FooBar
- */
-extension FooBar {
-
-    public var more_string: String? {
-        get {
-            self.parseUnknownField(fieldNumber: 150, type: String.self)
-        }
-        set {
-            self.setUnknownField(fieldNumber: 150, newValue: newValue)
-        }
     }
 }
 
@@ -191,7 +223,7 @@ extension FooBar {
 
     }
 
-    public enum FooBarBazEnum : Int32, CaseIterable, ProtoEnum, Proto2Enum {
+    public enum FooBarBazEnum : Int32, CaseIterable, Proto2Enum {
 
         case FOO = 1
         case BAR = 2

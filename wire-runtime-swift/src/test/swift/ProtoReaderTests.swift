@@ -532,7 +532,7 @@ final class ProtoReaderTests: XCTestCase {
             }
 
             XCTAssertEqual(values, [])
-            
+
             // The original data is packed (length delimited), but we encode it as
             // unpacked in the unknown data, so it shows up as individual varints.
 
@@ -841,7 +841,7 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeStringToUnknownEnumMapOneFailReverseOrder() throws {
-        
+
         let data = Foundation.Data(hexEncoded: """
             // Key/Value 1 out of order
             0A // (Tag 1 | Length Delimited)

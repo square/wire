@@ -6,12 +6,15 @@ public struct ExternalMessage {
 
     @CustomDefaulted(defaultValue: 20)
     public var f: Float?
-    public var unknownFields: UnknownFields = .init()
+    public var unknownFields: ExtensibleUnknownFields = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
         configure(&self)
     }
 
+}
+
+extension ExternalMessage : ProtoExtensible {
 }
 
 #if !WIRE_REMOVE_EQUATABLE
@@ -32,9 +35,6 @@ extension ExternalMessage : ProtoDefaultedValue {
     public static var defaultedValue: ExternalMessage {
         ExternalMessage()
     }
-}
-
-extension ExternalMessage : ProtoExtensible {
 }
 
 extension ExternalMessage : ProtoMessage {

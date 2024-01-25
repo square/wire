@@ -5,12 +5,39 @@ import Wire
 public struct SwiftModuleOneMessage {
 
     public var name: String
-    public var unknownFields: UnknownFields = .init()
+    public var unknownFields: ExtensibleUnknownFields = .init()
 
-    public init(name: String) {
+    public init(name: String, configure: (inout Self) -> Swift.Void = { _ in }) {
         self.name = name
+        configure(&self)
     }
 
+}
+
+extension SwiftModuleOneMessage : ProtoExtensible {
+}
+
+/**
+ * Extensions of SwiftModuleOneMessage
+ */
+extension SwiftModuleOneMessage {
+
+    /**
+     *
+     * Source: swift_module_three.proto
+     */
+    public var extension_message: ExtensionMessage? {
+        get {
+            self.parseUnknownField(fieldNumber: 1000, type: ExtensionMessage.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1000, newValue: newValue)
+        }
+    }
+    /**
+     * Default value for extension_message extension field.
+     */
+    public static let default_extension_message: ExtensionMessage = .defaultedValue
 }
 
 #if !WIRE_REMOVE_EQUATABLE
@@ -24,12 +51,6 @@ extension SwiftModuleOneMessage : Hashable {
 #endif
 
 extension SwiftModuleOneMessage : Sendable {
-}
-
-/**
- * Extensions of SwiftModuleOneMessage
- */
-extension SwiftModuleOneMessage {
 }
 
 extension SwiftModuleOneMessage : ProtoMessage {

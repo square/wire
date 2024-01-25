@@ -6,12 +6,15 @@ public struct ForeignMessage {
 
     @ProtoDefaulted
     public var i: Int32?
-    public var unknownFields: UnknownFields = .init()
+    public var unknownFields: ExtensibleUnknownFields = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
         configure(&self)
     }
 
+}
+
+extension ForeignMessage : ProtoExtensible {
 }
 
 #if !WIRE_REMOVE_EQUATABLE
@@ -32,9 +35,6 @@ extension ForeignMessage : ProtoDefaultedValue {
     public static var defaultedValue: ForeignMessage {
         ForeignMessage()
     }
-}
-
-extension ForeignMessage : ProtoExtensible {
 }
 
 extension ForeignMessage : ProtoMessage {
