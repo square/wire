@@ -46,7 +46,9 @@ internal class FileDescriptorGeneratorTest {
       |package test;
       |import "imported.proto";
       |
-      |message Test {}
+      |message Test {
+      |  optional Imported imported = 1;
+      |}
       |
         """.trimMargin(),
       ),

@@ -53,8 +53,9 @@ class Pruner(
   }
 
   private fun retainImports(protoFiles: List<ProtoFile>): List<ProtoFile> {
+    val schema = Schema(protoFiles)
     return protoFiles.map { protoFile ->
-      protoFile.retainImports(protoFiles)
+      protoFile.retainImports(schema)
     }
   }
 

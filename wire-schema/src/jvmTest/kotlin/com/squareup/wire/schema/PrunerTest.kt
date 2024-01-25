@@ -1462,6 +1462,54 @@ class PrunerTest {
     assertThat(message.imports).containsExactly("title.proto")
   }
 
+  /**
+   * We had a bug in import pruning where we retained imports if the files were non-empty,
+   * even if those imports were unnecessary.
+   */
+
+  @Test
+  fun importPruningIsPrecise() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+             |import 'footer.proto';
+             |
+             |message Message {
+             |  optional string label = 1;
+             |}
+             |
+             |message AnotherMessage {
+             |  optional Footer footer = 1;
+             |}
+        """.trimMargin(),
+      )
+      add(
+        "footer.proto".toPath(),
+        """
+             |message Footer {
+             |  optional string label = 1;
+             |}
+             |
+             |message Shoe {
+             |  optional string label = 1;
+             |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Message")
+        .addRoot("Shoe")
+        .build(),
+    )
+
+    assertThat(pruned.protoFile("footer.proto")!!.types).isNotEmpty()
+
+    val message = pruned.protoFile("message.proto")!!
+    assertThat(message.imports).isEmpty()
+  }
+
   @Test
   fun enumsAreKeptsIfUsed() {
     val schema = buildSchema {

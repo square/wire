@@ -129,24 +129,40 @@ data class ProtoFile(
     return result
   }
 
-  /** Returns a new proto file that omits unnecessary imports. */
-  fun retainImports(retained: List<ProtoFile>): ProtoFile {
-    val retainedImports = mutableListOf<String>()
-    for (path in imports) {
-      val importedProtoFile = findProtoFile(retained, path) ?: continue
+  private fun referencedTypes(schema: Schema): List<Type> {
+    val types = typesAndNestedTypes()
+    val messages = types.filterIsInstance<MessageType>()
 
-      if (path == "google/protobuf/descriptor.proto" &&
-        extendList.any { it.name.startsWith("google.protobuf.") }
-      ) {
-        // If we extend a google protobuf type, we should keep the import.
-        retainedImports.add(path)
-      } else if (importedProtoFile.types.isNotEmpty() ||
-        importedProtoFile.services.isNotEmpty() ||
-        importedProtoFile.extendList.isNotEmpty()
-      ) {
-        retainedImports.add(path)
-      }
-    }
+    val messageTypes = messages
+      .flatMap { it.fieldsAndOneOfFields }
+      .mapNotNull { it.type }
+
+    val messageOptions = messages.map { it.options }
+    val fieldOptions = messages.flatMap { it.fieldsAndOneOfFields.map { it.options } }
+    val oneOfOptions = messages.flatMap { it.oneOfs }.map { it.options }
+    val optionTypes = (messageOptions + oneOfOptions + fieldOptions).flatMap { it.fields().asMap().keys }
+
+    val rpcTypes = services
+      .flatMap { service -> service.rpcs }
+      .flatMap { rpc -> listOfNotNull(rpc.requestType, rpc.responseType) }
+
+    return (messageTypes + optionTypes + rpcTypes).distinct().mapNotNull { schema.getType(it) }.toList()
+  }
+
+  /** Returns a new proto file that omits unnecessary imports. */
+  fun retainImports(schema: Schema): ProtoFile {
+    val referencedTypes = referencedTypes(schema)
+
+    val typeLocations = referencedTypes.map { type -> type.location }
+
+    val extensionLocations = referencedTypes
+      .filterIsInstance<MessageType>()
+      .flatMap { type -> type.extensionFields }
+      .map { field -> field.location }
+
+    val referencedImports = (typeLocations + extensionLocations).map { it.path }.toSet()
+
+    val retainedImports = imports.filter { referencedImports.contains(it) }
 
     return if (imports.size != retainedImports.size) {
       val result = ProtoFile(
