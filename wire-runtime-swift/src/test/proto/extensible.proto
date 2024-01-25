@@ -18,54 +18,54 @@ syntax = "proto2";
 import "person.proto";
 
 message Extensible {
-    optional string name = 1;
-    
-    extensions 1000 to 3000;
+  optional string name = 1;
+
+  extensions 1000 to 3000;
 }
 
 extend Extensible {
-    optional int32 ext_int32 = 1001;
-    optional uint32 ext_uint32 = 1002;
-    optional sint32 ext_sint32 = 1003;
-    optional fixed32 ext_fixed32 = 1004;
-    optional sfixed32 ext_sfixed32 = 1005;
-    optional int64 ext_int64 = 1006;
-    optional uint64 ext_uint64 = 1007;
-    optional sint64 ext_sint64 = 1008;
-    optional fixed64 ext_fixed64 = 1009;
-    optional sfixed64 ext_sfixed64 = 1010;
-    optional bool ext_bool = 1011;
-    optional float ext_float = 1012;
-    optional double ext_double = 1013;
-    optional string ext_string = 1014;
-    optional bytes ext_bytes = 1015;
+  optional int32 ext_int32 = 1001;
+  optional uint32 ext_uint32 = 1002;
+  optional sint32 ext_sint32 = 1003;
+  optional fixed32 ext_fixed32 = 1004;
+  optional sfixed32 ext_sfixed32 = 1005;
+  optional int64 ext_int64 = 1006;
+  optional uint64 ext_uint64 = 1007;
+  optional sint64 ext_sint64 = 1008;
+  optional fixed64 ext_fixed64 = 1009;
+  optional sfixed64 ext_sfixed64 = 1010;
+  optional bool ext_bool = 1011;
+  optional float ext_float = 1012;
+  optional double ext_double = 1013;
+  optional string ext_string = 1014;
+  optional bytes ext_bytes = 1015;
 
-    optional squareup.protos.person.Person ext_person = 2000;
-    optional squareup.protos.person.Person.PhoneType ext_phone_type = 2001;
+  optional squareup.protos.person.Person ext_person = 2000;
+  optional squareup.protos.person.Person.PhoneType ext_phone_type = 2001;
 }
 
 message LargeExtensible {
-    optional string value1 = 1;
-    optional string value2 = 2;
-    optional string value3 = 3;
-    optional string value4 = 4;
-    optional string value5 = 5;
-    optional string value6 = 6;
-    optional string value7 = 7;
-    optional string value8 = 8;
-    optional string value9 = 9;
-    optional string value10 = 10;
-    optional string value11 = 11;
-    optional string value12 = 12;
-    optional string value13 = 13;
-    optional string value14 = 14;
-    optional string value15 = 15;
-    optional string value16 = 16;
+  optional string value1 = 1;
+  optional string value2 = 2;
+  optional string value3 = 3;
+  optional string value4 = 4;
+  optional string value5 = 5;
+  optional string value6 = 6;
+  optional string value7 = 7;
+  optional string value8 = 8;
+  optional string value9 = 9;
+  optional string value10 = 10;
+  optional string value11 = 11;
+  optional string value12 = 12;
+  optional string value13 = 13;
+  optional string value14 = 14;
+  optional string value15 = 15;
+  optional string value16 = 16;
 
    extensions 17 to 20;
 }
 
 extend LargeExtensible {
-   optional string ext_value17 = 17 [default = "my extension default value" ];
-   optional string ext_value18 = 18;
+  optional string ext_value17 = 17 [default = "my extension default value" ];
+  optional string ext_value18 = 18;
 }

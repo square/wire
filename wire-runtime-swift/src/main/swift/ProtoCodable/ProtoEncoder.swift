@@ -82,6 +82,57 @@ public final class ProtoEncoder {
         }
     }
 
+    // MARK: - Internal Methods
+
+    /** Encode a tagged `ProtoEncodable` field into raw data */
+    internal func encode<T: ProtoEncodable>(tag: UInt32, value: T) throws -> Data {
+        try encodeWithWriter(value, syntax: T.self.protoSyntax ?? .proto2) { writer in
+            try writer.encode(tag: tag, value: value)
+        }
+    }
+
+    /** Encode a tagged `ProtoEnum` field into raw data */
+    internal func encode<T: ProtoEnum>(tag: UInt32, value: T) throws -> Data where T: RawRepresentable<Int32> {
+        try encodeWithWriter(value, syntax: T.self.protoSyntax ?? .proto2) { writer in
+            try writer.encode(tag: tag, value: value)
+        }
+    }
+
+    /** Encode a tagged `int32`, `sfixed32`, or `sint32` field into raw data */
+    internal func encode(tag: UInt32, value: Int32, encoding: ProtoIntEncoding) throws -> Data {
+        try encodeWithWriter(value, syntax: .proto2) { writer in
+            try writer.encode(tag: tag, value: value, encoding: encoding)
+        }
+    }
+
+    /** Encode a tagged `int64`, `sfixed64`, or `sint64` field into raw data */
+    internal func encode(tag: UInt32, value: Int64, encoding: ProtoIntEncoding) throws -> Data {
+        try encodeWithWriter(value, syntax: .proto2) { writer in
+            try writer.encode(tag: tag, value: value, encoding: encoding)
+        }
+    }
+
+    /** Encode a tagged `fixed32` or `uint32` field into raw data */
+    internal func encode(tag: UInt32, value: UInt32, encoding: ProtoIntEncoding = .variable) throws -> Data {
+        try encodeWithWriter(value, syntax: .proto2) { writer in
+            try writer.encode(tag: tag, value: value, encoding: encoding)
+        }
+    }
+
+    /** Encode a tagged `fixed64` or `uint64` field into raw data */
+    internal func encode(tag: UInt32, value: UInt64, encoding: ProtoIntEncoding = .variable) throws -> Data {
+        try encodeWithWriter(value, syntax: .proto2) { writer in
+            try writer.encode(tag: tag, value: value, encoding: encoding)
+        }
+    }
+
+    /** Encode a repeated tagged `fixed64` or `uint64` field into raw data */
+    internal func encode(tag: UInt32, value: [UInt64], encoding: ProtoIntEncoding = .variable) throws -> Data {
+        try encodeWithWriter(value, syntax: .proto2) { writer in
+            try writer.encode(tag: tag, value: value, encoding: encoding)
+        }
+    }
+
     // MARK: - Private Methods
 
     private func encodeWithWriter<T>(

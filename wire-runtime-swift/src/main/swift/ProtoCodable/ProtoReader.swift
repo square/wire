@@ -209,6 +209,11 @@ public final class ProtoReader {
         return nil
     }
 
+    @_disfavoredOverload
+    public func endMessage(token: Int) throws -> ExtensibleUnknownFields {
+        try ExtensibleUnknownFields(rawData: endMessage(token: token))
+    }
+
     public func endMessage(token: Int) throws -> UnknownFields {
         guard token != -1 else {
             // Special case the empty reader.
@@ -547,10 +552,22 @@ public final class ProtoReader {
         }
     }
 
+    internal func decode(into array: inout [UInt32], encoding: ProtoIntEncoding, withTag tag: UInt32) throws {
+        return try decodeBoxed(tag: tag) {
+            try decode(into: &array, encoding: encoding)
+        }
+    }
+
     /** Decode a repeated `fixed64`, or `uint64` field */
     public func decode(into array: inout [UInt64], encoding: ProtoIntEncoding = .variable) throws {
         try decode(into: &array) {
             return try UInt64(from: self, encoding: encoding)
+        }
+    }
+
+    internal func decode(into array: inout [UInt64], encoding: ProtoIntEncoding, withTag tag: UInt32) throws {
+        return try decodeBoxed(tag: tag) {
+            try decode(into: &array, encoding: encoding)
         }
     }
 

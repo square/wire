@@ -22,6 +22,10 @@ final class ExtensibleTests: XCTestCase {
         let message = Extensible {
             $0.name = "real field"
             $0.ext_string = "extension string field"
+            $0.ext_bool = true
+            $0.ext_float = 3.14
+            $0.ext_double = 3.14159
+            $0.ext_bytes = Foundation.Data("test".utf8)
             $0.ext_int32 = -4
             $0.ext_uint32 = 42
             $0.ext_person = Person(name: "Someone", id: 1, data: Data(json_data: ""))
@@ -35,6 +39,10 @@ final class ExtensibleTests: XCTestCase {
         XCTAssertEqual(message, decodedMessage)
         XCTAssertEqual(decodedMessage.name, "real field")
         XCTAssertEqual(decodedMessage.ext_string, "extension string field")
+        XCTAssertEqual(decodedMessage.ext_bool, true)
+        XCTAssertEqual(decodedMessage.ext_float, 3.14)
+        XCTAssertEqual(decodedMessage.ext_double, 3.14159)
+        XCTAssertEqual(decodedMessage.ext_bytes, Foundation.Data("test".utf8))
         XCTAssertEqual(decodedMessage.ext_person?.name, "Someone")
         XCTAssertEqual(decodedMessage.ext_person?.id, 1)
         XCTAssertEqual(decodedMessage.ext_int32, -4)
@@ -68,11 +76,29 @@ final class ExtensibleTests: XCTestCase {
         XCTAssertEqual(message.value1, "value1")
         XCTAssertEqual(message.ext_value17, "ext_value17")
         XCTAssertEqual(message.ext_value18, "ext_value18")
-
+        
         var copy = message
         copy.ext_value17 = "new_ext_value17"
         XCTAssertNotEqual(message, copy)
         XCTAssertEqual(message.ext_value17, "ext_value17")
         XCTAssertEqual(copy.ext_value17, "new_ext_value17")
+    }
+        
+    func testExtensionRepeated() {
+        let message = Extensible {
+            $0.rep_ext_uint64 = [0,1,3]
+        }
+        let encoder = ProtoEncoder()
+        let data = try! encoder.encode(message)
+
+        let decoder = ProtoDecoder()
+        let decodedMessage = try! decoder.decode(Extensible.self, from: data)
+        XCTAssertEqual(message, decodedMessage)
+        XCTAssertEqual(decodedMessage.rep_ext_uint64, [0,1,3])
+    }
+
+    func testExtensionDefaultValues() {
+        XCTAssertEqual(LargeExtensible.Storage.default_ext_value17, "my extension default value")
+        XCTAssertEqual(LargeExtensible.Storage.default_ext_value18, "")
     }
 }

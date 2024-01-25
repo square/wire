@@ -795,7 +795,7 @@ public struct AllTypes {
             storage.array_double = newValue
         }
     }
-    public var unknownFields: UnknownFields {
+    public var unknownFields: ExtensibleUnknownFields {
         get {
             storage.unknownFields
         }
@@ -851,6 +851,305 @@ public struct AllTypes {
 extension AllTypes.Storage : ProtoExtensible {
 }
 
+/**
+ * Extensions of AllTypes.Storage
+ */
+extension AllTypes.Storage {
+
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_int32: Int32? {
+        get {
+            self.parseUnknownField(fieldNumber: 1001, type: Int32.self, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1001, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     * Default value for ext_opt_int32 extension field.
+     */
+    public static let default_ext_opt_int32: Int32 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_uint32: UInt32? {
+        get {
+            self.parseUnknownField(fieldNumber: 1002, type: UInt32.self, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1002, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     * Default value for ext_opt_uint32 extension field.
+     */
+    public static let default_ext_opt_uint32: UInt32 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_sint32: Int32? {
+        get {
+            self.parseUnknownField(fieldNumber: 1003, type: Int32.self, encoding: .signed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1003, newValue: newValue, encoding: .signed)
+        }
+    }
+    /**
+     * Default value for ext_opt_sint32 extension field.
+     */
+    public static let default_ext_opt_sint32: Int32 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_fixed32: UInt32? {
+        get {
+            self.parseUnknownField(fieldNumber: 1004, type: UInt32.self, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1004, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     * Default value for ext_opt_fixed32 extension field.
+     */
+    public static let default_ext_opt_fixed32: UInt32 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_sfixed32: Int32? {
+        get {
+            self.parseUnknownField(fieldNumber: 1005, type: Int32.self, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1005, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     * Default value for ext_opt_sfixed32 extension field.
+     */
+    public static let default_ext_opt_sfixed32: Int32 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_int64: Int64? {
+        get {
+            self.parseUnknownField(fieldNumber: 1006, type: Int64.self, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1006, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     * Default value for ext_opt_int64 extension field.
+     */
+    public static let default_ext_opt_int64: Int64 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_uint64: UInt64? {
+        get {
+            self.parseUnknownField(fieldNumber: 1007, type: UInt64.self, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1007, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     * Default value for ext_opt_uint64 extension field.
+     */
+    public static let default_ext_opt_uint64: UInt64 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_sint64: Int64? {
+        get {
+            self.parseUnknownField(fieldNumber: 1008, type: Int64.self, encoding: .signed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1008, newValue: newValue, encoding: .signed)
+        }
+    }
+    /**
+     * Default value for ext_opt_sint64 extension field.
+     */
+    public static let default_ext_opt_sint64: Int64 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_fixed64: UInt64? {
+        get {
+            self.parseUnknownField(fieldNumber: 1009, type: UInt64.self, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1009, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     * Default value for ext_opt_fixed64 extension field.
+     */
+    public static let default_ext_opt_fixed64: UInt64 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_sfixed64: Int64? {
+        get {
+            self.parseUnknownField(fieldNumber: 1010, type: Int64.self, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1010, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     * Default value for ext_opt_sfixed64 extension field.
+     */
+    public static let default_ext_opt_sfixed64: Int64 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_bool: Bool? {
+        get {
+            self.parseUnknownField(fieldNumber: 1011, type: Bool.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1011, newValue: newValue)
+        }
+    }
+    /**
+     * Default value for ext_opt_bool extension field.
+     */
+    public static let default_ext_opt_bool: Bool = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_float: Float? {
+        get {
+            self.parseUnknownField(fieldNumber: 1012, type: Float.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1012, newValue: newValue)
+        }
+    }
+    /**
+     * Default value for ext_opt_float extension field.
+     */
+    public static let default_ext_opt_float: Float = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_double: Double? {
+        get {
+            self.parseUnknownField(fieldNumber: 1013, type: Double.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1013, newValue: newValue)
+        }
+    }
+    /**
+     * Default value for ext_opt_double extension field.
+     */
+    public static let default_ext_opt_double: Double = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_string: String? {
+        get {
+            self.parseUnknownField(fieldNumber: 1014, type: String.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1014, newValue: newValue)
+        }
+    }
+    /**
+     * Default value for ext_opt_string extension field.
+     */
+    public static let default_ext_opt_string: String = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_bytes: Foundation.Data? {
+        get {
+            self.parseUnknownField(fieldNumber: 1015, type: Foundation.Data.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1015, newValue: newValue)
+        }
+    }
+    /**
+     * Default value for ext_opt_bytes extension field.
+     */
+    public static let default_ext_opt_bytes: Foundation.Data = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_nested_enum: AllTypes.NestedEnum? {
+        get {
+            self.parseUnknownField(fieldNumber: 1016, type: AllTypes.NestedEnum.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1016, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_nested_message: AllTypes.NestedMessage? {
+        get {
+            self.parseUnknownField(fieldNumber: 1017, type: AllTypes.NestedMessage.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1017, newValue: newValue)
+        }
+    }
+    /**
+     * Default value for ext_opt_nested_message extension field.
+     */
+    public static let default_ext_opt_nested_message: AllTypes.NestedMessage = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_uint64: [UInt64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1107, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1107, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_uint64: [UInt64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1207, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1207, newValue: newValue, encoding: .variable)
+        }
+    }
+}
+
 #if !WIRE_REMOVE_EQUATABLE
 extension AllTypes : Equatable {
 }
@@ -862,24 +1161,6 @@ extension AllTypes : Hashable {
 #endif
 
 extension AllTypes : Sendable {
-}
-
-extension AllTypes : ProtoExtensible {
-}
-
-/**
- * Extensions of AllTypes
- */
-extension AllTypes {
-
-    public var ext_opt_string: String? {
-        get {
-            self.parseUnknownField(fieldNumber: 1014, type: String.self)
-        }
-        set {
-            self.setUnknownField(fieldNumber: 1014, newValue: newValue)
-        }
-    }
 }
 
 extension AllTypes : Proto2Codable {
@@ -1151,7 +1432,7 @@ extension AllTypes {
         public var array_sfixed64: [Int64] = []
         public var array_float: [Float] = []
         public var array_double: [Double] = []
-        public var unknownFields: UnknownFields = .init()
+        public var unknownFields: ExtensibleUnknownFields = .init()
 
         public init(
             req_int32: Int32,
