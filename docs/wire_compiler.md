@@ -310,6 +310,16 @@ wire {
 }
 ```
 
+By default this feature is lenient given unknown `root` and `prune` arguments. You may prefer for
+this to be strict instead:
+
+```groovy
+wire {
+  rejectUnusedRootsOrPrunes = true
+  ...
+}
+```
+
 ### Version Matching
 
 Another way to prune obsolete fields is to assign them a version, then to generate your code
@@ -492,6 +502,15 @@ wire {
 
     // True for emitted services to implement one interface per RPC.
     singleMethodServices = false
+
+    // Set how many oneof choices are necessary for generated message classes to use the
+    // `OneOf<Key<T>, T>` form rather than the default, where options are flattened into the
+    // enclosing type.
+    boxOneOfsMinSize = 5000
+
+    // True to escape Kotlin keywords like `value` and `data` with backticks. Otherwise an
+    // underscore underscore is added as a suffix, like `value_` and `data_`.
+    escapeKotlinKeywords = false
   }
 }
 ```
