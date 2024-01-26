@@ -129,29 +129,51 @@ data class ProtoFile(
     return result
   }
 
-  private fun referencedTypes(schema: Schema): List<Type> {
+  /**
+   * Returns all types references by types and subtypes defined in the proto file.
+   */
+  private fun referencedTypes(): List<ProtoType> {
     val types = typesAndNestedTypes()
     val messages = types.filterIsInstance<MessageType>()
+    val enums = types.filterIsInstance<EnumType>()
 
-    val messageTypes = messages
+    val messageFieldTypes = messages
       .flatMap { it.fieldsAndOneOfFields }
       .mapNotNull { it.type }
-
-    val messageOptions = messages.map { it.options }
-    val fieldOptions = messages.flatMap { it.fieldsAndOneOfFields.map { it.options } }
-    val oneOfOptions = messages.flatMap { it.oneOfs }.map { it.options }
-    val optionTypes = (messageOptions + oneOfOptions + fieldOptions).flatMap { it.fields().asMap().keys }
 
     val rpcTypes = services
       .flatMap { service -> service.rpcs }
       .flatMap { rpc -> listOfNotNull(rpc.requestType, rpc.responseType) }
 
-    return (messageTypes + optionTypes + rpcTypes).distinct().mapNotNull { schema.getType(it) }.toList()
+    val extendTypes = mutableListOf<ProtoType>().apply {
+      addAll(extendList.flatMap { it.fields }.mapNotNull { it.type })
+      addAll(types.flatMap { it.nestedExtendList }.flatMap { it.fields }.mapNotNull { it.type })
+    }
+
+    val optionTypes = mutableListOf<Options>().apply {
+      add(options) // file options
+      addAll(messages.map { it.options }) // message options
+      addAll(messages.flatMap { it.fields }.map { it.options }) // field options
+      addAll(messages.flatMap { it.oneOfs }.map { it.options }) // one-of options
+      addAll(enums.map { it.options }) // enum options
+      addAll(enums.flatMap { it.constants }.map { it.options }) // enum value options
+      addAll(services.map { it.options }) // service options
+      addAll(services.flatMap { it.rpcs }.map { it.options }) // method options
+    }.flatMap { it.fields().asMap().keys }
+
+    return (messageFieldTypes + rpcTypes + extendTypes + optionTypes).distinct().toList()
+  }
+
+  /** Returns a new proto file that omits unnecessary imports. */
+  @Suppress("unused") // left for backwards compatibility
+  fun retainImports(retained: List<ProtoFile>): ProtoFile {
+    val schema = Schema(retained)
+    return retainImports(schema)
   }
 
   /** Returns a new proto file that omits unnecessary imports. */
   fun retainImports(schema: Schema): ProtoFile {
-    val referencedTypes = referencedTypes(schema)
+    val referencedTypes = referencedTypes().mapNotNull { schema.getType(it) }
 
     val typeLocations = referencedTypes.map { type -> type.location }
 
@@ -164,9 +186,13 @@ data class ProtoFile(
 
     val retainedImports = imports.filter { referencedImports.contains(it) }
 
-    return if (imports.size != retainedImports.size) {
+    val protoFilesInSchema = schema.protoFiles.map { it.location.path }.toSet()
+
+    val retainedPublicImports = publicImports.filter { protoFilesInSchema.contains(it) }
+
+    return if (imports.size != retainedImports.size || publicImports.size != retainedPublicImports.size) {
       val result = ProtoFile(
-        location, retainedImports, publicImports, packageName, types, services,
+        location, retainedImports, retainedPublicImports, packageName, types, services,
         extendList, options, syntax,
       )
       result.javaPackage = javaPackage
