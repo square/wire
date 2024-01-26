@@ -25,12 +25,6 @@ Cutting a JVM Release
     sed -i "" \
       "s/VERSION_NAME=.*/VERSION_NAME=$RELEASE_VERSION/g" \
       `find . -name "gradle.properties"`
-    sed -i "" \
-      "s/\"com.squareup.wire:\([^\:]*\):[^\"]*\"/\"com.squareup.wire:\1:$RELEASE_VERSION\"/g" \
-      `find . -name "README.md"`
-    sed -i "" \
-      "s/\<version\>\([^<]*\)\<\/version\>/\<version\>$RELEASE_VERSION\<\/version\>/g" \
-      `find . -name "README.md"`
     ```
 
 4. Tag the release and push to GitHub.

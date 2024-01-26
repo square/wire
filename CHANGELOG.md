@@ -1,6 +1,47 @@
 Change Log
 ==========
 
+Version 4.9.4
+-------------
+
+_2024-01-26_
+
+### Common
+
+* Added `linuxArm64` target to wire-runtime module (#2733 by [Shay Oinif][ShayOinif])
+* Add `ProtoReader` API for length-delimited stream reads (#2747 by [Jake Wharton][JakeWharton])
+  * You can now call `ProtoReader#nextLengthDelimited` to read and return the length of the next message in a length-delimited stream.
+* Ensure `ConsoleWireLogger` does not print anything if in quiet mode (#2754 by [Dimitris Koutsogiorgas][dnkoutso])
+* Provide a built in public `EmptyWireLoggerFactory` class (#2776 by [Dimitris Koutsogiorgas][dnkoutso])
+* Stop logging includes and excludes (#2777)
+* Implement equals/hash for Duration and Instant on native and JS (#2781)
+* Prune imports no longer used by retained entities in the schema (#2797 by [Michael Peyper][mpeyper])
+
+### Kotlin
+
+* Generate Grpc `SERVICE_NAME` as const (#2773 by [Marius Volkhart][MariusVolkhart])
+* Use `%N` in `KotlinGenerator` to ensure names are escaped (#2784 by [Egor Andreevich][Egorand])
+* Add `escapeKotlinKeywords` parameter to Kotlin target (#2785 by [Egor Andreevich][Egorand])
+  * You can now set `escapeKotlinKeywords = true` within our `kotlin {}` targets to escape Kotlin keywords with backticks rather than having them suffixed with an `_`.
+* Don't retransmit a `PipeDuplexRequestBody` (#2791)
+  * We had crashes that occurred when OkHttp attempted to retry sending the request body of a gRPC streaming connection.
+
+### Swift
+
+* Remove deprecated cruft (#2721 by [Adam Lickel][lickel])
+* Always qualify names for types that conflict with common Swift types (#2764 by [Dimitris Koutsogiorgas][dnkoutso])
+* Fix edge case for heap based messages using a redacted description field (#2772 by [Dimitris Koutsogiorgas][dnkoutso])
+* Change `unknownFields` type to `[UInt32: Data]` from just `Data`. (#2789 by [Dimitris Koutsogiorgas][dnkoutso])
+* Introduce a `ProtoExtensible` protocol that all messages that have been extended conform to. (#2790 by [Dimitris Koutsogiorgas][dnkoutso])
+
+### Announcement
+
+Wire 5.0 is happening soon. This will happen:
+
+* `SchemaHander.Factory#create()` will be removed. Override its counterpart for painless migration `SchemaHander.Factory#create(includes: List<String>, excludes: List<String>, exclusive: Boolean, outDirectory: String, options: Map<String, String>)`.
+* The module `wire-grpc-server` will be extracted into its own repository: https://github.com/square/wire-grpc-server/
+  * Here is how one should migrate: // TODO
+
 Version 4.9.3
 -------------
 
@@ -1269,3 +1310,10 @@ Initial version.
  [reflect]: https://github.com/grpc/grpc/blob/master/doc/server-reflection.md
  [swiftblogpost]: https://cashapp.github.io/2020-08-19/wire-support-for-swift-part-1
  [wire-customizing-output]: https://square.github.io/wire/wire_compiler/#customizing-output
+ [ShayOinif]: https://github.com/ShayOinif
+ [lickel]: https://github.com/lickel
+ [dnkoutso]: https://github.com/dnkoutso
+ [mpeyper]: https://github.com/mpeyper
+ [JakeWharton]: https://github.com/JakeWharton
+ [MariusVolkhart]: https://github.com/MariusVolkhart
+ [Egorand]: https://github.com/Egorand
