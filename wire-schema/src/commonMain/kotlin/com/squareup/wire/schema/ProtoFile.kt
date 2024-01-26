@@ -129,28 +129,73 @@ data class ProtoFile(
     return result
   }
 
-  /** Returns a new proto file that omits unnecessary imports. */
-  fun retainImports(retained: List<ProtoFile>): ProtoFile {
-    val retainedImports = mutableListOf<String>()
-    for (path in imports) {
-      val importedProtoFile = findProtoFile(retained, path) ?: continue
+  /**
+   * Returns all types references by types and subtypes defined in the proto file.
+   */
+  private fun referencedTypes(): List<ProtoType> {
+    val types = typesAndNestedTypes()
+    val messages = types.filterIsInstance<MessageType>()
+    val enums = types.filterIsInstance<EnumType>()
 
-      if (path == "google/protobuf/descriptor.proto" &&
-        extendList.any { it.name.startsWith("google.protobuf.") }
-      ) {
-        // If we extend a google protobuf type, we should keep the import.
-        retainedImports.add(path)
-      } else if (importedProtoFile.types.isNotEmpty() ||
-        importedProtoFile.services.isNotEmpty() ||
-        importedProtoFile.extendList.isNotEmpty()
-      ) {
-        retainedImports.add(path)
-      }
+    val messageFieldTypes = messages
+      .flatMap { it.fieldsAndOneOfFields }
+      .mapNotNull { it.type }
+
+    val rpcTypes = services
+      .flatMap { service -> service.rpcs }
+      .flatMap { rpc -> listOfNotNull(rpc.requestType, rpc.responseType) }
+
+    val extendTypes = mutableListOf<ProtoType>().apply {
+      addAll(extendList.flatMap { it.fields }.mapNotNull { it.type })
+      addAll(types.flatMap { it.nestedExtendList }.flatMap { it.fields }.mapNotNull { it.type })
     }
 
-    return if (imports.size != retainedImports.size) {
+    val optionTypes = mutableListOf<Options>().apply {
+      add(options) // file options
+      addAll(messages.map { it.options }) // message options
+      addAll(messages.flatMap { it.fields }.map { it.options }) // field options
+      addAll(messages.flatMap { it.oneOfs }.map { it.options }) // one-of options
+      addAll(enums.map { it.options }) // enum options
+      addAll(enums.flatMap { it.constants }.map { it.options }) // enum value options
+      addAll(services.map { it.options }) // service options
+      addAll(services.flatMap { it.rpcs }.map { it.options }) // method options
+    }.flatMap { it.fields().asMap().keys }
+
+    return (messageFieldTypes + rpcTypes + extendTypes + optionTypes).distinct().toList()
+  }
+
+  /** Returns a new proto file that omits unnecessary imports. */
+  @Suppress("unused") // left for backwards compatibility
+  fun retainImports(retained: List<ProtoFile>): ProtoFile {
+    val schema = Schema(retained)
+    return retainImports(schema)
+  }
+
+  /** Returns a new proto file that omits unnecessary imports. */
+  fun retainImports(schema: Schema): ProtoFile {
+    val referencedTypes = referencedTypes().mapNotNull { schema.getType(it) }
+
+    val typeLocations = referencedTypes.map { type -> type.location }
+
+    val extensionLocations = referencedTypes
+      .filterIsInstance<MessageType>()
+      .flatMap { type -> type.extensionFields }
+      .map { field -> field.location }
+
+    val referencedImports = (typeLocations + extensionLocations).map { it.path }.toSet()
+
+    val retainedImports = imports.filter { referencedImports.contains(it) }
+
+    val nonEmptyProtoFilesInSchema = schema.protoFiles
+      .filter { it.types.isNotEmpty() || it.services.isNotEmpty() || it.extendList.isNotEmpty() }
+      .map { protoFile -> protoFile.location.path }
+      .toSet()
+
+    val retainedPublicImports = publicImports.filter { nonEmptyProtoFilesInSchema.contains(it) }
+
+    return if (imports.size != retainedImports.size || publicImports.size != retainedPublicImports.size) {
       val result = ProtoFile(
-        location, retainedImports, publicImports, packageName, types, services,
+        location, retainedImports, retainedPublicImports, packageName, types, services,
         extendList, options, syntax,
       )
       result.javaPackage = javaPackage
@@ -200,10 +245,6 @@ data class ProtoFile(
         protoFileElement.publicImports, packageName, types, services, wireExtends, options,
         protoFileElement.syntax,
       )
-    }
-
-    private fun findProtoFile(protoFiles: List<ProtoFile>, path: String): ProtoFile? {
-      return protoFiles.find { it.location.path == path }
     }
   }
 }

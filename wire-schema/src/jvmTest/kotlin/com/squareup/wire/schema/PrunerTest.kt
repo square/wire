@@ -1463,6 +1463,814 @@ class PrunerTest {
   }
 
   @Test
+  fun excludeUnusedPublicImports() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+             |import public 'footer.proto';
+             |import public 'title.proto';
+             |
+             |message Message {
+             |}
+        """.trimMargin(),
+      )
+      add(
+        "title.proto".toPath(),
+        """
+             |message Title {
+             |  optional string label = 1;
+             |}
+        """.trimMargin(),
+      )
+      add(
+        "footer.proto".toPath(),
+        """
+             |message Footer {
+             |  optional string label = 1;
+             |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Message")
+        .addRoot("Title")
+        .build(),
+    )
+
+    assertThat(pruned.protoFile("footer.proto")!!.types).isEmpty()
+    assertThat(pruned.protoFile("title.proto")!!.types).isNotEmpty()
+
+    val message = pruned.protoFile("message.proto")!!
+    assertThat(message.publicImports).containsExactly("title.proto")
+  }
+
+  /**
+   * We had a bug in import pruning where we retained imports if the files were non-empty,
+   * even if those imports were unnecessary.
+   */
+  @Test
+  fun importPruningIsPrecise() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+             |import 'footer.proto';
+             |
+             |message Message {
+             |  optional string label = 1;
+             |}
+             |
+             |message AnotherMessage {
+             |  optional Footer footer = 1;
+             |}
+        """.trimMargin(),
+      )
+      add(
+        "footer.proto".toPath(),
+        """
+             |message Footer {
+             |  optional string label = 1;
+             |}
+             |
+             |message Shoe {
+             |  optional string label = 1;
+             |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Message")
+        .addRoot("Shoe")
+        .build(),
+    )
+
+    assertThat(pruned.protoFile("footer.proto")!!.types).isNotEmpty()
+
+    val message = pruned.protoFile("message.proto")!!
+    assertThat(message.imports).isEmpty()
+  }
+
+  @Test
+  fun retainImportWhenUsedForMessageField() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+          |import 'title.proto';
+          |import 'footer.proto';
+          |
+          |message Message {
+          |  optional Title title = 1;
+          |}
+          |
+          |message AnotherMessage {
+          |  optional Footer footer = 1;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "title.proto".toPath(),
+        """
+          |message Title {
+          |  optional string label = 1;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "footer.proto".toPath(),
+        """
+          |message Footer {
+          |  optional string label = 1;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Message")
+        .build(),
+    )
+
+    val message = pruned.protoFile("message.proto")!!
+    assertThat(message.imports).containsExactly("title.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedForMessageOneOf() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+          |import 'title.proto';
+          |import 'footer.proto';
+          |
+          |message Message {
+          |  oneof title_value {
+          |    Title title = 1;
+          |    string value = 2;
+          |  }
+          |}
+          |
+          |message AnotherMessage {
+          |  oneof footer_value {
+          |    Footer footer = 1;
+          |    string value = 2;
+          |  }
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "title.proto".toPath(),
+        """
+          |message Title {
+          |  optional string label = 1;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "footer.proto".toPath(),
+        """
+          |message Footer {
+          |  optional string label = 1;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Message")
+        .build(),
+    )
+
+    val message = pruned.protoFile("message.proto")!!
+    assertThat(message.imports).containsExactly("title.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedForServiceRpc() {
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
+        """
+          |import 'call.proto';
+          |import 'another_call.proto';
+          |
+          |service Service {
+          |  rpc Call (CallRequest) returns (CallResponse);
+          |  rpc AnotherCall (AnotherCallRequest) returns (AnotherCallResponse);
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "call.proto".toPath(),
+        """
+          |message CallRequest {
+          |}
+          |
+          |message CallResponse {
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "another_call.proto".toPath(),
+        """
+          |message AnotherCallRequest {
+          |}
+          |
+          |message AnotherCallResponse {
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Service#Call")
+        .build(),
+    )
+
+    val service = pruned.protoFile("service.proto")!!
+    assertThat(service.imports).containsExactly("call.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedForExtendedMessage() {
+    val schema = buildSchema {
+      add(
+        "extension.proto".toPath(),
+        """
+          |import 'message.proto';
+          |import 'title.proto';
+          |import 'footer.proto';
+          |
+          |extend Message {
+          |  optional Title title = 2;
+          |}
+          |
+          |extend AnotherMessage {
+          |  optional Footer footer = 2;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "message.proto".toPath(),
+        """
+          |message Message {
+          |  optional string value = 1;
+          |}
+          |
+          |message AnotherMessage {
+          |  optional string value = 1;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "title.proto".toPath(),
+        """
+          |message Title {
+          |  optional string label = 1;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "footer.proto".toPath(),
+        """
+          |message Footer {
+          |  optional string label = 1;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Message")
+        .build(),
+    )
+
+    val extension = pruned.protoFile("extension.proto")!!
+    assertThat(extension.imports).containsExactly("title.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedForNestedMessageField() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+          |import 'title.proto';
+          |import 'footer.proto';
+          |
+          |message Outer {
+          |  message Message {
+          |    optional Title title = 1;
+          |  }
+          |
+          |  message AnotherMessage {
+          |    optional Footer footer = 1;
+          |  }
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "title.proto".toPath(),
+        """
+          |message Title {
+          |  optional string label = 1;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "footer.proto".toPath(),
+        """
+          |message Footer {
+          |  optional string label = 1;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Outer.Message")
+        .build(),
+    )
+
+    val message = pruned.protoFile("message.proto")!!
+    assertThat(message.imports).containsExactly("title.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedForNestedExtendedMessage() {
+    val schema = buildSchema {
+      add(
+        "extension.proto".toPath(),
+        """
+          |import 'message.proto';
+          |import 'title.proto';
+          |import 'footer.proto';
+          |
+          |message Outer {
+          |  extend Message {
+          |    optional Title title = 2;
+          |  }
+          |
+          |  extend AnotherMessage {
+          |    optional Footer footer = 2;
+          |  }
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "message.proto".toPath(),
+        """
+          |message Message {
+          |  optional string value = 1;
+          |}
+          |
+          |message AnotherMessage {
+          |  optional string value = 1;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "title.proto".toPath(),
+        """
+          |message Title {
+          |  optional string label = 1;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "footer.proto".toPath(),
+        """
+          |message Footer {
+          |  optional string label = 1;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Message")
+        .build(),
+    )
+
+    val extension = pruned.protoFile("extension.proto")!!
+    assertThat(extension.imports).containsExactly("title.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedForFileOption() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+          |import 'option.proto';
+          |
+          |option custom_option = true;
+          |
+          |message Message {
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.FileOptions {
+          |  optional bool custom_option = 10000;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Message")
+        .build(),
+    )
+
+    val message = pruned.protoFile("message.proto")!!
+    assertThat(message.imports).containsExactly("option.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedForMessageOption() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+          |import 'option.proto';
+          |import 'another_option.proto';
+          |
+          |message Message {
+          |  option custom_option = true;
+          |}
+          |
+          |message AnotherMessage {
+          |  option another_custom_option = true;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.MessageOptions {
+          |  optional bool custom_option = 10000;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "another_option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.MessageOptions {
+          |  optional bool another_custom_option = 10001;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Message")
+        .build(),
+    )
+
+    val message = pruned.protoFile("message.proto")!!
+    assertThat(message.imports).containsExactly("option.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedForFieldOption() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+          |import 'option.proto';
+          |import 'another_option.proto';
+          |
+          |message Message {
+          |  optional string value = 1 [custom_option = true];
+          |}
+          |
+          |message AnotherMessage {
+          |  optional string value = 1 [another_custom_option = true];
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.FieldOptions {
+          |  optional bool custom_option = 10000;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "another_option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.FieldOptions {
+          |  optional bool another_custom_option = 10001;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Message")
+        .build(),
+    )
+
+    val message = pruned.protoFile("message.proto")!!
+    assertThat(message.imports).containsExactly("option.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedForOneOfOption() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+          |import 'option.proto';
+          |import 'another_option.proto';
+          |
+          |message Message {
+          |  oneof value {
+          |    option custom_option = true;
+          |    string value_1 = 1;
+          |    string value_2 = 2;
+          |  }
+          |}
+          |
+          |message AnotherMessage {
+          |  oneof value {
+          |    option another_custom_option = true;
+          |    string value_1 = 1;
+          |    string value_2 = 2;
+          |  }
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.OneofOptions {
+          |  optional bool custom_option = 10000;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "another_option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.OneofOptions {
+          |  optional bool another_custom_option = 10001;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Message")
+        .build(),
+    )
+
+    val message = pruned.protoFile("message.proto")!!
+    assertThat(message.imports).containsExactly("option.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedForEnumOption() {
+    val schema = buildSchema {
+      add(
+        "enum.proto".toPath(),
+        """
+          |import 'option.proto';
+          |import 'another_option.proto';
+          |
+          |enum Enum {
+          |  option custom_option = true;
+          |  ENUM_UNSPECIFIED = 0;
+          |  ENUM_VALUE = 1;
+          |}
+          |
+          |enum AnotherEnum {
+          |  option another_custom_option = true;
+          |  ANOTHER_ENUM_UNSPECIFIED = 0;
+          |  ANOTHER_ENUM_VALUE = 1;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.EnumOptions {
+          |  optional bool custom_option = 10000;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "another_option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.EnumOptions {
+          |  optional bool another_custom_option = 10001;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Enum")
+        .build(),
+    )
+
+    val enum = pruned.protoFile("enum.proto")!!
+    assertThat(enum.imports).containsExactly("option.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedForEnumValueOption() {
+    val schema = buildSchema {
+      add(
+        "enum.proto".toPath(),
+        """
+          |import 'option.proto';
+          |import 'another_option.proto';
+          |
+          |enum Enum {
+          |  ENUM_UNSPECIFIED = 0;
+          |  ENUM_VALUE = 1 [custom_option = true];
+          |}
+          |
+          |enum AnotherEnum {
+          |  ANOTHER_ENUM_UNSPECIFIED = 0;
+          |  ANOTHER_ENUM_VALUE = 1 [another_custom_option = true];
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.EnumValueOptions {
+          |  optional bool custom_option = 10000;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "another_option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.EnumValueOptions {
+          |  optional bool another_custom_option = 10001;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Enum")
+        .build(),
+    )
+
+    val enum = pruned.protoFile("enum.proto")!!
+    assertThat(enum.imports).containsExactly("option.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedForServiceOption() {
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
+        """
+          |import 'option.proto';
+          |import 'another_option.proto';
+          |
+          |message CallRequest {
+          |}
+          |
+          |message CallResponse {
+          |}
+          |
+          |service Service {
+          |  option custom_option = true;
+          |  rpc Call (CallRequest) returns (CallResponse);
+          |}
+          |
+          |service AnotherService {
+          |  option another_custom_option = true;
+          |  rpc Call (CallRequest) returns (CallResponse);
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.ServiceOptions {
+          |  optional bool custom_option = 10000;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "another_option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.ServiceOptions {
+          |  optional bool another_custom_option = 10001;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Service")
+        .build(),
+    )
+
+    val service = pruned.protoFile("service.proto")!!
+    assertThat(service.imports).containsExactly("option.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedForMethodOption() {
+    val schema = buildSchema {
+      add(
+        "service.proto".toPath(),
+        """
+          |import 'option.proto';
+          |import 'another_option.proto';
+          |
+          |message CallRequest {
+          |}
+          |
+          |message CallResponse {
+          |}
+          |
+          |service Service {
+          |  rpc Call (CallRequest) returns (CallResponse) {
+          |    option custom_option = true;
+          |  }
+          |}
+          |
+          |service AnotherService {
+          |  rpc Call (CallRequest) returns (CallResponse) {
+          |    option another_custom_option = true;
+          |  }
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.MethodOptions {
+          |  optional bool custom_option = 10000;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "another_option.proto".toPath(),
+        """
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.MethodOptions {
+          |  optional bool another_custom_option = 10001;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Service")
+        .build(),
+    )
+
+    val service = pruned.protoFile("service.proto")!!
+    assertThat(service.imports).containsExactly("option.proto")
+  }
+
+  @Test
   fun enumsAreKeptsIfUsed() {
     val schema = buildSchema {
       add(

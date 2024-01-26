@@ -612,6 +612,7 @@ public final class com/squareup/wire/schema/ProtoFile {
 	public final fun linkOptions (Lcom/squareup/wire/schema/Linker;Z)V
 	public final fun name ()Ljava/lang/String;
 	public final fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;)Lcom/squareup/wire/schema/ProtoFile;
+	public final fun retainImports (Lcom/squareup/wire/schema/Schema;)Lcom/squareup/wire/schema/ProtoFile;
 	public final fun retainImports (Ljava/util/List;)Lcom/squareup/wire/schema/ProtoFile;
 	public final fun retainLinked (Ljava/util/Set;Ljava/util/Set;)Lcom/squareup/wire/schema/ProtoFile;
 	public final fun toElement ()Lcom/squareup/wire/schema/internal/parser/ProtoFileElement;
