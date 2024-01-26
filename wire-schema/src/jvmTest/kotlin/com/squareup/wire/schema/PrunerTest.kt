@@ -1462,11 +1462,54 @@ class PrunerTest {
     assertThat(message.imports).containsExactly("title.proto")
   }
 
+  @Test
+  fun excludeUnusedPublicImports() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+             |import public 'footer.proto';
+             |import public 'title.proto';
+             |
+             |message Message {
+             |}
+        """.trimMargin(),
+      )
+      add(
+        "title.proto".toPath(),
+        """
+             |message Title {
+             |  optional string label = 1;
+             |}
+        """.trimMargin(),
+      )
+      add(
+        "footer.proto".toPath(),
+        """
+             |message Footer {
+             |  optional string label = 1;
+             |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Message")
+        .addRoot("Title")
+        .build(),
+    )
+
+    assertThat(pruned.protoFile("footer.proto")!!.types).isEmpty()
+    assertThat(pruned.protoFile("title.proto")!!.types).isNotEmpty()
+
+    val message = pruned.protoFile("message.proto")!!
+    assertThat(message.publicImports).containsExactly("title.proto")
+  }
+
   /**
    * We had a bug in import pruning where we retained imports if the files were non-empty,
    * even if those imports were unnecessary.
    */
-
   @Test
   fun importPruningIsPrecise() {
     val schema = buildSchema {

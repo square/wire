@@ -186,9 +186,12 @@ data class ProtoFile(
 
     val retainedImports = imports.filter { referencedImports.contains(it) }
 
-    val protoFilesInSchema = schema.protoFiles.map { it.location.path }.toSet()
+    val nonEmptyProtoFilesInSchema = schema.protoFiles
+      .filter { it.types.isNotEmpty() || it.services.isNotEmpty() || it.extendList.isNotEmpty() }
+      .map { protoFile -> protoFile.location.path }
+      .toSet()
 
-    val retainedPublicImports = publicImports.filter { protoFilesInSchema.contains(it) }
+    val retainedPublicImports = publicImports.filter { nonEmptyProtoFilesInSchema.contains(it) }
 
     return if (imports.size != retainedImports.size || publicImports.size != retainedPublicImports.size) {
       val result = ProtoFile(
@@ -242,10 +245,6 @@ data class ProtoFile(
         protoFileElement.publicImports, packageName, types, services, wireExtends, options,
         protoFileElement.syntax,
       )
-    }
-
-    private fun findProtoFile(protoFiles: List<ProtoFile>, path: String): ProtoFile? {
-      return protoFiles.find { it.location.path == path }
     }
   }
 }
