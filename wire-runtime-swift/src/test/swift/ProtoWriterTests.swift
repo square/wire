@@ -472,11 +472,19 @@ final class ProtoWriterTests: XCTestCase {
     func testEncodeRepeatedEnums() throws {
         let writer = ProtoWriter()
         let values: [Person.PhoneType] = [.HOME, .MOBILE]
-        try writer.encode(tag: 1, value: values, packed: false)
+        try writer.encode(tag: 1, value: values)
 
         assertBufferEqual(writer, "08_01_08_00")
     }
 
+    func testEncodeUnpackedRepeatedEnums() throws {
+        let writer = ProtoWriter()
+        let values: [Person.PhoneType] = [.HOME, .MOBILE]
+        try writer.encode(tag: 1, value: values, packed: false)
+
+        assertBufferEqual(writer, "08_01_08_00")
+    }
+    
     func testEncodePackedRepeatedEnums() throws {
         let writer = ProtoWriter()
         let values: [Person.PhoneType] = [.HOME, .MOBILE]

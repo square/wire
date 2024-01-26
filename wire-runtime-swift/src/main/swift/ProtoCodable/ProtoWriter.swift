@@ -116,13 +116,13 @@ public final class ProtoWriter {
     }
 
     /** Encode a required `enum` field */
-    public func encode<T: RawRepresentable>(tag: UInt32, value: T) throws where T.RawValue == Int32 {
+    public func encode<T: ProtoEnum>(tag: UInt32, value: T) throws where T: RawRepresentable<Int32> {
         if value.rawValue == 0 && isProto3 { return }
         try encode(tag: tag, value: value as T?)
     }
 
     /** Encode an optional `enum` field */
-    public func encode<T: RawRepresentable>(tag: UInt32, value: T?) throws where T.RawValue == Int32 {
+    public func encode<T: ProtoEnum>(tag: UInt32, value: T?) throws where T: RawRepresentable<Int32> {
         guard let value = value else { return }
         encode(tag: tag, wireType: .varint, value: value) {
             let uintValue = UInt32(bitPattern: $0.rawValue)
@@ -228,6 +228,7 @@ public final class ProtoWriter {
      Encode a field which has a single encoding mechanism (unlike integers).
      This includes most fields types, such as messages, strings, bytes, and floating point numbers.
      */
+    @_disfavoredOverload
     public func encode(tag: UInt32, value: ProtoEncodable?) throws {
         guard let value = value else { return }
 
@@ -387,7 +388,7 @@ public final class ProtoWriter {
     }
 
     /** Encoded a repeated `enum` field */
-    public func encode<T: RawRepresentable>(tag: UInt32, value: [T], packed: Bool? = nil) throws where T.RawValue == Int32 {
+    public func encode<T: ProtoEnum>(tag: UInt32, value: [T], packed: Bool? = nil) throws where T: RawRepresentable<Int32> {
         guard !value.isEmpty else { return }
 
         encode(tag: tag, wireType: .varint, value: value, packed: packed) {
@@ -460,6 +461,7 @@ public final class ProtoWriter {
     }
 
     /** Encode a repeated field which has a single encoding mechanism, like messages, strings, and bytes. */
+    @_disfavoredOverload
     public func encode<T: ProtoEncodable>(tag: UInt32, value: [T]) throws {
         guard !value.isEmpty else { return }
 
@@ -477,6 +479,7 @@ public final class ProtoWriter {
 
     // MARK: - Public Methods - Encoding - Maps
 
+    @_disfavoredOverload
     public func encode<V: ProtoEncodable>(tag: UInt32, value: [String: V]) throws {
         guard !value.isEmpty else { return }
 
@@ -486,7 +489,7 @@ public final class ProtoWriter {
         }
     }
 
-    public func encode<V: RawRepresentable>(tag: UInt32, value: [String: V]) throws where V.RawValue == Int32 {
+    public func encode<V: ProtoEnum>(tag: UInt32, value: [String: V]) throws where V: RawRepresentable<Int32> {
         guard !value.isEmpty else { return }
 
         try encode(tag: tag, value: value) { key, item in
@@ -495,6 +498,7 @@ public final class ProtoWriter {
         }
     }
 
+    @_disfavoredOverload
     public func encode<K: ProtoIntEncodable, V: ProtoEncodable>(
         tag: UInt32,
         value: [K: V],

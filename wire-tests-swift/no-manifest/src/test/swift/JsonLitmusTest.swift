@@ -31,15 +31,18 @@ final class JsonLitmusTest : XCTestCase {
         }
         let expectedJson = """
         {\
+        "aliases":["Nerfherder"],\
         "email":"luke@skywalker.net",\
         "id":42,\
-        "phone":[{"number":"800-555-1234","type":"WORK"}],\
         "name":"Luke Skywalker",\
-        "aliases":["Nerfherder"]\
+        "phone":[{"number":"800-555-1234","type":"WORK"}]\
         }
         """
 
-        let jsonData = try! JSONEncoder().encode(expectedPerson)
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
+
+        let jsonData = try! encoder.encode(expectedPerson)
         let actualJson = String(data: jsonData, encoding: .utf8)!
         XCTAssertEqual(expectedJson, actualJson)
 

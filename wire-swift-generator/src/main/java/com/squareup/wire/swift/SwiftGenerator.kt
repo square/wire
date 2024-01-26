@@ -789,6 +789,12 @@ class SwiftGenerator private constructor(
       PROTO_3 -> proto3Codable
     }
 
+  private val EnumType.protoCodableType: DeclaredTypeName
+    get() = when (syntax) {
+      PROTO_2 -> proto2Codable
+      PROTO_3 -> proto3Codable
+    }
+
   private fun heapCodableExtension(
     structType: DeclaredTypeName,
     storageName: String,
@@ -1511,9 +1517,7 @@ class SwiftGenerator private constructor(
     val enumName = type.typeName
     return TypeSpec.enumBuilder(enumName)
       .addModifiers(PUBLIC)
-      .addSuperType(INT32)
-      .addSuperType(CASE_ITERABLE)
-      .addSuperType(protoEnum)
+      .addSuperTypes(listOf(INT32, CASE_ITERABLE, protoEnum, type.protoCodableType))
       .apply {
         type.protoDefaultedName?.let { protoDefaultedName ->
           addSuperType(protoDefaultedValue)

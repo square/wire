@@ -201,7 +201,7 @@ extension FooBar {
 
     }
 
-    public enum FooBarBazEnum : Int32, CaseIterable, ProtoEnum {
+    public enum FooBarBazEnum : Int32, CaseIterable, ProtoEnum, Proto2Codable {
 
         case FOO = 1
         case BAR = 2
