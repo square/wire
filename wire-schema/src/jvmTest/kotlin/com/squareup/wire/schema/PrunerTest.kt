@@ -1748,8 +1748,8 @@ class PrunerTest {
         .build(),
     )
 
-    val message = pruned.protoFile("extension.proto")!!
-    assertThat(message.imports).containsExactly("title.proto")
+    val extension = pruned.protoFile("extension.proto")!!
+    assertThat(extension.imports).containsExactly("title.proto")
   }
 
   @Test
@@ -1854,8 +1854,8 @@ class PrunerTest {
         .build(),
     )
 
-    val message = pruned.protoFile("extension.proto")!!
-    assertThat(message.imports).containsExactly("title.proto")
+    val extension = pruned.protoFile("extension.proto")!!
+    assertThat(extension.imports).containsExactly("title.proto")
   }
 
   @Test
@@ -2205,8 +2205,8 @@ class PrunerTest {
         .build(),
     )
 
-    val enum = pruned.protoFile("service.proto")!!
-    assertThat(enum.imports).containsExactly("option.proto")
+    val service = pruned.protoFile("service.proto")!!
+    assertThat(service.imports).containsExactly("option.proto")
   }
 
   @Test
@@ -2264,8 +2264,8 @@ class PrunerTest {
         .build(),
     )
 
-    val enum = pruned.protoFile("service.proto")!!
-    assertThat(enum.imports).containsExactly("option.proto")
+    val service = pruned.protoFile("service.proto")!!
+    assertThat(service.imports).containsExactly("option.proto")
   }
 
   @Test
