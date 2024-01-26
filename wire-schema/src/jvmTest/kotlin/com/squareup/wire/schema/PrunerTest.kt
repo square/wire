@@ -1714,7 +1714,8 @@ class PrunerTest {
           |}
         """.trimMargin(),
       )
-      add("message.proto".toPath(),
+      add(
+        "message.proto".toPath(),
         """
           |message Message {
           |  optional string value = 1;
@@ -1723,7 +1724,7 @@ class PrunerTest {
           |message AnotherMessage {
           |  optional string value = 1;
           |}
-        """.trimMargin()
+        """.trimMargin(),
       )
       add(
         "title.proto".toPath(),
@@ -1820,7 +1821,8 @@ class PrunerTest {
           |}
         """.trimMargin(),
       )
-      add("message.proto".toPath(),
+      add(
+        "message.proto".toPath(),
         """
           |message Message {
           |  optional string value = 1;
@@ -1829,7 +1831,7 @@ class PrunerTest {
           |message AnotherMessage {
           |  optional string value = 1;
           |}
-        """.trimMargin()
+        """.trimMargin(),
       )
       add(
         "title.proto".toPath(),
