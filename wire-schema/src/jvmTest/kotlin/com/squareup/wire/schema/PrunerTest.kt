@@ -1750,7 +1750,33 @@ class PrunerTest {
     )
 
     val extension = pruned.protoFile("extension.proto")!!
-    assertThat(extension.imports).containsExactly("title.proto")
+    assertThat(extension.imports).containsExactly("message.proto", "title.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedForExtendingOptions() {
+    val schema = buildSchema {
+      add(
+        "extension.proto".toPath(),
+        """
+          |syntax = "proto2";
+          |
+          |import "google/protobuf/descriptor.proto";
+          |
+          |extend google.protobuf.MessageOptions {
+          |  optional string value = 10000;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("google.protobuf.MessageOptions")
+        .build(),
+    )
+
+    val extension = pruned.protoFile("extension.proto")!!
+    assertThat(extension.imports).containsExactly("google/protobuf/descriptor.proto")
   }
 
   @Test

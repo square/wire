@@ -146,6 +146,7 @@ data class ProtoFile(
       .flatMap { rpc -> listOfNotNull(rpc.requestType, rpc.responseType) }
 
     val extendTypes = mutableListOf<ProtoType>().apply {
+      addAll(extendList.mapNotNull { it.type })
       addAll(extendList.flatMap { it.fields }.mapNotNull { it.type })
       addAll(types.flatMap { it.nestedExtendList }.flatMap { it.fields }.mapNotNull { it.type })
     }
