@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 4.9.5
+-------------
+
+_2024-01-27_
+
+### Common
+
+* Fix over pruning imports when only option types are being extended in a file (#2800 by [Michael Peyper][mpeyper])
+
 Version 4.9.4
 -------------
 
