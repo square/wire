@@ -109,8 +109,13 @@ class SchemaEncoder(
       enclosingEncoder.asRepeated()
         .encodeWithTag(writer, 4, value.types.filterIsInstance<EnclosingType>())
       // INT32.asRepeated().encodeWithTag(writer, 11, value.weak_dependency)
-      // INT32.asRepeated().encodeWithTag(writer, 10, value.public_dependency)
-      STRING.asRepeated().encodeWithTag(writer, 3, value.imports)
+      val allImports = value.imports + value.publicImports
+      val publicImportIndexes = allImports
+        .withIndex()
+        .filter { value.publicImports.contains(it.value) }
+        .map { it.index }
+      INT32.asRepeated().encodeWithTag(writer, 10, publicImportIndexes)
+      STRING.asRepeated().encodeWithTag(writer, 3, allImports)
       STRING.encodeWithTag(writer, 2, value.packageName)
       STRING.encodeWithTag(writer, 1, value.location.path)
     }

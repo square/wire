@@ -329,4 +329,82 @@ class SchemaEncoderTest {
         .build(),
     )
   }
+
+  @Test fun `encode import public dependency`() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+            |syntax = "proto2";
+            |
+            |import "standard.proto";
+            |import public "public.proto";
+            |
+            |message TestMessage {
+            |  optional StandardMessage standard_message = 1;
+            |  optional PublicMessage public_message = 2;
+            |}
+            |
+        """.trimMargin(),
+      )
+      add(
+        "standard.proto".toPath(),
+        """
+            |syntax = "proto2";
+            |
+            |message StandardMessage {
+            |  optional string value = 1;
+            |}
+            |
+        """.trimMargin(),
+      )
+      add(
+        "public.proto".toPath(),
+        """
+            |syntax = "proto2";
+            |
+            |message PublicMessage {
+            |  optional string value = 1;
+            |}
+            |
+        """.trimMargin(),
+      )
+    }
+
+    val handleServiceProto = schema.protoFile("test.proto")!!
+    val encoded = SchemaEncoder(schema).encode(handleServiceProto)
+
+    val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
+    assertThat(fileDescriptorProto).isEqualTo(
+      FileDescriptorProto.newBuilder()
+        .setName("test.proto")
+        .addDependency("standard.proto")
+        .addDependency("public.proto")
+        .addPublicDependency(1)
+        .addMessageType(
+          DescriptorProto.newBuilder()
+            .setName("TestMessage")
+            .addField(
+              FieldDescriptorProto.newBuilder()
+                .setType(FieldDescriptorProto.Type.TYPE_MESSAGE)
+                .setName("standard_message")
+                .setNumber(1)
+                .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
+                .setTypeName(".StandardMessage")
+                .build(),
+            )
+            .addField(
+              FieldDescriptorProto.newBuilder()
+                .setType(FieldDescriptorProto.Type.TYPE_MESSAGE)
+                .setName("public_message")
+                .setNumber(2)
+                .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
+                .setTypeName(".PublicMessage")
+                .build(),
+            )
+            .build(),
+        )
+        .build(),
+    )
+  }
 }
