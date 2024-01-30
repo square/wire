@@ -242,10 +242,9 @@ public final class ProtoReader {
     // MARK: - Public Methods - Decoding - Single Fields
 
     /**
-     Decode enums. Note that the enums themselves do not need to be `ProtoDecodable`
-     so long as they're RawRepresentable as `UInt32`
+     Decode enums.
      */
-    public func decode<T: RawRepresentable>(_ type: T.Type) throws -> T? where T.RawValue == Int32 {
+    public func decode<T: ProtoEnum>(_ type: T.Type) throws -> T? where T: RawRepresentable<Int32> {
         // Pop the enum int value and pass in to initializer
         let intValue = try Int32(truncatingIfNeeded: readVarint())
         guard let enumValue = T(rawValue: intValue) else {
@@ -305,6 +304,7 @@ public final class ProtoReader {
     }
 
     /** Decode a message field */
+    @_disfavoredOverload
     public func decode<T: ProtoDecodable>(_ type: T.Type) throws -> T {
         isProto3Message = T.self.protoSyntax == .proto3
         return try T(from: self)
@@ -397,7 +397,7 @@ public final class ProtoReader {
 
     /**
      Decode a repeated `bool` field.
-     This method is distinct from the generic repeated `ProtoEncodable` one because bools can be packed.
+     This method is distinct from the generic repeated `ProtoDecodable` one because bools can be packed.
      */
     public func decode(into array: inout [Bool]) throws {
         try decode(into: &array) {
@@ -413,7 +413,7 @@ public final class ProtoReader {
 
     /**
      Decode a repeated `double` field.
-     This method is distinct from the generic repeated `ProtoEncodable` one because doubles can be packed.
+     This method is distinct from the generic repeated `ProtoDecodable` one because doubles can be packed.
      */
     public func decode(into array: inout [Double]) throws {
         try decode(into: &array) {
@@ -423,7 +423,7 @@ public final class ProtoReader {
 
     /**
      Decode a repeated `float` field.
-     This method is distinct from the generic repeated `ProtoEncodable` one because floats can be packed.
+     This method is distinct from the generic repeated `ProtoDecodable` one because floats can be packed.
      */
     public func decode(into array: inout [Float]) throws {
         try decode(into: &array) {
@@ -432,7 +432,7 @@ public final class ProtoReader {
     }
 
     /** Decode a repeated `enum` field. */
-    public func decode<T: RawRepresentable>(into array: inout [T]) throws where T.RawValue == Int32 {
+    public func decode<T: ProtoEnum>(into array: inout [T]) throws where T: RawRepresentable<Int32> {
         try decode(into: &array) {
             let intValue = try Int32(truncatingIfNeeded: readVarint())
             guard let enumValue = T(rawValue: intValue) else {
@@ -490,6 +490,7 @@ public final class ProtoReader {
     }
 
     /** Decode a repeated message field. */
+    @_disfavoredOverload
     public func decode<T: ProtoDecodable>(into array: inout [T]) throws {
         // These types do not support packing, so no need to test for it.
         isProto3Message = T.self is Proto3Codable.Type
@@ -501,6 +502,7 @@ public final class ProtoReader {
     /**
      Decode a single key-value pair from a map of values keyed by a `string`.
      */
+    @_disfavoredOverload
     public func decode<V: ProtoDecodable>(into dictionary: inout [String: V]) throws {
         try decode(
             into: &dictionary,
@@ -512,7 +514,7 @@ public final class ProtoReader {
     /**
     Decode a single key-value pair from a map of values keyed by a `string` with an `enum` value type.
     */
-    public func decode<V: RawRepresentable>(into dictionary: inout [String: V]) throws where V.RawValue == Int32 {
+    public func decode<V: ProtoEnum>(into dictionary: inout [String: V]) throws where V: RawRepresentable<Int32> {
         try decode(
             into: &dictionary,
             decodeKey: { try String(from: self) },
@@ -526,6 +528,7 @@ public final class ProtoReader {
     /**
      Decode a single key-value pair from a map of values keyed by an integer type
      */
+    @_disfavoredOverload
     public func decode<K: ProtoIntDecodable, V: ProtoDecodable>(
         into dictionary: inout [K: V], keyEncoding: ProtoIntEncoding = .variable
     ) throws {
@@ -800,11 +803,11 @@ public final class ProtoReader {
     ///   - dictionary: The dictionary in which to add key-value pair if the decoded value is a known case in V.
     ///   - decodeKey: A closure that decodes the key for each pair
     ///   - addUnknownPair: A closure that adds the key-value pair to unknown fields in the event a given raw value is not a known case in V.
-    private func decode<K, V: RawRepresentable>(
+    private func decode<K, V: ProtoEnum>(
         into dictionary: inout [K: V],
         decodeKey: () throws -> K,
         addUnknownPair: (UInt32, K, V.RawValue) throws -> ()
-    ) throws where V.RawValue == Int32 {
+    ) throws where V: RawRepresentable<Int32> {
         var key: K?
         var value: V?
         var rawValue: Int32?

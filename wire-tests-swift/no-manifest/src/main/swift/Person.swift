@@ -142,7 +142,7 @@ extension Person {
     /**
      * Represents the type of the phone number: mobile, home or work.
      */
-    public enum PhoneType : Int32, CaseIterable, ProtoEnum {
+    public enum PhoneType : Int32, CaseIterable, ProtoEnum, Proto2Codable {
 
         case MOBILE = 0
         case HOME = 1

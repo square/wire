@@ -272,9 +272,9 @@ extension StringEncodedTests {
     func testMapRoundTrip() throws {
         let json = """
         {\
+        "both":{"3":"4"},\
         "keys":{"2":"c"},\
-        "values":{"a":"1"},\
-        "both":{"3":"4"}\
+        "values":{"a":"1"}\
         }
         """
         let expectedStruct = DictionaryStruct(
@@ -291,6 +291,7 @@ extension StringEncodedTests {
         XCTAssertEqual(expectedStruct, actualStruct)
 
         let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
 
         let actualJSONData = try encoder.encode(actualStruct)
         let actualJSON = String(data: actualJSONData, encoding: .utf8)!

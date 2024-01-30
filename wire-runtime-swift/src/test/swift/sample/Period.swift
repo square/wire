@@ -2,7 +2,7 @@
 // Source: squareup.geology.Period in squareup/geology/period.proto
 import Wire
 
-public enum Period : Int32, CaseIterable, ProtoEnum {
+public enum Period : Int32, CaseIterable, ProtoEnum, Proto2Codable {
 
     /**
      * 145.5 million years ago — 66.0 million years ago.

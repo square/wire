@@ -2,7 +2,7 @@
 // Source: squareup.protos.kotlin.NegativeValueEnum in negative_value_enum.proto
 import Wire
 
-public enum NegativeValueEnum : Int32, CaseIterable, ProtoEnum {
+public enum NegativeValueEnum : Int32, CaseIterable, ProtoEnum, Proto2Codable {
 
     case DO_NOT_USE = -1
 

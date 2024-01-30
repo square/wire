@@ -118,7 +118,7 @@ extension MappyTwo : Codable {
  */
 extension MappyTwo {
 
-    public enum ValueEnum : Int32, CaseIterable, ProtoEnum {
+    public enum ValueEnum : Int32, CaseIterable, ProtoEnum, Proto2Codable {
 
         case DEFAULT = 0
         case FOO = 1

@@ -35,5 +35,4 @@ final class ProtoDecoderTests: XCTestCase {
         XCTAssertEqual(object1, SimpleOptional2())
         XCTAssertEqual(object2, SimpleOptional2())
     }
-
 }

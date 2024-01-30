@@ -2,7 +2,7 @@
 // Source: squareup.protos.kotlin.swift_modules.SwiftModuleOneEnum in swift_module_one.proto
 import Wire
 
-public enum SwiftModuleOneEnum : Int32, CaseIterable, ProtoEnum {
+public enum SwiftModuleOneEnum : Int32, CaseIterable, ProtoEnum, Proto2Codable {
 
     case DO_NOT_USE = 0
     case ONE = 1
