@@ -47,7 +47,7 @@ _2024-01-26_
 
 Wire 5.0 is happening soon. This will happen:
 
-* `SchemaHander.Factory#create()` will be removed. Override its counterpart for painless migration `SchemaHander.Factory#create(includes: List<String>, excludes: List<String>, exclusive: Boolean, outDirectory: String, options: Map<String, String>)`.
+* `SchemaHandler.Factory#create()` will be removed. Override its counterpart for painless migration `SchemaHandler.Factory#create(includes: List<String>, excludes: List<String>, exclusive: Boolean, outDirectory: String, options: Map<String, String>)`.
 * The module `wire-grpc-server` will be extracted into its own repository: https://github.com/square/wire-grpc-server/
   * Here is how one should migrate: // TODO
 
