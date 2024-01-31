@@ -18,6 +18,7 @@ package com.squareup.wire.internal
 import com.squareup.wire.GrpcResponse
 import com.squareup.wire.MessageSource
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.grpcResponseToException
 import com.squareup.wire.use
 import java.util.concurrent.LinkedBlockingDeque
 import okhttp3.Call

@@ -53,6 +53,11 @@ public final class com/squareup/wire/GrpcHttpUrlKt {
 	public static final fun toHttpUrl (Ljava/lang/String;)Lokhttp3/HttpUrl;
 }
 
+public final class com/squareup/wire/GrpcKt {
+	public static final fun grpcResponseToException (Lokhttp3/Response;Ljava/io/IOException;)Ljava/io/IOException;
+	public static synthetic fun grpcResponseToException$default (Lokhttp3/Response;Ljava/io/IOException;ILjava/lang/Object;)Ljava/io/IOException;
+}
+
 public final class com/squareup/wire/GrpcMethod {
 	public fun <init> (Ljava/lang/String;Lcom/squareup/wire/ProtoAdapter;Lcom/squareup/wire/ProtoAdapter;)V
 	public final fun getPath ()Ljava/lang/String;

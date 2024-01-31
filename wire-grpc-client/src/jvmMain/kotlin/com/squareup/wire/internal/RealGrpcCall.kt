@@ -19,6 +19,7 @@ import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcMethod
 import com.squareup.wire.GrpcResponse
 import com.squareup.wire.WireGrpcClient
+import com.squareup.wire.grpcResponseToException
 import com.squareup.wire.use
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume

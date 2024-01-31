@@ -15,13 +15,11 @@
  */
 package com.squareup.wire.internal
 
-import com.squareup.wire.GrpcException
 import com.squareup.wire.GrpcResponse
-import com.squareup.wire.GrpcStatus
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.grpcResponseToException
 import com.squareup.wire.use
 import java.io.Closeable
-import java.util.Base64
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
@@ -29,7 +27,6 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.runBlocking
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.Headers.Companion.headersOf
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
@@ -197,45 +194,4 @@ private fun GrpcResponse.checkGrpcResponse() {
   ) {
     throw IOException("expected gRPC but was HTTP status=$code, content-type=$contentType")
   }
-}
-
-/** Returns an exception if the gRPC call didn't have a grpc-status of 0. */
-internal fun GrpcResponse.grpcResponseToException(suppressed: IOException? = null): IOException? {
-  var trailers = headersOf()
-  var transportException = suppressed
-  try {
-    trailers = trailers()
-  } catch (e: IOException) {
-    if (transportException == null) transportException = e
-  }
-
-  val grpcStatus = trailers["grpc-status"] ?: header("grpc-status")
-  val grpcMessage = trailers["grpc-message"] ?: header("grpc-message")
-  var grpcStatusDetailsBin: ByteArray? = null
-
-  grpcStatus?.toIntOrNull()?.takeIf { it != 0 }?.let { grpcStatusInt ->
-    (trailers["grpc-status-details-bin"] ?: header("grpc-status-details-bin"))?.let {
-      try {
-        grpcStatusDetailsBin = Base64.getDecoder().decode(it)
-      } catch (e: IllegalArgumentException) {
-        throw IOException(
-          "gRPC transport failure, invalid grpc-status-details-bin" +
-            " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)",
-          e,
-        )
-      }
-    }
-
-    return GrpcException(GrpcStatus.get(grpcStatusInt), grpcMessage, grpcStatusDetailsBin)
-  }
-
-  if (transportException != null || grpcStatus?.toIntOrNull() == null) {
-    return IOException(
-      "gRPC transport failure" +
-        " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)",
-      transportException,
-    )
-  }
-
-  return null // Success.
 }
