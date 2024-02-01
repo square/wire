@@ -48,7 +48,7 @@ jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
 jmh-generator = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "jmh" }
 jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
 junit = { module = "junit:junit", version.ref = "junit" }
-kaml = { module = "com.charleskorn.kaml:kaml", version = "0.56.0" }
+kaml = { module = "com.charleskorn.kaml:kaml", version = "0.57.0" }
 kotlin-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlin-gradleApi = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
