@@ -404,7 +404,7 @@ class WireCompiler internal constructor(
           arg == KOTLIN_GRPC_SERVER_COMPATIBLE -> {
             throw IllegalArgumentException(
               "kotlin_grpc_server_compatible is no longer valid.\n" +
-                "Please migrate following the steps defined in https://square.github.io/wire/wire_grpc/#wire-grpc-server",
+                "Please migrate by following the steps defined in https://square.github.io/wire/wire_grpc/#wire-grpc-server",
             )
           }
           arg == KOTLIN_BUILDERS_ONLY -> kotlinBuildersOnly = true
