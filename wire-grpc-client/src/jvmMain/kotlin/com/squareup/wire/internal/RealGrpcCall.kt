@@ -26,6 +26,7 @@ import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Callback
 import okhttp3.Response
+import okio.ForwardingTimeout
 import okio.IOException
 import okio.Timeout
 
@@ -37,7 +38,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
   private var call: Call? = null
   private var canceled = false
 
-  override val timeout: Timeout = LateInitTimeout()
+  override val timeout: Timeout = ForwardingTimeout(Timeout())
 
   override var requestMetadata: Map<String, String> = mapOf()
 
@@ -142,7 +143,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
     val result = grpcClient.newCall(method, requestMetadata, requestBody)
     this.call = result
     if (canceled) result.cancel()
-    (timeout as LateInitTimeout).init(result.timeout())
+    (timeout as ForwardingTimeout).setDelegate(result.timeout())
     return result
   }
 }

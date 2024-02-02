@@ -30,6 +30,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
+import okio.ForwardingTimeout
 import okio.Timeout
 
 internal class RealGrpcStreamingCall<S : Any, R : Any>(
@@ -42,7 +43,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
   private var call: Call? = null
   private var canceled = false
 
-  override val timeout: Timeout = LateInitTimeout()
+  override val timeout: Timeout = ForwardingTimeout(Timeout())
 
   init {
     timeout.clearTimeout()
@@ -132,7 +133,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
     val result = grpcClient.newCall(method, requestMetadata, requestBody)
     this.call = result
     if (canceled) result.cancel()
-    (timeout as LateInitTimeout).init(result.timeout())
+    (timeout as ForwardingTimeout).setDelegate(result.timeout())
     return result
   }
 }

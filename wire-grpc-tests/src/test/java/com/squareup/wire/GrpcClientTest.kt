@@ -17,6 +17,7 @@
 
 package com.squareup.wire
 
+import com.google.common.util.concurrent.SettableFuture
 import com.squareup.wire.MockRouteGuideService.Action.Delay
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveCall
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveComplete
@@ -26,7 +27,6 @@ import com.squareup.wire.MockRouteGuideService.Action.SendMessage
 import io.grpc.Metadata
 import io.grpc.Status
 import io.grpc.StatusException
-import java.io.IOException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -53,6 +53,7 @@ import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import okio.ByteString
+import okio.IOException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Assert.assertThrows
@@ -85,6 +86,9 @@ class GrpcClientTest {
   private lateinit var incompatibleRouteGuideService: IncompatibleRouteGuideClient
   private var callReference = AtomicReference<Call>()
 
+  // Just set to a large enough value we won't timeout in tests
+  private val okHttpClientTimeout = Duration.ofSeconds(117)
+
   /** This is a pass through interceptor that tests can replace without extra plumbing. */
   private var interceptor: Interceptor = object : Interceptor {
     override fun intercept(chain: Chain) = chain.proceed(chain.request())
@@ -98,6 +102,7 @@ class GrpcClientTest {
         interceptor.intercept(chain)
       }
       .protocols(listOf(H2_PRIOR_KNOWLEDGE))
+      .callTimeout(okHttpClientTimeout)
       .build()
     grpcClient = GrpcClient.Builder()
       .client(okhttpClient)
@@ -1654,6 +1659,34 @@ class GrpcClientTest {
         assertThat(call.isCanceled()).isTrue()
       }
     }
+  }
+
+  @Test
+  fun grpcCallCallTimeoutIsPreservedFromHttpClient() {
+    val call = routeGuideService.GetFeature()
+
+    val callbackCallFuture = SettableFuture.create<GrpcCall<Point, Feature>>()
+
+    call.enqueue(
+      Point(1, 1),
+      object : GrpcCall.Callback<Point, Feature> {
+        override fun onFailure(
+          call: GrpcCall<Point, Feature>,
+          exception: IOException,
+        ) {
+          callbackCallFuture.set(call)
+        }
+
+        override fun onSuccess(
+          call: GrpcCall<Point, Feature>,
+          response: Feature,
+        ) {
+          callbackCallFuture.set(call)
+        }
+      },
+    )
+
+    assertThat(callbackCallFuture.get().timeout.timeoutNanos()).isEqualTo(okHttpClientTimeout.toNanos())
   }
 
   private fun removeGrpcStatusInterceptor(): Interceptor {
