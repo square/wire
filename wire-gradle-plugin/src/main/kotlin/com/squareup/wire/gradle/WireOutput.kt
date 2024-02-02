@@ -94,7 +94,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
     if (grpcServerCompatible) {
       throw IllegalArgumentException(
         "grpcServerCompatible is no longer valid.\n" +
-          "Please migrate following the steps defined in https://square.github.io/wire/wire_grpc/#wire-grpc-server",
+          "Please migrate by following the steps defined in https://square.github.io/wire/wire_grpc/#wire-grpc-server",
       )
     }
 
