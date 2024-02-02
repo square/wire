@@ -21,13 +21,13 @@ wire {
     // `blocking` to generate blocking APIs callable by Java and Kotlin.
     rpcCallStyle = 'suspending'
     // Server only
-    // True for emitted services to generate one interface per RPC. 
+    // True for emitted services to generate one interface per RPC.
     singleMethodServices = false
   }
 }
 ```
 
-The generated code varies depending on your RPC role, namely client or server.  
+The generated code varies depending on your RPC role, namely client or server.
 We'll use the following schema to demonstrate how they differ:
 
 ```proto
@@ -81,7 +81,7 @@ val grpcClient = GrpcClient.Builder()
   .baseUrl(serverUrl)
   .build()
 val routeGuideClient = grpcClient.create(RouteGuideClient::class)
-``` 
+```
 
 gRPC for Servers
 ----------------
@@ -233,7 +233,76 @@ In addition, to use Wire gRPC for clients, use these new Gradle coordinates:
 
 ```groovy
 implementation("com.squareup.wire:wire-grpc-client:LATEST_VERSION")
-```    
+```
+
+wire-grpc-server
+----------------
+
+The modules `wire-grpc-server` and `wire-grpc-server-generator` have been extracted out of Wire 5.
+They now live as a standalone repository [square/wire-grpc-server/](https://github.com/square/wire-grpc-server/).
+
+Here are the steps for a smooth migration:
+
+### Maven Coordinates
+
+Update the coordinates for `com.squareup.wire:wire-grpc-server`.
+```diff
+-com.squareup.wire:wire-grpc-server:<wire-version>
++com.squareup.wiregrpcserver:server:<new-repo-version>
+```
+
+Add a new dependency on the classpath Wire will run on.
+
+```kotlin
+classpath("com.squareup.wiregrpcserver:server-generator:<new-repo-version>")
+```
+
+### Configuration
+
+Before
+```kotlin
+wire {
+  kotlin {
+    rpcRole = "server"
+    grpcServerCompatible = true
+    singleMethodServices = false
+    rpcCallStyle = "suspending"
+  }
+}
+```
+
+`grpcServerCompatible` does not exist anymore. You are to pass the new `GrpcServerSchemaHandler` to
+Wire in a custom block.
+
+After
+```kotlin
+wire {
+  custom {
+    // Be sure that `server-generator` is on the classpath for Gradle to resolve
+    // `GrpcServerSchemaHandler`.
+    schemaHandlerFactory = com.squareup.wire.kotlin.grpcserver.GrpcServerSchemaHandler.Factory()
+    options = mapOf(
+      // Defaults to `true` if absent. Any other value than `true` is considered false.
+      "singleMethodServices" to "false",
+      // Defaults to `suspending` if absent. Any other value than `suspending` is considered
+      // non-suspending.
+      "rpcCallStyle" to "suspending",
+    )
+    // We set the custom block exclusivity to false so that the next `kotlin {}` block can also
+    // generate the protobuf Messages.
+    exclusive = false
+  }
+
+  kotlin {
+    rpcRole = "server"
+    singleMethodServices = false
+    rpcCallStyle = "suspending"
+  }
+}
+```
+
+For any problem with the migration, please ask on [wire-grpc-server](https://github.com/square/wire-grpc-server/issues).
+
 
  [gradlePlugin]: https://square.github.io/wire/wire_compiler/
  [grpcCall]: https://square.github.io/wire/3.x/wire-grpc-client/com.squareup.wire/-grpc-call/
