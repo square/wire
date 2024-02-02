@@ -1,6 +1,19 @@
 Change Log
 ==========
 
+Version 4.9.6
+-------------
+
+_2024-02-02_
+
+### Common
+
+* Add public dependencies when encoding the schema (#2801 by [Michael Peyper][mpeyper])
+
+### Kotlin
+
+* Fix RealGrpcCall timeout (#2816 by [Jeff Gulbronson][JGulbronson])
+
 Version 4.9.5
 -------------
 
@@ -1323,6 +1336,7 @@ Initial version.
  [lickel]: https://github.com/lickel
  [dnkoutso]: https://github.com/dnkoutso
  [mpeyper]: https://github.com/mpeyper
+ [JGulbronson]: https://github.com/JGulbronson
  [JakeWharton]: https://github.com/JakeWharton
  [MariusVolkhart]: https://github.com/MariusVolkhart
  [Egorand]: https://github.com/Egorand
