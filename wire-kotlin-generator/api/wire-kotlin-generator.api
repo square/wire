@@ -1,7 +1,6 @@
 public final class com/squareup/wire/kotlin/KotlinGenerator {
 	public static final field Companion Lcom/squareup/wire/kotlin/KotlinGenerator$Companion;
-	public synthetic fun <init> (Lcom/squareup/wire/schema/Schema;Ljava/util/Map;Ljava/util/Map;Lcom/squareup/wire/schema/Profile;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;IZLjava/lang/String;ZZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun generateGrpcServerAdapter (Lcom/squareup/wire/schema/Service;)Ljava/util/Map;
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Schema;Ljava/util/Map;Ljava/util/Map;Lcom/squareup/wire/schema/Profile;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ILjava/lang/String;ZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun generateOptionType (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Field;)Lcom/squareup/kotlinpoet/TypeSpec;
 	public final fun generateServiceTypeSpecs (Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/Rpc;)Ljava/util/Map;
 	public static synthetic fun generateServiceTypeSpecs$default (Lcom/squareup/wire/kotlin/KotlinGenerator;Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/Rpc;ILjava/lang/Object;)Ljava/util/Map;
@@ -10,20 +9,20 @@ public final class com/squareup/wire/kotlin/KotlinGenerator {
 	public static synthetic fun generatedServiceName$default (Lcom/squareup/wire/kotlin/KotlinGenerator;Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/Rpc;ZILjava/lang/Object;)Lcom/squareup/kotlinpoet/ClassName;
 	public final fun generatedTypeName (Lcom/squareup/wire/schema/ProtoMember;)Lcom/squareup/kotlinpoet/ClassName;
 	public final fun generatedTypeName (Lcom/squareup/wire/schema/Type;)Lcom/squareup/kotlinpoet/ClassName;
-	public static final fun get (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/Profile;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;IZLjava/lang/String;ZZZ)Lcom/squareup/wire/kotlin/KotlinGenerator;
+	public static final fun get (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/Profile;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ILjava/lang/String;ZZ)Lcom/squareup/wire/kotlin/KotlinGenerator;
 	public final fun getSchema ()Lcom/squareup/wire/schema/Schema;
 }
 
 public final class com/squareup/wire/kotlin/KotlinGenerator$Companion {
 	public final fun builtInType (Lcom/squareup/wire/schema/ProtoType;)Z
-	public final fun get (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/Profile;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;IZLjava/lang/String;ZZZ)Lcom/squareup/wire/kotlin/KotlinGenerator;
-	public static synthetic fun get$default (Lcom/squareup/wire/kotlin/KotlinGenerator$Companion;Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/Profile;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;IZLjava/lang/String;ZZZILjava/lang/Object;)Lcom/squareup/wire/kotlin/KotlinGenerator;
+	public final fun get (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/Profile;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ILjava/lang/String;ZZ)Lcom/squareup/wire/kotlin/KotlinGenerator;
+	public static synthetic fun get$default (Lcom/squareup/wire/kotlin/KotlinGenerator$Companion;Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/Profile;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ILjava/lang/String;ZZILjava/lang/Object;)Lcom/squareup/wire/kotlin/KotlinGenerator;
 }
 
 public final class com/squareup/wire/kotlin/KotlinSchemaHandler : com/squareup/wire/schema/SchemaHandler {
 	public static final field Companion Lcom/squareup/wire/kotlin/KotlinSchemaHandler$Companion;
-	public fun <init> (Ljava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZIZLjava/lang/String;ZZ)V
-	public synthetic fun <init> (Ljava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZIZLjava/lang/String;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZILjava/lang/String;ZZ)V
+	public synthetic fun <init> (Ljava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZILjava/lang/String;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun handle (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Field;Lcom/squareup/wire/schema/SchemaHandler$Context;)Lokio/Path;
 	public fun handle (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/SchemaHandler$Context;)V
 	public fun handle (Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/SchemaHandler$Context;)Ljava/util/List;

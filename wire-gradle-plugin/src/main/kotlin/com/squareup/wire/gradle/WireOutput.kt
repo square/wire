@@ -81,6 +81,8 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   var rpcRole: String = "client"
   var singleMethodServices: Boolean = false
   var boxOneOfsMinSize: Int = 5_000
+
+  @Deprecated("See https://square.github.io/wire/wire_grpc/#wire-grpc-server")
   var grpcServerCompatible: Boolean = false
   var nameSuffix: String? = null
   var buildersOnly: Boolean = false
@@ -89,6 +91,13 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   var escapeKotlinKeywords: Boolean = false
 
   override fun toTarget(outputDirectory: String): KotlinTarget {
+    if (grpcServerCompatible) {
+      throw IllegalArgumentException(
+        "grpcServerCompatible is no longer valid.\n" +
+          "Please migrate by following the steps defined in https://square.github.io/wire/wire_grpc/#wire-grpc-server",
+      )
+    }
+
     val rpcCallStyle = RpcCallStyle.values()
       .singleOrNull { it.toString().equals(rpcCallStyle, ignoreCase = true) }
       ?: throw IllegalArgumentException(
@@ -113,7 +122,6 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       rpcRole = rpcRole,
       singleMethodServices = singleMethodServices,
       boxOneOfsMinSize = boxOneOfsMinSize,
-      grpcServerCompatible = grpcServerCompatible,
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,

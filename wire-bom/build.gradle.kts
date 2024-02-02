@@ -10,8 +10,6 @@ dependencies {
     api(projects.wireGradlePlugin)
     api(projects.wireGrpcClient)
     api(projects.wireGrpcClient.group + ":wire-grpc-client-jvm:" + projects.wireGrpcClient.version)
-    api(projects.wireGrpcServer)
-    api(projects.wireGrpcServerGenerator)
     api(projects.wireGrpcMockwebserver)
     api(projects.wireGsonSupport)
     api(projects.wireJavaGenerator)

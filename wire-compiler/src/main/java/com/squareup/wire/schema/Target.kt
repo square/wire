@@ -117,9 +117,6 @@ data class KotlinTarget(
    */
   val boxOneOfsMinSize: Int = 5_000,
 
-  /** True to also generate gRPC server-compatible classes. Experimental feature. */
-  val grpcServerCompatible: Boolean = false,
-
   /**
    * If present, generated services classes will use this as a suffix instead of inferring one
    * from the [rpcRole].
@@ -146,7 +143,6 @@ data class KotlinTarget(
       rpcRole = rpcRole,
       singleMethodServices = singleMethodServices,
       boxOneOfsMinSize = boxOneOfsMinSize,
-      grpcServerCompatible = grpcServerCompatible,
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,

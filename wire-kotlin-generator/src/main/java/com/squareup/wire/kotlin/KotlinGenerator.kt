@@ -76,7 +76,6 @@ import com.squareup.wire.internal.LongArrayList
 import com.squareup.wire.internal.boxedOneOfClassName
 import com.squareup.wire.internal.boxedOneOfKeyFieldName
 import com.squareup.wire.internal.boxedOneOfKeysFieldName
-import com.squareup.wire.kotlin.grpcserver.KotlinGrpcGenerator
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumConstant
 import com.squareup.wire.schema.EnumType
@@ -127,10 +126,8 @@ class KotlinGenerator private constructor(
   private val rpcCallStyle: RpcCallStyle,
   private val rpcRole: RpcRole,
   private val boxOneOfsMinSize: Int,
-  private val grpcServerCompatible: Boolean,
   private val nameSuffix: String?,
   private val buildersOnly: Boolean,
-  private val singleMethodServices: Boolean,
   private val escapeKotlinKeywords: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
@@ -283,22 +280,6 @@ class KotlinGenerator private constructor(
       )
       result[implementationName] = implementationSpec
     }
-
-    return result
-  }
-
-  /**
-   * Generates [TypeSpec]s for gRPC adapter for the given [service].
-   *
-   * These adapters allow us to use Wire based gRPC as io.grpc.BindableService
-   */
-  fun generateGrpcServerAdapter(service: Service): Map<ClassName, TypeSpec> {
-    val result = mutableMapOf<ClassName, TypeSpec>()
-
-    val protoFile: ProtoFile? = schema.protoFile(service.location.path)
-    val (grpcClassName, grpcSpec) = KotlinGrpcGenerator(typeToKotlinName, singleMethodServices, rpcCallStyle == RpcCallStyle.SUSPENDING)
-      .generateGrpcServer(service, protoFile, schema)
-    result[grpcClassName] = grpcSpec
 
     return result
   }
@@ -2902,10 +2883,8 @@ class KotlinGenerator private constructor(
       rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
       rpcRole: RpcRole = RpcRole.CLIENT,
       boxOneOfsMinSize: Int = 5_000,
-      grpcServerCompatible: Boolean = false,
       nameSuffix: String? = null,
       buildersOnly: Boolean = false,
-      singleMethodServices: Boolean = false,
       escapeKotlinKeywords: Boolean = false,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
@@ -2952,10 +2931,8 @@ class KotlinGenerator private constructor(
         rpcCallStyle = rpcCallStyle,
         rpcRole = rpcRole,
         boxOneOfsMinSize = boxOneOfsMinSize,
-        grpcServerCompatible = grpcServerCompatible,
         nameSuffix = nameSuffix,
         buildersOnly = buildersOnly,
-        singleMethodServices = singleMethodServices,
         escapeKotlinKeywords = escapeKotlinKeywords,
       )
     }
