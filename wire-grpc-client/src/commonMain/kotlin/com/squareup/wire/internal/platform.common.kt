@@ -20,8 +20,7 @@ import okio.IOException
 import okio.Sink
 import okio.Source
 
-// TODO make internal https://youtrack.jetbrains.com/issue/KT-37316
-expect interface Call {
+internal expect interface Call {
   fun cancel()
 
   @Throws(IOException::class)

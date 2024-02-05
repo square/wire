@@ -22,7 +22,7 @@ import okio.Sink
 import okio.Source
 import okio.gzip
 
-actual interface Call {
+internal actual interface Call {
   actual fun cancel()
 
   @Throws(IOException::class)

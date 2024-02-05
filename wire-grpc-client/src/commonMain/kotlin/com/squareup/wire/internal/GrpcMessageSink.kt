@@ -28,7 +28,7 @@ import okio.BufferedSink
  * @param callForCancel the HTTP call that can be canceled to signal abnormal termination.
  * @param grpcEncoding the content coding for the stream body.
  */
-class GrpcMessageSink<T : Any>(
+internal class GrpcMessageSink<T : Any>(
   private val sink: BufferedSink,
   private val minMessageToCompress: Long,
   private val messageAdapter: ProtoAdapter<T>,

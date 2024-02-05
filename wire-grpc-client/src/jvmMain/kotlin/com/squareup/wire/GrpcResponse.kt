@@ -19,7 +19,7 @@ import java.io.IOException
 import okhttp3.Response
 import okhttp3.ResponseBody
 
-actual class GrpcResponse(private val response: Response) {
+internal actual class GrpcResponse(private val response: Response) {
 
   @get:JvmName("body")
   actual val body: ResponseBody?

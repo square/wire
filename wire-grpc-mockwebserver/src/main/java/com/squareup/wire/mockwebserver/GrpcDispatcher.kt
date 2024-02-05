@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress(
+  "CANNOT_OVERRIDE_INVISIBLE_MEMBER",
+  "INVISIBLE_MEMBER",
+  "INVISIBLE_REFERENCE",
+)
+// Above is a hack to use GrpcMessageSink and GrpcMessageSource from wire-grpc-client.
+
 package com.squareup.wire.mockwebserver
 
 import com.squareup.wire.GrpcCall

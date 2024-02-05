@@ -60,16 +60,6 @@ public final class com/squareup/wire/GrpcMethod {
 	public final fun getResponseAdapter ()Lcom/squareup/wire/ProtoAdapter;
 }
 
-public final class com/squareup/wire/GrpcResponse {
-	public fun <init> (Lokhttp3/Response;)V
-	public final fun body ()Lokhttp3/ResponseBody;
-	public final fun close ()V
-	public final fun header (Ljava/lang/String;)Ljava/lang/String;
-	public final fun header (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-	public static synthetic fun header$default (Lcom/squareup/wire/GrpcResponse;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
-	public final fun trailers ()Lokhttp3/Headers;
-}
-
 public final class com/squareup/wire/GrpcStatus : java/io/Serializable {
 	public static final field ABORTED Lcom/squareup/wire/GrpcStatus;
 	public static final field ALREADY_EXISTS Lcom/squareup/wire/GrpcStatus;
@@ -114,25 +104,5 @@ public abstract interface class com/squareup/wire/GrpcStreamingCall {
 }
 
 public abstract interface annotation class com/squareup/wire/WireGrpcExperimental : java/lang/annotation/Annotation {
-}
-
-public abstract interface class com/squareup/wire/internal/Call {
-	public abstract fun cancel ()V
-	public abstract fun execute ()Lcom/squareup/wire/GrpcResponse;
-}
-
-public final class com/squareup/wire/internal/GrpcMessageSink : com/squareup/wire/MessageSink {
-	public fun <init> (Lokio/BufferedSink;JLcom/squareup/wire/ProtoAdapter;Lcom/squareup/wire/internal/Call;Ljava/lang/String;)V
-	public fun cancel ()V
-	public fun close ()V
-	public fun write (Ljava/lang/Object;)V
-}
-
-public final class com/squareup/wire/internal/GrpcMessageSource : com/squareup/wire/MessageSource {
-	public fun <init> (Lokio/BufferedSource;Lcom/squareup/wire/ProtoAdapter;Ljava/lang/String;)V
-	public synthetic fun <init> (Lokio/BufferedSource;Lcom/squareup/wire/ProtoAdapter;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun close ()V
-	public fun read ()Ljava/lang/Object;
-	public final fun readExactlyOneAndClose ()Ljava/lang/Object;
 }
 
