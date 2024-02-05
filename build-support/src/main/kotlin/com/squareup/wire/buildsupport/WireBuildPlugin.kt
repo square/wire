@@ -202,8 +202,6 @@ class WireBuildPlugin : Plugin<Project> {
     tasks.withType(KotlinCompile::class.java).configureEach {
       kotlinOptions {
         freeCompilerArgs += listOf(
-          // Disable optimized callable references. See https://youtrack.jetbrains.com/issue/KT-37435
-          "-Xno-optimized-callable-references",
           // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
           "-progressive",
         )

@@ -23,7 +23,7 @@ buildscript {
 plugins {
   `kotlin-dsl`
   `java-gradle-plugin`
-  kotlin("jvm") version "1.9.10"
+  kotlin("jvm") version "1.9.22"
 }
 
 repositories {
@@ -71,16 +71,17 @@ allprojects {
   plugins.withId("java") {
     configure<JavaPluginExtension> {
       withSourcesJar()
-      sourceCompatibility = JavaVersion.VERSION_11
-      targetCompatibility = JavaVersion.VERSION_11
     }
+  }
+
+  tasks.withType<JavaCompile>().configureEach {
+    sourceCompatibility = JavaVersion.VERSION_11.toString()
+    targetCompatibility = JavaVersion.VERSION_11.toString()
   }
 
   tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
       jvmTarget = "11"
-      // Disable optimized callable references. See https://youtrack.jetbrains.com/issue/KT-37435
-      freeCompilerArgs += "-Xno-optimized-callable-references"
       freeCompilerArgs += "-Xjvm-default=all"
       // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
       freeCompilerArgs += "-progressive"

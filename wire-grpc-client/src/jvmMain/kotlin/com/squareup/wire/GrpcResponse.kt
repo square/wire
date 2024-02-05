@@ -15,4 +15,32 @@
  */
 package com.squareup.wire
 
-actual typealias GrpcResponse = okhttp3.Response
+import java.io.IOException
+import okhttp3.Response
+import okhttp3.ResponseBody
+
+actual class GrpcResponse(private val response: Response) {
+
+  @get:JvmName("body")
+  actual val body: ResponseBody?
+    get() = response.body
+
+  fun header(name: String): String? = header(name, null)
+
+  actual fun header(name: String, defaultValue: String?): String? =
+    response.header(name, defaultValue)
+
+  /**
+   * Returns the trailers after the HTTP response, which may be empty. It is an error to call this
+   * before the entire gRPC response body has been consumed.
+   */
+  @Throws(IOException::class)
+  actual fun trailers(): GrpcHeaders = response.trailers()
+
+  /**
+   * Closes the response body. Equivalent to body().close().
+   * It is an error to close a response that is not eligible for a body. This includes the
+   * responses returned from cacheResponse, networkResponse, and priorResponse.
+   */
+  actual fun close() = response.close()
+}

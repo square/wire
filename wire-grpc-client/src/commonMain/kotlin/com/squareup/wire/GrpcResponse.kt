@@ -17,43 +17,17 @@
 
 package com.squareup.wire
 
-import com.squareup.wire.internal.addSuppressed
 import kotlin.jvm.JvmName
-import kotlin.jvm.JvmOverloads
 import okio.IOException
 
 expect class GrpcResponse {
   @get:JvmName("body")
   val body: GrpcResponseBody?
 
-  @JvmOverloads fun header(name: String, defaultValue: String? = null): String?
+  fun header(name: String, defaultValue: String? = null): String?
 
   @Throws(IOException::class)
   fun trailers(): GrpcHeaders
 
   fun close()
-}
-
-internal inline fun <T : GrpcResponse?, R> T.use(block: (T) -> R): R {
-  var exception: Throwable? = null
-  try {
-    return block(this)
-  } catch (e: Throwable) {
-    exception = e
-    throw e
-  } finally {
-    closeFinally(exception)
-  }
-}
-
-private fun GrpcResponse?.closeFinally(cause: Throwable?) = when {
-  this == null -> {
-  }
-  cause == null -> close()
-  else ->
-    try {
-      close()
-    } catch (closeException: Throwable) {
-      cause.addSuppressed(closeException)
-    }
 }
