@@ -15,12 +15,27 @@
  */
 package com.squareup.wire.internal
 
+import com.squareup.wire.GrpcResponse
 import java.lang.reflect.Method
+import okio.IOException
 import okio.Sink
 import okio.Source
 import okio.gzip
 
-actual typealias Call = okhttp3.Call
+internal actual interface Call {
+  actual fun cancel()
+
+  @Throws(IOException::class)
+  actual fun execute(): GrpcResponse
+}
+
+internal fun okhttp3.Call.toWireCall(): Call {
+  return object : Call {
+    override fun cancel() = this@toWireCall.cancel()
+
+    override fun execute(): GrpcResponse = GrpcResponse(this@toWireCall.execute())
+  }
+}
 
 @Suppress("NOTHING_TO_INLINE")
 internal actual inline fun Sink.asGzip(): Sink = gzip()

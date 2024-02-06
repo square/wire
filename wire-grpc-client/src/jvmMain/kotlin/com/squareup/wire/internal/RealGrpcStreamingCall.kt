@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit
 import kotlin.DeprecationLevel.WARNING
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -40,7 +39,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
   private val requestBody = newDuplexRequestBody()
 
   /** Non-null once this is executed. */
-  private var call: Call? = null
+  private var call: okhttp3.Call? = null
   private var canceled = false
 
   override val timeout: Timeout = ForwardingTimeout(Timeout())
@@ -70,7 +69,6 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
   @Suppress("OPT_IN_USAGE")
   override fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>> = executeIn(GlobalScope)
 
-  @OptIn(ExperimentalCoroutinesApi::class)
   override fun executeIn(scope: CoroutineScope): Pair<SendChannel<S>, ReceiveChannel<R>> {
     val requestChannel = Channel<S>(1)
     val responseChannel = Channel<R>(1)
@@ -127,7 +125,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
     return result
   }
 
-  private fun initCall(): Call {
+  private fun initCall(): okhttp3.Call {
     check(this.call == null) { "already executed" }
 
     val result = grpcClient.newCall(method, requestMetadata, requestBody)

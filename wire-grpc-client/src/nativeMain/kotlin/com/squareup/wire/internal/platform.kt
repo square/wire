@@ -19,7 +19,7 @@ import com.squareup.wire.GrpcResponse
 import okio.Sink
 import okio.Source
 
-actual interface Call {
+internal actual interface Call {
   actual fun cancel()
   actual fun execute(): GrpcResponse
 }

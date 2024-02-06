@@ -15,7 +15,7 @@
  */
 package com.squareup.wire
 
-actual class GrpcResponse {
+internal actual class GrpcResponse {
   actual val body: GrpcResponseBody?
     get() = TODO("Not yet implemented")
 

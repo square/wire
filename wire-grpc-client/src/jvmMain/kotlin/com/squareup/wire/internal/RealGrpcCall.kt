@@ -17,15 +17,11 @@ package com.squareup.wire.internal
 
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcMethod
-import com.squareup.wire.GrpcResponse
 import com.squareup.wire.WireGrpcClient
-import com.squareup.wire.use
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
-import okhttp3.Callback
-import okhttp3.Response
 import okio.ForwardingTimeout
 import okio.IOException
 import okio.Timeout
@@ -35,7 +31,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
   override val method: GrpcMethod<S, R>,
 ) : GrpcCall<S, R> {
   /** Non-null once this is executed. */
-  private var call: Call? = null
+  private var call: okhttp3.Call? = null
   private var canceled = false
 
   override val timeout: Timeout = ForwardingTimeout(Timeout())
@@ -60,12 +56,12 @@ internal class RealGrpcCall<S : Any, R : Any>(
         cancel()
       }
 
-      call.enqueue(object : Callback {
-        override fun onFailure(call: Call, e: IOException) {
+      call.enqueue(object : okhttp3.Callback {
+        override fun onFailure(call: okhttp3.Call, e: IOException) {
           continuation.resumeWithException(e)
         }
 
-        override fun onResponse(call: Call, response: GrpcResponse) {
+        override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
           try {
             responseMetadata = response.headers.toMap()
             val message = response.readExactlyOneAndClose()
@@ -87,12 +83,12 @@ internal class RealGrpcCall<S : Any, R : Any>(
 
   override fun enqueue(request: S, callback: GrpcCall.Callback<S, R>) {
     val call = initCall(request)
-    call.enqueue(object : Callback {
-      override fun onFailure(call: Call, e: IOException) {
+    call.enqueue(object : okhttp3.Callback {
+      override fun onFailure(call: okhttp3.Call, e: IOException) {
         callback.onFailure(this@RealGrpcCall, e)
       }
 
-      override fun onResponse(call: Call, response: GrpcResponse) {
+      override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
         try {
           responseMetadata = response.headers.toMap()
           val message = response.readExactlyOneAndClose()
@@ -104,7 +100,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
     })
   }
 
-  private fun Response.readExactlyOneAndClose(): R {
+  private fun okhttp3.Response.readExactlyOneAndClose(): R {
     use {
       messageSource(method.responseAdapter).use { reader ->
         val result = try {
@@ -132,7 +128,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
     return result
   }
 
-  private fun initCall(request: S): Call {
+  private fun initCall(request: S): okhttp3.Call {
     check(this.call == null) { "already executed" }
 
     val requestBody = newRequestBody(
