@@ -26,6 +26,9 @@ extension SwiftModuleOneMessage : Hashable {
 extension SwiftModuleOneMessage : Sendable {
 }
 
+extension SwiftModuleOneMessage : ProtoExtensible {
+}
+
 extension SwiftModuleOneMessage : ProtoMessage {
 
     public static func protoMessageTypeURL() -> String {
