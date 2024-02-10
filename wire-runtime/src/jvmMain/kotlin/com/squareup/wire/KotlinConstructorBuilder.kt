@@ -80,27 +80,9 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
   @Suppress("UNCHECKED_CAST")
   override fun build(): M {
     val protoFields = messageType.declaredProtoFields()
-
-    // KotlinGenerator emits different kinds of properties for various proto fields depending on
-    // their type:
-    //
-    // - For certain types (group A), a primary constructor property is created
-    // - For other types (group B), a primary constructor parameter and a simple property are
-    //   created; this concerns repeated and packed fields, as well as maps.
-    //
-    // This leads to a mismatch between the order in which proto fields annotated with WireField
-    // appear in generated code (which matches the order in which they appear in the proto file) and
-    // the order of matching constructor parameters. Therefore, we'll partition fields from groups A
-    // and B separately, where fields in each group will appear in the right order. This will allow
-    // us to iterate over the constructor parameters and retrieve the matching proto field based on
-    // the parameter type.
-    val fieldsWithSimpleProperties = ArrayDeque<ProtoField>()
-    val fieldsWithPrimaryConstructorProperties = ArrayDeque<ProtoField>()
-    for (protoField in protoFields) {
-      if (protoField.wireField.label.isRepeated || protoField.wireField.isMap) {
-        fieldsWithSimpleProperties += protoField
-      } else {
-        fieldsWithPrimaryConstructorProperties += protoField
+    val fields = ArrayDeque<ProtoField>().apply {
+      for (protoField in protoFields) {
+        add(protoField)
       }
     }
 
@@ -110,10 +92,8 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
     }
     val args = constructor.parameters.mapIndexed { index, param ->
       when {
-        param.type == List::class.java || param.type == Map::class.java ->
-          get(fieldsWithSimpleProperties.removeFirst().wireField)
         index == protoFields.size -> buildUnknownFields()
-        else -> get(fieldsWithPrimaryConstructorProperties.removeFirst().wireField)
+        else -> get(fields.removeFirst().wireField)
       }
     }
     return constructor.newInstance(*args.toTypedArray()) as M
@@ -121,7 +101,7 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
 
   private fun Class<M>.declaredProtoFields(): List<ProtoField> = declaredFields
     .mapNotNull { field ->
-      val wireField = field.declaredAnnotations.filterIsInstance(WireField::class.java)
+      val wireField = field.declaredAnnotations.filterIsInstance<WireField>()
         .firstOrNull()
       return@mapNotNull wireField?.let { ProtoField(field.type, wireField) }
     }
