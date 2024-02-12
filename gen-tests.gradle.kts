@@ -90,7 +90,7 @@ val generateGsonAdapterCompactJavaTests by tasks.creating(JavaExec::class) {
           "--proto_path=wire-tests/src/commonTest/shared/proto/proto2",
           "--java_out=wire-gson-support/src/test/java",
           "--compact",
-          "all_types_proto2.proto"
+          "all_types_proto2.proto",
   )
 }
 
@@ -135,11 +135,12 @@ val generateGsonAdapterKotlinTests by tasks.creating(JavaExec::class) {
           "--proto_path=wire-tests/src/commonTest/shared/proto/proto2",
           "--proto_path=wire-tests/src/commonTest/shared/proto/proto3",
           "--kotlin_out=wire-gson-support/src/test/java",
+          "all_structs.proto",
           "dinosaur_kotlin.proto",
           "period_kotlin.proto",
           "person_kotlin.proto",
           "getters_kotlin.proto",
-          "pizza.proto"
+          "pizza.proto",
   )
 }
 
@@ -581,11 +582,12 @@ val generateMoshiAdapterKotlinTests by tasks.creating(JavaExec::class) {
           "--proto_path=wire-tests/src/commonTest/shared/proto/proto2",
           "--proto_path=wire-tests/src/commonTest/shared/proto/proto3",
           "--kotlin_out=wire-moshi-adapter/src/test/java",
+          "all_structs.proto",
           "person_kotlin.proto",
           "dinosaur_kotlin.proto",
           "period_kotlin.proto",
           "getters_kotlin.proto",
-          "pizza.proto"
+          "pizza.proto",
   )
 }
 
