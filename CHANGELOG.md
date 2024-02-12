@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 4.9.7
+-------------
+
+_2024-02-12_
+
+### Common
+
+* Support all struct types for JSON encoding (#2824 by [Arnaud Frugier][quanturium])
+
 Version 4.9.6
 -------------
 
@@ -1335,6 +1344,7 @@ Initial version.
  [ShayOinif]: https://github.com/ShayOinif
  [lickel]: https://github.com/lickel
  [dnkoutso]: https://github.com/dnkoutso
+ [quanturium]: https://github.com/quanturium
  [mpeyper]: https://github.com/mpeyper
  [JGulbronson]: https://github.com/JGulbronson
  [JakeWharton]: https://github.com/JakeWharton
