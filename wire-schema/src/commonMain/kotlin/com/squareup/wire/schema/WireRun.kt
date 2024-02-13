@@ -327,12 +327,14 @@ class WireRun(
     }
 
     for (emittingRules in targetToEmittingRules.values) {
-      if (emittingRules.unusedIncludes().isNotEmpty()) {
-        logger.unusedIncludesInTarget(emittingRules.unusedIncludes())
+      val unusedIncludes = emittingRules.unusedIncludes()
+      if (unusedIncludes.isNotEmpty() && unusedIncludes != setOf("*")) {
+        logger.unusedIncludesInTarget(unusedIncludes)
       }
 
-      if (emittingRules.unusedExcludes().isNotEmpty()) {
-        logger.unusedExcludesInTarget(emittingRules.unusedExcludes())
+      val unusedExcludes = emittingRules.unusedExcludes()
+      if (unusedExcludes.isNotEmpty()) {
+        logger.unusedExcludesInTarget(unusedExcludes)
       }
     }
 
