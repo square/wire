@@ -857,6 +857,47 @@ class WireRunTest {
     )
   }
 
+  object NullSchemaHandler : SchemaHandler() {
+    override fun handle(schema: Schema, context: Context) {
+    }
+    override fun handle(type: Type, context: Context) = null
+    override fun handle(service: Service, context: Context) = listOf<Path>()
+    override fun handle(extend: Extend, field: Field, context: Context) = null
+
+    object Factory : SchemaHandler.Factory {
+      override fun create() = NullSchemaHandler
+    }
+  }
+
+  /**
+   * We had a bug where custom handlers that don't need [SchemaHandler.Context.emittingRules], would
+   * trigger an annoying warning like this:
+   *
+   * ```
+   * Unused includes in targets:
+   *   *
+   * ```
+   *
+   * The '*' here is the default includes rule, which isn't really the user's fault.
+   */
+  @Test
+  fun noUnusedIncludesWarningOnStar() {
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("polygons/src/main/proto")),
+      targets = listOf(
+        CustomTarget(
+          outDirectory = "generated/out",
+          schemaHandlerFactory = NullSchemaHandler.Factory,
+        ),
+      ),
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(logger.log).isEmpty()
+  }
+
   @Test
   fun noSuchClass() {
     assertThat(
