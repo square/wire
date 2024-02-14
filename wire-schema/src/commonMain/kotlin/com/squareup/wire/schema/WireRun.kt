@@ -328,6 +328,7 @@ class WireRun(
 
     for (emittingRules in targetToEmittingRules.values) {
       val unusedIncludes = emittingRules.unusedIncludes()
+      // The '*' here is the default includes rule. It's okay if this is unused.
       if (unusedIncludes.isNotEmpty() && unusedIncludes != setOf("*")) {
         logger.unusedIncludesInTarget(unusedIncludes)
       }
