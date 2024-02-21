@@ -305,9 +305,9 @@ For any problem with the migration, please ask on [wire-grpc-server](https://git
 
 
  [gradlePlugin]: https://square.github.io/wire/wire_compiler/
- [grpcCall]: https://square.github.io/wire/3.x/wire-grpc-client/com.squareup.wire/-grpc-call/
- [grpcClient]: https://square.github.io/wire/3.x/wire-grpc-client/com.squareup.wire/-grpc-client/
- [grpcStreamingCall]: https://square.github.io/wire/3.x/wire-grpc-client/com.squareup.wire/-grpc-streaming-call/
- [messageSink]: https://square.github.io/wire/3.x/wire-runtime/com.squareup.wire/-message-sink/
- [messageSource]: https://square.github.io/wire/3.x/wire-runtime/com.squareup.wire/-message-source/
+ [grpcCall]: https://square.github.io/wire/3.x/wire-grpc-client/wire-grpc-client/com.squareup.wire/-grpc-call/
+ [grpcClient]: https://square.github.io/wire/3.x/wire-grpc-client/wire-grpc-client/com.squareup.wire/-grpc-client/
+ [grpcStreamingCall]: https://square.github.io/wire/3.x/wire-grpc-client/wire-grpc-client/com.squareup.wire/-grpc-streaming-call/
+ [messageSink]: https://square.github.io/wire/3.x/wire-runtime/wire-runtime/com.squareup.wire/-message-sink/
+ [messageSource]: https://square.github.io/wire/3.x/wire-runtime/wire-runtime/com.squareup.wire/-message-source/
  [sampleProject]: https://github.com/square/wire/tree/master/samples/wire-grpc-sample
