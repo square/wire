@@ -62,7 +62,7 @@ kotlin-test-common = { module = "org.jetbrains.kotlin:kotlin-test-common" }
 kotlin-test-js = { module = "org.jetbrains.kotlin:kotlin-test-js" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
-misk = { module = "com.squareup.misk:misk", version = "0.11.0" }
+misk = { module = "com.squareup.misk:misk", version = "0.25.0-20230405.1913-51e097f" }
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
 moshiKotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }
