@@ -1494,6 +1494,8 @@ class GrpcClientTest {
     assertThat(responseChannel.read()).isEqualTo(Feature(name = "house"))
     assertThat(responseChannel.read()).isNull()
     assertThat(grpcCall.responseMetadata!!["response-lucky-animal"]).isEqualTo("horse")
+
+    mockService.awaitSuccessBlocking()
   }
 
   @Test
