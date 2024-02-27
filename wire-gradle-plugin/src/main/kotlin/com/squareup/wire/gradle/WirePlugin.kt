@@ -135,11 +135,19 @@ class WirePlugin : Plugin<Project> {
     addWireRuntimeDependency(hasJavaOutput, hasKotlinOutput)
 
     sources.forEach { source ->
+      val protoSourceProtoRootSets = extension.protoSourceProtoRootSets.toMutableList()
+      val protoPathProtoRootSets = extension.protoPathProtoRootSets.toMutableList()
+
       // TODO(Benoit) Should we add our default source folders everytime? Right now, someone could
       //  not combine a custom protoSource with our default using variants.
-      if (extension.protoSourceProtoRootSets.all { it.roots.isEmpty() }) {
+      if (protoSourceProtoRootSets.all { it.roots.isEmpty() }) {
+        val sourceSetProtoRootSet = WireExtension.ProtoRootSet(
+          project = project,
+          name = "${source.name}ProtoSource",
+        )
+        protoSourceProtoRootSets += sourceSetProtoRootSet
         for (sourceFolder in defaultSourceFolders(source)) {
-          extension.sourcePath(sourceFolder)
+          sourceSetProtoRootSet.srcDir(sourceFolder)
         }
       }
 
@@ -201,10 +209,10 @@ class WirePlugin : Plugin<Project> {
         // Flatten all the input files here. Changes to any of them will cause the task to re-run.
         task.source(
           buildList {
-            for (rootSet in extension.protoSourceProtoRootSets) {
+            for (rootSet in protoSourceProtoRootSets) {
               addAll(rootSet.roots)
             }
-            for (rootSet in extension.protoPathProtoRootSets) {
+            for (rootSet in protoPathProtoRootSets) {
               addAll(rootSet.roots)
             }
           },
@@ -227,8 +235,8 @@ class WirePlugin : Plugin<Project> {
         if (extension.protoLibrary) {
           task.protoLibraryOutput.set(File(project.libraryProtoOutputPath()))
         }
-        task.sourceInput.set(extension.protoSourceProtoRootSets.inputLocations)
-        task.protoInput.set(extension.protoPathProtoRootSets.inputLocations)
+        task.sourceInput.set(protoSourceProtoRootSets.inputLocations)
+        task.protoInput.set(protoPathProtoRootSets.inputLocations)
         task.roots.set(extension.roots.toList())
         task.prunes.set(extension.prunes.toList())
         task.moves.set(extension.moves.toList())
