@@ -1691,7 +1691,7 @@ class GrpcClientTest {
 
   @Test
   fun grpcCallCallTimeoutIsPropagatedInRequestMetadata() {
-    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature", requestHeaders = mapOf("grpc-timeout" to "1S")))
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature", requestHeaders = mapOf("grpc-timeout" to "1000000u")))
     mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
     mockService.enqueue(ReceiveComplete)
     mockService.enqueueSendFeature(name = "tree at 5,6")
