@@ -51,7 +51,10 @@ fun InputLocation.toLocations(
   fileOperations: FileOperations,
   projectDir: File,
 ): List<Location> {
-  val base = File(projectDir, path)
+  val base = when {
+    File(path).isAbsolute -> File(path)
+    else -> File(projectDir, path)
+  }
   return buildList {
     val fileTree = when {
       base.isZip -> fileOperations.zipTree(base)
