@@ -36,7 +36,11 @@ private fun ProtoRootSet.inputLocation(file: File): InputLocation {
   }
   // We store [file] relative to the [project] in order to not invalidate the cache when we don't
   // have to.
-  return InputLocation(project.relativePath(file.path), includes, excludes)
+  val path = when {
+    file.toPath().startsWith(project.rootDir.toPath()) -> project.relativePath(file.path)
+    else -> file.path
+  }
+  return InputLocation(path, includes, excludes)
 }
 
 /**
