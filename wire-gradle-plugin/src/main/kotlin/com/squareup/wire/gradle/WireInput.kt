@@ -40,6 +40,11 @@ private fun ProtoRootSet.inputLocation(file: File): InputLocation {
     file.toPath().startsWith(project.rootDir.toPath()) -> project.relativePath(file.path)
     else -> file.path
   }
+
+  println("RETURNING inputLocation=$path")
+  println("                project=${project.rootDir}")
+  println("                   file=$file")
+
   return InputLocation(path, includes, excludes)
 }
 
