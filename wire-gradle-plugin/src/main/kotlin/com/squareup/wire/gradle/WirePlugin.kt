@@ -217,6 +217,7 @@ class WirePlugin : Plugin<Project> {
             }
           },
         )
+        println("TASK SOURCE size=${task.source.files.size} firstOrNull=${task.source.files.joinToString(separator = "\n  ")}")
 
         val outputDirectories: List<String> = buildList {
           addAll(
