@@ -1689,6 +1689,24 @@ class GrpcClientTest {
     assertThat(callbackCallFuture.get().timeout.timeoutNanos()).isEqualTo(okHttpClientTimeout.toNanos())
   }
 
+  @Test
+  fun grpcCallCallTimeoutIsPropagatedInRequestMetadata() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature", requestHeaders = mapOf("grpc-timeout" to "1S")))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    grpcCall.timeout.timeout(1, TimeUnit.SECONDS)
+
+    val feature = grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+
+    assertThat(feature).isEqualTo(Feature(name = "tree at 5,6"))
+
+    mockService.awaitSuccessBlocking()
+  }
+
   private fun removeGrpcStatusInterceptor(): Interceptor {
     val noTrailersResponse = noTrailersResponse()
     assertThat(noTrailersResponse.trailers().size).isEqualTo(0)

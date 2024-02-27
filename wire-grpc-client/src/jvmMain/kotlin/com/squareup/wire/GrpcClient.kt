@@ -22,6 +22,7 @@ import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Protocol.H2_PRIOR_KNOWLEDGE
 import okhttp3.Protocol.HTTP_2
+import okio.Timeout
 
 actual abstract class GrpcClient actual constructor() {
   actual abstract fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R>
@@ -66,6 +67,7 @@ actual abstract class GrpcClient actual constructor() {
     method: GrpcMethod<*, *>,
     requestMetadata: Map<String, String>,
     requestBody: GrpcRequestBody,
+    timeout: Timeout,
   ): Call {
     check(this is WireGrpcClient) { "newCall is not available for custom implementation of GrpcClient" }
     return client.newCall(
@@ -80,6 +82,17 @@ actual abstract class GrpcClient actual constructor() {
           }
           for ((key, value) in requestMetadata) {
             addHeader(key, value)
+          }
+
+          if (timeout.hasDeadline()) {
+            // TODO: Not sure if this the best way to serialize this, copilot made me do it
+            val seconds  = timeout.deadlineNanoTime() / 1_000_000_000
+            addHeader("grpc-timeout", "${seconds}S" )
+          }
+          if (timeout.timeoutNanos() > 0) {
+            // TODO: Not sure if this the best way to serialize this, copilot made me do it
+            val seconds  = timeout.timeoutNanos() / 1_000_000_000
+            addHeader("grpc-timeout", "${seconds}S" )
           }
         }
         .tag(GrpcMethod::class.java, method)
