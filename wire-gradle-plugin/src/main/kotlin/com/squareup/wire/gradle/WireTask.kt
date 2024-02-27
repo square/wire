@@ -154,9 +154,20 @@ abstract class WireTask @Inject constructor(
 
     val projectDirAsFile = projectDir.asFile
     val allTargets = targets.get()
+    val sourcePath = sourceInput.get().flatMap { it.toLocations(fileOperations, projectDirAsFile) }
+    val protoPath = protoInput.get().flatMap { it.toLocations(fileOperations, projectDirAsFile) }
+
+    println("RECEIVING sourcePath=${sourcePath.size} protoPath=${protoPath.size}")
+    for (location in sourcePath) {
+      println(" sourcePath location=${location.base} ${location.path}")
+    }
+    for (location in protoPath) {
+      println(" protoPath location=${location.base} ${location.path}")
+    }
+
     val wireRun = WireRun(
-      sourcePath = sourceInput.get().flatMap { it.toLocations(fileOperations, projectDirAsFile) },
-      protoPath = protoInput.get().flatMap { it.toLocations(fileOperations, projectDirAsFile) },
+      sourcePath = sourcePath,
+      protoPath = protoPath,
       treeShakingRoots = roots.get().ifEmpty { includes },
       treeShakingRubbish = prunes.get().ifEmpty { excludes },
       moves = moves.get().map { it.toTypeMoverMove() },
