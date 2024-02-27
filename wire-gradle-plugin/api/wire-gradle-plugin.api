@@ -17,17 +17,10 @@ public class com/squareup/wire/gradle/CustomOutput : com/squareup/wire/gradle/Wi
 }
 
 public final class com/squareup/wire/gradle/InputLocation : java/io/Serializable {
-	public static final field Companion Lcom/squareup/wire/gradle/InputLocation$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public static final fun get (Lorg/gradle/api/Project;Ljava/lang/String;)Lcom/squareup/wire/gradle/InputLocation;
-	public static final fun get (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;)Lcom/squareup/wire/gradle/InputLocation;
-	public final fun getBase ()Ljava/lang/String;
+	public fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/util/List;)V
+	public final fun getExcludes ()Ljava/util/List;
+	public final fun getIncludes ()Ljava/util/List;
 	public final fun getPath ()Ljava/lang/String;
-}
-
-public final class com/squareup/wire/gradle/InputLocation$Companion {
-	public final fun get (Lorg/gradle/api/Project;Ljava/lang/String;)Lcom/squareup/wire/gradle/InputLocation;
-	public final fun get (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;)Lcom/squareup/wire/gradle/InputLocation;
 }
 
 public class com/squareup/wire/gradle/JavaOutput : com/squareup/wire/gradle/WireOutput {
@@ -114,15 +107,9 @@ public class com/squareup/wire/gradle/WireExtension {
 	public final fun eventListenerFactoryClasses ()Ljava/util/Set;
 	public final fun getDryRun ()Z
 	public final fun getOutputs ()Ljava/util/List;
-	public final fun getProtoJars ()Ljava/util/Set;
 	public final fun getProtoLibrary ()Z
-	public final fun getProtoPaths ()Ljava/util/Set;
-	public final fun getProtoTrees ()Ljava/util/Set;
 	public final fun getRejectUnusedRootsOrPrunes ()Z
 	public final fun getRules ()Ljava/lang/String;
-	public final fun getSourceJars ()Ljava/util/Set;
-	public final fun getSourcePaths ()Ljava/util/Set;
-	public final fun getSourceTrees ()Ljava/util/Set;
 	public final fun java (Lorg/gradle/api/Action;)V
 	public final fun kotlin (Lorg/gradle/api/Action;)V
 	public final fun move (Lorg/gradle/api/Action;)V
@@ -152,21 +139,9 @@ public class com/squareup/wire/gradle/WireExtension {
 	public final fun untilVersion (Ljava/lang/String;)V
 }
 
-public class com/squareup/wire/gradle/WireExtension$ProtoRootSet {
-	public fun <init> ()V
+public final class com/squareup/wire/gradle/WireExtension$ProtoRootSet {
 	public final fun exclude ([Ljava/lang/String;)V
-	public final fun getExcludes ()Ljava/util/List;
-	public final fun getIncludes ()Ljava/util/List;
-	public final fun getSrcDirs ()Ljava/util/List;
-	public final fun getSrcJar ()Ljava/lang/String;
-	public final fun getSrcJarAsExternalModuleDependency ()Lorg/gradle/api/provider/Provider;
-	public final fun getSrcProject ()Ljava/lang/String;
-	public final fun getSrcProjectDependency ()Lorg/gradle/api/internal/catalog/DelegatingProjectDependency;
 	public final fun include ([Ljava/lang/String;)V
-	public final fun setSrcJar (Ljava/lang/String;)V
-	public final fun setSrcJarAsExternalModuleDependency (Lorg/gradle/api/provider/Provider;)V
-	public final fun setSrcProject (Ljava/lang/String;)V
-	public final fun setSrcProjectDependency (Lorg/gradle/api/internal/catalog/DelegatingProjectDependency;)V
 	public final fun srcDir (Ljava/lang/String;)V
 	public final fun srcDirs ([Ljava/lang/String;)V
 	public final fun srcJar (Ljava/lang/String;)V
@@ -174,6 +149,10 @@ public class com/squareup/wire/gradle/WireExtension$ProtoRootSet {
 	public final fun srcJar (Lorg/gradle/api/provider/ProviderConvertible;)V
 	public final fun srcProject (Ljava/lang/String;)V
 	public final fun srcProject (Lorg/gradle/api/internal/catalog/DelegatingProjectDependency;)V
+}
+
+public final class com/squareup/wire/gradle/WireInputKt {
+	public static final fun toLocations (Lcom/squareup/wire/gradle/InputLocation;Lorg/gradle/api/internal/file/FileOperations;Ljava/io/File;)Ljava/util/List;
 }
 
 public abstract class com/squareup/wire/gradle/WireOutput {
@@ -192,22 +171,22 @@ public final class com/squareup/wire/gradle/WirePlugin : org/gradle/api/Plugin {
 }
 
 public abstract class com/squareup/wire/gradle/WireTask : org/gradle/api/tasks/SourceTask {
-	public static final field Companion Lcom/squareup/wire/gradle/WireTask$Companion;
-	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;Lorg/gradle/api/internal/file/FileOperations;)V
 	public final fun generateWireFiles ()V
 	public abstract fun getBuildDirProperty ()Lorg/gradle/api/file/DirectoryProperty;
 	public final fun getDryRun ()Lorg/gradle/api/provider/Property;
 	public abstract fun getEventListenerFactories ()Lorg/gradle/api/provider/ListProperty;
-	public abstract fun getInputFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	public abstract fun getMoves ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getOnlyVersion ()Lorg/gradle/api/provider/Property;
 	public abstract fun getOpaques ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getOutputDirectories ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	public final fun getPermitPackageCycles ()Lorg/gradle/api/provider/Property;
 	public final fun getPluginVersion ()Lorg/gradle/api/provider/Property;
-	public abstract fun getProjectDependencies ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getProjectDependenciesJvmConfiguration ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	public abstract fun getProjectDirProperty ()Lorg/gradle/api/file/DirectoryProperty;
 	public abstract fun getProtoLibraryOutput ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getProtoPathConfiguration ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getProtoSourceConfiguration ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	public abstract fun getPrunes ()Lorg/gradle/api/provider/ListProperty;
 	public final fun getRejectUnusedRootsOrPrunes ()Lorg/gradle/api/provider/Property;
 	public abstract fun getRoots ()Lorg/gradle/api/provider/ListProperty;
@@ -216,8 +195,5 @@ public abstract class com/squareup/wire/gradle/WireTask : org/gradle/api/tasks/S
 	public fun getSource ()Lorg/gradle/api/file/FileTree;
 	public abstract fun getTargets ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getUntilVersion ()Lorg/gradle/api/provider/Property;
-}
-
-public final class com/squareup/wire/gradle/WireTask$Companion {
 }
 
