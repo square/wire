@@ -16,27 +16,24 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.schema.EventListener
+import java.io.File
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
-import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.catalog.DelegatingProjectDependency
+import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderConvertible
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.util.PatternFilterable
 
-open class WireExtension(project: Project) {
+open class WireExtension(
+  private val project: Project,
+) {
   private val objectFactory = project.objects
 
-  internal val sourcePaths = mutableSetOf<String>()
-  internal val protoPaths = mutableSetOf<String>()
-  internal val sourceTrees = mutableSetOf<SourceDirectorySet>()
-  internal val protoTrees = mutableSetOf<SourceDirectorySet>()
-  internal val sourceJars = mutableSetOf<ProtoRootSet>()
-  internal val protoJars = mutableSetOf<ProtoRootSet>()
+  internal val protoSourceProtoRootSets = mutableListOf<ProtoRootSet>()
+  internal val protoPathProtoRootSets = mutableListOf<ProtoRootSet>()
   internal val roots = mutableSetOf<String>()
   internal val prunes = mutableSetOf<String>()
   internal val moves = mutableListOf<Move>()
@@ -156,24 +153,15 @@ open class WireExtension(project: Project) {
   @get:Optional
   var dryRun = false
 
-  @InputFiles
-  @Optional
-  fun getSourcePaths() = sourcePaths.toSet()
-
-  @InputFiles
-  @Optional
-  fun getSourceTrees() = sourceTrees.toSet()
-
-  @InputFiles
-  @Optional
-  fun getSourceJars() = sourceJars.toSet()
-
   /**
    * Source paths for local jars and directories, as well as remote binary dependencies
    */
   // TODO(Benoit) Delete this because it seems unused? I think the DSL only pass down ProtoRootSet.
   fun sourcePath(vararg sourcePaths: String) {
-    this.sourcePaths.addAll(sourcePaths)
+    val protoRootSet = addProtoSourceProtoRootSet()
+    for (path in sourcePaths) {
+      protoRootSet.srcJar(path)
+    }
   }
 
   /**
@@ -181,7 +169,7 @@ open class WireExtension(project: Project) {
    * Must provide at least a [org.gradle.api.file.SourceDirectorySet.srcDir]
    */
   fun sourcePath(action: Action<ProtoRootSet>) {
-    populateRootSets(action, sourceTrees, sourceJars, "source-tree")
+    action.execute(addProtoSourceProtoRootSet())
   }
 
   @Input
@@ -200,29 +188,14 @@ open class WireExtension(project: Project) {
     this.eventListenerFactoryClasses.add(eventListenerFactoryClass)
   }
 
-  @InputFiles
-  @Optional
-  fun getProtoPaths(): Set<String> {
-    return protoPaths
-  }
-
-  @InputFiles
-  @Optional
-  fun getProtoTrees(): Set<SourceDirectorySet> {
-    return protoTrees
-  }
-
-  @InputFiles
-  @Optional
-  fun getProtoJars(): Set<ProtoRootSet> {
-    return protoJars
-  }
-
   /**
    * Proto paths for local jars and directories, as well as remote binary dependencies
    */
   fun protoPath(vararg protoPaths: String) {
-    this.protoPaths.addAll(protoPaths)
+    val protoRootSet = addProtoPathProtoRootSet()
+    for (path in protoPaths) {
+      protoRootSet.srcJar(path)
+    }
   }
 
   /**
@@ -230,42 +203,32 @@ open class WireExtension(project: Project) {
    * Must provide at least a [org.gradle.api.file.SourceDirectorySet.srcDir]
    */
   fun protoPath(action: Action<ProtoRootSet>) {
-    populateRootSets(action, protoTrees, protoJars, "proto-tree")
+    val protoRootSet = addProtoPathProtoRootSet()
+    action.execute(protoRootSet)
   }
 
-  private fun populateRootSets(
-    action: Action<ProtoRootSet>,
-    sourceTrees: MutableSet<SourceDirectorySet>,
-    sourceJars: MutableSet<ProtoRootSet>,
-    name: String,
-  ) {
-    val protoRootSet = objectFactory.newInstance(ProtoRootSet::class.java)
-    action.execute(protoRootSet)
+  internal fun addProtoSourceProtoRootSet() =
+    addProtoRootSet(protoSourceProtoRootSets, "protoSource")
 
-    protoRootSet.validate()
+  internal fun addProtoPathProtoRootSet() =
+    addProtoRootSet(protoPathProtoRootSets, "protoPath")
 
-    val hasSrcDirs = protoRootSet.srcDirs.isNotEmpty()
-    val hasSrcJar = protoRootSet.srcJar != null
-    val hasSrcJarAsExternalModuleDependency = protoRootSet.srcJarAsExternalModuleDependency != null
-    val hasSrcProjectDependency = protoRootSet.srcProjectDependency != null
-    val hasSrcProject = protoRootSet.srcProject != null
+  /** Creates a new uniquely-named [ProtoRootSet], adds it to [list], and returns it. */
+  private fun addProtoRootSet(
+    list: MutableList<ProtoRootSet>,
+    namePrefix: String,
+  ): ProtoRootSet {
+    val result = ProtoRootSet(
+      project = project,
+      name = when {
+        list.isEmpty() -> namePrefix
+        else -> "$namePrefix${(list.size + 1)}"
+      },
+    )
 
-    if (hasSrcDirs) {
-      // map to SourceDirectorySet which does the work for us!
-      val protoTree = objectFactory
-        .sourceDirectorySet(name, "Wire proto sources for $name.")
-        .srcDirs(protoRootSet.srcDirs)
+    list += result
 
-      protoRootSet.filters
-        .ifEmpty { listOf(Include("**/*.proto")) }
-        .forEach { it.act(protoTree.filter) }
-
-      sourceTrees.add(protoTree)
-    }
-
-    if (hasSrcJar || hasSrcJarAsExternalModuleDependency || hasSrcProject || hasSrcProjectDependency) {
-      sourceJars.add(protoRootSet)
-    }
+    return result
   }
 
   fun java(action: Action<JavaOutput>) {
@@ -310,45 +273,74 @@ open class WireExtension(project: Project) {
     this.opaques.addAll(opaques)
   }
 
-  // TODO(Benoit) See how we can make this class better, it's a mess and doesn't scale nicely.
-  open class ProtoRootSet {
-    val srcDirs = mutableListOf<String>()
-    var srcJar: String? = null
-    var srcProject: String? = null
-    var srcProjectDependency: DelegatingProjectDependency? = null
-    var srcJarAsExternalModuleDependency: Provider<MinimalExternalModuleDependency>? = null
-    val includes = mutableListOf<String>()
-    val excludes = mutableListOf<String>()
+  /**
+   * Aggregates inputs for a run of Wire. Instances of this are either proto sources (these emit
+   * code) or proto paths (these are only used to resolve references).
+   *
+   * This uses a Gradle configuration for the library and project dependencies that we need Gradle
+   * to resolve. It uses a basic `MutableList<String>` for paths to files and .jar files.
+   *
+   * This also keeps track of [includes] and [excludes] that apply only to the referenced file
+   * trees. A single run of Wire may use many [ProtoRootSet]s, each with their own sets of
+   * includes and excludes.
+   */
+  class ProtoRootSet internal constructor(
+    internal val project: Project,
+    name: String,
+  ) {
+    private val configuration = project.configurations.create(name)
+      .apply {
+        isCanBeConsumed = false
+        isTransitive = false
+      }
+    private val sourceDirectoriesAndLocalJars = mutableListOf<File>()
 
-    internal val filters: Collection<Filter>
-      get() = includes.map(::Include) + excludes.map(::Exclude)
+    internal val roots: Set<File>
+      get() = configuration.files + sourceDirectoriesAndLocalJars
+
+    internal val includes = mutableListOf<String>()
+    internal val excludes = mutableListOf<String>()
 
     fun srcDir(dir: String) {
-      srcDirs += dir
+      sourceDirectoriesAndLocalJars += project.file(dir)
     }
 
     fun srcDirs(vararg dirs: String) {
-      srcDirs += dirs
+      sourceDirectoriesAndLocalJars += dirs.map { project.file(it) }
     }
 
     fun srcJar(jar: String) {
-      srcJar = jar
+      srcFileOrConfiguration(jar)
+    }
+
+    private fun srcFileOrConfiguration(jar: String) {
+      val parser = FileOrUriNotationConverter.parser()
+      val converted = parser.parseNotation(jar)
+      when (converted) {
+        is File -> sourceDirectoriesAndLocalJars += project.file(jar)
+        else -> addDependency(jar)
+      }
     }
 
     fun srcJar(provider: Provider<MinimalExternalModuleDependency>) {
-      srcJarAsExternalModuleDependency = provider
+      addDependency(provider)
     }
 
     fun srcJar(convertible: ProviderConvertible<MinimalExternalModuleDependency>) {
-      srcJar(convertible.asProvider())
+      addDependency(convertible.asProvider())
     }
 
     fun srcProject(projectPath: String) {
-      srcProject = projectPath
+      addDependency(project.project(projectPath))
     }
 
     fun srcProject(project: DelegatingProjectDependency) {
-      srcProjectDependency = project
+      addDependency(project)
+    }
+
+    private fun addDependency(dependencyNotation: Any) {
+      project.dependencies.add(configuration.name, dependencyNotation)
+      project.dependencies.add("protoProjectDependenciesJvm", dependencyNotation)
     }
 
     fun include(vararg includePaths: String) {
@@ -358,35 +350,5 @@ open class WireExtension(project: Project) {
     fun exclude(vararg excludePaths: String) {
       excludes += excludePaths
     }
-  }
-
-  internal sealed class Filter(val glob: String) {
-    abstract fun act(filter: PatternFilterable)
-  }
-
-  internal class Exclude(glob: String) : Filter(glob) {
-    override fun act(filter: PatternFilterable) {
-      filter.exclude(glob)
-    }
-  }
-
-  internal class Include(glob: String) : Filter(glob) {
-    override fun act(filter: PatternFilterable) {
-      filter.include(glob)
-    }
-  }
-}
-
-private fun WireExtension.ProtoRootSet.validate() {
-  val sources = listOf(
-    srcDirs.isNotEmpty(),
-    srcJar != null,
-    srcJarAsExternalModuleDependency != null,
-    srcProjectDependency != null,
-    srcProject != null,
-  )
-
-  check(sources.count { it } <= 1) {
-    "Only one source can be set among srcDirs, srcJar, and srcProject within one sourcePath or protoPath closure."
   }
 }

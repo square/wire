@@ -86,21 +86,10 @@ class WirePluginTest {
   fun sourcePathDirDoesNotExist() {
     val fixtureRoot = File("src/test/projects/sourcepath-nonexistent-dir")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
-    assertThat(result.task(":generateProtos")).isNull()
-    assertThat(result.output).contains(
-      """
-            |Invalid path string: "src/main/proto".
-            |For individual files, use the following syntax:
-            |wire {
-            |  sourcePath {
-            |    srcDir 'dirPath'
-            |    include 'relativePath'
-            |  }
-            |}
-      """.trimMargin(),
-    )
+    assertThat(result.task(":generateMainProtos")?.getOutcome())
+      .isEqualTo(TaskOutcome.NO_SOURCE)
   }
 
   @Test
@@ -187,16 +176,19 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
+      .containsPattern(
+        "Invalid path string: \".*src/main/proto/squareup/geology/period.proto\"",
+      )
+    assertThat(result.output)
       .contains(
         """
-            |Invalid path string: "src/main/proto/squareup/geology/period.proto".
-            |For individual files, use the following syntax:
-            |wire {
-            |  sourcePath {
-            |    srcDir 'dirPath'
-            |    include 'relativePath'
-            |  }
-            |}
+        |For individual files, use the following syntax:
+        |wire {
+        |  sourcePath {
+        |    srcDir 'dirPath'
+        |    include 'relativePath'
+        |  }
+        |}
         """.trimMargin(),
       )
   }
@@ -210,7 +202,7 @@ class WirePluginTest {
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
       .contains(
-        """Invalid path string: "http://www.squareup.com". URL dependencies are not allowed.""",
+        """Cannot resolve external dependency http://www.squareup.com because no repositories are defined.""",
       )
   }
 
