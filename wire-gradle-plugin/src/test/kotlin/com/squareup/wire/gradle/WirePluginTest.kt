@@ -182,8 +182,8 @@ class WirePluginTest {
         |For individual files, use the following syntax:
         |wire {
         |  sourcePath {
-        |    srcDir 'dirPath'
-        |    include 'relativePath'
+        |    srcDir("dirPath")
+        |    include("relativePath")
         |  }
         |}
         """.trimMargin().withPlatformSlashes(),
