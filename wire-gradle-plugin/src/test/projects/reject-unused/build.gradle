@@ -10,7 +10,5 @@ wire {
   root 'squareup.dinosaurs.Crustacean'
   prune 'squareup.mammals.Human'
 
-  rejectUnusedRootsOrPrunes = true
-
   kotlin {}
 }

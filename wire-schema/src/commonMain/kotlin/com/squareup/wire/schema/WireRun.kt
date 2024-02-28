@@ -198,7 +198,7 @@ class WireRun(
    *
    * If false, unused [treeShakingRoots] and [treeShakingRubbish] will be printed as warnings.
    */
-  val rejectUnusedRootsOrPrunes: Boolean = false,
+  val rejectUnusedRootsOrPrunes: Boolean = true,
 
   /**
    * All qualified named Protobuf types in [opaqueTypes] will be evaluated as being of type `bytes`.
