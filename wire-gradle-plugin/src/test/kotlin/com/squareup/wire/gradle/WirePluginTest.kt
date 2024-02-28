@@ -57,7 +57,6 @@ class WirePluginTest {
         "generateProtos",
         "--stacktrace",
         "--info",
-        "--debug",
         "--configuration-cache",
       )
       .withDebug(true)
@@ -177,12 +176,9 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
-      .containsPattern(
-        "Invalid path string: \"src.main.proto.squareup.geology.period.proto\"",
-      )
-    assertThat(result.output)
       .contains(
         """
+        |Invalid path string: "src/main/proto/squareup/geology/period.proto".
         |For individual files, use the following syntax:
         |wire {
         |  sourcePath {
@@ -190,7 +186,7 @@ class WirePluginTest {
         |    include 'relativePath'
         |  }
         |}
-        """.trimMargin(),
+        """.trimMargin().withPlatformSlashes(),
       )
   }
 
@@ -569,7 +565,7 @@ class WirePluginTest {
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
       .contains("Writing squareup/geology/period.proto")
-      .contains("src/test/projects/different-proto-out/custom".withPlatformSlashes())
+        .contains("src/test/projects/different-proto-out/custom".withPlatformSlashes())
   }
 
   @Test
