@@ -669,7 +669,7 @@ class WireRunTest {
       treeShakingRoots = listOf("squareup.colors.Blue", "squareup.colors.Green"),
       treeShakingRubbish = listOf("squareup.colors.Purple", "squareup.colors.Color#name"),
       targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
-      rejectUnusedRootsOrPrunes = false
+      rejectUnusedRootsOrPrunes = false,
     )
     wireRun.execute(fs, logger)
     assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
