@@ -110,7 +110,7 @@ jobs:
           timeout_minutes: 90
           shell: bash
           command: |
-            ./gradlew --info -Pswift=false build --stacktrace --warning-mode all
+            ./gradlew -Pswift=false build --stacktrace --warning-mode all
 
   swift:
     runs-on: macos-latest

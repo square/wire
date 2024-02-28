@@ -57,6 +57,7 @@ class WirePluginTest {
         "generateProtos",
         "--stacktrace",
         "--info",
+        "--debug",
         "--configuration-cache",
       )
       .withDebug(true)
@@ -177,7 +178,7 @@ class WirePluginTest {
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
       .containsPattern(
-        "Invalid path string: \".*src/main/proto/squareup/geology/period.proto\"",
+        "Invalid path string: \"src.main.proto.squareup.geology.period.proto\"",
       )
     assertThat(result.output)
       .contains(
