@@ -176,12 +176,9 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
-      .containsPattern(
-        "Invalid path string: \".*src/main/proto/squareup/geology/period.proto\"",
-      )
-    assertThat(result.output)
       .contains(
         """
+        |Invalid path string: "src/main/proto/squareup/geology/period.proto".
         |For individual files, use the following syntax:
         |wire {
         |  sourcePath {
@@ -189,7 +186,7 @@ class WirePluginTest {
         |    include 'relativePath'
         |  }
         |}
-        """.trimMargin(),
+        """.trimMargin().withPlatformSlashes(),
       )
   }
 
