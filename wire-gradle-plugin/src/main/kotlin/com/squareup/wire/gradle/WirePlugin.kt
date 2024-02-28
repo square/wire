@@ -30,7 +30,6 @@ import java.lang.reflect.Array as JavaArray
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.UnknownConfigurationException
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.tasks.SourceSet
@@ -57,14 +56,11 @@ class WirePlugin : Plugin<Project> {
     this.extension = project.extensions.create("wire", WireExtension::class.java, project)
     this.project = project
 
-    project.configurations.create("protoSource").also {
-      it.isCanBeConsumed = false
-      it.isTransitive = false
-    }
-    project.configurations.create("protoPath").also {
-      it.isCanBeConsumed = false
-      it.isTransitive = false
-    }
+    // Add default 'protoSource' and 'protoPath' configurations, which can be used in the
+    // dependencies {} block.
+    extension.addProtoPathProtoRootSet()
+    extension.addProtoSourceProtoRootSet()
+
     project.configurations.create("protoProjectDependenciesJvm").also {
       it.isCanBeResolved = true
       it.isCanBeConsumed = false
@@ -122,6 +118,8 @@ class WirePlugin : Plugin<Project> {
       }
     }
 
+    val protoSourceConfiguration = project.configurations.getByName("protoSource")
+    val protoPathConfiguration = project.configurations.getByName("protoPath")
     val projectDependenciesJvmConfiguration = project.configurations.getByName("protoProjectDependenciesJvm")
 
     val outputs = extension.outputs
@@ -136,32 +134,21 @@ class WirePlugin : Plugin<Project> {
 
     addWireRuntimeDependency(hasJavaOutput, hasKotlinOutput)
 
-    val protoPathInput = WireInput(project.configurations.getByName("protoPath"))
-    protoPathInput.addTrees(project, extension.protoTrees)
-    protoPathInput.addJars(project, extension.protoJars)
-    protoPathInput.addPaths(project, extension.protoPaths)
-
     sources.forEach { source ->
-      val protoSourceInput = WireInput(
-        configuration = project.configurations.getByName("protoSource").copy().also {
-          it.isCanBeConsumed = false
-        },
-      )
-      protoSourceInput.addTrees(project, extension.sourceTrees)
-      protoSourceInput.addJars(project, extension.sourceJars)
-      protoSourceInput.addPaths(project, extension.sourcePaths)
+      val protoSourceProtoRootSets = extension.protoSourceProtoRootSets.toMutableList()
+      val protoPathProtoRootSets = extension.protoPathProtoRootSets.toMutableList()
+
       // TODO(Benoit) Should we add our default source folders everytime? Right now, someone could
       //  not combine a custom protoSource with our default using variants.
-      if (protoSourceInput.dependencies.isEmpty()) {
-        protoSourceInput.addPaths(project, defaultSourceFolders(source))
-      }
-
-      val inputFiles = project.layout.files(protoSourceInput.inputFiles, protoPathInput.inputFiles)
-
-      val projectDependencies =
-        (protoSourceInput.dependencies + protoPathInput.dependencies).filterIsInstance<ProjectDependency>()
-      for (projectDependency in projectDependencies) {
-        projectDependenciesJvmConfiguration.dependencies.add(projectDependency)
+      if (protoSourceProtoRootSets.all { it.roots.isEmpty() }) {
+        val sourceSetProtoRootSet = WireExtension.ProtoRootSet(
+          project = project,
+          name = "${source.name}ProtoSource",
+        )
+        protoSourceProtoRootSets += sourceSetProtoRootSet
+        for (sourceFolder in defaultSourceFolders(source)) {
+          sourceSetProtoRootSet.srcDir(sourceFolder)
+        }
       }
 
       val targets = outputs.map { output ->
@@ -218,7 +205,18 @@ class WirePlugin : Plugin<Project> {
       val task = project.tasks.register(taskName, WireTask::class.java) { task: WireTask ->
         task.group = GROUP
         task.description = "Generate protobuf implementation for ${source.name}"
-        task.source(protoSourceInput.configuration)
+
+        // Flatten all the input files here. Changes to any of them will cause the task to re-run.
+        task.source(
+          buildList {
+            for (rootSet in protoSourceProtoRootSets) {
+              addAll(rootSet.roots)
+            }
+            for (rootSet in protoPathProtoRootSets) {
+              addAll(rootSet.roots)
+            }
+          },
+        )
 
         val outputDirectories: List<String> = buildList {
           addAll(
@@ -231,12 +229,14 @@ class WirePlugin : Plugin<Project> {
           )
         }
         task.outputDirectories.setFrom(outputDirectories)
-        task.projectDependencies.setFrom(projectDependenciesJvmConfiguration)
+        task.protoSourceConfiguration.setFrom(protoSourceConfiguration)
+        task.protoPathConfiguration.setFrom(protoPathConfiguration)
+        task.projectDependenciesJvmConfiguration.setFrom(projectDependenciesJvmConfiguration)
         if (extension.protoLibrary) {
           task.protoLibraryOutput.set(File(project.libraryProtoOutputPath()))
         }
-        task.sourceInput.set(protoSourceInput.toLocations(project))
-        task.protoInput.set(protoPathInput.toLocations(project))
+        task.sourceInput.set(protoSourceProtoRootSets.inputLocations)
+        task.protoInput.set(protoPathProtoRootSets.inputLocations)
         task.roots.set(extension.roots.toList())
         task.prunes.set(extension.prunes.toList())
         task.moves.set(extension.moves.toList())
@@ -249,8 +249,6 @@ class WirePlugin : Plugin<Project> {
         task.permitPackageCycles.set(extension.permitPackageCycles)
         task.dryRun.set(extension.dryRun)
         task.rejectUnusedRootsOrPrunes.set(extension.rejectUnusedRootsOrPrunes)
-
-        task.inputFiles.setFrom(inputFiles)
 
         task.projectDirProperty.set(project.layout.projectDirectory)
         task.buildDirProperty.set(project.layout.buildDirectory)

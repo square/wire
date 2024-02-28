@@ -19,15 +19,14 @@ import com.squareup.wire.DryRunFileSystem
 import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.internal.GradleWireLogger
 import com.squareup.wire.schema.EventListener
-import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
-import java.io.File
 import javax.inject.Inject
 import okio.FileSystem
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
+import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -45,14 +44,28 @@ import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
 
 @CacheableTask
-abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask() {
+abstract class WireTask @Inject constructor(
+  objects: ObjectFactory,
+  private val fileOperations: FileOperations,
+) : SourceTask() {
 
   @get:OutputDirectories
   abstract val outputDirectories: ConfigurableFileCollection
 
+  /** This input only exists to signal task dependencies. The files are read via [source]. */
   @get:InputFiles
   @get:PathSensitive(PathSensitivity.RELATIVE)
-  abstract val projectDependencies: ConfigurableFileCollection
+  abstract val protoSourceConfiguration: ConfigurableFileCollection
+
+  /** Same as above: files are read via [source]. */
+  @get:InputFiles
+  @get:PathSensitive(PathSensitivity.RELATIVE)
+  abstract val protoPathConfiguration: ConfigurableFileCollection
+
+  /** Same as above: files are read via [source]. */
+  @get:InputFiles
+  @get:PathSensitive(PathSensitivity.RELATIVE)
+  abstract val projectDependenciesJvmConfiguration: ConfigurableFileCollection
 
   @get:Optional
   @get:OutputDirectory
@@ -103,10 +116,6 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
   val permitPackageCycles: Property<Boolean> = objects.property(Boolean::class.java)
     .convention(false)
 
-  @get:InputFiles
-  @get:PathSensitive(PathSensitivity.RELATIVE)
-  abstract val inputFiles: ConfigurableFileCollection
-
   @get:Internal
   abstract val projectDirProperty: DirectoryProperty
 
@@ -143,17 +152,11 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
         }
     }
 
-    inputFiles.forEach { fileObj ->
-      check(fileObj.exists()) {
-        "Invalid path string: \"${fileObj.path}\". Path does not exist."
-      }
-    }
-
     val projectDirAsFile = projectDir.asFile
     val allTargets = targets.get()
     val wireRun = WireRun(
-      sourcePath = sourceInput.get().map { it.toLocation(projectDirAsFile) },
-      protoPath = protoInput.get().map { it.toLocation(projectDirAsFile) },
+      sourcePath = sourceInput.get().flatMap { it.toLocations(fileOperations, projectDirAsFile) },
+      protoPath = protoInput.get().flatMap { it.toLocations(fileOperations, projectDirAsFile) },
       treeShakingRoots = roots.get().ifEmpty { includes },
       treeShakingRubbish = prunes.get().ifEmpty { excludes },
       moves = moves.get().map { it.toTypeMoverMove() },
@@ -186,15 +189,5 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
   @PathSensitive(PathSensitivity.RELATIVE)
   override fun getSource(): FileTree {
     return super.getSource()
-  }
-
-  companion object {
-    private fun InputLocation.toLocation(projectDir: File): Location {
-      return if (base.isEmpty()) {
-        Location.get(projectDir.resolve(path).absolutePath)
-      } else {
-        Location.get(projectDir.resolve(base).absolutePath, path)
-      }
-    }
   }
 }
