@@ -47,7 +47,7 @@ private fun ProtoRootSet.inputLocation(file: File): InputLocation {
  * Expand a jar or directory to the specific `.proto` files we want to build, applying includes and
  * excludes.
  */
-fun InputLocation.toLocations(
+internal fun InputLocation.toLocations(
   fileOperations: FileOperations,
   projectDir: File,
 ): List<Location> {

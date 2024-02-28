@@ -16,13 +16,6 @@ public class com/squareup/wire/gradle/CustomOutput : com/squareup/wire/gradle/Wi
 	public synthetic fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/Target;
 }
 
-public final class com/squareup/wire/gradle/InputLocation : java/io/Serializable {
-	public fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/util/List;)V
-	public final fun getExcludes ()Ljava/util/List;
-	public final fun getIncludes ()Ljava/util/List;
-	public final fun getPath ()Ljava/lang/String;
-}
-
 public class com/squareup/wire/gradle/JavaOutput : com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
 	public final fun getAndroid ()Z
@@ -149,10 +142,6 @@ public final class com/squareup/wire/gradle/WireExtension$ProtoRootSet {
 	public final fun srcJar (Lorg/gradle/api/provider/ProviderConvertible;)V
 	public final fun srcProject (Ljava/lang/String;)V
 	public final fun srcProject (Lorg/gradle/api/internal/catalog/DelegatingProjectDependency;)V
-}
-
-public final class com/squareup/wire/gradle/WireInputKt {
-	public static final fun toLocations (Lcom/squareup/wire/gradle/InputLocation;Lorg/gradle/api/internal/file/FileOperations;Ljava/io/File;)Ljava/util/List;
 }
 
 public abstract class com/squareup/wire/gradle/WireOutput {

@@ -17,7 +17,7 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.internal.Serializable
 
-data class InputLocation(
+internal data class InputLocation(
   /** The path to the directory or .jar. This might not exist until the [WireTask] runs! */
   val path: String,
 
