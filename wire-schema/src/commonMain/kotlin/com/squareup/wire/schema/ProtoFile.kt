@@ -155,6 +155,7 @@ data class ProtoFile(
       add(options) // file options
       addAll(messages.map { it.options }) // message options
       addAll(messages.flatMap { it.fields }.map { it.options }) // field options
+      addAll(messages.flatMap { it.oneOfs }.flatMap { it.fields }.map { it.options }) // one-of field options
       addAll(messages.flatMap { it.oneOfs }.map { it.options }) // one-of options
       addAll(enums.map { it.options }) // enum options
       addAll(enums.flatMap { it.constants }.map { it.options }) // enum value options
