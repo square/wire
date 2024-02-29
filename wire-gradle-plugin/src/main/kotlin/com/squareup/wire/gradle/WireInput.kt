@@ -22,7 +22,7 @@ import java.io.File
 import java.io.RandomAccessFile
 import org.gradle.api.internal.file.FileOperations
 
-internal val List<ProtoRootSet>.inputLocations
+internal val List<ProtoRootSet>.inputLocations: List<InputLocation>
   get() = flatMap { rootSet ->
     rootSet.roots.map { file ->
       rootSet.inputLocation(file)

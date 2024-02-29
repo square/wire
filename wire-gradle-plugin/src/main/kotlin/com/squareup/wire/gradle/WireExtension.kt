@@ -288,13 +288,17 @@ open class WireExtension(
     internal val project: Project,
     name: String,
   ) {
-    private val configuration = project.configurations.create(name)
+    /** Calling this doesn't resolve the configuration. */
+    internal var isEmpty = true
+
+    internal val configuration = project.configurations.create(name)
       .apply {
         isCanBeConsumed = false
         isTransitive = false
       }
-    private val sourceDirectoriesAndLocalJars = mutableListOf<File>()
+    internal val sourceDirectoriesAndLocalJars = mutableListOf<File>()
 
+    /** Calling this will resolve the configuration. */
     internal val roots: Set<File>
       get() = configuration.files + sourceDirectoriesAndLocalJars
 
@@ -302,10 +306,12 @@ open class WireExtension(
     internal val excludes = mutableListOf<String>()
 
     fun srcDir(dir: String) {
+      isEmpty = false
       sourceDirectoriesAndLocalJars += project.file(dir)
     }
 
     fun srcDirs(vararg dirs: String) {
+      isEmpty = false
       sourceDirectoriesAndLocalJars += dirs.map { project.file(it) }
     }
 
@@ -314,6 +320,7 @@ open class WireExtension(
     }
 
     private fun srcFileOrConfiguration(jar: String) {
+      isEmpty = false
       val parser = FileOrUriNotationConverter.parser()
       val converted = parser.parseNotation(jar)
       when (converted) {
@@ -339,6 +346,7 @@ open class WireExtension(
     }
 
     private fun addDependency(dependencyNotation: Any) {
+      isEmpty = false
       project.dependencies.add(configuration.name, dependencyNotation)
       project.dependencies.add("protoProjectDependenciesJvm", dependencyNotation)
     }

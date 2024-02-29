@@ -140,7 +140,7 @@ class WirePlugin : Plugin<Project> {
 
       // TODO(Benoit) Should we add our default source folders everytime? Right now, someone could
       //  not combine a custom protoSource with our default using variants.
-      if (protoSourceProtoRootSets.all { it.roots.isEmpty() }) {
+      if (protoSourceProtoRootSets.all { it.isEmpty }) {
         val sourceSetProtoRootSet = WireExtension.ProtoRootSet(
           project = project,
           name = "${source.name}ProtoSource",
@@ -207,16 +207,14 @@ class WirePlugin : Plugin<Project> {
         task.description = "Generate protobuf implementation for ${source.name}"
 
         // Flatten all the input files here. Changes to any of them will cause the task to re-run.
-        task.source(
-          buildList {
-            for (rootSet in protoSourceProtoRootSets) {
-              addAll(rootSet.roots)
-            }
-            for (rootSet in protoPathProtoRootSets) {
-              addAll(rootSet.roots)
-            }
-          },
-        )
+        for (rootSet in protoSourceProtoRootSets) {
+          task.source(rootSet.configuration)
+          task.source(*rootSet.sourceDirectoriesAndLocalJars.toTypedArray())
+        }
+        for (rootSet in protoPathProtoRootSets) {
+          task.source(rootSet.configuration)
+          task.source(*rootSet.sourceDirectoriesAndLocalJars.toTypedArray())
+        }
 
         val outputDirectories: List<String> = buildList {
           addAll(
@@ -235,8 +233,8 @@ class WirePlugin : Plugin<Project> {
         if (extension.protoLibrary) {
           task.protoLibraryOutput.set(File(project.libraryProtoOutputPath()))
         }
-        task.sourceInput.set(protoSourceProtoRootSets.inputLocations)
-        task.protoInput.set(protoPathProtoRootSets.inputLocations)
+        task.sourceInput.set(project.provider { protoSourceProtoRootSets.inputLocations })
+        task.protoInput.set(project.provider { protoPathProtoRootSets.inputLocations })
         task.roots.set(extension.roots.toList())
         task.prunes.set(extension.prunes.toList())
         task.moves.set(extension.moves.toList())
