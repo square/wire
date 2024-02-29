@@ -136,7 +136,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
       requestAdapter = method.requestAdapter,
       onlyMessage = request,
     )
-    val result = grpcClient.newCall(method, requestMetadata, requestBody)
+    val result = grpcClient.newCall(method, requestMetadata, requestBody, timeout)
     this.call = result
     if (canceled) result.cancel()
     (timeout as ForwardingTimeout).setDelegate(result.timeout())

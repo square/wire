@@ -17,11 +17,13 @@ package com.squareup.wire
 
 import com.squareup.wire.internal.RealGrpcCall
 import com.squareup.wire.internal.RealGrpcStreamingCall
+import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Protocol.H2_PRIOR_KNOWLEDGE
 import okhttp3.Protocol.HTTP_2
+import okio.Timeout
 
 actual abstract class GrpcClient actual constructor() {
   actual abstract fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R>
@@ -66,6 +68,7 @@ actual abstract class GrpcClient actual constructor() {
     method: GrpcMethod<*, *>,
     requestMetadata: Map<String, String>,
     requestBody: GrpcRequestBody,
+    timeout: Timeout,
   ): Call {
     check(this is WireGrpcClient) { "newCall is not available for custom implementation of GrpcClient" }
     return client.newCall(
@@ -81,11 +84,43 @@ actual abstract class GrpcClient actual constructor() {
           for ((key, value) in requestMetadata) {
             addHeader(key, value)
           }
+
+          if (timeout.hasDeadline()) {
+            addHeader("grpc-timeout", serializeTimeout(timeout.deadlineNanoTime()))
+          }
+          if (timeout.timeoutNanos() > 0) {
+            addHeader("grpc-timeout", serializeTimeout(timeout.timeoutNanos()))
+          }
         }
         .tag(GrpcMethod::class.java, method)
         .method("POST", requestBody)
         .build(),
     )
+  }
+
+  /**
+   * Return a string that represents the timeout in gRPC wire format. The Timeout value must be a
+   * positive integer as an ASCII string of at most 8 digits. We will increase the TimeoutUnit to
+   * fit the 8-digit limit.
+   */
+  private fun serializeTimeout(timeoutNanos: Long): String {
+    val cutoff: Long = 100000000
+    val unit = TimeUnit.NANOSECONDS
+    return if (timeoutNanos < 0) {
+      throw IllegalArgumentException("Timeout too small")
+    } else if (timeoutNanos < cutoff) {
+      timeoutNanos.toString() + "n"
+    } else if (timeoutNanos < cutoff * 1000L) {
+      unit.toMicros(timeoutNanos).toString() + "u"
+    } else if (timeoutNanos < cutoff * 1000L * 1000L) {
+      unit.toMillis(timeoutNanos).toString() + "m"
+    } else if (timeoutNanos < cutoff * 1000L * 1000L * 1000L) {
+      unit.toSeconds(timeoutNanos).toString() + "S"
+    } else if (timeoutNanos < cutoff * 1000L * 1000L * 1000L * 60L) {
+      unit.toMinutes(timeoutNanos).toString() + "M"
+    } else {
+      unit.toHours(timeoutNanos).toString() + "H"
+    }
   }
 
   class Builder {

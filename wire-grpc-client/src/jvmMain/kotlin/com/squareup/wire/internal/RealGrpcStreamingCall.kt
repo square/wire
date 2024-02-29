@@ -128,7 +128,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
   private fun initCall(): okhttp3.Call {
     check(this.call == null) { "already executed" }
 
-    val result = grpcClient.newCall(method, requestMetadata, requestBody)
+    val result = grpcClient.newCall(method, requestMetadata, requestBody, timeout)
     this.call = result
     if (canceled) result.cancel()
     (timeout as ForwardingTimeout).setDelegate(result.timeout())
