@@ -9,7 +9,6 @@ repositories {
 
 wire {
   root("human.Person")
-  rejectUnusedRootsOrPrunes = true
 
   kotlin {
     javaInterop = true

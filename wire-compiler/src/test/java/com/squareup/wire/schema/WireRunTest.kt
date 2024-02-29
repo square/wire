@@ -346,6 +346,7 @@ class WireRunTest {
         ),
       ),
       eventListeners = listeners,
+      rejectUnusedRootsOrPrunes = false,
     )
     wireRun.execute(fs, logger)
 
@@ -591,7 +592,6 @@ class WireRunTest {
         "squareup.colors.Color#name",
       ),
       targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
-      rejectUnusedRootsOrPrunes = true,
     )
     try {
       wireRun.execute(fs, logger)
@@ -617,7 +617,6 @@ class WireRunTest {
       treeShakingRoots = listOf("squareup.colors.Blue"),
       treeShakingRubbish = listOf("squareup.colors.Purple", "squareup.colors.Color#name"),
       targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
-      rejectUnusedRootsOrPrunes = true,
     )
     try {
       wireRun.execute(fs, logger)
@@ -643,7 +642,6 @@ class WireRunTest {
       treeShakingRoots = listOf("squareup.colors.Blue", "squareup.colors.Green"),
       treeShakingRubbish = listOf("squareup.colors.Purple", "squareup.colors.Color#name"),
       targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
-      rejectUnusedRootsOrPrunes = true,
     )
     try {
       wireRun.execute(fs, logger)
@@ -657,6 +655,27 @@ class WireRunTest {
           "  squareup.colors.Color#name",
       )
     }
+  }
+
+  /** Confirm we can disable the `rejectUnusedRootsOrPrunes` check. */
+  @Test
+  fun permitUnusedRootsOrPrunes() {
+    writeBlueProto()
+    writeRedProto()
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      protoPath = listOf(Location.get("polygons/src/main/proto")),
+      treeShakingRoots = listOf("squareup.colors.Blue", "squareup.colors.Green"),
+      treeShakingRubbish = listOf("squareup.colors.Purple", "squareup.colors.Color#name"),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+      rejectUnusedRootsOrPrunes = false,
+    )
+    wireRun.execute(fs, logger)
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/kt/squareup/colors/Blue.kt",
+    )
   }
 
   @Test

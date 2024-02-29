@@ -310,12 +310,12 @@ wire {
 }
 ```
 
-By default this feature is lenient given unknown `root` and `prune` arguments. You may prefer for
-this to be strict instead:
+By default this feature is strict given unknown `root` and `prune` arguments. You may prefer for
+this to be lenient instead:
 
 ```groovy
 wire {
-  rejectUnusedRootsOrPrunes = true
+  rejectUnusedRootsOrPrunes = false
   ...
 }
 ```

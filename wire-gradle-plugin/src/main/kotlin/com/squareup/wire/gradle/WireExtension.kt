@@ -143,7 +143,7 @@ open class WireExtension(
    */
   @get:Input
   @get:Optional
-  var rejectUnusedRootsOrPrunes = false
+  var rejectUnusedRootsOrPrunes = true
 
   /**
    * True to not write generated types to disk, but emit the names of the source files that would
