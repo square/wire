@@ -158,7 +158,7 @@ class PrunerTest {
           |message TestMessage {
           |  oneof element {
           |    option (my_custom_oneOf_option) = true;
-          |
+          |  
           |    string one = 1;
           |    string two = 2;
           |  }
