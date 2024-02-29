@@ -17,7 +17,6 @@
 
 package com.squareup.wire.gradle
 
-import java.lang.reflect.Array as JavaArray
 import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
@@ -27,6 +26,7 @@ import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.newEventListenerFactory
 import java.io.File
+import java.lang.reflect.Array as JavaArray
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Plugin
 import org.gradle.api.Project
