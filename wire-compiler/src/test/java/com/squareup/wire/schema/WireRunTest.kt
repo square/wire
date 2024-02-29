@@ -346,6 +346,7 @@ class WireRunTest {
         ),
       ),
       eventListeners = listeners,
+      rejectUnusedRootsOrPrunes = false,
     )
     wireRun.execute(fs, logger)
 
