@@ -2077,6 +2077,61 @@ class PrunerTest {
   }
 
   @Test
+  fun retainImportWhenUsedForOneOfFieldOption() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |import 'option.proto';
+        |import 'another_option.proto';
+        |
+        |message Message {
+        |  oneof value {
+        |    string value_1 = 1 [custom_option = true];
+        |    string value_2 = 2;
+        |  }
+        |}
+        |
+        |message AnotherMessage {
+        |  oneof value {
+        |    string value_1 = 1 [another_custom_option = true];
+        |    string value_2 = 2;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+      add(
+        "option.proto".toPath(),
+        """
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.FieldOptions {
+        |  optional bool custom_option = 10000;
+        |}
+        """.trimMargin(),
+      )
+      add(
+        "another_option.proto".toPath(),
+        """
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.FieldOptions {
+        |  optional bool another_custom_option = 10001;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("Message")
+        .build(),
+    )
+
+    val message = pruned.protoFile("message.proto")!!
+    assertThat(message.imports).containsExactly("option.proto")
+  }
+
+  @Test
   fun retainImportWhenUsedForEnumOption() {
     val schema = buildSchema {
       add(
