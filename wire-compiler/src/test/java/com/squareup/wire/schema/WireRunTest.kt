@@ -884,7 +884,13 @@ class WireRunTest {
     override fun handle(extend: Extend, field: Field, context: Context) = null
 
     object Factory : SchemaHandler.Factory {
-      override fun create() = NullSchemaHandler
+      override fun create(
+        includes: List<String>,
+        excludes: List<String>,
+        exclusive: Boolean,
+        outDirectory: String,
+        options: Map<String, String>,
+      ): SchemaHandler = NullSchemaHandler
     }
   }
 
@@ -945,7 +951,13 @@ class WireRunTest {
   }
 
   class ErrorReportingCustomHandler : SchemaHandler.Factory {
-    override fun create(): SchemaHandler {
+    override fun create(
+      includes: List<String>,
+      excludes: List<String>,
+      exclusive: Boolean,
+      outDirectory: String,
+      options: Map<String, String>,
+    ): SchemaHandler {
       return object : SchemaHandler() {
         override fun handle(type: Type, context: SchemaHandler.Context): Path? {
           val errorCollector = context.errorCollector
@@ -992,16 +1004,24 @@ class WireRunTest {
     schemaLoader.initRoots(listOf(Location.get("polygons/src/main/proto")))
     val schema = schemaLoader.loadSchema()
     val errorCollector = ErrorCollector()
-    schemaHandlerFactory.create().handle(
-      schema = schema,
-      context = SchemaHandler.Context(
-        fileSystem = fs,
-        outDirectory = "out".toPath(),
-        logger = EmptyWireLogger(),
-        errorCollector = errorCollector,
-        claimedPaths = ClaimedPaths(),
-      ),
-    )
+    schemaHandlerFactory
+      .create(
+        includes = listOf(),
+        excludes = listOf(),
+        exclusive = true,
+        outDirectory = "",
+        options = mapOf(),
+      )
+      .handle(
+        schema = schema,
+        context = SchemaHandler.Context(
+          fileSystem = fs,
+          outDirectory = "out".toPath(),
+          logger = EmptyWireLogger(),
+          errorCollector = errorCollector,
+          claimedPaths = ClaimedPaths(),
+        ),
+      )
 
     errorCollector.throwIfNonEmpty()
   }

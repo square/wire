@@ -192,20 +192,23 @@ abstract class SchemaHandler {
   /** Implementations of this interface must have a no-arguments public constructor. */
   @JvmDefaultWithCompatibility
   interface Factory : Serializable {
-    @Deprecated("Wire does not call this method anymore. Implement the other 'create' method to receive the payload associated with the schema handler. This method will be removed in Wire 5.")
-    fun create(): SchemaHandler
-
-    // TODO(Benoit) At some point, let's make this method without any defaults so that new consumers
-    //  actually see this method first, and not the deprecated one.
     fun create(
+      /** Set of rules letting the [SchemaHandler] know what [ProtoType] to include in its logic. */
       includes: List<String>,
+      /** Set of rules letting the [SchemaHandler] know what [ProtoType] to exclude in its logic. */
       excludes: List<String>,
+      /**
+       * If true, the schema handler is to [claim][SchemaHandler.Context.claimedDefinitions] types
+       * and services it handled.
+       */
       exclusive: Boolean,
+      /** Location on the fileSystem where the schema handler is to write files, if it needs to. */
       outDirectory: String,
+      /**
+       * Arbitrary list of options to be used for the caller to pass extract data to the Schema
+       * Handler if needed.
+       * */
       options: Map<String, String>,
-    ): SchemaHandler {
-      @Suppress("DEPRECATION")
-      return create()
-    }
+    ): SchemaHandler
   }
 }
