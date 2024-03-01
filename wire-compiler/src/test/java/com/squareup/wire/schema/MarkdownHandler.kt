@@ -18,24 +18,32 @@ package com.squareup.wire.schema
 import okio.Path
 
 class MarkdownHandlerFactory : SchemaHandler.Factory {
-  override fun create(): SchemaHandler = MarkdownHandler()
+  override fun create(
+    includes: List<String>,
+    excludes: List<String>,
+    exclusive: Boolean,
+    outDirectory: String,
+    options: Map<String, String>,
+  ): SchemaHandler {
+    return MarkdownHandler()
+  }
 }
 
 /** This is a sample handler that writes text files that describe types. */
 private class MarkdownHandler : SchemaHandler() {
-  override fun handle(type: Type, context: SchemaHandler.Context): Path {
+  override fun handle(type: Type, context: Context): Path {
     return writeMarkdownFile(type.type, toMarkdown(type), context)
   }
 
-  override fun handle(service: Service, context: SchemaHandler.Context): List<Path> {
+  override fun handle(service: Service, context: Context): List<Path> {
     return listOf(writeMarkdownFile(service.type, toMarkdown(service), context))
   }
 
-  override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? {
+  override fun handle(extend: Extend, field: Field, context: Context): Path? {
     return null
   }
 
-  private fun writeMarkdownFile(protoType: ProtoType, markdown: String, context: SchemaHandler.Context): Path {
+  private fun writeMarkdownFile(protoType: ProtoType, markdown: String, context: Context): Path {
     val outDirectory = context.outDirectory
     val fileSystem = context.fileSystem
     val path = outDirectory / toPath(protoType).joinToString(separator = "/")
