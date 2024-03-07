@@ -23,7 +23,7 @@ buildscript {
 plugins {
   `kotlin-dsl`
   `java-gradle-plugin`
-  kotlin("jvm") version "1.9.22"
+  kotlin("jvm") version "1.9.23"
 }
 
 repositories {
