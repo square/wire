@@ -175,7 +175,14 @@ data class ProtoFile(
 
   /** Returns a new proto file that omits unnecessary imports. */
   fun retainImports(schema: Schema): ProtoFile {
-    val referencedTypes = referencedTypes().mapNotNull { schema.getType(it) }
+    val referencedTypes = referencedTypes().mapNotNull { protoType ->
+      if (protoType.isMap) {
+        // We only need to retain the value type; map keys' types can only be scalar types.
+        schema.getType(protoType.valueType!!)
+      } else {
+        schema.getType(protoType)
+      }
+    }
 
     val typeLocations = referencedTypes.map { type -> type.location }
 
