@@ -1780,6 +1780,97 @@ class PrunerTest {
   }
 
   @Test
+  fun retainImportWhenUsedInMaps() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+          |import 'title.proto';
+          |import 'footer.proto';
+          |
+          |message OuterMessage {
+          |  map<int32, Title> titles = 1;
+          |
+          |  message InnerMessage {
+          |    map <string, Footer> footers = 1;
+          |  }
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "title.proto".toPath(),
+        """
+          |message Title {
+          |  optional string label = 1;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "footer.proto".toPath(),
+        """
+          |message Footer {
+          |  optional string label = 1;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("OuterMessage")
+        .build(),
+    )
+
+    val message = pruned.protoFile("message.proto")!!
+    assertThat(message.imports).containsExactly("title.proto")
+  }
+
+  @Test
+  fun retainImportWhenUsedInMapsWithinInnerTypes() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+          |import 'title.proto';
+          |import 'footer.proto';
+          |
+          |message OuterMessage {
+          |  map<int32, Title> titles = 1;
+          |
+          |  message InnerMessage {
+          |    map <string, Footer> footers = 1;
+          |  }
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "title.proto".toPath(),
+        """
+          |message Title {
+          |  optional string label = 1;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "footer.proto".toPath(),
+        """
+          |message Footer {
+          |  optional string label = 1;
+          |}
+        """.trimMargin(),
+      )
+    }
+
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("OuterMessage.InnerMessage")
+        .build(),
+    )
+
+    val message = pruned.protoFile("message.proto")!!
+    assertThat(message.imports).containsExactly("footer.proto")
+  }
+
+  @Test
   fun retainImportWhenUsedForNestedMessageField() {
     val schema = buildSchema {
       add(
