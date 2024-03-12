@@ -88,10 +88,10 @@ extension FooBar : Proto2Codable {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: foo = try protoReader.decode(Int32.self)
+            case 1: foo = try protoReader.decode(Int32.self, encoding: .variable)
             case 2: bar = try protoReader.decode(String.self)
             case 3: baz = try protoReader.decode(FooBar.Nested.self)
-            case 4: qux = try protoReader.decode(UInt64.self)
+            case 4: qux = try protoReader.decode(UInt64.self, encoding: .variable)
             case 5: try protoReader.decode(into: &fred)
             case 6: daisy = try protoReader.decode(Double.self)
             case 7: try protoReader.decode(into: &nested)
@@ -116,10 +116,10 @@ extension FooBar : Proto2Codable {
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.foo)
+        try protoWriter.encode(tag: 1, value: self.foo, encoding: .variable)
         try protoWriter.encode(tag: 2, value: self.bar)
         try protoWriter.encode(tag: 3, value: self.baz)
-        try protoWriter.encode(tag: 4, value: self.qux)
+        try protoWriter.encode(tag: 4, value: self.qux, encoding: .variable)
         try protoWriter.encode(tag: 5, value: self.fred)
         try protoWriter.encode(tag: 6, value: self.daisy)
         try protoWriter.encode(tag: 7, value: self.nested)
@@ -324,7 +324,7 @@ extension FooBar.More : Proto2Codable {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: try protoReader.decode(into: &serial)
+            case 1: try protoReader.decode(into: &serial, encoding: .variable)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -334,7 +334,7 @@ extension FooBar.More : Proto2Codable {
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.serial)
+        try protoWriter.encode(tag: 1, value: self.serial, encoding: .variable)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 

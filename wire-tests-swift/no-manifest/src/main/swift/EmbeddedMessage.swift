@@ -52,8 +52,8 @@ extension EmbeddedMessage : Proto2Codable {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: try protoReader.decode(into: &inner_repeated_number)
-            case 2: inner_number_after = try protoReader.decode(Int32.self)
+            case 1: try protoReader.decode(into: &inner_repeated_number, encoding: .variable)
+            case 2: inner_number_after = try protoReader.decode(Int32.self, encoding: .variable)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -64,8 +64,8 @@ extension EmbeddedMessage : Proto2Codable {
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.inner_repeated_number, packed: true)
-        try protoWriter.encode(tag: 2, value: self.inner_number_after)
+        try protoWriter.encode(tag: 1, value: self.inner_repeated_number, encoding: .variable, packed: true)
+        try protoWriter.encode(tag: 2, value: self.inner_number_after, encoding: .variable)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
