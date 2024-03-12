@@ -5,7 +5,7 @@ import Wire
 /**
  * Collides with Foundation.SortOrder
  */
-public enum SortOrder : Int32, CaseIterable, ProtoEnum, Proto2Codable {
+public enum SortOrder : Int32, CaseIterable, ProtoEnum, Proto2Enum {
 
     case DESC = 0
     case ASC = 1

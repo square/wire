@@ -18,7 +18,19 @@ import Foundation
 /// Common protocol that all Wire generated enums conform to
 /// - Note: All ProtoEnums will convert to/from their field and string equivalent when serializing via Codable.
 /// This matches the Proto3 JSON spec: https://developers.google.com/protocol-buffers/docs/proto3#json
-public protocol ProtoEnum : LosslessStringConvertible, Codable, ProtoCodable {
+public protocol ProtoEnum : LosslessStringConvertible, Codable {
+    static var protoSyntax: ProtoSyntax? { get }
+}
+
+public protocol Proto2Enum: ProtoEnum {}
+public protocol Proto3Enum: ProtoEnum {}
+
+extension Proto2Enum {
+    public static var protoSyntax: ProtoSyntax? { .proto2 }
+}
+
+extension Proto3Enum {
+    public static var protoSyntax: ProtoSyntax? { .proto3 }
 }
 
 extension ProtoEnum where Self : CaseIterable {
@@ -33,15 +45,6 @@ extension ProtoEnum where Self : CaseIterable {
 extension ProtoEnum where Self : RawRepresentable, RawValue == Int32 {
     public static var protoFieldWireType: FieldWireType {
         .varint
-    }
-
-    public init(from reader: ProtoReader) throws {
-        self = try reader.decode(Self.self)
-    }
-
-    public func encode(to writer: ProtoWriter) throws {
-        let uintValue = UInt32(bitPattern: rawValue)
-        writer.writeVarint(uintValue)
     }
 }
 

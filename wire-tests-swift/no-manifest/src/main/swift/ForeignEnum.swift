@@ -2,7 +2,7 @@
 // Source: squareup.protos.kotlin.foreign.ForeignEnum in foreign.proto
 import Wire
 
-public enum ForeignEnum : Int32, CaseIterable, ProtoEnum, Proto2Codable {
+public enum ForeignEnum : Int32, CaseIterable, ProtoEnum, Proto2Enum {
 
     case BAV = 0
     case BAX = 1

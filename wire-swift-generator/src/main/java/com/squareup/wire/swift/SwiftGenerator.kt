@@ -76,6 +76,8 @@ class SwiftGenerator private constructor(
 ) {
   private val proto2Codable = DeclaredTypeName.typeName("Wire.Proto2Codable")
   private val proto3Codable = DeclaredTypeName.typeName("Wire.Proto3Codable")
+  private val proto2Enum = DeclaredTypeName.typeName("Wire.Proto2Enum")
+  private val proto3Enum = DeclaredTypeName.typeName("Wire.Proto3Enum")
   private val protoMessage = DeclaredTypeName.typeName("Wire.ProtoMessage")
   private val protoReader = DeclaredTypeName.typeName("Wire.ProtoReader")
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
@@ -791,8 +793,8 @@ class SwiftGenerator private constructor(
 
   private val EnumType.protoCodableType: DeclaredTypeName
     get() = when (syntax) {
-      PROTO_2 -> proto2Codable
-      PROTO_3 -> proto3Codable
+      PROTO_2 -> proto2Enum
+      PROTO_3 -> proto3Enum
     }
 
   private fun heapCodableExtension(
