@@ -124,12 +124,25 @@ public final class ProtoDecoder {
 
     // MARK: - Public Methods
 
+    /** Decode a `ProtoDecodable` field from raw data */
     public func decode<T: ProtoDecodable>(_ type: T.Type, from data: Data) throws -> T {
+        try decodeWithReader(from: data, emptyValue: try T(from: .empty)) { reader in
+            try reader.decode(type)
+        }
+    }
+
+    // MARK: - Private Methods
+
+    private func decodeWithReader<T>(
+        from data: Data,
+        emptyValue: @autoclosure () throws -> T,
+        decoder: (ProtoReader) throws -> T
+    ) throws -> T {
         var value: T?
         try data.withUnsafeBytes { buffer in
             // Handle the empty-data case.
             guard let baseAddress = buffer.baseAddress, buffer.count > 0 else {
-                value = try T(from: .empty)
+                value = try emptyValue()
                 return
             }
 
@@ -138,14 +151,12 @@ public final class ProtoDecoder {
                 count: buffer.count
             )
             let reader = ProtoReader(buffer: readBuffer, enumDecodingStrategy: enumDecodingStrategy)
-            value = try reader.decode(type)
+            value = try decoder(reader)
         }
-
-        guard let unwrappedValue = value else {
+        guard let value else {
             throw Error.invalidStructure(message: "The data root does not have any identifiable fields.")
         }
-        return unwrappedValue
+        return value
     }
-
 }
 

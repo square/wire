@@ -75,19 +75,31 @@ public final class ProtoEncoder {
 
     // MARK: - Public Methods
 
+    /** Encode a `ProtoEncodable` field into raw data */
     public func encode<T: ProtoEncodable>(_ value: T) throws -> Data {
+        try encodeWithWriter(value, syntax: T.self.protoSyntax ?? .proto2) { writer in
+            try value.encode(to: writer)
+        }
+    }
+
+    // MARK: - Private Methods
+
+    private func encodeWithWriter<T>(
+        _ value: T,
+        syntax: ProtoSyntax,
+        encoder: (ProtoWriter) throws -> Void
+    ) throws -> Data {
         // Use the size of the struct as an initial estimate for the space needed.
         let structSize = MemoryLayout.size(ofValue: value)
 
         let writer = ProtoWriter(
             data: .init(capacity: structSize),
             outputFormatting: [],
-            rootMessageProtoSyntax: T.self.protoSyntax ?? .proto2
+            rootMessageProtoSyntax: syntax
         )
         writer.outputFormatting = outputFormatting
-        try value.encode(to: writer)
+        try encoder(writer)
 
         return Data(writer.buffer, copyBytes: false)
     }
-
 }
