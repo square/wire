@@ -64,8 +64,8 @@ extension NestedVersionTwo : Proto2Codable {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: i = try protoReader.decode(Int32.self)
-            case 2: v2_i = try protoReader.decode(Int32.self)
+            case 1: i = try protoReader.decode(Int32.self, encoding: .variable)
+            case 2: v2_i = try protoReader.decode(Int32.self, encoding: .variable)
             case 3: v2_s = try protoReader.decode(String.self)
             case 4: v2_f32 = try protoReader.decode(UInt32.self, encoding: .fixed)
             case 5: v2_f64 = try protoReader.decode(UInt64.self, encoding: .fixed)
@@ -84,8 +84,8 @@ extension NestedVersionTwo : Proto2Codable {
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.i)
-        try protoWriter.encode(tag: 2, value: self.v2_i)
+        try protoWriter.encode(tag: 1, value: self.i, encoding: .variable)
+        try protoWriter.encode(tag: 2, value: self.v2_i, encoding: .variable)
         try protoWriter.encode(tag: 3, value: self.v2_s)
         try protoWriter.encode(tag: 4, value: self.v2_f32, encoding: .fixed)
         try protoWriter.encode(tag: 5, value: self.v2_f64, encoding: .fixed)

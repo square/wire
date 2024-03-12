@@ -53,7 +53,7 @@ extension OuterMessage : Proto2Codable {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: outer_number_before = try protoReader.decode(Int32.self)
+            case 1: outer_number_before = try protoReader.decode(Int32.self, encoding: .variable)
             case 2: embedded_message = try protoReader.decode(EmbeddedMessage.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
@@ -65,7 +65,7 @@ extension OuterMessage : Proto2Codable {
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.outer_number_before)
+        try protoWriter.encode(tag: 1, value: self.outer_number_before, encoding: .variable)
         try protoWriter.encode(tag: 2, value: self.embedded_message)
         try protoWriter.writeUnknownFields(unknownFields)
     }

@@ -50,7 +50,7 @@ extension NestedVersionOne : Proto2Codable {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: i = try protoReader.decode(Int32.self)
+            case 1: i = try protoReader.decode(Int32.self, encoding: .variable)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -60,7 +60,7 @@ extension NestedVersionOne : Proto2Codable {
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.i)
+        try protoWriter.encode(tag: 1, value: self.i, encoding: .variable)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 

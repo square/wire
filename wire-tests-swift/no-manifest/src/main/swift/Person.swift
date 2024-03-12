@@ -72,7 +72,7 @@ extension Person : Proto2Codable {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 2: id = try protoReader.decode(Int32.self)
+            case 2: id = try protoReader.decode(Int32.self, encoding: .variable)
             case 1: name = try protoReader.decode(String.self)
             case 3: email = try protoReader.decode(String.self)
             case 4: try protoReader.decode(into: &phone)
@@ -90,7 +90,7 @@ extension Person : Proto2Codable {
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 2, value: self.id)
+        try protoWriter.encode(tag: 2, value: self.id, encoding: .variable)
         try protoWriter.encode(tag: 1, value: self.name)
         try protoWriter.encode(tag: 3, value: self.email)
         try protoWriter.encode(tag: 4, value: self.phone)

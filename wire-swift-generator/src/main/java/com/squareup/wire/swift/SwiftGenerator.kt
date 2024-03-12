@@ -1507,6 +1507,9 @@ class SwiftGenerator private constructor(
     get() = when (this) {
       ProtoType.SINT32, ProtoType.SINT64 -> "signed"
       ProtoType.FIXED32, ProtoType.FIXED64 -> "fixed"
+      ProtoType.SFIXED32, ProtoType.SFIXED64 -> "fixed"
+      ProtoType.INT32, ProtoType.INT64 -> "variable"
+      ProtoType.UINT32, ProtoType.UINT64 -> "variable"
       else -> null
     }
 
