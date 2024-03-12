@@ -258,6 +258,31 @@ public final class ProtoReader {
         return enumValue
     }
 
+    private func decode<T: ProtoEnum>(_ type: T.Type, forceThrow: Bool) throws -> T where T: RawRepresentable<Int32> {
+        assert(forceThrow, "For nil return values, use decode(_:)")
+        // Pop the enum int value and pass in to initializer
+        let intValue = try Int32(truncatingIfNeeded: readVarint())
+        guard let enumValue = T(rawValue: intValue) else {
+            throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: intValue)
+        }
+        return enumValue
+    }
+
+    /**
+     Decode enums
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func decode<T: ProtoEnum>(_ type: T.Type, boxed: Bool) throws -> T where T: RawRepresentable<Int32> {
+        assert(boxed, "For non-boxed values, use decode(_:)")
+        return try decode(type, withTag: 1)
+    }
+
+    internal func decode<T: ProtoEnum>(_ type: T.Type, withTag tag: UInt32) throws -> T where T: RawRepresentable<Int32> {
+        return try decodeBoxed(tag: tag) {
+            try decode(type, forceThrow: true)
+        }
+    }
+
     /** Decode a `bool` field */
     public func decode(_ type: Bool.Type) throws -> Bool {
         return try Bool(from: self)
@@ -309,6 +334,13 @@ public final class ProtoReader {
         return try T(from: self)
     }
 
+    internal func decode<T: ProtoDecodable>(_ type: T.Type, withTag tag: UInt32) throws -> T {
+        isProto3Message = T.self.protoSyntax == .proto3
+        return try decodeBoxed(tag: tag) {
+            try T(from: self)
+        }
+    }
+
     // MARK: - Public Methods - Decoding - Proto3 Well-Known Types
 
     /**
@@ -317,7 +349,9 @@ public final class ProtoReader {
      */
     public func decode(_ type: Bool.Type, boxed: Bool) throws -> Bool {
         assert(boxed, "For non-boxed values, use decode(_:)")
-        return try decodeBoxed { try Bool(from: self) }
+        return try decodeBoxed(tag: 1) {
+            try Bool(from: self)
+        }
     }
 
     /**
@@ -326,7 +360,9 @@ public final class ProtoReader {
      */
     public func decode(_ type: Data.Type, boxed: Bool) throws -> Data {
         assert(boxed, "For non-boxed values, use decode(_:)")
-        return try decodeBoxed { try Data(from: self) }
+        return try decodeBoxed(tag: 1) {
+            try Data(from: self)
+        }
     }
 
     /**
@@ -335,7 +371,9 @@ public final class ProtoReader {
      */
     public func decode(_ type: Double.Type, boxed: Bool) throws -> Double {
         assert(boxed, "For non-boxed values, use decode(_:)")
-        return try decodeBoxed { try Double(from: self) }
+        return try decodeBoxed(tag: 1) {
+            try Double(from: self)
+        }
     }
 
     /**
@@ -344,25 +382,39 @@ public final class ProtoReader {
      */
     public func decode(_ type: Float.Type, boxed: Bool) throws -> Float {
         assert(boxed, "For non-boxed values, use decode(_:)")
-        return try decodeBoxed { try Float(from: self) }
+        return try decodeBoxed(tag: 1) {
+            try Float(from: self)
+        }
     }
 
     /**
      Decode a `Int32Value` message field.
      The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
      */
-    public func decode(_ type: Int32.Type, boxed: Bool) throws -> Int32 {
+    public func decode(_ type: Int32.Type, encoding: ProtoIntEncoding = .variable, boxed: Bool) throws -> Int32 {
         assert(boxed, "For non-boxed values, use decode(_:)")
-        return try decodeBoxed { try Int32(from: self, encoding: .variable) }
+        return try decode(type, encoding: encoding, withTag: 1)
+    }
+
+    internal func decode(_ type: Int32.Type, encoding: ProtoIntEncoding, withTag tag: UInt32) throws -> Int32 {
+        return try decodeBoxed(tag: tag) {
+            try Int32(from: self, encoding: encoding)
+        }
     }
 
     /**
      Decode a `Int64Value` message field.
      The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
      */
-    public func decode(_ type: Int64.Type, boxed: Bool) throws -> Int64 {
+    public func decode(_ type: Int64.Type, encoding: ProtoIntEncoding = .variable, boxed: Bool) throws -> Int64 {
         assert(boxed, "For non-boxed values, use decode(_:)")
-        return try decodeBoxed { try Int64(from: self, encoding: .variable) }
+        return try decode(type, encoding: encoding, withTag: 1)
+    }
+
+    internal func decode(_ type: Int64.Type, encoding: ProtoIntEncoding, withTag tag: UInt32) throws -> Int64 {
+        return try decodeBoxed(tag: tag) {
+            try Int64(from: self, encoding: encoding)
+        }
     }
 
     /**
@@ -371,25 +423,39 @@ public final class ProtoReader {
      */
     public func decode(_ type: String.Type, boxed: Bool) throws -> String {
         assert(boxed, "For non-boxed values, use decode(_:)")
-        return try decodeBoxed { try String(from: self) }
+        return try decodeBoxed(tag: 1) {
+            try String(from: self)
+        }
     }
 
     /**
      Decode a `UInt32Value` message field.
      The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
      */
-    public func decode(_ type: UInt32.Type, boxed: Bool) throws -> UInt32 {
+    public func decode(_ type: UInt32.Type, encoding: ProtoIntEncoding = .variable, boxed: Bool) throws -> UInt32 {
         assert(boxed, "For non-boxed values, use decode(_:)")
-        return try decodeBoxed { try UInt32(from: self, encoding: .variable) }
+        return try decode(type, encoding: encoding, withTag: 1)
+    }
+
+    internal func decode(_ type: UInt32.Type, encoding: ProtoIntEncoding, withTag tag: UInt32) throws -> UInt32 {
+        return try decodeBoxed(tag: tag) {
+            try UInt32(from: self, encoding: encoding)
+        }
     }
 
     /**
      Decode a `UInt64Value` message field.
      The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
      */
-    public func decode(_ type: UInt64.Type, boxed: Bool) throws -> UInt64 {
+    public func decode(_ type: UInt64.Type, encoding: ProtoIntEncoding = .variable, boxed: Bool) throws -> UInt64 {
         assert(boxed, "For non-boxed values, use decode(_:)")
-        return try decodeBoxed { try UInt64(from: self, encoding: .variable) }
+        return try decode(type, encoding: encoding, withTag: 1)
+    }
+
+    internal func decode(_ type: UInt64.Type, encoding: ProtoIntEncoding, withTag tag: UInt32) throws -> UInt64 {
+        return try decodeBoxed(tag: tag) {
+            try UInt64(from: self, encoding: encoding)
+        }
     }
 
     // MARK: - Public Methods - Decoding - Repeated Fields
@@ -688,12 +754,12 @@ public final class ProtoReader {
         return try T(from: self, encoding: encoding)
     }
 
-    private func decodeBoxed<T>(_ decode: () throws -> T) throws -> T {
+    private func decodeBoxed<T>(tag expectedTag: UInt32, _ decode: () throws -> T) throws -> T {
         var result: T?
         let token = try beginMessage()
         while let tag = try nextTag(token: token) {
             switch tag {
-            case 1: result = try decode()
+            case expectedTag: result = try decode()
             default:
                 throw ProtoDecoder.Error.unexpectedFieldNumberInBoxedValue(tag)
             }
