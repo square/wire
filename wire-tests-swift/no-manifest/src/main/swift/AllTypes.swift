@@ -1284,7 +1284,7 @@ extension AllTypes : Codable {
  */
 extension AllTypes {
 
-    public enum NestedEnum : Int32, CaseIterable, ProtoEnum, Proto2Codable {
+    public enum NestedEnum : Int32, CaseIterable, ProtoEnum, Proto2Enum {
 
         case UNKNOWN = 0
         case A = 1

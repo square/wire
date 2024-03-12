@@ -304,7 +304,6 @@ public final class ProtoReader {
     }
 
     /** Decode a message field */
-    @_disfavoredOverload
     public func decode<T: ProtoDecodable>(_ type: T.Type) throws -> T {
         isProto3Message = T.self.protoSyntax == .proto3
         return try T(from: self)
@@ -490,7 +489,6 @@ public final class ProtoReader {
     }
 
     /** Decode a repeated message field. */
-    @_disfavoredOverload
     public func decode<T: ProtoDecodable>(into array: inout [T]) throws {
         // These types do not support packing, so no need to test for it.
         isProto3Message = T.self is Proto3Codable.Type
@@ -502,7 +500,6 @@ public final class ProtoReader {
     /**
      Decode a single key-value pair from a map of values keyed by a `string`.
      */
-    @_disfavoredOverload
     public func decode<V: ProtoDecodable>(into dictionary: inout [String: V]) throws {
         try decode(
             into: &dictionary,
@@ -528,7 +525,6 @@ public final class ProtoReader {
     /**
      Decode a single key-value pair from a map of values keyed by an integer type
      */
-    @_disfavoredOverload
     public func decode<K: ProtoIntDecodable, V: ProtoDecodable>(
         into dictionary: inout [K: V], keyEncoding: ProtoIntEncoding = .variable
     ) throws {

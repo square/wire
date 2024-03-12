@@ -18,7 +18,7 @@ import XCTest
 @testable import Wire
 
 final class ProtoEnumCodableTests: XCTestCase {
-    enum EnumType : Int32, CaseIterable, ProtoEnum, Proto2Codable {
+    enum EnumType : Int32, CaseIterable, ProtoEnum, Proto2Enum {
         case DO_NOT_USE = 0
         case ONE = 1
         case TWO = 2

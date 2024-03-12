@@ -228,7 +228,6 @@ public final class ProtoWriter {
      Encode a field which has a single encoding mechanism (unlike integers).
      This includes most fields types, such as messages, strings, bytes, and floating point numbers.
      */
-    @_disfavoredOverload
     public func encode(tag: UInt32, value: ProtoEncodable?) throws {
         guard let value = value else { return }
 
@@ -461,7 +460,6 @@ public final class ProtoWriter {
     }
 
     /** Encode a repeated field which has a single encoding mechanism, like messages, strings, and bytes. */
-    @_disfavoredOverload
     public func encode<T: ProtoEncodable>(tag: UInt32, value: [T]) throws {
         guard !value.isEmpty else { return }
 
@@ -479,7 +477,6 @@ public final class ProtoWriter {
 
     // MARK: - Public Methods - Encoding - Maps
 
-    @_disfavoredOverload
     public func encode<V: ProtoEncodable>(tag: UInt32, value: [String: V]) throws {
         guard !value.isEmpty else { return }
 
@@ -498,7 +495,6 @@ public final class ProtoWriter {
         }
     }
 
-    @_disfavoredOverload
     public func encode<K: ProtoIntEncodable, V: ProtoEncodable>(
         tag: UInt32,
         value: [K: V],
@@ -512,11 +508,11 @@ public final class ProtoWriter {
         }
     }
 
-    public func encode<K: ProtoIntEncodable, V: RawRepresentable>(
+    public func encode<K: ProtoIntEncodable, V: ProtoEnum>(
         tag: UInt32,
         value: [K: V],
         keyEncoding: ProtoIntEncoding = .variable
-    ) throws where V.RawValue == Int32 {
+    ) throws where V: RawRepresentable<Int32> {
         guard !value.isEmpty else { return }
 
         try encode(tag: tag, value: value) { key, item in
