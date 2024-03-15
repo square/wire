@@ -21,11 +21,11 @@ final class ExtensibleTests: XCTestCase {
     func testExtensionEncodeDecode() {
         let message = Extensible {
             $0.name = "real field"
-            $0.string = "extension string field"
-            $0.int32 = -4
-            $0.uint32 = 42
-            $0.person = Person(name: "Someone", id: 1, data: Data(json_data: ""))
-            $0.phone_type = .MOBILE
+            $0.ext_string = "extension string field"
+            $0.ext_int32 = -4
+            $0.ext_uint32 = 42
+            $0.ext_person = Person(name: "Someone", id: 1, data: Data(json_data: ""))
+            $0.ext_phone_type = .MOBILE
         }
         let encoder = ProtoEncoder()
         let data = try! encoder.encode(message)
@@ -33,12 +33,46 @@ final class ExtensibleTests: XCTestCase {
         let decoder = ProtoDecoder()
         let decodedMessage = try! decoder.decode(Extensible.self, from: data)
         XCTAssertEqual(message, decodedMessage)
-        XCTAssertEqual(message.name, "real field")
-        XCTAssertEqual(message.string, "extension string field")
-        XCTAssertEqual(message.person?.name, "Someone")
-        XCTAssertEqual(message.person?.id, 1)
-        XCTAssertEqual(message.int32, -4)
-        XCTAssertEqual(message.uint32, 42)
-        XCTAssertEqual(message.phone_type, .MOBILE)
+        XCTAssertEqual(decodedMessage.name, "real field")
+        XCTAssertEqual(decodedMessage.ext_string, "extension string field")
+        XCTAssertEqual(decodedMessage.ext_person?.name, "Someone")
+        XCTAssertEqual(decodedMessage.ext_person?.id, 1)
+        XCTAssertEqual(decodedMessage.ext_int32, -4)
+        XCTAssertEqual(decodedMessage.ext_uint32, 42)
+        XCTAssertEqual(decodedMessage.ext_phone_type, .MOBILE)
+    }
+
+    func testExtensionEncodeDecodeHeapStorageMessage() {
+        let message = LargeExtensible {
+            $0.value1 = "value1"
+            $0.ext_value17 = "ext_value17"
+            $0.ext_value18 = "ext_value18"
+        }
+        let encoder = ProtoEncoder()
+        let data = try! encoder.encode(message)
+
+        let decoder = ProtoDecoder()
+        let decodedMessage = try! decoder.decode(LargeExtensible.self, from: data)
+        XCTAssertEqual(message, decodedMessage)
+        XCTAssertEqual(decodedMessage.value1, "value1")
+        XCTAssertEqual(decodedMessage.ext_value17, "ext_value17")
+        XCTAssertEqual(decodedMessage.ext_value18, "ext_value18")
+    }
+
+    func testExtensionCopyOnWrite() {
+        let message = LargeExtensible {
+            $0.value1 = "value1"
+            $0.ext_value17 = "ext_value17"
+            $0.ext_value18 = "ext_value18"
+        }
+        XCTAssertEqual(message.value1, "value1")
+        XCTAssertEqual(message.ext_value17, "ext_value17")
+        XCTAssertEqual(message.ext_value18, "ext_value18")
+
+        var copy = message
+        copy.ext_value17 = "new_ext_value17"
+        XCTAssertNotEqual(message, copy)
+        XCTAssertEqual(message.ext_value17, "ext_value17")
+        XCTAssertEqual(copy.ext_value17, "new_ext_value17")
     }
 }
