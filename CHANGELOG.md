@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 4.9.8
+-------------
+
+_2024-03-18_
+
+### Common
+
+* Retain imports for types used in maps (#2864)
+
 Version 4.9.7
 -------------
 
