@@ -7,10 +7,6 @@ plugins {
 }
 
 class MyCustomHandlerFactory implements SchemaHandler.Factory {
-  @Override public SchemaHandler create() {
-    throw new RuntimeException("boom");
-  }
-
   @Override
   SchemaHandler create(@NotNull List<String> includes, @NotNull List<String> excludes,
       boolean exclusive, @NotNull String outDirectory, @NotNull Map<String, String> options) {
