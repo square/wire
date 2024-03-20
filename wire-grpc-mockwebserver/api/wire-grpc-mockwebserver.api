@@ -1,0 +1,30 @@
+public final class com/squareup/wire/mockwebserver/GrpcDispatcher : okhttp3/mockwebserver/Dispatcher {
+	public static final field Companion Lcom/squareup/wire/mockwebserver/GrpcDispatcher$Companion;
+	public fun <init> (Ljava/util/List;Lokhttp3/mockwebserver/Dispatcher;)V
+	public fun dispatch (Lokhttp3/mockwebserver/RecordedRequest;)Lokhttp3/mockwebserver/MockResponse;
+	public final fun getDelegate ()Lokhttp3/mockwebserver/Dispatcher;
+}
+
+public final class com/squareup/wire/mockwebserver/GrpcDispatcher$Companion {
+}
+
+public final class com/squareup/wire/mockwebserver/GrpcDispatcher$Companion$NullCall : okhttp3/Call {
+	public static final field INSTANCE Lcom/squareup/wire/mockwebserver/GrpcDispatcher$Companion$NullCall;
+	public fun cancel ()Ljava/lang/Void;
+	public synthetic fun cancel ()V
+	public synthetic fun clone ()Ljava/lang/Object;
+	public fun clone ()Ljava/lang/Void;
+	public synthetic fun clone ()Lokhttp3/Call;
+	public fun enqueue (Lokhttp3/Callback;)Ljava/lang/Void;
+	public synthetic fun enqueue (Lokhttp3/Callback;)V
+	public fun execute ()Ljava/lang/Void;
+	public synthetic fun execute ()Lokhttp3/Response;
+	public fun isCanceled ()Ljava/lang/Void;
+	public synthetic fun isCanceled ()Z
+	public fun isExecuted ()Ljava/lang/Void;
+	public synthetic fun isExecuted ()Z
+	public fun request ()Ljava/lang/Void;
+	public synthetic fun request ()Lokhttp3/Request;
+	public fun timeout ()Lokio/Timeout;
+}
+

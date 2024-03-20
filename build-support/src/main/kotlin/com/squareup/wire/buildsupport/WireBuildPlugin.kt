@@ -53,6 +53,7 @@ private val PROJECT_TO_PUBLISH = listOf(
   "wire-compiler",
   "wire-gradle-plugin",
   "wire-grpc-client",
+  "wire-grpc-mockwebserver",
   "wire-gson-support",
   "wire-java-generator",
   "wire-kotlin-generator",
