@@ -62,10 +62,28 @@ message LargeExtensible {
   optional string value15 = 15;
   optional string value16 = 16;
 
-   extensions 17 to 20;
+  extensions 17 to 100;
 }
 
 extend LargeExtensible {
   optional string ext_value17 = 17 [default = "my extension default value" ];
   optional string ext_value18 = 18;
+
+  repeated int32 rep_ext_int32 = 19;
+  repeated uint32 rep_ext_uint32 = 20;
+  repeated sint32 rep_ext_sint32 = 21;
+  repeated fixed32 rep_ext_fixed32 = 22;
+  repeated sfixed32 rep_ext_sfixed32 = 23;
+  repeated int64 rep_ext_int64 = 24;
+  repeated uint64 rep_ext_uint64 = 25;
+  repeated sint64 rep_ext_sint64 = 26;
+  repeated fixed64 rep_ext_fixed64 = 27;
+  repeated sfixed64 rep_ext_sfixed64 = 28;
+  repeated bool rep_ext_bool = 29;
+  repeated float rep_ext_float = 30;
+  repeated double rep_ext_double = 31;
+  repeated string rep_ext_string = 32;
+  repeated bytes rep_ext_bytes = 33;
+  //  repeated AllTypes.NestedEnum rep_ext_nested_enum = 1116;
+  //  repeated AllTypes.NestedMessage rep_ext_nested_message = 1117;
 }

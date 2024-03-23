@@ -1196,7 +1196,7 @@ class SwiftGenerator private constructor(
         .addDoc("Extensions of %T\n", structType)
         .apply {
           type.extensionFields.filter { !it.isMap }.forEach { field ->
-            if (field.isRepeated && field.type != ProtoType.UINT64) {
+            if (field.isRepeated && (field.type!!.isMessage || field.type!!.isEnum)) {
               return@forEach
             }
             val property = PropertySpec.varBuilder(field.safeName, field.typeName, PUBLIC)
@@ -1208,22 +1208,22 @@ class SwiftGenerator private constructor(
               }
               .apply {
                 val getterFunctionSpec = FunctionSpec.getterBuilder()
-
+                var parseMethod = "self.parseUnknownField(fieldNumber: %L"
+                val args = mutableListOf<Any>(field.tag)
+                if (!field.isRepeated) {
+                  parseMethod += ", type: %T.self"
+                  args.add(field.typeName.makeNonOptional())
+                }
                 val encoding = field.type!!.encoding
                 if (encoding != null) {
-                  getterFunctionSpec.addCode(
-                    "self.parseUnknownField(fieldNumber: %L, type: %T.self, encoding: .%N)\n",
-                    field.tag,
-                    field.typeName.makeNonOptional(),
-                    encoding,
-                  )
-                } else {
-                  getterFunctionSpec.addCode(
-                    "self.parseUnknownField(fieldNumber: %L, type: %T.self)\n",
-                    field.tag,
-                    field.typeName.makeNonOptional(),
-                  )
+                  parseMethod += ", encoding: .%N"
+                  args.add(encoding)
                 }
+                parseMethod += ")\n"
+                getterFunctionSpec.addCode(
+                  parseMethod,
+                  *args.toTypedArray()
+                )
                 getter(getterFunctionSpec.build())
 
                 val setterFunctionSpec = FunctionSpec.setterBuilder()

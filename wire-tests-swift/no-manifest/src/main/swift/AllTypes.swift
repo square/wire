@@ -1128,6 +1128,78 @@ extension AllTypes.Storage {
      *
      * Source: all_types.proto
      */
+    public var ext_rep_int32: [Int32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1101, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1101, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_uint32: [UInt32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1102, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1102, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_sint32: [Int32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1103, encoding: .signed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1103, newValue: newValue, encoding: .signed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_fixed32: [UInt32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1104, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1104, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_sfixed32: [Int32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1105, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1105, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_int64: [Int64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1106, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1106, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
     public var ext_rep_uint64: [UInt64] {
         get {
             self.parseUnknownField(fieldNumber: 1107, encoding: .variable)
@@ -1140,12 +1212,252 @@ extension AllTypes.Storage {
      *
      * Source: all_types.proto
      */
+    public var ext_rep_sint64: [Int64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1108, encoding: .signed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1108, newValue: newValue, encoding: .signed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_fixed64: [UInt64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1109, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1109, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_sfixed64: [Int64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1110, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1110, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_bool: [Bool] {
+        get {
+            self.parseUnknownField(fieldNumber: 1111)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1111, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_float: [Float] {
+        get {
+            self.parseUnknownField(fieldNumber: 1112)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1112, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_double: [Double] {
+        get {
+            self.parseUnknownField(fieldNumber: 1113)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1113, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_string: [String] {
+        get {
+            self.parseUnknownField(fieldNumber: 1114)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1114, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_bytes: [Foundation.Data] {
+        get {
+            self.parseUnknownField(fieldNumber: 1115)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1115, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_int32: [Int32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1201, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1201, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_uint32: [UInt32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1202, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1202, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_sint32: [Int32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1203, encoding: .signed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1203, newValue: newValue, encoding: .signed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_fixed32: [UInt32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1204, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1204, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_sfixed32: [Int32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1205, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1205, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_int64: [Int64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1206, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1206, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
     public var ext_pack_uint64: [UInt64] {
         get {
             self.parseUnknownField(fieldNumber: 1207, encoding: .variable)
         }
         set {
             self.setUnknownField(fieldNumber: 1207, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_sint64: [Int64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1208, encoding: .signed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1208, newValue: newValue, encoding: .signed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_fixed64: [UInt64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1209, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1209, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_sfixed64: [Int64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1210, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1210, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_bool: [Bool] {
+        get {
+            self.parseUnknownField(fieldNumber: 1211)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1211, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_float: [Float] {
+        get {
+            self.parseUnknownField(fieldNumber: 1212)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1212, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_double: [Double] {
+        get {
+            self.parseUnknownField(fieldNumber: 1213)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1213, newValue: newValue)
         }
     }
 }

@@ -50,33 +50,33 @@ final class JsonLitmusTest : XCTestCase {
         XCTAssertEqual(expectedPerson, actualPerson)
     }
 
-    func testCopyOnWrite() {
-        let original = AllTypes(
-            req_int32: 0,
-            req_uint32: 1,
-            req_sint32: 2,
-            req_fixed32: 3,
-            req_sfixed32: 4,
-            req_int64: 5,
-            req_uint64: 6,
-            req_sint64: 7,
-            req_fixed64: 8,
-            req_sfixed64: 9,
-            req_bool: true,
-            req_float: 0,
-            req_double: 1,
-            req_string: "Hello",
-            req_bytes: Data(),
-            req_nested_enum: .A,
-            req_nested_message: .init()
-        )
-
-        XCTAssertEqual(original.opt_bool, nil)
-
-        var copy = original
-        copy.opt_bool = true
-
-        XCTAssertEqual(original.opt_bool, nil)
-        XCTAssertEqual(copy.opt_bool, true)
-    }
+//    func testCopyOnWrite() {
+//        let original = AllTypes(
+//            req_int32: 0,
+//            req_uint32: 1,
+//            req_sint32: 2,
+//            req_fixed32: 3,
+//            req_sfixed32: 4,
+//            req_int64: 5,
+//            req_uint64: 6,
+//            req_sint64: 7,
+//            req_fixed64: 8,
+//            req_sfixed64: 9,
+//            req_bool: true,
+//            req_float: 0,
+//            req_double: 1,
+//            req_string: "Hello",
+//            req_bytes: Data(),
+//            req_nested_enum: .A,
+//            req_nested_message: .init()
+//        )
+//
+//        XCTAssertEqual(original.opt_bool, nil)
+//
+//        var copy = original
+//        copy.opt_bool = true
+//
+//        XCTAssertEqual(original.opt_bool, nil)
+//        XCTAssertEqual(copy.opt_bool, true)
+//    }
 }

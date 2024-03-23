@@ -475,10 +475,22 @@ public final class ProtoReader {
         }
     }
 
+    internal func decode(into array: inout [Bool], withTag tag: UInt32) throws {
+        return try decodeBoxed(tag: tag) {
+            try decode(into: &array)
+        }
+    }
+
     /** Decode a repeated `bytes` field */
     public func decode(into array: inout [Data]) throws {
         // Data fields do not support packing, so no need to test for it.
         try array.append(Data(from: self))
+    }
+
+    internal func decode(into array: inout [Data], withTag tag: UInt32) throws {
+        return try decodeBoxed(tag: tag) {
+            try decode(into: &array)
+        }
     }
 
     /**
@@ -491,6 +503,12 @@ public final class ProtoReader {
         }
     }
 
+    internal func decode(into array: inout [Double], withTag tag: UInt32) throws {
+        return try decodeBoxed(tag: tag) {
+            try decode(into: &array)
+        }
+    }
+
     /**
      Decode a repeated `float` field.
      This method is distinct from the generic repeated `ProtoDecodable` one because floats can be packed.
@@ -498,6 +516,12 @@ public final class ProtoReader {
     public func decode(into array: inout [Float]) throws {
         try decode(into: &array) {
             return try Float(from: self)
+        }
+    }
+
+    internal func decode(into array: inout [Float], withTag tag: UInt32) throws {
+        return try decodeBoxed(tag: tag) {
+            try decode(into: &array)
         }
     }
 
@@ -532,6 +556,12 @@ public final class ProtoReader {
         }
     }
 
+    internal func decode(into array: inout [Int32], encoding: ProtoIntEncoding, withTag tag: UInt32) throws {
+        return try decodeBoxed(tag: tag) {
+            try decode(into: &array, encoding: encoding)
+        }
+    }
+
     /** Decode a repeated `int64`, `sfixed64`, or `sint64` field */
     public func decode(into array: inout [Int64], encoding: ProtoIntEncoding = .variable) throws {
         try decode(into: &array) {
@@ -539,10 +569,22 @@ public final class ProtoReader {
         }
     }
 
+    internal func decode(into array: inout [Int64], encoding: ProtoIntEncoding, withTag tag: UInt32) throws {
+        return try decodeBoxed(tag: tag) {
+            try decode(into: &array, encoding: encoding)
+        }
+    }
+
     /** Decode a repeated `string` field */
     public func decode(into array: inout [String]) throws {
         // String fields do not support packing, so no need to test for it.
         try array.append(String(from: self))
+    }
+
+    internal func decode(into array: inout [String], withTag tag: UInt32) throws {
+        return try decodeBoxed(tag: tag) {
+            try decode(into: &array)
+        }
     }
 
     /** Decode a repeated `fixed32` or `uint32` field */

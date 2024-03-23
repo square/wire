@@ -189,6 +189,55 @@ public final class ProtoDecoder {
         }
     }
 
+    /** Decode a repeated tagged `fixed64` or `int64` field from raw data */
+    internal func decode(into array: inout [Int64], from data: Data, encoding: ProtoIntEncoding, withTag tag: UInt32) throws {
+        try decodeWithReader(from: data, emptyValue: nil) { reader in
+            try reader.decode(into: &array, encoding: encoding, withTag: tag)
+        }
+    }
+
+    /** Decode a repeated tagged `fixed32` or `int32` field from raw data */
+    internal func decode(into array: inout [Int32], from data: Data, encoding: ProtoIntEncoding, withTag tag: UInt32) throws {
+        try decodeWithReader(from: data, emptyValue: nil) { reader in
+            try reader.decode(into: &array, encoding: encoding, withTag: tag)
+        }
+    }
+
+    /** Decode a repeated tagged `bool` field from raw data */
+    internal func decode(into array: inout [Bool], from data: Data, withTag tag: UInt32) throws {
+        try decodeWithReader(from: data, emptyValue: nil) { reader in
+            try reader.decode(into: &array, withTag: tag)
+        }
+    }
+
+    /** Decode a repeated tagged `float` field from raw data */
+    internal func decode(into array: inout [Float], from data: Data, withTag tag: UInt32) throws {
+        try decodeWithReader(from: data, emptyValue: nil) { reader in
+            try reader.decode(into: &array, withTag: tag)
+        }
+    }
+
+    /** Decode a repeated tagged `double` field from raw data */
+    internal func decode(into array: inout [Double], from data: Data, withTag tag: UInt32) throws {
+        try decodeWithReader(from: data, emptyValue: nil) { reader in
+            try reader.decode(into: &array, withTag: tag)
+        }
+    }
+
+    /** Decode a repeated tagged `string` field from raw data */
+    internal func decode(into array: inout [String], from data: Data, withTag tag: UInt32) throws {
+        try decodeWithReader(from: data, emptyValue: nil) { reader in
+            try reader.decode(into: &array, withTag: tag)
+        }
+    }
+
+    /** Decode a repeated tagged `bytes` field from raw data */
+    internal func decode(into array: inout [Data], from data: Data, withTag tag: UInt32) throws {
+        try decodeWithReader(from: data, emptyValue: nil) { reader in
+            try reader.decode(into: &array, withTag: tag)
+        }
+    }
+
     // MARK: - Private Methods
 
     private func decodeWithReader<T>(

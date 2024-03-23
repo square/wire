@@ -157,6 +157,8 @@ public extension ProtoExtensible {
 
     // MARK: - Arrays
 
+    // MARK: - [UInt64]
+
     func parseUnknownField(
         with protoDecoder: ProtoDecoder = .init(),
         fieldNumber: UInt32,
@@ -172,13 +174,15 @@ public extension ProtoExtensible {
     mutating func setUnknownField(
         with protoEncoder: ProtoEncoder = .init(),
         fieldNumber: UInt32,
-        newValue: [UInt64]?,
+        newValue: [UInt64],
         encoding: ProtoIntEncoding
     ) {
         try? unknownFields.setParsedField(fieldNumber: fieldNumber, value: newValue) { value in
             try protoEncoder.encode(tag: fieldNumber, value: value, encoding: encoding)
         }
     }
+
+    // MARK: - [UInt32]
 
     func parseUnknownField(
         with protoDecoder: ProtoDecoder = .init(),
@@ -192,16 +196,181 @@ public extension ProtoExtensible {
         return result
     }
 
-//    mutating func setUnknownField(
-//        with protoEncoder: ProtoEncoder = .init(),
-//        fieldNumber: UInt32,
-//        newValue: [UInt32]?,
-//        encoding: ProtoIntEncoding
-//    ) {
-//        try? unknownFields.setParsedField(fieldNumber: fieldNumber, value: newValue) { value in
-//            try protoEncoder.encode(tag: fieldNumber, value: value, encoding: encoding)
-//        }
-//    }
+    mutating func setUnknownField(
+        with protoEncoder: ProtoEncoder = .init(),
+        fieldNumber: UInt32,
+        newValue: [UInt32],
+        encoding: ProtoIntEncoding
+    ) {
+        try? unknownFields.setParsedField(fieldNumber: fieldNumber, value: newValue) { value in
+            try protoEncoder.encode(tag: fieldNumber, value: value, encoding: encoding)
+        }
+    }
+
+    // MARK: - [Int64]
+
+    func parseUnknownField(
+        with protoDecoder: ProtoDecoder = .init(),
+        fieldNumber: UInt32,
+        encoding: ProtoIntEncoding
+    ) -> [Int64] {
+        var result: [Int64] = []
+        try? unknownFields.getParsedField(fieldNumber: fieldNumber) { data in
+            try protoDecoder.decode(into: &result, from: data, encoding: encoding, withTag: fieldNumber)
+        }
+        return result
+    }
+
+    mutating func setUnknownField(
+        with protoEncoder: ProtoEncoder = .init(),
+        fieldNumber: UInt32,
+        newValue: [Int64],
+        encoding: ProtoIntEncoding
+    ) {
+        try? unknownFields.setParsedField(fieldNumber: fieldNumber, value: newValue) { value in
+            try protoEncoder.encode(tag: fieldNumber, value: value, encoding: encoding)
+        }
+    }
+
+    // MARK: - [Int32]
+
+    func parseUnknownField(
+        with protoDecoder: ProtoDecoder = .init(),
+        fieldNumber: UInt32,
+        encoding: ProtoIntEncoding
+    ) -> [Int32] {
+        var result: [Int32] = []
+        try? unknownFields.getParsedField(fieldNumber: fieldNumber) { data in
+            try protoDecoder.decode(into: &result, from: data, encoding: encoding, withTag: fieldNumber)
+        }
+        return result
+    }
+
+    mutating func setUnknownField(
+        with protoEncoder: ProtoEncoder = .init(),
+        fieldNumber: UInt32,
+        newValue: [Int32],
+        encoding: ProtoIntEncoding
+    ) {
+        try? unknownFields.setParsedField(fieldNumber: fieldNumber, value: newValue) { value in
+            try protoEncoder.encode(tag: fieldNumber, value: value, encoding: encoding)
+        }
+    }
+
+    // MARK: - [Bool]
+
+    func parseUnknownField(
+        with protoDecoder: ProtoDecoder = .init(),
+        fieldNumber: UInt32
+    ) -> [Bool] {
+        var result: [Bool] = []
+        try? unknownFields.getParsedField(fieldNumber: fieldNumber) { data in
+            try protoDecoder.decode(into: &result, from: data, withTag: fieldNumber)
+        }
+        return result
+    }
+
+    mutating func setUnknownField(
+        with protoEncoder: ProtoEncoder = .init(),
+        fieldNumber: UInt32,
+        newValue: [Bool]
+    ) {
+        try? unknownFields.setParsedField(fieldNumber: fieldNumber, value: newValue) { value in
+            try protoEncoder.encode(tag: fieldNumber, value: value)
+        }
+    }
+
+    // MARK: - [Float]
+
+    func parseUnknownField(
+        with protoDecoder: ProtoDecoder = .init(),
+        fieldNumber: UInt32
+    ) -> [Float] {
+        var result: [Float] = []
+        try? unknownFields.getParsedField(fieldNumber: fieldNumber) { data in
+            try protoDecoder.decode(into: &result, from: data, withTag: fieldNumber)
+        }
+        return result
+    }
+
+    mutating func setUnknownField(
+        with protoEncoder: ProtoEncoder = .init(),
+        fieldNumber: UInt32,
+        newValue: [Float]
+    ) {
+        try? unknownFields.setParsedField(fieldNumber: fieldNumber, value: newValue) { value in
+            try protoEncoder.encode(tag: fieldNumber, value: value)
+        }
+    }
+
+    // MARK: - [Double]
+
+    func parseUnknownField(
+        with protoDecoder: ProtoDecoder = .init(),
+        fieldNumber: UInt32
+    ) -> [Double] {
+        var result: [Double] = []
+        try? unknownFields.getParsedField(fieldNumber: fieldNumber) { data in
+            try protoDecoder.decode(into: &result, from: data, withTag: fieldNumber)
+        }
+        return result
+    }
+
+    mutating func setUnknownField(
+        with protoEncoder: ProtoEncoder = .init(),
+        fieldNumber: UInt32,
+        newValue: [Double]
+    ) {
+        try? unknownFields.setParsedField(fieldNumber: fieldNumber, value: newValue) { value in
+            try protoEncoder.encode(tag: fieldNumber, value: value)
+        }
+    }
+
+    // MARK: - [String]
+
+    func parseUnknownField(
+        with protoDecoder: ProtoDecoder = .init(),
+        fieldNumber: UInt32
+    ) -> [String] {
+        var result: [String] = []
+        try? unknownFields.getParsedField(fieldNumber: fieldNumber) { data in
+            try protoDecoder.decode(into: &result, from: data, withTag: fieldNumber)
+        }
+        return result
+    }
+
+    mutating func setUnknownField(
+        with protoEncoder: ProtoEncoder = .init(),
+        fieldNumber: UInt32,
+        newValue: [String]
+    ) {
+        try? unknownFields.setParsedField(fieldNumber: fieldNumber, value: newValue) { value in
+            try protoEncoder.encode(tag: fieldNumber, value: value)
+        }
+    }
+
+    // MARK: - [Data]
+
+    func parseUnknownField(
+        with protoDecoder: ProtoDecoder = .init(),
+        fieldNumber: UInt32
+    ) -> [Data] {
+        var result: [Data] = []
+        try? unknownFields.getParsedField(fieldNumber: fieldNumber) { data in
+            try protoDecoder.decode(into: &result, from: data, withTag: fieldNumber)
+        }
+        return result
+    }
+
+    mutating func setUnknownField(
+        with protoEncoder: ProtoEncoder = .init(),
+        fieldNumber: UInt32,
+        newValue: [Data]
+    ) {
+        try? unknownFields.setParsedField(fieldNumber: fieldNumber, value: newValue) { value in
+            try protoEncoder.encode(tag: fieldNumber, value: value)
+        }
+    }
 
     // MARK: - Dictionaries
 
