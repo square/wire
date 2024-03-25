@@ -34,7 +34,7 @@ public struct ExtensibleUnknownFields {
             MemoizedValue()
         }
     }
-        
+
     public subscript(key: Key) -> Value? {
         get {
             rawData[key]
@@ -144,7 +144,7 @@ private class MemoizedValue: @unchecked Sendable {
             if let value = cached as? T {
                 return value
             }
-            
+    
             let newValue = try compute()
             cached = newValue
             return newValue

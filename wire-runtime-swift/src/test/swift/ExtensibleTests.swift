@@ -76,14 +76,14 @@ final class ExtensibleTests: XCTestCase {
         XCTAssertEqual(message.value1, "value1")
         XCTAssertEqual(message.ext_value17, "ext_value17")
         XCTAssertEqual(message.ext_value18, "ext_value18")
-        
+
         var copy = message
         copy.ext_value17 = "new_ext_value17"
         XCTAssertNotEqual(message, copy)
         XCTAssertEqual(message.ext_value17, "ext_value17")
         XCTAssertEqual(copy.ext_value17, "new_ext_value17")
     }
-        
+
     func testRepeatedExtensions() {
         let message = LargeExtensible {
             $0.rep_ext_int32 = [0, -1, -2]
