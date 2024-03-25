@@ -5,7 +5,8 @@ public struct OneofOptions {
 
     public var unknownFields: ExtensibleUnknownFields = .init()
 
-    public init() {
+    public init(configure: (inout Self) -> Swift.Void = { _ in }) {
+        configure(&self)
     }
 
 }

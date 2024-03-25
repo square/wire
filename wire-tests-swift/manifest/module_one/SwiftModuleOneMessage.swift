@@ -7,8 +7,9 @@ public struct SwiftModuleOneMessage {
     public var name: String
     public var unknownFields: ExtensibleUnknownFields = .init()
 
-    public init(name: String) {
+    public init(name: String, configure: (inout Self) -> Swift.Void = { _ in }) {
         self.name = name
+        configure(&self)
     }
 
 }

@@ -1079,7 +1079,7 @@ class SwiftGenerator private constructor(
     storageType: DeclaredTypeName,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
   ) {
-    val needsConfigure = type.declaredFields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty()
+    val needsConfigure = type.declaredFields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty() || type.isExtensible
 
     addFunction(
       FunctionSpec.constructorBuilder()
@@ -1130,7 +1130,7 @@ class SwiftGenerator private constructor(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
   ) {
-    val needsConfigure = type.declaredFields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty()
+    val needsConfigure = type.declaredFields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty() || type.isExtensible
 
     addFunction(
       FunctionSpec.constructorBuilder()
