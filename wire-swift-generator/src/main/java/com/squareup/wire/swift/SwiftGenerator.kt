@@ -1219,7 +1219,7 @@ class SwiftGenerator private constructor(
                 parseMethod += ")\n"
                 getterFunctionSpec.addCode(
                   parseMethod,
-                  *args.toTypedArray()
+                  *args.toTypedArray(),
                 )
                 getter(getterFunctionSpec.build())
 
@@ -1466,7 +1466,6 @@ class SwiftGenerator private constructor(
           .build(),
       )
     }
-
 
     addProperty(
       PropertySpec.varBuilder("unknownFields", type.unknownFieldsType, PUBLIC)
