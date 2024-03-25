@@ -19,19 +19,19 @@ import misk.MiskApplication
 import misk.MiskRealServiceModule
 import misk.config.ConfigModule
 import misk.config.MiskConfig
-import misk.environment.Environment
-import misk.environment.EnvironmentModule
+import misk.environment.DeploymentModule
 import misk.web.MiskWebModule
+import wisp.deployment.getDeploymentFromEnvironmentVariable
 
 fun main(args: Array<String>) {
-  val environment = Environment.fromEnvironmentVariable()
-  val config = MiskConfig.load<WhiteboardConfig>("whiteboard", environment)
+  val deployment = getDeploymentFromEnvironmentVariable()
+  val config = MiskConfig.load<WhiteboardConfig>("whiteboard", deployment)
 
   MiskApplication(
     MiskRealServiceModule(),
     MiskWebModule(config.web),
     WhiteboardGrpcModule(),
     ConfigModule.create("whiteboard", config),
-    EnvironmentModule(environment),
+    DeploymentModule(deployment),
   ).run(args)
 }
