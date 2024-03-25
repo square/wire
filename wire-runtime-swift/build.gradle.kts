@@ -24,7 +24,7 @@ dependencies {
 
 val generateSwiftProtos by tasks.creating(JavaExec::class) {
   val swiftOut = "src/main/swift/wellknowntypes"
-  val protoPath = "../wire-schema/src/jvmMain/resources/"
+  val protoPath = "../wire-schema/src/coreLoader/"
 
   doFirst {
     val outFile = file(swiftOut)
