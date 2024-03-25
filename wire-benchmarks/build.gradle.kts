@@ -42,7 +42,6 @@ dependencies {
   jmh(libs.jmh.core)
   jmh(libs.jmh.generator)
 
-  protobuf(projects.wireSchema)
   implementation(projects.wireMoshiAdapter)
   implementation(projects.wireRuntime)
   implementation(libs.okio.core)
