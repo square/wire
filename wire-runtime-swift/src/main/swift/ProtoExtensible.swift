@@ -372,6 +372,29 @@ public extension ProtoExtensible {
         }
     }
 
+    // MARK: - [ProtoCodable]
+
+    func parseUnknownField<T: ProtoDecodable>(
+        with protoDecoder: ProtoDecoder = .init(),
+        fieldNumber: UInt32
+    ) -> [T] {
+        var result: [T] = []
+        try? unknownFields.getParsedField(fieldNumber: fieldNumber) { data in
+            try protoDecoder.decode(into: &result, from: data, withTag: fieldNumber)
+        }
+        return result
+    }
+
+    mutating func setUnknownField<T: ProtoEncodable>(
+        with protoEncoder: ProtoEncoder = .init(),
+        fieldNumber: UInt32,
+        newValue: [T]
+    ) {
+        try? unknownFields.setParsedField(fieldNumber: fieldNumber, value: newValue) { value in
+            try protoEncoder.encode(tag: fieldNumber, value: value)
+        }
+    }
+
     // MARK: - [ProtoEnum]
 
     func parseUnknownField<T: ProtoEnum>(

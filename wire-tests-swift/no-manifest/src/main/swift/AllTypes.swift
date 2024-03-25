@@ -1320,6 +1320,18 @@ extension AllTypes.Storage {
      *
      * Source: all_types.proto
      */
+    public var ext_rep_nested_message: [AllTypes.NestedMessage] {
+        get {
+            self.parseUnknownField(fieldNumber: 1117)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1117, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
     public var ext_pack_int32: [Int32] {
         get {
             self.parseUnknownField(fieldNumber: 1201, encoding: .variable)

@@ -238,6 +238,13 @@ public final class ProtoDecoder {
         }
     }
 
+    /** Decode a repeated tagged `ProtoDecodable` field from raw data */
+    internal func decode<T: ProtoDecodable>(into array: inout [T], from data: Data, withTag tag: UInt32) throws {
+        try decodeWithReader(from: data, emptyValue: nil) { reader in
+            try reader.decode(into: &array, withTag: tag)
+        }
+    }
+
     /** Decode a repeated tagged `ProtoEnum` field from raw data */
     internal func decode<T: ProtoEnum>(into array: inout [T], from data: Data, withTag tag: UInt32) throws where T: RawRepresentable<Int32> {
         try decodeWithReader(from: data, emptyValue: nil) { reader in

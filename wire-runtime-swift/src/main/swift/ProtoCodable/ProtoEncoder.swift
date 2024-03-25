@@ -189,6 +189,13 @@ public final class ProtoEncoder {
         }
     }
 
+    /** Encode a repeated tagged `ProtoEncodable` field into raw data */
+    internal func encode<T: ProtoEncodable>(tag: UInt32, value: [T]) throws -> Data {
+        try encodeWithWriter(value, syntax: .proto2) { writer in
+            try writer.encode(tag: tag, value: value)
+        }
+    }
+
     /** Encode a repeated tagged `ProtoEnum` field into raw data */
     internal func encode<T: ProtoEnum>(tag: UInt32, value: [T]) throws -> Data where T: RawRepresentable<Int32> {
         try encodeWithWriter(value, syntax: .proto2) { writer in

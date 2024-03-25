@@ -626,6 +626,12 @@ public final class ProtoReader {
         try array.append(T(from: self))
     }
 
+    internal func decode<T: ProtoDecodable>(into array: inout [T], withTag tag: UInt32) throws {
+        return try decodeBoxed(tag: tag) {
+            try decode(into: &array)
+        }
+    }
+
     // MARK: - Public Methods - Decoding - Maps
 
     /**
