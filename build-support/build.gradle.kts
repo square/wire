@@ -46,6 +46,7 @@ dependencies {
   implementation(libs.pluginz.shadow)
   implementation(libs.pluginz.buildConfig)
   implementation(libs.guava)
+  implementation(libs.okio.core)
 
   // Expose the generated version catalog API to the plugin.
   implementation(files(libs::class.java.superclass.protectionDomain.codeSource.location))

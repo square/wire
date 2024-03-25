@@ -36,7 +36,7 @@ actual object CoreLoader : Loader {
 
   override fun load(path: String): ProtoFile {
     if (isWireRuntimeProto(path)) {
-      resourceFileSystem.read("/".toPath() / path) {
+      resourceFileSystem.read("/".toPath() / coreLoaderResourceDirectory / path) {
         val data = readUtf8()
         val location = Location.get(path)
         val element = ProtoParser.parse(location, data)
