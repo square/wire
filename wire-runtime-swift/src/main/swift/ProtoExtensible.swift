@@ -372,6 +372,29 @@ public extension ProtoExtensible {
         }
     }
 
+    // MARK: - [ProtoEnum]
+
+    func parseUnknownField<T: ProtoEnum>(
+        with protoDecoder: ProtoDecoder = .init(),
+        fieldNumber: UInt32
+    ) -> [T] where T: RawRepresentable<Int32> {
+        var result: [T] = []
+        try? unknownFields.getParsedField(fieldNumber: fieldNumber) { data in
+            try protoDecoder.decode(into: &result, from: data, withTag: fieldNumber)
+        }
+        return result
+    }
+
+    mutating func setUnknownField<T: ProtoEnum>(
+        with protoEncoder: ProtoEncoder = .init(),
+        fieldNumber: UInt32,
+        newValue: [T]
+    ) where T: RawRepresentable<Int32> {
+        try? unknownFields.setParsedField(fieldNumber: fieldNumber, value: newValue) { value in
+            try protoEncoder.encode(tag: fieldNumber, value: value)
+        }
+    }
+
     // MARK: - Dictionaries
 
     // TODO: Add Dictionary support.

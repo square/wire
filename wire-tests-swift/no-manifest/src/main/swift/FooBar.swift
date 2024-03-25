@@ -48,6 +48,18 @@ extension FooBar {
      *
      * Source: custom_options.proto
      */
+    public var rep: [FooBar.FooBarBazEnum] {
+        get {
+            self.parseUnknownField(fieldNumber: 102)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 102, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: custom_options.proto
+     */
     public var more_string: String? {
         get {
             self.parseUnknownField(fieldNumber: 150, type: String.self)

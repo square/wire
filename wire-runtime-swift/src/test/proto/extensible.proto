@@ -84,6 +84,6 @@ extend LargeExtensible {
   repeated double rep_ext_double = 31;
   repeated string rep_ext_string = 32;
   repeated bytes rep_ext_bytes = 33;
-  //  repeated AllTypes.NestedEnum rep_ext_nested_enum = 1116;
-  //  repeated AllTypes.NestedMessage rep_ext_nested_message = 1117;
+//  repeated squareup.protos.person.Person rep_ext_person = 34;
+  repeated squareup.protos.person.Person.PhoneType rep_ext_phone_type = 35;
 }

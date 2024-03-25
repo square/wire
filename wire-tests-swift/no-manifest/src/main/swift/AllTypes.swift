@@ -1308,6 +1308,18 @@ extension AllTypes.Storage {
      *
      * Source: all_types.proto
      */
+    public var ext_rep_nested_enum: [AllTypes.NestedEnum] {
+        get {
+            self.parseUnknownField(fieldNumber: 1116)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1116, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
     public var ext_pack_int32: [Int32] {
         get {
             self.parseUnknownField(fieldNumber: 1201, encoding: .variable)
@@ -1458,6 +1470,18 @@ extension AllTypes.Storage {
         }
         set {
             self.setUnknownField(fieldNumber: 1213, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_nested_enum: [AllTypes.NestedEnum] {
+        get {
+            self.parseUnknownField(fieldNumber: 1216)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1216, newValue: newValue)
         }
     }
 }

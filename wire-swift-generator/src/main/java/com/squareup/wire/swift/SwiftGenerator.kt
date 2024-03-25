@@ -1196,7 +1196,7 @@ class SwiftGenerator private constructor(
         .addDoc("Extensions of %T\n", structType)
         .apply {
           type.extensionFields.filter { !it.isMap }.forEach { field ->
-            if (field.isRepeated && (field.type!!.isMessage || field.type!!.isEnum)) {
+            if (field.isRepeated && field.type!!.isMessage) {
               return@forEach
             }
             val property = PropertySpec.varBuilder(field.safeName, field.typeName, PUBLIC)

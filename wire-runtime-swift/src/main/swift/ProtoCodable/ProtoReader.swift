@@ -549,6 +549,12 @@ public final class ProtoReader {
         }
     }
 
+    internal func decode<T: ProtoEnum>(into array: inout [T], withTag tag: UInt32) throws where T: RawRepresentable<Int32> {
+        return try decodeBoxed(tag: tag) {
+            try decode(into: &array)
+        }
+    }
+
     /** Decode a repeated `int32`, `sfixed32`, or `sint32` field */
     public func decode(into array: inout [Int32], encoding: ProtoIntEncoding = .variable) throws {
         try decode(into: &array) {

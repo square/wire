@@ -101,6 +101,7 @@ final class ExtensibleTests: XCTestCase {
             $0.rep_ext_double = [3.14159, 1.41421]
             $0.rep_ext_string = ["one", "two", "three"]
             $0.rep_ext_bytes = [Foundation.Data("one".utf8), Foundation.Data("two".utf8)]
+            $0.rep_ext_phone_type = [.MOBILE, .HOME]
         }
         let encoder = ProtoEncoder()
         let data = try! encoder.encode(message)
@@ -123,6 +124,7 @@ final class ExtensibleTests: XCTestCase {
         XCTAssertEqual(message.rep_ext_double, [3.14159, 1.41421])
         XCTAssertEqual(message.rep_ext_string, ["one", "two", "three"])
         XCTAssertEqual(message.rep_ext_bytes, [Foundation.Data("one".utf8), Foundation.Data("two".utf8)])
+        XCTAssertEqual(message.rep_ext_phone_type, [.MOBILE, .HOME])
     }
 
     func testExtensionDefaultValues() {
