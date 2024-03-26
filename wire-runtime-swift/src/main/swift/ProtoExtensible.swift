@@ -417,8 +417,4 @@ public extension ProtoExtensible {
             try protoEncoder.encode(tag: fieldNumber, value: value)
         }
     }
-
-    // MARK: - Dictionaries
-
-    // TODO: Add Dictionary support.
 }
