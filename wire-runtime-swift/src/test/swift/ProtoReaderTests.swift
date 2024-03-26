@@ -532,7 +532,7 @@ final class ProtoReaderTests: XCTestCase {
             }
 
             XCTAssertEqual(values, [])
-    
+
             // The original data is packed (length delimited), but we encode it as
             // unpacked in the unknown data, so it shows up as individual varints.
 

@@ -302,7 +302,6 @@ extension CodableTests {
     }
 }
 
-
 // MARK: - Duration and Timestamp
 
 extension CodableTests {
