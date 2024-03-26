@@ -522,7 +522,7 @@ class LinkerTest {
     opaqueTypes: List<ProtoType> = listOf(),
     reverseSort: Boolean = false,
   ): Schema {
-    val forwardingFileSystem = when {
+    val schemaLoaderFileSystem = when {
       reverseSort -> {
         object : ForwardingFileSystem(fs) {
           override fun listRecursively(dir: Path, followSymlinks: Boolean): Sequence<Path> =
@@ -532,7 +532,7 @@ class LinkerTest {
       else -> fs
     }
 
-    val loader = SchemaLoader(forwardingFileSystem)
+    val loader = SchemaLoader(schemaLoaderFileSystem)
     loader.opaqueTypes = opaqueTypes
     loader.initRoots(
       sourcePath = listOf(Location.get("source-path")),
