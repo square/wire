@@ -136,6 +136,10 @@ class Linker {
       }
     }
 
+    // The order of the input files shows up in the order of extension fields in the output files.
+    // Sort the inputs to get consistent output even when the order of input files is inconsistent.
+    sourceFiles.sortBy { it.protoFile.location.path }
+
     for (fileLinker in sourceFiles) {
       fileLinker.requireTypesRegistered()
     }

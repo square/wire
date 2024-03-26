@@ -19,6 +19,7 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.testing.add
 import kotlin.test.assertFailsWith
+import okio.ForwardingFileSystem
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
@@ -480,10 +481,58 @@ class LinkerTest {
     assertThat(enumValueDeprecated!!.encodeMode).isNotNull()
   }
 
+  @Test
+  fun schemaIsDeterministicEvenIfProtoPathOrderIsNot() {
+    fs.add(
+      "source-path/a.proto",
+      """
+      |message A {
+      |}
+      """.trimMargin(),
+    )
+    fs.add(
+      "source-path/b.proto",
+      """
+      |import "a.proto";
+      |extend A {
+      |  optional string b = 1;
+      |}
+      """.trimMargin(),
+    )
+    fs.add(
+      "source-path/c.proto",
+      """
+      |import "a.proto";
+      |extend A {
+      |  optional string c = 2;
+      |}
+      """.trimMargin(),
+    )
+
+    val schemaSorted = loadAndLinkSchema()
+    assertThat((schemaSorted.getType("A") as MessageType).extensionFields.map { it.name })
+      .containsExactly("b", "c")
+
+    val schemaReversed = loadAndLinkSchema(reverseSort = true)
+    assertThat((schemaReversed.getType("A") as MessageType).extensionFields.map { it.name })
+      .containsExactly("b", "c")
+  }
+
   private fun loadAndLinkSchema(
     opaqueTypes: List<ProtoType> = listOf(),
+    reverseSort: Boolean = false,
   ): Schema {
-    val loader = SchemaLoader(fs)
+    val schemaLoaderFileSystem = when {
+      reverseSort -> {
+        object : ForwardingFileSystem(fs) {
+          override fun listRecursively(dir: Path, followSymlinks: Boolean): Sequence<Path> =
+            super.listRecursively(dir, followSymlinks).toList().reversed().asSequence()
+        }
+      }
+      else -> fs
+    }
+
+    val loader = SchemaLoader(schemaLoaderFileSystem)
     loader.opaqueTypes = opaqueTypes
     loader.initRoots(
       sourcePath = listOf(Location.get("source-path")),
