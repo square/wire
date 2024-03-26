@@ -81,7 +81,6 @@ class SwiftGenerator private constructor(
   private val protoMessage = DeclaredTypeName.typeName("Wire.ProtoMessage")
   private val protoReader = DeclaredTypeName.typeName("Wire.ProtoReader")
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
-  private val protoEnum = DeclaredTypeName.typeName("Wire.ProtoEnum")
   private val protoDefaultedValue = DeclaredTypeName.typeName("Wire.ProtoDefaultedValue")
 
   private val heap = DeclaredTypeName.typeName("Wire.CopyOnWrite")
@@ -1595,7 +1594,7 @@ class SwiftGenerator private constructor(
     val enumName = type.typeName
     return TypeSpec.enumBuilder(enumName)
       .addModifiers(PUBLIC)
-      .addSuperTypes(listOf(INT32, CASE_ITERABLE, protoEnum, type.protoCodableType))
+      .addSuperTypes(listOf(INT32, CASE_ITERABLE, type.protoCodableType))
       .apply {
         type.protoDefaultedName?.let { protoDefaultedName ->
           addSuperType(protoDefaultedValue)
