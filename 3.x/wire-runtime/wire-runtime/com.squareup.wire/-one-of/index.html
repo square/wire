@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>OneOf</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../index.html">
+                            wire-runtime
+                    </a>
+            </div>
+            <div class="library-version">
+5.0.0-SNAPSHOT            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":wire-runtime:dokkaHtml/commonMain">common</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="wire-runtime::com.squareup.wire/OneOf///PointingToDeclaration//-519790334">
+  <div class="breadcrumbs"><a href="../../../index.html">wire-runtime</a><span class="delimiter">/</span><a href="../index.html">com.squareup.wire</a><span class="delimiter">/</span><span class="current">OneOf</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>One</span><wbr></wbr><span><span>Of</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">OneOf</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="index.html">K</a><span class="token operator"> : </span><a href="-key/index.html">OneOf.Key</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>key<span class="token operator">: </span><a href="index.html">K</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>value<span class="token operator">: </span><a href="index.html">T</a></span></span><span class="token punctuation">)</span></div><p class="paragraph">A oneof's value and the key that identifies which field holds it.</p><p class="paragraph">Wire has two different mechanisms for generating <code class="lang-kotlin">oneof</code> code: “boxed” that uses this class, and “flat” where all oneof fields are defined inline in the declaring message.</p><p class="paragraph"><p class="paragraph">Flat oneofs</p> -----------</p><p class="paragraph">This is Wire's default mechanism. Each oneof field in the schema yields a field in the generated Kotlin or Java class. At most one field has a non-null value, and callers need to manually probe each field until they find the non-null value.</p><p class="paragraph">This is well-suited to oneofs with a small number of choices (less than 5).</p><p class="paragraph"><p class="paragraph">Boxed oneofs</p> ------------</p><p class="paragraph">In this mechanism the generated class has one field that holds an instance of this. It has both a key that identifies which field is populated, and its value. If no field is set, then the OneOf box is null.</p><p class="paragraph">This is well-suited to oneofs with a large number of choices (5 or more). This mechanism is necessary for oneofs with a very large number of options because in the other form the generated code may exceed the JVM's method size limits.</p><p class="paragraph">Opt-in to boxed oneofs in your build by setting the <code class="lang-kotlin">boxOneOfsMinSize</code> option. OneOfs with this many fields or more will be generated in this form.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">wire {<br>  kotlin {<br>    boxOneOfsMinSize = 10<br>  }<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph"><p class="paragraph">Using Boxed oneofs</p> ------------------</p><p class="paragraph">One challenge in using oneofs is coping with data from different schema versions that offer new unknown choices. For example, a client may receive a message from a server that sets a oneof field the client doesn't know about; or a server may read an archived message with a oneof field that has since been deleted.</p><p class="paragraph">In either case, the oneof will be null! There is no way to differentiate between unset and set to an unknown field. Please keep this in mind when writing code to handle oneofs.</p><p class="paragraph">In this example the address type may be absent (no value was ever set) or its type may be too new for the current code to understand. This code returns a default value:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val buttonLabel = when (contact.address?.key) {<br>  Contact.addressSmsNumber -&gt; &quot;Send SMS&quot;<br>  Contact.addressEmailAddress -&gt; &quot;Send Email&quot;<br>  else -&gt; &quot;Address Type Unknown or Unset&quot;<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">Another approach is to crash. In this case applications need to be careful to avoid receiving data with an incompatible schema.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val buttonLabel = when (contact.address?.key) {<br>  Contact.addressSmsNumber -&gt; &quot;Send SMS&quot;<br>  Contact.addressEmailAddress -&gt; &quot;Send Email&quot;<br>  else -&gt; throw IllegalStateException(&quot;unknown address!&quot;)<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph"><p class="paragraph">Consider AnyMessage</p> -------------------</p><p class="paragraph">New schemas should consider <a href="../-any-message/index.html">google.protobuf.Any</a> instead of <code class="lang-kotlin">oneof</code>.</p><p class="paragraph">Benefits of <code class="lang-kotlin">Any</code>:</p><ul><li><p class="paragraph">No build-time dependency from the referencing type on the referenced type.</p></li><li><p class="paragraph">Add new types without changing the schema</p></li></ul><p class="paragraph">Benefits of <code class="lang-kotlin">OneOf</code>:</p><ul><li><p class="paragraph">More compact on-the-wire encoding. Approximately 1 byte of overhead for <code class="lang-kotlin">OneOf</code> vs. <code class="lang-kotlin">32</code> for     the message name in an <code class="lang-kotlin">Any</code>.</p></li><li><p class="paragraph">All choices are cataloged a central place in the schema.</p></li></ul></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-603001320%2FConstructors%2F-519790334" anchor-label="OneOf" id="-603001320%2FConstructors%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-one-of.html"><span>One</span><wbr></wbr><span><span>Of</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-603001320%2FConstructors%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="index.html">K</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="index.html">T</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-1283000956%2FClasslikes%2F-519790334" anchor-label="Key" id="-1283000956%2FClasslikes%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-key/index.html"><span><span>Key</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1283000956%2FClasslikes%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-key/index.html">Key</a><span class="token operator">&lt;</span><a href="-key/index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>tag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>adapter<span class="token operator">: </span><a href="../-proto-adapter/index.html">ProtoAdapter</a><span class="token operator">&lt;</span><a href="-key/index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>declaredName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>redacted<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>jsonName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Identifies a field in a OneOf. Typically subclasses are generated by the Wire compiler and instances are declared as members of the referencing message class.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="652546929%2FProperties%2F-519790334" anchor-label="key" id="652546929%2FProperties%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="key.html"><span><span>key</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="652546929%2FProperties%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="key.html">key</a><span class="token operator">: </span><a href="index.html">K</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="765515743%2FProperties%2F-519790334" anchor-label="value" id="765515743%2FProperties%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="value.html"><span><span>value</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="765515743%2FProperties%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="value.html">value</a><span class="token operator">: </span><a href="index.html">T</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1504349701%2FFunctions%2F-519790334" anchor-label="encodedSizeWithTag" id="1504349701%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="encoded-size-with-tag.html"><span>encoded</span><wbr></wbr><span>Size</span><wbr></wbr><span>With</span><wbr></wbr><span><span>Tag</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1504349701%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="encoded-size-with-tag.html"><span class="token function">encodedSizeWithTag</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1000960510%2FFunctions%2F-519790334" anchor-label="encodeWithTag" id="-1000960510%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="encode-with-tag.html"><span>encode</span><wbr></wbr><span>With</span><wbr></wbr><span><span>Tag</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1000960510%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="encode-with-tag.html"><span class="token function">encodeWithTag</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">writer<span class="token operator">: </span><a href="../-proto-writer/index.html">ProtoWriter</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="encode-with-tag.html"><span class="token function">encodeWithTag</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">writer<span class="token operator">: </span><a href="../-reverse-proto-writer/index.html">ReverseProtoWriter</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="910871402%2FFunctions%2F-519790334" anchor-label="getOrNull" id="910871402%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-or-null.html"><span>get</span><wbr></wbr><span>Or</span><wbr></wbr><span><span>Null</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="910871402%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="get-or-null.html">X</a><span class="token operator">&gt; </span><a href="get-or-null.html"><span class="token function">getOrNull</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="-key/index.html">OneOf.Key</a><span class="token operator">&lt;</span><a href="get-or-null.html">X</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="get-or-null.html">X</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-692226690%2FFunctions%2F-519790334" anchor-label="toString" id="-692226690%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-string.html"><span>to</span><wbr></wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-692226690%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="to-string.html"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

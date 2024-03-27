@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>SchemaHandler</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../index.html">
+                            wire-schema
+                    </a>
+            </div>
+            <div class="library-version">
+5.0.0-SNAPSHOT            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":wire-schema:dokkaHtml/commonMain">common</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="wire-schema::com.squareup.wire.schema/SchemaHandler///PointingToDeclaration//1568146121">
+  <div class="breadcrumbs"><a href="../../../index.html">wire-schema</a><span class="delimiter">/</span><a href="../index.html">com.squareup.wire.schema</a><span class="delimiter">/</span><span class="current">SchemaHandler</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Schema</span><wbr></wbr><span><span>Handler</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">SchemaHandler</a></div><p class="paragraph">A <a href="handle.html">SchemaHandler</a>s <a href="../-schema/index.html">Schema</a>!</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-1176370072%2FConstructors%2F1568146121" anchor-label="SchemaHandler" id="-1176370072%2FConstructors%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-schema-handler.html"><span>Schema</span><wbr></wbr><span><span>Handler</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1176370072%2FConstructors%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="410941781%2FClasslikes%2F1568146121" anchor-label="Context" id="410941781%2FClasslikes%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-context/index.html"><span><span>Context</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="410941781%2FClasslikes%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-context/index.html">Context</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>fileSystem<span class="token operator">: </span><span data-unresolved-link="okio/FileSystem///PointingToDeclaration/">FileSystem</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>outDirectory<span class="token operator">: </span><span data-unresolved-link="okio/Path///PointingToDeclaration/">Path</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>logger<span class="token operator">: </span><a href="../../com.squareup.wire/-wire-logger/index.html">WireLogger</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>errorCollector<span class="token operator">: </span><a href="../-error-collector/index.html">ErrorCollector</a><span class="token operator"> = </span>ErrorCollector()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>emittingRules<span class="token operator">: </span><a href="../-emitting-rules/index.html">EmittingRules</a><span class="token operator"> = </span>EmittingRules()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>claimedDefinitions<span class="token operator">: </span><a href="../-claimed-definitions/index.html">ClaimedDefinitions</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>claimedPaths<span class="token operator">: </span><a href="../-claimed-paths/index.html">ClaimedPaths</a><span class="token operator"> = </span>ClaimedPaths()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>module<span class="token operator">: </span><a href="-module/index.html">SchemaHandler.Module</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>sourcePathPaths<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html">Set</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>profileLoader<span class="token operator">: </span><a href="../-profile-loader/index.html">ProfileLoader</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">A <a href="-context/index.html">Context</a> holds the information necessary for a <a href="index.html">SchemaHandler</a> to do its job. It contains both helping objects such as <a href="-context/logger.html">logger</a>, and constraining objects such as <a href="-context/emitting-rules.html">emittingRules</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1637127590%2FClasslikes%2F1568146121" anchor-label="Factory" id="-1637127590%2FClasslikes%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-factory/index.html"><span><span>Factory</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1637127590%2FClasslikes%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-factory/index.html">Factory</a> : <span data-unresolved-link="com.squareup.wire.internal/Serializable///PointingToDeclaration/">Serializable</span></div><div class="brief "><p class="paragraph">Implementations of this interface must have a no-arguments public constructor.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1232113906%2FClasslikes%2F1568146121" anchor-label="Module" id="1232113906%2FClasslikes%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-module/index.html"><span><span>Module</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1232113906%2FClasslikes%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-module/index.html">Module</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>types<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html">Set</a><span class="token operator">&lt;</span><a href="../-proto-type/index.html">ProtoType</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>upstreamTypes<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="../-proto-type/index.html">ProtoType</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator"> = </span>mapOf()</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">A <a href="-module/index.html">Module</a> dictates how the loaded types are to be partitioned and handled.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-488926844%2FFunctions%2F1568146121" anchor-label="handle" id="-488926844%2FFunctions%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="handle.html"><span><span>handle</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-488926844%2FFunctions%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="handle.html"><span class="token function">handle</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">schema<span class="token operator">: </span><a href="../-schema/index.html">Schema</a><span class="token punctuation">, </span></span><span class="parameter ">context<span class="token operator">: </span><a href="-context/index.html">SchemaHandler.Context</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">This will handle all <a href="../-proto-file/index.html">ProtoFile</a>s which are part of the <code class="lang-kotlin">sourcePath</code>. If a <a href="-module/index.html">Module</a> is set in the <a href="handle.html">context</a>, it will handle only <a href="../-type/index.html">Type</a>s and <a href="../-service/index.html">Service</a>s the module defines respecting the <a href="handle.html">context</a> rules. Override this method if you have specific needs the default implementation doesn't address.</p></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="handle.html"><span class="token function">handle</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">service<span class="token operator">: </span><a href="../-service/index.html">Service</a><span class="token punctuation">, </span></span><span class="parameter ">context<span class="token operator">: </span><a href="-context/index.html">SchemaHandler.Context</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span data-unresolved-link="okio/Path///PointingToDeclaration/">Path</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Returns the <span data-unresolved-link="okio/Path///PointingToDeclaration/">Path</span>s of the files which <a href="handle.html">service</a> will have been generated into. Null if nothing has been generated.</p></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="handle.html"><span class="token function">handle</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">type<span class="token operator">: </span><a href="../-type/index.html">Type</a><span class="token punctuation">, </span></span><span class="parameter ">context<span class="token operator">: </span><a href="-context/index.html">SchemaHandler.Context</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="okio/Path///PointingToDeclaration/">Path</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns the <span data-unresolved-link="okio/Path///PointingToDeclaration/">Path</span> of the file which <a href="handle.html">type</a> will have been generated into. Null if nothing has been generated.</p></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="handle.html"><span class="token function">handle</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">extend<span class="token operator">: </span><a href="../-extend/index.html">Extend</a><span class="token punctuation">, </span></span><span class="parameter ">field<span class="token operator">: </span><a href="../-field/index.html">Field</a><span class="token punctuation">, </span></span><span class="parameter ">context<span class="token operator">: </span><a href="-context/index.html">SchemaHandler.Context</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="okio/Path///PointingToDeclaration/">Path</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns the <span data-unresolved-link="okio/Path///PointingToDeclaration/">Path</span> of the files which <a href="handle.html">field</a> will have been generated into. Null if nothing has been generated.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

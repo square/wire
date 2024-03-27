@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>com.squareup.wire</title>
+    <link href="../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../index.html">
+                            wire-runtime
+                    </a>
+            </div>
+            <div class="library-version">
+5.0.0-SNAPSHOT            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":wire-runtime:dokkaHtml/commonMain">common</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":wire-runtime:dokkaHtml/darwinMain">darwin</button>
+                <button class="platform-tag platform-selector js-like" data-active="" data-filter=":wire-runtime:dokkaHtml/jsMain">js</button>
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":wire-runtime:dokkaHtml/jvmMain">jvm</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":wire-runtime:dokkaHtml/nativeMain">native</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="package" id="content" pageIds="wire-runtime::com.squareup.wire////PointingToDeclaration//-2141611482">
+  <div class="breadcrumbs"><a href="../../index.html">wire-runtime</a><span class="delimiter">/</span><span class="current">com.squareup.wire</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button><button class="section-tab" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-2110034952%2FClasslikes%2F492318644" anchor-label="AndroidMessage" id="-2110034952%2FClasslikes%2F492318644" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-android-message/index.html"><span>Android</span><wbr></wbr><span><span>Message</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2110034952%2FClasslikes%2F492318644"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain" data-active="" data-toggle=":wire-runtime:dokkaHtml/jvmMain">jvm</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/jvmMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-android-message/index.html">AndroidMessage</a><span class="token operator">&lt;</span><a href="-android-message/index.html">M</a><span class="token operator"> : </span><a href="-message/index.html">Message</a><span class="token operator">&lt;</span><a href="-android-message/index.html">M</a><span class="token punctuation">, </span><a href="-android-message/index.html">B</a><span class="token operator">&gt;</span><span class="token punctuation">, </span><a href="-android-message/index.html">B</a><span class="token operator"> : </span><a href="-message/-builder/index.html">Message.Builder</a><span class="token operator">&lt;</span><a href="-android-message/index.html">M</a><span class="token punctuation">, </span><a href="-android-message/index.html">B</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span> : <a href="-message/index.html">Message</a><span class="token operator">&lt;</span><a href="-android-message/index.html">M</a><span class="token punctuation">, </span><a href="-android-message/index.html">B</a><span class="token operator">&gt; </span>, <span data-unresolved-link="android.os/Parcelable///PointingToDeclaration/">Parcelable</span></div><div class="brief "><p class="paragraph">An Android-specific <a href="-message/index.html">Message</a> which adds support for <span data-unresolved-link="android.os/Parcelable///PointingToDeclaration/">Parcelable</span>.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2040200459%2FClasslikes%2F-519790334" anchor-label="AnyMessage" id="-2040200459%2FClasslikes%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-any-message/index.html"><span>Any</span><wbr></wbr><span><span>Message</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2040200459%2FClasslikes%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-any-message/index.html">AnyMessage</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>typeUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>value<span class="token operator">: </span><span data-unresolved-link="okio/ByteString///PointingToDeclaration/">ByteString</span><span class="token operator"> = </span>ByteString.EMPTY</span></span><span class="token punctuation">)</span> : <a href="-message/index.html">Message</a><span class="token operator">&lt;</span><a href="-any-message/index.html">AnyMessage</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-nothing/index.html">Nothing</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Wire implementation of the <code class="lang-kotlin">google.protobuf.Any</code> type. The <code class="lang-kotlin">Any</code> type wraps an arbitrary protobuf message. Field of <code class="lang-kotlin">Any</code> generated by Wire will be typed <a href="-any-message/index.html">AnyMessage</a>. <a href="-any-message/type-url.html">typeUrl</a> is used to identify the type of the message, defined as 'type.googleapis.com/full.type.name'. <a href="-any-message/value.html">value</a> is the serialized representation of the wrapped message. The <a href="-any-message/-companion/pack.html">pack</a> and <a href="-any-message/unpack.html">unpack</a> methods are available to wrap and unwrap an <code class="lang-kotlin">Any</code> message.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="874970044%2FClasslikes%2F1130791900" anchor-label="Duration" id="874970044%2FClasslikes%2F1130791900" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/nativeMain,:wire-runtime:dokkaHtml/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/nativeMain,:wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/nativeMain,:wire-runtime:dokkaHtml/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-duration/index.html"><span><span>Duration</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="874970044%2FClasslikes%2F1130791900"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain" data-active="" data-toggle=":wire-runtime:dokkaHtml/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jsMain" data-filterable-set=":wire-runtime:dokkaHtml/jsMain" data-toggle=":wire-runtime:dokkaHtml/jsMain">js</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain" data-toggle=":wire-runtime:dokkaHtml/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/nativeMain" data-toggle=":wire-runtime:dokkaHtml/nativeMain">native</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">class </span><a href="-duration/index.html">Duration</a></div><div class="brief "><p class="paragraph">A measurement of time. Durations may be positive, zero, or negative.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jsMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">class </span><a href="-duration/index.html">Duration</a></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jvmMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">typealias </span><a href="-duration/index.html">Duration</a><span class="token operator"> = </span><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html">java.time.Duration</a></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/nativeMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">class </span><a href="-duration/index.html">Duration</a></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="280793572%2FClasslikes%2F1130791900" anchor-label="EnumAdapter" id="280793572%2FClasslikes%2F1130791900" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-enum-adapter/index.html"><span>Enum</span><wbr></wbr><span><span>Adapter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="280793572%2FClasslikes%2F1130791900"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain" data-active="" data-toggle=":wire-runtime:dokkaHtml/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jsMain" data-filterable-set=":wire-runtime:dokkaHtml/jsMain" data-toggle=":wire-runtime:dokkaHtml/jsMain">js</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain" data-toggle=":wire-runtime:dokkaHtml/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/nativeMain" data-toggle=":wire-runtime:dokkaHtml/nativeMain">native</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-enum-adapter/index.html">EnumAdapter</a><span class="token operator">&lt;</span><a href="-enum-adapter/index.html">E</a><span class="token operator"> : </span><a href="-wire-enum/index.html">WireEnum</a><span class="token operator">&gt;</span> : <a href="-proto-adapter/index.html">ProtoAdapter</a><span class="token operator">&lt;</span><a href="-enum-adapter/index.html">E</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">An abstract <a href="-proto-adapter/index.html">ProtoAdapter</a> that converts values of an enum to and from integers.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jsMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-enum-adapter/index.html">EnumAdapter</a><span class="token operator">&lt;</span><a href="-enum-adapter/index.html">E</a><span class="token operator"> : </span><a href="-wire-enum/index.html">WireEnum</a><span class="token operator">&gt;</span> : <a href="-proto-adapter/index.html">ProtoAdapter</a><span class="token operator">&lt;</span><a href="-enum-adapter/index.html">E</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">An abstract <a href="-proto-adapter/index.html">ProtoAdapter</a> that converts values of an enum to and from integers.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jvmMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-enum-adapter/index.html">EnumAdapter</a><span class="token operator">&lt;</span><a href="-enum-adapter/index.html">E</a><span class="token operator"> : </span><a href="-wire-enum/index.html">WireEnum</a><span class="token operator">&gt;</span> : <a href="-proto-adapter/index.html">ProtoAdapter</a><span class="token operator">&lt;</span><a href="-enum-adapter/index.html">E</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">An abstract <a href="-proto-adapter/index.html">ProtoAdapter</a> that converts values of an enum to and from integers.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/nativeMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-enum-adapter/index.html">EnumAdapter</a><span class="token operator">&lt;</span><a href="-enum-adapter/index.html">E</a><span class="token operator"> : </span><a href="-wire-enum/index.html">WireEnum</a><span class="token operator">&gt;</span> : <a href="-proto-adapter/index.html">ProtoAdapter</a><span class="token operator">&lt;</span><a href="-enum-adapter/index.html">E</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">An abstract <a href="-proto-adapter/index.html">ProtoAdapter</a> that converts values of an enum to and from integers.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1385043675%2FClasslikes%2F-519790334" anchor-label="FieldEncoding" id="-1385043675%2FClasslikes%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-field-encoding/index.html"><span>Field</span><wbr></wbr><span><span>Encoding</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1385043675%2FClasslikes%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-field-encoding/index.html">FieldEncoding</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-field-encoding/index.html">FieldEncoding</a><span class="token operator">&gt; </span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="399182577%2FClasslikes%2F1130791900" anchor-label="Instant" id="399182577%2FClasslikes%2F1130791900" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/nativeMain,:wire-runtime:dokkaHtml/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/nativeMain,:wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/nativeMain,:wire-runtime:dokkaHtml/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-instant/index.html"><span><span>Instant</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="399182577%2FClasslikes%2F1130791900"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain" data-active="" data-toggle=":wire-runtime:dokkaHtml/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jsMain" data-filterable-set=":wire-runtime:dokkaHtml/jsMain" data-toggle=":wire-runtime:dokkaHtml/jsMain">js</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain" data-toggle=":wire-runtime:dokkaHtml/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/nativeMain" data-toggle=":wire-runtime:dokkaHtml/nativeMain">native</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">class </span><a href="-instant/index.html">Instant</a></div><div class="brief "><p class="paragraph">This represents a timestamp, though we use the name 'instant' in the runtime because that's what the JVM libraries use, and 'Timestamp' means something else on that platform.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jsMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">class </span><a href="-instant/index.html">Instant</a></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jvmMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">typealias </span><a href="-instant/index.html">Instant</a><span class="token operator"> = </span><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html">java.time.Instant</a></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/nativeMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">class </span><a href="-instant/index.html">Instant</a></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1508259957%2FClasslikes%2F1130791900" anchor-label="Message" id="-1508259957%2FClasslikes%2F1130791900" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-message/index.html"><span><span>Message</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1508259957%2FClasslikes%2F1130791900"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain" data-active="" data-toggle=":wire-runtime:dokkaHtml/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jsMain" data-filterable-set=":wire-runtime:dokkaHtml/jsMain" data-toggle=":wire-runtime:dokkaHtml/jsMain">js</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain" data-toggle=":wire-runtime:dokkaHtml/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/nativeMain" data-toggle=":wire-runtime:dokkaHtml/nativeMain">native</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-message/index.html">Message</a><span class="token operator">&lt;</span><a href="-message/index.html">M</a><span class="token operator"> : </span><a href="-message/index.html">Message</a><span class="token operator">&lt;</span><a href="-message/index.html">M</a><span class="token punctuation">, </span><a href="-message/index.html">B</a><span class="token operator">&gt;</span><span class="token punctuation">, </span><a href="-message/index.html">B</a><span class="token operator"> : </span><a href="-message/-builder/index.html">Message.Builder</a><span class="token operator">&lt;</span><a href="-message/index.html">M</a><span class="token punctuation">, </span><a href="-message/index.html">B</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A protocol buffer message.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jsMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-message/index.html">Message</a><span class="token operator">&lt;</span><a href="-message/index.html">M</a><span class="token operator"> : </span><a href="-message/index.html">Message</a><span class="token operator">&lt;</span><a href="-message/index.html">M</a><span class="token punctuation">, </span><a href="-message/index.html">B</a><span class="token operator">&gt;</span><span class="token punctuation">, </span><a href="-message/index.html">B</a><span class="token operator"> : </span><a href="-message/-builder/index.html">Message.Builder</a><span class="token operator">&lt;</span><a href="-message/index.html">M</a><span class="token punctuation">, </span><a href="-message/index.html">B</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A protocol buffer message.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jvmMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-message/index.html">Message</a><span class="token operator">&lt;</span><a href="-message/index.html">M</a><span class="token operator"> : </span><a href="-message/index.html">Message</a><span class="token operator">&lt;</span><a href="-message/index.html">M</a><span class="token punctuation">, </span><a href="-message/index.html">B</a><span class="token operator">&gt;</span><span class="token punctuation">, </span><a href="-message/index.html">B</a><span class="token operator"> : </span><a href="-message/-builder/index.html">Message.Builder</a><span class="token operator">&lt;</span><a href="-message/index.html">M</a><span class="token punctuation">, </span><a href="-message/index.html">B</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span> : <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html">Serializable</a></div><div class="brief "><p class="paragraph">A protocol buffer message.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/nativeMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-message/index.html">Message</a><span class="token operator">&lt;</span><a href="-message/index.html">M</a><span class="token operator"> : </span><a href="-message/index.html">Message</a><span class="token operator">&lt;</span><a href="-message/index.html">M</a><span class="token punctuation">, </span><a href="-message/index.html">B</a><span class="token operator">&gt;</span><span class="token punctuation">, </span><a href="-message/index.html">B</a><span class="token operator"> : </span><a href="-message/-builder/index.html">Message.Builder</a><span class="token operator">&lt;</span><a href="-message/index.html">M</a><span class="token punctuation">, </span><a href="-message/index.html">B</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A protocol buffer message.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-985950408%2FClasslikes%2F1130791900" anchor-label="MessageSink" id="-985950408%2FClasslikes%2F1130791900" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-message-sink/index.html"><span>Message</span><wbr></wbr><span><span>Sink</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-985950408%2FClasslikes%2F1130791900"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain" data-active="" data-toggle=":wire-runtime:dokkaHtml/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jsMain" data-filterable-set=":wire-runtime:dokkaHtml/jsMain" data-toggle=":wire-runtime:dokkaHtml/jsMain">js</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain" data-toggle=":wire-runtime:dokkaHtml/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/nativeMain" data-toggle=":wire-runtime:dokkaHtml/nativeMain">native</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">interface </span><a href="-message-sink/index.html">MessageSink</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="-message-sink/index.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A writable stream of messages.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jsMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-message-sink/index.html">MessageSink</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="-message-sink/index.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jvmMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-message-sink/index.html">MessageSink</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="-message-sink/index.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span> : <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html">Closeable</a></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/nativeMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-message-sink/index.html">MessageSink</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="-message-sink/index.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-705089488%2FClasslikes%2F1130791900" anchor-label="MessageSource" id="-705089488%2FClasslikes%2F1130791900" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-message-source/index.html"><span>Message</span><wbr></wbr><span><span>Source</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-705089488%2FClasslikes%2F1130791900"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain" data-active="" data-toggle=":wire-runtime:dokkaHtml/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jsMain" data-filterable-set=":wire-runtime:dokkaHtml/jsMain" data-toggle=":wire-runtime:dokkaHtml/jsMain">js</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain" data-toggle=":wire-runtime:dokkaHtml/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/nativeMain" data-toggle=":wire-runtime:dokkaHtml/nativeMain">native</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">interface </span><a href="-message-source/index.html">MessageSource</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="-message-source/index.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A readable stream of messages.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jsMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-message-source/index.html">MessageSource</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="-message-source/index.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jvmMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-message-source/index.html">MessageSource</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="-message-source/index.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span> : <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html">Closeable</a></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/nativeMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-message-source/index.html">MessageSource</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="-message-source/index.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1717552715%2FClasslikes%2F-519790334" anchor-label="OneOf" id="-1717552715%2FClasslikes%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-one-of/index.html"><span>One</span><wbr></wbr><span><span>Of</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1717552715%2FClasslikes%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-one-of/index.html">OneOf</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="-one-of/index.html">K</a><span class="token operator"> : </span><a href="-one-of/-key/index.html">OneOf.Key</a><span class="token operator">&lt;</span><a href="-one-of/index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span><a href="-one-of/index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>key<span class="token operator">: </span><a href="-one-of/index.html">K</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>value<span class="token operator">: </span><a href="-one-of/index.html">T</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">A oneof's value and the key that identifies which field holds it.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1395866391%2FClasslikes%2F1130791900" anchor-label="ProtoAdapter" id="-1395866391%2FClasslikes%2F1130791900" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-proto-adapter/index.html"><span>Proto</span><wbr></wbr><span><span>Adapter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1395866391%2FClasslikes%2F1130791900"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain" data-active="" data-toggle=":wire-runtime:dokkaHtml/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jsMain" data-filterable-set=":wire-runtime:dokkaHtml/jsMain" data-toggle=":wire-runtime:dokkaHtml/jsMain">js</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain" data-toggle=":wire-runtime:dokkaHtml/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/nativeMain" data-toggle=":wire-runtime:dokkaHtml/nativeMain">native</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-proto-adapter/index.html">ProtoAdapter</a><span class="token operator">&lt;</span><a href="-proto-adapter/index.html">E</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fieldEncoding<span class="token operator">: </span><a href="-field-encoding/index.html">FieldEncoding</a><span class="token punctuation">, </span></span><span class="parameter ">type<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">typeUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">syntax<span class="token operator">: </span><a href="-syntax/index.html">Syntax</a><span class="token punctuation">, </span></span><span class="parameter ">identity<span class="token operator">: </span><a href="-proto-adapter/index.html">E</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">sourceFile<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jsMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-proto-adapter/index.html">ProtoAdapter</a><span class="token operator">&lt;</span><a href="-proto-adapter/index.html">E</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fieldEncoding<span class="token operator">: </span><a href="-field-encoding/index.html">FieldEncoding</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>type<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>typeUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>syntax<span class="token operator">: </span><a href="-syntax/index.html">Syntax</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>identity<span class="token operator">: </span><a href="-proto-adapter/index.html">E</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>sourceFile<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jvmMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-proto-adapter/index.html">ProtoAdapter</a><span class="token operator">&lt;</span><a href="-proto-adapter/index.html">E</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fieldEncoding<span class="token operator">: </span><a href="-field-encoding/index.html">FieldEncoding</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>type<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>typeUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>syntax<span class="token operator">: </span><a href="-syntax/index.html">Syntax</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>identity<span class="token operator">: </span><a href="-proto-adapter/index.html">E</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>sourceFile<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/nativeMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-proto-adapter/index.html">ProtoAdapter</a><span class="token operator">&lt;</span><a href="-proto-adapter/index.html">E</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fieldEncoding<span class="token operator">: </span><a href="-field-encoding/index.html">FieldEncoding</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>type<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>typeUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>syntax<span class="token operator">: </span><a href="-syntax/index.html">Syntax</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>identity<span class="token operator">: </span><a href="-proto-adapter/index.html">E</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>sourceFile<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="926925511%2FClasslikes%2F-519790334" anchor-label="ProtoReader" id="926925511%2FClasslikes%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-proto-reader/index.html"><span>Proto</span><wbr></wbr><span><span>Reader</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="926925511%2FClasslikes%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-proto-reader/index.html">ProtoReader</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><span data-unresolved-link="okio/BufferedSource///PointingToDeclaration/">BufferedSource</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Reads and decodes protocol message fields.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2096407%2FClasslikes%2F-519790334" anchor-label="ProtoWriter" id="2096407%2FClasslikes%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-proto-writer/index.html"><span>Proto</span><wbr></wbr><span><span>Writer</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2096407%2FClasslikes%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-proto-writer/index.html">ProtoWriter</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">sink<span class="token operator">: </span><span data-unresolved-link="okio/BufferedSink///PointingToDeclaration/">BufferedSink</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Utilities for encoding and writing protocol message fields.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1707359753%2FClasslikes%2F-519790334" anchor-label="ReverseProtoWriter" id="-1707359753%2FClasslikes%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-reverse-proto-writer/index.html"><span>Reverse</span><wbr></wbr><span>Proto</span><wbr></wbr><span><span>Writer</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1707359753%2FClasslikes%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-reverse-proto-writer/index.html">ReverseProtoWriter</a></div><div class="brief "><p class="paragraph">Encodes protocol buffer message fields from back-to-front for efficiency. Callers should write data in the opposite order that the data will be read.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2113081530%2FClasslikes%2F492318644" anchor-label="RuntimeEnumAdapter" id="2113081530%2FClasslikes%2F492318644" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-runtime-enum-adapter/index.html"><span>Runtime</span><wbr></wbr><span>Enum</span><wbr></wbr><span><span>Adapter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2113081530%2FClasslikes%2F492318644"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain" data-active="" data-toggle=":wire-runtime:dokkaHtml/jvmMain">jvm</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/jvmMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-runtime-enum-adapter/index.html">RuntimeEnumAdapter</a><span class="token operator">&lt;</span><a href="-runtime-enum-adapter/index.html">E</a><span class="token operator"> : </span><a href="-wire-enum/index.html">WireEnum</a><span class="token operator">&gt;</span> : <a href="-enum-adapter/index.html">EnumAdapter</a><span class="token operator">&lt;</span><a href="-runtime-enum-adapter/index.html">E</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Converts values of an enum to and from integers using reflection.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-205373283%2FClasslikes%2F-519790334" anchor-label="Service" id="-205373283%2FClasslikes%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-service/index.html"><span><span>Service</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-205373283%2FClasslikes%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-service/index.html">Service</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="491659277%2FClasslikes%2F-519790334" anchor-label="Syntax" id="491659277%2FClasslikes%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-syntax/index.html"><span><span>Syntax</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="491659277%2FClasslikes%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-syntax/index.html">Syntax</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-syntax/index.html">Syntax</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Syntax version.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1609506198%2FClasslikes%2F-519790334" anchor-label="WireEnum" id="-1609506198%2FClasslikes%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-wire-enum/index.html"><span>Wire</span><wbr></wbr><span><span>Enum</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1609506198%2FClasslikes%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-wire-enum/index.html">WireEnum</a></div><div class="brief "><p class="paragraph">Interface for generated <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a> values to help serialization and deserialization.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1051776550%2FClasslikes%2F-519790334" anchor-label="WireEnumConstant" id="1051776550%2FClasslikes%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-wire-enum-constant/index.html"><span>Wire</span><wbr></wbr><span>Enum</span><wbr></wbr><span><span>Constant</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1051776550%2FClasslikes%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-target/index.html"><span class="token annotation builtin">Target</span></a><span class="token punctuation">(</span><span>allowedTargets<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-annotation-target/-f-i-e-l-d/index.html">AnnotationTarget.FIELD</a></span><wbr></wbr><span class="token punctuation">]</span></span><wbr></wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="-wire-enum-constant/index.html">WireEnumConstant</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>declaredName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Annotates generated <a href="-wire-enum/index.html">WireEnum</a> fields with metadata for serialization and deserialization.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="758478749%2FClasslikes%2F-519790334" anchor-label="WireField" id="758478749%2FClasslikes%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-wire-field/index.html"><span>Wire</span><wbr></wbr><span><span>Field</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="758478749%2FClasslikes%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-target/index.html"><span class="token annotation builtin">Target</span></a><span class="token punctuation">(</span><span>allowedTargets<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-annotation-target/-f-i-e-l-d/index.html">AnnotationTarget.FIELD</a></span><wbr></wbr><span class="token punctuation">]</span></span><wbr></wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="-wire-field/index.html">WireField</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>tag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>keyAdapter<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>adapter<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>label<span class="token operator">: </span><a href="-wire-field/-label/index.html">WireField.Label</a><span class="token operator"> = </span>Label.OPTIONAL<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>redacted<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>declaredName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>jsonName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>oneofName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>schemaIndex<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>-1</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Annotates generated <a href="-message/index.html">Message</a> fields with metadata for serialization and deserialization.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-327434606%2FClasslikes%2F-519790334" anchor-label="WireRpc" id="-327434606%2FClasslikes%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-wire-rpc/index.html"><span>Wire</span><wbr></wbr><span><span>Rpc</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-327434606%2FClasslikes%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-target/index.html"><span class="token annotation builtin">Target</span></a><span class="token punctuation">(</span><span>allowedTargets<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-annotation-target/-f-u-n-c-t-i-o-n/index.html">AnnotationTarget.FUNCTION</a></span><wbr></wbr><span class="token punctuation">]</span></span><wbr></wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="-wire-rpc/index.html">WireRpc</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>path<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>requestAdapter<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>responseAdapter<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>sourceFile<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">For gRPC actions the path is formatted as <code class="lang-kotlin">/&lt;service name&gt;/&lt;method name&gt;</code>. The path of the proto service below is <code class="lang-kotlin">/squareup.helloworld.Greeter/SayHello</code>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1195937051%2FFunctions%2F1830420354" anchor-label="decode" id="1195937051%2FFunctions%2F1830420354" data-filterable-set=":wire-runtime:dokkaHtml/darwinMain"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":wire-runtime:dokkaHtml/darwinMain" data-filterable-set=":wire-runtime:dokkaHtml/darwinMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="decode.html"><span><span>decode</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1195937051%2FFunctions%2F1830420354"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/darwinMain" data-filterable-set=":wire-runtime:dokkaHtml/darwinMain" data-active="" data-toggle=":wire-runtime:dokkaHtml/darwinMain">darwin</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/darwinMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-experimental-unsigned-types/index.html"><span class="token annotation builtin">ExperimentalUnsignedTypes</span></a></div></div><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="decode.html">E</a><span class="token operator">&gt; </span><a href="-proto-adapter/index.html">ProtoAdapter</a><span class="token operator">&lt;</span><a href="decode.html">E</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="decode.html"><span class="token function">decode</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">data<span class="token operator">: </span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="decode.html">E</a></div><div class="brief "><p class="paragraph">Read an encoded message from <code class="lang-kotlin">data</code>.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-935753988%2FFunctions%2F1130791900" anchor-label="durationOfSeconds" id="-935753988%2FFunctions%2F1130791900" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="duration-of-seconds.html"><span>duration</span><wbr></wbr><span>Of</span><wbr></wbr><span><span>Seconds</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-935753988%2FFunctions%2F1130791900"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain" data-active="" data-toggle=":wire-runtime:dokkaHtml/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jsMain" data-filterable-set=":wire-runtime:dokkaHtml/jsMain" data-toggle=":wire-runtime:dokkaHtml/jsMain">js</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain" data-toggle=":wire-runtime:dokkaHtml/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/nativeMain" data-toggle=":wire-runtime:dokkaHtml/nativeMain">native</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">fun </span><a href="duration-of-seconds.html"><span class="token function">durationOfSeconds</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">seconds<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">nano<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-duration/index.html">Duration</a></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jsMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">fun </span><a href="duration-of-seconds.html"><span class="token function">durationOfSeconds</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">seconds<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">nano<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-duration/index.html">Duration</a></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jvmMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="duration-of-seconds.html"><span class="token function">durationOfSeconds</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">seconds<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">nano<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-duration/index.html">Duration</a></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/nativeMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">fun </span><a href="duration-of-seconds.html"><span class="token function">durationOfSeconds</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">seconds<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">nano<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-duration/index.html">Duration</a></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1875565223%2FFunctions%2F492318644" anchor-label="get" id="-1875565223%2FFunctions%2F492318644" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get.html"><span><span>get</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1875565223%2FFunctions%2F492318644"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain" data-active="" data-toggle=":wire-runtime:dokkaHtml/jvmMain">jvm</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="get.html">T</a><span class="token operator">&gt; </span><a href="get.html"><span class="token function">get</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="get.html">T</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">defaultValue<span class="token operator">: </span><a href="get.html">T</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="get.html">T</a></div><div class="brief "><p class="paragraph">Returns <code class="lang-kotlin">value</code> if it is not null; <code class="lang-kotlin">defaultValue</code> otherwise. This is used to conveniently return a default value when a value is null. For example,</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="638908046%2FFunctions%2F1130791900" anchor-label="ofEpochSecond" id="638908046%2FFunctions%2F1130791900" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain,:wire-runtime:dokkaHtml/jsMain,:wire-runtime:dokkaHtml/jvmMain,:wire-runtime:dokkaHtml/nativeMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="of-epoch-second.html"><span>of</span><wbr></wbr><span>Epoch</span><wbr></wbr><span><span>Second</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="638908046%2FFunctions%2F1130791900"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain" data-active="" data-toggle=":wire-runtime:dokkaHtml/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jsMain" data-filterable-set=":wire-runtime:dokkaHtml/jsMain" data-toggle=":wire-runtime:dokkaHtml/jsMain">js</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/jvmMain" data-filterable-set=":wire-runtime:dokkaHtml/jvmMain" data-toggle=":wire-runtime:dokkaHtml/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":wire-runtime:dokkaHtml/nativeMain" data-filterable-set=":wire-runtime:dokkaHtml/nativeMain" data-toggle=":wire-runtime:dokkaHtml/nativeMain">native</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">fun </span><a href="of-epoch-second.html"><span class="token function">ofEpochSecond</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">epochSecond<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">nano<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-instant/index.html">Instant</a></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jsMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">fun </span><a href="of-epoch-second.html"><span class="token function">ofEpochSecond</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">epochSecond<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">nano<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-instant/index.html">Instant</a></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/jvmMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="of-epoch-second.html"><span class="token function">ofEpochSecond</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">epochSecond<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">nano<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-instant/index.html">Instant</a></div></div><div class="content sourceset-dependent-content" data-togglable=":wire-runtime:dokkaHtml/nativeMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">fun </span><a href="of-epoch-second.html"><span class="token function">ofEpochSecond</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">epochSecond<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">nano<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-instant/index.html">Instant</a></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

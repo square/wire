@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>GrpcCall</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../index.html">
+                            wire-grpc-client
+                    </a>
+            </div>
+            <div class="library-version">
+5.0.0-SNAPSHOT            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":wire-grpc-client:dokkaHtml/commonMain">common</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="wire-grpc-client::com.squareup.wire/GrpcCall///PointingToDeclaration//-510132348">
+  <div class="breadcrumbs"><a href="../../../index.html">wire-grpc-client</a><span class="delimiter">/</span><a href="../index.html">com.squareup.wire</a><span class="delimiter">/</span><span class="current">GrpcCall</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Grpc</span><wbr></wbr><span><span>Call</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-client:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">GrpcCall</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">, </span><a href="index.html">R</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div><p class="paragraph">A single call to a remote server. This call sends a single request value and receives a single response value. A gRPC call cannot be executed twice.</p><p class="paragraph">gRPC calls can be <a href="execute.html">suspending</a>, <a href="execute-blocking.html">blocking</a>, or <a href="enqueue.html">asynchronous</a>. Use whichever mechanism works at your call site: the bytes transmitted on the network are the same.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="2030579163%2FClasslikes%2F-510132348" anchor-label="Callback" id="2030579163%2FClasslikes%2F-510132348" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-client:dokkaHtml/commonMain" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-callback/index.html"><span><span>Callback</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2030579163%2FClasslikes%2F-510132348"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-client:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-callback/index.html">Callback</a><span class="token operator">&lt;</span><a href="-callback/index.html">S</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">, </span><a href="-callback/index.html">R</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1587511818%2FProperties%2F-510132348" anchor-label="method" id="1587511818%2FProperties%2F-510132348" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-client:dokkaHtml/commonMain" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="method.html"><span><span>method</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1587511818%2FProperties%2F-510132348"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-client:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="method.html">method</a><span class="token operator">: </span><a href="../-grpc-method/index.html">GrpcMethod</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token punctuation">, </span><a href="index.html">R</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">The method invoked by this call.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="456504913%2FProperties%2F-510132348" anchor-label="requestMetadata" id="456504913%2FProperties%2F-510132348" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-client:dokkaHtml/commonMain" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="request-metadata.html"><span>request</span><wbr></wbr><span><span>Metadata</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="456504913%2FProperties%2F-510132348"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-client:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">var </span><a href="request-metadata.html">requestMetadata</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A map containing request metadata. This is initially empty; it can be assigned to any other map of metadata before the call is executed. It is an error to set this value after the call is executed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1475286597%2FProperties%2F-510132348" anchor-label="responseMetadata" id="-1475286597%2FProperties%2F-510132348" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-client:dokkaHtml/commonMain" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="response-metadata.html"><span>response</span><wbr></wbr><span><span>Metadata</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1475286597%2FProperties%2F-510132348"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-client:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="response-metadata.html">responseMetadata</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">A map containing response metadata. This is null until the call has executed, at which point it will be non-null if the call completed successfully. It may also be non-null in failure cases if the failure was not a problem of connectivity. For example, if the gRPC call fails with an HTTP 503 error, response metadata will be present.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="791926574%2FProperties%2F-510132348" anchor-label="timeout" id="791926574%2FProperties%2F-510132348" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-client:dokkaHtml/commonMain" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="timeout.html"><span><span>timeout</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="791926574%2FProperties%2F-510132348"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-client:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="timeout.html">timeout</a><span class="token operator">: </span><span data-unresolved-link="okio/Timeout///PointingToDeclaration/">Timeout</span></div><div class="brief "><p class="paragraph">Configures how long the call can take to complete before it is automatically canceled.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1333759343%2FFunctions%2F-510132348" anchor-label="cancel" id="-1333759343%2FFunctions%2F-510132348" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-client:dokkaHtml/commonMain" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="cancel.html"><span><span>cancel</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1333759343%2FFunctions%2F-510132348"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-client:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="cancel.html"><span class="token function">cancel</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Attempts to cancel the call. This function is safe to call concurrently with execution. When canceled, execution fails with an immediate <span data-unresolved-link="okio/IOException///PointingToDeclaration/">IOException</span> rather than waiting to complete normally.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="126533426%2FFunctions%2F-510132348" anchor-label="clone" id="126533426%2FFunctions%2F-510132348" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-client:dokkaHtml/commonMain" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clone.html"><span><span>clone</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="126533426%2FFunctions%2F-510132348"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-client:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="clone.html"><span class="token function">clone</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">GrpcCall</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token punctuation">, </span><a href="index.html">R</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Create a new, identical gRPC call to this one which can be enqueued or executed even if this call has already been.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1670055818%2FFunctions%2F-510132348" anchor-label="enqueue" id="-1670055818%2FFunctions%2F-510132348" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-client:dokkaHtml/commonMain" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="enqueue.html"><span><span>enqueue</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1670055818%2FFunctions%2F-510132348"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-client:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="enqueue.html"><span class="token function">enqueue</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="index.html">S</a><span class="token punctuation">, </span></span><span class="parameter ">callback<span class="token operator">: </span><a href="-callback/index.html">GrpcCall.Callback</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token punctuation">, </span><a href="index.html">R</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Enqueues this call for asynchronous execution. The <a href="enqueue.html">callback</a> will be invoked on the client's dispatcher thread when the call completes.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="782989319%2FFunctions%2F-510132348" anchor-label="execute" id="782989319%2FFunctions%2F-510132348" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-client:dokkaHtml/commonMain" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="execute.html"><span><span>execute</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="782989319%2FFunctions%2F-510132348"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-client:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="execute.html"><span class="token function">execute</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="index.html">S</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">R</a></div><div class="brief "><p class="paragraph">Invokes the call immediately and suspends until its response is received.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1243004690%2FFunctions%2F-510132348" anchor-label="executeBlocking" id="1243004690%2FFunctions%2F-510132348" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-client:dokkaHtml/commonMain" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="execute-blocking.html"><span>execute</span><wbr></wbr><span><span>Blocking</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1243004690%2FFunctions%2F-510132348"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-client:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="execute-blocking.html"><span class="token function">executeBlocking</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="index.html">S</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">R</a></div><div class="brief "><p class="paragraph">Invokes the call immediately and blocks until its response is received.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-243698104%2FFunctions%2F-510132348" anchor-label="isCanceled" id="-243698104%2FFunctions%2F-510132348" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-client:dokkaHtml/commonMain" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-canceled.html"><span>is</span><wbr></wbr><span><span>Canceled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-243698104%2FFunctions%2F-510132348"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-client:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="is-canceled.html"><span class="token function">isCanceled</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">True if <a href="cancel.html">cancel</a> was called.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1999231982%2FFunctions%2F-510132348" anchor-label="isExecuted" id="-1999231982%2FFunctions%2F-510132348" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-client:dokkaHtml/commonMain" data-filterable-set=":wire-grpc-client:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-executed.html"><span>is</span><wbr></wbr><span><span>Executed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1999231982%2FFunctions%2F-510132348"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-client:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="is-executed.html"><span class="token function">isExecuted</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Returns true if <a href="execute.html">execute</a>, <a href="execute-blocking.html">executeBlocking</a>, or <a href="enqueue.html">enqueue</a> was called. It is an error to execute or enqueue a call more than once.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

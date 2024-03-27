@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ProtoReader</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../index.html">
+                            wire-runtime
+                    </a>
+            </div>
+            <div class="library-version">
+5.0.0-SNAPSHOT            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":wire-runtime:dokkaHtml/commonMain">common</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="wire-runtime::com.squareup.wire/ProtoReader///PointingToDeclaration//-519790334">
+  <div class="breadcrumbs"><a href="../../../index.html">wire-runtime</a><span class="delimiter">/</span><a href="../index.html">com.squareup.wire</a><span class="delimiter">/</span><span class="current">ProtoReader</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Proto</span><wbr></wbr><span><span>Reader</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">ProtoReader</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><span data-unresolved-link="okio/BufferedSource///PointingToDeclaration/">BufferedSource</span></span></span><span class="token punctuation">)</span></div><p class="paragraph">Reads and decodes protocol message fields.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-1395294075%2FConstructors%2F-519790334" anchor-label="ProtoReader" id="-1395294075%2FConstructors%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-proto-reader.html"><span>Proto</span><wbr></wbr><span><span>Reader</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1395294075%2FConstructors%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><span data-unresolved-link="okio/BufferedSource///PointingToDeclaration/">BufferedSource</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-1533095287%2FClasslikes%2F-519790334" anchor-label="Companion" id="-1533095287%2FClasslikes%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1533095287%2FClasslikes%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1185316328%2FFunctions%2F-519790334" anchor-label="addUnknownField" id="1185316328%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="add-unknown-field.html"><span>add</span><wbr></wbr><span>Unknown</span><wbr></wbr><span><span>Field</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1185316328%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="add-unknown-field.html"><span class="token function">addUnknownField</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">fieldEncoding<span class="token operator">: </span><a href="../-field-encoding/index.html">FieldEncoding</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Store an already read field temporarily. Once the entire message is read, call <a href="end-message-and-get-unknown-fields.html">endMessageAndGetUnknownFields</a> to retrieve unknown fields.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="994998970%2FFunctions%2F-519790334" anchor-label="beginMessage" id="994998970%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="begin-message.html"><span>begin</span><wbr></wbr><span><span>Message</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="994998970%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="begin-message.html"><span class="token function">beginMessage</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">Begin a nested message. A call to this method will restrict the reader so that <a href="next-tag.html">nextTag</a> returns -1 when the message is complete. An accompanying call to <span data-unresolved-link="com.squareup.wire/ProtoReader/endMessage/#kotlin.Long/PointingToDeclaration/">endMessage</span> must then occur with the opaque token returned from this method.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1540388559%2FFunctions%2F-519790334" anchor-label="endMessageAndGetUnknownFields" id="1540388559%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="end-message-and-get-unknown-fields.html"><span>end</span><wbr></wbr><span>Message</span><wbr></wbr><span>And</span><wbr></wbr><span>Get</span><wbr></wbr><span>Unknown</span><wbr></wbr><span><span>Fields</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1540388559%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="end-message-and-get-unknown-fields.html"><span class="token function">endMessageAndGetUnknownFields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="okio/ByteString///PointingToDeclaration/">ByteString</span></div><div class="brief "><p class="paragraph">End a length-delimited nested message. Calls to this method must be symmetric with calls to <a href="begin-message.html">beginMessage</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="496363319%2FFunctions%2F-519790334" anchor-label="forEachTag" id="496363319%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="for-each-tag.html"><span>for</span><wbr></wbr><span>Each</span><wbr></wbr><span><span>Tag</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="496363319%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-name/index.html"><span class="token annotation builtin">JvmName</span></a><span class="token punctuation">(</span><span>name<span class="token operator"> = </span><span class="breakable-word"><span class="token string">&quot;-forEachTag&quot;</span></span></span><wbr></wbr><span class="token punctuation">)</span></div></div><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="for-each-tag.html"><span class="token function">forEachTag</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tagHandler<span class="token operator">: </span><span class="token punctuation">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="okio/ByteString///PointingToDeclaration/">ByteString</span></div><div class="brief "><p class="paragraph">Reads each tag, handles it, and returns a byte string with the unknown fields.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-855797331%2FFunctions%2F-519790334" anchor-label="nextFieldMinLengthInBytes" id="-855797331%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="next-field-min-length-in-bytes.html"><span>next</span><wbr></wbr><span>Field</span><wbr></wbr><span>Min</span><wbr></wbr><span>Length</span><wbr></wbr><span>In</span><wbr></wbr><span><span>Bytes</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-855797331%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="next-field-min-length-in-bytes.html"><span class="token function">nextFieldMinLengthInBytes</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">Returns the min length of the next field in bytes. Some encodings have a fixed length, while others have a variable length. LENGTH_DELIMITED fields have a known variable length, while VARINT fields could be as small as a single byte.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="252604610%2FFunctions%2F-519790334" anchor-label="nextLengthDelimited" id="252604610%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="next-length-delimited.html"><span>next</span><wbr></wbr><span>Length</span><wbr></wbr><span><span>Delimited</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="252604610%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="next-length-delimited.html"><span class="token function">nextLengthDelimited</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Reads and returns the length of the next message in a length-delimited stream.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1680491707%2FFunctions%2F-519790334" anchor-label="nextTag" id="1680491707%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="next-tag.html"><span>next</span><wbr></wbr><span><span>Tag</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1680491707%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="next-tag.html"><span class="token function">nextTag</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Reads and returns the next tag of the message, or -1 if there are no further tags. Use <a href="peek-field-encoding.html">peekFieldEncoding</a> after calling this method to query its encoding. This silently skips groups.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="367360432%2FFunctions%2F-519790334" anchor-label="peekFieldEncoding" id="367360432%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="peek-field-encoding.html"><span>peek</span><wbr></wbr><span>Field</span><wbr></wbr><span><span>Encoding</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="367360432%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="peek-field-encoding.html"><span class="token function">peekFieldEncoding</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-field-encoding/index.html">FieldEncoding</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns the encoding of the next field value. <a href="next-tag.html">nextTag</a> must be called before this method.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="53836397%2FFunctions%2F-519790334" anchor-label="readBytes" id="53836397%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="read-bytes.html"><span>read</span><wbr></wbr><span><span>Bytes</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="53836397%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="read-bytes.html"><span class="token function">readBytes</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="okio/ByteString///PointingToDeclaration/">ByteString</span></div><div class="brief "><p class="paragraph">Reads a <code class="lang-kotlin">bytes</code> field value from the stream. The length is read from the stream prior to the actual data.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1554326459%2FFunctions%2F-519790334" anchor-label="readFixed32" id="-1554326459%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="read-fixed32.html"><span>read</span><wbr></wbr><span><span>Fixed32</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1554326459%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="read-fixed32.html"><span class="token function">readFixed32</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Reads a 32-bit little-endian integer from the stream.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1392555206%2FFunctions%2F-519790334" anchor-label="readFixed64" id="1392555206%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="read-fixed64.html"><span>read</span><wbr></wbr><span><span>Fixed64</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1392555206%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="read-fixed64.html"><span class="token function">readFixed64</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">Reads a 64-bit little-endian integer from the stream.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1556744049%2FFunctions%2F-519790334" anchor-label="readString" id="1556744049%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="read-string.html"><span>read</span><wbr></wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1556744049%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="read-string.html"><span class="token function">readString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Reads a <code class="lang-kotlin">string</code> field value from the stream.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="362124528%2FFunctions%2F-519790334" anchor-label="readUnknownField" id="362124528%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="read-unknown-field.html"><span>read</span><wbr></wbr><span>Unknown</span><wbr></wbr><span><span>Field</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="362124528%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="read-unknown-field.html"><span class="token function">readUnknownField</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Read an unknown field and store temporarily. Once the entire message is read, call <a href="end-message-and-get-unknown-fields.html">endMessageAndGetUnknownFields</a> to retrieve unknown fields.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-907521221%2FFunctions%2F-519790334" anchor-label="readVarint32" id="-907521221%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="read-varint32.html"><span>read</span><wbr></wbr><span><span>Varint32</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-907521221%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="read-varint32.html"><span class="token function">readVarint32</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Reads a raw varint from the stream. If larger than 32 bits, discard the upper bits.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2039360444%2FFunctions%2F-519790334" anchor-label="readVarint64" id="2039360444%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="read-varint64.html"><span>read</span><wbr></wbr><span><span>Varint64</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2039360444%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="read-varint64.html"><span class="token function">readVarint64</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">Reads a raw varint up to 64 bits in length from the stream.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1548099193%2FFunctions%2F-519790334" anchor-label="skip" id="1548099193%2FFunctions%2F-519790334" data-filterable-set=":wire-runtime:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-runtime:dokkaHtml/commonMain" data-filterable-set=":wire-runtime:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="skip.html"><span><span>skip</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1548099193%2FFunctions%2F-519790334"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-runtime:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="skip.html"><span class="token function">skip</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Skips the current field's value. This is only safe to call immediately following a call to <a href="next-tag.html">nextTag</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

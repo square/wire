@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>WireRun</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../index.html">
+                            wire-schema
+                    </a>
+            </div>
+            <div class="library-version">
+5.0.0-SNAPSHOT            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":wire-schema:dokkaHtml/commonMain">common</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="wire-schema::com.squareup.wire.schema/WireRun///PointingToDeclaration//1568146121">
+  <div class="breadcrumbs"><a href="../../../index.html">wire-schema</a><span class="delimiter">/</span><a href="../index.html">com.squareup.wire.schema</a><span class="delimiter">/</span><span class="current">WireRun</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Wire</span><wbr></wbr><span><span>Run</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">WireRun</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>sourcePath<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-location/index.html">Location</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>protoPath<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-location/index.html">Location</a><span class="token operator">&gt;</span><span class="token operator"> = </span>listOf()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>treeShakingRoots<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator"> = </span>listOf(&quot;*&quot;)<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>treeShakingRubbish<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator"> = </span>listOf()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>moves<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span data-unresolved-link="com.squareup.wire.schema.internal/TypeMover.Move///PointingToDeclaration/">TypeMover.Move</span><span class="token operator">&gt;</span><span class="token operator"> = </span>listOf()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>sinceVersion<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>untilVersion<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>onlyVersion<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>targets<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-target/index.html">Target</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>modules<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="-module/index.html">WireRun.Module</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyMap()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>permitPackageCycles<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>escapeKotlinKeywords<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>eventListeners<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-event-listener/index.html">EventListener</a><span class="token operator">&gt;</span><span class="token operator"> = </span>listOf()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>rejectUnusedRootsOrPrunes<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>opaqueTypes<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator"> = </span>listOf()</span></span><span class="token punctuation">)</span></div><p class="paragraph">An invocation of the Wire compiler. Each invocation performs the following operations:</p><ol><li><p class="paragraph">Read source <code class="lang-kotlin">.proto</code> files directly from the file system or from archive files (ie. <code class="lang-kotlin">.jar</code>     and <code class="lang-kotlin">.zip</code> files). This will also load imported <code class="lang-kotlin">.proto</code> files from either the <a href="source-path.html">sourcePath</a>     or <a href="proto-path.html">protoPath</a>. The collection of loaded type declarations is called a schema.</p></li><li><p class="paragraph">Validate the schema and resolve references between types.</p></li><li><p class="paragraph">Optionally refactor the schema. This builds a new schema that is a subset of the original.     The new schema contains only types that are both transitively reachable from     <a href="tree-shaking-roots.html">treeShakingRoots</a> and not in <a href="tree-shaking-rubbish.html">treeShakingRubbish</a>. Types are moved to different files as     specified by <a href="moves.html">moves</a>.</p></li><li><p class="paragraph">Call each target. It will generate sources for protos in the <a href="source-path.html">sourcePath</a> that are in its     <a href="../-target/includes.html">Target.includes</a>, that are not in its <a href="../-target/excludes.html">Target.excludes</a>, and that haven't already been     emitted by an earlier target.</p></li></ol><p class="paragraph"><p class="paragraph">Source Directories and Archives</p> -------------------------------</p><p class="paragraph">The <a href="source-path.html">sourcePath</a> and <a href="proto-path.html">protoPath</a> lists contain locations that are of the following forms:</p><ul><li><p class="paragraph">Locations of <code class="lang-kotlin">.proto</code> files.</p></li><li><p class="paragraph">Locations of directories that contain a tree of <code class="lang-kotlin">.proto</code> files. Typically this is a directory     ending in <code class="lang-kotlin">src/main/proto</code>.</p></li><li><p class="paragraph">Locations of <code class="lang-kotlin">.zip</code> and <code class="lang-kotlin">.jar</code> archives that contain a tree of <code class="lang-kotlin">.proto</code> files. Typically this     is a <code class="lang-kotlin">.jar</code> file from a Maven repository.</p></li></ul><p class="paragraph">When one <code class="lang-kotlin">.proto</code> message imports another, the import is resolved from the base of each location and archive. If the build is in the unfortunate situation where an import could be resolved by multiple files, whichever was listed first takes precedence.</p><p class="paragraph">Although the content and structure of <a href="source-path.html">sourcePath</a> and <a href="proto-path.html">protoPath</a> are the same, only types defined in <a href="source-path.html">sourcePath</a> are used to generate sources.</p><p class="paragraph"><p class="paragraph">Matching Packages, Types, and Members</p> -------------------------------------</p><p class="paragraph">The <a href="tree-shaking-roots.html">treeShakingRoots</a>, <a href="tree-shaking-rubbish.html">treeShakingRubbish</a>, <a href="../-target/includes.html">Target.includes</a> and <a href="../-target/excludes.html">Target.excludes</a> lists contain strings that select proto types and members. Strings in these lists are in one of these forms:</p><ul><li><p class="paragraph">Package names followed by <code class="lang-kotlin">.*</code>, like <code class="lang-kotlin">squareup.dinosaurs.*</code>. This matches types defined in the     package and its descendant packages. A lone asterisk <code class="lang-kotlin">*</code> matches all packages.</p></li><li><p class="paragraph">Fully-qualified type names like <code class="lang-kotlin">squareup.dinosaurs.Dinosaur</code>. Types may be messages, enums,     or services.</p></li><li><p class="paragraph">Fully-qualified member names like <code class="lang-kotlin">squareup.dinosaurs.Dinosaur#name</code>. These are type names     followed by <code class="lang-kotlin">#</code> followed by a member name. Members may be message fields, enum constants, or     service RPCs.</p></li></ul><p class="paragraph">It is an error to specify mutually-redundant values in any of these lists. For example, the list <code class="lang-kotlin">[squareup.dinosaurs, squareup.dinosaurs.Dinosaur]</code> is invalid because the second element is already matched by the first.</p><p class="paragraph">Every element in each lists must apply to at least one declaration. Otherwise that option is unnecessary and a possible typo.</p><p class="paragraph"><p class="paragraph">Composability</p> -------------</p><p class="paragraph">There are many moving parts in this system! For most applications it is safe to use <a href="source-path.html">sourcePath</a> and <a href="targets.html">targets</a> only. The other options are for the benefit of large and modular applications.</p><h3 class="">Use <a href="proto-path.html">protoPath</a> when one proto module depends on another proto module.</h3><p class="paragraph">These <code class="lang-kotlin">.proto</code> files are used for checking dependencies only. It is assumed that the sources for these protos are generated elsewhere.</p><h3 class="">Use tree shaking to remove unwanted types.</h3><p class="paragraph"><a href="https://en.wikipedia.org/wiki/Tree_shaking">Tree shaking</a> can be used to create a small-as-possible generated footprint even if the source declarations are large. This works like <a href="https://en.wikipedia.org/wiki/ProGuard_(software)">ProGuard</a> and other code shrinking compilers: it allows you to benefit from a shared codebase without creating a large artifact.</p><h3 class="">Use multiple targets to split generated code across multiple programming languages.</h3><p class="paragraph">If your project is already using generated Java, it’s difficult to switch to generated Kotlin. Instead of switching everything over at once you can use multiple targets to switch over incrementally. Targets consume their types; subsequent targets get whatever types are left over.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-922830164%2FConstructors%2F1568146121" anchor-label="WireRun" id="-922830164%2FConstructors%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-wire-run.html"><span>Wire</span><wbr></wbr><span><span>Run</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-922830164%2FConstructors%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">sourcePath<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-location/index.html">Location</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">protoPath<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-location/index.html">Location</a><span class="token operator">&gt;</span><span class="token operator"> = </span>listOf()<span class="token punctuation">, </span></span><span class="parameter ">treeShakingRoots<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator"> = </span>listOf(&quot;*&quot;)<span class="token punctuation">, </span></span><span class="parameter ">treeShakingRubbish<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator"> = </span>listOf()<span class="token punctuation">, </span></span><span class="parameter ">moves<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span data-unresolved-link="com.squareup.wire.schema.internal/TypeMover.Move///PointingToDeclaration/">TypeMover.Move</span><span class="token operator">&gt;</span><span class="token operator"> = </span>listOf()<span class="token punctuation">, </span></span><span class="parameter ">sinceVersion<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">untilVersion<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">onlyVersion<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">targets<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-target/index.html">Target</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">modules<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="-module/index.html">WireRun.Module</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyMap()<span class="token punctuation">, </span></span><span class="parameter ">permitPackageCycles<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">escapeKotlinKeywords<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">eventListeners<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-event-listener/index.html">EventListener</a><span class="token operator">&gt;</span><span class="token operator"> = </span>listOf()<span class="token punctuation">, </span></span><span class="parameter ">rejectUnusedRootsOrPrunes<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">opaqueTypes<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator"> = </span>listOf()</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="765196239%2FClasslikes%2F1568146121" anchor-label="Module" id="765196239%2FClasslikes%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-module/index.html"><span><span>Module</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="765196239%2FClasslikes%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-module/index.html">Module</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>dependencies<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html">Set</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptySet()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>pruningRules<span class="token operator">: </span><a href="../-pruning-rules/index.html">PruningRules</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-1434159782%2FProperties%2F1568146121" anchor-label="escapeKotlinKeywords" id="-1434159782%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="escape-kotlin-keywords.html"><span>escape</span><wbr></wbr><span>Kotlin</span><wbr></wbr><span><span>Keywords</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1434159782%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="escape-kotlin-keywords.html">escapeKotlinKeywords</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></div><div class="brief "><p class="paragraph">If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1273918497%2FProperties%2F1568146121" anchor-label="eventListeners" id="1273918497%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="event-listeners.html"><span>event</span><wbr></wbr><span><span>Listeners</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1273918497%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="event-listeners.html">eventListeners</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-event-listener/index.html">EventListener</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="886719661%2FProperties%2F1568146121" anchor-label="modules" id="886719661%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="modules.html"><span><span>modules</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="886719661%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="modules.html">modules</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="-module/index.html">WireRun.Module</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A map from module dir to module info which dictates how the loaded types are partitioned and generated.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-323031150%2FProperties%2F1568146121" anchor-label="moves" id="-323031150%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="moves.html"><span><span>moves</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-323031150%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="moves.html">moves</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span data-unresolved-link="com.squareup.wire.schema.internal/TypeMover.Move///PointingToDeclaration/">TypeMover.Move</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Types to move before generating code or producing other output. Use this with ProtoTarget to refactor proto schemas safely.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1729662152%2FProperties%2F1568146121" anchor-label="onlyVersion" id="1729662152%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="only-version.html"><span>only</span><wbr></wbr><span><span>Version</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1729662152%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="only-version.html">onlyVersion</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">The only version of the version range. Fields with <code class="lang-kotlin">until</code> values greater than this, as well as fields with <code class="lang-kotlin">since</code> values less than or equal to this, are retained. This field is mutually exclusive with <code class="lang-kotlin">sinceVersion</code> and <code class="lang-kotlin">untilVersion</code>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1760879868%2FProperties%2F1568146121" anchor-label="opaqueTypes" id="1760879868%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="opaque-types.html"><span>opaque</span><wbr></wbr><span><span>Types</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1760879868%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="opaque-types.html">opaqueTypes</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">All qualified named Protobuf types in <a href="opaque-types.html">opaqueTypes</a> will be evaluated as being of type <code class="lang-kotlin">bytes</code>. On code generation, the fields of such types will be using the platform equivalent of <code class="lang-kotlin">bytes</code>, like <span data-unresolved-link="okio/ByteString///PointingToDeclaration/">okio.ByteString</span> for the JVM. Note that scalar types cannot be opaqued. The opaque step will happen before the tree shaking one.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1029486852%2FProperties%2F1568146121" anchor-label="permitPackageCycles" id="-1029486852%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="permit-package-cycles.html"><span>permit</span><wbr></wbr><span>Package</span><wbr></wbr><span><span>Cycles</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1029486852%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="permit-package-cycles.html">permitPackageCycles</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></div><div class="brief "><p class="paragraph">If true, no validation will be executed to check package cycles.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-577676537%2FProperties%2F1568146121" anchor-label="protoPath" id="-577676537%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="proto-path.html"><span>proto</span><wbr></wbr><span><span>Path</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-577676537%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="proto-path.html">protoPath</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-location/index.html">Location</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Sources <code class="lang-kotlin">.proto</code> files for this task to use when resolving references.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="822393644%2FProperties%2F1568146121" anchor-label="rejectUnusedRootsOrPrunes" id="822393644%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="reject-unused-roots-or-prunes.html"><span>reject</span><wbr></wbr><span>Unused</span><wbr></wbr><span>Roots</span><wbr></wbr><span>Or</span><wbr></wbr><span><span>Prunes</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="822393644%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="reject-unused-roots-or-prunes.html">rejectUnusedRootsOrPrunes</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span></div><div class="brief "><p class="paragraph">If true, Wire will fail if not all <a href="tree-shaking-roots.html">treeShakingRoots</a> and <a href="tree-shaking-rubbish.html">treeShakingRubbish</a> are used when tree-shaking the schema. This can help discover incorrect configurations early and avoid misexpectations about the built schema.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-330650360%2FProperties%2F1568146121" anchor-label="sinceVersion" id="-330650360%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="since-version.html"><span>since</span><wbr></wbr><span><span>Version</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-330650360%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="since-version.html">sinceVersion</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">The exclusive lower bound of the version range. Fields with <code class="lang-kotlin">until</code> values greater than this are retained.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1565313306%2FProperties%2F1568146121" anchor-label="sourcePath" id="-1565313306%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="source-path.html"><span>source</span><wbr></wbr><span><span>Path</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1565313306%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="source-path.html">sourcePath</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-location/index.html">Location</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Source <code class="lang-kotlin">.proto</code> files for this task to generate from.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1452063634%2FProperties%2F1568146121" anchor-label="targets" id="1452063634%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="targets.html"><span><span>targets</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1452063634%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="targets.html">targets</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-target/index.html">Target</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Action to take with the loaded, resolved, and possibly-pruned schema.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-177599878%2FProperties%2F1568146121" anchor-label="treeShakingRoots" id="-177599878%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="tree-shaking-roots.html"><span>tree</span><wbr></wbr><span>Shaking</span><wbr></wbr><span><span>Roots</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-177599878%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="tree-shaking-roots.html">treeShakingRoots</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">The roots of the schema model. Wire will prune the schema model to only include types in this list and the types transitively required by them.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-16303568%2FProperties%2F1568146121" anchor-label="treeShakingRubbish" id="-16303568%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="tree-shaking-rubbish.html"><span>tree</span><wbr></wbr><span>Shaking</span><wbr></wbr><span><span>Rubbish</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-16303568%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="tree-shaking-rubbish.html">treeShakingRubbish</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Types and members that will be stripped from the schema model. Wire will remove the elements themselves and also all references to them.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1584420564%2FProperties%2F1568146121" anchor-label="untilVersion" id="-1584420564%2FProperties%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="until-version.html"><span>until</span><wbr></wbr><span><span>Version</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1584420564%2FProperties%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="until-version.html">untilVersion</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">The inclusive upper bound of the version range. Fields with <code class="lang-kotlin">since</code> values less than or equal to this are retained.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1793902526%2FFunctions%2F1568146121" anchor-label="execute" id="1793902526%2FFunctions%2F1568146121" data-filterable-set=":wire-schema:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":wire-schema:dokkaHtml/commonMain" data-filterable-set=":wire-schema:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="execute.html"><span><span>execute</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1793902526%2FFunctions%2F1568146121"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-schema:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="execute.html"><span class="token function">execute</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fs<span class="token operator">: </span><span data-unresolved-link="okio/FileSystem///PointingToDeclaration/">FileSystem</span><span class="token punctuation">, </span></span><span class="parameter ">logger<span class="token operator">: </span><a href="../../com.squareup.wire/-wire-logger/index.html">WireLogger</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

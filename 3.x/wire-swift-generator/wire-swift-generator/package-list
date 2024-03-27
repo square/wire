@@ -1,0 +1,12 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.squareup.wire.swift////PointingToDeclaration/wire-swift-generator/com.squareup.wire.swift/index.html
+$dokka.location:com.squareup.wire.swift/SwiftGenerator.Companion///PointingToDeclaration/wire-swift-generator/com.squareup.wire.swift/-swift-generator/-companion/index.html
+$dokka.location:com.squareup.wire.swift/SwiftGenerator.Companion/builtInType/#com.squareup.wire.schema.ProtoType/PointingToDeclaration/wire-swift-generator/com.squareup.wire.swift/-swift-generator/-companion/built-in-type.html
+$dokka.location:com.squareup.wire.swift/SwiftGenerator.Companion/invoke/#com.squareup.wire.schema.Schema#kotlin.collections.Map[com.squareup.wire.schema.ProtoType,kotlin.String]/PointingToDeclaration/wire-swift-generator/com.squareup.wire.swift/-swift-generator/-companion/invoke.html
+$dokka.location:com.squareup.wire.swift/SwiftGenerator///PointingToDeclaration/wire-swift-generator/com.squareup.wire.swift/-swift-generator/index.html
+$dokka.location:com.squareup.wire.swift/SwiftGenerator/generateTypeTo/#com.squareup.wire.schema.Type#io.outfoxx.swiftpoet.FileSpec.Builder/PointingToDeclaration/wire-swift-generator/com.squareup.wire.swift/-swift-generator/generate-type-to.html
+$dokka.location:com.squareup.wire.swift/SwiftGenerator/generatedTypeName/#com.squareup.wire.schema.Type/PointingToDeclaration/wire-swift-generator/com.squareup.wire.swift/-swift-generator/generated-type-name.html
+$dokka.location:com.squareup.wire.swift/SwiftGenerator/schema/#/PointingToDeclaration/wire-swift-generator/com.squareup.wire.swift/-swift-generator/schema.html
+com.squareup.wire.swift
+

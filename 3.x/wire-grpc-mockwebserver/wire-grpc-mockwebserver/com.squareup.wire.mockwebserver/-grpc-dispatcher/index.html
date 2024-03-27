@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>GrpcDispatcher</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../index.html">
+                            wire-grpc-mockwebserver
+                    </a>
+            </div>
+            <div class="library-version">
+5.0.0-SNAPSHOT            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":wire-grpc-mockwebserver:dokkaHtml/main">jvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="wire-grpc-mockwebserver::com.squareup.wire.mockwebserver/GrpcDispatcher///PointingToDeclaration//1102571131">
+  <div class="breadcrumbs"><a href="../../../index.html">wire-grpc-mockwebserver</a><span class="delimiter">/</span><a href="../index.html">com.squareup.wire.mockwebserver</a><span class="delimiter">/</span><span class="current">GrpcDispatcher</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Grpc</span><wbr></wbr><span><span>Dispatcher</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-mockwebserver:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">GrpcDispatcher</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">services<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span data-unresolved-link="com.squareup.wire/Service///PointingToDeclaration/">Service</span><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>delegate<span class="token operator">: </span><span data-unresolved-link="okhttp3.mockwebserver/Dispatcher///PointingToDeclaration/">Dispatcher</span></span></span><span class="token punctuation">)</span> : <span data-unresolved-link="okhttp3.mockwebserver/Dispatcher///PointingToDeclaration/">Dispatcher</span></div><p class="paragraph">Serves gRPC calls using MockWebServer over HTTP/2.</p><p class="paragraph">Use this instead of MockWebServer's default dispatcher. It can delegate to that dispatcher for non-gRPC calls.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">@JvmField @Rule val mockWebServer = MockWebServer()<br><br>val myFakeService = MyFakeService()<br><br>@Before<br>fun setUp() {<br>  mockWebServer.dispatcher = GrpcDispatcher(<br>    services = listOf(myFakeService),<br>    delegate = mockWebServer.dispatcher<br>  )<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph"><strong>WARNING</strong>: This class does not currently support streaming calls.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="1136804871%2FConstructors%2F1102571131" anchor-label="GrpcDispatcher" id="1136804871%2FConstructors%2F1102571131" data-filterable-set=":wire-grpc-mockwebserver:dokkaHtml/main"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":wire-grpc-mockwebserver:dokkaHtml/main" data-filterable-set=":wire-grpc-mockwebserver:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-grpc-dispatcher.html"><span>Grpc</span><wbr></wbr><span><span>Dispatcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1136804871%2FConstructors%2F1102571131"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-mockwebserver:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">services<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span data-unresolved-link="com.squareup.wire/Service///PointingToDeclaration/">Service</span><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">delegate<span class="token operator">: </span><span data-unresolved-link="okhttp3.mockwebserver/Dispatcher///PointingToDeclaration/">Dispatcher</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="726104620%2FClasslikes%2F1102571131" anchor-label="Companion" id="726104620%2FClasslikes%2F1102571131" data-filterable-set=":wire-grpc-mockwebserver:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-mockwebserver:dokkaHtml/main" data-filterable-set=":wire-grpc-mockwebserver:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="726104620%2FClasslikes%2F1102571131"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-mockwebserver:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-1664070736%2FProperties%2F1102571131" anchor-label="delegate" id="-1664070736%2FProperties%2F1102571131" data-filterable-set=":wire-grpc-mockwebserver:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-mockwebserver:dokkaHtml/main" data-filterable-set=":wire-grpc-mockwebserver:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="delegate.html"><span><span>delegate</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1664070736%2FProperties%2F1102571131"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-mockwebserver:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="delegate.html">delegate</a><span class="token operator">: </span><span data-unresolved-link="okhttp3.mockwebserver/Dispatcher///PointingToDeclaration/">Dispatcher</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1308398984%2FFunctions%2F1102571131" anchor-label="dispatch" id="1308398984%2FFunctions%2F1102571131" data-filterable-set=":wire-grpc-mockwebserver:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-mockwebserver:dokkaHtml/main" data-filterable-set=":wire-grpc-mockwebserver:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="dispatch.html"><span><span>dispatch</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1308398984%2FFunctions%2F1102571131"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-mockwebserver:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="dispatch.html"><span class="token function">dispatch</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><span data-unresolved-link="okhttp3.mockwebserver/RecordedRequest///PointingToDeclaration/">RecordedRequest</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="okhttp3.mockwebserver/MockResponse///PointingToDeclaration/">MockResponse</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1383470203%2FFunctions%2F1102571131" anchor-label="peek" id="1383470203%2FFunctions%2F1102571131" data-filterable-set=":wire-grpc-mockwebserver:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-mockwebserver:dokkaHtml/main" data-filterable-set=":wire-grpc-mockwebserver:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1383470203%2FFunctions%2F1102571131"><span><span>peek</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1383470203%2FFunctions%2F1102571131"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-mockwebserver:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1383470203%2FFunctions%2F1102571131"><span class="token function">peek</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="okhttp3.mockwebserver/MockResponse///PointingToDeclaration/">MockResponse</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1825700704%2FFunctions%2F1102571131" anchor-label="shutdown" id="1825700704%2FFunctions%2F1102571131" data-filterable-set=":wire-grpc-mockwebserver:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-grpc-mockwebserver:dokkaHtml/main" data-filterable-set=":wire-grpc-mockwebserver:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1825700704%2FFunctions%2F1102571131"><span><span>shutdown</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1825700704%2FFunctions%2F1102571131"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-grpc-mockwebserver:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1825700704%2FFunctions%2F1102571131"><span class="token function">shutdown</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

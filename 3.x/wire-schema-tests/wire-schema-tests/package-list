@@ -1,0 +1,28 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.squareup.wire////PointingToDeclaration/wire-schema-tests/com.squareup.wire/index.html
+$dokka.location:com.squareup.wire//addFakeRuntimeProtos/com.squareup.wire.SchemaBuilder#/PointingToDeclaration/wire-schema-tests/com.squareup.wire/add-fake-runtime-protos.html
+$dokka.location:com.squareup.wire//buildSchema/#kotlin.Function1[com.squareup.wire.SchemaBuilder,kotlin.Unit]/PointingToDeclaration/wire-schema-tests/com.squareup.wire/build-schema.html
+$dokka.location:com.squareup.wire/SchemaBuilder///PointingToDeclaration/wire-schema-tests/com.squareup.wire/-schema-builder/index.html
+$dokka.location:com.squareup.wire/SchemaBuilder/SchemaBuilder/#/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-schema-builder/-schema-builder.html
+$dokka.location:com.squareup.wire/SchemaBuilder/add/#okio.Path#kotlin.String#okio.Path/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-schema-builder/add.html
+$dokka.location:com.squareup.wire/SchemaBuilder/add/#okio.Path#kotlin.String/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-schema-builder/add.html
+$dokka.location:com.squareup.wire/SchemaBuilder/addOpaqueTypes/#kotlin.Array[com.squareup.wire.schema.ProtoType]/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-schema-builder/add-opaque-types.html
+$dokka.location:com.squareup.wire/SchemaBuilder/addProtoPath/#okio.Path#kotlin.String/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-schema-builder/add-proto-path.html
+$dokka.location:com.squareup.wire/SchemaBuilder/build/#/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-schema-builder/build.html
+$dokka.location:com.squareup.wire/WireTestLogger///PointingToDeclaration/wire-schema-tests/com.squareup.wire/-wire-test-logger/index.html
+$dokka.location:com.squareup.wire/WireTestLogger/WireTestLogger/#/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-wire-test-logger/-wire-test-logger.html
+$dokka.location:com.squareup.wire/WireTestLogger/artifactHandled/#/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-wire-test-logger/artifact-handled.html
+$dokka.location:com.squareup.wire/WireTestLogger/artifactHandled/#okio.Path#kotlin.String#kotlin.String/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-wire-test-logger/artifact-handled.html
+$dokka.location:com.squareup.wire/WireTestLogger/artifactSkipped/#/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-wire-test-logger/artifact-skipped.html
+$dokka.location:com.squareup.wire/WireTestLogger/artifactSkipped/#com.squareup.wire.schema.ProtoType#kotlin.String/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-wire-test-logger/artifact-skipped.html
+$dokka.location:com.squareup.wire/WireTestLogger/unusedExcludesInTarget/#/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-wire-test-logger/unused-excludes-in-target.html
+$dokka.location:com.squareup.wire/WireTestLogger/unusedExcludesInTarget/#kotlin.collections.Set[kotlin.String]/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-wire-test-logger/unused-excludes-in-target.html
+$dokka.location:com.squareup.wire/WireTestLogger/unusedIncludesInTarget/#/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-wire-test-logger/unused-includes-in-target.html
+$dokka.location:com.squareup.wire/WireTestLogger/unusedIncludesInTarget/#kotlin.collections.Set[kotlin.String]/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-wire-test-logger/unused-includes-in-target.html
+$dokka.location:com.squareup.wire/WireTestLogger/unusedPrunes/#/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-wire-test-logger/unused-prunes.html
+$dokka.location:com.squareup.wire/WireTestLogger/unusedPrunes/#kotlin.collections.Set[kotlin.String]/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-wire-test-logger/unused-prunes.html
+$dokka.location:com.squareup.wire/WireTestLogger/unusedRoots/#/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-wire-test-logger/unused-roots.html
+$dokka.location:com.squareup.wire/WireTestLogger/unusedRoots/#kotlin.collections.Set[kotlin.String]/PointingToDeclaration/wire-schema-tests/com.squareup.wire/-wire-test-logger/unused-roots.html
+com.squareup.wire
+

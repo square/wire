@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>JavaGenerator</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../index.html">
+                            wire-java-generator
+                    </a>
+            </div>
+            <div class="library-version">
+5.0.0-SNAPSHOT            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":wire-java-generator:dokkaHtml/main">jvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="wire-java-generator::com.squareup.wire.java/JavaGenerator///PointingToDeclaration//1169711237">
+  <div class="breadcrumbs"><a href="../../../index.html">wire-java-generator</a><span class="delimiter">/</span><a href="../index.html">com.squareup.wire.java</a><span class="delimiter">/</span><span class="current">JavaGenerator</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Java</span><wbr></wbr><span><span>Generator</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">JavaGenerator</a></div><p class="paragraph">Generates Java source code that matches proto definitions. </p><p class="paragraph">This can map type names from protocol buffers (like <code class="lang-kotlin">uint32</code>, <code class="lang-kotlin">string</code>, or <code class="lang-kotlin">
+squareup.protos.person.Person</code> to the corresponding Java names (like <code class="lang-kotlin">int</code>, <code class="lang-kotlin">
+java.lang.String</code>, or <code class="lang-kotlin">com.squareup.protos.person.Person</code>).</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="620794171%2FFunctions%2F1169711237" anchor-label="abstractAdapterName" id="620794171%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="abstract-adapter-name.html"><span>abstract</span><wbr></wbr><span>Adapter</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="620794171%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/javax/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword">fun </span><a href="abstract-adapter-name.html"><span class="token function">abstractAdapterName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">protoType<span class="token operator">: </span><span data-unresolved-link="com.squareup.wire.schema/ProtoType///PointingToDeclaration/">ProtoType</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></div><div class="brief ">Returns the Java type of the abstract adapter class generated for a corresponding <code class="lang-kotlin">
+protoType</code>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1469857802%2FFunctions%2F1169711237" anchor-label="builtInType" id="-1469857802%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="built-in-type.html"><span>built</span><wbr></wbr><span>In</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1469857802%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="built-in-type.html"><span class="token function">builtInType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">protoType<span class="token operator">: </span><span data-unresolved-link="com.squareup.wire.schema/ProtoType///PointingToDeclaration/">ProtoType</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1941087901%2FFunctions%2F1169711237" anchor-label="generateAdapterForCustomType" id="-1941087901%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="generate-adapter-for-custom-type.html"><span>generate</span><wbr></wbr><span>Adapter</span><wbr></wbr><span>For</span><wbr></wbr><span>Custom</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1941087901%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="generate-adapter-for-custom-type.html"><span class="token function">generateAdapterForCustomType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">type<span class="token operator">: </span><span data-unresolved-link="com.squareup.wire.schema/Type///PointingToDeclaration/">Type</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/TypeSpec///PointingToDeclaration/">TypeSpec</span></div><div class="brief ">Returns a standalone adapter for <code class="lang-kotlin">type</code>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-322405894%2FFunctions%2F1169711237" anchor-label="generatedTypeName" id="-322405894%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="generated-type-name.html"><span>generated</span><wbr></wbr><span>Type</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-322405894%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="generated-type-name.html"><span class="token function">generatedTypeName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">member<span class="token operator">: </span><span data-unresolved-link="com.squareup.wire.schema/ProtoMember///PointingToDeclaration/">ProtoMember</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></div><div class="brief ">Returns the full name of the class generated for <code class="lang-kotlin">member</code>.</div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="generated-type-name.html"><span class="token function">generatedTypeName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">type<span class="token operator">: </span><span data-unresolved-link="com.squareup.wire.schema/Type///PointingToDeclaration/">Type</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></div><div class="brief ">Returns the full name of the class generated for <code class="lang-kotlin">type</code>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1902096165%2FFunctions%2F1169711237" anchor-label="generateOptionType" id="1902096165%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="generate-option-type.html"><span>generate</span><wbr></wbr><span>Option</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1902096165%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/javax/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword">fun </span><a href="generate-option-type.html"><span class="token function">generateOptionType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">extend<span class="token operator">: </span><span data-unresolved-link="com.squareup.wire.schema/Extend///PointingToDeclaration/">Extend</span><span class="token punctuation">, </span></span><span class="parameter ">field<span class="token operator">: </span><span data-unresolved-link="com.squareup.wire.schema/Field///PointingToDeclaration/">Field</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/TypeSpec///PointingToDeclaration/">TypeSpec</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="265986552%2FFunctions%2F1169711237" anchor-label="generateType" id="265986552%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="generate-type.html"><span>generate</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="265986552%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="generate-type.html"><span class="token function">generateType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">type<span class="token operator">: </span><span data-unresolved-link="com.squareup.wire.schema/Type///PointingToDeclaration/">Type</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/TypeSpec///PointingToDeclaration/">TypeSpec</span></div><div class="brief ">Returns the generated code for <code class="lang-kotlin">type</code>, which may be a top-level or a nested type.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="879609474%2FFunctions%2F1169711237" anchor-label="get" id="879609474%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get.html"><span><span>get</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="879609474%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="get.html"><span class="token function">get</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">schema<span class="token operator">: </span><span data-unresolved-link="com.squareup.wire.schema/Schema///PointingToDeclaration/">Schema</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">JavaGenerator</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="373869074%2FFunctions%2F1169711237" anchor-label="isEnum" id="373869074%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-enum.html"><span>is</span><wbr></wbr><span><span>Enum</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="373869074%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="is-enum.html"><span class="token function">isEnum</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">type<span class="token operator">: </span><span data-unresolved-link="com.squareup.wire.schema/ProtoType///PointingToDeclaration/">ProtoType</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="668869649%2FFunctions%2F1169711237" anchor-label="schema" id="668869649%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="schema.html"><span><span>schema</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="668869649%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="schema.html"><span class="token function">schema</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.squareup.wire.schema/Schema///PointingToDeclaration/">Schema</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="396284152%2FFunctions%2F1169711237" anchor-label="typeName" id="396284152%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="type-name.html"><span>type</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="396284152%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="type-name.html"><span class="token function">typeName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">protoType<span class="token operator">: </span><span data-unresolved-link="com.squareup.wire.schema/ProtoType///PointingToDeclaration/">ProtoType</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/TypeName///PointingToDeclaration/">TypeName</span></div><div class="brief ">Returns the Java type for <code class="lang-kotlin">protoType</code>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="507912155%2FFunctions%2F1169711237" anchor-label="withAndroid" id="507912155%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="with-android.html"><span>with</span><wbr></wbr><span><span>Android</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="507912155%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="with-android.html"><span class="token function">withAndroid</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">emitAndroid<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">JavaGenerator</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="724076515%2FFunctions%2F1169711237" anchor-label="withAndroidAnnotations" id="724076515%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="with-android-annotations.html"><span>with</span><wbr></wbr><span>Android</span><wbr></wbr><span><span>Annotations</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="724076515%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="with-android-annotations.html"><span class="token function">withAndroidAnnotations</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">emitAndroidAnnotations<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">JavaGenerator</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1582813326%2FFunctions%2F1169711237" anchor-label="withBuildersOnly" id="-1582813326%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="with-builders-only.html"><span>with</span><wbr></wbr><span>Builders</span><wbr></wbr><span><span>Only</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1582813326%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="with-builders-only.html"><span class="token function">withBuildersOnly</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">buildersOnly<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">JavaGenerator</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1461365617%2FFunctions%2F1169711237" anchor-label="withCompact" id="-1461365617%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="with-compact.html"><span>with</span><wbr></wbr><span><span>Compact</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1461365617%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="with-compact.html"><span class="token function">withCompact</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">emitCompact<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">JavaGenerator</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="570536645%2FFunctions%2F1169711237" anchor-label="withOptions" id="570536645%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="with-options.html"><span>with</span><wbr></wbr><span><span>Options</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="570536645%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="with-options.html"><span class="token function">withOptions</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">emitDeclaredOptions<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">emitAppliedOptions<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">JavaGenerator</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-964539319%2FFunctions%2F1169711237" anchor-label="withProfile" id="-964539319%2FFunctions%2F1169711237" data-filterable-set=":wire-java-generator:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-java-generator:dokkaHtml/main" data-filterable-set=":wire-java-generator:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="with-profile.html"><span>with</span><wbr></wbr><span><span>Profile</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-964539319%2FFunctions%2F1169711237"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-java-generator:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="with-profile.html"><span class="token function">withProfile</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">profile<span class="token operator">: </span><span data-unresolved-link="com.squareup.wire.schema/Profile///PointingToDeclaration/">Profile</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">JavaGenerator</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
