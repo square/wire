@@ -10,7 +10,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
-import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
 import kotlin.Any
@@ -32,15 +32,17 @@ public class MessageUsingMultipleEnums(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.MessageWithStatus${'$'}Status#ADAPTER",
+    label = WireField.Label.OMIT_IDENTITY,
     schemaIndex = 0,
   )
-  public val a: MessageWithStatus.Status? = null,
+  public val a: MessageWithStatus.Status = MessageWithStatus.Status.A,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.OtherMessageWithStatus${'$'}Status#ADAPTER",
+    label = WireField.Label.OMIT_IDENTITY,
     schemaIndex = 1,
   )
-  public val b: OtherMessageWithStatus.Status? = null,
+  public val b: OtherMessageWithStatus.Status = OtherMessageWithStatus.Status.A,
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MessageUsingMultipleEnums, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
@@ -63,8 +65,8 @@ public class MessageUsingMultipleEnums(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + (a?.hashCode() ?: 0)
-      result = result * 37 + (b?.hashCode() ?: 0)
+      result = result * 37 + a.hashCode()
+      result = result * 37 + b.hashCode()
       super.hashCode = result
     }
     return result
@@ -72,15 +74,15 @@ public class MessageUsingMultipleEnums(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (a != null) result += """a=$a"""
-    if (b != null) result += """b=$b"""
+    result += """a=$a"""
+    result += """b=$b"""
     return result.joinToString(prefix = "MessageUsingMultipleEnums{", separator = ", ", postfix =
         "}")
   }
 
   public fun copy(
-    a: MessageWithStatus.Status? = this.a,
-    b: OtherMessageWithStatus.Status? = this.b,
+    a: MessageWithStatus.Status = this.a,
+    b: OtherMessageWithStatus.Status = this.b,
     unknownFields: ByteString = this.unknownFields,
   ): MessageUsingMultipleEnums = MessageUsingMultipleEnums(a, b, unknownFields)
 
@@ -91,32 +93,38 @@ public class MessageUsingMultipleEnums(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageUsingMultipleEnums::class, 
       "type.googleapis.com/squareup.protos.kotlin.MessageUsingMultipleEnums", 
-      PROTO_2, 
+      PROTO_3, 
       null, 
       "same_name_enum.proto"
     ) {
       override fun encodedSize(`value`: MessageUsingMultipleEnums): Int {
         var size = value.unknownFields.size
-        size += MessageWithStatus.Status.ADAPTER.encodedSizeWithTag(1, value.a)
-        size += OtherMessageWithStatus.Status.ADAPTER.encodedSizeWithTag(2, value.b)
+        if (value.a != MessageWithStatus.Status.A) size +=
+            MessageWithStatus.Status.ADAPTER.encodedSizeWithTag(1, value.a)
+        if (value.b != OtherMessageWithStatus.Status.A) size +=
+            OtherMessageWithStatus.Status.ADAPTER.encodedSizeWithTag(2, value.b)
         return size
       }
 
       override fun encode(writer: ProtoWriter, `value`: MessageUsingMultipleEnums) {
-        MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)
-        OtherMessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 2, value.b)
+        if (value.a != MessageWithStatus.Status.A)
+            MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)
+        if (value.b != OtherMessageWithStatus.Status.A)
+            OtherMessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 2, value.b)
         writer.writeBytes(value.unknownFields)
       }
 
       override fun encode(writer: ReverseProtoWriter, `value`: MessageUsingMultipleEnums) {
         writer.writeBytes(value.unknownFields)
-        OtherMessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 2, value.b)
-        MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)
+        if (value.b != OtherMessageWithStatus.Status.A)
+            OtherMessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 2, value.b)
+        if (value.a != MessageWithStatus.Status.A)
+            MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)
       }
 
       override fun decode(reader: ProtoReader): MessageUsingMultipleEnums {
-        var a: MessageWithStatus.Status? = null
-        var b: OtherMessageWithStatus.Status? = null
+        var a: MessageWithStatus.Status = MessageWithStatus.Status.A
+        var b: OtherMessageWithStatus.Status = OtherMessageWithStatus.Status.A
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> try {

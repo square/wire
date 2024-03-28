@@ -72,8 +72,17 @@ class KotlinSchemaHandler(
    */
   private val buildersOnly: Boolean = false,
 
-  /** If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix. */
+  /**
+   * If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a
+   * suffix.
+   */
   private val escapeKotlinKeywords: Boolean = false,
+
+  /**
+   * If true, generated enums will have an extra `UNRECOGNIZED` constant with a value of `-1`. This
+   * only applies to enum which syntax is proto3.
+   */
+  private val generateUnrecognizedEnumConstant: Boolean = false,
 ) : SchemaHandler() {
   private lateinit var kotlinGenerator: KotlinGenerator
 
@@ -93,6 +102,7 @@ class KotlinSchemaHandler(
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,
+      generateUnrecognizedEnumConstant = generateUnrecognizedEnumConstant,
     )
     context.fileSystem.createDirectories(context.outDirectory)
     super.handle(schema, context)

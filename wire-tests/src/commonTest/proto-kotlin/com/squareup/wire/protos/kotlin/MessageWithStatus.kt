@@ -11,7 +11,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
-import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
 import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmStatic
@@ -57,7 +57,7 @@ public class MessageWithStatus(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageWithStatus::class, 
       "type.googleapis.com/squareup.protos.kotlin.MessageWithStatus", 
-      PROTO_2, 
+      PROTO_3, 
       null, 
       "same_name_enum.proto"
     ) {
@@ -92,22 +92,24 @@ public class MessageWithStatus(
   public enum class Status(
     override val `value`: Int,
   ) : WireEnum {
-    A(1),
+    A(0),
+    B(1),
     ;
 
     public companion object {
       @JvmField
       public val ADAPTER: ProtoAdapter<Status> = object : EnumAdapter<Status>(
         Status::class, 
-        PROTO_2, 
-        null
+        PROTO_3, 
+        Status.A
       ) {
         override fun fromValue(`value`: Int): Status? = Status.fromValue(`value`)
       }
 
       @JvmStatic
       public fun fromValue(`value`: Int): Status? = when (`value`) {
-        1 -> A
+        0 -> A
+        1 -> B
         else -> null
       }
     }
