@@ -27,7 +27,9 @@ protobuf {
   }
 
   protoc {
-    artifact = libs.protobuf.protoc.get().toString()
+    // TODO(Benoit) Replace with `artifact = libs.protobuf.protoc.get().toString()` once gRPC-java
+    //  starts supporting protoc 4+. See https://github.com/grpc/grpc-java/issues/10976
+    artifact = "com.google.protobuf:protoc:3.25.1"
   }
 
   generateProtoTasks {
