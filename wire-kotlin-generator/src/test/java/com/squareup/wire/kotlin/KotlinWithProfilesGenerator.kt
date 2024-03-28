@@ -52,6 +52,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
     boxOneOfsMinSize: Int = 5_000,
     buildersOnly: Boolean = false,
     javaInterop: Boolean = false,
+    generateUnrecognizedEnumConstant: Boolean = false,
   ): String {
     val kotlinGenerator = KotlinGenerator(
       schema,
@@ -59,6 +60,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
       boxOneOfsMinSize = boxOneOfsMinSize,
       buildersOnly = buildersOnly,
       javaInterop = javaInterop,
+      generateUnrecognizedEnumConstant = generateUnrecognizedEnumConstant,
     )
     val type = schema.getType(typeName)!!
     val typeSpec = kotlinGenerator.generateType(type)

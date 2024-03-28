@@ -66,6 +66,50 @@ class KotlinGeneratorTest {
     assertThat(code).contains("WORK(1),")
   }
 
+  @Test fun generateUnrecognizedEnumConstantIsIgnoredForProto2() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |enum PhoneType {
+        |	HOME = 0;
+        |	WORK = 1;
+        |	MOBILE = 2;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PhoneType", generateUnrecognizedEnumConstant = true)
+    assertThat(code).contains("HOME(0),")
+    assertThat(code).contains("WORK(1),")
+    assertThat(code).contains("MOBILE(2),")
+    assertThat(code).doesNotContain("UNRECOGNIZED(-1),")
+  }
+
+  @Test fun generateUnrecognizedEnumConstantIsAppliedForProto3() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |enum PhoneType {
+        |	HOME = 0;
+        |	WORK = 1;
+        |	MOBILE = 2;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PhoneType", generateUnrecognizedEnumConstant = true)
+    assertThat(code).contains("HOME(0),")
+    assertThat(code).contains("WORK(1),")
+    assertThat(code).contains("MOBILE(2),")
+    assertThat(code).contains("UNRECOGNIZED(-1),")
+  }
+
   @Test fun defaultValues() {
     val schema = buildSchema {
       add(
