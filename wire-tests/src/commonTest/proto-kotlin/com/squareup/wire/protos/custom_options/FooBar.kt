@@ -41,6 +41,7 @@ import okio.ByteString
 
 public class FooBar(
   @MyFieldOptionOneOption(17)
+  @field:MyFieldOptionOneOption(17)
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
@@ -48,6 +49,7 @@ public class FooBar(
   )
   public val foo: Int? = null,
   @MyFieldOptionTwoOption(33.5f)
+  @field:MyFieldOptionTwoOption(33.5f)
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
@@ -55,6 +57,7 @@ public class FooBar(
   )
   public val bar: String? = null,
   @MyFieldOptionThreeOption(FooBarBazEnum.BAR)
+  @field:MyFieldOptionThreeOption(FooBarBazEnum.BAR)
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}Nested#ADAPTER",
@@ -62,15 +65,28 @@ public class FooBar(
   )
   public val baz: Nested? = null,
   @MyFieldOptionOneOption(18)
+  @field:MyFieldOptionOneOption(18)
   @MyFieldOptionTwoOption(34.5f)
+  @field:MyFieldOptionTwoOption(34.5f)
   @MyFieldOptionFiveOption([
+    3
+  ])
+  @field:MyFieldOptionFiveOption([
     3
   ])
   @MyFieldOptionSixOption([
     "a",
     "b"
   ])
+  @field:MyFieldOptionSixOption([
+    "a",
+    "b"
+  ])
   @MyFieldOptionSevenOption([
+    ForeignEnum.BAV,
+    ForeignEnum.BAX
+  ])
+  @field:MyFieldOptionSevenOption([
     ForeignEnum.BAV,
     ForeignEnum.BAX
   ])
@@ -110,6 +126,7 @@ public class FooBar(
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<FooBar, Nothing>(ADAPTER, unknownFields) {
   @MyFieldOptionTwoOption(99.9f)
+  @field:MyFieldOptionTwoOption(99.9f)
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
