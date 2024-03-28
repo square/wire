@@ -25,5 +25,13 @@ message SwiftModuleThreeMessage {
   message NestedMessage {
     map<string, SwiftModuleOneEnum> map_string_types = 1;
     optional SwiftModuleOneMessage module_type = 2;
+
+    extend SwiftModuleOneMessage {
+      optional ExtensionMessage extension_message = 1000;
+    }
   }
+}
+
+message ExtensionMessage {
+  optional string value = 1;
 }

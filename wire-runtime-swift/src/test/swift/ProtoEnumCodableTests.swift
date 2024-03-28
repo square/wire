@@ -205,7 +205,6 @@ extension ProtoEnumCodableTests {
     }
 }
 
-
 // MARK: - Optional
 
 extension ProtoEnumCodableTests {

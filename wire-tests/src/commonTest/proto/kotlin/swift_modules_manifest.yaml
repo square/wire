@@ -32,5 +32,6 @@ module_three:
   roots:
   - squareup.protos.kotlin.swift_modules.SwiftModuleThreeMessage
   - squareup.protos.kotlin.swift_modules.SwiftModuleThreeMessage.NestedMessage
+  - squareup.protos.kotlin.swift_modules.ExtensionMessage
   dependencies:
   - module_one

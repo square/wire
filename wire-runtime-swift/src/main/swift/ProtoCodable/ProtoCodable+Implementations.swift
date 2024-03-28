@@ -18,9 +18,9 @@ import Foundation
 // MARK: -
 
 extension Bool : ProtoCodable, ProtoDefaultedValue {
-    
+
     // MARK: - ProtoDefaultedValue
-    
+
     public static var defaultedValue: Bool {
         false
     }
@@ -47,9 +47,9 @@ extension Bool : ProtoCodable, ProtoDefaultedValue {
 // MARK: -
 
 extension Data : ProtoCodable, ProtoDefaultedValue {
-    
+
     // MARK: - ProtoDefaultedValue
-    
+
     public static var defaultedValue: Data {
         Data()
     }
@@ -120,9 +120,9 @@ extension Float : ProtoCodable, ProtoDefaultedValue {
 // MARK: -
 
 extension String : ProtoCodable, ProtoDefaultedValue {
-    
+
     // MARK: - ProtoDefaultedValue
-    
+
     public static var defaultedValue: String {
         ""
     }

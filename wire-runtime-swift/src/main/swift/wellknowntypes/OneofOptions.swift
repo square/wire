@@ -3,11 +3,15 @@
 
 public struct OneofOptions {
 
-    public var unknownFields: UnknownFields = .init()
+    public var unknownFields: ExtensibleUnknownFields = .init()
 
-    public init() {
+    public init(configure: (inout Self) -> Swift.Void = { _ in }) {
+        configure(&self)
     }
 
+}
+
+extension OneofOptions : ProtoExtensible {
 }
 
 #if !WIRE_REMOVE_EQUATABLE
@@ -28,9 +32,6 @@ extension OneofOptions : ProtoDefaultedValue {
     public static var defaultedValue: OneofOptions {
         OneofOptions()
     }
-}
-
-extension OneofOptions : ProtoExtensible {
 }
 
 extension OneofOptions : ProtoMessage {

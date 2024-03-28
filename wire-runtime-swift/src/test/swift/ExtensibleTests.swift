@@ -22,6 +22,10 @@ final class ExtensibleTests: XCTestCase {
         let message = Extensible {
             $0.name = "real field"
             $0.ext_string = "extension string field"
+            $0.ext_bool = true
+            $0.ext_float = 3.14
+            $0.ext_double = 3.14159
+            $0.ext_bytes = Foundation.Data("test".utf8)
             $0.ext_int32 = -4
             $0.ext_uint32 = 42
             $0.ext_person = Person(name: "Someone", id: 1, data: Data(json_data: ""))
@@ -35,6 +39,10 @@ final class ExtensibleTests: XCTestCase {
         XCTAssertEqual(message, decodedMessage)
         XCTAssertEqual(decodedMessage.name, "real field")
         XCTAssertEqual(decodedMessage.ext_string, "extension string field")
+        XCTAssertEqual(decodedMessage.ext_bool, true)
+        XCTAssertEqual(decodedMessage.ext_float, 3.14)
+        XCTAssertEqual(decodedMessage.ext_double, 3.14159)
+        XCTAssertEqual(decodedMessage.ext_bytes, Foundation.Data("test".utf8))
         XCTAssertEqual(decodedMessage.ext_person?.name, "Someone")
         XCTAssertEqual(decodedMessage.ext_person?.id, 1)
         XCTAssertEqual(decodedMessage.ext_int32, -4)
@@ -74,5 +82,55 @@ final class ExtensibleTests: XCTestCase {
         XCTAssertNotEqual(message, copy)
         XCTAssertEqual(message.ext_value17, "ext_value17")
         XCTAssertEqual(copy.ext_value17, "new_ext_value17")
+    }
+
+    func testRepeatedExtensions() {
+        let message = LargeExtensible {
+            $0.rep_ext_int32 = [0, -1, -2]
+            $0.rep_ext_uint32 = [0, 1, 2]
+            $0.rep_ext_sint32 = [0, -1, -2]
+            $0.rep_ext_fixed32 = [0, 1, 2]
+            $0.rep_ext_sfixed32 = [0, 1, 2]
+            $0.rep_ext_int64 = [0, -1, -2]
+            $0.rep_ext_uint64 = [0, 1, 2]
+            $0.rep_ext_sint64 = [0, -1, -2]
+            $0.rep_ext_fixed64 = [0, 1, 2]
+            $0.rep_ext_sfixed64 = [0, 1, 2]
+            $0.rep_ext_bool = [true, false, true]
+            $0.rep_ext_float = [3.14, 1.41]
+            $0.rep_ext_double = [3.14159, 1.41421]
+            $0.rep_ext_string = ["one", "two", "three"]
+            $0.rep_ext_bytes = [Foundation.Data("one".utf8), Foundation.Data("two".utf8)]
+            $0.rep_ext_person = [Person(name: "First Person", id: 1, data: Data(json_data: "")), Person(name: "Second Person", id: 1, data: Data(json_data: ""))]
+            $0.rep_ext_phone_type = [.MOBILE, .HOME]
+        }
+        let encoder = ProtoEncoder()
+        let data = try! encoder.encode(message)
+
+        let decoder = ProtoDecoder()
+        let decodedMessage = try! decoder.decode(LargeExtensible.self, from: data)
+        XCTAssertEqual(message, decodedMessage)
+        XCTAssertEqual(message.rep_ext_int32, [0, -1, -2])
+        XCTAssertEqual(message.rep_ext_uint32, [0, 1, 2])
+        XCTAssertEqual(message.rep_ext_sint32, [0, -1, -2])
+        XCTAssertEqual(message.rep_ext_fixed32, [0, 1, 2])
+        XCTAssertEqual(message.rep_ext_sfixed32, [0, 1, 2])
+        XCTAssertEqual(message.rep_ext_int64, [0, -1, -2])
+        XCTAssertEqual(message.rep_ext_uint64, [0, 1, 2])
+        XCTAssertEqual(message.rep_ext_sint64, [0, -1, -2])
+        XCTAssertEqual(message.rep_ext_fixed64, [0, 1, 2])
+        XCTAssertEqual(message.rep_ext_sfixed64, [0, 1, 2])
+        XCTAssertEqual(message.rep_ext_bool, [true, false, true])
+        XCTAssertEqual(message.rep_ext_float, [3.14, 1.41])
+        XCTAssertEqual(message.rep_ext_double, [3.14159, 1.41421])
+        XCTAssertEqual(message.rep_ext_string, ["one", "two", "three"])
+        XCTAssertEqual(message.rep_ext_bytes, [Foundation.Data("one".utf8), Foundation.Data("two".utf8)])
+        XCTAssertEqual(message.rep_ext_person, [Person(name: "First Person", id: 1, data: Data(json_data: "")), Person(name: "Second Person", id: 1, data: Data(json_data: ""))])
+        XCTAssertEqual(message.rep_ext_phone_type, [.MOBILE, .HOME])
+    }
+
+    func testExtensionDefaultValues() {
+        XCTAssertEqual(LargeExtensible.Storage.default_ext_value17, "my extension default value")
+        XCTAssertEqual(LargeExtensible.Storage.default_ext_value18, "")
     }
 }

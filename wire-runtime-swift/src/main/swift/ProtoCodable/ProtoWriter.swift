@@ -557,6 +557,11 @@ public final class ProtoWriter {
         }
     }
 
+    /** Append unknown fields data to the output */
+    public func writeUnknownFields(_ fields: ExtensibleUnknownFields) throws {
+        try writeUnknownFields(fields.rawData)
+    }
+
     // MARK: - Internal Methods - Writing Primitives
 
     /** Write arbitrary data */
