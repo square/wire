@@ -50,6 +50,7 @@ public class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/Wi
 	public final fun getEscapeKotlinKeywords ()Z
 	public final fun getExcludes ()Ljava/util/List;
 	public final fun getExclusive ()Z
+	public final fun getGenerateUnrecognizedEnumConstant ()Z
 	public final fun getGrpcServerCompatible ()Z
 	public final fun getIncludes ()Ljava/util/List;
 	public final fun getJavaInterop ()Z
@@ -65,6 +66,7 @@ public class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/Wi
 	public final fun setEscapeKotlinKeywords (Z)V
 	public final fun setExcludes (Ljava/util/List;)V
 	public final fun setExclusive (Z)V
+	public final fun setGenerateUnrecognizedEnumConstant (Z)V
 	public final fun setGrpcServerCompatible (Z)V
 	public final fun setIncludes (Ljava/util/List;)V
 	public final fun setJavaInterop (Z)V

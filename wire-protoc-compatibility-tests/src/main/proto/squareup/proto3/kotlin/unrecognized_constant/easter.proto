@@ -1,0 +1,15 @@
+syntax = "proto3";
+package squareup.proto3.kotlin.unrecognized_constant;
+
+// Proto3 message with a proto3 enum.
+message Easter {
+  optional EasterAnimal optional_easter_animal = 2;
+  EasterAnimal identity_easter_animal = 3;
+  repeated EasterAnimal easter_animals = 4;
+}
+
+enum EasterAnimal {
+  EASTER_ANIMAL_DEFAULT = 0;
+  BUNNY = 1;
+  HEN = 2;
+}

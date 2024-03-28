@@ -6,6 +6,13 @@ plugins {
 
 wire {
   kotlin {
+    includes = listOf("squareup.wire.unrecognized_constant.*")
+    out = "src/main/kotlin"
+    buildersOnly = true
+    generateUnrecognizedEnumConstant = true
+  }
+
+  kotlin {
     includes = listOf(
       "squareup.wire.buildersonly.*",
       "squareup.wire.alltypes.*",

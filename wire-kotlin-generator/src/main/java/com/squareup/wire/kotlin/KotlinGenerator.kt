@@ -1841,6 +1841,32 @@ class KotlinGenerator private constructor(
               beginControlFlow("%L -> try", field.tag)
               addStatement("%L", decodeAndAssign(field, fieldName, adapterName))
               nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
+              if (
+                message.syntax == Syntax.PROTO_3 &&
+                // StructNull is a special type defined as an enum that Wire translates into
+                // `kotlin.Nothing`. We do not generate special constants for this type.
+                field.type!! != ProtoType.STRUCT_NULL
+              ) {
+                val enumType = schema.getType(field.type!!) as EnumType
+                if (enumType.generateUnrecognizedEnumConstant) {
+                  addStatement(
+                    "%L",
+                    if (field.isRepeated) {
+                      CodeBlock.of(
+                        "%N.add(%L)",
+                        fieldName,
+                        CodeBlock.of("%T.%L", enumType.type.typeName, "UNRECOGNIZED"),
+                      )
+                    } else {
+                      CodeBlock.of(
+                        if (buildersOnly) "builder.%N(%L)" else "%N·= %L",
+                        fieldName,
+                        CodeBlock.of("%T.%L", enumType.type.typeName, "UNRECOGNIZED"),
+                      )
+                    },
+                  )
+                }
+              }
               addStatement(
                 "reader.addUnknownField(%L, %T.VARINT, e.value.toLong())",
                 tag,
@@ -2221,7 +2247,7 @@ class KotlinGenerator private constructor(
   private fun generateEnum(enum: EnumType): TypeSpec {
     @Suppress("NAME_SHADOWING")
     val enum =
-      if (enum.syntax == Syntax.PROTO_3 && generateUnrecognizedEnumConstant) {
+      if (enum.generateUnrecognizedEnumConstant) {
         // We mutate the constant by inserting `UNRECOGNIZED(-1)` at the front of the list.
         enum.copy(
           constants = listOf(
@@ -2835,6 +2861,9 @@ class KotlinGenerator private constructor(
     return com.squareup.wire.OneOf::class.asClassName()
       .parameterizedBy(oneOfClass, STAR).copy(nullable = true)
   }
+
+  private val EnumType.generateUnrecognizedEnumConstant: Boolean
+    get() = syntax == Syntax.PROTO_3 && this@KotlinGenerator.generateUnrecognizedEnumConstant
 
   companion object {
     fun builtInType(protoType: ProtoType): Boolean = protoType in BUILT_IN_TYPES.keys
