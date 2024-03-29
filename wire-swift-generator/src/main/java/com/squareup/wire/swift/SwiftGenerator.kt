@@ -1201,8 +1201,11 @@ class SwiftGenerator private constructor(
                   addDoc("\n%L\n", field.documentation.sanitizeDoc())
                 }
                 addDoc("\nSource: %L\n", field.location.withPathOnly())
-              }
-              .apply {
+
+                if (field.isDeprecated) {
+                  addAttribute(deprecated)
+                }
+
                 val getterFunctionSpec = FunctionSpec.getterBuilder()
                 var parseMethod = "self.parseUnknownField(fieldNumber: %L"
                 val args = mutableListOf<Any>(field.tag)

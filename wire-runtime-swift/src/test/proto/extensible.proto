@@ -39,6 +39,7 @@ extend Extensible {
   optional double ext_double = 1013;
   optional string ext_string = 1014;
   optional bytes ext_bytes = 1015;
+  optional string ext_string_deprecated = 1016 [deprecated = true];
 
   optional squareup.protos.person.Person ext_person = 2000;
   optional squareup.protos.person.Person.PhoneType ext_phone_type = 2001;
