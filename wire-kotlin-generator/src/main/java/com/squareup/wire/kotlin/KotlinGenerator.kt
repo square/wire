@@ -129,6 +129,11 @@ class KotlinGenerator private constructor(
   private val nameSuffix: String?,
   private val buildersOnly: Boolean,
   private val escapeKotlinKeywords: Boolean,
+  /**
+   * If true, generated enums will have an extra `UNRECOGNIZED` constant with a value of `-1`. This
+   * only applies to enum which syntax is proto3.
+   */
+  private val generateUnrecognizedEnumConstant: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -2214,6 +2219,25 @@ class KotlinGenerator private constructor(
    * }
    */
   private fun generateEnum(enum: EnumType): TypeSpec {
+    @Suppress("NAME_SHADOWING")
+    val enum =
+      if (enum.syntax == Syntax.PROTO_3 && generateUnrecognizedEnumConstant) {
+        // We mutate the constant by inserting `UNRECOGNIZED(-1)` at the front of the list.
+        enum.copy(
+          constants = listOf(
+            EnumConstant(
+              location = enum.location,
+              name = "UNRECOGNIZED",
+              tag = -1,
+              documentation = "",
+              options = Options(optionType = ENUM_OPTIONS, optionElements = listOf()),
+            ),
+          ) + enum.constants,
+        )
+      } else {
+        enum
+      }
+
     val type = enum.type
     val nameAllocator = nameAllocator(enum)
 
@@ -2886,6 +2910,7 @@ class KotlinGenerator private constructor(
       nameSuffix: String? = null,
       buildersOnly: Boolean = false,
       escapeKotlinKeywords: Boolean = false,
+      generateUnrecognizedEnumConstant: Boolean = false,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -2934,6 +2959,7 @@ class KotlinGenerator private constructor(
         nameSuffix = nameSuffix,
         buildersOnly = buildersOnly,
         escapeKotlinKeywords = escapeKotlinKeywords,
+        generateUnrecognizedEnumConstant = generateUnrecognizedEnumConstant,
       )
     }
 
