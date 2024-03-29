@@ -72,7 +72,7 @@ final class RedactableTests: XCTestCase {
             RedactedLargeMessage.RedactedKeys.a
         )
     }
-    
+
     func testLargeMessageRedactedUnsafeNameField() {
         let redacted = RedactedLargeMessage {
             $0.description_ = "foo"

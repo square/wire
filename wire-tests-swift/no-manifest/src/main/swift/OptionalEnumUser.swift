@@ -88,7 +88,7 @@ extension OptionalEnumUser : Codable {
  */
 extension OptionalEnumUser {
 
-    public enum OptionalEnum : Int32, CaseIterable, ProtoEnum, Proto2Enum {
+    public enum OptionalEnum : Int32, CaseIterable, Proto2Enum {
 
         case FOO = 1
         case BAR = 2

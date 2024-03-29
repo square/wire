@@ -795,391 +795,7 @@ public struct AllTypes {
             storage.array_double = newValue
         }
     }
-    public var ext_opt_int32: Int32? {
-        get {
-            storage.ext_opt_int32
-        }
-        set {
-            storage.ext_opt_int32 = newValue
-        }
-    }
-    public var ext_opt_uint32: UInt32? {
-        get {
-            storage.ext_opt_uint32
-        }
-        set {
-            storage.ext_opt_uint32 = newValue
-        }
-    }
-    public var ext_opt_sint32: Int32? {
-        get {
-            storage.ext_opt_sint32
-        }
-        set {
-            storage.ext_opt_sint32 = newValue
-        }
-    }
-    public var ext_opt_fixed32: UInt32? {
-        get {
-            storage.ext_opt_fixed32
-        }
-        set {
-            storage.ext_opt_fixed32 = newValue
-        }
-    }
-    public var ext_opt_sfixed32: Int32? {
-        get {
-            storage.ext_opt_sfixed32
-        }
-        set {
-            storage.ext_opt_sfixed32 = newValue
-        }
-    }
-    public var ext_opt_int64: Int64? {
-        get {
-            storage.ext_opt_int64
-        }
-        set {
-            storage.ext_opt_int64 = newValue
-        }
-    }
-    public var ext_opt_uint64: UInt64? {
-        get {
-            storage.ext_opt_uint64
-        }
-        set {
-            storage.ext_opt_uint64 = newValue
-        }
-    }
-    public var ext_opt_sint64: Int64? {
-        get {
-            storage.ext_opt_sint64
-        }
-        set {
-            storage.ext_opt_sint64 = newValue
-        }
-    }
-    public var ext_opt_fixed64: UInt64? {
-        get {
-            storage.ext_opt_fixed64
-        }
-        set {
-            storage.ext_opt_fixed64 = newValue
-        }
-    }
-    public var ext_opt_sfixed64: Int64? {
-        get {
-            storage.ext_opt_sfixed64
-        }
-        set {
-            storage.ext_opt_sfixed64 = newValue
-        }
-    }
-    public var ext_opt_bool: Bool? {
-        get {
-            storage.ext_opt_bool
-        }
-        set {
-            storage.ext_opt_bool = newValue
-        }
-    }
-    public var ext_opt_float: Float? {
-        get {
-            storage.ext_opt_float
-        }
-        set {
-            storage.ext_opt_float = newValue
-        }
-    }
-    public var ext_opt_double: Double? {
-        get {
-            storage.ext_opt_double
-        }
-        set {
-            storage.ext_opt_double = newValue
-        }
-    }
-    public var ext_opt_string: String? {
-        get {
-            storage.ext_opt_string
-        }
-        set {
-            storage.ext_opt_string = newValue
-        }
-    }
-    public var ext_opt_bytes: Foundation.Data? {
-        get {
-            storage.ext_opt_bytes
-        }
-        set {
-            storage.ext_opt_bytes = newValue
-        }
-    }
-    public var ext_opt_nested_enum: AllTypes.NestedEnum? {
-        get {
-            storage.ext_opt_nested_enum
-        }
-        set {
-            storage.ext_opt_nested_enum = newValue
-        }
-    }
-    public var ext_opt_nested_message: AllTypes.NestedMessage? {
-        get {
-            storage.ext_opt_nested_message
-        }
-        set {
-            storage.ext_opt_nested_message = newValue
-        }
-    }
-    public var ext_rep_int32: [Int32] {
-        get {
-            storage.ext_rep_int32
-        }
-        set {
-            storage.ext_rep_int32 = newValue
-        }
-    }
-    public var ext_rep_uint32: [UInt32] {
-        get {
-            storage.ext_rep_uint32
-        }
-        set {
-            storage.ext_rep_uint32 = newValue
-        }
-    }
-    public var ext_rep_sint32: [Int32] {
-        get {
-            storage.ext_rep_sint32
-        }
-        set {
-            storage.ext_rep_sint32 = newValue
-        }
-    }
-    public var ext_rep_fixed32: [UInt32] {
-        get {
-            storage.ext_rep_fixed32
-        }
-        set {
-            storage.ext_rep_fixed32 = newValue
-        }
-    }
-    public var ext_rep_sfixed32: [Int32] {
-        get {
-            storage.ext_rep_sfixed32
-        }
-        set {
-            storage.ext_rep_sfixed32 = newValue
-        }
-    }
-    public var ext_rep_int64: [Int64] {
-        get {
-            storage.ext_rep_int64
-        }
-        set {
-            storage.ext_rep_int64 = newValue
-        }
-    }
-    public var ext_rep_uint64: [UInt64] {
-        get {
-            storage.ext_rep_uint64
-        }
-        set {
-            storage.ext_rep_uint64 = newValue
-        }
-    }
-    public var ext_rep_sint64: [Int64] {
-        get {
-            storage.ext_rep_sint64
-        }
-        set {
-            storage.ext_rep_sint64 = newValue
-        }
-    }
-    public var ext_rep_fixed64: [UInt64] {
-        get {
-            storage.ext_rep_fixed64
-        }
-        set {
-            storage.ext_rep_fixed64 = newValue
-        }
-    }
-    public var ext_rep_sfixed64: [Int64] {
-        get {
-            storage.ext_rep_sfixed64
-        }
-        set {
-            storage.ext_rep_sfixed64 = newValue
-        }
-    }
-    public var ext_rep_bool: [Bool] {
-        get {
-            storage.ext_rep_bool
-        }
-        set {
-            storage.ext_rep_bool = newValue
-        }
-    }
-    public var ext_rep_float: [Float] {
-        get {
-            storage.ext_rep_float
-        }
-        set {
-            storage.ext_rep_float = newValue
-        }
-    }
-    public var ext_rep_double: [Double] {
-        get {
-            storage.ext_rep_double
-        }
-        set {
-            storage.ext_rep_double = newValue
-        }
-    }
-    public var ext_rep_string: [String] {
-        get {
-            storage.ext_rep_string
-        }
-        set {
-            storage.ext_rep_string = newValue
-        }
-    }
-    public var ext_rep_bytes: [Foundation.Data] {
-        get {
-            storage.ext_rep_bytes
-        }
-        set {
-            storage.ext_rep_bytes = newValue
-        }
-    }
-    public var ext_rep_nested_enum: [AllTypes.NestedEnum] {
-        get {
-            storage.ext_rep_nested_enum
-        }
-        set {
-            storage.ext_rep_nested_enum = newValue
-        }
-    }
-    public var ext_rep_nested_message: [AllTypes.NestedMessage] {
-        get {
-            storage.ext_rep_nested_message
-        }
-        set {
-            storage.ext_rep_nested_message = newValue
-        }
-    }
-    public var ext_pack_int32: [Int32] {
-        get {
-            storage.ext_pack_int32
-        }
-        set {
-            storage.ext_pack_int32 = newValue
-        }
-    }
-    public var ext_pack_uint32: [UInt32] {
-        get {
-            storage.ext_pack_uint32
-        }
-        set {
-            storage.ext_pack_uint32 = newValue
-        }
-    }
-    public var ext_pack_sint32: [Int32] {
-        get {
-            storage.ext_pack_sint32
-        }
-        set {
-            storage.ext_pack_sint32 = newValue
-        }
-    }
-    public var ext_pack_fixed32: [UInt32] {
-        get {
-            storage.ext_pack_fixed32
-        }
-        set {
-            storage.ext_pack_fixed32 = newValue
-        }
-    }
-    public var ext_pack_sfixed32: [Int32] {
-        get {
-            storage.ext_pack_sfixed32
-        }
-        set {
-            storage.ext_pack_sfixed32 = newValue
-        }
-    }
-    public var ext_pack_int64: [Int64] {
-        get {
-            storage.ext_pack_int64
-        }
-        set {
-            storage.ext_pack_int64 = newValue
-        }
-    }
-    public var ext_pack_uint64: [UInt64] {
-        get {
-            storage.ext_pack_uint64
-        }
-        set {
-            storage.ext_pack_uint64 = newValue
-        }
-    }
-    public var ext_pack_sint64: [Int64] {
-        get {
-            storage.ext_pack_sint64
-        }
-        set {
-            storage.ext_pack_sint64 = newValue
-        }
-    }
-    public var ext_pack_fixed64: [UInt64] {
-        get {
-            storage.ext_pack_fixed64
-        }
-        set {
-            storage.ext_pack_fixed64 = newValue
-        }
-    }
-    public var ext_pack_sfixed64: [Int64] {
-        get {
-            storage.ext_pack_sfixed64
-        }
-        set {
-            storage.ext_pack_sfixed64 = newValue
-        }
-    }
-    public var ext_pack_bool: [Bool] {
-        get {
-            storage.ext_pack_bool
-        }
-        set {
-            storage.ext_pack_bool = newValue
-        }
-    }
-    public var ext_pack_float: [Float] {
-        get {
-            storage.ext_pack_float
-        }
-        set {
-            storage.ext_pack_float = newValue
-        }
-    }
-    public var ext_pack_double: [Double] {
-        get {
-            storage.ext_pack_double
-        }
-        set {
-            storage.ext_pack_double = newValue
-        }
-    }
-    public var ext_pack_nested_enum: [AllTypes.NestedEnum] {
-        get {
-            storage.ext_pack_nested_enum
-        }
-        set {
-            storage.ext_pack_nested_enum = newValue
-        }
-    }
-    public var unknownFields: UnknownFields {
+    public var unknownFields: ExtensibleUnknownFields {
         get {
             storage.unknownFields
         }
@@ -1235,6 +851,653 @@ public struct AllTypes {
 extension AllTypes.Storage : ProtoExtensible {
 }
 
+/**
+ * Extensions of AllTypes.Storage
+ */
+extension AllTypes.Storage {
+
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_int32: Int32? {
+        get {
+            self.parseUnknownField(fieldNumber: 1001, type: Int32.self, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1001, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     * Default value for ext_opt_int32 extension field.
+     */
+    public static let default_ext_opt_int32: Int32 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_uint32: UInt32? {
+        get {
+            self.parseUnknownField(fieldNumber: 1002, type: UInt32.self, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1002, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     * Default value for ext_opt_uint32 extension field.
+     */
+    public static let default_ext_opt_uint32: UInt32 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_sint32: Int32? {
+        get {
+            self.parseUnknownField(fieldNumber: 1003, type: Int32.self, encoding: .signed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1003, newValue: newValue, encoding: .signed)
+        }
+    }
+    /**
+     * Default value for ext_opt_sint32 extension field.
+     */
+    public static let default_ext_opt_sint32: Int32 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_fixed32: UInt32? {
+        get {
+            self.parseUnknownField(fieldNumber: 1004, type: UInt32.self, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1004, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     * Default value for ext_opt_fixed32 extension field.
+     */
+    public static let default_ext_opt_fixed32: UInt32 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_sfixed32: Int32? {
+        get {
+            self.parseUnknownField(fieldNumber: 1005, type: Int32.self, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1005, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     * Default value for ext_opt_sfixed32 extension field.
+     */
+    public static let default_ext_opt_sfixed32: Int32 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_int64: Int64? {
+        get {
+            self.parseUnknownField(fieldNumber: 1006, type: Int64.self, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1006, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     * Default value for ext_opt_int64 extension field.
+     */
+    public static let default_ext_opt_int64: Int64 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_uint64: UInt64? {
+        get {
+            self.parseUnknownField(fieldNumber: 1007, type: UInt64.self, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1007, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     * Default value for ext_opt_uint64 extension field.
+     */
+    public static let default_ext_opt_uint64: UInt64 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_sint64: Int64? {
+        get {
+            self.parseUnknownField(fieldNumber: 1008, type: Int64.self, encoding: .signed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1008, newValue: newValue, encoding: .signed)
+        }
+    }
+    /**
+     * Default value for ext_opt_sint64 extension field.
+     */
+    public static let default_ext_opt_sint64: Int64 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_fixed64: UInt64? {
+        get {
+            self.parseUnknownField(fieldNumber: 1009, type: UInt64.self, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1009, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     * Default value for ext_opt_fixed64 extension field.
+     */
+    public static let default_ext_opt_fixed64: UInt64 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_sfixed64: Int64? {
+        get {
+            self.parseUnknownField(fieldNumber: 1010, type: Int64.self, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1010, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     * Default value for ext_opt_sfixed64 extension field.
+     */
+    public static let default_ext_opt_sfixed64: Int64 = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_bool: Bool? {
+        get {
+            self.parseUnknownField(fieldNumber: 1011, type: Bool.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1011, newValue: newValue)
+        }
+    }
+    /**
+     * Default value for ext_opt_bool extension field.
+     */
+    public static let default_ext_opt_bool: Bool = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_float: Float? {
+        get {
+            self.parseUnknownField(fieldNumber: 1012, type: Float.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1012, newValue: newValue)
+        }
+    }
+    /**
+     * Default value for ext_opt_float extension field.
+     */
+    public static let default_ext_opt_float: Float = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_double: Double? {
+        get {
+            self.parseUnknownField(fieldNumber: 1013, type: Double.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1013, newValue: newValue)
+        }
+    }
+    /**
+     * Default value for ext_opt_double extension field.
+     */
+    public static let default_ext_opt_double: Double = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_string: String? {
+        get {
+            self.parseUnknownField(fieldNumber: 1014, type: String.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1014, newValue: newValue)
+        }
+    }
+    /**
+     * Default value for ext_opt_string extension field.
+     */
+    public static let default_ext_opt_string: String = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_bytes: Foundation.Data? {
+        get {
+            self.parseUnknownField(fieldNumber: 1015, type: Foundation.Data.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1015, newValue: newValue)
+        }
+    }
+    /**
+     * Default value for ext_opt_bytes extension field.
+     */
+    public static let default_ext_opt_bytes: Foundation.Data = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_nested_enum: AllTypes.NestedEnum? {
+        get {
+            self.parseUnknownField(fieldNumber: 1016, type: AllTypes.NestedEnum.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1016, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_opt_nested_message: AllTypes.NestedMessage? {
+        get {
+            self.parseUnknownField(fieldNumber: 1017, type: AllTypes.NestedMessage.self)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1017, newValue: newValue)
+        }
+    }
+    /**
+     * Default value for ext_opt_nested_message extension field.
+     */
+    public static let default_ext_opt_nested_message: AllTypes.NestedMessage = .defaultedValue
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_int32: [Int32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1101, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1101, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_uint32: [UInt32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1102, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1102, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_sint32: [Int32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1103, encoding: .signed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1103, newValue: newValue, encoding: .signed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_fixed32: [UInt32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1104, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1104, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_sfixed32: [Int32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1105, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1105, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_int64: [Int64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1106, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1106, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_uint64: [UInt64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1107, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1107, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_sint64: [Int64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1108, encoding: .signed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1108, newValue: newValue, encoding: .signed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_fixed64: [UInt64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1109, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1109, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_sfixed64: [Int64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1110, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1110, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_bool: [Bool] {
+        get {
+            self.parseUnknownField(fieldNumber: 1111)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1111, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_float: [Float] {
+        get {
+            self.parseUnknownField(fieldNumber: 1112)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1112, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_double: [Double] {
+        get {
+            self.parseUnknownField(fieldNumber: 1113)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1113, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_string: [String] {
+        get {
+            self.parseUnknownField(fieldNumber: 1114)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1114, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_bytes: [Foundation.Data] {
+        get {
+            self.parseUnknownField(fieldNumber: 1115)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1115, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_nested_enum: [AllTypes.NestedEnum] {
+        get {
+            self.parseUnknownField(fieldNumber: 1116)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1116, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_rep_nested_message: [AllTypes.NestedMessage] {
+        get {
+            self.parseUnknownField(fieldNumber: 1117)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1117, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_int32: [Int32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1201, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1201, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_uint32: [UInt32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1202, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1202, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_sint32: [Int32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1203, encoding: .signed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1203, newValue: newValue, encoding: .signed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_fixed32: [UInt32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1204, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1204, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_sfixed32: [Int32] {
+        get {
+            self.parseUnknownField(fieldNumber: 1205, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1205, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_int64: [Int64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1206, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1206, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_uint64: [UInt64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1207, encoding: .variable)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1207, newValue: newValue, encoding: .variable)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_sint64: [Int64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1208, encoding: .signed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1208, newValue: newValue, encoding: .signed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_fixed64: [UInt64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1209, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1209, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_sfixed64: [Int64] {
+        get {
+            self.parseUnknownField(fieldNumber: 1210, encoding: .fixed)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1210, newValue: newValue, encoding: .fixed)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_bool: [Bool] {
+        get {
+            self.parseUnknownField(fieldNumber: 1211)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1211, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_float: [Float] {
+        get {
+            self.parseUnknownField(fieldNumber: 1212)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1212, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_double: [Double] {
+        get {
+            self.parseUnknownField(fieldNumber: 1213)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1213, newValue: newValue)
+        }
+    }
+    /**
+     *
+     * Source: all_types.proto
+     */
+    public var ext_pack_nested_enum: [AllTypes.NestedEnum] {
+        get {
+            self.parseUnknownField(fieldNumber: 1216)
+        }
+        set {
+            self.setUnknownField(fieldNumber: 1216, newValue: newValue)
+        }
+    }
+}
+
 #if !WIRE_REMOVE_EQUATABLE
 extension AllTypes : Equatable {
 }
@@ -1246,9 +1509,6 @@ extension AllTypes : Hashable {
 #endif
 
 extension AllTypes : Sendable {
-}
-
-extension AllTypes : ProtoExtensible {
 }
 
 extension AllTypes : Proto2Codable {
@@ -1284,7 +1544,7 @@ extension AllTypes : Codable {
  */
 extension AllTypes {
 
-    public enum NestedEnum : Int32, CaseIterable, ProtoEnum, Proto2Enum {
+    public enum NestedEnum : Int32, CaseIterable, Proto2Enum {
 
         case UNKNOWN = 0
         case A = 1
@@ -1520,71 +1780,7 @@ extension AllTypes {
         public var array_sfixed64: [Int64] = []
         public var array_float: [Float] = []
         public var array_double: [Double] = []
-        @ProtoDefaulted
-        public var ext_opt_int32: Int32?
-        @ProtoDefaulted
-        public var ext_opt_uint32: UInt32?
-        @ProtoDefaulted
-        public var ext_opt_sint32: Int32?
-        @ProtoDefaulted
-        public var ext_opt_fixed32: UInt32?
-        @ProtoDefaulted
-        public var ext_opt_sfixed32: Int32?
-        @ProtoDefaulted
-        public var ext_opt_int64: Int64?
-        @ProtoDefaulted
-        public var ext_opt_uint64: UInt64?
-        @ProtoDefaulted
-        public var ext_opt_sint64: Int64?
-        @ProtoDefaulted
-        public var ext_opt_fixed64: UInt64?
-        @ProtoDefaulted
-        public var ext_opt_sfixed64: Int64?
-        @ProtoDefaulted
-        public var ext_opt_bool: Bool?
-        @ProtoDefaulted
-        public var ext_opt_float: Float?
-        @ProtoDefaulted
-        public var ext_opt_double: Double?
-        @ProtoDefaulted
-        public var ext_opt_string: String?
-        @ProtoDefaulted
-        public var ext_opt_bytes: Foundation.Data?
-        public var ext_opt_nested_enum: AllTypes.NestedEnum?
-        @ProtoDefaulted
-        public var ext_opt_nested_message: AllTypes.NestedMessage?
-        public var ext_rep_int32: [Int32] = []
-        public var ext_rep_uint32: [UInt32] = []
-        public var ext_rep_sint32: [Int32] = []
-        public var ext_rep_fixed32: [UInt32] = []
-        public var ext_rep_sfixed32: [Int32] = []
-        public var ext_rep_int64: [Int64] = []
-        public var ext_rep_uint64: [UInt64] = []
-        public var ext_rep_sint64: [Int64] = []
-        public var ext_rep_fixed64: [UInt64] = []
-        public var ext_rep_sfixed64: [Int64] = []
-        public var ext_rep_bool: [Bool] = []
-        public var ext_rep_float: [Float] = []
-        public var ext_rep_double: [Double] = []
-        public var ext_rep_string: [String] = []
-        public var ext_rep_bytes: [Foundation.Data] = []
-        public var ext_rep_nested_enum: [AllTypes.NestedEnum] = []
-        public var ext_rep_nested_message: [AllTypes.NestedMessage] = []
-        public var ext_pack_int32: [Int32] = []
-        public var ext_pack_uint32: [UInt32] = []
-        public var ext_pack_sint32: [Int32] = []
-        public var ext_pack_fixed32: [UInt32] = []
-        public var ext_pack_sfixed32: [Int32] = []
-        public var ext_pack_int64: [Int64] = []
-        public var ext_pack_uint64: [UInt64] = []
-        public var ext_pack_sint64: [Int64] = []
-        public var ext_pack_fixed64: [UInt64] = []
-        public var ext_pack_sfixed64: [Int64] = []
-        public var ext_pack_bool: [Bool] = []
-        public var ext_pack_float: [Float] = []
-        public var ext_pack_double: [Double] = []
-        public var ext_pack_nested_enum: [AllTypes.NestedEnum] = []
-        public var unknownFields: UnknownFields = .init()
+        public var unknownFields: ExtensibleUnknownFields = .init()
 
         public init(
             req_int32: Int32,
@@ -1751,54 +1947,6 @@ extension AllTypes.Storage : Proto2Codable {
         var array_sfixed64: [Int64] = []
         var array_float: [Float] = []
         var array_double: [Double] = []
-        var ext_opt_int32: Int32? = nil
-        var ext_opt_uint32: UInt32? = nil
-        var ext_opt_sint32: Int32? = nil
-        var ext_opt_fixed32: UInt32? = nil
-        var ext_opt_sfixed32: Int32? = nil
-        var ext_opt_int64: Int64? = nil
-        var ext_opt_uint64: UInt64? = nil
-        var ext_opt_sint64: Int64? = nil
-        var ext_opt_fixed64: UInt64? = nil
-        var ext_opt_sfixed64: Int64? = nil
-        var ext_opt_bool: Bool? = nil
-        var ext_opt_float: Float? = nil
-        var ext_opt_double: Double? = nil
-        var ext_opt_string: String? = nil
-        var ext_opt_bytes: Foundation.Data? = nil
-        var ext_opt_nested_enum: AllTypes.NestedEnum? = nil
-        var ext_opt_nested_message: AllTypes.NestedMessage? = nil
-        var ext_rep_int32: [Int32] = []
-        var ext_rep_uint32: [UInt32] = []
-        var ext_rep_sint32: [Int32] = []
-        var ext_rep_fixed32: [UInt32] = []
-        var ext_rep_sfixed32: [Int32] = []
-        var ext_rep_int64: [Int64] = []
-        var ext_rep_uint64: [UInt64] = []
-        var ext_rep_sint64: [Int64] = []
-        var ext_rep_fixed64: [UInt64] = []
-        var ext_rep_sfixed64: [Int64] = []
-        var ext_rep_bool: [Bool] = []
-        var ext_rep_float: [Float] = []
-        var ext_rep_double: [Double] = []
-        var ext_rep_string: [String] = []
-        var ext_rep_bytes: [Foundation.Data] = []
-        var ext_rep_nested_enum: [AllTypes.NestedEnum] = []
-        var ext_rep_nested_message: [AllTypes.NestedMessage] = []
-        var ext_pack_int32: [Int32] = []
-        var ext_pack_uint32: [UInt32] = []
-        var ext_pack_sint32: [Int32] = []
-        var ext_pack_fixed32: [UInt32] = []
-        var ext_pack_sfixed32: [Int32] = []
-        var ext_pack_int64: [Int64] = []
-        var ext_pack_uint64: [UInt64] = []
-        var ext_pack_sint64: [Int64] = []
-        var ext_pack_fixed64: [UInt64] = []
-        var ext_pack_sfixed64: [Int64] = []
-        var ext_pack_bool: [Bool] = []
-        var ext_pack_float: [Float] = []
-        var ext_pack_double: [Double] = []
-        var ext_pack_nested_enum: [AllTypes.NestedEnum] = []
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -1900,54 +2048,6 @@ extension AllTypes.Storage : Proto2Codable {
             case 610: try protoReader.decode(into: &array_sfixed64, encoding: .fixed)
             case 611: try protoReader.decode(into: &array_float)
             case 612: try protoReader.decode(into: &array_double)
-            case 1001: ext_opt_int32 = try protoReader.decode(Int32.self, encoding: .variable)
-            case 1002: ext_opt_uint32 = try protoReader.decode(UInt32.self, encoding: .variable)
-            case 1003: ext_opt_sint32 = try protoReader.decode(Int32.self, encoding: .signed)
-            case 1004: ext_opt_fixed32 = try protoReader.decode(UInt32.self, encoding: .fixed)
-            case 1005: ext_opt_sfixed32 = try protoReader.decode(Int32.self, encoding: .fixed)
-            case 1006: ext_opt_int64 = try protoReader.decode(Int64.self, encoding: .variable)
-            case 1007: ext_opt_uint64 = try protoReader.decode(UInt64.self, encoding: .variable)
-            case 1008: ext_opt_sint64 = try protoReader.decode(Int64.self, encoding: .signed)
-            case 1009: ext_opt_fixed64 = try protoReader.decode(UInt64.self, encoding: .fixed)
-            case 1010: ext_opt_sfixed64 = try protoReader.decode(Int64.self, encoding: .fixed)
-            case 1011: ext_opt_bool = try protoReader.decode(Bool.self)
-            case 1012: ext_opt_float = try protoReader.decode(Float.self)
-            case 1013: ext_opt_double = try protoReader.decode(Double.self)
-            case 1014: ext_opt_string = try protoReader.decode(String.self)
-            case 1015: ext_opt_bytes = try protoReader.decode(Foundation.Data.self)
-            case 1016: ext_opt_nested_enum = try protoReader.decode(AllTypes.NestedEnum.self)
-            case 1017: ext_opt_nested_message = try protoReader.decode(AllTypes.NestedMessage.self)
-            case 1101: try protoReader.decode(into: &ext_rep_int32, encoding: .variable)
-            case 1102: try protoReader.decode(into: &ext_rep_uint32, encoding: .variable)
-            case 1103: try protoReader.decode(into: &ext_rep_sint32, encoding: .signed)
-            case 1104: try protoReader.decode(into: &ext_rep_fixed32, encoding: .fixed)
-            case 1105: try protoReader.decode(into: &ext_rep_sfixed32, encoding: .fixed)
-            case 1106: try protoReader.decode(into: &ext_rep_int64, encoding: .variable)
-            case 1107: try protoReader.decode(into: &ext_rep_uint64, encoding: .variable)
-            case 1108: try protoReader.decode(into: &ext_rep_sint64, encoding: .signed)
-            case 1109: try protoReader.decode(into: &ext_rep_fixed64, encoding: .fixed)
-            case 1110: try protoReader.decode(into: &ext_rep_sfixed64, encoding: .fixed)
-            case 1111: try protoReader.decode(into: &ext_rep_bool)
-            case 1112: try protoReader.decode(into: &ext_rep_float)
-            case 1113: try protoReader.decode(into: &ext_rep_double)
-            case 1114: try protoReader.decode(into: &ext_rep_string)
-            case 1115: try protoReader.decode(into: &ext_rep_bytes)
-            case 1116: try protoReader.decode(into: &ext_rep_nested_enum)
-            case 1117: try protoReader.decode(into: &ext_rep_nested_message)
-            case 1201: try protoReader.decode(into: &ext_pack_int32, encoding: .variable)
-            case 1202: try protoReader.decode(into: &ext_pack_uint32, encoding: .variable)
-            case 1203: try protoReader.decode(into: &ext_pack_sint32, encoding: .signed)
-            case 1204: try protoReader.decode(into: &ext_pack_fixed32, encoding: .fixed)
-            case 1205: try protoReader.decode(into: &ext_pack_sfixed32, encoding: .fixed)
-            case 1206: try protoReader.decode(into: &ext_pack_int64, encoding: .variable)
-            case 1207: try protoReader.decode(into: &ext_pack_uint64, encoding: .variable)
-            case 1208: try protoReader.decode(into: &ext_pack_sint64, encoding: .signed)
-            case 1209: try protoReader.decode(into: &ext_pack_fixed64, encoding: .fixed)
-            case 1210: try protoReader.decode(into: &ext_pack_sfixed64, encoding: .fixed)
-            case 1211: try protoReader.decode(into: &ext_pack_bool)
-            case 1212: try protoReader.decode(into: &ext_pack_float)
-            case 1213: try protoReader.decode(into: &ext_pack_double)
-            case 1216: try protoReader.decode(into: &ext_pack_nested_enum)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -2050,54 +2150,6 @@ extension AllTypes.Storage : Proto2Codable {
         self.array_sfixed64 = array_sfixed64
         self.array_float = array_float
         self.array_double = array_double
-        self._ext_opt_int32.wrappedValue = ext_opt_int32
-        self._ext_opt_uint32.wrappedValue = ext_opt_uint32
-        self._ext_opt_sint32.wrappedValue = ext_opt_sint32
-        self._ext_opt_fixed32.wrappedValue = ext_opt_fixed32
-        self._ext_opt_sfixed32.wrappedValue = ext_opt_sfixed32
-        self._ext_opt_int64.wrappedValue = ext_opt_int64
-        self._ext_opt_uint64.wrappedValue = ext_opt_uint64
-        self._ext_opt_sint64.wrappedValue = ext_opt_sint64
-        self._ext_opt_fixed64.wrappedValue = ext_opt_fixed64
-        self._ext_opt_sfixed64.wrappedValue = ext_opt_sfixed64
-        self._ext_opt_bool.wrappedValue = ext_opt_bool
-        self._ext_opt_float.wrappedValue = ext_opt_float
-        self._ext_opt_double.wrappedValue = ext_opt_double
-        self._ext_opt_string.wrappedValue = ext_opt_string
-        self._ext_opt_bytes.wrappedValue = ext_opt_bytes
-        self.ext_opt_nested_enum = ext_opt_nested_enum
-        self._ext_opt_nested_message.wrappedValue = ext_opt_nested_message
-        self.ext_rep_int32 = ext_rep_int32
-        self.ext_rep_uint32 = ext_rep_uint32
-        self.ext_rep_sint32 = ext_rep_sint32
-        self.ext_rep_fixed32 = ext_rep_fixed32
-        self.ext_rep_sfixed32 = ext_rep_sfixed32
-        self.ext_rep_int64 = ext_rep_int64
-        self.ext_rep_uint64 = ext_rep_uint64
-        self.ext_rep_sint64 = ext_rep_sint64
-        self.ext_rep_fixed64 = ext_rep_fixed64
-        self.ext_rep_sfixed64 = ext_rep_sfixed64
-        self.ext_rep_bool = ext_rep_bool
-        self.ext_rep_float = ext_rep_float
-        self.ext_rep_double = ext_rep_double
-        self.ext_rep_string = ext_rep_string
-        self.ext_rep_bytes = ext_rep_bytes
-        self.ext_rep_nested_enum = ext_rep_nested_enum
-        self.ext_rep_nested_message = ext_rep_nested_message
-        self.ext_pack_int32 = ext_pack_int32
-        self.ext_pack_uint32 = ext_pack_uint32
-        self.ext_pack_sint32 = ext_pack_sint32
-        self.ext_pack_fixed32 = ext_pack_fixed32
-        self.ext_pack_sfixed32 = ext_pack_sfixed32
-        self.ext_pack_int64 = ext_pack_int64
-        self.ext_pack_uint64 = ext_pack_uint64
-        self.ext_pack_sint64 = ext_pack_sint64
-        self.ext_pack_fixed64 = ext_pack_fixed64
-        self.ext_pack_sfixed64 = ext_pack_sfixed64
-        self.ext_pack_bool = ext_pack_bool
-        self.ext_pack_float = ext_pack_float
-        self.ext_pack_double = ext_pack_double
-        self.ext_pack_nested_enum = ext_pack_nested_enum
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -2198,54 +2250,6 @@ extension AllTypes.Storage : Proto2Codable {
         try protoWriter.encode(tag: 610, value: self.array_sfixed64, encoding: .fixed, packed: true)
         try protoWriter.encode(tag: 611, value: self.array_float, packed: true)
         try protoWriter.encode(tag: 612, value: self.array_double, packed: true)
-        try protoWriter.encode(tag: 1001, value: self.ext_opt_int32, encoding: .variable)
-        try protoWriter.encode(tag: 1002, value: self.ext_opt_uint32, encoding: .variable)
-        try protoWriter.encode(tag: 1003, value: self.ext_opt_sint32, encoding: .signed)
-        try protoWriter.encode(tag: 1004, value: self.ext_opt_fixed32, encoding: .fixed)
-        try protoWriter.encode(tag: 1005, value: self.ext_opt_sfixed32, encoding: .fixed)
-        try protoWriter.encode(tag: 1006, value: self.ext_opt_int64, encoding: .variable)
-        try protoWriter.encode(tag: 1007, value: self.ext_opt_uint64, encoding: .variable)
-        try protoWriter.encode(tag: 1008, value: self.ext_opt_sint64, encoding: .signed)
-        try protoWriter.encode(tag: 1009, value: self.ext_opt_fixed64, encoding: .fixed)
-        try protoWriter.encode(tag: 1010, value: self.ext_opt_sfixed64, encoding: .fixed)
-        try protoWriter.encode(tag: 1011, value: self.ext_opt_bool)
-        try protoWriter.encode(tag: 1012, value: self.ext_opt_float)
-        try protoWriter.encode(tag: 1013, value: self.ext_opt_double)
-        try protoWriter.encode(tag: 1014, value: self.ext_opt_string)
-        try protoWriter.encode(tag: 1015, value: self.ext_opt_bytes)
-        try protoWriter.encode(tag: 1016, value: self.ext_opt_nested_enum)
-        try protoWriter.encode(tag: 1017, value: self.ext_opt_nested_message)
-        try protoWriter.encode(tag: 1101, value: self.ext_rep_int32, encoding: .variable)
-        try protoWriter.encode(tag: 1102, value: self.ext_rep_uint32, encoding: .variable)
-        try protoWriter.encode(tag: 1103, value: self.ext_rep_sint32, encoding: .signed)
-        try protoWriter.encode(tag: 1104, value: self.ext_rep_fixed32, encoding: .fixed)
-        try protoWriter.encode(tag: 1105, value: self.ext_rep_sfixed32, encoding: .fixed)
-        try protoWriter.encode(tag: 1106, value: self.ext_rep_int64, encoding: .variable)
-        try protoWriter.encode(tag: 1107, value: self.ext_rep_uint64, encoding: .variable)
-        try protoWriter.encode(tag: 1108, value: self.ext_rep_sint64, encoding: .signed)
-        try protoWriter.encode(tag: 1109, value: self.ext_rep_fixed64, encoding: .fixed)
-        try protoWriter.encode(tag: 1110, value: self.ext_rep_sfixed64, encoding: .fixed)
-        try protoWriter.encode(tag: 1111, value: self.ext_rep_bool)
-        try protoWriter.encode(tag: 1112, value: self.ext_rep_float)
-        try protoWriter.encode(tag: 1113, value: self.ext_rep_double)
-        try protoWriter.encode(tag: 1114, value: self.ext_rep_string)
-        try protoWriter.encode(tag: 1115, value: self.ext_rep_bytes)
-        try protoWriter.encode(tag: 1116, value: self.ext_rep_nested_enum)
-        try protoWriter.encode(tag: 1117, value: self.ext_rep_nested_message)
-        try protoWriter.encode(tag: 1201, value: self.ext_pack_int32, encoding: .variable, packed: true)
-        try protoWriter.encode(tag: 1202, value: self.ext_pack_uint32, encoding: .variable, packed: true)
-        try protoWriter.encode(tag: 1203, value: self.ext_pack_sint32, encoding: .signed, packed: true)
-        try protoWriter.encode(tag: 1204, value: self.ext_pack_fixed32, encoding: .fixed, packed: true)
-        try protoWriter.encode(tag: 1205, value: self.ext_pack_sfixed32, encoding: .fixed, packed: true)
-        try protoWriter.encode(tag: 1206, value: self.ext_pack_int64, encoding: .variable, packed: true)
-        try protoWriter.encode(tag: 1207, value: self.ext_pack_uint64, encoding: .variable, packed: true)
-        try protoWriter.encode(tag: 1208, value: self.ext_pack_sint64, encoding: .signed, packed: true)
-        try protoWriter.encode(tag: 1209, value: self.ext_pack_fixed64, encoding: .fixed, packed: true)
-        try protoWriter.encode(tag: 1210, value: self.ext_pack_sfixed64, encoding: .fixed, packed: true)
-        try protoWriter.encode(tag: 1211, value: self.ext_pack_bool, packed: true)
-        try protoWriter.encode(tag: 1212, value: self.ext_pack_float, packed: true)
-        try protoWriter.encode(tag: 1213, value: self.ext_pack_double, packed: true)
-        try protoWriter.encode(tag: 1216, value: self.ext_pack_nested_enum, packed: true)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -2353,54 +2357,6 @@ extension AllTypes.Storage : Codable {
         self.array_sfixed64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "arraySfixed64", "array_sfixed64")
         self.array_float = try container.decodeProtoArray(Float.self, firstOfKeys: "arrayFloat", "array_float")
         self.array_double = try container.decodeProtoArray(Double.self, firstOfKeys: "arrayDouble", "array_double")
-        self._ext_opt_int32.wrappedValue = try container.decodeIfPresent(Int32.self, firstOfKeys: "extOptInt32", "ext_opt_int32")
-        self._ext_opt_uint32.wrappedValue = try container.decodeIfPresent(UInt32.self, firstOfKeys: "extOptUint32", "ext_opt_uint32")
-        self._ext_opt_sint32.wrappedValue = try container.decodeIfPresent(Int32.self, firstOfKeys: "extOptSint32", "ext_opt_sint32")
-        self._ext_opt_fixed32.wrappedValue = try container.decodeIfPresent(UInt32.self, firstOfKeys: "extOptFixed32", "ext_opt_fixed32")
-        self._ext_opt_sfixed32.wrappedValue = try container.decodeIfPresent(Int32.self, firstOfKeys: "extOptSfixed32", "ext_opt_sfixed32")
-        self._ext_opt_int64.wrappedValue = try container.decodeIfPresent(stringEncoded: Int64.self, firstOfKeys: "extOptInt64", "ext_opt_int64")
-        self._ext_opt_uint64.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, firstOfKeys: "extOptUint64", "ext_opt_uint64")
-        self._ext_opt_sint64.wrappedValue = try container.decodeIfPresent(stringEncoded: Int64.self, firstOfKeys: "extOptSint64", "ext_opt_sint64")
-        self._ext_opt_fixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, firstOfKeys: "extOptFixed64", "ext_opt_fixed64")
-        self._ext_opt_sfixed64.wrappedValue = try container.decodeIfPresent(stringEncoded: Int64.self, firstOfKeys: "extOptSfixed64", "ext_opt_sfixed64")
-        self._ext_opt_bool.wrappedValue = try container.decodeIfPresent(Bool.self, firstOfKeys: "extOptBool", "ext_opt_bool")
-        self._ext_opt_float.wrappedValue = try container.decodeIfPresent(Float.self, firstOfKeys: "extOptFloat", "ext_opt_float")
-        self._ext_opt_double.wrappedValue = try container.decodeIfPresent(Double.self, firstOfKeys: "extOptDouble", "ext_opt_double")
-        self._ext_opt_string.wrappedValue = try container.decodeIfPresent(String.self, firstOfKeys: "extOptString", "ext_opt_string")
-        self._ext_opt_bytes.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, firstOfKeys: "extOptBytes", "ext_opt_bytes")
-        self.ext_opt_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, firstOfKeys: "extOptNestedEnum", "ext_opt_nested_enum")
-        self._ext_opt_nested_message.wrappedValue = try container.decodeIfPresent(AllTypes.NestedMessage.self, firstOfKeys: "extOptNestedMessage", "ext_opt_nested_message")
-        self.ext_rep_int32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extRepInt32", "ext_rep_int32")
-        self.ext_rep_uint32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "extRepUint32", "ext_rep_uint32")
-        self.ext_rep_sint32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extRepSint32", "ext_rep_sint32")
-        self.ext_rep_fixed32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "extRepFixed32", "ext_rep_fixed32")
-        self.ext_rep_sfixed32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extRepSfixed32", "ext_rep_sfixed32")
-        self.ext_rep_int64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extRepInt64", "ext_rep_int64")
-        self.ext_rep_uint64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "extRepUint64", "ext_rep_uint64")
-        self.ext_rep_sint64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extRepSint64", "ext_rep_sint64")
-        self.ext_rep_fixed64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "extRepFixed64", "ext_rep_fixed64")
-        self.ext_rep_sfixed64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extRepSfixed64", "ext_rep_sfixed64")
-        self.ext_rep_bool = try container.decodeProtoArray(Bool.self, firstOfKeys: "extRepBool", "ext_rep_bool")
-        self.ext_rep_float = try container.decodeProtoArray(Float.self, firstOfKeys: "extRepFloat", "ext_rep_float")
-        self.ext_rep_double = try container.decodeProtoArray(Double.self, firstOfKeys: "extRepDouble", "ext_rep_double")
-        self.ext_rep_string = try container.decodeProtoArray(String.self, firstOfKeys: "extRepString", "ext_rep_string")
-        self.ext_rep_bytes = try container.decodeProtoArray(Foundation.Data.self, firstOfKeys: "extRepBytes", "ext_rep_bytes")
-        self.ext_rep_nested_enum = try container.decodeProtoArray(AllTypes.NestedEnum.self, firstOfKeys: "extRepNestedEnum", "ext_rep_nested_enum")
-        self.ext_rep_nested_message = try container.decodeProtoArray(AllTypes.NestedMessage.self, firstOfKeys: "extRepNestedMessage", "ext_rep_nested_message")
-        self.ext_pack_int32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extPackInt32", "ext_pack_int32")
-        self.ext_pack_uint32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "extPackUint32", "ext_pack_uint32")
-        self.ext_pack_sint32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extPackSint32", "ext_pack_sint32")
-        self.ext_pack_fixed32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "extPackFixed32", "ext_pack_fixed32")
-        self.ext_pack_sfixed32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "extPackSfixed32", "ext_pack_sfixed32")
-        self.ext_pack_int64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extPackInt64", "ext_pack_int64")
-        self.ext_pack_uint64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "extPackUint64", "ext_pack_uint64")
-        self.ext_pack_sint64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extPackSint64", "ext_pack_sint64")
-        self.ext_pack_fixed64 = try container.decodeProtoArray(UInt64.self, firstOfKeys: "extPackFixed64", "ext_pack_fixed64")
-        self.ext_pack_sfixed64 = try container.decodeProtoArray(Int64.self, firstOfKeys: "extPackSfixed64", "ext_pack_sfixed64")
-        self.ext_pack_bool = try container.decodeProtoArray(Bool.self, firstOfKeys: "extPackBool", "ext_pack_bool")
-        self.ext_pack_float = try container.decodeProtoArray(Float.self, firstOfKeys: "extPackFloat", "ext_pack_float")
-        self.ext_pack_double = try container.decodeProtoArray(Double.self, firstOfKeys: "extPackDouble", "ext_pack_double")
-        self.ext_pack_nested_enum = try container.decodeProtoArray(AllTypes.NestedEnum.self, firstOfKeys: "extPackNestedEnum", "ext_pack_nested_enum")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -2630,116 +2586,6 @@ extension AllTypes.Storage : Codable {
         }
         if includeDefaults || !self.array_double.isEmpty {
             try container.encodeProtoArray(self.array_double, forKey: preferCamelCase ? "arrayDouble" : "array_double")
-        }
-        try container.encodeIfPresent(self.ext_opt_int32, forKey: preferCamelCase ? "extOptInt32" : "ext_opt_int32")
-        try container.encodeIfPresent(self.ext_opt_uint32, forKey: preferCamelCase ? "extOptUint32" : "ext_opt_uint32")
-        try container.encodeIfPresent(self.ext_opt_sint32, forKey: preferCamelCase ? "extOptSint32" : "ext_opt_sint32")
-        try container.encodeIfPresent(self.ext_opt_fixed32, forKey: preferCamelCase ? "extOptFixed32" : "ext_opt_fixed32")
-        try container.encodeIfPresent(self.ext_opt_sfixed32, forKey: preferCamelCase ? "extOptSfixed32" : "ext_opt_sfixed32")
-        try container.encodeIfPresent(stringEncoded: self.ext_opt_int64, forKey: preferCamelCase ? "extOptInt64" : "ext_opt_int64")
-        try container.encodeIfPresent(stringEncoded: self.ext_opt_uint64, forKey: preferCamelCase ? "extOptUint64" : "ext_opt_uint64")
-        try container.encodeIfPresent(stringEncoded: self.ext_opt_sint64, forKey: preferCamelCase ? "extOptSint64" : "ext_opt_sint64")
-        try container.encodeIfPresent(stringEncoded: self.ext_opt_fixed64, forKey: preferCamelCase ? "extOptFixed64" : "ext_opt_fixed64")
-        try container.encodeIfPresent(stringEncoded: self.ext_opt_sfixed64, forKey: preferCamelCase ? "extOptSfixed64" : "ext_opt_sfixed64")
-        try container.encodeIfPresent(self.ext_opt_bool, forKey: preferCamelCase ? "extOptBool" : "ext_opt_bool")
-        try container.encodeIfPresent(self.ext_opt_float, forKey: preferCamelCase ? "extOptFloat" : "ext_opt_float")
-        try container.encodeIfPresent(self.ext_opt_double, forKey: preferCamelCase ? "extOptDouble" : "ext_opt_double")
-        try container.encodeIfPresent(self.ext_opt_string, forKey: preferCamelCase ? "extOptString" : "ext_opt_string")
-        try container.encodeIfPresent(stringEncoded: self.ext_opt_bytes, forKey: preferCamelCase ? "extOptBytes" : "ext_opt_bytes")
-        try container.encodeIfPresent(self.ext_opt_nested_enum, forKey: preferCamelCase ? "extOptNestedEnum" : "ext_opt_nested_enum")
-        try container.encodeIfPresent(self.ext_opt_nested_message, forKey: preferCamelCase ? "extOptNestedMessage" : "ext_opt_nested_message")
-        if includeDefaults || !self.ext_rep_int32.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_int32, forKey: preferCamelCase ? "extRepInt32" : "ext_rep_int32")
-        }
-        if includeDefaults || !self.ext_rep_uint32.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_uint32, forKey: preferCamelCase ? "extRepUint32" : "ext_rep_uint32")
-        }
-        if includeDefaults || !self.ext_rep_sint32.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_sint32, forKey: preferCamelCase ? "extRepSint32" : "ext_rep_sint32")
-        }
-        if includeDefaults || !self.ext_rep_fixed32.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_fixed32, forKey: preferCamelCase ? "extRepFixed32" : "ext_rep_fixed32")
-        }
-        if includeDefaults || !self.ext_rep_sfixed32.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_sfixed32, forKey: preferCamelCase ? "extRepSfixed32" : "ext_rep_sfixed32")
-        }
-        if includeDefaults || !self.ext_rep_int64.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_int64, forKey: preferCamelCase ? "extRepInt64" : "ext_rep_int64")
-        }
-        if includeDefaults || !self.ext_rep_uint64.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_uint64, forKey: preferCamelCase ? "extRepUint64" : "ext_rep_uint64")
-        }
-        if includeDefaults || !self.ext_rep_sint64.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_sint64, forKey: preferCamelCase ? "extRepSint64" : "ext_rep_sint64")
-        }
-        if includeDefaults || !self.ext_rep_fixed64.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_fixed64, forKey: preferCamelCase ? "extRepFixed64" : "ext_rep_fixed64")
-        }
-        if includeDefaults || !self.ext_rep_sfixed64.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_sfixed64, forKey: preferCamelCase ? "extRepSfixed64" : "ext_rep_sfixed64")
-        }
-        if includeDefaults || !self.ext_rep_bool.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_bool, forKey: preferCamelCase ? "extRepBool" : "ext_rep_bool")
-        }
-        if includeDefaults || !self.ext_rep_float.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_float, forKey: preferCamelCase ? "extRepFloat" : "ext_rep_float")
-        }
-        if includeDefaults || !self.ext_rep_double.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_double, forKey: preferCamelCase ? "extRepDouble" : "ext_rep_double")
-        }
-        if includeDefaults || !self.ext_rep_string.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_string, forKey: preferCamelCase ? "extRepString" : "ext_rep_string")
-        }
-        if includeDefaults || !self.ext_rep_bytes.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_bytes, forKey: preferCamelCase ? "extRepBytes" : "ext_rep_bytes")
-        }
-        if includeDefaults || !self.ext_rep_nested_enum.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_nested_enum, forKey: preferCamelCase ? "extRepNestedEnum" : "ext_rep_nested_enum")
-        }
-        if includeDefaults || !self.ext_rep_nested_message.isEmpty {
-            try container.encodeProtoArray(self.ext_rep_nested_message, forKey: preferCamelCase ? "extRepNestedMessage" : "ext_rep_nested_message")
-        }
-        if includeDefaults || !self.ext_pack_int32.isEmpty {
-            try container.encodeProtoArray(self.ext_pack_int32, forKey: preferCamelCase ? "extPackInt32" : "ext_pack_int32")
-        }
-        if includeDefaults || !self.ext_pack_uint32.isEmpty {
-            try container.encodeProtoArray(self.ext_pack_uint32, forKey: preferCamelCase ? "extPackUint32" : "ext_pack_uint32")
-        }
-        if includeDefaults || !self.ext_pack_sint32.isEmpty {
-            try container.encodeProtoArray(self.ext_pack_sint32, forKey: preferCamelCase ? "extPackSint32" : "ext_pack_sint32")
-        }
-        if includeDefaults || !self.ext_pack_fixed32.isEmpty {
-            try container.encodeProtoArray(self.ext_pack_fixed32, forKey: preferCamelCase ? "extPackFixed32" : "ext_pack_fixed32")
-        }
-        if includeDefaults || !self.ext_pack_sfixed32.isEmpty {
-            try container.encodeProtoArray(self.ext_pack_sfixed32, forKey: preferCamelCase ? "extPackSfixed32" : "ext_pack_sfixed32")
-        }
-        if includeDefaults || !self.ext_pack_int64.isEmpty {
-            try container.encodeProtoArray(self.ext_pack_int64, forKey: preferCamelCase ? "extPackInt64" : "ext_pack_int64")
-        }
-        if includeDefaults || !self.ext_pack_uint64.isEmpty {
-            try container.encodeProtoArray(self.ext_pack_uint64, forKey: preferCamelCase ? "extPackUint64" : "ext_pack_uint64")
-        }
-        if includeDefaults || !self.ext_pack_sint64.isEmpty {
-            try container.encodeProtoArray(self.ext_pack_sint64, forKey: preferCamelCase ? "extPackSint64" : "ext_pack_sint64")
-        }
-        if includeDefaults || !self.ext_pack_fixed64.isEmpty {
-            try container.encodeProtoArray(self.ext_pack_fixed64, forKey: preferCamelCase ? "extPackFixed64" : "ext_pack_fixed64")
-        }
-        if includeDefaults || !self.ext_pack_sfixed64.isEmpty {
-            try container.encodeProtoArray(self.ext_pack_sfixed64, forKey: preferCamelCase ? "extPackSfixed64" : "ext_pack_sfixed64")
-        }
-        if includeDefaults || !self.ext_pack_bool.isEmpty {
-            try container.encodeProtoArray(self.ext_pack_bool, forKey: preferCamelCase ? "extPackBool" : "ext_pack_bool")
-        }
-        if includeDefaults || !self.ext_pack_float.isEmpty {
-            try container.encodeProtoArray(self.ext_pack_float, forKey: preferCamelCase ? "extPackFloat" : "ext_pack_float")
-        }
-        if includeDefaults || !self.ext_pack_double.isEmpty {
-            try container.encodeProtoArray(self.ext_pack_double, forKey: preferCamelCase ? "extPackDouble" : "ext_pack_double")
-        }
-        if includeDefaults || !self.ext_pack_nested_enum.isEmpty {
-            try container.encodeProtoArray(self.ext_pack_nested_enum, forKey: preferCamelCase ? "extPackNestedEnum" : "ext_pack_nested_enum")
         }
     }
 

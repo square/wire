@@ -484,7 +484,7 @@ final class ProtoWriterTests: XCTestCase {
 
         assertBufferEqual(writer, "08_01_08_00")
     }
-    
+
     func testEncodePackedRepeatedEnums() throws {
         let writer = ProtoWriter()
         let values: [Person.PhoneType] = [.HOME, .MOBILE]
