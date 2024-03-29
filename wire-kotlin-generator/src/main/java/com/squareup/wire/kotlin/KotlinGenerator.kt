@@ -2222,8 +2222,9 @@ class KotlinGenerator private constructor(
     @Suppress("NAME_SHADOWING")
     val enum =
       if (enum.syntax == Syntax.PROTO_3 && generateUnrecognizedEnumConstant) {
+        // We mutate the constant by inserting `UNRECOGNIZED(-1)` at the front of the list.
         enum.copy(
-          constants = enum.constants + listOf(
+          constants = listOf(
             EnumConstant(
               location = enum.location,
               name = "UNRECOGNIZED",
@@ -2231,7 +2232,7 @@ class KotlinGenerator private constructor(
               documentation = "",
               options = Options(optionType = ENUM_OPTIONS, optionElements = listOf()),
             ),
-          ),
+          ) + enum.constants,
         )
       } else {
         enum
