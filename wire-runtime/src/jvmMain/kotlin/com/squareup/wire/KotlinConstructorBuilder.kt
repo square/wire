@@ -86,11 +86,10 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
       }
     }
 
-    // Retrieve constructor explicitly since `Constructor#getParameterCount` was introduced in JDK
-    // 1.8 and may not be available. ByteString is for `unknown_fields`.
-    val parameterTypes = protoFields.map { it.type }.toTypedArray()
-    val constructor = messageType.getDeclaredConstructor(*parameterTypes, ByteString::class.java)
-    val args = (0..parameterTypes.size).map { index ->
+    val constructor = messageType.constructors.first {
+      it.parameterCount == protoFields.size + 1 // +1 for the unknown_fields.
+    }
+    val args = constructor.parameters.mapIndexed { index, param ->
       when {
         index == protoFields.size -> buildUnknownFields()
         else -> get(fields.removeFirst().wireField)
