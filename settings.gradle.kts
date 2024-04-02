@@ -75,6 +75,7 @@ if (startParameter.projectProperties.get("swift") != "false") {
 }
 include(":samples:android-app-java-sample")
 include(":samples:android-app-kotlin-sample")
+include(":samples:android-app-kotlin-minsdk-sample")
 include(":samples:android-app-variants-sample")
 include(":samples:android-lib-java-sample")
 include(":samples:android-lib-kotlin-sample")
