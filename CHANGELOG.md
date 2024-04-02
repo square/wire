@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 4.9.9
+-------------
+
+_2024-04-02_
+
+### Common
+
+* Backport JSON serialization for Android SDK below 26 (#2881 by [Damian Wieczorek][damianw])
+
 Version 4.9.8
 -------------
 
@@ -1338,24 +1347,25 @@ _2013-08-23_
 Initial version.
 
 
- [bom]: https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import
- [custom-handlers-doc]: https://square.github.io/wire/wire_compiler/#custom-handlers
- [custom-handlers-recipes]: https://github.com/square/wire/tree/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
- [javapoet]: https://github.com/square/javapoet
- [jimfs]: https://github.com/google/jimfs
- [event_listener]: https://github.com/square/wire/blob/3e300c492a74e80260581e3aee624d9cf3e5b1f8/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/EventListener.kt#L105-L111
- [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
- [okio_3_0_0]: https://square.github.io/okio/changelog/#version-300
- [okio_3_0_0_a_3]: https://square.github.io/okio/changelog/#version-300-alpha3
- [reflect]: https://github.com/grpc/grpc/blob/master/doc/server-reflection.md
- [swiftblogpost]: https://cashapp.github.io/2020-08-19/wire-support-for-swift-part-1
- [wire-customizing-output]: https://square.github.io/wire/wire_compiler/#customizing-output
- [ShayOinif]: https://github.com/ShayOinif
- [lickel]: https://github.com/lickel
- [dnkoutso]: https://github.com/dnkoutso
- [quanturium]: https://github.com/quanturium
- [mpeyper]: https://github.com/mpeyper
+ [Egorand]: https://github.com/Egorand
  [JGulbronson]: https://github.com/JGulbronson
  [JakeWharton]: https://github.com/JakeWharton
  [MariusVolkhart]: https://github.com/MariusVolkhart
- [Egorand]: https://github.com/Egorand
+ [ShayOinif]: https://github.com/ShayOinif
+ [bom]: https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import
+ [custom-handlers-doc]: https://square.github.io/wire/wire_compiler/#custom-handlers
+ [custom-handlers-recipes]: https://github.com/square/wire/tree/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
+ [damianw]: https://github.com/damianw
+ [dnkoutso]: https://github.com/dnkoutso
+ [event_listener]: https://github.com/square/wire/blob/3e300c492a74e80260581e3aee624d9cf3e5b1f8/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/EventListener.kt#L105-L111
+ [javapoet]: https://github.com/square/javapoet
+ [jimfs]: https://github.com/google/jimfs
+ [lickel]: https://github.com/lickel
+ [mpeyper]: https://github.com/mpeyper
+ [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
+ [okio_3_0_0]: https://square.github.io/okio/changelog/#version-300
+ [okio_3_0_0_a_3]: https://square.github.io/okio/changelog/#version-300-alpha3
+ [quanturium]: https://github.com/quanturium
+ [reflect]: https://github.com/grpc/grpc/blob/master/doc/server-reflection.md
+ [swiftblogpost]: https://cashapp.github.io/2020-08-19/wire-support-for-swift-part-1
+ [wire-customizing-output]: https://square.github.io/wire/wire_compiler/#customizing-output
