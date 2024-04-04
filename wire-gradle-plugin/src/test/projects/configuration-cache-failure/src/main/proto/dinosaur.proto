@@ -1,0 +1,7 @@
+syntax = "proto2";
+
+import "period.proto";
+
+message Dinosaur {
+  optional Period period = 5;
+}

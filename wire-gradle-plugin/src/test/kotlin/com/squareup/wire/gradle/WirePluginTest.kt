@@ -1458,6 +1458,16 @@ class WirePluginTest {
     buildCacheDir.deleteRecursively()
   }
 
+  @Test
+  fun configurationCacheFailure() {
+    val fixtureRoot = File("src/test/projects/configuration-cache-failure")
+
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("clean", "generateMainProtos", "--stacktrace", "--info").build()
+    }
+    assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+  }
+
   private fun GradleRunner.runFixture(
     root: File,
     action: GradleRunner.() -> BuildResult,
