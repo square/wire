@@ -51,6 +51,8 @@ import squareup.proto2.kotlin.interop.type.EnumProto2 as EnumProto2K
 import squareup.proto2.kotlin.interop.type.InteropTypes.EnumProto2
 import squareup.proto2.kotlin.interop.type.InteropTypes.MessageProto2
 import squareup.proto2.kotlin.interop.type.MessageProto2 as MessageProto2K
+import squareup.proto2.kotlin.unrecognized_constant.Easter as EasterK2
+import squareup.proto2.kotlin.unrecognized_constant.EasterOuterClass.Easter as EasterP2
 import squareup.proto2.wire.extensions.WireMessage
 import squareup.proto3.java.interop.type.EnumProto3 as EnumProto3J
 import squareup.proto3.java.interop.type.MessageProto3 as MessageProto3J
@@ -58,6 +60,8 @@ import squareup.proto3.kotlin.interop.type.EnumProto3 as EnumProto3K
 import squareup.proto3.kotlin.interop.type.InteropTypes.EnumProto3
 import squareup.proto3.kotlin.interop.type.InteropTypes.MessageProto3
 import squareup.proto3.kotlin.interop.type.MessageProto3 as MessageProto3K
+import squareup.proto3.kotlin.unrecognized_constant.EasterAnimal as EasterAnimalK3
+import squareup.proto3.kotlin.unrecognized_constant.EasterOuterClass.EasterAnimal as EasterAnimalP3
 
 class Proto2WireProtocCompatibilityTests {
   @Test fun simpleMessage() {
@@ -193,6 +197,61 @@ class Proto2WireProtocCompatibilityTests {
 
     assertThat(wireMessageDecodedFromGoogleMessage).isEqualTo(wireMessage)
     assertThat(googleMessageDecodedFromWireMessage).isEqualTo(googleMessage)
+  }
+
+  @Test fun encodingAndDecodingOfUnrecognizedEnumConstants_negativeValue_proto2Message() {
+    // ┌─ 2: -1
+    // ╰- 3: 2
+    val bytes = "10ffffffffffffffffff011802"
+    val wireMessage: EasterK2 = EasterK2.ADAPTER.decode(bytes.decodeHex())
+    val protocMessage: EasterP2 = EasterP2.parseFrom(bytes.decodeHex().toByteArray())
+
+    assertThat(protocMessage.optionalEasterAnimal).isEqualTo(EasterAnimalP3.EASTER_ANIMAL_DEFAULT)
+    assertThat(protocMessage.optionalEasterAnimal.number).isEqualTo(0)
+
+    // Keeping that around to clearly show that Wire has a different behavior that protoc. Not sure
+    // that we want to fix this.
+    assertThat(wireMessage.optional_easter_animal).isEqualTo(EasterAnimalK3.UNRECOGNIZED)
+  }
+
+  @Test fun encodingAndDecodingOfUnrecognizedEnumConstants_knownValue_proto2Message() {
+    // ┌─ 2: 1
+    // ╰- 3: 1
+    val bytes = "10011801"
+    val wireMessage: EasterK2 = EasterK2.ADAPTER.decode(bytes.decodeHex())
+    val protocMessage: EasterP2 = EasterP2.parseFrom(bytes.decodeHex().toByteArray())
+
+    assertThat(wireMessage.required_easter_animal.value).isEqualTo(protocMessage.requiredEasterAnimal.number)
+    assertThat(wireMessage.optional_easter_animal!!.value).isEqualTo(protocMessage.optionalEasterAnimal.number)
+
+    assertThat(protocMessage.optionalEasterAnimal).isEqualTo(EasterAnimalP3.BUNNY)
+    assertThat(protocMessage.optionalEasterAnimal.number).isEqualTo(EasterAnimalP3.BUNNY_VALUE)
+    assertThat(protocMessage.requiredEasterAnimal).isEqualTo(EasterAnimalP3.BUNNY)
+    assertThat(protocMessage.requiredEasterAnimal.number).isEqualTo(EasterAnimalP3.BUNNY_VALUE)
+
+    assertThat(wireMessage.optional_easter_animal).isEqualTo(EasterAnimalK3.BUNNY)
+    assertThat(wireMessage.required_easter_animal).isEqualTo(EasterAnimalK3.BUNNY)
+  }
+
+  @Test fun encodingAndDecodingOfUnrecognizedEnumConstants_unknownValue_proto2Message() {
+    // Both Wire and Protoc throw if the required field isn't known.
+    // ┌─ 2: 5
+    // ├─ 3: 2
+    // ├─ 4: 5
+    // ╰- 4: 5
+    val bytes = "1005180220052005"
+    val wireMessage: EasterK2 = EasterK2.ADAPTER.decode(bytes.decodeHex())
+    val protocMessage: EasterP2 = EasterP2.parseFrom(bytes.decodeHex().toByteArray())
+
+    assertThat(protocMessage.optionalEasterAnimal).isEqualTo(EasterAnimalP3.EASTER_ANIMAL_DEFAULT)
+    assertThat(protocMessage.optionalEasterAnimal.number).isEqualTo(0)
+    assertThat(protocMessage.easterAnimalsList).isEmpty()
+
+    // Keeping that around to clearly show that Wire has a different behavior that protoc. Not sure
+    // that we want to fix this.
+    assertThat(wireMessage.optional_easter_animal).isNull()
+    // Wire and Protoc are similar when dealing with lists.
+    assertThat(wireMessage.easter_animals).isEmpty()
   }
 
   companion object {

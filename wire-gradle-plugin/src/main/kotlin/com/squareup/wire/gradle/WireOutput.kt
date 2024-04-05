@@ -90,6 +90,12 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   /** If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix. */
   var escapeKotlinKeywords: Boolean = false
 
+  /**
+   * If true, generated enums will have an extra `UNRECOGNIZED` constant with a value of `-1`. This
+   * only applies to enum which syntax is proto3.
+   */
+  var generateUnrecognizedEnumConstant = false
+
   override fun toTarget(outputDirectory: String): KotlinTarget {
     if (grpcServerCompatible) {
       throw IllegalArgumentException(
@@ -125,6 +131,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,
+      generateUnrecognizedEnumConstant = generateUnrecognizedEnumConstant,
     )
   }
 }

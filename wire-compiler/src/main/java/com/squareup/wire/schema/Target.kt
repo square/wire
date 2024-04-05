@@ -129,8 +129,17 @@ data class KotlinTarget(
    */
   val buildersOnly: Boolean = false,
 
-  /** If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix. */
+  /**
+   * If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a
+   * suffix.
+   */
   val escapeKotlinKeywords: Boolean = false,
+
+  /**
+   * If true, generated enums will have an extra `UNRECOGNIZED` constant with a value of `-1`. This
+   * only applies to enum which syntax is proto3.
+   */
+  val generateUnrecognizedEnumConstant: Boolean = false,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
     return KotlinSchemaHandler(
@@ -146,6 +155,7 @@ data class KotlinTarget(
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,
+      generateUnrecognizedEnumConstant = generateUnrecognizedEnumConstant,
     )
   }
 

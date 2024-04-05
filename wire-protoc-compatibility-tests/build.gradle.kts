@@ -41,6 +41,7 @@ wire {
   kotlin {
     javaInterop = true
     boxOneOfsMinSize = 5
+    generateUnrecognizedEnumConstant = true
 
     includes = listOf(
       "squareup.proto2.kotlin.*",

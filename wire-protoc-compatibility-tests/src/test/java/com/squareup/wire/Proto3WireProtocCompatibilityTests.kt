@@ -31,6 +31,7 @@ import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtension as Re
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtensionMessage as RequiredExtensionMessageK
 import java.io.File
 import okio.ByteString
+import okio.ByteString.Companion.decodeHex
 import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
@@ -62,6 +63,10 @@ import squareup.proto3.kotlin.interop.type.InteropTypes.MessageProto3
 import squareup.proto3.kotlin.interop.type.MessageProto3 as MessageProto3K
 import squareup.proto3.kotlin.pizza.PizzaDelivery as PizzaDeliveryK
 import squareup.proto3.kotlin.pizza.PizzaOuterClass
+import squareup.proto3.kotlin.unrecognized_constant.Easter as EasterK3
+import squareup.proto3.kotlin.unrecognized_constant.EasterAnimal as EasterAnimalK3
+import squareup.proto3.kotlin.unrecognized_constant.EasterOuterClass.Easter as EasterP3
+import squareup.proto3.kotlin.unrecognized_constant.EasterOuterClass.EasterAnimal as EasterAnimalP3
 import squareup.proto3.wire.extensions.WireMessage
 
 class Proto3WireProtocCompatibilityTests {
@@ -193,6 +198,80 @@ class Proto3WireProtocCompatibilityTests {
       EXPLICIT_IDENTITY_ALL_TYPES_JSON,
       jsonPrinter.print(explicitIdentityAllTypesProtoc),
     )
+  }
+
+  @Test fun encodingAndDecodingOfUnrecognizedEnumConstants_negativeValue_proto3Message() {
+    // ┌─ 2: -1
+    // ├─ 3: -1
+    // ├─ 4: -1
+    // ╰- 4: -1
+    val bytes = "10ffffffffffffffffff0118ffffffffffffffffff0120ffffffffffffffffff0120ffffffffffffffffff01"
+    val wireMessage: EasterK3 = EasterK3.ADAPTER.decode(bytes.decodeHex())
+    val protocMessage: EasterP3 = EasterP3.parseFrom(bytes.decodeHex().toByteArray())
+
+    assertThat(wireMessage.identity_easter_animal.value).isEqualTo(protocMessage.identityEasterAnimalValue)
+    assertThat(wireMessage.optional_easter_animal!!.value).isEqualTo(protocMessage.optionalEasterAnimalValue)
+
+    assertThat(protocMessage.optionalEasterAnimal).isEqualTo(EasterAnimalP3.UNRECOGNIZED)
+    assertThat(protocMessage.optionalEasterAnimalValue).isEqualTo(-1)
+    assertThat(protocMessage.identityEasterAnimal).isEqualTo(EasterAnimalP3.UNRECOGNIZED)
+    assertThat(protocMessage.identityEasterAnimalValue).isEqualTo(-1)
+    assertThat(protocMessage.easterAnimalsList).isEqualTo(listOf(EasterAnimalP3.UNRECOGNIZED, EasterAnimalP3.UNRECOGNIZED))
+    assertThat(protocMessage.easterAnimalsValueList).isEqualTo(listOf(-1, -1))
+
+    assertThat(wireMessage.optional_easter_animal).isEqualTo(EasterAnimalK3.UNRECOGNIZED)
+    assertThat(wireMessage.identity_easter_animal).isEqualTo(EasterAnimalK3.UNRECOGNIZED)
+    assertThat(wireMessage.easter_animals).isEqualTo(listOf(EasterAnimalK3.UNRECOGNIZED, EasterAnimalK3.UNRECOGNIZED))
+  }
+
+  @Test fun encodingAndDecodingOfUnrecognizedEnumConstants_knownValue_proto3Message() {
+    // ┌─ 2: 1
+    // ├─ 3: 1
+    // ├─ 4: 1
+    // ╰- 4: 1
+    val bytes = "1001180120012001"
+    val wireMessage: EasterK3 = EasterK3.ADAPTER.decode(bytes.decodeHex())
+    val protocMessage: EasterP3 = EasterP3.parseFrom(bytes.decodeHex().toByteArray())
+
+    assertThat(wireMessage.identity_easter_animal.value).isEqualTo(protocMessage.identityEasterAnimalValue)
+    assertThat(wireMessage.optional_easter_animal!!.value).isEqualTo(protocMessage.optionalEasterAnimalValue)
+
+    assertThat(protocMessage.optionalEasterAnimal).isEqualTo(EasterAnimalP3.BUNNY)
+    assertThat(protocMessage.optionalEasterAnimalValue).isEqualTo(EasterAnimalP3.BUNNY_VALUE)
+    assertThat(protocMessage.identityEasterAnimal).isEqualTo(EasterAnimalP3.BUNNY)
+    assertThat(protocMessage.identityEasterAnimalValue).isEqualTo(EasterAnimalP3.BUNNY_VALUE)
+    assertThat(protocMessage.easterAnimalsList).isEqualTo(listOf(EasterAnimalP3.BUNNY, EasterAnimalP3.BUNNY))
+    assertThat(protocMessage.easterAnimalsValueList).isEqualTo(listOf(EasterAnimalP3.BUNNY_VALUE, EasterAnimalP3.BUNNY_VALUE))
+
+    assertThat(wireMessage.optional_easter_animal).isEqualTo(EasterAnimalK3.BUNNY)
+    assertThat(wireMessage.identity_easter_animal).isEqualTo(EasterAnimalK3.BUNNY)
+    assertThat(wireMessage.easter_animals).isEqualTo(listOf(EasterAnimalK3.BUNNY, EasterAnimalK3.BUNNY))
+  }
+
+  @Test fun encodingAndDecodingOfUnrecognizedEnumConstants_unknownValue_proto3Message() {
+    // ┌─ 2: 5
+    // ├─ 3: 5
+    // ├─ 4: 5
+    // ╰- 4: 5
+    val bytes = "1005180520052005"
+    val wireMessage: EasterK3 = EasterK3.ADAPTER.decode(bytes.decodeHex())
+    val protocMessage: EasterP3 = EasterP3.parseFrom(bytes.decodeHex().toByteArray())
+
+    // TODO(Benoit) Wrong Wire API called for the next two lines. We need something new to fetch
+    //  the real unknown value.
+    // assertThat(wireMessage.identity_easter_animal.value).isEqualTo(protocMessage.identityEasterAnimalValue)
+    // assertThat(wireMessage.optional_easter_animal).isEqualTo(protocMessage.optionalEasterAnimalValue)
+
+    assertThat(protocMessage.optionalEasterAnimal).isEqualTo(EasterAnimalP3.UNRECOGNIZED)
+    assertThat(protocMessage.optionalEasterAnimalValue).isEqualTo(5)
+    assertThat(protocMessage.identityEasterAnimal).isEqualTo(EasterAnimalP3.UNRECOGNIZED)
+    assertThat(protocMessage.identityEasterAnimalValue).isEqualTo(5)
+    assertThat(protocMessage.easterAnimalsList).isEqualTo(listOf(EasterAnimalP3.UNRECOGNIZED, EasterAnimalP3.UNRECOGNIZED))
+    assertThat(protocMessage.easterAnimalsValueList).isEqualTo(listOf(5, 5))
+
+    assertThat(wireMessage.optional_easter_animal).isEqualTo(EasterAnimalK3.UNRECOGNIZED)
+    assertThat(wireMessage.identity_easter_animal).isEqualTo(EasterAnimalK3.UNRECOGNIZED)
+    assertThat(wireMessage.easter_animals).isEqualTo(listOf(EasterAnimalK3.UNRECOGNIZED, EasterAnimalK3.UNRECOGNIZED))
   }
 
   @Test fun deserializeIdentityAllTypesProtoc() {

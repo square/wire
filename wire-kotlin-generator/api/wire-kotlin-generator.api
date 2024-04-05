@@ -21,8 +21,8 @@ public final class com/squareup/wire/kotlin/KotlinGenerator$Companion {
 
 public final class com/squareup/wire/kotlin/KotlinSchemaHandler : com/squareup/wire/schema/SchemaHandler {
 	public static final field Companion Lcom/squareup/wire/kotlin/KotlinSchemaHandler$Companion;
-	public fun <init> (Ljava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZILjava/lang/String;ZZ)V
-	public synthetic fun <init> (Ljava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZILjava/lang/String;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZILjava/lang/String;ZZZ)V
+	public synthetic fun <init> (Ljava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZILjava/lang/String;ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun handle (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Field;Lcom/squareup/wire/schema/SchemaHandler$Context;)Lokio/Path;
 	public fun handle (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/SchemaHandler$Context;)V
 	public fun handle (Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/SchemaHandler$Context;)Ljava/util/List;
