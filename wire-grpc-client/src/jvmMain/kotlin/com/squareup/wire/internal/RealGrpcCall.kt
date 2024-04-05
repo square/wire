@@ -139,7 +139,11 @@ internal class RealGrpcCall<S : Any, R : Any>(
     val result = grpcClient.newCall(method, requestMetadata, requestBody, timeout)
     this.call = result
     if (canceled) result.cancel()
-    (timeout as ForwardingTimeout).setDelegate(result.timeout())
+    // If the timeout doesn't have a deadline or timeout, then the user
+    // didn't set the timeout on this Call manually.
+    if (!timeout.hasDeadline() && (timeout.timeoutNanos() == 0L)) {
+      (timeout as ForwardingTimeout).setDelegate(result.timeout())
+    }
     return result
   }
 }

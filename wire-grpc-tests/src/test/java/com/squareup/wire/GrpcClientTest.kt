@@ -1692,6 +1692,36 @@ class GrpcClientTest {
   }
 
   @Test
+  fun grpcCallCallTimeoutCanBeUpdatedFromTheClientDefault() {
+    val callbackCallFuture = SettableFuture.create<GrpcCall<Point, Feature>>()
+
+    routeGuideService.GetFeature()
+      .apply {
+        timeout.timeout(okHttpClientTimeout.toMillis() * 2, TimeUnit.MILLISECONDS)
+      }
+      .enqueue(
+        Point(1, 1),
+        object : GrpcCall.Callback<Point, Feature> {
+          override fun onFailure(
+            call: GrpcCall<Point, Feature>,
+            exception: IOException,
+          ) {
+            callbackCallFuture.set(call)
+          }
+
+          override fun onSuccess(
+            call: GrpcCall<Point, Feature>,
+            response: Feature,
+          ) {
+            callbackCallFuture.set(call)
+          }
+        },
+      )
+
+    assertThat(callbackCallFuture.get().timeout.timeoutNanos()).isEqualTo(okHttpClientTimeout.toNanos() * 2)
+  }
+
+  @Test
   fun grpcCallCallTimeoutIsPropagatedInRequestMetadata() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature", requestHeaders = mapOf("grpc-timeout" to "1000000u")))
     mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
