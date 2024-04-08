@@ -357,7 +357,8 @@ class SwiftGenerator private constructor(
 
           generateMessageStoragePropertyDelegates(type, storageName, storageType, oneOfEnumNames)
           generateMessageStorageDelegateConstructor(type, storageName, storageType, oneOfEnumNames)
-          generateMessageExtensions(type, storageType, fileMembers)
+          generateMessageExtensions(type, storageType, fileMembers, forStorageType = true)
+          generateMessageExtensionStorageDelegates(type, storageName, structType, fileMembers)
         } else {
           generateMessageProperties(type, oneOfEnumNames)
           generateMessageConstructor(type, oneOfEnumNames)
@@ -1177,10 +1178,71 @@ class SwiftGenerator private constructor(
     )
   }
 
+  private fun TypeSpec.Builder.generateMessageExtensionStorageDelegates(
+    type: MessageType,
+    storageName: String,
+    structType: DeclaredTypeName,
+    fileMembers: MutableList<FileMemberSpec>,
+  ) {
+    if (!type.isHeapAllocated) {
+      println("Generating storage property delegates for a non-heap allocated type?!")
+    }
+
+    if (type.isExtensible) {
+      val extensibleExtension = ExtensionSpec.builder(structType)
+        .addSuperType(protoExtensible)
+        .addDoc("Extensions of %T\n", structType)
+        .apply {
+          type.extensionFields.forEach { field ->
+            val property = PropertySpec.varBuilder(field.safeName, field.typeName, PUBLIC)
+              .apply {
+                if (field.documentation.isNotBlank()) {
+                  addDoc("\n%L\n", field.documentation.sanitizeDoc())
+                }
+                addDoc("\nSource: %L\n", field.location.withPathOnly())
+
+                if (field.isDeprecated) {
+                  addAttribute(deprecated)
+                }
+              }
+              .getter(
+                FunctionSpec.getterBuilder()
+                  .addStatement("%N.%N", storageName, field.safeName)
+                  .build(),
+              )
+              .setter(
+                FunctionSpec.setterBuilder()
+                  .addStatement("%N.%N = newValue", storageName, field.safeName)
+                  .build(),
+              )
+              .build()
+            addProperty(property)
+
+            if (!field.isMap && !field.isRepeated && (field.defaultedValue != null || field.isProtoDefaulted)) {
+              // Look into AccessorMacros in the future when CocoaPods has better support.
+              val defaultProperty =
+                PropertySpec.varBuilder("default_${field.safeName}", field.typeName.makeNonOptional(), PUBLIC, STATIC)
+                  .addDoc("Default value for %L extension field.\n", field.safeName)
+                  .mutable(false)
+                  .initializer(field.defaultedValue ?: CodeBlock.of(".defaultedValue"))
+                  .build()
+
+              addProperty(defaultProperty)
+            }
+          }
+        }
+        .build()
+
+      fileMembers += FileMemberSpec.builder(extensibleExtension)
+        .build()
+    }
+  }
+
   private fun generateMessageExtensions(
     type: MessageType,
     structType: DeclaredTypeName,
     fileMembers: MutableList<FileMemberSpec>,
+    forStorageType: Boolean = false,
   ) {
     if (type.isExtensible) {
       val extensibleExtension = ExtensionSpec.builder(structType)
@@ -1192,15 +1254,19 @@ class SwiftGenerator private constructor(
 
     if (type.extensionFields.isNotEmpty()) {
       val extendedFieldsExtension = ExtensionSpec.builder(structType)
-        .addDoc("Extensions of %T\n", structType)
         .apply {
-          type.extensionFields.filter { !it.isMap }.forEach { field ->
+          if (!forStorageType) {
+            addDoc("Extensions of %T\n", structType)
+          }
+          type.extensionFields.forEach { field ->
             val property = PropertySpec.varBuilder(field.safeName, field.typeName, PUBLIC)
               .apply {
-                if (field.documentation.isNotBlank()) {
+                if (!forStorageType && field.documentation.isNotBlank()) {
                   addDoc("\n%L\n", field.documentation.sanitizeDoc())
                 }
-                addDoc("\nSource: %L\n", field.location.withPathOnly())
+                if (!forStorageType) {
+                  addDoc("\nSource: %L\n", field.location.withPathOnly())
+                }
 
                 if (field.isDeprecated) {
                   addAttribute(deprecated)
@@ -1240,7 +1306,7 @@ class SwiftGenerator private constructor(
               .build()
             addProperty(property)
 
-            if (!field.isMap && !field.isRepeated && (field.defaultedValue != null || field.isProtoDefaulted)) {
+            if (!forStorageType && !field.isMap && !field.isRepeated && (field.defaultedValue != null || field.isProtoDefaulted)) {
               // Look into AccessorMacros in the future when CocoaPods has better support.
               val defaultProperty =
                 PropertySpec.varBuilder("default_${field.safeName}", field.typeName.makeNonOptional(), PUBLIC, STATIC)
