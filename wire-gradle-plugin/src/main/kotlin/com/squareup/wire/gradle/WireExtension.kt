@@ -46,7 +46,7 @@ open class WireExtension(
   fun roots() = roots.toSet()
 
   /**
-   * See [com.squareup.wire.schema.WireRun.treeShakingRoots]
+   * See [com.squareup.wire.schema.WireRun.treeShakingRoots].
    */
   fun root(vararg roots: String) {
     this.roots.addAll(roots)
@@ -55,7 +55,7 @@ open class WireExtension(
   fun prunes() = prunes.toSet()
 
   /**
-   * See [com.squareup.wire.schema.WireRun.treeShakingRubbish]
+   * See [com.squareup.wire.schema.WireRun.treeShakingRubbish].
    */
   fun prune(vararg prunes: String) {
     this.prunes.addAll(prunes)
@@ -64,7 +64,7 @@ open class WireExtension(
   fun sinceVersion() = sinceVersion
 
   /**
-   * See [com.squareup.wire.schema.WireRun.sinceVersion]
+   * See [com.squareup.wire.schema.WireRun.sinceVersion].
    */
   fun sinceVersion(sinceVersion: String) {
     this.sinceVersion = sinceVersion
@@ -73,7 +73,7 @@ open class WireExtension(
   fun untilVersion() = untilVersion
 
   /**
-   * See [com.squareup.wire.schema.WireRun.untilVersion]
+   * See [com.squareup.wire.schema.WireRun.untilVersion].
    */
   fun untilVersion(untilVersion: String) {
     this.untilVersion = untilVersion
@@ -91,14 +91,14 @@ open class WireExtension(
   fun permitPackageCycles() = permitPackageCycles
 
   /**
-   * See [com.squareup.wire.schema.WireRun.permitPackageCycles]
+   * See [com.squareup.wire.schema.WireRun.permitPackageCycles].
    */
   fun permitPackageCycles(permitPackageCycles: Boolean) {
     this.permitPackageCycles = permitPackageCycles
   }
 
   /**
-   * A user-provided file listing [roots] and [prunes]
+   * A user-provided file listing [roots] and [prunes].
    */
   var rules: String? = null
 
@@ -143,8 +143,8 @@ open class WireExtension(
   }
 
   /**
-   * Source paths for local file trees, backed by a [org.gradle.api.file.SourceDirectorySet]
-   * Must provide at least a [org.gradle.api.file.SourceDirectorySet.srcDir]
+   * Source paths for local file trees, backed by a [org.gradle.api.file.SourceDirectorySet].
+   * Must provide at least a [org.gradle.api.file.SourceDirectorySet.srcDir].
    */
   fun sourcePath(action: Action<ProtoRootSet>) {
     action.execute(addProtoSourceProtoRootSet())
@@ -175,8 +175,8 @@ open class WireExtension(
   }
 
   /**
-   * Proto paths for local file trees, backed by a [org.gradle.api.file.SourceDirectorySet]
-   * Must provide at least a [org.gradle.api.file.SourceDirectorySet.srcDir]
+   * Proto paths for local file trees, backed by a [org.gradle.api.file.SourceDirectorySet].
+   * Must provide at least a [org.gradle.api.file.SourceDirectorySet.srcDir].
    */
   fun protoPath(action: Action<ProtoRootSet>) {
     val protoRootSet = addProtoPathProtoRootSet()
@@ -208,7 +208,7 @@ open class WireExtension(
   }
 
   /**
-   * Defines a Java target. See [com.squareup.wire.schema.JavaTarget]
+   * Defines a Java target. See [com.squareup.wire.schema.JavaTarget].
    */
   fun java(action: Action<JavaOutput>) {
     val javaOutput = objectFactory.newInstance(JavaOutput::class.java)
@@ -217,7 +217,7 @@ open class WireExtension(
   }
 
   /**
-   * Defines a Kotlin target. See [com.squareup.wire.schema.KotlinTarget]
+   * Defines a Kotlin target. See [com.squareup.wire.schema.KotlinTarget].
    */
   fun kotlin(action: Action<KotlinOutput>) {
     val kotlinOutput = objectFactory.newInstance(KotlinOutput::class.java)
@@ -226,7 +226,7 @@ open class WireExtension(
   }
 
   /**
-   * Defines a Proto target. See [com.squareup.wire.schema.ProtoTarget]
+   * Defines a Proto target. See [com.squareup.wire.schema.ProtoTarget].
    */
   fun proto(action: Action<ProtoOutput>) {
     val protoOutput = objectFactory.newInstance(ProtoOutput::class.java)
@@ -235,7 +235,7 @@ open class WireExtension(
   }
 
   /**
-   * Defines a Custom target. See [com.squareup.wire.schema.CustomTarget]
+   * Defines a Custom target. See [com.squareup.wire.schema.CustomTarget].
    */
   fun custom(action: Action<CustomOutput>) {
     val customOutput = objectFactory.newInstance(CustomOutput::class.java)
@@ -246,7 +246,7 @@ open class WireExtension(
   fun moves() = moves.toList()
 
   /**
-   * See [com.squareup.wire.schema.WireRun.moves]
+   * See [com.squareup.wire.schema.WireRun.moves].
    */
   fun move(action: Action<Move>) {
     val move = objectFactory.newInstance(Move::class.java)
@@ -257,7 +257,7 @@ open class WireExtension(
   fun opaques() = opaques.toSet()
 
   /**
-   * See [com.squareup.wire.schema.WireRun.opaqueTypes]
+   * See [com.squareup.wire.schema.WireRun.opaqueTypes].
    */
   fun opaque(vararg opaques: String) {
     this.opaques.addAll(opaques)
@@ -301,7 +301,7 @@ open class WireExtension(
       sourceDirectoriesAndLocalJars += project.file(dir)
     }
 
-    /** Sets one or more directory. */
+    /** Sets one or more directories. */
     fun srcDirs(vararg dirs: String) {
       isEmpty = false
       sourceDirectoriesAndLocalJars += dirs.map { project.file(it) }
@@ -349,7 +349,7 @@ open class WireExtension(
     }
 
     /**
-     * If set, only the files being defined as included will be treated.
+     * If set, only the files defined as included will be processed.
      * Example: "com/example/important.proto".
      */
     fun include(vararg includePaths: String) {
@@ -357,7 +357,7 @@ open class WireExtension(
     }
 
     /**
-     * If set, all the files being defined as excluded will be ignored.
+     * If set, all the files defined as excluded will be ignored.
      * Example: "com/example/irrelevant.proto".
      */
     fun exclude(vararg excludePaths: String) {
