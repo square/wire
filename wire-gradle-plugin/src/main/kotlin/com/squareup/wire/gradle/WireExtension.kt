@@ -24,8 +24,6 @@ import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderConvertible
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
 
 open class WireExtension(
   private val project: Project,
@@ -45,8 +43,6 @@ open class WireExtension(
   internal var untilVersion: String? = null
   internal var permitPackageCycles: Boolean = false
 
-  @Input
-  @Optional
   fun roots() = roots.toSet()
 
   /**
@@ -56,8 +52,6 @@ open class WireExtension(
     this.roots.addAll(roots)
   }
 
-  @Input
-  @Optional
   fun prunes() = prunes.toSet()
 
   /**
@@ -67,8 +61,6 @@ open class WireExtension(
     this.prunes.addAll(prunes)
   }
 
-  @Input
-  @Optional
   fun sinceVersion() = sinceVersion
 
   /**
@@ -78,8 +70,6 @@ open class WireExtension(
     this.sinceVersion = sinceVersion
   }
 
-  @Input
-  @Optional
   fun untilVersion() = untilVersion
 
   /**
@@ -89,8 +79,6 @@ open class WireExtension(
     this.untilVersion = untilVersion
   }
 
-  @Input
-  @Optional
   fun onlyVersion() = onlyVersion
 
   /**
@@ -100,7 +88,6 @@ open class WireExtension(
     this.onlyVersion = onlyVersion
   }
 
-  @Input
   fun permitPackageCycles() = permitPackageCycles
 
   /**
@@ -113,12 +100,9 @@ open class WireExtension(
   /**
    * A user-provided file listing [roots] and [prunes]
    */
-  @get:Input
-  @get:Optional
   var rules: String? = null
 
   /** Specified what types to output where. Maps to [com.squareup.wire.schema.Target] */
-  @get:Input
   val outputs = mutableListOf<WireOutput>()
 
   /**
@@ -128,8 +112,6 @@ open class WireExtension(
    * Note that only the `.proto` files used in the library will be included, and these files will
    * have tree-shaking applied.
    */
-  @get:Input
-  @get:Optional
   var protoLibrary = false
 
   /**
@@ -141,16 +123,12 @@ open class WireExtension(
    *
    * If false, unused [roots] and [prunes] will be printed as warnings.
    */
-  @get:Input
-  @get:Optional
   var rejectUnusedRootsOrPrunes = true
 
   /**
    * True to not write generated types to disk, but emit the names of the source files that would
    * otherwise be generated.
    */
-  @get:Input
-  @get:Optional
   var dryRun = false
 
   /**
@@ -172,7 +150,6 @@ open class WireExtension(
     action.execute(addProtoSourceProtoRootSet())
   }
 
-  @Input
   fun eventListenerFactories() = eventListenerFactories.toSet()
 
   /** Add a [EventListener.Factory]. */
@@ -180,7 +157,6 @@ open class WireExtension(
     this.eventListenerFactories.add(eventListenerFactory)
   }
 
-  @Input
   fun eventListenerFactoryClasses() = eventListenerFactoryClasses.toSet()
 
   /** Add a [EventListener.Factory] by name. The referred class must have a no-arguments constructor. */
@@ -255,8 +231,6 @@ open class WireExtension(
     outputs += customOutput
   }
 
-  @Input
-  @Optional
   fun moves() = moves.toList()
 
   fun move(action: Action<Move>) {
@@ -265,8 +239,6 @@ open class WireExtension(
     moves += move
   }
 
-  @Input
-  @Optional
   fun opaques() = opaques.toSet()
 
   fun opaque(vararg opaques: String) {
