@@ -15,13 +15,11 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.wire.WireCompiler
 import com.squareup.wire.java.JavaSchemaHandler
 import com.squareup.wire.kotlin.KotlinSchemaHandler
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
-import com.squareup.wire.swift.SwiftGenerator
-import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
+import com.squareup.wire.swift.SwiftSchemaHandler
 import java.io.IOException
 import okio.Path
 
@@ -174,7 +172,6 @@ data class KotlinTarget(
   }
 }
 
-// TODO(Benoit) Get SwiftGenerator to expose a factory from its module. Code should not be here.
 data class SwiftTarget(
   override val includes: List<String> = listOf("*"),
   override val excludes: List<String> = listOf(),
@@ -182,56 +179,7 @@ data class SwiftTarget(
   override val outDirectory: String,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
-    return object : SchemaHandler() {
-      private lateinit var generator: SwiftGenerator
-
-      override fun handle(schema: Schema, context: Context) {
-        generator = SwiftGenerator(schema, context.module?.upstreamTypes ?: mapOf())
-        context.fileSystem.createDirectories(context.outDirectory)
-        super.handle(schema, context)
-      }
-
-      override fun handle(type: Type, context: Context): Path? {
-        if (SwiftGenerator.builtInType(type.type)) return null
-
-        val modulePath = context.outDirectory
-        val typeName = generator.generatedTypeName(type)
-        val swiftFile = SwiftFileSpec.builder(typeName.moduleName, typeName.simpleName)
-          .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
-          .addComment("\nSource: %L in %L", type.type, type.location.withPathOnly())
-          .indent("    ")
-          .apply {
-            generator.generateTypeTo(type, this)
-          }
-          .build()
-
-        val filePath = modulePath / "${swiftFile.name}.swift"
-        try {
-          context.fileSystem.write(filePath) {
-            writeUtf8(swiftFile.toString())
-          }
-        } catch (e: IOException) {
-          throw IOException(
-            "Error emitting ${swiftFile.moduleName}.${typeName.canonicalName} to $modulePath",
-            e,
-          )
-        }
-
-        context.logger.artifactHandled(
-          outputPath = modulePath,
-          qualifiedName = "${swiftFile.moduleName}.${typeName.canonicalName} declared in ${type.location.withPathOnly()}",
-          targetName = "Swift",
-        )
-        return filePath
-      }
-
-      override fun handle(service: Service, context: Context) = emptyList<Path>()
-      override fun handle(
-        extend: Extend,
-        field: Field,
-        context: Context,
-      ): Path? = null
-    }
+    return SwiftSchemaHandler()
   }
 
   override fun copyTarget(

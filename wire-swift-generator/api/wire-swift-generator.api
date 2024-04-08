@@ -13,3 +13,15 @@ public final class com/squareup/wire/swift/SwiftGenerator$Companion {
 	public static synthetic fun get$default (Lcom/squareup/wire/swift/SwiftGenerator$Companion;Lcom/squareup/wire/schema/Schema;Ljava/util/Map;ILjava/lang/Object;)Lcom/squareup/wire/swift/SwiftGenerator;
 }
 
+public final class com/squareup/wire/swift/SwiftSchemaHandler : com/squareup/wire/schema/SchemaHandler {
+	public static final field Companion Lcom/squareup/wire/swift/SwiftSchemaHandler$Companion;
+	public fun <init> ()V
+	public fun handle (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Field;Lcom/squareup/wire/schema/SchemaHandler$Context;)Lokio/Path;
+	public fun handle (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/SchemaHandler$Context;)V
+	public fun handle (Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/SchemaHandler$Context;)Ljava/util/List;
+	public fun handle (Lcom/squareup/wire/schema/Type;Lcom/squareup/wire/schema/SchemaHandler$Context;)Lokio/Path;
+}
+
+public final class com/squareup/wire/swift/SwiftSchemaHandler$Companion {
+}
+
