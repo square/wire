@@ -207,24 +207,36 @@ open class WireExtension(
     return result
   }
 
+  /**
+   * Defines a Java target. See [com.squareup.wire.schema.JavaTarget]
+   */
   fun java(action: Action<JavaOutput>) {
     val javaOutput = objectFactory.newInstance(JavaOutput::class.java)
     action.execute(javaOutput)
     outputs += javaOutput
   }
 
+  /**
+   * Defines a Kotlin target. See [com.squareup.wire.schema.KotlinTarget]
+   */
   fun kotlin(action: Action<KotlinOutput>) {
     val kotlinOutput = objectFactory.newInstance(KotlinOutput::class.java)
     action.execute(kotlinOutput)
     outputs += kotlinOutput
   }
 
+  /**
+   * Defines a Proto target. See [com.squareup.wire.schema.ProtoTarget]
+   */
   fun proto(action: Action<ProtoOutput>) {
     val protoOutput = objectFactory.newInstance(ProtoOutput::class.java)
     action.execute(protoOutput)
     outputs += protoOutput
   }
 
+  /**
+   * Defines a Custom target. See [com.squareup.wire.schema.CustomTarget]
+   */
   fun custom(action: Action<CustomOutput>) {
     val customOutput = objectFactory.newInstance(CustomOutput::class.java)
     action.execute(customOutput)
@@ -233,6 +245,9 @@ open class WireExtension(
 
   fun moves() = moves.toList()
 
+  /**
+   * See [com.squareup.wire.schema.WireRun.moves]
+   */
   fun move(action: Action<Move>) {
     val move = objectFactory.newInstance(Move::class.java)
     action.execute(move)
@@ -241,6 +256,9 @@ open class WireExtension(
 
   fun opaques() = opaques.toSet()
 
+  /**
+   * See [com.squareup.wire.schema.WireRun.opaqueTypes]
+   */
   fun opaque(vararg opaques: String) {
     this.opaques.addAll(opaques)
   }
@@ -277,16 +295,19 @@ open class WireExtension(
     internal val includes = mutableListOf<String>()
     internal val excludes = mutableListOf<String>()
 
+    /** Sets a directory. Example: "src/main/proto". */
     fun srcDir(dir: String) {
       isEmpty = false
       sourceDirectoriesAndLocalJars += project.file(dir)
     }
 
+    /** Sets one or more directory. */
     fun srcDirs(vararg dirs: String) {
       isEmpty = false
       sourceDirectoriesAndLocalJars += dirs.map { project.file(it) }
     }
 
+    /** Sets a local or a remote jar. Examples: "libs/protos.jar", or "com.example:protos:1.0.0". */
     fun srcJar(jar: String) {
       srcFileOrConfiguration(jar)
     }
@@ -301,18 +322,22 @@ open class WireExtension(
       }
     }
 
+    /** Sets a local or a remote jar. */
     fun srcJar(provider: Provider<MinimalExternalModuleDependency>) {
       addDependency(provider)
     }
 
+    /** Sets a local or a remote jar. */
     fun srcJar(convertible: ProviderConvertible<MinimalExternalModuleDependency>) {
       addDependency(convertible.asProvider())
     }
 
+    /** Sets a project. Example: ":protos". */
     fun srcProject(projectPath: String) {
       addDependency(project.project(projectPath))
     }
 
+    /** Sets a project. */
     fun srcProject(project: DelegatingProjectDependency) {
       addDependency(project)
     }
@@ -323,10 +348,18 @@ open class WireExtension(
       project.dependencies.add("protoProjectDependenciesJvm", dependencyNotation)
     }
 
+    /**
+     * If set, only the files being defined as included will be treated.
+     * Example: "com/example/important.proto".
+     */
     fun include(vararg includePaths: String) {
       includes += includePaths
     }
 
+    /**
+     * If set, all the files being defined as excluded will be ignored.
+     * Example: "com/example/irrelevant.proto".
+     */
     fun exclude(vararg excludePaths: String) {
       excludes += excludePaths
     }
