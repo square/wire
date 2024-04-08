@@ -48,7 +48,7 @@ class KotlinSchemaHandler(
   /** Blocking or suspending. */
   private val rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
 
-  /** Client or server. */
+  /** Client, server, or none. */
   private val rpcRole: RpcRole = RpcRole.CLIENT,
 
   /** True for emitted services to implement one interface per RPC. */

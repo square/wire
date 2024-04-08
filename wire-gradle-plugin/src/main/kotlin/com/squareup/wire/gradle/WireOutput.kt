@@ -43,14 +43,34 @@ abstract class WireOutput {
 }
 
 open class JavaOutput @Inject constructor() : WireOutput() {
+  /** See [com.squareup.wire.schema.Target.includes] */
   var includes: List<String>? = null
+
+  /** See [com.squareup.wire.schema.Target.excludes] */
   var excludes: List<String>? = null
+
+  /** See [com.squareup.wire.schema.Target.exclusive] */
   var exclusive: Boolean = true
+
+  /** True for emitted types to implement `android.os.Parcelable`. */
   var android: Boolean = false
+
+  /** True to enable the `androidx.annotation.Nullable` annotation where applicable. */
   var androidAnnotations: Boolean = false
+
+  /**
+   * True to emit code that uses reflection for reading, writing, and toString methods which are
+   * normally implemented with generated code.
+   */
   var compact: Boolean = false
+
+  /** True to emit types for options declared on messages, fields, etc. */
   var emitDeclaredOptions: Boolean = true
+
+  /** True to emit annotations for options applied on messages, fields, etc. */
   var emitAppliedOptions: Boolean = true
+
+  /** If true, the constructor of all generated types will be non-public. */
   var buildersOnly: Boolean = false
 
   override fun toTarget(outputDirectory: String): JavaTarget {
@@ -70,21 +90,55 @@ open class JavaOutput @Inject constructor() : WireOutput() {
 }
 
 open class KotlinOutput @Inject constructor() : WireOutput() {
+  /** See [com.squareup.wire.schema.Target.includes] */
   var includes: List<String>? = null
+
+  /** See [com.squareup.wire.schema.Target.excludes] */
   var excludes: List<String>? = null
+
+  /** See [com.squareup.wire.schema.Target.exclusive] */
   var exclusive: Boolean = true
+
+  /** True for emitted types to implement `android.os.Parcelable`. */
   var android: Boolean = false
+
+  /** True for emitted types to implement APIs for easier migration from the Java target. */
   var javaInterop: Boolean = false
+
+  /** True to emit types for options declared on messages, fields, etc. */
   var emitDeclaredOptions: Boolean = true
+
+  /** True to emit annotations for options applied on messages, fields, etc. */
   var emitAppliedOptions: Boolean = true
+
+  /** Blocking or suspending. */
   var rpcCallStyle: String = "suspending"
+
+  /** Client, server, or none. */
   var rpcRole: String = "client"
+
+  /** True for emitted services to implement one interface per RPC. */
   var singleMethodServices: Boolean = false
+
+  /**
+   * If a oneof has more than or [boxOneOfsMinSize] fields, it will be generated using boxed oneofs
+   * as defined in [OneOf][com.squareup.wire.OneOf].
+   */
   var boxOneOfsMinSize: Int = 5_000
 
   @Deprecated("See https://square.github.io/wire/wire_grpc/#wire-grpc-server")
   var grpcServerCompatible: Boolean = false
+
+  /**
+   * If present, generated services classes will use this as a suffix instead of inferring one
+   * from the [rpcRole].
+   */
   var nameSuffix: String? = null
+
+  /**
+   * If true, the constructor of all generated types will be non-public, and they will be
+   * instantiable via their builders, regardless of the value of [javaInterop].
+   */
   var buildersOnly: Boolean = false
 
   /** If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix. */
@@ -143,8 +197,13 @@ open class ProtoOutput @Inject constructor() : WireOutput() {
 }
 
 open class CustomOutput @Inject constructor() : WireOutput() {
+  /** See [com.squareup.wire.schema.Target.includes] */
   var includes: List<String>? = null
+
+  /** See [com.squareup.wire.schema.Target.excludes] */
   var excludes: List<String>? = null
+
+  /** See [com.squareup.wire.schema.Target.exclusive] */
   var exclusive: Boolean = true
 
   /**
