@@ -67,8 +67,9 @@ message LargeExtensible {
 }
 
 extend LargeExtensible {
+  // With default value
   optional string ext_value17 = 17 [default = "my extension default value" ];
-  optional string ext_value18 = 18;
+  optional string ext_value18 = 18 [deprecated = true];
 
   repeated int32 rep_ext_int32 = 19;
   repeated uint32 rep_ext_uint32 = 20;

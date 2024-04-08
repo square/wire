@@ -130,7 +130,7 @@ final class ExtensibleTests: XCTestCase {
     }
 
     func testExtensionDefaultValues() {
-        XCTAssertEqual(LargeExtensible.Storage.default_ext_value17, "my extension default value")
-        XCTAssertEqual(LargeExtensible.Storage.default_ext_value18, "")
+        XCTAssertEqual(LargeExtensible.default_ext_value17, "my extension default value")
+        XCTAssertEqual(LargeExtensible.default_ext_value18, "")
     }
 }
