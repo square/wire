@@ -49,7 +49,7 @@ class MapTest {
     assertThat(adapter.decode(BYTES)).isEqualTo(THREE)
 
     val empty = adapter.decode(ByteArray(0))
-    assertThat(empty.things).isNotNull
+    assertThat(empty.things).isNotNull()
   }
 
   companion object {
