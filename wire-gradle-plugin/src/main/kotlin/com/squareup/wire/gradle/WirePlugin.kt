@@ -211,9 +211,13 @@ class WirePlugin : Plugin<Project> {
           task.source(rootSet.configuration)
           task.source(*rootSet.sourceDirectoriesAndLocalJars.toTypedArray())
         }
-        for (rootSet in protoPathProtoRootSets) {
-          task.source(rootSet.configuration)
-          task.source(*rootSet.sourceDirectoriesAndLocalJars.toTypedArray())
+        // We only want to add ProtoPath sources if we have other sources already. The WireTask
+        // would otherwise run even through we have no sources.
+        if (!task.source.isEmpty) {
+          for (rootSet in protoPathProtoRootSets) {
+            task.source(rootSet.configuration)
+            task.source(*rootSet.sourceDirectoriesAndLocalJars.toTypedArray())
+          }
         }
 
         val outputDirectories: List<String> = buildList {
