@@ -57,7 +57,7 @@ internal class SchemaReflectorTest {
           file_by_filename = "src/test/proto/RouteGuideProto.proto",
         ),
       ),
-    ).extracting { it.file_descriptor_response }.isNotNull
+    ).extracting { it.file_descriptor_response }.isNotNull()
   }
 
   @Test
@@ -72,7 +72,7 @@ internal class SchemaReflectorTest {
           file_containing_symbol = "routeguide.RouteGuide",
         ),
       ),
-    ).extracting { it.file_descriptor_response }.isNotNull
+    ).extracting { it.file_descriptor_response }.isNotNull()
   }
 
   @Test
