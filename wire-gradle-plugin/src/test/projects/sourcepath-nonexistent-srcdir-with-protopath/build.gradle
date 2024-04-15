@@ -1,0 +1,12 @@
+plugins {
+  id 'application'
+  id 'com.squareup.wire'
+}
+
+wire {
+  protoPath {
+    srcDir 'src/main/protopath'
+  }
+  java{
+  }
+}

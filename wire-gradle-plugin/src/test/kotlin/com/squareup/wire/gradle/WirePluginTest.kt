@@ -83,6 +83,16 @@ class WirePluginTest {
   }
 
   @Test
+  fun sourcePathDirDoesNotExistButProtoPathDoes() {
+    val fixtureRoot = File("src/test/projects/sourcepath-nonexistent-srcdir-with-protopath")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateMainProtos")).isNotNull()
+    assertThat(result.output).contains("NO-SOURCE")
+  }
+
+  @Test
   fun sourcePathDirDoesNotExist() {
     val fixtureRoot = File("src/test/projects/sourcepath-nonexistent-dir")
 
