@@ -137,7 +137,7 @@ abstract class SchemaHandler {
    * added to the [ClaimedDefinitions]. Already consumed types and services themselves will be
    * omitted by this handler.
    */
-  private fun handle(
+  protected fun handle(
     protoFile: ProtoFile,
     context: Context,
   ) {
