@@ -1,6 +1,49 @@
 Change Log
 ==========
 
+Version 5.0.0-alpha01
+---------------------
+
+_2024-04-16_
+
+### Common
+
+* ⚠ Reject unused prunes and roots by default (#2846)
+    This behavior used to be opt-in, now it’s opt-out. You can opt out with `rejectUnusedRootsOrPrunes = false`
+    in your `wire { }` block.
+* ⚠ Remove deprecated `SchemaHandler#create` method (#2851)
+    Override the other method `create(includes, excludes, exclusive, outDirectory, options): SchemaHandler` instead if you were not already doing it.
+* Don't warn about an unused emitting rule, when that rule is '*' (#2829)
+* The internal of our Wire Gradle plugin has been refactored where behavior changes should not be
+    expected. If you see anything different, please [let us know](https://github.com/square/wire/issues).
+* Allow custom options to be passed in WireCompiler (#2909)
+
+### Kotlin
+
+* Propagates Request timeout as grpc-timeout (#2840 by [Francisco Rojas][frojasg])
+* Don't override RealGrpcCall.timeout when it's manually set (#2893 by [Jeff Gulbronson][JGulbronson])
+* Publish the gRPC Dispatcher (#2872)
+    A new helper class [GrpcDispatcher](https://github.com/square/wire/blob/master/wire-grpc-mockwebserver/src/main/java/com/squareup/wire/mockwebserver/GrpcDispatcher.kt#L64) for gRPC testing is available under `com.squareup.wire:wire-grpc-mockwebserver`.
+    Note that it does not support streaming calls. If you want to contribute, please do!
+
+### Swift
+
+* ⚠ Refactored how extensions are emitted and provides a new API to get/set extension fields.
+    Due to the refactor above, Codable fields that are defined in extensions will now break as part of this change.
+    All done by [Dimitris Koutsogiorgas][dnkoutso] and [Adam Lickel][lickel]!
+
+### wire-grpc-server
+
+* ⚠ `wire-grpc-server` has been moved into its own repo: https://github.com/square/wire-grpc-server.
+    If you were using it, you can see how migration is to happen by checking these [instructions](https://github.com/square/wire/blob/master/docs/wire_grpc.md#wire-grpc-server).
+
+### Version bumps
+
+* kotlin -> `1.9.23`
+* kotlinpoet -> `1.16.0`
+* okhttp -> `5.0.0-alpha.12`
+* okio -> `3.9.0`
+
 Version 4.9.9
 -------------
 
@@ -1358,6 +1401,7 @@ Initial version.
  [damianw]: https://github.com/damianw
  [dnkoutso]: https://github.com/dnkoutso
  [event_listener]: https://github.com/square/wire/blob/3e300c492a74e80260581e3aee624d9cf3e5b1f8/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/EventListener.kt#L105-L111
+ [frojasg]: https://github.com/frojasg
  [javapoet]: https://github.com/square/javapoet
  [jimfs]: https://github.com/google/jimfs
  [lickel]: https://github.com/lickel
