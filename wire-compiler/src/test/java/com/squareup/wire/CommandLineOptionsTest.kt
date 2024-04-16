@@ -109,6 +109,27 @@ class CommandLineOptionsTest {
   }
 
   @Test
+  fun customOptions() {
+    var compiler = parseArgs(
+      "--custom_out=src/custom/out",
+      "--schema_handler_factory_class=com.squareup.wire.MyCustomHandlerFactory",
+      "--custom_option=key1,one",
+      "--custom_option=key2,value1,value2",
+      "--custom_option=key3,three",
+      "--custom_option=key1,override",
+    )
+    assertThat(compiler.customOut).isEqualTo("src/custom/out")
+    assertThat(compiler.schemaHandlerFactoryClass).isEqualTo("com.squareup.wire.MyCustomHandlerFactory")
+    assertThat(compiler.customOptions).isEqualTo(
+      mapOf(
+        "key1" to "override",
+        "key2" to "value1,value2",
+        "key3" to "three",
+      ),
+    )
+  }
+
+  @Test
   fun manifestModules() {
     val tmpFile = File.createTempFile("proto", ".yaml")
     tmpFile.writeText(

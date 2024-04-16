@@ -57,6 +57,7 @@ import okio.openZip
  *   [--android]
  *   [--android-annotations]
  *   [--compact]
+ *   [--custom_option=<key>,<value>]
  *   [file [file...]]
  * ```
  *
@@ -99,6 +100,10 @@ import okio.openZip
  *
  * The `--compact` flag will emit code that uses reflection for reading, writing, and
  * toString methods which are normally implemented with code generation.
+ *
+ * The `--custom_option` flag will be passed onto the custom [SchemaHandler][com.squareup.wire.schema.SchemaHandler]
+ * if set. The flag can be used as many times as needed and all key/value pairs will be aggregated
+ * into a map. See [com.squareup.wire.gradle.CustomOutput.options]
  */
 class WireCompiler internal constructor(
   val fs: FileSystem,
@@ -129,6 +134,7 @@ class WireCompiler internal constructor(
   val kotlinBuildersOnly: Boolean,
   val kotlinEscapeKeywords: Boolean,
   val eventListenerFactoryClasses: List<String>,
+  val customOptions: Map<String, String>,
 ) {
 
   @Throws(IOException::class)
@@ -170,6 +176,7 @@ class WireCompiler internal constructor(
       targets += CustomTarget(
         outDirectory = customOut,
         schemaHandlerFactory = newSchemaHandler(schemaHandlerFactoryClass),
+        options = customOptions,
       )
     }
 
@@ -259,6 +266,7 @@ class WireCompiler internal constructor(
     private const val KOTLIN_NAME_SUFFIX = "--kotlin_name_suffix="
     private const val KOTLIN_BUILDERS_ONLY = "--kotlin_builders_only"
     private const val KOTLIN_ESCAPE_KEYWORDS = "--kotlin_escape_keywords"
+    private const val CUSTOM_OPTION_FLAG = "--custom_option="
 
     @Throws(IOException::class)
     @JvmStatic
@@ -319,6 +327,7 @@ class WireCompiler internal constructor(
       var kotlinBuildersOnly = false
       var kotlinEscapeKeywords = false
       var dryRun = false
+      val customOptions = mutableMapOf<String, String>()
 
       for (arg in args) {
         when {
@@ -370,6 +379,13 @@ class WireCompiler internal constructor(
 
           arg.startsWith(SCHEMA_HANDLER_FACTORY_CLASS_FLAG) -> {
             schemaHandlerFactoryClass = arg.substring(SCHEMA_HANDLER_FACTORY_CLASS_FLAG.length)
+          }
+
+          arg.startsWith(CUSTOM_OPTION_FLAG) -> {
+            val (key, value) = arg
+              .substring(CUSTOM_OPTION_FLAG.length)
+              .split(',', limit = 2)
+            customOptions[key] = value
           }
 
           arg.startsWith(FILES_FLAG) -> {
@@ -465,6 +481,7 @@ class WireCompiler internal constructor(
         kotlinBuildersOnly = kotlinBuildersOnly,
         kotlinEscapeKeywords = kotlinEscapeKeywords,
         eventListenerFactoryClasses = eventListenerFactoryClasses,
+        customOptions = customOptions,
       )
     }
   }

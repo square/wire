@@ -835,6 +835,7 @@ public final class com/squareup/wire/schema/SchemaException : java/lang/RuntimeE
 public abstract class com/squareup/wire/schema/SchemaHandler {
 	public fun <init> ()V
 	public abstract fun handle (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Field;Lcom/squareup/wire/schema/SchemaHandler$Context;)Lokio/Path;
+	protected final fun handle (Lcom/squareup/wire/schema/ProtoFile;Lcom/squareup/wire/schema/SchemaHandler$Context;)V
 	public fun handle (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/SchemaHandler$Context;)V
 	public abstract fun handle (Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/SchemaHandler$Context;)Ljava/util/List;
 	public abstract fun handle (Lcom/squareup/wire/schema/Type;Lcom/squareup/wire/schema/SchemaHandler$Context;)Lokio/Path;
