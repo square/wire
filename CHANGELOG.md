@@ -13,6 +13,7 @@ _2024-04-16_
     in your `wire { }` block.
 * ⚠ Remove deprecated `SchemaHandler#create` method (#2851)
     Override the other method `create(includes, excludes, exclusive, outDirectory, options): SchemaHandler` instead if you were not already doing it.
+* ⚠ Adding a project dependency via `srcJar` used to work but not anymore. Use `srcProject(":my-project")` instead.
 * Don't warn about an unused emitting rule, when that rule is '*' (#2829)
 * The internal of our Wire Gradle plugin has been refactored where behavior changes should not be
     expected. If you see anything different, please [let us know](https://github.com/square/wire/issues).
