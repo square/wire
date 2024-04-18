@@ -33,7 +33,7 @@ androidx-ktx = { module = "androidx.core:core-ktx", version = "1.13.0" }
 androidx-test-runner = { module = "androidx.test:runner", version = "1.5.2" }
 asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
-assertk = "com.willowtreeapps.assertk:assertk:0.28.0"
+assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
 checker-qual = { module = "org.checkerframework:checker-qual", version.ref = "checkerQual" }
 contour = { module = "app.cash.contour:contour", version = "1.1.0" }
 googleJavaFormat = "com.google.googlejavaformat:google-java-format:1.22.0"
