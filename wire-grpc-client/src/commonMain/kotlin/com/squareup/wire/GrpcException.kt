@@ -21,4 +21,5 @@ class GrpcException(
   val grpcStatus: GrpcStatus,
   val grpcMessage: String?,
   val grpcStatusDetails: ByteArray? = null,
-) : IOException("grpc-status=${grpcStatus.code}, grpc-status-name=${grpcStatus.name}, grpc-message=$grpcMessage")
+  val grpcUrl: String?,
+) : IOException("grpc-status=${grpcStatus.code}, grpc-status-name=${grpcStatus.name}, grpc-message=$grpcMessage grpc-url=$grpcUrl")
