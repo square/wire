@@ -210,7 +210,7 @@ internal fun Response.grpcResponseToException(suppressed: IOException? = null): 
 
   val grpcStatus = trailers["grpc-status"] ?: header("grpc-status")
   val grpcMessage = trailers["grpc-message"] ?: header("grpc-message")
-  val grpcUrl = request.url.toString()
+  val url = request.url.toString()
   var grpcStatusDetailsBin: ByteArray? = null
 
   grpcStatus?.toIntOrNull()?.takeIf { it != 0 }?.let { grpcStatusInt ->
@@ -226,7 +226,7 @@ internal fun Response.grpcResponseToException(suppressed: IOException? = null): 
       }
     }
 
-    return GrpcException(GrpcStatus.get(grpcStatusInt), grpcMessage, grpcStatusDetailsBin, grpcUrl)
+    return GrpcException(GrpcStatus.get(grpcStatusInt), grpcMessage, grpcStatusDetailsBin, url)
   }
 
   if (transportException != null || grpcStatus?.toIntOrNull() == null) {

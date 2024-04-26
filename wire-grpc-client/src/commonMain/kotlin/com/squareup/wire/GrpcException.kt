@@ -21,5 +21,21 @@ class GrpcException(
   val grpcStatus: GrpcStatus,
   val grpcMessage: String?,
   val grpcStatusDetails: ByteArray? = null,
-  val grpcUrl: String?,
-) : IOException("grpc-status=${grpcStatus.code}, grpc-status-name=${grpcStatus.name}, grpc-message=$grpcMessage grpc-url=$grpcUrl")
+  val url: String? = null,
+) : IOException(
+  buildString {
+    append("grpc-status=${grpcStatus.code} (${grpcStatus.name})")
+    if (grpcMessage != null) append(" grpc-message=$grpcMessage")
+    if (url != null) append(" url=$url")
+  },
+) {
+  @Deprecated(
+    message = "added url parameter",
+    level = DeprecationLevel.HIDDEN
+  )
+  constructor(
+    grpcStatus: GrpcStatus,
+    grpcMessage: String?,
+    grpcStatusDetails: ByteArray? = null,
+  ) : this(grpcStatus, grpcMessage, grpcStatusDetails)
+}
