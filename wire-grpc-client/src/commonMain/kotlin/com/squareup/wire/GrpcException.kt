@@ -31,7 +31,7 @@ class GrpcException(
 ) {
   @Deprecated(
     message = "added url parameter",
-    level = DeprecationLevel.HIDDEN
+    level = DeprecationLevel.HIDDEN,
   )
   constructor(
     grpcStatus: GrpcStatus,
