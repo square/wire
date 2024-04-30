@@ -1194,8 +1194,8 @@ class GrpcClientTest {
       fail()
     } catch (expected: GrpcException) {
       assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
-      assertThat(expected).hasMessage(
-        "grpc-status=13, grpc-status-name=INTERNAL, grpc-message=boom",
+      assertThat(expected).hasMessageStartingWith(
+        "grpc-status=13 (INTERNAL) grpc-message=boom",
       )
     }
   }
@@ -1630,7 +1630,7 @@ class GrpcClientTest {
       fail()
     } catch (expected: GrpcException) {
       assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
-      assertThat(expected).hasMessage("grpc-status=13, grpc-status-name=INTERNAL, grpc-message=boom")
+      assertThat(expected).hasMessageStartingWith("grpc-status=13 (INTERNAL) grpc-message=boom")
       assertThat(RouteNote.ADAPTER.decode(expected.grpcStatusDetails!!).message).isEqualTo("marco")
     }
   }

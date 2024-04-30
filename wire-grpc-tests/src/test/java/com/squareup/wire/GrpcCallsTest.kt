@@ -263,7 +263,7 @@ class GrpcCallsTest {
       grpcCall.executeBlocking("hello")
       fail()
     } catch (e: GrpcException) {
-      assertThat(e).hasMessage("grpc-status=13, grpc-status-name=INTERNAL, grpc-message=oops")
+      assertThat(e).hasMessage("grpc-status=13 (INTERNAL) grpc-message=oops")
     }
   }
 }
