@@ -24,7 +24,7 @@ class GrpcException(
   val url: String? = null,
 ) : IOException(
   buildString {
-    append("grpc-status=${grpcStatus.code} (${grpcStatus.name})")
+    append("grpc-status=${grpcStatus.code} grpc-status-name=${grpcStatus.name}")
     if (grpcMessage != null) append(" grpc-message=$grpcMessage")
     if (url != null) append(" url=$url")
   },
