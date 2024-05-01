@@ -206,14 +206,17 @@ class WirePlugin : Plugin<Project> {
         task.group = GROUP
         task.description = "Generate protobuf implementation for ${source.name}"
 
+        var addedSourcesDependencies = 0
         // Flatten all the input files here. Changes to any of them will cause the task to re-run.
         for (rootSet in protoSourceProtoRootSets) {
           task.source(rootSet.configuration)
-          task.source(*rootSet.sourceDirectoriesAndLocalJars.toTypedArray())
+          val sourceDirectoriesAndLocalJars = rootSet.sourceDirectoriesAndLocalJars.toTypedArray()
+          addedSourcesDependencies += sourceDirectoriesAndLocalJars.size
+          task.source(*sourceDirectoriesAndLocalJars)
         }
         // We only want to add ProtoPath sources if we have other sources already. The WireTask
         // would otherwise run even through we have no sources.
-        if (!task.source.isEmpty) {
+        if (addedSourcesDependencies > 0) {
           for (rootSet in protoPathProtoRootSets) {
             task.source(rootSet.configuration)
             task.source(*rootSet.sourceDirectoriesAndLocalJars.toTypedArray())
