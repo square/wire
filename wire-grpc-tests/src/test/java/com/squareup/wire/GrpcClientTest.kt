@@ -1196,7 +1196,7 @@ class GrpcClientTest {
       assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
       assertThat(expected).hasMessageMatching(
         "grpc-status=13 grpc-status-name=INTERNAL grpc-message=boom url=" +
-          mockService.url + "routeguide.RouteGuide/GetFeature"
+          mockService.url + "routeguide.RouteGuide/GetFeature",
       )
     }
   }
@@ -1633,7 +1633,7 @@ class GrpcClientTest {
       assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
       assertThat(expected).hasMessageMatching(
         "grpc-status=13 grpc-status-name=INTERNAL grpc-message=boom url=" +
-          mockService.url + "routeguide.RouteGuide/GetFeature"
+          mockService.url + "routeguide.RouteGuide/GetFeature",
       )
       assertThat(RouteNote.ADAPTER.decode(expected.grpcStatusDetails!!).message).isEqualTo("marco")
     }
