@@ -374,6 +374,7 @@ val generateKotlinJavaInteropTests by tasks.creating(JavaExec::class) {
       "all_types.proto",
       "deprecated.proto",
       "custom_options.proto",
+      "easter.proto",
       "external_message.proto",
       "foreign.proto",
       "form.proto",
