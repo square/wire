@@ -23,8 +23,8 @@ private val UNICODE_BOMS = okio.Options.of(
   "efbbbf".decodeHex(), // UTF-8
   "feff".decodeHex(), // UTF-16BE
   "fffe".decodeHex(), // UTF-16LE
-  "0000ffff".decodeHex(), // UTF-32BE
-  "ffff0000".decodeHex(), // UTF-32LE
+  "0000feff".decodeHex(), // UTF-32BE
+  "fffe0000".decodeHex(), // UTF-32LE
 )
 
 internal fun BufferedSource.readBomAsCharset(default: Charset = Charsets.UTF_8): Charset {
