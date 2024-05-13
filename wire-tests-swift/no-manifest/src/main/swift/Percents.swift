@@ -32,8 +32,8 @@ extension Percents : Sendable {
 
 extension Percents : ProtoDefaultedValue {
 
-    public static var defaultedValue: Percents {
-        Percents()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

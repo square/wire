@@ -30,8 +30,8 @@ extension DeprecatedProto : Sendable {
 
 extension DeprecatedProto : ProtoDefaultedValue {
 
-    public static var defaultedValue: DeprecatedProto {
-        DeprecatedProto()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

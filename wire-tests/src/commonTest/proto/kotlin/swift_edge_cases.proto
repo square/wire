@@ -20,3 +20,10 @@ package squareup.protos.kotlin.swift_modules;
 message SwiftEdgeCases {
   optional string return = 1;
 }
+
+message Screen {
+  oneof screen {
+    string oneof_string = 1;
+    int32 oneof_int32 = 2;
+  }
+}

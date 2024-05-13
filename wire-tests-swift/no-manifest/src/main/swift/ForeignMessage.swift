@@ -32,8 +32,8 @@ extension ForeignMessage : Sendable {
 
 extension ForeignMessage : ProtoDefaultedValue {
 
-    public static var defaultedValue: ForeignMessage {
-        ForeignMessage()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

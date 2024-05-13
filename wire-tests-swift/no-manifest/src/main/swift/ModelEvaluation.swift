@@ -47,8 +47,8 @@ extension ModelEvaluation : Sendable {
 
 extension ModelEvaluation : ProtoDefaultedValue {
 
-    public static var defaultedValue: ModelEvaluation {
-        ModelEvaluation()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

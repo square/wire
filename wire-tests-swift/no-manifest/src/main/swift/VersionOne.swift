@@ -32,8 +32,8 @@ extension VersionOne : Sendable {
 
 extension VersionOne : ProtoDefaultedValue {
 
-    public static var defaultedValue: VersionOne {
-        VersionOne()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

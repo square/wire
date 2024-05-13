@@ -41,8 +41,8 @@ extension Dinosaur : Sendable {
 
 extension Dinosaur : ProtoDefaultedValue {
 
-    public static var defaultedValue: Dinosaur {
-        Dinosaur()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

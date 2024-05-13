@@ -26,8 +26,8 @@ extension MessageWithStatus : Sendable {
 
 extension MessageWithStatus : ProtoDefaultedValue {
 
-    public static var defaultedValue: MessageWithStatus {
-        MessageWithStatus()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

@@ -28,8 +28,8 @@ extension RedactedOneOf : Sendable {
 
 extension RedactedOneOf : ProtoDefaultedValue {
 
-    public static var defaultedValue: RedactedOneOf {
-        RedactedOneOf()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

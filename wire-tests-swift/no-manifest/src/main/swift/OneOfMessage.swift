@@ -34,8 +34,8 @@ extension OneOfMessage : Sendable {
 
 extension OneOfMessage : ProtoDefaultedValue {
 
-    public static var defaultedValue: OneOfMessage {
-        OneOfMessage()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

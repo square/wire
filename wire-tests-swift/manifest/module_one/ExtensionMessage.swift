@@ -29,8 +29,8 @@ extension ExtensionMessage : Sendable {
 
 extension ExtensionMessage : ProtoDefaultedValue {
 
-    public static var defaultedValue: ExtensionMessage {
-        ExtensionMessage()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

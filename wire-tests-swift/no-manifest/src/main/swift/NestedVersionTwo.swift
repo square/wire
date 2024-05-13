@@ -38,8 +38,8 @@ extension NestedVersionTwo : Sendable {
 
 extension NestedVersionTwo : ProtoDefaultedValue {
 
-    public static var defaultedValue: NestedVersionTwo {
-        NestedVersionTwo()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
