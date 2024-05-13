@@ -22,18 +22,18 @@ import okio.ByteString.Companion.decodeHex
 private val UNICODE_BOMS = okio.Options.of(
   "efbbbf".decodeHex(), // UTF-8
   "feff".decodeHex(), // UTF-16BE
+  "fffe0000".decodeHex(), // UTF-32LE
   "fffe".decodeHex(), // UTF-16LE
-  "0000ffff".decodeHex(), // UTF-32BE
-  "ffff0000".decodeHex(), // UTF-32LE
+  "0000feff".decodeHex(), // UTF-32BE
 )
 
 internal fun BufferedSource.readBomAsCharset(default: Charset = Charsets.UTF_8): Charset {
   return when (select(UNICODE_BOMS)) {
     0 -> Charsets.UTF_8
     1 -> Charsets.UTF_16BE
-    2 -> Charsets.UTF_16LE
-    3 -> Charsets.UTF_32BE
-    4 -> Charsets.UTF_32LE
+    2 -> Charsets.UTF_32LE
+    3 -> Charsets.UTF_16LE
+    4 -> Charsets.UTF_32BE
     -1 -> default
     else -> throw AssertionError()
   }
