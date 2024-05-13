@@ -30,8 +30,8 @@ extension EmbeddedMessage : Sendable {
 
 extension EmbeddedMessage : ProtoDefaultedValue {
 
-    public static var defaultedValue: EmbeddedMessage {
-        EmbeddedMessage()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

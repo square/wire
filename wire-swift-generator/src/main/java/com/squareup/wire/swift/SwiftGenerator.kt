@@ -59,6 +59,7 @@ import io.outfoxx.swiftpoet.ParameterSpec
 import io.outfoxx.swiftpoet.ParameterizedTypeName
 import io.outfoxx.swiftpoet.PropertySpec
 import io.outfoxx.swiftpoet.STRING
+import io.outfoxx.swiftpoet.SelfTypeName
 import io.outfoxx.swiftpoet.TypeAliasSpec
 import io.outfoxx.swiftpoet.TypeName
 import io.outfoxx.swiftpoet.TypeSpec
@@ -394,10 +395,8 @@ class SwiftGenerator private constructor(
       val defaultedValueExtension = ExtensionSpec.builder(structType)
         .addSuperType(protoDefaultedValue)
         .addProperty(
-          PropertySpec.varBuilder("defaultedValue", structType, PUBLIC, STATIC).getter(
-            FunctionSpec.getterBuilder().addCode(
-              CodeBlock.of("%T()\n", structType),
-            ).build(),
+          PropertySpec.varBuilder("defaultedValue", SelfTypeName.INSTANCE.makeNonOptional(), PUBLIC, STATIC).getter(
+            FunctionSpec.getterBuilder().addCode(".init()\n").build(),
           ).build(),
         ).build()
 

@@ -1978,8 +1978,8 @@ extension AllTypes.NestedMessage : Sendable {
 
 extension AllTypes.NestedMessage : ProtoDefaultedValue {
 
-    public static var defaultedValue: AllTypes.NestedMessage {
-        AllTypes.NestedMessage()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

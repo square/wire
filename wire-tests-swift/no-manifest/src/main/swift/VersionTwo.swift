@@ -41,8 +41,8 @@ extension VersionTwo : Sendable {
 
 extension VersionTwo : ProtoDefaultedValue {
 
-    public static var defaultedValue: VersionTwo {
-        VersionTwo()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

@@ -28,8 +28,8 @@ extension ContainsTimestamp : Sendable {
 
 extension ContainsTimestamp : ProtoDefaultedValue {
 
-    public static var defaultedValue: ContainsTimestamp {
-        ContainsTimestamp()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

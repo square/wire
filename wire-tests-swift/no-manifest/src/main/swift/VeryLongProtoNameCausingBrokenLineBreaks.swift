@@ -32,8 +32,8 @@ extension VeryLongProtoNameCausingBrokenLineBreaks : Sendable {
 
 extension VeryLongProtoNameCausingBrokenLineBreaks : ProtoDefaultedValue {
 
-    public static var defaultedValue: VeryLongProtoNameCausingBrokenLineBreaks {
-        VeryLongProtoNameCausingBrokenLineBreaks()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

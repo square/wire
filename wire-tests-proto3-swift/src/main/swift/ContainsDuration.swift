@@ -28,8 +28,8 @@ extension ContainsDuration : Sendable {
 
 extension ContainsDuration : ProtoDefaultedValue {
 
-    public static var defaultedValue: ContainsDuration {
-        ContainsDuration()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

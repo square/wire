@@ -89,8 +89,8 @@ extension FooBar : Sendable {
 
 extension FooBar : ProtoDefaultedValue {
 
-    public static var defaultedValue: FooBar {
-        FooBar()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -256,8 +256,8 @@ extension FooBar.Nested : Sendable {
 
 extension FooBar.Nested : ProtoDefaultedValue {
 
-    public static var defaultedValue: FooBar.Nested {
-        FooBar.Nested()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -325,8 +325,8 @@ extension FooBar.More : Sendable {
 
 extension FooBar.More : ProtoDefaultedValue {
 
-    public static var defaultedValue: FooBar.More {
-        FooBar.More()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

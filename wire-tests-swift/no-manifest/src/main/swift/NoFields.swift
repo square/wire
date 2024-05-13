@@ -26,8 +26,8 @@ extension NoFields : Sendable {
 
 extension NoFields : ProtoDefaultedValue {
 
-    public static var defaultedValue: NoFields {
-        NoFields()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

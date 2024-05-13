@@ -28,8 +28,8 @@ extension OptionalEnumUser : Sendable {
 
 extension OptionalEnumUser : ProtoDefaultedValue {
 
-    public static var defaultedValue: OptionalEnumUser {
-        OptionalEnumUser()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

@@ -28,8 +28,8 @@ extension NegativeValueMessage : Sendable {
 
 extension NegativeValueMessage : ProtoDefaultedValue {
 
-    public static var defaultedValue: NegativeValueMessage {
-        NegativeValueMessage()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

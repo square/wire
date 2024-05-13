@@ -29,8 +29,8 @@ extension OneofOptions : Sendable {
 
 extension OneofOptions : ProtoDefaultedValue {
 
-    public static var defaultedValue: OneofOptions {
-        OneofOptions()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

@@ -32,8 +32,8 @@ extension MessageUsingMultipleEnums : Sendable {
 
 extension MessageUsingMultipleEnums : ProtoDefaultedValue {
 
-    public static var defaultedValue: MessageUsingMultipleEnums {
-        MessageUsingMultipleEnums()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

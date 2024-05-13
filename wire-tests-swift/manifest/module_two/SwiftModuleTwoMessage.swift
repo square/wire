@@ -31,8 +31,8 @@ extension SwiftModuleTwoMessage : Sendable {
 
 extension SwiftModuleTwoMessage : ProtoDefaultedValue {
 
-    public static var defaultedValue: SwiftModuleTwoMessage {
-        SwiftModuleTwoMessage()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -125,8 +125,8 @@ extension SwiftModuleTwoMessage.NestedMessage : Sendable {
 
 extension SwiftModuleTwoMessage.NestedMessage : ProtoDefaultedValue {
 
-    public static var defaultedValue: SwiftModuleTwoMessage.NestedMessage {
-        SwiftModuleTwoMessage.NestedMessage()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

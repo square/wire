@@ -32,8 +32,8 @@ extension ExternalMessage : Sendable {
 
 extension ExternalMessage : ProtoDefaultedValue {
 
-    public static var defaultedValue: ExternalMessage {
-        ExternalMessage()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

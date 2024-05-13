@@ -31,8 +31,8 @@ extension MappyTwo : Sendable {
 
 extension MappyTwo : ProtoDefaultedValue {
 
-    public static var defaultedValue: MappyTwo {
-        MappyTwo()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

@@ -29,8 +29,8 @@ extension Thing : Sendable {
 
 extension Thing : ProtoDefaultedValue {
 
-    public static var defaultedValue: Thing {
-        Thing()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

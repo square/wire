@@ -29,8 +29,8 @@ extension Form : Sendable {
 
 extension Form : ProtoDefaultedValue {
 
-    public static var defaultedValue: Form {
-        Form()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -436,8 +436,8 @@ extension Form.ButtonElement : Sendable {
 
 extension Form.ButtonElement : ProtoDefaultedValue {
 
-    public static var defaultedValue: Form.ButtonElement {
-        Form.ButtonElement()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -492,8 +492,8 @@ extension Form.LocalImageElement : Sendable {
 
 extension Form.LocalImageElement : ProtoDefaultedValue {
 
-    public static var defaultedValue: Form.LocalImageElement {
-        Form.LocalImageElement()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -548,8 +548,8 @@ extension Form.RemoteImageElement : Sendable {
 
 extension Form.RemoteImageElement : ProtoDefaultedValue {
 
-    public static var defaultedValue: Form.RemoteImageElement {
-        Form.RemoteImageElement()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -604,8 +604,8 @@ extension Form.MoneyElement : Sendable {
 
 extension Form.MoneyElement : ProtoDefaultedValue {
 
-    public static var defaultedValue: Form.MoneyElement {
-        Form.MoneyElement()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -660,8 +660,8 @@ extension Form.SpacerElement : Sendable {
 
 extension Form.SpacerElement : ProtoDefaultedValue {
 
-    public static var defaultedValue: Form.SpacerElement {
-        Form.SpacerElement()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -716,8 +716,8 @@ extension Form.TextElement : Sendable {
 
 extension Form.TextElement : ProtoDefaultedValue {
 
-    public static var defaultedValue: Form.TextElement {
-        Form.TextElement()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -785,8 +785,8 @@ extension Form.CustomizedCardElement : Sendable {
 
 extension Form.CustomizedCardElement : ProtoDefaultedValue {
 
-    public static var defaultedValue: Form.CustomizedCardElement {
-        Form.CustomizedCardElement()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -841,8 +841,8 @@ extension Form.AddressElement : Sendable {
 
 extension Form.AddressElement : ProtoDefaultedValue {
 
-    public static var defaultedValue: Form.AddressElement {
-        Form.AddressElement()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -897,8 +897,8 @@ extension Form.TextInputElement : Sendable {
 
 extension Form.TextInputElement : ProtoDefaultedValue {
 
-    public static var defaultedValue: Form.TextInputElement {
-        Form.TextInputElement()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -953,8 +953,8 @@ extension Form.OptionPickerElement : Sendable {
 
 extension Form.OptionPickerElement : ProtoDefaultedValue {
 
-    public static var defaultedValue: Form.OptionPickerElement {
-        Form.OptionPickerElement()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -1009,8 +1009,8 @@ extension Form.DetailRowElement : Sendable {
 
 extension Form.DetailRowElement : ProtoDefaultedValue {
 
-    public static var defaultedValue: Form.DetailRowElement {
-        Form.DetailRowElement()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
@@ -1065,8 +1065,8 @@ extension Form.CurrencyConversionFlagsElement : Sendable {
 
 extension Form.CurrencyConversionFlagsElement : ProtoDefaultedValue {
 
-    public static var defaultedValue: Form.CurrencyConversionFlagsElement {
-        Form.CurrencyConversionFlagsElement()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

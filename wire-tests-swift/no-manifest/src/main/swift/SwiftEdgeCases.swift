@@ -29,8 +29,8 @@ extension SwiftEdgeCases : Sendable {
 
 extension SwiftEdgeCases : ProtoDefaultedValue {
 
-    public static var defaultedValue: SwiftEdgeCases {
-        SwiftEdgeCases()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

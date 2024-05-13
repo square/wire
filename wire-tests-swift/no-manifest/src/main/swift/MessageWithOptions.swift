@@ -26,8 +26,8 @@ extension MessageWithOptions : Sendable {
 
 extension MessageWithOptions : ProtoDefaultedValue {
 
-    public static var defaultedValue: MessageWithOptions {
-        MessageWithOptions()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 

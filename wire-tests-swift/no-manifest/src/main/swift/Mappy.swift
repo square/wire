@@ -28,8 +28,8 @@ extension Mappy : Sendable {
 
 extension Mappy : ProtoDefaultedValue {
 
-    public static var defaultedValue: Mappy {
-        Mappy()
+    public static var defaultedValue: Self {
+        .init()
     }
 }
 
