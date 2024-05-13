@@ -313,7 +313,7 @@ class SchemaLoaderTest {
         |}
       """.trimMargin(),
       charset = UTF_32BE,
-      bom = "0000ffff".decodeHex(),
+      bom = "0000feff".decodeHex(),
     )
     fs.add(
       "colors/squareup/colors/blue.proto",
@@ -324,7 +324,7 @@ class SchemaLoaderTest {
         |}
       """.trimMargin(),
       charset = UTF_32LE,
-      bom = "ffff0000".decodeHex(),
+      bom = "fffe0000".decodeHex(),
     )
 
     val loader = CommonSchemaLoader(fs)
