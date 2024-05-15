@@ -659,6 +659,7 @@ final class com.squareup.wire.schema/ClaimedDefinitions { // com.squareup.wire.s
 }
 final class com.squareup.wire.schema/ClaimedPaths { // com.squareup.wire.schema/ClaimedPaths|null[0]
     constructor <init>() // com.squareup.wire.schema/ClaimedPaths.<init>|<init>(){}[0]
+    final fun claim(okio/Path, com.squareup.wire.schema/Extend) // com.squareup.wire.schema/ClaimedPaths.claim|claim(okio.Path;com.squareup.wire.schema.Extend){}[0]
     final fun claim(okio/Path, com.squareup.wire.schema/Service) // com.squareup.wire.schema/ClaimedPaths.claim|claim(okio.Path;com.squareup.wire.schema.Service){}[0]
     final fun claim(okio/Path, com.squareup.wire.schema/Type) // com.squareup.wire.schema/ClaimedPaths.claim|claim(okio.Path;com.squareup.wire.schema.Type){}[0]
 }

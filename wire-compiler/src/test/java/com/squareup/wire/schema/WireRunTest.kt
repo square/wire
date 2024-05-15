@@ -1200,6 +1200,78 @@ class WireRunTest {
     }
   }
 
+  @Test fun crashWhenExtendGenerationConflicts() {
+    fs.add(
+      "protos/zero/zero.proto",
+      """
+          |package zero;
+          |option java_package = "same.package";
+          |import "google/protobuf/descriptor.proto";
+          |extend google.protobuf.FieldOptions {
+          |  optional string documentation_url = 60001;
+          |}
+          |extend google.protobuf.MessageOptions {
+          |  optional string documentation_url = 60002;
+          |}
+          |
+      """.trimMargin(),
+    )
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("protos")),
+      targets = listOf(
+        JavaTarget(
+          outDirectory = "generated/java",
+          emitDeclaredOptions = true,
+          emitAppliedOptions = true,
+        ),
+      ),
+    )
+
+    try {
+      wireRun.execute(fs, logger)
+      fail()
+    } catch (expected: IllegalStateException) {
+      assertThat(expected).hasMessage(
+        "Same file generated/java/same/package/DocumentationUrlOption.java is getting generated for different extends:\n" +
+          "  FieldOptions.documentation_url at protos/zero/zero.proto:4:1\n" +
+          "  MessageOptions.documentation_url at protos/zero/zero.proto:7:1",
+      )
+    }
+  }
+
+  @Test fun javaDoesNotClaimServices() {
+    writeRedProto()
+    fs.add(
+      "routes/src/main/proto/squareup/routes1/route.proto",
+      """
+          |syntax = "proto2";
+          |package squareup.routes;
+          |option java_package = "same.package";
+          |import "squareup/colors/red.proto";
+          |service Route {
+          |  rpc GetUpdatedRed(squareup.colors.Red) returns (squareup.colors.Red) {}
+          |}
+      """.trimMargin(),
+    )
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("routes/src/main/proto")),
+      protoPath = listOf(Location.get("colors/src/main/proto")),
+      targets = listOf(
+        JavaTarget(outDirectory = "generate/java"),
+        KotlinTarget(outDirectory = "generated/kt"),
+      ),
+    )
+
+    wireRun.execute(fs, logger)
+    // We had a bug where the Java target, even though it doesn't generate them, would claim the
+    // services and prevent the Kotlin target to generate them. Asserting that we have services
+    // generated in Kotlin confirms the fix.
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/kt/same/package/GrpcRouteClient.kt",
+      "generated/kt/same/package/RouteClient.kt",
+    )
+  }
+
   @Test fun crashWhenServiceGenerationConflicts() {
     writeRedProto()
     fs.add(

@@ -49,6 +49,19 @@ class ClaimedPaths {
     paths[path] = errorMessage
   }
 
+  /** Tracks that [extend] has been generated to [path]. */
+  fun claim(path: Path, extend: Extend) {
+    val errorMessage = extend.asErrorMessage()
+    val existingEntry = paths[path]
+    check(existingEntry == null) {
+      "Same file $path is getting generated for different extends:\n" +
+        "  ${existingEntry}\n" +
+        "  ${extend.asErrorMessage()}"
+    }
+    paths[path] = errorMessage
+  }
+
+  private fun Extend.asErrorMessage(): String = "${type!!.simpleName}.${fields.joinToString()} at $location"
   private fun Type.asErrorMessage(): String = "${type.simpleName} at $location"
   private fun Service.asErrorMessage(): String = "${type.simpleName} at $location"
 }

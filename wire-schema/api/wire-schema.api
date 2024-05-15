@@ -50,6 +50,7 @@ public final class com/squareup/wire/schema/ClaimedDefinitions {
 
 public final class com/squareup/wire/schema/ClaimedPaths {
 	public fun <init> ()V
+	public final fun claim (Lokio/Path;Lcom/squareup/wire/schema/Extend;)V
 	public final fun claim (Lokio/Path;Lcom/squareup/wire/schema/Service;)V
 	public final fun claim (Lokio/Path;Lcom/squareup/wire/schema/Type;)V
 }

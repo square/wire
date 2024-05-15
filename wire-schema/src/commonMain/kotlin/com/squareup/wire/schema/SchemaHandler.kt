@@ -153,10 +153,9 @@ abstract class SchemaHandler {
 
       if (generatedFilePath != null) {
         claimedPaths.claim(generatedFilePath, type)
+        // We don't let other targets handle this one.
+        claimedDefinitions?.claim(type)
       }
-
-      // We don't let other targets handle this one.
-      claimedDefinitions?.claim(type)
     }
 
     val services = protoFile.services
@@ -166,12 +165,13 @@ abstract class SchemaHandler {
     for (service in services) {
       val generatedFilePaths = handle(service, context)
 
-      for (generatedFilePath in generatedFilePaths) {
-        claimedPaths.claim(generatedFilePath, service)
+      if (generatedFilePaths.isNotEmpty()) {
+        for (generatedFilePath in generatedFilePaths) {
+          claimedPaths.claim(generatedFilePath, service)
+        }
+        // We don't let other targets handle this one.
+        claimedDefinitions?.claim(service)
       }
-
-      // We don't let other targets handle this one.
-      claimedDefinitions?.claim(service)
     }
 
     // TODO(jwilson): extend emitting rules to support include/exclude of extension fields.
@@ -181,11 +181,13 @@ abstract class SchemaHandler {
         claimedDefinitions == null || extend.member(field) !in claimedDefinitions
       }
       .forEach { (extend, field) ->
-        // TODO(Benoît) claim path.
-        handle(extend, field, context)
+        val generatedFilePath = handle(extend, field, context)
 
-        // We don't let other targets handle this one.
-        claimedDefinitions?.claim(extend.member(field))
+        if (generatedFilePath != null) {
+          claimedPaths.claim(generatedFilePath, extend)
+          // We don't let other targets handle this one.
+          claimedDefinitions?.claim(extend.member(field))
+        }
       }
   }
 
