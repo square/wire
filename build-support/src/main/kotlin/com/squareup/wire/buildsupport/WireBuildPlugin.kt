@@ -22,6 +22,7 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
 import java.io.File
 import kotlinx.validation.ApiValidationExtension
+import kotlinx.validation.ExperimentalBCVApi
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
@@ -263,6 +264,7 @@ class WireBuildPlugin : Plugin<Project> {
 }
 
 private class WireBuildExtensionImpl(private val project: Project) : WireBuildExtension {
+  @OptIn(ExperimentalBCVApi::class)
   override fun publishing() {
     project.plugins.apply("com.vanniktech.maven.publish")
     project.plugins.apply("org.jetbrains.dokka")
@@ -371,6 +373,9 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
 
     project.extensions.getByType(ApiValidationExtension::class.java).apply {
       ignoredPackages += "grpc.reflection.v1alpha"
+      klib {
+        enabled = true
+      }
     }
   }
 
