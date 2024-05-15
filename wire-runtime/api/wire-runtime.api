@@ -306,6 +306,12 @@ public final class com/squareup/wire/ProtoWriter {
 public final class com/squareup/wire/ProtoWriter$Companion {
 }
 
+public final class com/squareup/wire/RepeatedUnknownValueReader : com/squareup/wire/UnknownValueReader {
+	public fun <init> (ILcom/squareup/wire/ProtoAdapter;)V
+	public synthetic fun read (Lcom/squareup/wire/Message;)Ljava/lang/Object;
+	public fun read (Lcom/squareup/wire/Message;)Ljava/util/List;
+}
+
 public final class com/squareup/wire/ReverseProtoWriter {
 	public fun <init> ()V
 	public final fun getByteCount ()I
@@ -334,6 +340,11 @@ public final class com/squareup/wire/RuntimeEnumAdapter$Companion {
 public abstract interface class com/squareup/wire/Service {
 }
 
+public final class com/squareup/wire/SingleUnknownValueReader : com/squareup/wire/UnknownValueReader {
+	public fun <init> (ILcom/squareup/wire/ProtoAdapter;)V
+	public fun read (Lcom/squareup/wire/Message;)Ljava/lang/Object;
+}
+
 public final class com/squareup/wire/Syntax : java/lang/Enum {
 	public static final field Companion Lcom/squareup/wire/Syntax$Companion;
 	public static final field PROTO_2 Lcom/squareup/wire/Syntax;
@@ -346,6 +357,10 @@ public final class com/squareup/wire/Syntax : java/lang/Enum {
 
 public final class com/squareup/wire/Syntax$Companion {
 	public final fun get (Ljava/lang/String;)Lcom/squareup/wire/Syntax;
+}
+
+public abstract interface class com/squareup/wire/UnknownValueReader {
+	public abstract fun read (Lcom/squareup/wire/Message;)Ljava/lang/Object;
 }
 
 public final class com/squareup/wire/Wire {
