@@ -19,11 +19,13 @@ import com.squareup.wire.schema.EventListener
 import java.io.File
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderConvertible
+import org.gradle.api.tasks.TaskProvider
 
 open class WireExtension(
   private val project: Project,
@@ -294,6 +296,12 @@ open class WireExtension(
 
     internal val includes = mutableListOf<String>()
     internal val excludes = mutableListOf<String>()
+
+    /** Sets a task. */
+    fun srcDir(provider: TaskProvider<Task>) {
+      isEmpty = false
+      project.artifacts.add(configuration.name, provider)
+    }
 
     /** Sets a directory. Example: "src/main/proto". */
     fun srcDir(dir: String) {
