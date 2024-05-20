@@ -5,7 +5,8 @@ package squareup.proto3.kotlin.unrecognized_constant;
 message Easter {
   optional EasterAnimal optional_easter_animal = 2;
   EasterAnimal identity_easter_animal = 3;
-  repeated EasterAnimal easter_animals = 4;
+  repeated EasterAnimal easter_animals_repeated = 4 [packed = false];
+  repeated EasterAnimal easter_animals_packed = 5 [packed = true];
 }
 
 enum EasterAnimal {
