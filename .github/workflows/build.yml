@@ -65,9 +65,10 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      # We set `SDKROOT` as a workaround for https://github.com/gradle/gradle/pull/29227
       - name: Check test files
         run: |
-          ./gradlew generateTests --stacktrace --warning-mode all
+          SDKROOT=$(xcrun -sdk macosx --show-sdk-path) ./gradlew generateTests --stacktrace --warning-mode all
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
       - name: Install Chrome
@@ -130,11 +131,12 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      # We set `SDKROOT` as a workaround for https://github.com/gradle/gradle/pull/29227
       - name: Test Swift Runtime
         # This builds the wire-swift-runtime, verifies that generated protos match what's currently
         # checked into the repo both for the runtime itself and for its tests, and runs the tests.
         run: |
-          ./gradlew :wire-runtime-swift:build --warning-mode all
+          SDKROOT=$(xcrun -sdk macosx --show-sdk-path) ./gradlew :wire-runtime-swift:build --warning-mode all
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nGenerated files changed. Did you run ./gradlew generateSwiftProtos?"; exit 1; fi
 
       - name: Generate Swift from golden proto files
@@ -143,9 +145,9 @@ jobs:
         # wire-tests-swift build but should still be reviewed manually. Finally, run the associated
         # unit tests.
         run: |
-          ./gradlew generateSwiftTests --warning-mode all
+          SDKROOT=$(xcrun -sdk macosx --show-sdk-path) ./gradlew generateSwiftTests --warning-mode all
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nGenerated files changed. Did you run ./gradlew generateSwiftProtos and generateSwiftTests?"; exit 1; fi
-          ./gradlew -p wire-tests-swift build --warning-mode all
+          SDKROOT=$(xcrun -sdk macosx --show-sdk-path) ./gradlew -p wire-tests-swift build --warning-mode all
 
       - name: Test Swift Package Manager
         run: swift test
