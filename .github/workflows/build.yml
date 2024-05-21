@@ -208,9 +208,10 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      # We set `SDKROOT` as a workaround for https://github.com/gradle/gradle/pull/29227
       - name: Upload Artifacts
         run: |
-          ./gradlew publish --stacktrace --warning-mode all --no-daemon
+          SDKROOT=$(xcrun -sdk macosx --show-sdk-path) ./gradlew publish --stacktrace --warning-mode all --no-daemon
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
