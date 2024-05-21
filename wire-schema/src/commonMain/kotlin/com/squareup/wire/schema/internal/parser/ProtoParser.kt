@@ -212,7 +212,7 @@ class ProtoParser internal constructor(
 
     return MessageElement(
       location = location,
-      name = name,
+      name = name.trimStart('.'),
       documentation = documentation,
       nestedTypes = nestedTypes,
       options = options,
@@ -269,7 +269,7 @@ class ProtoParser internal constructor(
 
     return ServiceElement(
       location = location,
-      name = name,
+      name = name.trimStart('.'),
       documentation = documentation,
       rpcs = rpcs,
       options = options,
@@ -299,7 +299,7 @@ class ProtoParser internal constructor(
       }
     }
 
-    return EnumElement(location, name, documentation, options, constants, reserveds)
+    return EnumElement(location, name.trimStart('.'), documentation, options, constants, reserveds)
   }
 
   private fun readField(documentation: String, location: Location, word: String): Any {

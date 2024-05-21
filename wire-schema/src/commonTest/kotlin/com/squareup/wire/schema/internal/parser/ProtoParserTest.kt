@@ -322,6 +322,19 @@ class ProtoParserTest {
   }
 
   @Test
+  fun leadingDotsAreNormalized() {
+    val proto = """
+        |message ..package.Message {}
+        |enum .package.Enum {}
+        |service .package.Service {}
+    """.trimMargin()
+    val parsed = ProtoParser.parse(location, proto)
+    assertThat(parsed.types[0].name).isEqualTo("package.Message")
+    assertThat(parsed.types[1].name).isEqualTo("package.Enum")
+    assertThat(parsed.services[0].name).isEqualTo("package.Service")
+  }
+
+  @Test
   fun multipleSingleLineComments() {
     val proto = """
         |// Test all
