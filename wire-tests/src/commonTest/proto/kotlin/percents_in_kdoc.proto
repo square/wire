@@ -20,4 +20,7 @@ option java_package = "com.squareup.wire.protos.kotlin";
 message Percents {
   /** e.g. "No limits, free to send and just 2.75% to receive". */
   optional string text = 1;
+
+  /** Testing very long field name in builders. */
+  optional int32 very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3 = 2;
 }

@@ -35,11 +35,25 @@ public class Percents(
   )
   @JvmField
   public val text: String? = null,
+  /**
+   * Testing very long field name in builders.
+   */
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    schemaIndex = 1,
+  )
+  @JvmField
+  public
+      val very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3:
+      Int? = null,
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<Percents, Percents.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.text = text
+    builder.very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3 =
+        very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3
     builder.addUnknownFields(unknownFields)
     return builder
   }
@@ -49,6 +63,11 @@ public class Percents(
     if (other !is Percents) return false
     if (unknownFields != other.unknownFields) return false
     if (text != other.text) return false
+    if
+        (very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3
+        !=
+        other.very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3)
+        return false
     return true
   }
 
@@ -57,6 +76,9 @@ public class Percents(
     if (result == 0) {
       result = unknownFields.hashCode()
       result = result * 37 + (text?.hashCode() ?: 0)
+      result = result * 37 +
+          (very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3?.hashCode()
+          ?: 0)
       super.hashCode = result
     }
     return result
@@ -65,15 +87,31 @@ public class Percents(
   override fun toString(): String {
     val result = mutableListOf<String>()
     if (text != null) result += """text=${sanitize(text)}"""
+    if
+        (very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3
+        != null) result +=
+        """very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3=$very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3"""
     return result.joinToString(prefix = "Percents{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(text: String? = this.text, unknownFields: ByteString = this.unknownFields):
-      Percents = Percents(text, unknownFields)
+  public fun copy(
+    text: String? = this.text,
+    very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3: Int?
+        =
+        this.very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3,
+    unknownFields: ByteString = this.unknownFields,
+  ): Percents = Percents(text,
+      very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3,
+      unknownFields)
 
   public class Builder : Message.Builder<Percents, Builder>() {
     @JvmField
     public var text: String? = null
+
+    @JvmField
+    public
+        var very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3:
+        Int? = null
 
     /**
      * e.g. "No limits, free to send and just 2.75% to receive".
@@ -83,8 +121,21 @@ public class Percents(
       return this
     }
 
+    /**
+     * Testing very long field name in builders.
+     */
+    public
+        fun very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3(very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3: Int?):
+        Builder {
+      this.very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3 =
+          very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3
+      return this
+    }
+
     override fun build(): Percents = Percents(
       text = text,
+      very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3 =
+          very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3,
       unknownFields = buildUnknownFields()
     )
   }
@@ -102,29 +153,44 @@ public class Percents(
       override fun encodedSize(`value`: Percents): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.text)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(2,
+            value.very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3)
         return size
       }
 
       override fun encode(writer: ProtoWriter, `value`: Percents) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
+        ProtoAdapter.INT32.encodeWithTag(writer, 2,
+            value.very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3)
         writer.writeBytes(value.unknownFields)
       }
 
       override fun encode(writer: ReverseProtoWriter, `value`: Percents) {
         writer.writeBytes(value.unknownFields)
+        ProtoAdapter.INT32.encodeWithTag(writer, 2,
+            value.very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3)
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
       }
 
       override fun decode(reader: ProtoReader): Percents {
         var text: String? = null
+        var
+            very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3:
+            Int? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> text = ProtoAdapter.STRING.decode(reader)
+            2 ->
+                very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3 =
+                ProtoAdapter.INT32.decode(reader)
             else -> reader.readUnknownField(tag)
           }
         }
         return Percents(
           text = text,
+          very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3
+              =
+              very_very_long_field_name_placeholder_1_with_very_long_same_placeholder_2_and_different_placeholder_3,
           unknownFields = unknownFields
         )
       }
