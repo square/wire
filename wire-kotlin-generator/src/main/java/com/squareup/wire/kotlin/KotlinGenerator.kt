@@ -661,11 +661,11 @@ class KotlinGenerator private constructor(
       when (fieldOrOneOf) {
         is Field -> {
           val fieldName = nameAllocator[fieldOrOneOf]
-          funBuilder.addStatement("builder.%1N = %1N", fieldName)
+          funBuilder.addStatement("builder.%1N·= %1N", fieldName)
         }
         is OneOf -> {
           val fieldName = nameAllocator[fieldOrOneOf]
-          funBuilder.addStatement("builder.%1N = %1N", fieldName)
+          funBuilder.addStatement("builder.%1N·= %1N", fieldName)
         }
         else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
       }
@@ -897,11 +897,11 @@ class KotlinGenerator private constructor(
                 CodeBlock.of("")
               }
 
-              addStatement("%1N = %1N%2L,", fieldName, throwExceptionBlock)
+              addStatement("%1N·= %1N%2L,", fieldName, throwExceptionBlock)
             }
             is OneOf -> {
               val fieldName = nameAllocator[fieldOrOneOf]
-              addStatement("%1N = %1N,", fieldName)
+              addStatement("%1N·= %1N,", fieldName)
             }
             else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
           }
@@ -1001,12 +1001,12 @@ class KotlinGenerator private constructor(
     }
 
     return funBuilder
-      .addStatement("this.%1N = %1N", fieldName)
+      .addStatement("this.%1N·= %1N", fieldName)
       .apply {
         if (oneOf != null) {
           for (other in oneOf.fields) {
             if (field != other) {
-              addStatement("this.%N = null", nameAllocator[other])
+              addStatement("this.%N·= null", nameAllocator[other])
             }
           }
         }
