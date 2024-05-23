@@ -182,21 +182,25 @@ public class CamelCase(
 
       override fun encodedSize(`value`: CamelCase): Int {
         var size = value.unknownFields.size
-        if (value.nested__message != null) size += NestedCamelCase.ADAPTER.encodedSizeWithTag(1,
-            value.nested__message)
+        if (value.nested__message != null) {
+          size += NestedCamelCase.ADAPTER.encodedSizeWithTag(1, value.nested__message)
+        }
         size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(2, value._Rep_int32)
-        if (value.IDitIt_my_wAy != "") size += ProtoAdapter.STRING.encodedSizeWithTag(3,
-            value.IDitIt_my_wAy)
+        if (value.IDitIt_my_wAy != "") {
+          size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.IDitIt_my_wAy)
+        }
         size += map_int32_Int32Adapter.encodedSizeWithTag(4, value.map_int32_Int32)
         return size
       }
 
       override fun encode(writer: ProtoWriter, `value`: CamelCase) {
-        if (value.nested__message != null) NestedCamelCase.ADAPTER.encodeWithTag(writer, 1,
-            value.nested__message)
+        if (value.nested__message != null) {
+          NestedCamelCase.ADAPTER.encodeWithTag(writer, 1, value.nested__message)
+        }
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 2, value._Rep_int32)
-        if (value.IDitIt_my_wAy != "") ProtoAdapter.STRING.encodeWithTag(writer, 3,
-            value.IDitIt_my_wAy)
+        if (value.IDitIt_my_wAy != "") {
+          ProtoAdapter.STRING.encodeWithTag(writer, 3, value.IDitIt_my_wAy)
+        }
         map_int32_Int32Adapter.encodeWithTag(writer, 4, value.map_int32_Int32)
         writer.writeBytes(value.unknownFields)
       }
@@ -204,11 +208,13 @@ public class CamelCase(
       override fun encode(writer: ReverseProtoWriter, `value`: CamelCase) {
         writer.writeBytes(value.unknownFields)
         map_int32_Int32Adapter.encodeWithTag(writer, 4, value.map_int32_Int32)
-        if (value.IDitIt_my_wAy != "") ProtoAdapter.STRING.encodeWithTag(writer, 3,
-            value.IDitIt_my_wAy)
+        if (value.IDitIt_my_wAy != "") {
+          ProtoAdapter.STRING.encodeWithTag(writer, 3, value.IDitIt_my_wAy)
+        }
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 2, value._Rep_int32)
-        if (value.nested__message != null) NestedCamelCase.ADAPTER.encodeWithTag(writer, 1,
-            value.nested__message)
+        if (value.nested__message != null) {
+          NestedCamelCase.ADAPTER.encodeWithTag(writer, 1, value.nested__message)
+        }
       }
 
       override fun decode(reader: ProtoReader): CamelCase {
@@ -328,19 +334,24 @@ public class CamelCase(
       ) {
         override fun encodedSize(`value`: NestedCamelCase): Int {
           var size = value.unknownFields.size
-          if (value.one_int32 != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1,
-              value.one_int32)
+          if (value.one_int32 != 0) {
+            size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.one_int32)
+          }
           return size
         }
 
         override fun encode(writer: ProtoWriter, `value`: NestedCamelCase) {
-          if (value.one_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.one_int32)
+          if (value.one_int32 != 0) {
+            ProtoAdapter.INT32.encodeWithTag(writer, 1, value.one_int32)
+          }
           writer.writeBytes(value.unknownFields)
         }
 
         override fun encode(writer: ReverseProtoWriter, `value`: NestedCamelCase) {
           writer.writeBytes(value.unknownFields)
-          if (value.one_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.one_int32)
+          if (value.one_int32 != 0) {
+            ProtoAdapter.INT32.encodeWithTag(writer, 1, value.one_int32)
+          }
         }
 
         override fun decode(reader: ProtoReader): NestedCamelCase {

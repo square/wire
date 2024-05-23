@@ -30,6 +30,7 @@ class EnumJsonFormatter<E : WireEnum>(
 ) : JsonFormatter<E> {
   private val stringToValue: Map<String, E>
   private val valueToString: Map<E, String>
+
   /**
    * The `UNRECOGNIZED(-1) constant that might have been generated. This only concerns proto3 enums.
    */

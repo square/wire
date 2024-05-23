@@ -73,7 +73,8 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       val index = option / 2
       val fieldBinding = messageAdapter.fieldBindingsArray[index]
 
-      // We peekJson in order to be able to read the value twice if need be.
+      // We peekJson in order to be able to read the value twice if need to access for building
+      // unknown values.
       val peekInput = input.peekJson()
       val value = jsonAdapters[index].fromJson(peekInput)
       val protoAdapter = fieldBinding.adapter

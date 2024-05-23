@@ -661,13 +661,21 @@ public class All32(
 
       override fun encodedSize(`value`: All32): Int {
         var size = value.unknownFields.size
-        if (value.my_int32 != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.my_int32)
-        if (value.my_uint32 != 0) size += ProtoAdapter.UINT32.encodedSizeWithTag(2, value.my_uint32)
-        if (value.my_sint32 != 0) size += ProtoAdapter.SINT32.encodedSizeWithTag(3, value.my_sint32)
-        if (value.my_fixed32 != 0) size += ProtoAdapter.FIXED32.encodedSizeWithTag(4,
-            value.my_fixed32)
-        if (value.my_sfixed32 != 0) size += ProtoAdapter.SFIXED32.encodedSizeWithTag(5,
-            value.my_sfixed32)
+        if (value.my_int32 != 0) {
+          size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.my_int32)
+        }
+        if (value.my_uint32 != 0) {
+          size += ProtoAdapter.UINT32.encodedSizeWithTag(2, value.my_uint32)
+        }
+        if (value.my_sint32 != 0) {
+          size += ProtoAdapter.SINT32.encodedSizeWithTag(3, value.my_sint32)
+        }
+        if (value.my_fixed32 != 0) {
+          size += ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.my_fixed32)
+        }
+        if (value.my_sfixed32 != 0) {
+          size += ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.my_sfixed32)
+        }
         size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
         size += ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(202, value.rep_uint32)
         size += ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(203, value.rep_sint32)
@@ -689,12 +697,21 @@ public class All32(
       }
 
       override fun encode(writer: ProtoWriter, `value`: All32) {
-        if (value.my_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
-        if (value.my_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
-        if (value.my_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
-        if (value.my_fixed32 != 0) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.my_fixed32)
-        if (value.my_sfixed32 != 0) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5,
-            value.my_sfixed32)
+        if (value.my_int32 != 0) {
+          ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
+        }
+        if (value.my_uint32 != 0) {
+          ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
+        }
+        if (value.my_sint32 != 0) {
+          ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
+        }
+        if (value.my_fixed32 != 0) {
+          ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.my_fixed32)
+        }
+        if (value.my_sfixed32 != 0) {
+          ProtoAdapter.SFIXED32.encodeWithTag(writer, 5, value.my_sfixed32)
+        }
         ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32)
         ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 202, value.rep_uint32)
         ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 203, value.rep_sint32)
@@ -734,12 +751,21 @@ public class All32(
         ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 203, value.rep_sint32)
         ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 202, value.rep_uint32)
         ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32)
-        if (value.my_sfixed32 != 0) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5,
-            value.my_sfixed32)
-        if (value.my_fixed32 != 0) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.my_fixed32)
-        if (value.my_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
-        if (value.my_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
-        if (value.my_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
+        if (value.my_sfixed32 != 0) {
+          ProtoAdapter.SFIXED32.encodeWithTag(writer, 5, value.my_sfixed32)
+        }
+        if (value.my_fixed32 != 0) {
+          ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.my_fixed32)
+        }
+        if (value.my_sint32 != 0) {
+          ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
+        }
+        if (value.my_uint32 != 0) {
+          ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
+        }
+        if (value.my_int32 != 0) {
+          ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
+        }
       }
 
       override fun decode(reader: ProtoReader): All32 {

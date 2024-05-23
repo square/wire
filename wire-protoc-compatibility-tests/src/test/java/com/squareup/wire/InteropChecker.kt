@@ -45,7 +45,7 @@ class InteropChecker(
   private val wireAlternateJsons: List<String> = listOf(),
 
   /** If true, all tests using Gson will be skipped. */
-  private val skipGson : Boolean = false,
+  private val skipGson: Boolean = false,
 ) {
   private var protocBytes: ByteString? = null
 

@@ -663,15 +663,21 @@ public class All64(
 
       override fun encodedSize(`value`: All64): Int {
         var size = value.unknownFields.size
-        if (value.my_int64 != 0L) size += ProtoAdapter.INT64.encodedSizeWithTag(1, value.my_int64)
-        if (value.my_uint64 != 0L) size += ProtoAdapter.UINT64.encodedSizeWithTag(2,
-            value.my_uint64)
-        if (value.my_sint64 != 0L) size += ProtoAdapter.SINT64.encodedSizeWithTag(3,
-            value.my_sint64)
-        if (value.my_fixed64 != 0L) size += ProtoAdapter.FIXED64.encodedSizeWithTag(4,
-            value.my_fixed64)
-        if (value.my_sfixed64 != 0L) size += ProtoAdapter.SFIXED64.encodedSizeWithTag(5,
-            value.my_sfixed64)
+        if (value.my_int64 != 0L) {
+          size += ProtoAdapter.INT64.encodedSizeWithTag(1, value.my_int64)
+        }
+        if (value.my_uint64 != 0L) {
+          size += ProtoAdapter.UINT64.encodedSizeWithTag(2, value.my_uint64)
+        }
+        if (value.my_sint64 != 0L) {
+          size += ProtoAdapter.SINT64.encodedSizeWithTag(3, value.my_sint64)
+        }
+        if (value.my_fixed64 != 0L) {
+          size += ProtoAdapter.FIXED64.encodedSizeWithTag(4, value.my_fixed64)
+        }
+        if (value.my_sfixed64 != 0L) {
+          size += ProtoAdapter.SFIXED64.encodedSizeWithTag(5, value.my_sfixed64)
+        }
         size += ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(201, value.rep_int64)
         size += ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(202, value.rep_uint64)
         size += ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(203, value.rep_sint64)
@@ -693,12 +699,21 @@ public class All64(
       }
 
       override fun encode(writer: ProtoWriter, `value`: All64) {
-        if (value.my_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 1, value.my_int64)
-        if (value.my_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 2, value.my_uint64)
-        if (value.my_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 3, value.my_sint64)
-        if (value.my_fixed64 != 0L) ProtoAdapter.FIXED64.encodeWithTag(writer, 4, value.my_fixed64)
-        if (value.my_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer, 5,
-            value.my_sfixed64)
+        if (value.my_int64 != 0L) {
+          ProtoAdapter.INT64.encodeWithTag(writer, 1, value.my_int64)
+        }
+        if (value.my_uint64 != 0L) {
+          ProtoAdapter.UINT64.encodeWithTag(writer, 2, value.my_uint64)
+        }
+        if (value.my_sint64 != 0L) {
+          ProtoAdapter.SINT64.encodeWithTag(writer, 3, value.my_sint64)
+        }
+        if (value.my_fixed64 != 0L) {
+          ProtoAdapter.FIXED64.encodeWithTag(writer, 4, value.my_fixed64)
+        }
+        if (value.my_sfixed64 != 0L) {
+          ProtoAdapter.SFIXED64.encodeWithTag(writer, 5, value.my_sfixed64)
+        }
         ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 201, value.rep_int64)
         ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 202, value.rep_uint64)
         ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 203, value.rep_sint64)
@@ -738,12 +753,21 @@ public class All64(
         ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 203, value.rep_sint64)
         ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 202, value.rep_uint64)
         ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 201, value.rep_int64)
-        if (value.my_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer, 5,
-            value.my_sfixed64)
-        if (value.my_fixed64 != 0L) ProtoAdapter.FIXED64.encodeWithTag(writer, 4, value.my_fixed64)
-        if (value.my_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 3, value.my_sint64)
-        if (value.my_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 2, value.my_uint64)
-        if (value.my_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 1, value.my_int64)
+        if (value.my_sfixed64 != 0L) {
+          ProtoAdapter.SFIXED64.encodeWithTag(writer, 5, value.my_sfixed64)
+        }
+        if (value.my_fixed64 != 0L) {
+          ProtoAdapter.FIXED64.encodeWithTag(writer, 4, value.my_fixed64)
+        }
+        if (value.my_sint64 != 0L) {
+          ProtoAdapter.SINT64.encodeWithTag(writer, 3, value.my_sint64)
+        }
+        if (value.my_uint64 != 0L) {
+          ProtoAdapter.UINT64.encodeWithTag(writer, 2, value.my_uint64)
+        }
+        if (value.my_int64 != 0L) {
+          ProtoAdapter.INT64.encodeWithTag(writer, 1, value.my_int64)
+        }
       }
 
       override fun decode(reader: ProtoReader): All64 {

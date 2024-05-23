@@ -99,21 +99,24 @@ public class FreeGarlicBreadPromotion(
     ) {
       override fun encodedSize(`value`: FreeGarlicBreadPromotion): Int {
         var size = value.unknownFields.size
-        if (value.is_extra_cheesey != false) size += ProtoAdapter.BOOL.encodedSizeWithTag(1,
-            value.is_extra_cheesey)
+        if (value.is_extra_cheesey != false) {
+          size += ProtoAdapter.BOOL.encodedSizeWithTag(1, value.is_extra_cheesey)
+        }
         return size
       }
 
       override fun encode(writer: ProtoWriter, `value`: FreeGarlicBreadPromotion) {
-        if (value.is_extra_cheesey != false) ProtoAdapter.BOOL.encodeWithTag(writer, 1,
-            value.is_extra_cheesey)
+        if (value.is_extra_cheesey != false) {
+          ProtoAdapter.BOOL.encodeWithTag(writer, 1, value.is_extra_cheesey)
+        }
         writer.writeBytes(value.unknownFields)
       }
 
       override fun encode(writer: ReverseProtoWriter, `value`: FreeGarlicBreadPromotion) {
         writer.writeBytes(value.unknownFields)
-        if (value.is_extra_cheesey != false) ProtoAdapter.BOOL.encodeWithTag(writer, 1,
-            value.is_extra_cheesey)
+        if (value.is_extra_cheesey != false) {
+          ProtoAdapter.BOOL.encodeWithTag(writer, 1, value.is_extra_cheesey)
+        }
       }
 
       override fun decode(reader: ProtoReader): FreeGarlicBreadPromotion {
