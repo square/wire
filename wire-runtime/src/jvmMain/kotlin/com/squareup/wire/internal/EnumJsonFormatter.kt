@@ -16,6 +16,7 @@
 package com.squareup.wire.internal
 
 import com.squareup.wire.EnumAdapter
+import com.squareup.wire.Syntax
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
 
@@ -29,6 +30,10 @@ class EnumJsonFormatter<E : WireEnum>(
 ) : JsonFormatter<E> {
   private val stringToValue: Map<String, E>
   private val valueToString: Map<E, String>
+  /**
+   * The `UNRECOGNIZED(-1) constant that might have been generated. This only concerns proto3 enums.
+   */
+  private var unrecognizedConstant: E? = null
 
   init {
     val mutableStringToValue = mutableMapOf<String, E>()
@@ -39,6 +44,10 @@ class EnumJsonFormatter<E : WireEnum>(
     val enumType = adapter.type!!.java as Class<E>
     for (constant in enumType.enumConstants) {
       val name = (constant as Enum<*>).name
+
+      if (adapter.syntax == Syntax.PROTO_3 && (constant as? WireEnum)?.value == -1) {
+        unrecognizedConstant = constant
+      }
 
       mutableStringToValue[name] = constant
       mutableStringToValue[constant.value.toString()] = constant
@@ -59,6 +68,9 @@ class EnumJsonFormatter<E : WireEnum>(
 
   override fun fromString(value: String): E? {
     return stringToValue[value]
+      // If the constant is unknown to our runtime, we return `unrecognizedConstant` which is either
+      // null or set to the generated `UNRECOGNIZED(-1)` if it exists.
+      ?: unrecognizedConstant
   }
 
   override fun toStringOrNumber(value: E): String {

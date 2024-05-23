@@ -137,6 +137,7 @@ class KotlinGenerator private constructor(
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
+  @Suppress("RecursivePropertyAccessor")
   private val ProtoType.typeName: TypeName
     get() {
       return if (isMap) {
@@ -1610,7 +1611,7 @@ class KotlinGenerator private constructor(
           is Field -> {
             val fieldName = localNameAllocator[fieldOrOneOf]
             if (fieldOrOneOf.encodeMode == EncodeMode.OMIT_IDENTITY) {
-              add(fieldEqualsIdentityBlock(fieldOrOneOf, fieldName))
+              beginControlFlow(fieldEqualsIdentityBlock(fieldOrOneOf, fieldName).toString())
             }
             addStatement(
               "%N += %L.encodedSizeWithTag(%L, value.%N)",
@@ -1619,6 +1620,9 @@ class KotlinGenerator private constructor(
               fieldOrOneOf.tag,
               fieldName,
             )
+            if (fieldOrOneOf.encodeMode == EncodeMode.OMIT_IDENTITY) {
+              endControlFlow()
+            }
           }
           is OneOf -> {
             val fieldName = localNameAllocator[fieldOrOneOf]
@@ -1658,9 +1662,16 @@ class KotlinGenerator private constructor(
 
     for (field in message.fields + message.flatOneOfs().flatMap { it.fields }) {
       val fieldName = nameAllocator[field]
+      val enumType = schema.getType(field.type!!) as? EnumType?
+      val needsUnrecognizedBehavior =
+        enumType?.generateUnrecognizedEnumConstant == true &&
+          // We exclude struct types because `NULL_VALUE` is an special enum.
+          !field.type!!.isStruct &&
+          // TODO(Benoit) Remove when we're ready.
+          !field.isRepeated
       encodeCalls += buildCodeBlock {
         if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
-          add(fieldEqualsIdentityBlock(field, fieldName))
+          beginControlFlow(fieldEqualsIdentityBlock(field, fieldName).toString())
         }
         if (field.useArray && reverse) {
           val encodeArray = MemberName(
@@ -1674,12 +1685,26 @@ class KotlinGenerator private constructor(
             field.tag,
           )
         } else {
+          if (needsUnrecognizedBehavior) {
+            beginControlFlow(
+              "if (value.%N != %T.%L)",
+              fieldName,
+              enumType!!.type.typeName,
+              "UNRECOGNIZED",
+            )
+          }
           addStatement(
             "%L.encodeWithTag(writer, %L, value.%N)",
             adapterFor(field),
             field.tag,
             fieldName,
           )
+          if (needsUnrecognizedBehavior) {
+            endControlFlow()
+          }
+        }
+        if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
+          endControlFlow()
         }
       }
     }
@@ -1841,12 +1866,7 @@ class KotlinGenerator private constructor(
               beginControlFlow("%L -> try", field.tag)
               addStatement("%L", decodeAndAssign(field, fieldName, adapterName))
               nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
-              if (
-                message.syntax == Syntax.PROTO_3 &&
-                // StructNull is a special type defined as an enum that Wire translates into
-                // `kotlin.Nothing`. We do not generate special constants for this type.
-                field.type!! != ProtoType.STRUCT_NULL
-              ) {
+              if (message.syntax == Syntax.PROTO_3 && !field.type!!.isStruct) {
                 val enumType = schema.getType(field.type!!) as EnumType
                 if (enumType.generateUnrecognizedEnumConstant) {
                   addStatement(
@@ -2338,8 +2358,8 @@ class KotlinGenerator private constructor(
       // Special case for doubles and floats because of negative zeros.
       ProtoType.DOUBLE,
       ProtoType.FLOAT,
-      -> "if (!value.%1N.equals(%2L)) "
-      else -> "if (value.%1N != %2L) "
+      -> "if (!value.%1N.equals(%2L))"
+      else -> "if (value.%1N != %2L)"
     }
     return CodeBlock.of(format, fieldName, field.identityValue)
   }

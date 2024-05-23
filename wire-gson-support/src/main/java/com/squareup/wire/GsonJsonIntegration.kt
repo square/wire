@@ -21,6 +21,7 @@ import com.google.gson.TypeAdapter
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
+import com.squareup.wire.internal.EnumJsonFormatter
 import com.squareup.wire.internal.JsonFormatter
 import com.squareup.wire.internal.JsonIntegration
 import java.lang.reflect.Type
@@ -82,6 +83,12 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
     private val formatter: JsonFormatter<T>,
   ) : TypeAdapter<T>() {
     override fun write(writer: JsonWriter, value: T) {
+      if (formatter is EnumJsonFormatter && value is Number) {
+        // The value is unknown and we could not get a constant for `value`. We're thus writing the
+        // constant tag instead.
+        writer.value(value)
+        return
+      }
       val stringOrNumber = formatter.toStringOrNumber(value)
       if (stringOrNumber is Number) {
         writer.value(stringOrNumber)
