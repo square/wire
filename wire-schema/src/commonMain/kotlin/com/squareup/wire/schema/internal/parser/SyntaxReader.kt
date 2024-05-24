@@ -38,7 +38,8 @@ class SyntaxReader(
 
   /** Reads a non-whitespace character 'c', or throws an exception. */
   fun require(c: Char) {
-    expect(readChar() == c) { "expected '$c'" }
+    val readChar = readChar()
+    expect(readChar == c) { "expected '$c' but was '$readChar'" }
   }
 
   /**

@@ -1010,7 +1010,7 @@ class SchemaTest {
       }
       fail()
     } catch (expected: IllegalStateException) {
-      assertThat(expected).hasMessage("Syntax error in /sourcePath/message.proto:2:17: expected '{'")
+      assertThat(expected).hasMessage("Syntax error in /sourcePath/message.proto:2:17: expected '{' but was 's'")
     }
   }
 

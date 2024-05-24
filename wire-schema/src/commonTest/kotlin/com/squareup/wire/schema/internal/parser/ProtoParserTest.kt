@@ -21,6 +21,7 @@ import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import assertk.assertions.messageContains
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.schema.Field.Label.OPTIONAL
 import com.squareup.wire.schema.Field.Label.REPEATED
@@ -28,6 +29,7 @@ import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
+import com.squareup.wire.schema.internal.parser.OptionElement.OptionPrimitive
 import kotlin.test.Test
 import kotlin.test.fail
 
@@ -1855,7 +1857,12 @@ class ProtoParserTest {
                 OptionElement.create(
                   "squareup.a.b",
                   Kind.MAP,
-                  mapOf("value" to listOf(OptionElement.OptionPrimitive(Kind.ENUM, "FOO"), OptionElement.OptionPrimitive(Kind.ENUM, "BAR"))),
+                  mapOf(
+                    "value" to listOf(
+                      OptionPrimitive(Kind.ENUM, "FOO"),
+                      OptionPrimitive(Kind.ENUM, "BAR"),
+                    ),
+                  ),
                   true,
                 ),
               ),
@@ -1971,20 +1978,23 @@ class ProtoParserTest {
     option_one_map["name"] = "Name"
     option_one_map["class_name"] = "ClassName"
     val option_two_a_map = LinkedHashMap<String, Any>()
-    option_two_a_map["[squareup.options.type]"] = OptionElement.OptionPrimitive(Kind.ENUM, "EXOTIC")
+    option_two_a_map["[squareup.options.type]"] = OptionPrimitive(Kind.ENUM, "EXOTIC")
     val option_two_b_map = LinkedHashMap<String, List<String>>()
     option_two_b_map["names"] = listOf("Foo", "Bar")
     val option_three_map = LinkedHashMap<String, Map<String, *>>()
     val option_three_nested_map = LinkedHashMap<String, Any>()
-    option_three_nested_map["y"] = listOf(OptionElement.OptionPrimitive(Kind.NUMBER, "1"), OptionElement.OptionPrimitive(Kind.NUMBER, "2"))
+    option_three_nested_map["y"] = listOf(
+      OptionPrimitive(Kind.NUMBER, "1"),
+      OptionPrimitive(Kind.NUMBER, "2"),
+    )
     option_three_map["x"] = option_three_nested_map
 
     val option_four_map = LinkedHashMap<String, Map<String, *>>()
     val option_four_map_1 = LinkedHashMap<String, Any>()
     val option_four_map_2_a = LinkedHashMap<String, Any>()
-    option_four_map_2_a["z"] = OptionElement.OptionPrimitive(Kind.NUMBER, "1")
+    option_four_map_2_a["z"] = OptionPrimitive(Kind.NUMBER, "1")
     val option_four_map_2_b = LinkedHashMap<String, Any>()
-    option_four_map_2_b["z"] = OptionElement.OptionPrimitive(Kind.NUMBER, "2")
+    option_four_map_2_b["z"] = OptionPrimitive(Kind.NUMBER, "2")
     option_four_map_1["y"] = listOf(option_four_map_2_a, option_four_map_2_b)
     option_four_map["x"] = option_four_map_1
 
@@ -2873,6 +2883,94 @@ class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
+  @Test fun extensionRangeOptions() {
+    val proto = """
+      |syntax = "proto2";
+      |message MyMessage {
+      |  extensions 1000 to 9994 [
+      |    declaration = {
+      |      full_name: ".pb.cpp",
+      |      type: ".pb.CppFeatures"
+      |    },
+      |    declaration = {
+      |      full_name: ".pb.java",
+      |      type: ".pb.JavaFeatures"
+      |    },
+      |    declaration = { full_name: ".pb.go", type: ".pb.GoFeatures" },
+      |    declaration = {
+      |      full_name: ".pb.proto1",
+      |      type: ".pb.Proto1Features"
+      |    }
+      |  ];
+      |  extensions 1, 2 to 5, 99 [(a) = "b"];
+      |}
+    """.trimMargin()
+    val expected = ProtoFileElement(
+      syntax = PROTO_2,
+      location = location,
+      types = listOf(
+        MessageElement(
+          location = location.at(2, 1),
+          name = "MyMessage",
+          extensions = listOf(
+            ExtensionsElement(
+              location = location.at(3, 3),
+              values = listOf(1000..9994),
+              options = listOf(
+                OptionElement.create(
+                  name = "declaration",
+                  kind = Kind.MAP,
+                  value = mapOf(
+                    "full_name" to ".pb.cpp",
+                    "type" to ".pb.CppFeatures",
+                  ),
+                ),
+                OptionElement.create(
+                  name = "declaration",
+                  kind = Kind.MAP,
+                  value = mapOf(
+                    "full_name" to ".pb.java",
+                    "type" to ".pb.JavaFeatures",
+                  ),
+                ),
+                OptionElement.create(
+                  name = "declaration",
+                  kind = Kind.MAP,
+                  value = mapOf(
+                    "full_name" to ".pb.go",
+                    "type" to ".pb.GoFeatures",
+                  ),
+                ),
+                OptionElement.create(
+                  name = "declaration",
+                  kind = Kind.MAP,
+                  value = mapOf(
+                    "full_name" to ".pb.proto1",
+                    "type" to ".pb.Proto1Features",
+                  ),
+                ),
+              ),
+            ),
+            ExtensionsElement(
+              location = location.at(18, 3),
+              values = listOf(1, 2..5, 99),
+              options = listOf(
+                OptionElement.create(
+                  name = "a",
+                  kind = Kind.STRING,
+                  value = "b",
+                  isParenthesized = true,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    )
+    val actual = ProtoParser.parse(location, proto)
+    assertThat(actual).isEqualTo(expected)
+  }
+
   @Test fun protoKeywordAsServiceNameAndRpc() {
     // Note: this is consistent with protoc.
     val proto = """
@@ -3161,7 +3259,7 @@ class ProtoParserTest {
               Kind.MAP,
               mapOf(
                 "my_string" to "abc",
-                "my_int" to OptionElement.OptionPrimitive(Kind.NUMBER, "3"),
+                "my_int" to OptionPrimitive(Kind.NUMBER, "3"),
                 "my_list" to listOf("a", "b", "c"),
               ),
               isParenthesized = true,

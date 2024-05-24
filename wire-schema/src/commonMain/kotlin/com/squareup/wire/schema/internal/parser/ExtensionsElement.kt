@@ -18,12 +18,14 @@ package com.squareup.wire.schema.internal.parser
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 import com.squareup.wire.schema.internal.appendDocumentation
+import com.squareup.wire.schema.internal.appendOptions
 
 data class ExtensionsElement(
   val location: Location,
   val documentation: String = "",
   /** An [Int] or [IntRange] tag. */
   val values: List<Any>,
+  val options: List<OptionElement> = emptyList(),
 ) {
   fun toSchema() = buildString {
     appendDocumentation(documentation)
@@ -45,6 +47,12 @@ data class ExtensionsElement(
         else -> throw AssertionError()
       }
     }
+
+    if (options.isNotEmpty()) {
+      append(" ")
+      appendOptions(options)
+    }
+
     append(";\n")
   }
 }

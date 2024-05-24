@@ -19,6 +19,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.MAX_TAG_VALUE
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind
 import kotlin.test.Test
 
 class ExtensionsElementTest {
@@ -65,6 +66,69 @@ class ExtensionsElementTest {
         |// Hello
         |extensions 500;
         |
+    """.trimMargin()
+    assertThat(actual.toSchema()).isEqualTo(expected)
+  }
+
+  @Test fun withOptions() {
+    val actual = ExtensionsElement(
+      location = location.at(3, 3),
+      values = listOf(1000..9994),
+      options = listOf(
+        OptionElement.create(
+          name = "declaration",
+          kind = Kind.MAP,
+          value = mapOf(
+            "full_name" to ".pb.cpp",
+            "type" to ".pb.CppFeatures",
+          ),
+        ),
+        OptionElement.create(
+          name = "declaration",
+          kind = Kind.MAP,
+          value = mapOf(
+            "full_name" to ".pb.java",
+            "type" to ".pb.JavaFeatures",
+          ),
+        ),
+        OptionElement.create(
+          name = "declaration",
+          kind = Kind.MAP,
+          value = mapOf(
+            "full_name" to ".pb.go",
+            "type" to ".pb.GoFeatures",
+          ),
+        ),
+        OptionElement.create(
+          name = "declaration",
+          kind = Kind.MAP,
+          value = mapOf(
+            "full_name" to ".pb.proto1",
+            "type" to ".pb.Proto1Features",
+          ),
+        ),
+      ),
+    )
+    val expected = """
+      |extensions 1000 to 9994 [
+      |  declaration = {
+      |    full_name: ".pb.cpp",
+      |    type: ".pb.CppFeatures"
+      |  },
+      |  declaration = {
+      |    full_name: ".pb.java",
+      |    type: ".pb.JavaFeatures"
+      |  },
+      |  declaration = {
+      |    full_name: ".pb.go",
+      |    type: ".pb.GoFeatures"
+      |  },
+      |  declaration = {
+      |    full_name: ".pb.proto1",
+      |    type: ".pb.Proto1Features"
+      |  }
+      |];
+      |
     """.trimMargin()
     assertThat(actual.toSchema()).isEqualTo(expected)
   }
