@@ -525,19 +525,25 @@ class ProtoParser internal constructor(
     documentation: String,
   ): ExtensionsElement {
     val values = mutableListOf<Any>()
+    val options = mutableListOf<OptionElement>()
     loop@ while (true) {
       val start = reader.readInt()
 
       when (reader.peekChar()) {
-        ',', ';' -> values.add(start)
+        ',', ';', '[' -> values.add(start)
         else -> {
-          reader.expect(reader.readWord() == "to", location) { "expected ',', ';' or 'to'" }
+          reader.expect(reader.readWord() == "to", location) { "expected ',', ';', '[' or 'to'" }
           val end = when (val s = reader.readWord()) {
             "max" -> MAX_TAG_VALUE
             else -> s.toInt()
           }
           values.add(start..end)
         }
+      }
+      if (reader.peekChar() == '[') {
+        options.addAll(OptionReader(reader).readOptions())
+        reader.require(';')
+        break@loop
       }
       when (reader.readChar()) {
         ';' -> break@loop
@@ -550,6 +556,7 @@ class ProtoParser internal constructor(
       location = location,
       documentation = documentation,
       values = values,
+      options = options.toList(),
     )
   }
 

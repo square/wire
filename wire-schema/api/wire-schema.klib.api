@@ -239,11 +239,12 @@ final class com.squareup.wire.schema.internal.parser/ExtendElement { // com.squa
         final fun <get-name>(): kotlin/String // com.squareup.wire.schema.internal.parser/ExtendElement.name.<get-name>|<get-name>(){}[0]
 }
 final class com.squareup.wire.schema.internal.parser/ExtensionsElement { // com.squareup.wire.schema.internal.parser/ExtensionsElement|null[0]
-    constructor <init>(com.squareup.wire.schema/Location, kotlin/String =..., kotlin.collections/List<kotlin/Any>) // com.squareup.wire.schema.internal.parser/ExtensionsElement.<init>|<init>(com.squareup.wire.schema.Location;kotlin.String;kotlin.collections.List<kotlin.Any>){}[0]
+    constructor <init>(com.squareup.wire.schema/Location, kotlin/String =..., kotlin.collections/List<kotlin/Any>, kotlin.collections/List<com.squareup.wire.schema.internal.parser/OptionElement> =...) // com.squareup.wire.schema.internal.parser/ExtensionsElement.<init>|<init>(com.squareup.wire.schema.Location;kotlin.String;kotlin.collections.List<kotlin.Any>;kotlin.collections.List<com.squareup.wire.schema.internal.parser.OptionElement>){}[0]
     final fun component1(): com.squareup.wire.schema/Location // com.squareup.wire.schema.internal.parser/ExtensionsElement.component1|component1(){}[0]
     final fun component2(): kotlin/String // com.squareup.wire.schema.internal.parser/ExtensionsElement.component2|component2(){}[0]
     final fun component3(): kotlin.collections/List<kotlin/Any> // com.squareup.wire.schema.internal.parser/ExtensionsElement.component3|component3(){}[0]
-    final fun copy(com.squareup.wire.schema/Location =..., kotlin/String =..., kotlin.collections/List<kotlin/Any> =...): com.squareup.wire.schema.internal.parser/ExtensionsElement // com.squareup.wire.schema.internal.parser/ExtensionsElement.copy|copy(com.squareup.wire.schema.Location;kotlin.String;kotlin.collections.List<kotlin.Any>){}[0]
+    final fun component4(): kotlin.collections/List<com.squareup.wire.schema.internal.parser/OptionElement> // com.squareup.wire.schema.internal.parser/ExtensionsElement.component4|component4(){}[0]
+    final fun copy(com.squareup.wire.schema/Location =..., kotlin/String =..., kotlin.collections/List<kotlin/Any> =..., kotlin.collections/List<com.squareup.wire.schema.internal.parser/OptionElement> =...): com.squareup.wire.schema.internal.parser/ExtensionsElement // com.squareup.wire.schema.internal.parser/ExtensionsElement.copy|copy(com.squareup.wire.schema.Location;kotlin.String;kotlin.collections.List<kotlin.Any>;kotlin.collections.List<com.squareup.wire.schema.internal.parser.OptionElement>){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.squareup.wire.schema.internal.parser/ExtensionsElement.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.squareup.wire.schema.internal.parser/ExtensionsElement.hashCode|hashCode(){}[0]
     final fun toSchema(): kotlin/String // com.squareup.wire.schema.internal.parser/ExtensionsElement.toSchema|toSchema(){}[0]
@@ -252,6 +253,8 @@ final class com.squareup.wire.schema.internal.parser/ExtensionsElement { // com.
         final fun <get-documentation>(): kotlin/String // com.squareup.wire.schema.internal.parser/ExtensionsElement.documentation.<get-documentation>|<get-documentation>(){}[0]
     final val location // com.squareup.wire.schema.internal.parser/ExtensionsElement.location|{}location[0]
         final fun <get-location>(): com.squareup.wire.schema/Location // com.squareup.wire.schema.internal.parser/ExtensionsElement.location.<get-location>|<get-location>(){}[0]
+    final val options // com.squareup.wire.schema.internal.parser/ExtensionsElement.options|{}options[0]
+        final fun <get-options>(): kotlin.collections/List<com.squareup.wire.schema.internal.parser/OptionElement> // com.squareup.wire.schema.internal.parser/ExtensionsElement.options.<get-options>|<get-options>(){}[0]
     final val values // com.squareup.wire.schema.internal.parser/ExtensionsElement.values|{}values[0]
         final fun <get-values>(): kotlin.collections/List<kotlin/Any> // com.squareup.wire.schema.internal.parser/ExtensionsElement.values.<get-values>|<get-values>(){}[0]
 }
