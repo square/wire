@@ -20,6 +20,7 @@ import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
+import com.squareup.wire.internal.EnumJsonFormatter
 import com.squareup.wire.internal.JsonFormatter
 import com.squareup.wire.internal.JsonIntegration
 import java.lang.reflect.Type
@@ -59,6 +60,12 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
       writer: JsonWriter,
       value: T?,
     ) {
+      if (formatter is EnumJsonFormatter && value is Number) {
+        // The value is unknown and we could not get a constant for `value`. We're thus writing the
+        // constant tag instead.
+        writer.value(value)
+        return
+      }
       val stringOrNumber = formatter.toStringOrNumber(value!!)
       if (stringOrNumber is Number) {
         writer.value(stringOrNumber)

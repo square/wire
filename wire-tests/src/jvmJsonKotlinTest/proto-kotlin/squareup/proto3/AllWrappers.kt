@@ -791,24 +791,33 @@ public class AllWrappers(
 
       override fun encodedSize(`value`: AllWrappers): Int {
         var size = value.unknownFields.size
-        if (value.double_value != null) size += ProtoAdapter.DOUBLE_VALUE.encodedSizeWithTag(1,
-            value.double_value)
-        if (value.float_value != null) size += ProtoAdapter.FLOAT_VALUE.encodedSizeWithTag(2,
-            value.float_value)
-        if (value.int64_value != null) size += ProtoAdapter.INT64_VALUE.encodedSizeWithTag(3,
-            value.int64_value)
-        if (value.uint64_value != null) size += ProtoAdapter.UINT64_VALUE.encodedSizeWithTag(4,
-            value.uint64_value)
-        if (value.int32_value != null) size += ProtoAdapter.INT32_VALUE.encodedSizeWithTag(5,
-            value.int32_value)
-        if (value.uint32_value != null) size += ProtoAdapter.UINT32_VALUE.encodedSizeWithTag(6,
-            value.uint32_value)
-        if (value.bool_value != null) size += ProtoAdapter.BOOL_VALUE.encodedSizeWithTag(7,
-            value.bool_value)
-        if (value.string_value != null) size += ProtoAdapter.STRING_VALUE.encodedSizeWithTag(8,
-            value.string_value)
-        if (value.bytes_value != null) size += ProtoAdapter.BYTES_VALUE.encodedSizeWithTag(9,
-            value.bytes_value)
+        if (value.double_value != null) {
+          size += ProtoAdapter.DOUBLE_VALUE.encodedSizeWithTag(1, value.double_value)
+        }
+        if (value.float_value != null) {
+          size += ProtoAdapter.FLOAT_VALUE.encodedSizeWithTag(2, value.float_value)
+        }
+        if (value.int64_value != null) {
+          size += ProtoAdapter.INT64_VALUE.encodedSizeWithTag(3, value.int64_value)
+        }
+        if (value.uint64_value != null) {
+          size += ProtoAdapter.UINT64_VALUE.encodedSizeWithTag(4, value.uint64_value)
+        }
+        if (value.int32_value != null) {
+          size += ProtoAdapter.INT32_VALUE.encodedSizeWithTag(5, value.int32_value)
+        }
+        if (value.uint32_value != null) {
+          size += ProtoAdapter.UINT32_VALUE.encodedSizeWithTag(6, value.uint32_value)
+        }
+        if (value.bool_value != null) {
+          size += ProtoAdapter.BOOL_VALUE.encodedSizeWithTag(7, value.bool_value)
+        }
+        if (value.string_value != null) {
+          size += ProtoAdapter.STRING_VALUE.encodedSizeWithTag(8, value.string_value)
+        }
+        if (value.bytes_value != null) {
+          size += ProtoAdapter.BYTES_VALUE.encodedSizeWithTag(9, value.bytes_value)
+        }
         size += ProtoAdapter.DOUBLE_VALUE.asRepeated().encodedSizeWithTag(101,
             value.rep_double_value)
         size += ProtoAdapter.FLOAT_VALUE.asRepeated().encodedSizeWithTag(102, value.rep_float_value)
@@ -835,24 +844,33 @@ public class AllWrappers(
       }
 
       override fun encode(writer: ProtoWriter, `value`: AllWrappers) {
-        if (value.double_value != null) ProtoAdapter.DOUBLE_VALUE.encodeWithTag(writer, 1,
-            value.double_value)
-        if (value.float_value != null) ProtoAdapter.FLOAT_VALUE.encodeWithTag(writer, 2,
-            value.float_value)
-        if (value.int64_value != null) ProtoAdapter.INT64_VALUE.encodeWithTag(writer, 3,
-            value.int64_value)
-        if (value.uint64_value != null) ProtoAdapter.UINT64_VALUE.encodeWithTag(writer, 4,
-            value.uint64_value)
-        if (value.int32_value != null) ProtoAdapter.INT32_VALUE.encodeWithTag(writer, 5,
-            value.int32_value)
-        if (value.uint32_value != null) ProtoAdapter.UINT32_VALUE.encodeWithTag(writer, 6,
-            value.uint32_value)
-        if (value.bool_value != null) ProtoAdapter.BOOL_VALUE.encodeWithTag(writer, 7,
-            value.bool_value)
-        if (value.string_value != null) ProtoAdapter.STRING_VALUE.encodeWithTag(writer, 8,
-            value.string_value)
-        if (value.bytes_value != null) ProtoAdapter.BYTES_VALUE.encodeWithTag(writer, 9,
-            value.bytes_value)
+        if (value.double_value != null) {
+          ProtoAdapter.DOUBLE_VALUE.encodeWithTag(writer, 1, value.double_value)
+        }
+        if (value.float_value != null) {
+          ProtoAdapter.FLOAT_VALUE.encodeWithTag(writer, 2, value.float_value)
+        }
+        if (value.int64_value != null) {
+          ProtoAdapter.INT64_VALUE.encodeWithTag(writer, 3, value.int64_value)
+        }
+        if (value.uint64_value != null) {
+          ProtoAdapter.UINT64_VALUE.encodeWithTag(writer, 4, value.uint64_value)
+        }
+        if (value.int32_value != null) {
+          ProtoAdapter.INT32_VALUE.encodeWithTag(writer, 5, value.int32_value)
+        }
+        if (value.uint32_value != null) {
+          ProtoAdapter.UINT32_VALUE.encodeWithTag(writer, 6, value.uint32_value)
+        }
+        if (value.bool_value != null) {
+          ProtoAdapter.BOOL_VALUE.encodeWithTag(writer, 7, value.bool_value)
+        }
+        if (value.string_value != null) {
+          ProtoAdapter.STRING_VALUE.encodeWithTag(writer, 8, value.string_value)
+        }
+        if (value.bytes_value != null) {
+          ProtoAdapter.BYTES_VALUE.encodeWithTag(writer, 9, value.bytes_value)
+        }
         ProtoAdapter.DOUBLE_VALUE.asRepeated().encodeWithTag(writer, 101, value.rep_double_value)
         ProtoAdapter.FLOAT_VALUE.asRepeated().encodeWithTag(writer, 102, value.rep_float_value)
         ProtoAdapter.INT64_VALUE.asRepeated().encodeWithTag(writer, 103, value.rep_int64_value)
@@ -894,24 +912,33 @@ public class AllWrappers(
         ProtoAdapter.INT64_VALUE.asRepeated().encodeWithTag(writer, 103, value.rep_int64_value)
         ProtoAdapter.FLOAT_VALUE.asRepeated().encodeWithTag(writer, 102, value.rep_float_value)
         ProtoAdapter.DOUBLE_VALUE.asRepeated().encodeWithTag(writer, 101, value.rep_double_value)
-        if (value.bytes_value != null) ProtoAdapter.BYTES_VALUE.encodeWithTag(writer, 9,
-            value.bytes_value)
-        if (value.string_value != null) ProtoAdapter.STRING_VALUE.encodeWithTag(writer, 8,
-            value.string_value)
-        if (value.bool_value != null) ProtoAdapter.BOOL_VALUE.encodeWithTag(writer, 7,
-            value.bool_value)
-        if (value.uint32_value != null) ProtoAdapter.UINT32_VALUE.encodeWithTag(writer, 6,
-            value.uint32_value)
-        if (value.int32_value != null) ProtoAdapter.INT32_VALUE.encodeWithTag(writer, 5,
-            value.int32_value)
-        if (value.uint64_value != null) ProtoAdapter.UINT64_VALUE.encodeWithTag(writer, 4,
-            value.uint64_value)
-        if (value.int64_value != null) ProtoAdapter.INT64_VALUE.encodeWithTag(writer, 3,
-            value.int64_value)
-        if (value.float_value != null) ProtoAdapter.FLOAT_VALUE.encodeWithTag(writer, 2,
-            value.float_value)
-        if (value.double_value != null) ProtoAdapter.DOUBLE_VALUE.encodeWithTag(writer, 1,
-            value.double_value)
+        if (value.bytes_value != null) {
+          ProtoAdapter.BYTES_VALUE.encodeWithTag(writer, 9, value.bytes_value)
+        }
+        if (value.string_value != null) {
+          ProtoAdapter.STRING_VALUE.encodeWithTag(writer, 8, value.string_value)
+        }
+        if (value.bool_value != null) {
+          ProtoAdapter.BOOL_VALUE.encodeWithTag(writer, 7, value.bool_value)
+        }
+        if (value.uint32_value != null) {
+          ProtoAdapter.UINT32_VALUE.encodeWithTag(writer, 6, value.uint32_value)
+        }
+        if (value.int32_value != null) {
+          ProtoAdapter.INT32_VALUE.encodeWithTag(writer, 5, value.int32_value)
+        }
+        if (value.uint64_value != null) {
+          ProtoAdapter.UINT64_VALUE.encodeWithTag(writer, 4, value.uint64_value)
+        }
+        if (value.int64_value != null) {
+          ProtoAdapter.INT64_VALUE.encodeWithTag(writer, 3, value.int64_value)
+        }
+        if (value.float_value != null) {
+          ProtoAdapter.FLOAT_VALUE.encodeWithTag(writer, 2, value.float_value)
+        }
+        if (value.double_value != null) {
+          ProtoAdapter.DOUBLE_VALUE.encodeWithTag(writer, 1, value.double_value)
+        }
       }
 
       override fun decode(reader: ProtoReader): AllWrappers {

@@ -182,9 +182,15 @@ public class Person(
     ) {
       override fun encodedSize(`value`: Person): Int {
         var size = value.unknownFields.size
-        if (value.name != "") size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-        if (value.id != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
-        if (value.email != "") size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
+        if (value.name != "") {
+          size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        }
+        if (value.id != 0) {
+          size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
+        }
+        if (value.email != "") {
+          size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
+        }
         size += PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phones)
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.aliases)
         size += ProtoAdapter.INT32.encodedSizeWithTag(6, value.foo)
@@ -193,9 +199,15 @@ public class Person(
       }
 
       override fun encode(writer: ProtoWriter, `value`: Person) {
-        if (value.name != "") ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
-        if (value.id != 0) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
-        if (value.email != "") ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
+        if (value.name != "") {
+          ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
+        }
+        if (value.id != 0) {
+          ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
+        }
+        if (value.email != "") {
+          ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
+        }
         PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phones)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases)
         ProtoAdapter.INT32.encodeWithTag(writer, 6, value.foo)
@@ -209,9 +221,15 @@ public class Person(
         ProtoAdapter.INT32.encodeWithTag(writer, 6, value.foo)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases)
         PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phones)
-        if (value.email != "") ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
-        if (value.id != 0) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
-        if (value.name != "") ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
+        if (value.email != "") {
+          ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
+        }
+        if (value.id != 0) {
+          ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
+        }
+        if (value.name != "") {
+          ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
+        }
       }
 
       override fun decode(reader: ProtoReader): Person {
@@ -364,22 +382,33 @@ public class Person(
       ) {
         override fun encodedSize(`value`: PhoneNumber): Int {
           var size = value.unknownFields.size
-          if (value.number != "") size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.number)
-          if (value.type != PhoneType.MOBILE) size += PhoneType.ADAPTER.encodedSizeWithTag(2,
-              value.type)
+          if (value.number != "") {
+            size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.number)
+          }
+          if (value.type != com.squareup.wire.proto3.kotlin.person.Person.PhoneType.MOBILE) {
+            size += PhoneType.ADAPTER.encodedSizeWithTag(2, value.type)
+          }
           return size
         }
 
         override fun encode(writer: ProtoWriter, `value`: PhoneNumber) {
-          if (value.number != "") ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number)
-          if (value.type != PhoneType.MOBILE) PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type)
+          if (value.number != "") {
+            ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number)
+          }
+          if (value.type != com.squareup.wire.proto3.kotlin.person.Person.PhoneType.MOBILE) {
+            PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type)
+          }
           writer.writeBytes(value.unknownFields)
         }
 
         override fun encode(writer: ReverseProtoWriter, `value`: PhoneNumber) {
           writer.writeBytes(value.unknownFields)
-          if (value.type != PhoneType.MOBILE) PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type)
-          if (value.number != "") ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number)
+          if (value.type != com.squareup.wire.proto3.kotlin.person.Person.PhoneType.MOBILE) {
+            PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type)
+          }
+          if (value.number != "") {
+            ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number)
+          }
         }
 
         override fun decode(reader: ProtoReader): PhoneNumber {

@@ -1823,35 +1823,57 @@ public class AllTypes(
 
       override fun encodedSize(`value`: AllTypes): Int {
         var size = value.unknownFields.size
-        if (value.my_int32 != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.my_int32)
-        if (value.my_uint32 != 0) size += ProtoAdapter.UINT32.encodedSizeWithTag(2, value.my_uint32)
-        if (value.my_sint32 != 0) size += ProtoAdapter.SINT32.encodedSizeWithTag(3, value.my_sint32)
-        if (value.my_fixed32 != 0) size += ProtoAdapter.FIXED32.encodedSizeWithTag(4,
-            value.my_fixed32)
-        if (value.my_sfixed32 != 0) size += ProtoAdapter.SFIXED32.encodedSizeWithTag(5,
-            value.my_sfixed32)
-        if (value.my_int64 != 0L) size += ProtoAdapter.INT64.encodedSizeWithTag(6, value.my_int64)
-        if (value.my_uint64 != 0L) size += ProtoAdapter.UINT64.encodedSizeWithTag(7,
-            value.my_uint64)
-        if (value.my_sint64 != 0L) size += ProtoAdapter.SINT64.encodedSizeWithTag(8,
-            value.my_sint64)
-        if (value.my_fixed64 != 0L) size += ProtoAdapter.FIXED64.encodedSizeWithTag(9,
-            value.my_fixed64)
-        if (value.my_sfixed64 != 0L) size += ProtoAdapter.SFIXED64.encodedSizeWithTag(10,
-            value.my_sfixed64)
-        if (value.my_bool != false) size += ProtoAdapter.BOOL.encodedSizeWithTag(11, value.my_bool)
-        if (!value.my_float.equals(0f)) size += ProtoAdapter.FLOAT.encodedSizeWithTag(12,
-            value.my_float)
-        if (!value.my_double.equals(0.0)) size += ProtoAdapter.DOUBLE.encodedSizeWithTag(13,
-            value.my_double)
-        if (value.my_string != "") size += ProtoAdapter.STRING.encodedSizeWithTag(14,
-            value.my_string)
-        if (value.my_bytes != ByteString.EMPTY) size += ProtoAdapter.BYTES.encodedSizeWithTag(15,
-            value.my_bytes)
-        if (value.nested_enum != NestedEnum.UNKNOWN) size +=
-            NestedEnum.ADAPTER.encodedSizeWithTag(16, value.nested_enum)
-        if (value.nested_message != null) size += NestedMessage.ADAPTER.encodedSizeWithTag(17,
-            value.nested_message)
+        if (value.my_int32 != 0) {
+          size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.my_int32)
+        }
+        if (value.my_uint32 != 0) {
+          size += ProtoAdapter.UINT32.encodedSizeWithTag(2, value.my_uint32)
+        }
+        if (value.my_sint32 != 0) {
+          size += ProtoAdapter.SINT32.encodedSizeWithTag(3, value.my_sint32)
+        }
+        if (value.my_fixed32 != 0) {
+          size += ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.my_fixed32)
+        }
+        if (value.my_sfixed32 != 0) {
+          size += ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.my_sfixed32)
+        }
+        if (value.my_int64 != 0L) {
+          size += ProtoAdapter.INT64.encodedSizeWithTag(6, value.my_int64)
+        }
+        if (value.my_uint64 != 0L) {
+          size += ProtoAdapter.UINT64.encodedSizeWithTag(7, value.my_uint64)
+        }
+        if (value.my_sint64 != 0L) {
+          size += ProtoAdapter.SINT64.encodedSizeWithTag(8, value.my_sint64)
+        }
+        if (value.my_fixed64 != 0L) {
+          size += ProtoAdapter.FIXED64.encodedSizeWithTag(9, value.my_fixed64)
+        }
+        if (value.my_sfixed64 != 0L) {
+          size += ProtoAdapter.SFIXED64.encodedSizeWithTag(10, value.my_sfixed64)
+        }
+        if (value.my_bool != false) {
+          size += ProtoAdapter.BOOL.encodedSizeWithTag(11, value.my_bool)
+        }
+        if (!value.my_float.equals(0f)) {
+          size += ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.my_float)
+        }
+        if (!value.my_double.equals(0.0)) {
+          size += ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.my_double)
+        }
+        if (value.my_string != "") {
+          size += ProtoAdapter.STRING.encodedSizeWithTag(14, value.my_string)
+        }
+        if (value.my_bytes != okio.ByteString.EMPTY) {
+          size += ProtoAdapter.BYTES.encodedSizeWithTag(15, value.my_bytes)
+        }
+        if (value.nested_enum != com.squareup.wire.proto3.alltypes.AllTypes.NestedEnum.UNKNOWN) {
+          size += NestedEnum.ADAPTER.encodedSizeWithTag(16, value.nested_enum)
+        }
+        if (value.nested_message != null) {
+          size += NestedMessage.ADAPTER.encodedSizeWithTag(17, value.nested_message)
+        }
         size += ProtoAdapter.INT32.encodedSizeWithTag(101, value.opt_int32)
         size += ProtoAdapter.UINT32.encodedSizeWithTag(102, value.opt_uint32)
         size += ProtoAdapter.SINT32.encodedSizeWithTag(103, value.opt_sint32)
@@ -1909,29 +1931,57 @@ public class AllTypes(
       }
 
       override fun encode(writer: ProtoWriter, `value`: AllTypes) {
-        if (value.my_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
-        if (value.my_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
-        if (value.my_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
-        if (value.my_fixed32 != 0) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.my_fixed32)
-        if (value.my_sfixed32 != 0) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5,
-            value.my_sfixed32)
-        if (value.my_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 6, value.my_int64)
-        if (value.my_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 7, value.my_uint64)
-        if (value.my_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 8, value.my_sint64)
-        if (value.my_fixed64 != 0L) ProtoAdapter.FIXED64.encodeWithTag(writer, 9, value.my_fixed64)
-        if (value.my_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10,
-            value.my_sfixed64)
-        if (value.my_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.my_bool)
-        if (!value.my_float.equals(0f)) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.my_float)
-        if (!value.my_double.equals(0.0)) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
-            value.my_double)
-        if (value.my_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14, value.my_string)
-        if (value.my_bytes != ByteString.EMPTY) ProtoAdapter.BYTES.encodeWithTag(writer, 15,
-            value.my_bytes)
-        if (value.nested_enum != NestedEnum.UNKNOWN) NestedEnum.ADAPTER.encodeWithTag(writer, 16,
-            value.nested_enum)
-        if (value.nested_message != null) NestedMessage.ADAPTER.encodeWithTag(writer, 17,
-            value.nested_message)
+        if (value.my_int32 != 0) {
+          ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
+        }
+        if (value.my_uint32 != 0) {
+          ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
+        }
+        if (value.my_sint32 != 0) {
+          ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
+        }
+        if (value.my_fixed32 != 0) {
+          ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.my_fixed32)
+        }
+        if (value.my_sfixed32 != 0) {
+          ProtoAdapter.SFIXED32.encodeWithTag(writer, 5, value.my_sfixed32)
+        }
+        if (value.my_int64 != 0L) {
+          ProtoAdapter.INT64.encodeWithTag(writer, 6, value.my_int64)
+        }
+        if (value.my_uint64 != 0L) {
+          ProtoAdapter.UINT64.encodeWithTag(writer, 7, value.my_uint64)
+        }
+        if (value.my_sint64 != 0L) {
+          ProtoAdapter.SINT64.encodeWithTag(writer, 8, value.my_sint64)
+        }
+        if (value.my_fixed64 != 0L) {
+          ProtoAdapter.FIXED64.encodeWithTag(writer, 9, value.my_fixed64)
+        }
+        if (value.my_sfixed64 != 0L) {
+          ProtoAdapter.SFIXED64.encodeWithTag(writer, 10, value.my_sfixed64)
+        }
+        if (value.my_bool != false) {
+          ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.my_bool)
+        }
+        if (!value.my_float.equals(0f)) {
+          ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.my_float)
+        }
+        if (!value.my_double.equals(0.0)) {
+          ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.my_double)
+        }
+        if (value.my_string != "") {
+          ProtoAdapter.STRING.encodeWithTag(writer, 14, value.my_string)
+        }
+        if (value.my_bytes != okio.ByteString.EMPTY) {
+          ProtoAdapter.BYTES.encodeWithTag(writer, 15, value.my_bytes)
+        }
+        if (value.nested_enum != com.squareup.wire.proto3.alltypes.AllTypes.NestedEnum.UNKNOWN) {
+          NestedEnum.ADAPTER.encodeWithTag(writer, 16, value.nested_enum)
+        }
+        if (value.nested_message != null) {
+          NestedMessage.ADAPTER.encodeWithTag(writer, 17, value.nested_message)
+        }
         ProtoAdapter.INT32.encodeWithTag(writer, 101, value.opt_int32)
         ProtoAdapter.UINT32.encodeWithTag(writer, 102, value.opt_uint32)
         ProtoAdapter.SINT32.encodeWithTag(writer, 103, value.opt_sint32)
@@ -2043,29 +2093,57 @@ public class AllTypes(
         ProtoAdapter.SINT32.encodeWithTag(writer, 103, value.opt_sint32)
         ProtoAdapter.UINT32.encodeWithTag(writer, 102, value.opt_uint32)
         ProtoAdapter.INT32.encodeWithTag(writer, 101, value.opt_int32)
-        if (value.nested_message != null) NestedMessage.ADAPTER.encodeWithTag(writer, 17,
-            value.nested_message)
-        if (value.nested_enum != NestedEnum.UNKNOWN) NestedEnum.ADAPTER.encodeWithTag(writer, 16,
-            value.nested_enum)
-        if (value.my_bytes != ByteString.EMPTY) ProtoAdapter.BYTES.encodeWithTag(writer, 15,
-            value.my_bytes)
-        if (value.my_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14, value.my_string)
-        if (!value.my_double.equals(0.0)) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13,
-            value.my_double)
-        if (!value.my_float.equals(0f)) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.my_float)
-        if (value.my_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.my_bool)
-        if (value.my_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10,
-            value.my_sfixed64)
-        if (value.my_fixed64 != 0L) ProtoAdapter.FIXED64.encodeWithTag(writer, 9, value.my_fixed64)
-        if (value.my_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 8, value.my_sint64)
-        if (value.my_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 7, value.my_uint64)
-        if (value.my_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 6, value.my_int64)
-        if (value.my_sfixed32 != 0) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5,
-            value.my_sfixed32)
-        if (value.my_fixed32 != 0) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.my_fixed32)
-        if (value.my_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
-        if (value.my_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
-        if (value.my_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
+        if (value.nested_message != null) {
+          NestedMessage.ADAPTER.encodeWithTag(writer, 17, value.nested_message)
+        }
+        if (value.nested_enum != com.squareup.wire.proto3.alltypes.AllTypes.NestedEnum.UNKNOWN) {
+          NestedEnum.ADAPTER.encodeWithTag(writer, 16, value.nested_enum)
+        }
+        if (value.my_bytes != okio.ByteString.EMPTY) {
+          ProtoAdapter.BYTES.encodeWithTag(writer, 15, value.my_bytes)
+        }
+        if (value.my_string != "") {
+          ProtoAdapter.STRING.encodeWithTag(writer, 14, value.my_string)
+        }
+        if (!value.my_double.equals(0.0)) {
+          ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.my_double)
+        }
+        if (!value.my_float.equals(0f)) {
+          ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.my_float)
+        }
+        if (value.my_bool != false) {
+          ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.my_bool)
+        }
+        if (value.my_sfixed64 != 0L) {
+          ProtoAdapter.SFIXED64.encodeWithTag(writer, 10, value.my_sfixed64)
+        }
+        if (value.my_fixed64 != 0L) {
+          ProtoAdapter.FIXED64.encodeWithTag(writer, 9, value.my_fixed64)
+        }
+        if (value.my_sint64 != 0L) {
+          ProtoAdapter.SINT64.encodeWithTag(writer, 8, value.my_sint64)
+        }
+        if (value.my_uint64 != 0L) {
+          ProtoAdapter.UINT64.encodeWithTag(writer, 7, value.my_uint64)
+        }
+        if (value.my_int64 != 0L) {
+          ProtoAdapter.INT64.encodeWithTag(writer, 6, value.my_int64)
+        }
+        if (value.my_sfixed32 != 0) {
+          ProtoAdapter.SFIXED32.encodeWithTag(writer, 5, value.my_sfixed32)
+        }
+        if (value.my_fixed32 != 0) {
+          ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.my_fixed32)
+        }
+        if (value.my_sint32 != 0) {
+          ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
+        }
+        if (value.my_uint32 != 0) {
+          ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
+        }
+        if (value.my_int32 != 0) {
+          ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
+        }
       }
 
       override fun decode(reader: ProtoReader): AllTypes {
@@ -2531,18 +2609,24 @@ public class AllTypes(
       ) {
         override fun encodedSize(`value`: NestedMessage): Int {
           var size = value.unknownFields.size
-          if (value.a != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
+          if (value.a != 0) {
+            size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
+          }
           return size
         }
 
         override fun encode(writer: ProtoWriter, `value`: NestedMessage) {
-          if (value.a != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
+          if (value.a != 0) {
+            ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
+          }
           writer.writeBytes(value.unknownFields)
         }
 
         override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage) {
           writer.writeBytes(value.unknownFields)
-          if (value.a != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
+          if (value.a != 0) {
+            ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
+          }
         }
 
         override fun decode(reader: ProtoReader): NestedMessage {

@@ -17,6 +17,7 @@ package com.squareup.wire
 
 import com.google.protobuf.Duration
 import okio.ByteString
+import okio.ByteString.Companion.decodeHex
 import org.junit.Ignore
 import org.junit.Test
 import squareup.proto2.java.interop.InteropBoxOneOf as InteropBoxOneOfJ2
@@ -58,6 +59,8 @@ import squareup.proto3.kotlin.interop.InteropOptional as InteropOptionalK3
 import squareup.proto3.kotlin.interop.InteropUint64 as InteropUint64K3
 import squareup.proto3.kotlin.interop.InteropWrappers as InteropWrappersK3
 import squareup.proto3.kotlin.interop.TestProto3Optional.InteropOptional as InteropOptionalP3
+import squareup.proto3.kotlin.unrecognized_constant.Easter as EasterK3
+import squareup.proto3.kotlin.unrecognized_constant.EasterOuterClass.Easter as EasterP3
 
 class InteropTest {
   @Test fun duration() {
@@ -192,7 +195,7 @@ class InteropTest {
   }
 
   @Test fun `json names`() {
-    val checked = InteropChecker(
+    val checker = InteropChecker(
       protocMessage = InteropJsonNameP3.newBuilder()
         .setA("1")
         .setPublic("2")
@@ -204,12 +207,12 @@ class InteropTest {
       ),
     )
 
-    checked.check(InteropJsonNameJ3("1", "2", "3"))
-    checked.check(InteropJsonNameK3("1", "2", "3"))
+    checker.check(InteropJsonNameJ3("1", "2", "3"))
+    checker.check(InteropJsonNameK3("1", "2", "3"))
   }
 
   @Test fun `json names proto2`() {
-    val checked = InteropChecker(
+    val checker = InteropChecker(
       protocMessage = InteropJsonNameP2.newBuilder()
         .setA("1")
         .setPublic("2")
@@ -221,8 +224,8 @@ class InteropTest {
       ),
     )
 
-    checked.check(InteropJsonNameJ2("1", "2", "3"))
-    checked.check(InteropJsonNameK2("1", "2", "3"))
+    checker.check(InteropJsonNameJ2("1", "2", "3"))
+    checker.check(InteropJsonNameK2("1", "2", "3"))
   }
 
   @Test fun optionalNonIdentity() {
@@ -339,8 +342,40 @@ class InteropTest {
     checker.check(InteropWrappersK3.Builder().build())
   }
 
+  @Test fun knownEnumsWithUnrecognizedConstant() {
+    // ┌─ 2: 1
+    // ├─ 3: 1
+    val bytes = "10011801"
+    val wireMessage: EasterK3 = EasterK3.ADAPTER.decode(bytes.decodeHex())
+    val protocMessage: EasterP3 = EasterP3.parseFrom(bytes.decodeHex().toByteArray())
+
+    val checker = InteropChecker(
+      protocMessage = protocMessage,
+      canonicalJson = """{"optionalEasterAnimal":"BUNNY","identityEasterAnimal":"BUNNY"}""",
+    )
+
+    checker.check(wireMessage)
+  }
+
+  @Test fun unknownEnumsWithUnrecognizedConstant() {
+    // ┌─ 2: 5
+    // ├─ 3: 6
+    val bytes = "10051806"
+    val wireMessage: EasterK3 = EasterK3.ADAPTER.decode(bytes.decodeHex())
+    val protocMessage: EasterP3 = EasterP3.parseFrom(bytes.decodeHex().toByteArray())
+
+    val checker = InteropChecker(
+      protocMessage = protocMessage,
+      canonicalJson = """{"optionalEasterAnimal":5,"identityEasterAnimal":6}""",
+      // TODO(Benoit) Gotta fix in MessageTypeAdapter.read so that we can assign the unknown fields.
+      skipGson = true,
+    )
+
+    checker.check(wireMessage)
+  }
+
   @Test fun buildersOnlyMessage() {
-    val checked = InteropChecker(
+    val checker = InteropChecker(
       protocMessage = BuildersOnlyMessageP2.newBuilder()
         .setBuilder("my_builder")
         .setData(64)
@@ -365,7 +400,7 @@ class InteropTest {
       .squareup_proto2_kotlin_buildersonly_int64(listOf(94440L, 77000L, 79510L, 44880L))
       .nested_message(NestedMessageK2.Builder().a(99).build())
       .build()
-    checked.check(wireMessage)
+    checker.check(wireMessage)
   }
 
   @Test fun wrappers() {

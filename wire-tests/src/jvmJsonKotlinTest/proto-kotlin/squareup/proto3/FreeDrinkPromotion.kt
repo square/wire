@@ -99,18 +99,24 @@ public class FreeDrinkPromotion(
     ) {
       override fun encodedSize(`value`: FreeDrinkPromotion): Int {
         var size = value.unknownFields.size
-        if (value.drink != Drink.UNKNOWN) size += Drink.ADAPTER.encodedSizeWithTag(1, value.drink)
+        if (value.drink != squareup.proto3.FreeDrinkPromotion.Drink.UNKNOWN) {
+          size += Drink.ADAPTER.encodedSizeWithTag(1, value.drink)
+        }
         return size
       }
 
       override fun encode(writer: ProtoWriter, `value`: FreeDrinkPromotion) {
-        if (value.drink != Drink.UNKNOWN) Drink.ADAPTER.encodeWithTag(writer, 1, value.drink)
+        if (value.drink != squareup.proto3.FreeDrinkPromotion.Drink.UNKNOWN) {
+          Drink.ADAPTER.encodeWithTag(writer, 1, value.drink)
+        }
         writer.writeBytes(value.unknownFields)
       }
 
       override fun encode(writer: ReverseProtoWriter, `value`: FreeDrinkPromotion) {
         writer.writeBytes(value.unknownFields)
-        if (value.drink != Drink.UNKNOWN) Drink.ADAPTER.encodeWithTag(writer, 1, value.drink)
+        if (value.drink != squareup.proto3.FreeDrinkPromotion.Drink.UNKNOWN) {
+          Drink.ADAPTER.encodeWithTag(writer, 1, value.drink)
+        }
       }
 
       override fun decode(reader: ProtoReader): FreeDrinkPromotion {

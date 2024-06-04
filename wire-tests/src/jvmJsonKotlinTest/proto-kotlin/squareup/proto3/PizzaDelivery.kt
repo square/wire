@@ -249,47 +249,72 @@ public class PizzaDelivery(
     ) {
       override fun encodedSize(`value`: PizzaDelivery): Int {
         var size = value.unknownFields.size
-        if (value.phone_number != "") size += ProtoAdapter.STRING.encodedSizeWithTag(1,
-            value.phone_number)
-        if (value.address != "") size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.address)
+        if (value.phone_number != "") {
+          size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.phone_number)
+        }
+        if (value.address != "") {
+          size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.address)
+        }
         size += Pizza.ADAPTER.asRepeated().encodedSizeWithTag(3, value.pizzas)
-        if (value.promotion != null) size += AnyMessage.ADAPTER.encodedSizeWithTag(4,
-            value.promotion)
-        if (value.delivered_within_or_free != null) size +=
-            ProtoAdapter.DURATION.encodedSizeWithTag(5, value.delivered_within_or_free)
-        if (value.loyalty != null) size += ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(6,
-            value.loyalty)
-        if (value.ordered_at != null) size += ProtoAdapter.INSTANT.encodedSizeWithTag(7,
-            value.ordered_at)
+        if (value.promotion != null) {
+          size += AnyMessage.ADAPTER.encodedSizeWithTag(4, value.promotion)
+        }
+        if (value.delivered_within_or_free != null) {
+          size += ProtoAdapter.DURATION.encodedSizeWithTag(5, value.delivered_within_or_free)
+        }
+        if (value.loyalty != null) {
+          size += ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(6, value.loyalty)
+        }
+        if (value.ordered_at != null) {
+          size += ProtoAdapter.INSTANT.encodedSizeWithTag(7, value.ordered_at)
+        }
         return size
       }
 
       override fun encode(writer: ProtoWriter, `value`: PizzaDelivery) {
-        if (value.phone_number != "") ProtoAdapter.STRING.encodeWithTag(writer, 1,
-            value.phone_number)
-        if (value.address != "") ProtoAdapter.STRING.encodeWithTag(writer, 2, value.address)
+        if (value.phone_number != "") {
+          ProtoAdapter.STRING.encodeWithTag(writer, 1, value.phone_number)
+        }
+        if (value.address != "") {
+          ProtoAdapter.STRING.encodeWithTag(writer, 2, value.address)
+        }
         Pizza.ADAPTER.asRepeated().encodeWithTag(writer, 3, value.pizzas)
-        if (value.promotion != null) AnyMessage.ADAPTER.encodeWithTag(writer, 4, value.promotion)
-        if (value.delivered_within_or_free != null) ProtoAdapter.DURATION.encodeWithTag(writer, 5,
-            value.delivered_within_or_free)
-        if (value.loyalty != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 6, value.loyalty)
-        if (value.ordered_at != null) ProtoAdapter.INSTANT.encodeWithTag(writer, 7,
-            value.ordered_at)
+        if (value.promotion != null) {
+          AnyMessage.ADAPTER.encodeWithTag(writer, 4, value.promotion)
+        }
+        if (value.delivered_within_or_free != null) {
+          ProtoAdapter.DURATION.encodeWithTag(writer, 5, value.delivered_within_or_free)
+        }
+        if (value.loyalty != null) {
+          ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 6, value.loyalty)
+        }
+        if (value.ordered_at != null) {
+          ProtoAdapter.INSTANT.encodeWithTag(writer, 7, value.ordered_at)
+        }
         writer.writeBytes(value.unknownFields)
       }
 
       override fun encode(writer: ReverseProtoWriter, `value`: PizzaDelivery) {
         writer.writeBytes(value.unknownFields)
-        if (value.ordered_at != null) ProtoAdapter.INSTANT.encodeWithTag(writer, 7,
-            value.ordered_at)
-        if (value.loyalty != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 6, value.loyalty)
-        if (value.delivered_within_or_free != null) ProtoAdapter.DURATION.encodeWithTag(writer, 5,
-            value.delivered_within_or_free)
-        if (value.promotion != null) AnyMessage.ADAPTER.encodeWithTag(writer, 4, value.promotion)
+        if (value.ordered_at != null) {
+          ProtoAdapter.INSTANT.encodeWithTag(writer, 7, value.ordered_at)
+        }
+        if (value.loyalty != null) {
+          ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 6, value.loyalty)
+        }
+        if (value.delivered_within_or_free != null) {
+          ProtoAdapter.DURATION.encodeWithTag(writer, 5, value.delivered_within_or_free)
+        }
+        if (value.promotion != null) {
+          AnyMessage.ADAPTER.encodeWithTag(writer, 4, value.promotion)
+        }
         Pizza.ADAPTER.asRepeated().encodeWithTag(writer, 3, value.pizzas)
-        if (value.address != "") ProtoAdapter.STRING.encodeWithTag(writer, 2, value.address)
-        if (value.phone_number != "") ProtoAdapter.STRING.encodeWithTag(writer, 1,
-            value.phone_number)
+        if (value.address != "") {
+          ProtoAdapter.STRING.encodeWithTag(writer, 2, value.address)
+        }
+        if (value.phone_number != "") {
+          ProtoAdapter.STRING.encodeWithTag(writer, 1, value.phone_number)
+        }
       }
 
       override fun decode(reader: ProtoReader): PizzaDelivery {

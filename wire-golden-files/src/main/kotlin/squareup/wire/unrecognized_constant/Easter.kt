@@ -148,16 +148,24 @@ public class Easter private constructor(
       override fun encodedSize(`value`: Easter): Int {
         var size = value.unknownFields.size
         size += EasterAnimal.ADAPTER.encodedSizeWithTag(2, value.optional_easter_animal)
-        if (value.identity_easter_animal != EasterAnimal.EASTER_ANIMAL_DEFAULT) size +=
-            EasterAnimal.ADAPTER.encodedSizeWithTag(3, value.identity_easter_animal)
+        if (value.identity_easter_animal !=
+            squareup.wire.unrecognized_constant.EasterAnimal.EASTER_ANIMAL_DEFAULT) {
+          size += EasterAnimal.ADAPTER.encodedSizeWithTag(3, value.identity_easter_animal)
+        }
         size += EasterAnimal.ADAPTER.asRepeated().encodedSizeWithTag(4, value.easter_animals)
         return size
       }
 
       override fun encode(writer: ProtoWriter, `value`: Easter) {
-        EasterAnimal.ADAPTER.encodeWithTag(writer, 2, value.optional_easter_animal)
-        if (value.identity_easter_animal != EasterAnimal.EASTER_ANIMAL_DEFAULT)
+        if (value.optional_easter_animal != EasterAnimal.UNRECOGNIZED) {
+          EasterAnimal.ADAPTER.encodeWithTag(writer, 2, value.optional_easter_animal)
+        }
+        if (value.identity_easter_animal !=
+            squareup.wire.unrecognized_constant.EasterAnimal.EASTER_ANIMAL_DEFAULT) {
+          if (value.identity_easter_animal != EasterAnimal.UNRECOGNIZED) {
             EasterAnimal.ADAPTER.encodeWithTag(writer, 3, value.identity_easter_animal)
+          }
+        }
         EasterAnimal.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.easter_animals)
         writer.writeBytes(value.unknownFields)
       }
@@ -165,9 +173,15 @@ public class Easter private constructor(
       override fun encode(writer: ReverseProtoWriter, `value`: Easter) {
         writer.writeBytes(value.unknownFields)
         EasterAnimal.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.easter_animals)
-        if (value.identity_easter_animal != EasterAnimal.EASTER_ANIMAL_DEFAULT)
+        if (value.identity_easter_animal !=
+            squareup.wire.unrecognized_constant.EasterAnimal.EASTER_ANIMAL_DEFAULT) {
+          if (value.identity_easter_animal != EasterAnimal.UNRECOGNIZED) {
             EasterAnimal.ADAPTER.encodeWithTag(writer, 3, value.identity_easter_animal)
-        EasterAnimal.ADAPTER.encodeWithTag(writer, 2, value.optional_easter_animal)
+          }
+        }
+        if (value.optional_easter_animal != EasterAnimal.UNRECOGNIZED) {
+          EasterAnimal.ADAPTER.encodeWithTag(writer, 2, value.optional_easter_animal)
+        }
       }
 
       override fun decode(reader: ProtoReader): Easter {

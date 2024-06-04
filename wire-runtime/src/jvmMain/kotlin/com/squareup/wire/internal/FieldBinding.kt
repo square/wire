@@ -15,9 +15,14 @@
  */
 package com.squareup.wire.internal
 
+import com.squareup.wire.EnumAdapter
 import com.squareup.wire.KotlinConstructorBuilder
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.SingleUnknownValueReader
+import com.squareup.wire.Syntax
+import com.squareup.wire.UnknownValueReader
+import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -105,6 +110,15 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   }
 
   private fun getInstanceGetter(messageType: Class<M>): (M) -> Any? {
+    // For proto3 enums with the generated `UNRECOGNIZED` constant, we'll use `unknownValueReader`
+    // to read its actual value in the unknown fields.
+    var unknownValueReader: UnknownValueReader<M, *>? = null
+    if (singleAdapter.syntax == Syntax.PROTO_3 && adapter is EnumAdapter) {
+      val enumType = adapter.type!!.java as Class<*>
+      if (enumType.enumConstants.any { (it as WireEnum).value == -1 }) {
+        unknownValueReader = SingleUnknownValueReader(tag, ProtoAdapter.INT32)
+      }
+    }
     if (Modifier.isPrivate(messageField.modifiers)) {
       val fieldName = messageField.name
       val getterName = if (IS_GETTER_FIELD_NAME_REGEX.matches(fieldName)) {
@@ -113,9 +127,13 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
         "get" + fieldName.replaceFirstChar { it.uppercase() }
       }
       val getter = messageType.getMethod(getterName)
-      return { instance -> getter.invoke(instance) }
+      return { instance ->
+        unknownValueReader?.read(instance) ?: getter.invoke(instance)
+      }
     } else {
-      return { instance -> messageField.get(instance) }
+      return { instance ->
+        unknownValueReader?.read(instance) ?: messageField.get(instance)
+      }
     }
   }
 

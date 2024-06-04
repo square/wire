@@ -589,23 +589,33 @@ public class AllStructs(
 
       override fun encodedSize(`value`: AllStructs): Int {
         var size = value.unknownFields.size
-        if (value.struct != null) size += ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(1,
-            value.struct)
-        if (value.list != null) size += ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(2, value.list)
-        if (value.null_value != null) size += ProtoAdapter.STRUCT_NULL.encodedSizeWithTag(3,
-            value.null_value)
-        if (value.value_a != null) size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(4,
-            value.value_a)
-        if (value.value_b != null) size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(5,
-            value.value_b)
-        if (value.value_c != null) size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(6,
-            value.value_c)
-        if (value.value_d != null) size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(7,
-            value.value_d)
-        if (value.value_e != null) size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(8,
-            value.value_e)
-        if (value.value_f != null) size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(9,
-            value.value_f)
+        if (value.struct != null) {
+          size += ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(1, value.struct)
+        }
+        if (value.list != null) {
+          size += ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(2, value.list)
+        }
+        if (value.null_value != null) {
+          size += ProtoAdapter.STRUCT_NULL.encodedSizeWithTag(3, value.null_value)
+        }
+        if (value.value_a != null) {
+          size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(4, value.value_a)
+        }
+        if (value.value_b != null) {
+          size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(5, value.value_b)
+        }
+        if (value.value_c != null) {
+          size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(6, value.value_c)
+        }
+        if (value.value_d != null) {
+          size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(7, value.value_d)
+        }
+        if (value.value_e != null) {
+          size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(8, value.value_e)
+        }
+        if (value.value_f != null) {
+          size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(9, value.value_f)
+        }
         size += ProtoAdapter.STRUCT_MAP.asRepeated().encodedSizeWithTag(101, value.rep_struct)
         size += ProtoAdapter.STRUCT_LIST.asRepeated().encodedSizeWithTag(102, value.rep_list)
         size += ProtoAdapter.STRUCT_VALUE.asRepeated().encodedSizeWithTag(103, value.rep_value_a)
@@ -620,16 +630,33 @@ public class AllStructs(
       }
 
       override fun encode(writer: ProtoWriter, `value`: AllStructs) {
-        if (value.struct != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 1, value.struct)
-        if (value.list != null) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 2, value.list)
-        if (value.null_value != null) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 3,
-            value.null_value)
-        if (value.value_a != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 4, value.value_a)
-        if (value.value_b != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 5, value.value_b)
-        if (value.value_c != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 6, value.value_c)
-        if (value.value_d != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 7, value.value_d)
-        if (value.value_e != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 8, value.value_e)
-        if (value.value_f != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 9, value.value_f)
+        if (value.struct != null) {
+          ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 1, value.struct)
+        }
+        if (value.list != null) {
+          ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 2, value.list)
+        }
+        if (value.null_value != null) {
+          ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 3, value.null_value)
+        }
+        if (value.value_a != null) {
+          ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 4, value.value_a)
+        }
+        if (value.value_b != null) {
+          ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 5, value.value_b)
+        }
+        if (value.value_c != null) {
+          ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 6, value.value_c)
+        }
+        if (value.value_d != null) {
+          ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 7, value.value_d)
+        }
+        if (value.value_e != null) {
+          ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 8, value.value_e)
+        }
+        if (value.value_f != null) {
+          ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 9, value.value_f)
+        }
         ProtoAdapter.STRUCT_MAP.asRepeated().encodeWithTag(writer, 101, value.rep_struct)
         ProtoAdapter.STRUCT_LIST.asRepeated().encodeWithTag(writer, 102, value.rep_list)
         ProtoAdapter.STRUCT_VALUE.asRepeated().encodeWithTag(writer, 103, value.rep_value_a)
@@ -655,16 +682,33 @@ public class AllStructs(
         ProtoAdapter.STRUCT_VALUE.asRepeated().encodeWithTag(writer, 103, value.rep_value_a)
         ProtoAdapter.STRUCT_LIST.asRepeated().encodeWithTag(writer, 102, value.rep_list)
         ProtoAdapter.STRUCT_MAP.asRepeated().encodeWithTag(writer, 101, value.rep_struct)
-        if (value.value_f != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 9, value.value_f)
-        if (value.value_e != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 8, value.value_e)
-        if (value.value_d != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 7, value.value_d)
-        if (value.value_c != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 6, value.value_c)
-        if (value.value_b != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 5, value.value_b)
-        if (value.value_a != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 4, value.value_a)
-        if (value.null_value != null) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 3,
-            value.null_value)
-        if (value.list != null) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 2, value.list)
-        if (value.struct != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 1, value.struct)
+        if (value.value_f != null) {
+          ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 9, value.value_f)
+        }
+        if (value.value_e != null) {
+          ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 8, value.value_e)
+        }
+        if (value.value_d != null) {
+          ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 7, value.value_d)
+        }
+        if (value.value_c != null) {
+          ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 6, value.value_c)
+        }
+        if (value.value_b != null) {
+          ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 5, value.value_b)
+        }
+        if (value.value_a != null) {
+          ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 4, value.value_a)
+        }
+        if (value.null_value != null) {
+          ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 3, value.null_value)
+        }
+        if (value.list != null) {
+          ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 2, value.list)
+        }
+        if (value.struct != null) {
+          ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 1, value.struct)
+        }
       }
 
       override fun decode(reader: ProtoReader): AllStructs {

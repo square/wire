@@ -97,18 +97,24 @@ public class BuyOneGetOnePromotion(
     ) {
       override fun encodedSize(`value`: BuyOneGetOnePromotion): Int {
         var size = value.unknownFields.size
-        if (value.coupon != "") size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.coupon)
+        if (value.coupon != "") {
+          size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.coupon)
+        }
         return size
       }
 
       override fun encode(writer: ProtoWriter, `value`: BuyOneGetOnePromotion) {
-        if (value.coupon != "") ProtoAdapter.STRING.encodeWithTag(writer, 1, value.coupon)
+        if (value.coupon != "") {
+          ProtoAdapter.STRING.encodeWithTag(writer, 1, value.coupon)
+        }
         writer.writeBytes(value.unknownFields)
       }
 
       override fun encode(writer: ReverseProtoWriter, `value`: BuyOneGetOnePromotion) {
         writer.writeBytes(value.unknownFields)
-        if (value.coupon != "") ProtoAdapter.STRING.encodeWithTag(writer, 1, value.coupon)
+        if (value.coupon != "") {
+          ProtoAdapter.STRING.encodeWithTag(writer, 1, value.coupon)
+        }
       }
 
       override fun decode(reader: ProtoReader): BuyOneGetOnePromotion {

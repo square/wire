@@ -43,6 +43,9 @@ class InteropChecker(
 
   /** Alternate forms of JSON we expect Wire to support but protoc doesn't. */
   private val wireAlternateJsons: List<String> = listOf(),
+
+  /** If true, all tests using Gson will be skipped. */
+  private val skipGson: Boolean = false,
 ) {
   private var protocBytes: ByteString? = null
 
@@ -54,7 +57,6 @@ class InteropChecker(
     .usingTypeRegistry(typeRegistry)
 
   private val jsonParser = JsonFormat.parser()
-    // TODO(bquenaudon): add .ignoringUnknownFields()
     .usingTypeRegistry(typeRegistry)
 
   private val gson = GsonBuilder()
@@ -71,7 +73,9 @@ class InteropChecker(
 
     roundtripProtocJson()
     roundtripWireBytes(message)
-    roundtripGson(message)
+    if (!skipGson) {
+      roundtripGson(message)
+    }
     roundtripMoshi(message)
   }
 
@@ -106,7 +110,15 @@ class InteropChecker(
     val adapter = gson.getAdapter(message::class.java) as TypeAdapter<Any>
 
     assertThat(adapter.toJson(message)).isEqualTo(wireCanonicalJson)
-    assertThat(adapter.fromJson(wireCanonicalJson)).isEqualTo(message)
+    val fromJson = adapter.fromJson(wireCanonicalJson)
+    assertThat(fromJson)
+      .overridingErrorMessage {
+        """
+        |Expected :$message (unknownFields: `${(message as com.squareup.wire.Message<*, *>).unknownFields.hex()}`)
+        |Actual   :$fromJson (unknownFields: `${(fromJson as com.squareup.wire.Message<*, *>).unknownFields.hex()}`)
+        """.trimMargin()
+      }
+      .isEqualTo(message)
     for (json in alternateJsons + wireAlternateJsons) {
       assertThat(adapter.fromJson(json)).isEqualTo(message)
     }
@@ -117,7 +129,14 @@ class InteropChecker(
     val adapter = moshi.adapter(message::class.java) as JsonAdapter<Any>
 
     assertThat(adapter.toJson(message)).isEqualTo(wireCanonicalJson)
-    assertThat(adapter.fromJson(wireCanonicalJson)).isEqualTo(message)
+    val fromJson = adapter.fromJson(wireCanonicalJson)
+    assertThat(fromJson)
+      .overridingErrorMessage {
+        """
+        |Expected :$message (unknownFields: `${(message as com.squareup.wire.Message<*, *>).unknownFields.hex()}`)
+        |Actual   :$fromJson (unknownFields: `${(fromJson as com.squareup.wire.Message<*, *>).unknownFields.hex()}`)
+        """.trimMargin()
+      }.isEqualTo(message)
     for (json in alternateJsons + wireAlternateJsons) {
       assertThat(adapter.fromJson(json)).isEqualTo(message)
     }
