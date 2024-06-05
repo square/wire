@@ -1465,7 +1465,9 @@ class KotlinGenerator private constructor(
   }
 
   private fun List<*>.toArrayFieldInitializer(protoType: ProtoType): CodeBlock = buildCodeBlock {
-    add("[")
+    // We use named parameters so that the call-site compiles when the annotation has been
+    // generated as a Java interface, and not Kotlin.
+    add("value = [")
     var first = true
     forEach {
       if (!first) add(",")
@@ -2689,7 +2691,7 @@ class KotlinGenerator private constructor(
     if (!eligibleAsAnnotationMember(schema, field)) return null
 
     val protoFile: ProtoFile = schema.protoFile(field.location.path) ?: return null
-    val type = annotationName(protoFile, field, ClassNameFactory())
+    val type: ClassName = annotationName(protoFile, field, ClassNameFactory())
     val fieldValue = defaultFieldInitializer(field.type!!, value, annotation = true)
 
     return AnnotationSpec.builder(type)

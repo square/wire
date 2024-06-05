@@ -48,6 +48,18 @@ val generateJavaTests by tasks.creating(JavaExec::class) {
   ) + PROTOS
 }
 
+val generateKotlinClassAmongJavaTests by tasks.creating(JavaExec::class) {
+  group = "Generate Tests"
+  description = "Generates Kotlin classes from the Java test protos"
+  classpath = wire
+  mainClass.set("com.squareup.wire.WireCompiler")
+  args = listOf(
+    "--proto_path=wire-tests/src/commonTest/proto/kotlin",
+    "--kotlin_out=wire-tests/src/jvmJavaTest/proto-kotlin",
+    "custom_options2.proto"
+  )
+}
+
 // NO OPTIONS
 
 val generateNoOptionsTests by tasks.creating(JavaExec::class) {

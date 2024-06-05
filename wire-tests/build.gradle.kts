@@ -163,6 +163,7 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
 
     val javaTest by creating {
       java.srcDir("src/jvmJavaTest/proto-java")
+      java.srcDir("src/jvmJavaTest/proto-kotlin")
     }
     val jvmJavaTest by tasks.creating(Test::class) {
       classpath = javaTest.runtimeClasspath
