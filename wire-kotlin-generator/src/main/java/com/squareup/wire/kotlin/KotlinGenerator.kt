@@ -1196,7 +1196,10 @@ class KotlinGenerator private constructor(
           )
         }
         for (annotation in optionAnnotations(field.options)) {
+          // Adds default use-site target for kotlin properties.
           addAnnotation(annotation)
+          // Adds use-site target for java fields.
+          addAnnotation(annotation.toBuilder().useSiteTarget(FIELD).build())
         }
         addAnnotation(wireFieldAnnotation(message, field, schemaIndex))
         if (javaInterOp) {
