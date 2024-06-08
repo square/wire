@@ -27,14 +27,14 @@ import okio.ByteString
 
 @MyMessageOptionTwoOption(91011.0f)
 @MyMessageOptionFourOption(FooBar.FooBarBazEnum.FOO)
-@MyMessageOptionSevenOption([
+@MyMessageOptionSevenOption(value = [
   33
 ])
-@MyMessageOptionEightOption([
+@MyMessageOptionEightOption(value = [
   "g",
   "h"
 ])
-@MyMessageOptionNineOption([
+@MyMessageOptionNineOption(value = [
   ForeignEnum.BAV
 ])
 public class MessageWithOptions(

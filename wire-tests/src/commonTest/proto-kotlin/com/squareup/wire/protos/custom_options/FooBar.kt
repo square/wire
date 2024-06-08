@@ -63,14 +63,14 @@ public class FooBar(
   public val baz: Nested? = null,
   @MyFieldOptionOneOption(18)
   @MyFieldOptionTwoOption(34.5f)
-  @MyFieldOptionFiveOption([
+  @MyFieldOptionFiveOption(value = [
     3
   ])
-  @MyFieldOptionSixOption([
+  @MyFieldOptionSixOption(value = [
     "a",
     "b"
   ])
-  @MyFieldOptionSevenOption([
+  @MyFieldOptionSevenOption(value = [
     ForeignEnum.BAV,
     ForeignEnum.BAX
   ])
@@ -522,13 +522,13 @@ public class FooBar(
     @EnumValueOptionOption(17)
     FOO(1),
     @ForeignEnumValueOptionOption(true)
-    @RepeatedEnumValueOptionOneOption([
+    @RepeatedEnumValueOptionOneOption(value = [
       3
     ])
     BAR(2),
     @EnumValueOptionOption(18)
     @ForeignEnumValueOptionOption(false)
-    @RepeatedEnumValueOptionTwoOption([
+    @RepeatedEnumValueOptionTwoOption(value = [
       "c",
       "d"
     ])
