@@ -19,6 +19,7 @@ import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.buildSchema
+import com.squareup.wire.kotlin.EnumMode.SEALED_CLASS
 import com.squareup.wire.kotlin.KotlinGenerator.Companion.sanitizeKdoc
 import com.squareup.wire.schema.PruningRules
 import com.squareup.wire.schema.addFromTest
@@ -66,7 +67,7 @@ class KotlinGeneratorTest {
     assertThat(code).contains("WORK(1),")
   }
 
-  @Test fun generateUnrecognizedEnumConstantIsIgnoredForProto2() {
+  @Test fun generateSealedClassEnumForProto2() {
     val schema = buildSchema {
       add(
         "message.proto".toPath(),
@@ -81,14 +82,14 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema)
-      .generateKotlin("PhoneType", generateUnrecognizedEnumConstant = true)
-    assertThat(code).contains("HOME(0),")
-    assertThat(code).contains("WORK(1),")
-    assertThat(code).contains("MOBILE(2),")
-    assertThat(code).doesNotContain("UNRECOGNIZED(-1),")
+      .generateKotlin("PhoneType", enumMode = EnumMode.SEALED_CLASS)
+    assertThat(code).contains("data object HOME")
+    assertThat(code).contains("data object WORK")
+    assertThat(code).contains("data object MOBILE")
+    assertThat(code).contains("data class Unrecognized internal constructor(")
   }
 
-  @Test fun generateUnrecognizedEnumConstantIsAppliedForProto3() {
+  @Test fun generateSealedClassEnumForProto3() {
     val schema = buildSchema {
       add(
         "message.proto".toPath(),
@@ -103,11 +104,11 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema)
-      .generateKotlin("PhoneType", generateUnrecognizedEnumConstant = true)
-    assertThat(code).contains("HOME(0),")
-    assertThat(code).contains("WORK(1),")
-    assertThat(code).contains("MOBILE(2),")
-    assertThat(code).contains("UNRECOGNIZED(-1),")
+      .generateKotlin("PhoneType", enumMode = EnumMode.SEALED_CLASS)
+    assertThat(code).contains("data object HOME")
+    assertThat(code).contains("data object WORK")
+    assertThat(code).contains("data object MOBILE")
+    assertThat(code).contains("data class Unrecognized internal constructor(")
   }
 
   @Test fun defaultValues() {

@@ -43,9 +43,6 @@ class InteropChecker(
 
   /** Alternate forms of JSON we expect Wire to support but protoc doesn't. */
   private val wireAlternateJsons: List<String> = listOf(),
-
-  /** If true, all tests using Gson will be skipped. */
-  private val skipGson: Boolean = false,
 ) {
   private var protocBytes: ByteString? = null
 
@@ -73,9 +70,7 @@ class InteropChecker(
 
     roundtripProtocJson()
     roundtripWireBytes(message)
-    if (!skipGson) {
-      roundtripGson(message)
-    }
+    roundtripGson(message)
     roundtripMoshi(message)
   }
 

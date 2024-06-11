@@ -27,4 +27,6 @@ enum EasterAnimal {
   EASTER_ANIMAL_DEFAULT = 0;
   BUNNY = 1;
   HEN = 2;
+  // Using a keyword so that it gets renamed at generation.
+  object = 15;
 }

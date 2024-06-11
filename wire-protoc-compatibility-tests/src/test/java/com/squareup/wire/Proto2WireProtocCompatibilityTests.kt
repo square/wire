@@ -210,8 +210,9 @@ class Proto2WireProtocCompatibilityTests {
     assertThat(protocMessage.optionalEasterAnimal.number).isEqualTo(0)
 
     // Keeping that around to clearly show that Wire has a different behavior that protoc. Not sure
-    // that we want to fix this.
-    assertThat(wireMessage.optional_easter_animal).isEqualTo(EasterAnimalK3.UNRECOGNIZED)
+    // that we want to fix this. Protoc assigns it to 0 even for proto2 messages using the proto3
+    // enum.
+    assertThat(wireMessage.optional_easter_animal).isEqualTo(EasterAnimalK3.Unrecognized(-1))
   }
 
   @Test fun encodingAndDecodingOfUnrecognizedEnumConstants_knownValue_proto2Message() {
@@ -248,10 +249,10 @@ class Proto2WireProtocCompatibilityTests {
     assertThat(protocMessage.easterAnimalsList).isEmpty()
 
     // Keeping that around to clearly show that Wire has a different behavior that protoc. Not sure
-    // that we want to fix this.
-    assertThat(wireMessage.optional_easter_animal).isNull()
-    // Wire and Protoc are similar when dealing with lists.
-    assertThat(wireMessage.easter_animals).isEmpty()
+    // that we want to fix this. Protoc assigns it to 0 even for proto2 messages using the proto3
+    // enum.
+    assertThat(wireMessage.optional_easter_animal).isEqualTo(EasterAnimalK3.Unrecognized(5))
+    assertThat(wireMessage.easter_animals).isEqualTo(listOf(EasterAnimalK3.Unrecognized(5), EasterAnimalK3.Unrecognized(5)))
   }
 
   companion object {
