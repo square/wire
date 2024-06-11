@@ -129,11 +129,7 @@ class KotlinGenerator private constructor(
   private val nameSuffix: String?,
   private val buildersOnly: Boolean,
   private val escapeKotlinKeywords: Boolean,
-  /**
-   * If true, generated enums will have an extra `UNRECOGNIZED` constant with a value of `-1`. This
-   * only applies to enum which syntax is proto3.
-   */
-  private val generateUnrecognizedEnumConstant: Boolean,
+  private val enumMode: EnumMode,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -1666,7 +1662,7 @@ class KotlinGenerator private constructor(
       val fieldName = nameAllocator[field]
       val enumType = schema.getType(field.type!!) as? EnumType?
       val needsUnrecognizedBehavior =
-        enumType?.generateUnrecognizedEnumConstant == true &&
+        enumMode == EnumMode.SEALED_CLASS &&
           // We exclude struct types because `NULL_VALUE` is an special enum.
           !field.type!!.isStruct &&
           // TODO(Benoit) Remove when we're ready.
@@ -1870,7 +1866,7 @@ class KotlinGenerator private constructor(
               nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
               if (message.syntax == Syntax.PROTO_3 && !field.type!!.isStruct) {
                 val enumType = schema.getType(field.type!!) as EnumType
-                if (enumType.generateUnrecognizedEnumConstant) {
+                if (enumMode == EnumMode.SEALED_CLASS) {
                   addStatement(
                     "%L",
                     if (field.isRepeated) {
@@ -2269,7 +2265,7 @@ class KotlinGenerator private constructor(
   private fun generateEnum(enum: EnumType): TypeSpec {
     @Suppress("NAME_SHADOWING")
     val enum =
-      if (enum.generateUnrecognizedEnumConstant) {
+      if (enumMode == EnumMode.SEALED_CLASS) {
         // We mutate the constant by inserting `UNRECOGNIZED(-1)` at the front of the list.
         enum.copy(
           constants = listOf(
@@ -2884,9 +2880,6 @@ class KotlinGenerator private constructor(
       .parameterizedBy(oneOfClass, STAR).copy(nullable = true)
   }
 
-  private val EnumType.generateUnrecognizedEnumConstant: Boolean
-    get() = syntax == Syntax.PROTO_3 && this@KotlinGenerator.generateUnrecognizedEnumConstant
-
   companion object {
     fun builtInType(protoType: ProtoType): Boolean = protoType in BUILT_IN_TYPES.keys
 
@@ -2961,7 +2954,7 @@ class KotlinGenerator private constructor(
       nameSuffix: String? = null,
       buildersOnly: Boolean = false,
       escapeKotlinKeywords: Boolean = false,
-      generateUnrecognizedEnumConstant: Boolean = false,
+      enumMode: EnumMode = EnumMode.ENUM_CLASS,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -3010,7 +3003,7 @@ class KotlinGenerator private constructor(
         nameSuffix = nameSuffix,
         buildersOnly = buildersOnly,
         escapeKotlinKeywords = escapeKotlinKeywords,
-        generateUnrecognizedEnumConstant = generateUnrecognizedEnumConstant,
+        enumMode = enumMode,
       )
     }
 

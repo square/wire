@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.gradle
 
+import com.squareup.wire.kotlin.EnumMode
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.CustomTarget
@@ -144,11 +145,8 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   /** If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix. */
   var escapeKotlinKeywords: Boolean = false
 
-  /**
-   * If true, generated enums will have an extra `UNRECOGNIZED` constant with a value of `-1`. This
-   * only applies to enum which syntax is proto3.
-   */
-  var generateUnrecognizedEnumConstant = false
+  /** enum_class or sealed_class. See [EnumMode][com.squareup.wire.kotlin.EnumMode]. */
+  var enumMode: String = "enum_class"
 
   override fun toTarget(outputDirectory: String): KotlinTarget {
     if (grpcServerCompatible) {
@@ -169,6 +167,12 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
         "Unknown rpcRole $rpcRole. Valid values: ${RpcRole.values().contentToString()}",
       )
 
+    val enumMode = EnumMode.values()
+      .singleOrNull { it.toString().equals(enumMode, ignoreCase = true) }
+      ?: throw IllegalArgumentException(
+        "Unknown enumMode $enumMode. Valid values: ${EnumMode.values().contentToString()}",
+      )
+
     return KotlinTarget(
       includes = includes ?: listOf("*"),
       excludes = excludes ?: listOf(),
@@ -185,7 +189,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,
-      generateUnrecognizedEnumConstant = generateUnrecognizedEnumConstant,
+      enumMode = enumMode,
     )
   }
 }

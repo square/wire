@@ -27,10 +27,10 @@ import kotlin.Suppress
 import okio.ByteString
 
 /**
- * This message is to be generated in Kotlin while the options' annotations will be generated in
- * Java. We're testing that we can consume Wire like so without compilation errors. In order to do
- * so, we require the Kotlin generation to apply annotations but to not generate them. The options
- * definition has to match what is in `wire-tests/src/commonTest/proto/java/custom_options.proto`.
+ * This message is to be generated in Kotlin but the options' annotations are to be generated in
+ * Java. We're testing that we can consume assign Java array-typed annotations from Kotlin classes.
+ * For the generation to work, we need the defined options in this file to match what is in
+ * `wire-tests/src/commonTest/proto/java/custom_options.proto`.
  */
 public class FooBar2(
   @MyFieldOptionOneOption(17)

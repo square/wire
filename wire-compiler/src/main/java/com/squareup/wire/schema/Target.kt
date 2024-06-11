@@ -16,6 +16,7 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.java.JavaSchemaHandler
+import com.squareup.wire.kotlin.EnumMode
 import com.squareup.wire.kotlin.KotlinSchemaHandler
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
@@ -133,11 +134,8 @@ data class KotlinTarget(
    */
   val escapeKotlinKeywords: Boolean = false,
 
-  /**
-   * If true, generated enums will have an extra `UNRECOGNIZED` constant with a value of `-1`. This
-   * only applies to enum which syntax is proto3.
-   */
-  val generateUnrecognizedEnumConstant: Boolean = false,
+  /** enum_class or sealed_class. See [EnumMode][com.squareup.wire.kotlin.EnumMode]. */
+  val enumMode: EnumMode = EnumMode.ENUM_CLASS,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
     return KotlinSchemaHandler(
@@ -153,7 +151,7 @@ data class KotlinTarget(
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,
-      generateUnrecognizedEnumConstant = generateUnrecognizedEnumConstant,
+      enumMode = enumMode,
     )
   }
 
