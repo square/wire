@@ -548,6 +548,7 @@ public final class com/squareup/wire/schema/Options {
 	public static final field Companion Lcom/squareup/wire/schema/Options$Companion;
 	public static final field ENUM_OPTIONS Lcom/squareup/wire/schema/ProtoType;
 	public static final field ENUM_VALUE_OPTIONS Lcom/squareup/wire/schema/ProtoType;
+	public static final field EXTENSION_RANGE_OPTIONS Lcom/squareup/wire/schema/ProtoType;
 	public static final field FIELD_OPTIONS Lcom/squareup/wire/schema/ProtoType;
 	public static final field FILE_OPTIONS Lcom/squareup/wire/schema/ProtoType;
 	public static final field MESSAGE_OPTIONS Lcom/squareup/wire/schema/ProtoType;

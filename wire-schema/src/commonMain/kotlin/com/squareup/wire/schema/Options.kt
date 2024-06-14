@@ -403,20 +403,34 @@ class Options(
 
   companion object {
     @JvmField val FILE_OPTIONS = ProtoType.get("google.protobuf.FileOptions")
+    private val FILE_OPTIONS_VARIANT = ProtoType.get(".google.protobuf.FileOptions")
 
     @JvmField val MESSAGE_OPTIONS = ProtoType.get("google.protobuf.MessageOptions")
+    private val MESSAGE_OPTIONS_VARIANT = ProtoType.get(".google.protobuf.MessageOptions")
 
     @JvmField val FIELD_OPTIONS = ProtoType.get("google.protobuf.FieldOptions")
+    private val FIELD_OPTIONS_VARIANT = ProtoType.get(".google.protobuf.FieldOptions")
 
     @JvmField val ONEOF_OPTIONS = ProtoType.get("google.protobuf.OneofOptions")
+    private val ONEOF_OPTIONS_VARIANT = ProtoType.get(".google.protobuf.OneofOptions")
 
     @JvmField val ENUM_OPTIONS = ProtoType.get("google.protobuf.EnumOptions")
+    private val ENUM_OPTIONS_VARIANT = ProtoType.get(".google.protobuf.EnumOptions")
 
     @JvmField val ENUM_VALUE_OPTIONS = ProtoType.get("google.protobuf.EnumValueOptions")
+    private val ENUM_VALUE_OPTIONS_VARIANT = ProtoType.get(".google.protobuf.EnumValueOptions")
 
     @JvmField val SERVICE_OPTIONS = ProtoType.get("google.protobuf.ServiceOptions")
+    private val SERVICE_OPTIONS_VARIANT = ProtoType.get(".google.protobuf.ServiceOptions")
 
     @JvmField val METHOD_OPTIONS = ProtoType.get("google.protobuf.MethodOptions")
+    private val METHOD_OPTIONS_VARIANT = ProtoType.get(".google.protobuf.MethodOptions")
+
+    @JvmField val EXTENSION_RANGE_OPTIONS = ProtoType.get("google.protobuf.ExtensionRangeOptions")
+    private val EXTENSION_RANGE_OPTIONS_VARIANT = ProtoType.get(".google.protobuf.ExtensionRangeOptions")
+
+    // Protobuf allows leading dots when referencing a type. We add the variants to make sure our
+    // equality check match them too when we need to know that a ProtoType is a Protobuf option.
     val GOOGLE_PROTOBUF_OPTION_TYPES = arrayOf(
       FILE_OPTIONS,
       MESSAGE_OPTIONS,
@@ -426,6 +440,16 @@ class Options(
       ENUM_VALUE_OPTIONS,
       SERVICE_OPTIONS,
       METHOD_OPTIONS,
+      EXTENSION_RANGE_OPTIONS,
+      FILE_OPTIONS_VARIANT,
+      MESSAGE_OPTIONS_VARIANT,
+      FIELD_OPTIONS_VARIANT,
+      ONEOF_OPTIONS_VARIANT,
+      ENUM_OPTIONS_VARIANT,
+      ENUM_VALUE_OPTIONS_VARIANT,
+      SERVICE_OPTIONS_VARIANT,
+      METHOD_OPTIONS_VARIANT,
+      EXTENSION_RANGE_OPTIONS_VARIANT,
     )
 
     /**
