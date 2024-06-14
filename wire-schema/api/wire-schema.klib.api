@@ -1137,6 +1137,8 @@ final class com.squareup.wire.schema/Options { // com.squareup.wire.schema/Optio
             final fun <get-ENUM_OPTIONS>(): com.squareup.wire.schema/ProtoType // com.squareup.wire.schema/Options.Companion.ENUM_OPTIONS.<get-ENUM_OPTIONS>|<get-ENUM_OPTIONS>(){}[0]
         final val ENUM_VALUE_OPTIONS // com.squareup.wire.schema/Options.Companion.ENUM_VALUE_OPTIONS|{}ENUM_VALUE_OPTIONS[0]
             final fun <get-ENUM_VALUE_OPTIONS>(): com.squareup.wire.schema/ProtoType // com.squareup.wire.schema/Options.Companion.ENUM_VALUE_OPTIONS.<get-ENUM_VALUE_OPTIONS>|<get-ENUM_VALUE_OPTIONS>(){}[0]
+        final val EXTENSION_RANGE_OPTIONS // com.squareup.wire.schema/Options.Companion.EXTENSION_RANGE_OPTIONS|{}EXTENSION_RANGE_OPTIONS[0]
+            final fun <get-EXTENSION_RANGE_OPTIONS>(): com.squareup.wire.schema/ProtoType // com.squareup.wire.schema/Options.Companion.EXTENSION_RANGE_OPTIONS.<get-EXTENSION_RANGE_OPTIONS>|<get-EXTENSION_RANGE_OPTIONS>(){}[0]
         final val FIELD_OPTIONS // com.squareup.wire.schema/Options.Companion.FIELD_OPTIONS|{}FIELD_OPTIONS[0]
             final fun <get-FIELD_OPTIONS>(): com.squareup.wire.schema/ProtoType // com.squareup.wire.schema/Options.Companion.FIELD_OPTIONS.<get-FIELD_OPTIONS>|<get-FIELD_OPTIONS>(){}[0]
         final val FILE_OPTIONS // com.squareup.wire.schema/Options.Companion.FILE_OPTIONS|{}FILE_OPTIONS[0]

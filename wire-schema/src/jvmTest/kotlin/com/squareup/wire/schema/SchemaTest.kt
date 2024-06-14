@@ -2048,6 +2048,28 @@ class SchemaTest {
   }
 
   @Test
+  fun proto3CanExtendCustomOptionWithLeadingDot() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend .google.protobuf.FieldOptions {
+        |  string a = 22101;
+        |}
+        |message Message {
+        |  string title = 1 [(a) = "hello"];
+        |}
+        """.trimMargin(),
+      )
+    }
+    val fieldOptions = schema.getType("google.protobuf.FieldOptions") as MessageType
+    assertThat(fieldOptions.extensionField("a")!!.type).isEqualTo(ProtoType.get("string"))
+  }
+
+  @Test
   fun oneofOption() {
     val schema = buildSchema {
       add(
