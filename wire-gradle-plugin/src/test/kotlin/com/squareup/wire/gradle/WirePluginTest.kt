@@ -1292,6 +1292,28 @@ class WirePluginTest {
   }
 
   @Test
+  fun emitOptionsWithIncludes() {
+    val fixtureRoot = File("src/test/projects/emit-options-with-includes")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull()
+    assertThat(result.output).contains("Writing squareup.options.DocumentationUrlOption")
+    assertThat(result.output).doesNotContain("Writing squareup.other_options.CustomerSupportUrlOption")
+
+    val generatedProto = File(
+      fixtureRoot,
+      "build/generated/source/wire/squareup/polygons/Octagon.kt",
+    )
+    val octagon = generatedProto.readText()
+    assertThat(octagon)
+      .contains("""@DocumentationUrlOption("https://en.wikipedia.org/wiki/Octagon")""")
+    // Although we didn't generate the annotation, we still apply it!
+    assertThat(octagon)
+      .contains("""@CustomerSupportUrlOption("https://en.wikipedia.org/wiki/Customer_support")""")
+  }
+
+  @Test
   fun packageCycles() {
     val fixtureRoot = File("src/test/projects/package-cycles")
 

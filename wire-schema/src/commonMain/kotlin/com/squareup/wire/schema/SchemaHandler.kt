@@ -174,11 +174,15 @@ abstract class SchemaHandler {
       }
     }
 
-    // TODO(jwilson): extend emitting rules to support include/exclude of extension fields.
     protoFile.extendList
       .flatMap { extend -> extend.fields.map { field -> extend to field } }
       .filter { (extend, field) ->
         claimedDefinitions == null || extend.member(field) !in claimedDefinitions
+      }
+      .filter { (_, field) ->
+        // We append `.*` to the field's package name so that it matches rules defined as
+        // `package.*`.
+        emittingRules.includes(ProtoType.get(field.packageName + ".*"))
       }
       .forEach { (extend, field) ->
         val generatedFilePath = handle(extend, field, context)
