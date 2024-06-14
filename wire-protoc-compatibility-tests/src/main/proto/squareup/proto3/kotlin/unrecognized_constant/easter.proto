@@ -13,4 +13,6 @@ enum EasterAnimal {
   EASTER_ANIMAL_DEFAULT = 0;
   BUNNY = 1;
   HEN = 2;
+  // Creating on purpose a constance using a Kotlin keyword.
+  object = 15;
 }

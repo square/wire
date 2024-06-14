@@ -27,7 +27,11 @@ internal class EnumTypeAdapter<E>(
 
   @Throws(IOException::class)
   override fun write(out: JsonWriter, value: E) {
-    out.value(enumJsonFormatter.toStringOrNumber(value))
+    val formatted = enumJsonFormatter.toStringOrNumber(value)
+    when {
+      formatted is Number -> out.value(formatted)
+      else -> out.value(formatted.toString())
+    }
   }
 
   @Throws(IOException::class)

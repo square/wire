@@ -16,6 +16,7 @@
 package com.squareup.wire.kotlin
 
 import com.squareup.kotlinpoet.FileSpec
+import com.squareup.wire.kotlin.EnumMode.ENUM_CLASS
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Profile
 import com.squareup.wire.schema.Schema
@@ -52,7 +53,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
     boxOneOfsMinSize: Int = 5_000,
     buildersOnly: Boolean = false,
     javaInterop: Boolean = false,
-    generateUnrecognizedEnumConstant: Boolean = false,
+    enumMode: EnumMode = EnumMode.ENUM_CLASS,
   ): String {
     val kotlinGenerator = KotlinGenerator(
       schema,
@@ -60,7 +61,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
       boxOneOfsMinSize = boxOneOfsMinSize,
       buildersOnly = buildersOnly,
       javaInterop = javaInterop,
-      generateUnrecognizedEnumConstant = generateUnrecognizedEnumConstant,
+      enumMode = enumMode,
     )
     val type = schema.getType(typeName)!!
     val typeSpec = kotlinGenerator.generateType(type)

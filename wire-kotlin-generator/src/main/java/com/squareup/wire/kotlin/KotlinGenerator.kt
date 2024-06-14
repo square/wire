@@ -28,7 +28,9 @@ import com.squareup.kotlinpoet.INT
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.KModifier.ABSTRACT
 import com.squareup.kotlinpoet.KModifier.CONST
+import com.squareup.kotlinpoet.KModifier.DATA
 import com.squareup.kotlinpoet.KModifier.INLINE
+import com.squareup.kotlinpoet.KModifier.INTERNAL
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.KModifier.PUBLIC
@@ -76,6 +78,8 @@ import com.squareup.wire.internal.LongArrayList
 import com.squareup.wire.internal.boxedOneOfClassName
 import com.squareup.wire.internal.boxedOneOfKeyFieldName
 import com.squareup.wire.internal.boxedOneOfKeysFieldName
+import com.squareup.wire.kotlin.EnumMode.ENUM_CLASS
+import com.squareup.wire.kotlin.EnumMode.SEALED_CLASS
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumConstant
 import com.squareup.wire.schema.EnumType
@@ -1661,12 +1665,6 @@ class KotlinGenerator private constructor(
     for (field in message.fields + message.flatOneOfs().flatMap { it.fields }) {
       val fieldName = nameAllocator[field]
       val enumType = schema.getType(field.type!!) as? EnumType?
-      val needsUnrecognizedBehavior =
-        enumMode == EnumMode.SEALED_CLASS &&
-          // We exclude struct types because `NULL_VALUE` is an special enum.
-          !field.type!!.isStruct &&
-          // TODO(Benoit) Remove when we're ready.
-          !field.isRepeated
       encodeCalls += buildCodeBlock {
         if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
           beginControlFlow(fieldEqualsIdentityBlock(field, fieldName).toString())
@@ -1683,23 +1681,12 @@ class KotlinGenerator private constructor(
             field.tag,
           )
         } else {
-          if (needsUnrecognizedBehavior) {
-            beginControlFlow(
-              "if (value.%N != %T.%L)",
-              fieldName,
-              enumType!!.type.typeName,
-              "UNRECOGNIZED",
-            )
-          }
           addStatement(
             "%L.encodeWithTag(writer, %L, value.%N)",
             adapterFor(field),
             field.tag,
             fieldName,
           )
-          if (needsUnrecognizedBehavior) {
-            endControlFlow()
-          }
         }
         if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
           endControlFlow()
@@ -1864,27 +1851,6 @@ class KotlinGenerator private constructor(
               beginControlFlow("%L -> try", field.tag)
               addStatement("%L", decodeAndAssign(field, fieldName, adapterName))
               nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
-              if (message.syntax == Syntax.PROTO_3 && !field.type!!.isStruct) {
-                val enumType = schema.getType(field.type!!) as EnumType
-                if (enumMode == EnumMode.SEALED_CLASS) {
-                  addStatement(
-                    "%L",
-                    if (field.isRepeated) {
-                      CodeBlock.of(
-                        "%N.add(%L)",
-                        fieldName,
-                        CodeBlock.of("%T.%L", enumType.type.typeName, "UNRECOGNIZED"),
-                      )
-                    } else {
-                      CodeBlock.of(
-                        if (buildersOnly) "builder.%N(%L)" else "%N·= %L",
-                        fieldName,
-                        CodeBlock.of("%T.%L", enumType.type.typeName, "UNRECOGNIZED"),
-                      )
-                    },
-                  )
-                }
-              }
               addStatement(
                 "reader.addUnknownField(%L, %T.VARINT, e.value.toLong())",
                 tag,
@@ -2248,7 +2214,7 @@ class KotlinGenerator private constructor(
   }
 
   /**
-   * Example
+   * Example for enum mode == ENUM_CLASS
    * ```
    * enum class PhoneType(override val value: Int) : WireEnum {
    *     HOME(0),
@@ -2261,93 +2227,173 @@ class KotlinGenerator private constructor(
    *     }
    * ```
    * }
+   *
+   * Example for enum mode == SEALED_CLASS
+   * ```
+   * sealed class PhoneType(override val value: Int) : WireEnum {
+   *     data object HOME(0),
+   *     ...
+   *     data class Unrecognized internal constructor(
+   *       override val `value`: Int,
+   *     ) : PhoneType(value)
+   *
+   *     companion object {
+   *       fun fromValue(value: Int): PhoneType = ...
+   *
+   *       val ADAPTER: ProtoAdapter<PhoneType> = ...
+   *     }
+   * ```
+   * }
+   *
    */
   private fun generateEnum(enum: EnumType): TypeSpec {
-    @Suppress("NAME_SHADOWING")
-    val enum =
-      if (enumMode == EnumMode.SEALED_CLASS) {
-        // We mutate the constant by inserting `UNRECOGNIZED(-1)` at the front of the list.
-        enum.copy(
-          constants = listOf(
-            EnumConstant(
-              location = enum.location,
-              name = "UNRECOGNIZED",
-              tag = -1,
-              documentation = "",
-              options = Options(optionType = ENUM_OPTIONS, optionElements = listOf()),
-            ),
-          ) + enum.constants,
-        )
-      } else {
-        enum
-      }
-
     val type = enum.type
     val nameAllocator = nameAllocator(enum)
-
     // Note that we cannot use nameAllocator for `value` because if we rename it the generated code
     // will not compile for the constructor parameter `override val value_: Int` won't be overriding
     // anything anymore.
     val valueName = "value"
-
     val primaryConstructor = FunSpec.constructorBuilder()
       .addParameter(valueName, Int::class)
+    val builder: TypeSpec.Builder
 
-    val builder = TypeSpec.enumBuilder(type.simpleName)
-      .apply {
-        if (enum.documentation.isNotBlank()) {
-          addKdoc("%L\n", enum.documentation.sanitizeKdoc())
-        }
-        for (annotation in optionAnnotations(enum.options)) {
-          addAnnotation(annotation)
-        }
-        if (enum.isDeprecated) {
-          addAnnotation(
-            AnnotationSpec.builder(Deprecated::class)
-              .addMember("message = %S", "${type.simpleName} is deprecated")
-              .build(),
-          )
-        }
-      }
-      .addSuperinterface(WireEnum::class)
-      .addProperty(
-        PropertySpec.builder(valueName, Int::class, OVERRIDE)
-          .initializer(valueName)
-          .build(),
-      )
-      .addType(generateEnumCompanion(enum))
-
-    enum.constants.forEach { constant ->
-      builder.addEnumConstant(
-        nameAllocator[constant],
-        TypeSpec.anonymousClassBuilder()
-          .addSuperclassConstructorParameter("%L", constant.tag)
+    when (enumMode) {
+      ENUM_CLASS -> {
+        builder = TypeSpec.enumBuilder(type.simpleName)
           .apply {
-            if (constant.documentation.isNotBlank()) {
-              addKdoc("%L\n", constant.documentation.sanitizeKdoc())
+            if (enum.documentation.isNotBlank()) {
+              addKdoc("%L\n", enum.documentation.sanitizeKdoc())
             }
-
-            for (annotation in optionAnnotations(constant.options)) {
+            for (annotation in optionAnnotations(enum.options)) {
               addAnnotation(annotation)
             }
-            val wireEnumConstantAnnotation = wireEnumConstantAnnotation(enum, constant)
-            if (wireEnumConstantAnnotation != null) {
-              addAnnotation(wireEnumConstantAnnotation)
-            }
-
-            if (constant.isDeprecated) {
+            if (enum.isDeprecated) {
               addAnnotation(
                 AnnotationSpec.builder(Deprecated::class)
-                  .addMember("message = %S", "${constant.name} is deprecated")
+                  .addMember("message = %S", "${type.simpleName} is deprecated")
                   .build(),
               )
             }
           }
-          .build(),
-      )
+          .addSuperinterface(WireEnum::class)
+          .addProperty(
+            PropertySpec.builder(valueName, Int::class, OVERRIDE)
+              .initializer(valueName)
+              .build(),
+          )
+
+        enum.constants.forEach { constant ->
+          builder.addEnumConstant(
+            nameAllocator[constant],
+            TypeSpec.anonymousClassBuilder()
+              .addSuperclassConstructorParameter("%L", constant.tag)
+              .apply {
+                if (constant.documentation.isNotBlank()) {
+                  addKdoc("%L\n", constant.documentation.sanitizeKdoc())
+                }
+
+                for (annotation in optionAnnotations(constant.options)) {
+                  addAnnotation(annotation)
+                }
+                val wireEnumConstantAnnotation = wireEnumConstantAnnotation(enum, constant)
+                if (wireEnumConstantAnnotation != null) {
+                  addAnnotation(wireEnumConstantAnnotation)
+                }
+
+                if (constant.isDeprecated) {
+                  addAnnotation(
+                    AnnotationSpec.builder(Deprecated::class)
+                      .addMember("message = %S", "${constant.name} is deprecated")
+                      .build(),
+                  )
+                }
+              }
+              .build(),
+          )
+        }
+      }
+
+      SEALED_CLASS -> {
+        builder = TypeSpec.classBuilder(type.simpleName)
+          .addModifiers(KModifier.SEALED)
+          .apply {
+            if (enum.documentation.isNotBlank()) {
+              addKdoc("%L\n", enum.documentation.sanitizeKdoc())
+            }
+            for (annotation in optionAnnotations(enum.options)) {
+              addAnnotation(annotation)
+            }
+            if (enum.isDeprecated) {
+              addAnnotation(
+                AnnotationSpec.builder(Deprecated::class)
+                  .addMember("message = %S", "${type.simpleName} is deprecated")
+                  .build(),
+              )
+            }
+          }
+          .addSuperinterface(WireEnum::class)
+          .addProperty(
+            PropertySpec.builder(valueName, Int::class, OVERRIDE)
+              .initializer(valueName)
+              .build(),
+          )
+
+        enum.constants.forEach { constant ->
+          builder.addType(
+            TypeSpec.objectBuilder(nameAllocator[constant])
+              .addModifiers(DATA)
+              .superclass(ClassName("", type.simpleName))
+              .addSuperclassConstructorParameter("%L", constant.tag)
+              .apply {
+                if (constant.documentation.isNotBlank()) {
+                  addKdoc("%L\n", constant.documentation.sanitizeKdoc())
+                }
+
+                for (annotation in optionAnnotations(constant.options)) {
+                  addAnnotation(annotation)
+                }
+                val wireEnumConstantAnnotation = wireEnumConstantAnnotation(enum, constant)
+                if (wireEnumConstantAnnotation != null) {
+                  addAnnotation(wireEnumConstantAnnotation)
+                }
+
+                if (constant.isDeprecated) {
+                  addAnnotation(
+                    AnnotationSpec.builder(Deprecated::class)
+                      .addMember("message = %S", "${constant.name} is deprecated")
+                      .build(),
+                  )
+                }
+              }
+              .build(),
+          )
+        }
+        builder.addType(
+          TypeSpec.classBuilder("Unrecognized")
+            .addModifiers(DATA)
+            .addProperty(
+              PropertySpec
+                .builder(valueName, Int::class)
+                .addModifiers(OVERRIDE)
+                .initializer(valueName)
+                .build(),
+            )
+            .primaryConstructor(
+              FunSpec.constructorBuilder()
+                .addParameter(valueName, Int::class)
+                .addModifiers(INTERNAL)
+                .build(),
+            )
+            .superclass(ClassName("", type.simpleName))
+            .addSuperclassConstructorParameter(valueName)
+            .build(),
+        )
+      }
     }
 
-    return builder.primaryConstructor(primaryConstructor.build())
+    return builder
+      .addType(generateEnumCompanion(enum))
+      .primaryConstructor(primaryConstructor.build())
       .build()
   }
 
@@ -2370,7 +2416,7 @@ class KotlinGenerator private constructor(
     val fromValue = FunSpec.builder("fromValue")
       .addAnnotation(ClassName("com.squareup.wire.internal", "JvmStatic"))
       .addParameter(valueName, Int::class)
-      .returns(parentClassName.copy(nullable = true))
+      .returns(parentClassName.copy(nullable = enumMode == ENUM_CLASS))
       .apply {
         addCode("return when (%N) {\n⇥", valueName)
         message.constants.forEach { constant ->
@@ -2378,7 +2424,14 @@ class KotlinGenerator private constructor(
           if (constant.isDeprecated) addCode("@Suppress(\"DEPRECATION\") ")
           addCode("%N\n", nameAllocator[constant])
         }
-        addCode("else -> null")
+        when (enumMode) {
+          ENUM_CLASS -> {
+            addCode("else -> null")
+          }
+          SEALED_CLASS -> {
+            addCode("else -> Unrecognized(%N)", valueName)
+          }
+        }
         addCode("\n⇤}\n") // close the block
       }
       .build()
@@ -2954,7 +3007,7 @@ class KotlinGenerator private constructor(
       nameSuffix: String? = null,
       buildersOnly: Boolean = false,
       escapeKotlinKeywords: Boolean = false,
-      enumMode: EnumMode = EnumMode.ENUM_CLASS,
+      enumMode: EnumMode = ENUM_CLASS,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()

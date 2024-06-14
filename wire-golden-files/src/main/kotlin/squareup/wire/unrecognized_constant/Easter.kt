@@ -157,14 +157,10 @@ public class Easter private constructor(
       }
 
       override fun encode(writer: ProtoWriter, `value`: Easter) {
-        if (value.optional_easter_animal != EasterAnimal.UNRECOGNIZED) {
-          EasterAnimal.ADAPTER.encodeWithTag(writer, 2, value.optional_easter_animal)
-        }
+        EasterAnimal.ADAPTER.encodeWithTag(writer, 2, value.optional_easter_animal)
         if (value.identity_easter_animal !=
             squareup.wire.unrecognized_constant.EasterAnimal.EASTER_ANIMAL_DEFAULT) {
-          if (value.identity_easter_animal != EasterAnimal.UNRECOGNIZED) {
-            EasterAnimal.ADAPTER.encodeWithTag(writer, 3, value.identity_easter_animal)
-          }
+          EasterAnimal.ADAPTER.encodeWithTag(writer, 3, value.identity_easter_animal)
         }
         EasterAnimal.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.easter_animals)
         writer.writeBytes(value.unknownFields)
@@ -175,13 +171,9 @@ public class Easter private constructor(
         EasterAnimal.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.easter_animals)
         if (value.identity_easter_animal !=
             squareup.wire.unrecognized_constant.EasterAnimal.EASTER_ANIMAL_DEFAULT) {
-          if (value.identity_easter_animal != EasterAnimal.UNRECOGNIZED) {
-            EasterAnimal.ADAPTER.encodeWithTag(writer, 3, value.identity_easter_animal)
-          }
+          EasterAnimal.ADAPTER.encodeWithTag(writer, 3, value.identity_easter_animal)
         }
-        if (value.optional_easter_animal != EasterAnimal.UNRECOGNIZED) {
-          EasterAnimal.ADAPTER.encodeWithTag(writer, 2, value.optional_easter_animal)
-        }
+        EasterAnimal.ADAPTER.encodeWithTag(writer, 2, value.optional_easter_animal)
       }
 
       override fun decode(reader: ProtoReader): Easter {
@@ -192,19 +184,16 @@ public class Easter private constructor(
             2 -> try {
               builder.optional_easter_animal(EasterAnimal.ADAPTER.decode(reader))
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
-              builder.optional_easter_animal(EasterAnimal.UNRECOGNIZED)
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
             3 -> try {
               builder.identity_easter_animal(EasterAnimal.ADAPTER.decode(reader))
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
-              builder.identity_easter_animal(EasterAnimal.UNRECOGNIZED)
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
             4 -> try {
               EasterAnimal.ADAPTER.tryDecode(reader, easter_animals)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
-              easter_animals.add(EasterAnimal.UNRECOGNIZED)
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
             else -> reader.readUnknownField(tag)

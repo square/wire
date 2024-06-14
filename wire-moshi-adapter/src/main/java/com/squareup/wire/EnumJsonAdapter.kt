@@ -31,7 +31,11 @@ internal class EnumJsonAdapter<E>(
     if (value == null) {
       out.nullValue()
     } else {
-      out.value(enumJsonFormatter.toStringOrNumber(value))
+      val formatted = enumJsonFormatter.toStringOrNumber(value)
+      when {
+        formatted is Number -> out.value(formatted)
+        else -> out.value(formatted.toString())
+      }
     }
   }
 
