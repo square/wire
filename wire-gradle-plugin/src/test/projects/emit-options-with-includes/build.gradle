@@ -1,0 +1,13 @@
+plugins {
+  id 'application'
+  id 'org.jetbrains.kotlin.jvm'
+  id 'com.squareup.wire'
+}
+
+wire {
+  kotlin {
+    includes = ['squareup.polygons.*', 'squareup.options.*']
+    emitDeclaredOptions = true
+    emitAppliedOptions = true
+  }
+}
