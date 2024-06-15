@@ -78,11 +78,8 @@ class KotlinSchemaHandler(
    */
   private val escapeKotlinKeywords: Boolean = false,
 
-  /**
-   * If true, generated enums will have an extra `UNRECOGNIZED` constant with a value of `-1`. This
-   * only applies to enum which syntax is proto3.
-   */
-  private val generateUnrecognizedEnumConstant: Boolean = false,
+  /** enum_class or sealed_class. See [EnumMode][com.squareup.wire.kotlin.EnumMode]. */
+  val enumMode: EnumMode = EnumMode.ENUM_CLASS,
 ) : SchemaHandler() {
   private lateinit var kotlinGenerator: KotlinGenerator
 
@@ -102,7 +99,7 @@ class KotlinSchemaHandler(
       nameSuffix = nameSuffix,
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,
-      generateUnrecognizedEnumConstant = generateUnrecognizedEnumConstant,
+      enumMode = enumMode,
     )
     context.fileSystem.createDirectories(context.outDirectory)
     super.handle(schema, context)

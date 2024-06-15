@@ -16,9 +16,9 @@
 package com.squareup.wire.internal
 
 import com.squareup.wire.EnumAdapter
-import com.squareup.wire.Syntax
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
+import java.lang.reflect.Constructor
 
 /**
  * Encodes enums using their declared names as defined in [WireEnumConstant] or their generated
@@ -32,9 +32,9 @@ class EnumJsonFormatter<E : WireEnum>(
   private val valueToString: Map<E, String>
 
   /**
-   * The `UNRECOGNIZED(-1) constant that might have been generated. This only concerns proto3 enums.
+   * The `Unrecognized(value: Int) class that might have been generated. See [EnumMode][com.squareup.wire.kotlin.EnumMode].
    */
-  private var unrecognizedConstant: E? = null
+  private var unrecognizedClassConstructor: Constructor<E>? = null
 
   init {
     val mutableStringToValue = mutableMapOf<String, E>()
@@ -43,23 +43,48 @@ class EnumJsonFormatter<E : WireEnum>(
     // E is a subtype of Enum<*>, but we don't know that statically.
     @Suppress("UNCHECKED_CAST")
     val enumType = adapter.type!!.java as Class<E>
-    for (constant in enumType.enumConstants) {
-      val name = (constant as Enum<*>).name
+    val enumConstants = enumType.enumConstants
+    if (enumConstants == null) {
+      // The enum has been generated as a sealed class.
+      for (subClass in enumType.declaredClasses) {
+        val name = subClass.simpleName
+        if (name == "Companion") continue
 
-      if (adapter.syntax == Syntax.PROTO_3 && (constant as? WireEnum)?.value == -1) {
-        unrecognizedConstant = constant
+        val field = subClass.declaredFields.first()
+        if (field.name == "INSTANCE") {
+          @Suppress("UNCHECKED_CAST") // We know it's a E since we generated it.
+          val subClassInstance = field.get(null) as E
+          mutableStringToValue[subClass.simpleName] = subClassInstance
+          mutableStringToValue[subClassInstance.value.toString()] = subClassInstance
+
+          mutableValueToString[subClassInstance] = name
+
+          val wireEnumConstant = subClass.annotations.firstOrNull { it is WireEnumConstant } as? WireEnumConstant
+          if (wireEnumConstant != null && wireEnumConstant.declaredName.isNotEmpty()) {
+            mutableStringToValue[wireEnumConstant.declaredName] = subClassInstance
+            mutableValueToString[subClassInstance] = wireEnumConstant.declaredName
+          }
+        } else {
+          @Suppress("UNCHECKED_CAST") // We know it's a constructor of E since we generated it.
+          unrecognizedClassConstructor = subClass.constructors.first() as Constructor<E>
+        }
       }
+    } else {
+      // The enum has been generated as an enum class.
+      for (constant in enumConstants) {
+        val name = (constant as Enum<*>).name
 
-      mutableStringToValue[name] = constant
-      mutableStringToValue[constant.value.toString()] = constant
+        mutableStringToValue[name] = constant
+        mutableStringToValue[constant.value.toString()] = constant
 
-      mutableValueToString[constant] = name
+        mutableValueToString[constant] = name
 
-      val constantField = enumType.getDeclaredField(name)
-      val wireEnumConstant = constantField.getAnnotation(WireEnumConstant::class.java)
-      if (wireEnumConstant != null && wireEnumConstant.declaredName.isNotEmpty()) {
-        mutableStringToValue[wireEnumConstant.declaredName] = constant
-        mutableValueToString[constant] = wireEnumConstant.declaredName
+        val constantField = enumType.getDeclaredField(name)
+        val wireEnumConstant = constantField.getAnnotation(WireEnumConstant::class.java)
+        if (wireEnumConstant != null && wireEnumConstant.declaredName.isNotEmpty()) {
+          mutableStringToValue[wireEnumConstant.declaredName] = constant
+          mutableValueToString[constant] = wireEnumConstant.declaredName
+        }
       }
     }
 
@@ -69,12 +94,12 @@ class EnumJsonFormatter<E : WireEnum>(
 
   override fun fromString(value: String): E? {
     return stringToValue[value]
-      // If the constant is unknown to our runtime, we return `unrecognizedConstant` which is either
-      // null or set to the generated `UNRECOGNIZED(-1)` if it exists.
-      ?: unrecognizedConstant
+      // If the constant is unknown to our runtime, we return a `Unrecognized` instance if it has
+      // been generated.
+      ?: unrecognizedClassConstructor?.newInstance(value.toInt())
   }
 
-  override fun toStringOrNumber(value: E): String {
-    return valueToString[value]!!
+  override fun toStringOrNumber(value: E): Any {
+    return valueToString[value] ?: value.value
   }
 }

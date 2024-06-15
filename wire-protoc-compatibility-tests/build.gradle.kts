@@ -41,7 +41,7 @@ wire {
   kotlin {
     javaInterop = true
     boxOneOfsMinSize = 5
-    generateUnrecognizedEnumConstant = true
+    enumMode = "sealed_class"
 
     includes = listOf(
       "squareup.proto2.kotlin.*",

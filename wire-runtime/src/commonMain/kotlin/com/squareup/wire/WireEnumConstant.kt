@@ -19,7 +19,11 @@ package com.squareup.wire
  * Annotates generated [WireEnum] fields with metadata for serialization and deserialization.
  */
 @Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FIELD)
+@Target(
+  AnnotationTarget.FIELD,
+  // Needed in case the enum is generated as a sealed class.
+  AnnotationTarget.CLASS,
+)
 annotation class WireEnumConstant(
   /**
    * Name of this constant as declared in the proto schema. This value is set to a non-empty string

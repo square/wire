@@ -342,16 +342,19 @@ class InteropTest {
     checker.check(InteropWrappersK3.Builder().build())
   }
 
-  @Test fun knownEnumsWithUnrecognizedConstant() {
-    // ┌─ 2: 1
-    // ├─ 3: 1
-    val bytes = "10011801"
+  @Test fun keywordNamedConstant() {
+    // ┌─ 2: 15
+    // ├─ 3: 2
+    // ├─ 4: 1
+    // ├─ 4: 15
+    // ╰- 5: 15
+    val bytes = "100f18022001200f2a010f"
     val wireMessage: EasterK3 = EasterK3.ADAPTER.decode(bytes.decodeHex())
     val protocMessage: EasterP3 = EasterP3.parseFrom(bytes.decodeHex().toByteArray())
 
     val checker = InteropChecker(
       protocMessage = protocMessage,
-      canonicalJson = """{"optionalEasterAnimal":"BUNNY","identityEasterAnimal":"BUNNY"}""",
+      canonicalJson = """{"optionalEasterAnimal":"object","identityEasterAnimal":"HEN","easterAnimalsRepeated":["BUNNY","object"],"easterAnimalsPacked":["object"]}""",
     )
 
     checker.check(wireMessage)
@@ -360,15 +363,20 @@ class InteropTest {
   @Test fun unknownEnumsWithUnrecognizedConstant() {
     // ┌─ 2: 5
     // ├─ 3: 6
-    val bytes = "10051806"
+    // ├─ 4: 7
+    // ├─ 4: 2
+    // ├─ 4: 6
+    // ├─ 5: 8
+    // ├─ 5: 2
+    // ├─ 5: 9
+    // ╰- 5: 1
+    val bytes = "100518062007200220062a0408020901"
     val wireMessage: EasterK3 = EasterK3.ADAPTER.decode(bytes.decodeHex())
     val protocMessage: EasterP3 = EasterP3.parseFrom(bytes.decodeHex().toByteArray())
 
     val checker = InteropChecker(
       protocMessage = protocMessage,
-      canonicalJson = """{"optionalEasterAnimal":5,"identityEasterAnimal":6}""",
-      // TODO(Benoit) Gotta fix in MessageTypeAdapter.read so that we can assign the unknown fields.
-      skipGson = true,
+      canonicalJson = """{"optionalEasterAnimal":5,"identityEasterAnimal":6,"easterAnimalsRepeated":[7,"HEN",6],"easterAnimalsPacked":[8,"HEN",9,"BUNNY"]}""",
     )
 
     checker.check(wireMessage)

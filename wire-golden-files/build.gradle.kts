@@ -9,7 +9,7 @@ wire {
     includes = listOf("squareup.wire.unrecognized_constant.*")
     out = "src/main/kotlin"
     buildersOnly = true
-    generateUnrecognizedEnumConstant = true
+    enumMode = "sealed_class"
   }
 
   kotlin {

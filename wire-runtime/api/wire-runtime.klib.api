@@ -198,9 +198,6 @@ abstract class <#A: kotlin/Any?> com.squareup.wire/ProtoAdapter { // com.squareu
 abstract class com.squareup.wire.internal/ObjectStreamException : okio/IOException { // com.squareup.wire.internal/ObjectStreamException|null[0]
     constructor <init>() // com.squareup.wire.internal/ObjectStreamException.<init>|<init>(){}[0]
 }
-abstract interface <#A: com.squareup.wire/Message<#A, *>, #B: kotlin/Any?> com.squareup.wire/UnknownValueReader { // com.squareup.wire/UnknownValueReader|null[0]
-    abstract fun read(#A): #B // com.squareup.wire/UnknownValueReader.read|read(1:0){}[0]
-}
 abstract interface <#A: in kotlin/Any> com.squareup.wire/MessageSink { // com.squareup.wire/MessageSink|null[0]
     abstract fun cancel() // com.squareup.wire/MessageSink.cancel|cancel(){}[0]
     abstract fun close() // com.squareup.wire/MessageSink.close|close(){}[0]
@@ -232,14 +229,6 @@ abstract interface com.squareup.wire/Service // com.squareup.wire/Service|null[0
 abstract interface com.squareup.wire/WireEnum { // com.squareup.wire/WireEnum|null[0]
     abstract val value // com.squareup.wire/WireEnum.value|{}value[0]
         abstract fun <get-value>(): kotlin/Int // com.squareup.wire/WireEnum.value.<get-value>|<get-value>(){}[0]
-}
-final class <#A: com.squareup.wire/Message<#A, *>, #B: kotlin/Any> com.squareup.wire/RepeatedUnknownValueReader : com.squareup.wire/UnknownValueReader<#A, kotlin.collections/List<#B>> { // com.squareup.wire/RepeatedUnknownValueReader|null[0]
-    constructor <init>(kotlin/Int, com.squareup.wire/ProtoAdapter<#B>) // com.squareup.wire/RepeatedUnknownValueReader.<init>|<init>(kotlin.Int;com.squareup.wire.ProtoAdapter<1:1>){}[0]
-    final fun read(#A): kotlin.collections/List<#B> // com.squareup.wire/RepeatedUnknownValueReader.read|read(1:0){}[0]
-}
-final class <#A: com.squareup.wire/Message<#A, *>, #B: kotlin/Any> com.squareup.wire/SingleUnknownValueReader : com.squareup.wire/UnknownValueReader<#A, #B?> { // com.squareup.wire/SingleUnknownValueReader|null[0]
-    constructor <init>(kotlin/Int, com.squareup.wire/ProtoAdapter<#B>) // com.squareup.wire/SingleUnknownValueReader.<init>|<init>(kotlin.Int;com.squareup.wire.ProtoAdapter<1:1>){}[0]
-    final fun read(#A): #B? // com.squareup.wire/SingleUnknownValueReader.read|read(1:0){}[0]
 }
 final class <#A: kotlin/Any, #B: kotlin/Any> com.squareup.wire.internal/RuntimeMessageAdapter : com.squareup.wire/ProtoAdapter<#A> { // com.squareup.wire.internal/RuntimeMessageAdapter|null[0]
     constructor <init>(com.squareup.wire.internal/MessageBinding<#A, #B>) // com.squareup.wire.internal/RuntimeMessageAdapter.<init>|<init>(com.squareup.wire.internal.MessageBinding<1:0,1:1>){}[0]

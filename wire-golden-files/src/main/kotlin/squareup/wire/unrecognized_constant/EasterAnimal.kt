@@ -8,19 +8,30 @@ import com.squareup.wire.EnumAdapter
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
+import com.squareup.wire.WireEnumConstant
 import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmStatic
 import kotlin.Int
 import kotlin.Suppress
 
-public enum class EasterAnimal(
+public sealed class EasterAnimal(
   override val `value`: Int,
 ) : WireEnum {
-  UNRECOGNIZED(-1),
-  EASTER_ANIMAL_DEFAULT(0),
-  BUNNY(1),
-  HEN(2),
-  ;
+  public data object EASTER_ANIMAL_DEFAULT : EasterAnimal(0)
+
+  public data object BUNNY : EasterAnimal(1)
+
+  public data object HEN : EasterAnimal(2)
+
+  /**
+   * Using a keyword so that it gets renamed at generation.
+   */
+  @WireEnumConstant(declaredName = "object")
+  public data object object_ : EasterAnimal(15)
+
+  public data class Unrecognized internal constructor(
+    override val `value`: Int,
+  ) : EasterAnimal(value)
 
   public companion object {
     @JvmField
@@ -33,12 +44,12 @@ public enum class EasterAnimal(
     }
 
     @JvmStatic
-    public fun fromValue(`value`: Int): EasterAnimal? = when (`value`) {
-      -1 -> UNRECOGNIZED
+    public fun fromValue(`value`: Int): EasterAnimal = when (`value`) {
       0 -> EASTER_ANIMAL_DEFAULT
       1 -> BUNNY
       2 -> HEN
-      else -> null
+      15 -> object_
+      else -> Unrecognized(`value`)
     }
   }
 }
