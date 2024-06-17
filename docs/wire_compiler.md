@@ -511,6 +511,9 @@ wire {
     // True to escape Kotlin keywords like `value` and `data` with backticks. Otherwise an
     // underscore underscore is added as a suffix, like `value_` and `data_`.
     escapeKotlinKeywords = false
+
+    // Defines how an protobuf enum type is to be generated. See `com.squareup.wire.kotlin.EnumMode`
+    enumMode = "enum_class"
   }
 }
 ```

@@ -1,6 +1,56 @@
 Change Log
 ==========
 
+Version 5.0.0-alpha02
+---------------------
+
+_2024-06-17_
+
+### Common
+
+* ⚠ Paths and Definitions are properly claims by a SchemaHandler only when it generated something (#2943)
+* No eager source access on Task for the Wire Gradle plugin (#2923)
+* Fix the UTF-32 BOM in SchemaLoader (#2937 by [Endeavour233][Endeavour233])
+* Add support for parsing extensionRangeOptions (#2966)
+
+### Kotlin
+
+* expose the grpc url when converting Response to GrpcException (#2920 by [Travis Johnson][traviscj])
+* Support very long field names with builders (#2959)
+* New `enumMode` option added to Kotlin targets in order to generate enum types as sealed classes.
+  Its value can be either `enum_class` (default value) or `sealed_class`. `enum_class` will generate
+  enum types as Kotlin enum classes, which is the current behavior. `sealed_class` will generate enum
+  types as Kotlin sealed classes, generated each constant of the enum type as data objects. On top of
+  those constants, the sealed class will contain a `Unrecognized` data class which will contain the
+  real decoded value for this enum if the runtime didn't have any constant matching it. This is the
+  analogue feature of protoc generating a `UNRECOGNIZED(-1)` constant for enums on proto3. Note
+  however that Wire doesn't limit this option to proto3 enums, this can be used for proto2 enums
+  too.
+
+  ```kotlin
+  wire {
+    kotlin {
+      enumMode = "sealed_class"
+    }
+  }
+  ```
+
+  Switching to generating sealed class for enums can break the call-site for your consumers. In
+  order to allow gradual migration of enum generation from/to sealed classes, a Protobuf enum option
+  has also been created. This, when set in the `.proto` file, takes precedence over the global enum
+  mode.
+
+  ```protobuf
+  import "wire/extensions.proto";
+
+  enum Period {
+    option (wire.enum_mode) = "sealed_class"; // or `enum_class`.
+    CRETACEOUS = 1;
+    JURASSIC = 2;
+    TRIASSIC = 3;
+  }
+  ```
+
 Version 5.0.0-alpha01
 ---------------------
 
@@ -1401,6 +1451,8 @@ Initial version.
  [custom-handlers-recipes]: https://github.com/square/wire/tree/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
  [damianw]: https://github.com/damianw
  [dnkoutso]: https://github.com/dnkoutso
+ [traviscj]: https://github.com/traviscj
+ [Endeavour233]: https://github.com/Endeavour233
  [event_listener]: https://github.com/square/wire/blob/3e300c492a74e80260581e3aee624d9cf3e5b1f8/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/EventListener.kt#L105-L111
  [frojasg]: https://github.com/frojasg
  [javapoet]: https://github.com/square/javapoet
