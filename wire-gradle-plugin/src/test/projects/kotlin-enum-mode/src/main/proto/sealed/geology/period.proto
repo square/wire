@@ -1,0 +1,33 @@
+syntax = "proto2";
+
+package sealed.geology;
+
+import "wire/extensions.proto";
+
+option java_package = "com.squareup.sealed.geology";
+
+// Target is set to "sealed_class" so the option should not have any effect.
+enum Period {
+  option (wire.enum_mode) = "sealed_class";
+  CRETACEOUS = 1;
+  JURASSIC = 2;
+  TRIASSIC = 3;
+}
+
+// Target is set to "sealed_class" so the option should takes precedence.
+enum Continent {
+  option (wire.enum_mode) = "enum_class";
+  AFRICA = 0;
+  AMERICA = 1;
+  ANTARCTICA = 2;
+  ASIA = 3;
+  AUSTRALIA = 4;
+  EUROPE = 5;
+}
+
+enum Drink {
+  UNKNOWN = 0;
+  PEPSI = 1;
+  MOUNTAIN_DEW = 2;
+  ROOT_BEER = 9;
+}

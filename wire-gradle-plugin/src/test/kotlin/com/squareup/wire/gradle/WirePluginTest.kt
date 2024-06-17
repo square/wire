@@ -1314,6 +1314,56 @@ class WirePluginTest {
   }
 
   @Test
+  fun kotlinEnumMode() {
+    val fixtureRoot = File("src/test/projects/kotlin-enum-mode")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull()
+    assertThat(result.output).contains("Writing com.squareup.enum.geology.Period")
+    assertThat(result.output).contains("Writing com.squareup.enum.geology.Continent")
+    assertThat(result.output).contains("Writing com.squareup.enum.geology.Drink")
+    assertThat(result.output).contains("Writing com.squareup.sealed.geology.Period")
+    assertThat(result.output).contains("Writing com.squareup.sealed.geology.Continent")
+    assertThat(result.output).contains("Writing com.squareup.sealed.geology.Drink")
+
+    // Wire has been configured so that `Continent` should always be the opposite of the global
+    // setting while `Period` and `Drink` match it.
+
+    val enumPeriod = File(
+      fixtureRoot,
+      "build/generated/source/wire/com/squareup/enum/geology/Period.kt",
+    ).readText()
+    assertThat(enumPeriod).contains("enum class Period")
+    val enumContinent = File(
+      fixtureRoot,
+      "build/generated/source/wire/com/squareup/enum/geology/Continent.kt",
+    ).readText()
+    assertThat(enumContinent).contains("sealed class Continent")
+    val enumDrink = File(
+      fixtureRoot,
+      "build/generated/source/wire/com/squareup/enum/geology/Drink.kt",
+    ).readText()
+    assertThat(enumDrink).contains("enum class Drink")
+
+    val sealedPeriod = File(
+      fixtureRoot,
+      "build/generated/source/wire/com/squareup/sealed/geology/Period.kt",
+    ).readText()
+    assertThat(sealedPeriod).contains("sealed class Period")
+    val sealedContinent = File(
+      fixtureRoot,
+      "build/generated/source/wire/com/squareup/sealed/geology/Continent.kt",
+    ).readText()
+    assertThat(sealedContinent).contains("enum class Continent")
+    val sealedDrink = File(
+      fixtureRoot,
+      "build/generated/source/wire/com/squareup/sealed/geology/Drink.kt",
+    ).readText()
+    assertThat(sealedDrink).contains("sealed class Drink")
+  }
+
+  @Test
   fun packageCycles() {
     val fixtureRoot = File("src/test/projects/package-cycles")
 

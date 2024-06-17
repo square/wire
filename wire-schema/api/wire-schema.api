@@ -178,6 +178,7 @@ public final class com/squareup/wire/schema/EnumType : com/squareup/wire/schema/
 	public static final fun fromElement (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/internal/parser/EnumElement;Lcom/squareup/wire/Syntax;)Lcom/squareup/wire/schema/EnumType;
 	public final fun getConstants ()Ljava/util/List;
 	public fun getDocumentation ()Ljava/lang/String;
+	public final fun getEnumMode ()Ljava/lang/String;
 	public fun getLocation ()Lcom/squareup/wire/schema/Location;
 	public fun getName ()Ljava/lang/String;
 	public fun getNestedExtendList ()Ljava/util/List;

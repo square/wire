@@ -43,6 +43,18 @@ extend google.protobuf.FieldOptions {
   optional bool use_array = 1185;
 }
 
+extend google.protobuf.EnumOptions {
+  /**
+   * Defines how an enum type is to be generated. This is only supported by Kotlin generation.
+   * - 'enum_class': the enum type will be generated as a Kotlin enum class.
+   * - 'sealed_class': the enum type will be generated as a Kotlin sealed class.
+   *
+   * When set, the value of this option takes precedence over the global enum mode that may be set
+   * at the Kotlin target level in the Wire Gradle plugin.
+   */
+  optional string enum_mode = 1190;
+}
+
 extend google.protobuf.EnumValueOptions {
   /**
    * Annotates an enum constant that starts to be available with a specified version.

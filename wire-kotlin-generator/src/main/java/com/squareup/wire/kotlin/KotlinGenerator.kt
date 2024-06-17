@@ -2257,7 +2257,13 @@ class KotlinGenerator private constructor(
       .addParameter(valueName, Int::class)
     val builder: TypeSpec.Builder
 
-    when (enumMode) {
+    val enumModeOption = when (enum.enumMode?.lowercase()) {
+      "enum_class" -> ENUM_CLASS
+      "sealed_class" -> SEALED_CLASS
+      else -> null
+    }
+
+    when (enumModeOption ?: enumMode) {
       ENUM_CLASS -> {
         builder = TypeSpec.enumBuilder(type.simpleName)
           .apply {

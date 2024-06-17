@@ -773,6 +773,8 @@ final class com.squareup.wire.schema/EnumType : com.squareup.wire.schema/Type { 
         final fun <get-constants>(): kotlin.collections/List<com.squareup.wire.schema/EnumConstant> // com.squareup.wire.schema/EnumType.constants.<get-constants>|<get-constants>(){}[0]
     final val documentation // com.squareup.wire.schema/EnumType.documentation|{}documentation[0]
         final fun <get-documentation>(): kotlin/String // com.squareup.wire.schema/EnumType.documentation.<get-documentation>|<get-documentation>(){}[0]
+    final val enumMode // com.squareup.wire.schema/EnumType.enumMode|{}enumMode[0]
+        final fun <get-enumMode>(): kotlin/String? // com.squareup.wire.schema/EnumType.enumMode.<get-enumMode>|<get-enumMode>(){}[0]
     final val isDeprecated // com.squareup.wire.schema/EnumType.isDeprecated|{}isDeprecated[0]
         final fun <get-isDeprecated>(): kotlin/Boolean // com.squareup.wire.schema/EnumType.isDeprecated.<get-isDeprecated>|<get-isDeprecated>(){}[0]
     final val location // com.squareup.wire.schema/EnumType.location|{}location[0]
