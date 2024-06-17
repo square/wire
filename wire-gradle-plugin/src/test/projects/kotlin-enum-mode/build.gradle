@@ -1,0 +1,16 @@
+plugins {
+  id 'application'
+  id 'org.jetbrains.kotlin.jvm'
+  id 'com.squareup.wire'
+}
+
+wire {
+  kotlin {
+    includes = ["enum.geology.*"]
+    enumMode = "enum_class"
+  }
+  kotlin {
+    includes = ["sealed.geology.*"]
+    enumMode = "sealed_class"
+  }
+}

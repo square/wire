@@ -48,6 +48,9 @@ data class EnumType(
   val isDeprecated: Boolean
     get() = "true" == deprecated
 
+  val enumMode: String?
+    get() = options.get(WIRE_ENUM_MODE)?.toString()
+
   /** Returns the constant named `name`, or null if this enum has no such constant.  */
   fun constant(name: String) = constants.find { it.name == name }
 
@@ -197,6 +200,7 @@ data class EnumType(
   companion object {
     internal val ALLOW_ALIAS = ProtoMember.get(ENUM_OPTIONS, "allow_alias")
     internal val DEPRECATED = ProtoMember.get(ENUM_OPTIONS, "deprecated")
+    internal val WIRE_ENUM_MODE = ProtoMember.get(ENUM_OPTIONS, "wire.enum_mode")
 
     @JvmStatic
     fun fromElement(
