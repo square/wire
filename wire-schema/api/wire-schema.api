@@ -370,21 +370,6 @@ public final class com/squareup/wire/schema/Field$Label : java/lang/Enum {
 	public static fun values ()[Lcom/squareup/wire/schema/Field$Label;
 }
 
-public final class com/squareup/wire/schema/LinkedOptionEntry {
-	public fun <init> (Lcom/squareup/wire/schema/internal/parser/OptionElement;Lcom/squareup/wire/schema/ProtoMember;Ljava/lang/Object;)V
-	public final fun component1 ()Lcom/squareup/wire/schema/internal/parser/OptionElement;
-	public final fun component2 ()Lcom/squareup/wire/schema/ProtoMember;
-	public final fun component3 ()Ljava/lang/Object;
-	public final fun copy (Lcom/squareup/wire/schema/internal/parser/OptionElement;Lcom/squareup/wire/schema/ProtoMember;Ljava/lang/Object;)Lcom/squareup/wire/schema/LinkedOptionEntry;
-	public static synthetic fun copy$default (Lcom/squareup/wire/schema/LinkedOptionEntry;Lcom/squareup/wire/schema/internal/parser/OptionElement;Lcom/squareup/wire/schema/ProtoMember;Ljava/lang/Object;ILjava/lang/Object;)Lcom/squareup/wire/schema/LinkedOptionEntry;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getOptionElement ()Lcom/squareup/wire/schema/internal/parser/OptionElement;
-	public final fun getProtoMember ()Lcom/squareup/wire/schema/ProtoMember;
-	public final fun getValue ()Ljava/lang/Object;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
 public final class com/squareup/wire/schema/Linker {
 	public fun <init> (Lcom/squareup/wire/schema/Loader;Lcom/squareup/wire/schema/ErrorCollector;ZZ)V
 	public fun <init> (Lcom/squareup/wire/schema/Loader;Lcom/squareup/wire/schema/ErrorCollector;ZZLjava/util/List;)V

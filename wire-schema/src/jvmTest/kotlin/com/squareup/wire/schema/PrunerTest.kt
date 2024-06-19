@@ -30,6 +30,7 @@ import assertk.assertions.isTrue
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.MESSAGE_OPTIONS
+import kotlin.test.Ignore
 import kotlin.test.Test
 import okio.Path.Companion.toPath
 
@@ -144,7 +145,6 @@ class PrunerTest {
     )
     assertThat(pruned.protoFile("test_event.proto")!!.toSchema())
       .isEqualTo(
-        // spotless:off because spotless will remove the indents (trailing spaces) in the oneof block.
         """
           |// Proto schema formatted by Wire, do not edit.
           |// Source: test_event.proto
@@ -158,13 +158,349 @@ class PrunerTest {
           |message TestMessage {
           |  oneof element {
           |    option (my_custom_oneOf_option) = true;
-          |  
+          | $space
           |    string one = 1;
           |    string two = 2;
           |  }
           |}
-          |""".trimMargin(),
-        // spotless:on
+          |
+        """.trimMargin(),
+      )
+  }
+
+  @Test
+  fun rootCanHandleInlinedOptionWithMapFields() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+          |syntax = "proto3";
+          |
+          |import "google/protobuf/descriptor.proto";
+          |
+          |package wire.issue;
+          |
+          |message Options {
+          |  map<string, ConfigPayload> config = 1;
+          |  map<string, SettingPayload> setting = 2;
+          |  map<string, string> extra = 3;
+          |}
+          |
+          |message ConfigPayload {
+          |  optional string data = 1;
+          |}
+          |
+          |message SettingPayload {
+          |  optional string data = 1;
+          |}
+          |
+          |extend google.protobuf.MessageOptions {
+          |  repeated Options opt = 80000;
+          |}
+          |
+          |message SomeMessage {
+          |  option (wire.issue.opt) = {
+          |    config: [
+          |      {
+          |        key: "some_config_key_1",
+          |        value: { data: "some_config_data_1" }
+          |      },
+          |    ],
+          |    setting: [
+          |      {
+          |        key: "some_setting_key_1",
+          |        value: { data: "some_setting_data_1" }
+          |      },
+          |      {
+          |        key: "some_setting_key_2",
+          |        value: { data: "some_setting_data_2" }
+          |      },
+          |    ],
+          |    extra: [
+          |      {
+          |        key: "some_extra_key_1",
+          |        value: "some_extra_data_1"
+          |      },
+          |    ],
+          |  };
+          |
+          |  string id = 1;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("wire.issue.Options#config")
+        .build(),
+    )
+    assertThat(pruned.protoFile("test.proto")!!.toSchema())
+      .isEqualTo(
+        """
+          |// Proto schema formatted by Wire, do not edit.
+          |// Source: test.proto
+          |
+          |syntax = "proto3";
+          |
+          |package wire.issue;
+          |
+          |message Options {
+          |  map<string, ConfigPayload> config = 1;
+          |}
+          |
+          |message ConfigPayload {
+          |  optional string data = 1;
+          |}
+          |
+        """.trimMargin(),
+      )
+  }
+
+  @Ignore("Pruning inlined map options is not supported")
+  @Test
+  fun pruneCanHandleInlinedOptionMemberWithMapFields() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+          |syntax = "proto3";
+          |
+          |import "google/protobuf/descriptor.proto";
+          |
+          |package wire.issue;
+          |
+          |message Options {
+          |  map<string, ConfigPayload> config = 1;
+          |  map<string, SettingPayload> setting = 2;
+          |  map<string, string> extra = 3;
+          |}
+          |
+          |message ConfigPayload {
+          |  optional string data = 1;
+          |}
+          |
+          |message SettingPayload {
+          |  optional string data = 1;
+          |}
+          |
+          |extend google.protobuf.MessageOptions {
+          |  repeated Options opt = 80000;
+          |}
+          |
+          |message SomeMessage {
+          |  option (wire.issue.opt) = {
+          |    config: [
+          |      {
+          |        key: "some_config_key_1",
+          |        value: { data: "some_config_data_1" }
+          |      },
+          |    ],
+          |    setting: [
+          |      {
+          |        key: "some_setting_key_1",
+          |        value: { data: "some_setting_data_1" }
+          |      },
+          |      {
+          |        key: "some_setting_key_2",
+          |        value: { data: "some_setting_data_2" }
+          |      },
+          |    ],
+          |    extra: [
+          |      {
+          |        key: "some_extra_key_1",
+          |        value: "some_extra_data_1"
+          |      },
+          |    ],
+          |  };
+          |
+          |  string id = 1;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .prune("wire.issue.Options#config")
+        .build(),
+    )
+    assertThat(pruned.protoFile("test.proto")!!.toSchema())
+      .isEqualTo(
+        """
+         |// Proto schema formatted by Wire, do not edit.
+         |// Source: test.proto
+         |
+         |syntax = "proto3";
+         |
+         |package wire.issue;
+         |
+         |import "google/protobuf/descriptor.proto";
+         |
+         |message Options {
+         |  map<string, SettingPayload> setting = 2;
+         |
+         |  map<string, string> extra = 3;
+         |}
+         |
+         |message SettingPayload {
+         |  optional string data = 1;
+         |}
+         |
+         |message SomeMessage {
+         |  option (wire.issue.opt) = {
+         |    setting: [
+         |      {
+         |        key: "some_setting_key_1",
+         |        value: {
+         |          data: "some_setting_data_1"
+         |        }
+         |      },
+         |      {
+         |        key: "some_setting_key_2",
+         |        value: {
+         |          data: "some_setting_data_2"
+         |        }
+         |      }
+         |    ],
+         |    extra: [
+         |      {
+         |        key: "some_extra_key_1",
+         |        value: "some_extra_data_1"
+         |      }
+         |    ]
+         |  };
+         |
+         |  string id = 1;
+         |}
+         |
+         |extend google.protobuf.MessageOptions {
+         |  repeated Options opt = 80000;
+         |}
+          |
+        """.trimMargin(),
+      )
+  }
+
+  @Ignore("Pruning inlined map options is not supported")
+  @Test
+  fun pruneCanHandleInlinedOptionTypeWithMapFields() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+          |syntax = "proto3";
+          |
+          |import "google/protobuf/descriptor.proto";
+          |
+          |package wire.issue;
+          |
+          |message Options {
+          |  map<string, ConfigPayload> config = 1;
+          |  map<string, SettingPayload> setting = 2;
+          |  map<string, string> extra = 3;
+          |}
+          |
+          |message ConfigPayload {
+          |  optional string data = 1;
+          |}
+          |
+          |message SettingPayload {
+          |  optional string data = 1;
+          |}
+          |
+          |extend google.protobuf.MessageOptions {
+          |  repeated Options opt = 80000;
+          |}
+          |
+          |message SomeMessage {
+          |  option (wire.issue.opt) = {
+          |    config: [
+          |      {
+          |        key: "some_config_key_1",
+          |        value: { data: "some_config_data_1" }
+          |      },
+          |    ],
+          |    setting: [
+          |      {
+          |        key: "some_setting_key_1",
+          |        value: { data: "some_setting_data_1" }
+          |      },
+          |      {
+          |        key: "some_setting_key_2",
+          |        value: { data: "some_setting_data_2" }
+          |      },
+          |    ],
+          |    extra: [
+          |      {
+          |        key: "some_extra_key_1",
+          |        value: "some_extra_data_1"
+          |      },
+          |    ],
+          |  };
+          |
+          |  string id = 1;
+          |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .prune("wire.issue.ConfigPayload")
+        .build(),
+    )
+    assertThat(pruned.protoFile("test.proto")!!.toSchema())
+      .isEqualTo(
+        """
+         |// Proto schema formatted by Wire, do not edit.
+         |// Source: test.proto
+         |
+         |syntax = "proto3";
+         |
+         |package wire.issue;
+         |
+         |import "google/protobuf/descriptor.proto";
+         |
+         |message Options {
+         |  map<string, SettingPayload> setting = 2;
+         |
+         |  map<string, string> extra = 3;
+         |}
+         |
+         |message SettingPayload {
+         |  optional string data = 1;
+         |}
+         |
+         |message SomeMessage {
+         |  option (wire.issue.opt) = {
+         |    setting: [
+         |      {
+         |        key: "some_setting_key_1",
+         |        value: {
+         |          data: "some_setting_data_1"
+         |        }
+         |      },
+         |      {
+         |        key: "some_setting_key_2",
+         |        value: {
+         |          data: "some_setting_data_2"
+         |        }
+         |      }
+         |    ],
+         |    extra: [
+         |      {
+         |        key: "some_extra_key_1",
+         |        value: "some_extra_data_1"
+         |      }
+         |    ]
+         |  };
+         |
+         |  string id = 1;
+         |}
+         |
+         |extend google.protobuf.MessageOptions {
+         |  repeated Options opt = 80000;
+         |}
+          |
+        """.trimMargin(),
       )
   }
 
@@ -3333,3 +3669,6 @@ class PrunerTest {
     assertThat(bookType.field("title")).isNotNull()
   }
 }
+
+// Used so that spotless or the IDE doesn't trim them away.
+private const val space = " "
