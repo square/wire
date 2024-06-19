@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 5.0.0-alpha03
+---------------------
+
+_2024-06-19_
+
+### JSON
+
+* A performance degradation in JSON serialization was added in the previous `5.0.0` alphas. This
+  change has been reverted.
+
 Version 5.0.0-alpha02
 ---------------------
 
