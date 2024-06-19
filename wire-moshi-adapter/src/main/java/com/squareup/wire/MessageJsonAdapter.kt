@@ -71,29 +71,14 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
         continue
       }
       val index = option / 2
-      val fieldBinding = messageAdapter.fieldBindingsArray[index]
 
-      // We peekJson in order to be able to read the value twice if need to access for building
-      // unknown values.
-      val peekInput = input.peekJson()
-      val value = jsonAdapters[index].fromJson(peekInput)
-      val protoAdapter = fieldBinding.adapter
-      if ((value as? WireEnum)?.value == -1 &&
-        protoAdapter.syntax == Syntax.PROTO_3 &&
-        protoAdapter is EnumAdapter<*>
-      ) {
-        // The tag for this enum's constant is unknown to our runtime. It has been assigned  to
-        // `UNRECOGNIZED(-1)` and we put its actual value in the unknown fields.
-        builder.addUnknownField(fieldBinding.tag, FieldEncoding.VARINT, input.nextInt())
-      } else {
-        // We need to skip it since we passed our peeked Json to the json adapter.
-        input.skipValue()
-      }
+      val value = jsonAdapters[index].fromJson(input)
 
       // "If a value is missing in the JSON-encoded data or if its value is null, it will be
       // interpreted as the appropriate default value when parsed into a protocol buffer."
       if (value == null) continue
 
+      val fieldBinding = messageAdapter.fieldBindingsArray[index]
       fieldBinding.set(builder, value)
     }
     input.endObject()
