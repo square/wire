@@ -1845,21 +1845,35 @@ class SwiftGenerator private constructor(
       fun putAll(enclosingClassName: DeclaredTypeName?, types: List<Type>) {
         for (type in types) {
           val protoType = type.type
-          val name = protoType.simpleName
+          val simpleName = protoType.simpleName
 
           val className = if (enclosingClassName != null) {
-            // Temporary work around for https://bugs.swift.org/browse/SR-13160.
-            val safeName = if (name == "Type") "Type_" else name
+            // TODO use a NameAllocator
+            val safeName = if (simpleName == "Type") {
+              // Foo.Type is effectively reserved for the comppiler
+              "Type_"
+            } else {
+              simpleName
+            }
 
             enclosingClassName.nestedType(safeName, alwaysQualify = true)
           } else {
+            // TODO use a NameAllocator
+            val safeName = if (simpleName == "Error") {
+              // Error is _way_ too common to pollute the developer's namespace
+              "Error_"
+            } else {
+              simpleName
+            }
+
             val moduleName = existingTypeModuleName[protoType] ?: ""
             // In some cases a proto declares a message that collides with built-in Foundation and Swift stdlib
             // types. For those we always qualify the type name to disambiguate.
-            if (name in SWIFT_COMMON_TYPES) {
-              DeclaredTypeName.qualifiedTypeName("$moduleName.$name")
+
+            if (simpleName in SWIFT_COMMON_TYPES) {
+              DeclaredTypeName.qualifiedTypeName("$moduleName.$safeName")
             } else {
-              DeclaredTypeName(moduleName, name)
+              DeclaredTypeName(moduleName, safeName)
             }
           }
 

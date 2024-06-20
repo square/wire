@@ -18,7 +18,19 @@ syntax = "proto2";
 package squareup.protos.kotlin.swift_modules;
 
 message SwiftEdgeCases {
+  enum Error {
+    UNKNOWN = 0;
+    INNER_BAD_VALUE = 1;
+  }
+
+  enum Type {
+    INACTIVE = 0;
+    ACTIVE = 1;
+  }
+
   optional string return = 1;
+  optional Error error = 2;
+  optional Type type = 3;
 }
 
 message Screen {
@@ -26,4 +38,9 @@ message Screen {
     string oneof_string = 1;
     int32 oneof_int32 = 2;
   }
+}
+
+enum Error {
+  UNKNOWN = 0;
+  BAD_VALUE = 1;
 }
