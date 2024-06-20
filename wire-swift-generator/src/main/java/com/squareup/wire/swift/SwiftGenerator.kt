@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.swift
 
+import com.squareup.wire.Syntax.Edition
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.internal.camelCase
@@ -601,7 +602,9 @@ class SwiftGenerator private constructor(
           // Declare locals into which everything is written before promoting to members.
           type.declaredFields.forEach { field ->
             val localType = when (type.syntax) {
-              PROTO_2 -> if (field.isRepeated || field.isMap) {
+              is Edition,
+              PROTO_2,
+              -> if (field.isRepeated || field.isMap) {
                 field.typeName
               } else {
                 field.typeName.makeOptional()
@@ -614,7 +617,9 @@ class SwiftGenerator private constructor(
             }
 
             val initializer = when (type.syntax) {
-              PROTO_2 -> when {
+              is Edition,
+              PROTO_2,
+              -> when {
                 field.isMap -> "[:]"
                 field.isRepeated -> "[]"
                 else -> "nil"
@@ -696,7 +701,9 @@ class SwiftGenerator private constructor(
             val hasPropertyWrapper = !isIndirect(type, field) && (field.defaultedValue != null || field.isProtoDefaulted)
 
             val initializer = when (type.syntax) {
-              PROTO_2 -> if (field.isOptional || field.isRepeated || field.isMap) {
+              is Edition,
+              PROTO_2,
+              -> if (field.isOptional || field.isRepeated || field.isMap) {
                 CodeBlock.of("%N", field.safeName)
               } else {
                 CodeBlock.of("try %1T.checkIfMissing(%2N, %3S)", structType, field.safeName, field.name)
@@ -780,13 +787,17 @@ class SwiftGenerator private constructor(
 
   private val MessageType.protoCodableType: DeclaredTypeName
     get() = when (syntax) {
-      PROTO_2 -> proto2Codable
+      is Edition,
+      PROTO_2,
+      -> proto2Codable
       PROTO_3 -> proto3Codable
     }
 
   private val EnumType.protoCodableType: DeclaredTypeName
     get() = when (syntax) {
-      PROTO_2 -> proto2Enum
+      is Edition,
+      PROTO_2,
+      -> proto2Enum
       PROTO_3 -> proto3Enum
     }
 

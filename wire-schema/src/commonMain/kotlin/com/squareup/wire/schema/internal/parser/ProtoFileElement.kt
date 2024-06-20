@@ -16,6 +16,7 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.Edition
 import com.squareup.wire.schema.Location
 import kotlin.jvm.JvmStatic
 
@@ -37,7 +38,11 @@ data class ProtoFileElement(
 
     if (syntax != null) {
       append('\n')
-      append("syntax = \"$syntax\";\n")
+      when (syntax) {
+        is Edition -> append("edition")
+        else -> append("syntax")
+      }
+      append(" = \"$syntax\";\n")
     }
     if (packageName != null) {
       append('\n')
