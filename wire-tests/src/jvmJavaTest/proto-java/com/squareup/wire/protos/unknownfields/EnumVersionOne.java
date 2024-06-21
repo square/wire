@@ -42,7 +42,7 @@ public enum EnumVersionOne implements WireEnum {
 
   private static final class ProtoAdapter_EnumVersionOne extends EnumAdapter<EnumVersionOne> {
     ProtoAdapter_EnumVersionOne() {
-      super(EnumVersionOne.class, Syntax.PROTO_2, null);
+      super(EnumVersionOne.class, Syntax.PROTO_2.INSTANCE, null);
     }
 
     @Override

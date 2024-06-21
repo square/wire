@@ -28,6 +28,11 @@ wire {
     boxOneOfsMinSize = 1
   }
 
+  java {
+    includes = listOf("squareup.java.*")
+    out = "src/main/java"
+  }
+
   kotlin {
     out = "src/main/kotlin"
   }

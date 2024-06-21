@@ -39,7 +39,7 @@ public enum G implements WireEnum {
 
   private static final class ProtoAdapter_G extends EnumAdapter<G> {
     ProtoAdapter_G() {
-      super(G.class, Syntax.PROTO_2, null);
+      super(G.class, Syntax.PROTO_2.INSTANCE, null);
     }
 
     @Override
