@@ -34,7 +34,12 @@ class Options(
 
   val elements: List<OptionElement>
     get() {
-      return entries?.map { it.optionElement } ?: optionElements
+      return entries?.map {
+        // TODO(Benoit) this property is used to go from `Options` to `List<OptionElement>` but this
+        //  doesn't take into account what has been pruned. We should consume `it.value`  somehow and
+        //  select the option elements we are to fetch, or not.
+        it.optionElement
+      } ?: optionElements
     }
 
   val map: Map<ProtoMember, Any?>
@@ -322,7 +327,16 @@ class Options(
     when (o) {
       is Map<*, *> -> {
         for ((key, value) in o) {
-          val protoMember = key as ProtoMember
+          val protoMember = when (key) {
+            is ProtoMember -> key
+            else -> {
+              // When the key isn't a `ProtoMember`, this key/value pair is a inlined value of a map
+              // field. We don't need to track the key type in map fields for they are always of
+              // scalar types. We however have to check the value type.
+              gatherFields(sink, type, value!!, pruningRules)
+              continue
+            }
+          }
           if (pruningRules.prunes(protoMember)) continue
           sink.getOrPut(type, ::ArrayList).add(protoMember)
           gatherFields(sink, protoMember.type, value!!, pruningRules)
@@ -365,7 +379,21 @@ class Options(
       o is Map<*, *> -> {
         val map = mutableMapOf<ProtoMember, Any>()
         for ((key, value) in o) {
-          val protoMember = key as ProtoMember
+          val protoMember = when (key) {
+            is ProtoMember -> key
+            else -> {
+              // When the key isn't a `ProtoMember`, this key/value pair is a inlined value of a map
+              // field.
+              val retainedValue = retainAll(schema, markSet, type, value!!)
+              // if `retainedValue` is a map, its value represents an inline message, and we need to
+              // mark the proto member.
+              if (retainedValue is Map<*, *>) {
+                val (k, v) = retainedValue.entries.single()
+                map[k as ProtoMember] = v!!
+              }
+              continue
+            }
+          }
           val isCoreMemberOfGoogleProtobuf =
             protoMember.type in GOOGLE_PROTOBUF_OPTION_TYPES &&
               !schema.isExtensionField(protoMember)
