@@ -388,8 +388,7 @@ class Options(
               // if `retainedValue` is a map, its value represents an inline message, and we need to
               // mark the proto member.
               if (retainedValue is Map<*, *>) {
-                check(retainedValue.size == 1)
-                val (k, v) = retainedValue.entries.first()
+                val (k, v) = retainedValue.entries.single()
                 map[k as ProtoMember] = v!!
               }
               continue
