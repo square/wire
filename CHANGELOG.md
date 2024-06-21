@@ -1,6 +1,19 @@
 Change Log
 ==========
 
+Version 5.0.0-alpha04
+---------------------
+
+_2024-06-21_
+
+### Common
+
+* Don't crash with inlined map options (#2997)
+
+### Swift
+
+* Escape `error` names in some cases (#2999 by [Adam Lickel][lickel])
+
 Version 5.0.0-alpha03
 ---------------------
 
