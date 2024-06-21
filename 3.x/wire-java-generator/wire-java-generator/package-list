@@ -1,0 +1,30 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.squareup.wire.java////PointingToDeclaration/wire-java-generator/com.squareup.wire.java/index.html
+$dokka.location:com.squareup.wire.java/JavaGenerator///PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/index.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/abstractAdapterName/#com.squareup.wire.schema.ProtoType/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/abstract-adapter-name.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/builtInType/#com.squareup.wire.schema.ProtoType/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/built-in-type.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/generateAdapterForCustomType/#com.squareup.wire.schema.Type/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/generate-adapter-for-custom-type.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/generateOptionType/#com.squareup.wire.schema.Extend#com.squareup.wire.schema.Field/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/generate-option-type.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/generateType/#com.squareup.wire.schema.Type/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/generate-type.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/generatedTypeName/#com.squareup.wire.schema.ProtoMember/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/generated-type-name.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/generatedTypeName/#com.squareup.wire.schema.Type/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/generated-type-name.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/get/#com.squareup.wire.schema.Schema/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/get.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/isEnum/#com.squareup.wire.schema.ProtoType/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/is-enum.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/schema/#/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/schema.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/typeName/#com.squareup.wire.schema.ProtoType/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/type-name.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/withAndroid/#boolean/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/with-android.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/withAndroidAnnotations/#boolean/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/with-android-annotations.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/withBuildersOnly/#boolean/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/with-builders-only.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/withCompact/#boolean/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/with-compact.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/withOptions/#boolean#boolean/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/with-options.html
+$dokka.location:com.squareup.wire.java/JavaGenerator/withProfile/#com.squareup.wire.schema.Profile/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-generator/with-profile.html
+$dokka.location:com.squareup.wire.java/JavaSchemaHandler.Companion///PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-schema-handler/-companion/index.html
+$dokka.location:com.squareup.wire.java/JavaSchemaHandler///PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-schema-handler/index.html
+$dokka.location:com.squareup.wire.java/JavaSchemaHandler/JavaSchemaHandler/#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-schema-handler/-java-schema-handler.html
+$dokka.location:com.squareup.wire.java/JavaSchemaHandler/handle/#com.squareup.wire.schema.Extend#com.squareup.wire.schema.Field#com.squareup.wire.schema.SchemaHandler.Context/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-schema-handler/handle.html
+$dokka.location:com.squareup.wire.java/JavaSchemaHandler/handle/#com.squareup.wire.schema.Schema#com.squareup.wire.schema.SchemaHandler.Context/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-schema-handler/handle.html
+$dokka.location:com.squareup.wire.java/JavaSchemaHandler/handle/#com.squareup.wire.schema.Service#com.squareup.wire.schema.SchemaHandler.Context/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-schema-handler/handle.html
+$dokka.location:com.squareup.wire.java/JavaSchemaHandler/handle/#com.squareup.wire.schema.Type#com.squareup.wire.schema.SchemaHandler.Context/PointingToDeclaration/wire-java-generator/com.squareup.wire.java/-java-schema-handler/handle.html
+com.squareup.wire.java
+
