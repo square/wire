@@ -23,16 +23,16 @@ import kotlin.Suppress
 import kotlin.Unit
 import okio.ByteString
 
-@MyMessageOptionTwoOption(91011.0f)
-@MyMessageOptionFourOption(FooBar.FooBarBazEnum.FOO)
-@MyMessageOptionSevenOption(value = [
+@MyMessageOptionTwoMessageOption(91011.0f)
+@MyMessageOptionFourMessageOption(FooBar.FooBarBazEnum.FOO)
+@MyMessageOptionSevenMessageOption(value = [
   33
 ])
-@MyMessageOptionEightOption(value = [
+@MyMessageOptionEightMessageOption(value = [
   "g",
   "h"
 ])
-@MyMessageOptionNineOption(value = [
+@MyMessageOptionNineMessageOption(value = [
   ForeignEnum.BAV
 ])
 public class MessageWithOptions(

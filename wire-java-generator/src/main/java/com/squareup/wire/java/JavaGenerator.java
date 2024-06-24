@@ -423,7 +423,9 @@ public final class JavaGenerator {
         if (!eligibleAsAnnotationMember(schema, field)) continue;
 
         ProtoMember protoMember = extend.member(field);
-        memberToJavaName.put(protoMember, annotationName(protoFile, field, new ClassNameFactory()));
+        memberToJavaName.put(
+            protoMember,
+            annotationName(protoFile, extend.getType(), field, new ClassNameFactory()));
       }
     }
 
@@ -2384,7 +2386,8 @@ public final class JavaGenerator {
     if (!eligibleAsAnnotationMember(schema, field)) return null;
 
     ProtoFile protoFile = schema.protoFile(field.getLocation().getPath());
-    ClassName type = annotationName(protoFile, field, new ClassNameFactory());
+    ClassName type =
+        annotationName(protoFile, protoMember.getType(), field, new ClassNameFactory());
     CodeBlock fieldValue = fieldInitializer(field.getType(), value, true);
 
     return AnnotationSpec.builder(type).addMember("value", fieldValue).build();

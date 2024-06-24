@@ -17,9 +17,9 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import okio.ByteString;
-import squareup.protos.extension_collision_1.AOption;
-import squareup.protos.extension_collision_1.BOption;
-import squareup.protos.extension_collision_2.COption;
+import squareup.protos.extension_collision_1.AFieldOption;
+import squareup.protos.extension_collision_1.BFieldOption;
+import squareup.protos.extension_collision_2.CFieldOption;
 
 public final class CollisionSubject extends Message<CollisionSubject, CollisionSubject.Builder> {
   public static final ProtoAdapter<CollisionSubject> ADAPTER = new ProtoAdapter_CollisionSubject();
@@ -28,10 +28,10 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
 
   public static final String DEFAULT_F = "";
 
-  @AOption("1a")
-  @BOption("1b")
-  @squareup.protos.extension_collision_2.AOption("2a")
-  @COption("2c")
+  @AFieldOption("1a")
+  @BFieldOption("1b")
+  @squareup.protos.extension_collision_2.AFieldOption("2a")
+  @CFieldOption("2c")
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING"

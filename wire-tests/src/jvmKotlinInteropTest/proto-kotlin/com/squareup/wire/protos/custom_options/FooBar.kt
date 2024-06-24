@@ -21,7 +21,7 @@ import com.squareup.wire.`internal`.checkElementsNotNull
 import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.sanitize
 import com.squareup.wire.protos.kotlin.foreign.ForeignEnum
-import com.squareup.wire.protos.kotlin.foreign.ForeignEnumValueOptionOption
+import com.squareup.wire.protos.kotlin.foreign.ForeignEnumValueOptionEnumValueOption
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Double
@@ -39,7 +39,7 @@ import kotlin.collections.List
 import okio.ByteString
 
 public class FooBar(
-  @MyFieldOptionOneOption(17)
+  @MyFieldOptionOneFieldOption(17)
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
@@ -47,7 +47,7 @@ public class FooBar(
   )
   @JvmField
   public val foo: Int? = null,
-  @MyFieldOptionTwoOption(33.5f)
+  @MyFieldOptionTwoFieldOption(33.5f)
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
@@ -55,7 +55,7 @@ public class FooBar(
   )
   @JvmField
   public val bar: String? = null,
-  @MyFieldOptionThreeOption(FooBarBazEnum.BAR)
+  @MyFieldOptionThreeFieldOption(FooBarBazEnum.BAR)
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}Nested#ADAPTER",
@@ -63,16 +63,16 @@ public class FooBar(
   )
   @JvmField
   public val baz: Nested? = null,
-  @MyFieldOptionOneOption(18)
-  @MyFieldOptionTwoOption(34.5f)
-  @MyFieldOptionFiveOption(value = [
+  @MyFieldOptionOneFieldOption(18)
+  @MyFieldOptionTwoFieldOption(34.5f)
+  @MyFieldOptionFiveFieldOption(value = [
     3
   ])
-  @MyFieldOptionSixOption(value = [
+  @MyFieldOptionSixFieldOption(value = [
     "a",
     "b"
   ])
-  @MyFieldOptionSevenOption(value = [
+  @MyFieldOptionSevenFieldOption(value = [
     ForeignEnum.BAV,
     ForeignEnum.BAX
   ])
@@ -115,7 +115,7 @@ public class FooBar(
   rep: List<FooBarBazEnum> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<FooBar, FooBar.Builder>(ADAPTER, unknownFields) {
-  @MyFieldOptionTwoOption(99.9f)
+  @MyFieldOptionTwoFieldOption(99.9f)
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
@@ -673,21 +673,21 @@ public class FooBar(
     }
   }
 
-  @EnumOptionOption(true)
-  @FoobarStringOption("foobar")
+  @EnumOptionEnumOption(true)
+  @FoobarStringEnumOption("foobar")
   public enum class FooBarBazEnum(
     override val `value`: Int,
   ) : WireEnum {
-    @EnumValueOptionOption(17)
+    @EnumValueOptionEnumValueOption(17)
     FOO(1),
-    @ForeignEnumValueOptionOption(true)
-    @RepeatedEnumValueOptionOneOption(value = [
+    @ForeignEnumValueOptionEnumValueOption(true)
+    @RepeatedEnumValueOptionOneEnumValueOption(value = [
       3
     ])
     BAR(2),
-    @EnumValueOptionOption(18)
-    @ForeignEnumValueOptionOption(false)
-    @RepeatedEnumValueOptionTwoOption(value = [
+    @EnumValueOptionEnumValueOption(18)
+    @ForeignEnumValueOptionEnumValueOption(false)
+    @RepeatedEnumValueOptionTwoEnumValueOption(value = [
       "c",
       "d"
     ])
@@ -716,7 +716,7 @@ public class FooBar(
 
   @Retention(AnnotationRetention.RUNTIME)
   @Target(AnnotationTarget.CLASS)
-  public annotation class FoobarStringOption(
+  public annotation class FoobarStringEnumOption(
     public val `value`: String,
   )
 }

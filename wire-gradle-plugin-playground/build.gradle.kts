@@ -24,6 +24,8 @@ wire {
   kotlin {
     singleMethodServices = true
     escapeKotlinKeywords = true
+    emitDeclaredOptions = true
+    emitAppliedOptions = true
   }
 }
 

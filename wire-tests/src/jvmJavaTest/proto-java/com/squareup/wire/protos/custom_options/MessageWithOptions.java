@@ -17,14 +17,14 @@ import java.lang.String;
 import java.lang.StringBuilder;
 import okio.ByteString;
 
-@MyMessageOptionTwoOption(91011.0f)
-@MyMessageOptionFourOption(FooBar.FooBarBazEnum.FOO)
-@MyMessageOptionSevenOption({
+@MyMessageOptionTwoMessageOption(91011.0f)
+@MyMessageOptionFourMessageOption(FooBar.FooBarBazEnum.FOO)
+@MyMessageOptionSevenMessageOption({
         33})
-@MyMessageOptionEightOption({
+@MyMessageOptionEightMessageOption({
         "g",
         "h"})
-@MyMessageOptionNineOption({
+@MyMessageOptionNineMessageOption({
         ForeignEnum.BAV})
 public final class MessageWithOptions extends Message<MessageWithOptions, MessageWithOptions.Builder> {
   public static final ProtoAdapter<MessageWithOptions> ADAPTER = new ProtoAdapter_MessageWithOptions();

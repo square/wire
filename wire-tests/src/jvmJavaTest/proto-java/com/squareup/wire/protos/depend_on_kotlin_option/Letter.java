@@ -11,7 +11,7 @@ import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
-import com.squareup.wire.protos.custom_options.MyFieldOptionOneOption;
+import com.squareup.wire.protos.custom_options.MyFieldOptionOneFieldOption;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -26,7 +26,7 @@ public final class Letter extends Message<Letter, Letter.Builder> {
 
   public static final String DEFAULT_SUBJECT = "";
 
-  @MyFieldOptionOneOption(12)
+  @MyFieldOptionOneFieldOption(12)
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING"

@@ -8,8 +8,8 @@ import com.squareup.wire.GrpcCall
 import com.squareup.wire.Service
 import kotlin.Suppress
 
-@ServiceOptionOneOption(456)
+@ServiceOptionOneServiceOption(456)
 public interface ServiceWithOptionsClient : Service {
-  @MethodOptionOneOption(789)
+  @MethodOptionOneMethodOption(789)
   public fun MethodWithOptions(): GrpcCall<FooBar, FooBar>
 }

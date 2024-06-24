@@ -1262,7 +1262,7 @@ class WirePluginTest {
     val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull()
-    assertThat(result.output).contains("Writing squareup.options.DocumentationUrlOption")
+    assertThat(result.output).contains("Writing squareup.options.DocumentationUrlMessageOption")
 
     val generatedProto = File(
       fixtureRoot,
@@ -1270,7 +1270,7 @@ class WirePluginTest {
     )
     val octagon = generatedProto.readText()
     assertThat(octagon)
-      .contains("""@DocumentationUrlOption("https://en.wikipedia.org/wiki/Octagon")""")
+      .contains("""@DocumentationUrlMessageOption("https://en.wikipedia.org/wiki/Octagon")""")
   }
 
   @Test
@@ -1280,7 +1280,7 @@ class WirePluginTest {
     val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull()
-    assertThat(result.output).contains("Writing squareup.options.DocumentationUrlOption")
+    assertThat(result.output).contains("Writing squareup.options.DocumentationUrlMessageOption")
 
     val generatedProto = File(
       fixtureRoot,
@@ -1288,7 +1288,7 @@ class WirePluginTest {
     )
     val octagon = generatedProto.readText()
     assertThat(octagon)
-      .contains("""@DocumentationUrlOption("https://en.wikipedia.org/wiki/Octagon")""")
+      .contains("""@DocumentationUrlMessageOption("https://en.wikipedia.org/wiki/Octagon")""")
   }
 
   @Test
@@ -1298,8 +1298,8 @@ class WirePluginTest {
     val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull()
-    assertThat(result.output).contains("Writing squareup.options.DocumentationUrlOption")
-    assertThat(result.output).doesNotContain("Writing squareup.other_options.CustomerSupportUrlOption")
+    assertThat(result.output).contains("Writing squareup.options.DocumentationUrlMessageOption")
+    assertThat(result.output).doesNotContain("Writing squareup.other_options.CustomerSupportUrlMessageOption")
 
     val generatedProto = File(
       fixtureRoot,
@@ -1307,10 +1307,40 @@ class WirePluginTest {
     )
     val octagon = generatedProto.readText()
     assertThat(octagon)
-      .contains("""@DocumentationUrlOption("https://en.wikipedia.org/wiki/Octagon")""")
+      .contains("""@DocumentationUrlMessageOption("https://en.wikipedia.org/wiki/Octagon")""")
     // Although we didn't generate the annotation, we still apply it!
     assertThat(octagon)
-      .contains("""@CustomerSupportUrlOption("https://en.wikipedia.org/wiki/Customer_support")""")
+      .contains("""@CustomerSupportUrlMessageOption("https://en.wikipedia.org/wiki/Customer_support")""")
+  }
+
+  @Test
+  fun emitOptionsWithoutConflicts() {
+    val fixtureRoot = File("src/test/projects/emit-options-without-conflicts")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull()
+    assertThat(result.output).contains("Writing squareup.options.DocumentationUrlMessageOption")
+    assertThat(result.output).contains("Writing squareup.options.DocumentationUrlFieldOption")
+
+    val generatedProto = File(
+      fixtureRoot,
+      "build/generated/source/wire/squareup/polygons/Octagon.kt",
+    )
+    val octagon = generatedProto.readText()
+    assertThat(octagon)
+      .contains(
+        """@DocumentationUrlMessageOption("https://en.wikipedia.org/wiki/Octagon")
+          |public class Octagon(
+        """.trimMargin(),
+      )
+    // Although we didn't generate the annotation, we still apply it!
+    assertThat(octagon)
+      .contains(
+        """  @DocumentationUrlFieldOption("https://en.wikipedia.org/wiki/stop")
+          |  @field:WireField(
+        """.trimMargin(),
+      )
   }
 
   @Test

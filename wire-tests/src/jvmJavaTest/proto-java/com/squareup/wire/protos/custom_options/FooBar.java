@@ -14,7 +14,7 @@ import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import com.squareup.wire.protos.foreign.ForeignEnum;
-import com.squareup.wire.protos.foreign.ForeignEnumValueOptionOption;
+import com.squareup.wire.protos.foreign.ForeignEnumValueOptionEnumValueOption;
 import java.io.IOException;
 import java.lang.Double;
 import java.lang.Float;
@@ -49,35 +49,35 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
   public static final String DEFAULT_MORE_STRING = "";
 
-  @MyFieldOptionOneOption(17)
+  @MyFieldOptionOneFieldOption(17)
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer foo;
 
-  @MyFieldOptionTwoOption(33.5f)
+  @MyFieldOptionTwoFieldOption(33.5f)
   @WireField(
       tag = 2,
       adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String bar;
 
-  @MyFieldOptionThreeOption(FooBarBazEnum.BAR)
+  @MyFieldOptionThreeFieldOption(FooBarBazEnum.BAR)
   @WireField(
       tag = 3,
       adapter = "com.squareup.wire.protos.custom_options.FooBar$Nested#ADAPTER"
   )
   public final Nested baz;
 
-  @MyFieldOptionOneOption(18)
-  @MyFieldOptionTwoOption(34.5f)
-  @MyFieldOptionFiveOption({
+  @MyFieldOptionOneFieldOption(18)
+  @MyFieldOptionTwoFieldOption(34.5f)
+  @MyFieldOptionFiveFieldOption({
           3})
-  @MyFieldOptionSixOption({
+  @MyFieldOptionSixFieldOption({
           "a",
           "b"})
-  @MyFieldOptionSevenOption({
+  @MyFieldOptionSevenFieldOption({
           ForeignEnum.BAV,
           ForeignEnum.BAX})
   @WireField(
@@ -86,7 +86,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   )
   public final Long qux;
 
-  @MyFieldOptionTwoOption(99.9f)
+  @MyFieldOptionTwoFieldOption(99.9f)
   @WireField(
       tag = 5,
       adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
@@ -570,20 +570,20 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     }
   }
 
-  @EnumOptionOption(true)
-  @FoobarStringOption("foobar")
+  @EnumOptionEnumOption(true)
+  @FoobarStringEnumOption("foobar")
   public enum FooBarBazEnum implements WireEnum {
-    @EnumValueOptionOption(17)
+    @EnumValueOptionEnumValueOption(17)
     FOO(1),
 
-    @ForeignEnumValueOptionOption(true)
-    @RepeatedEnumValueOptionOneOption({
+    @ForeignEnumValueOptionEnumValueOption(true)
+    @RepeatedEnumValueOptionOneEnumValueOption({
             3})
     BAR(2),
 
-    @EnumValueOptionOption(18)
-    @ForeignEnumValueOptionOption(false)
-    @RepeatedEnumValueOptionTwoOption({
+    @EnumValueOptionEnumValueOption(18)
+    @ForeignEnumValueOptionEnumValueOption(false)
+    @RepeatedEnumValueOptionTwoEnumValueOption({
             "c",
             "d"})
     BAZ(3);
@@ -627,7 +627,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
   @Retention(RetentionPolicy.RUNTIME)
   @Target(ElementType.TYPE)
-  public @interface FoobarStringOption {
+  public @interface FoobarStringEnumOption {
     String value();
   }
 

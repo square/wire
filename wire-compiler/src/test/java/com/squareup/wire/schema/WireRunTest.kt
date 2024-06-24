@@ -1154,13 +1154,13 @@ class WireRunTest {
     // TODO(jwilson): fix modules to treat extension fields as first-class objects.
     assertThat(fs.findFiles("gen/a")).containsExactlyInAnyOrderAsRelativePaths(
       "gen/a/example/A.java",
-      "gen/a/example/MapsToOption.java",
-      "gen/a/example/TypeOption.java",
+      "gen/a/example/MapsToFieldOption.java",
+      "gen/a/example/TypeMessageOption.java",
     )
     assertThat(fs.findFiles("gen/b")).containsExactlyInAnyOrderAsRelativePaths(
       "gen/b/example/B.java",
-      "gen/b/example/MapsToOption.java",
-      "gen/b/example/TypeOption.java",
+      "gen/b/example/MapsToFieldOption.java",
+      "gen/b/example/TypeMessageOption.java",
     )
   }
 
@@ -1200,7 +1200,7 @@ class WireRunTest {
     }
   }
 
-  @Test fun crashWhenExtendGenerationConflicts() {
+  @Test fun dontCrashWhenExtendGenerationAreSimilarlyNamed() {
     fs.add(
       "protos/zero/zero.proto",
       """
@@ -1227,16 +1227,11 @@ class WireRunTest {
       ),
     )
 
-    try {
-      wireRun.execute(fs, logger)
-      fail()
-    } catch (expected: IllegalStateException) {
-      assertThat(expected).hasMessage(
-        "Same file generated/java/same/package/DocumentationUrlOption.java is getting generated for different extends:\n" +
-          "  FieldOptions.documentation_url at protos/zero/zero.proto:4:1\n" +
-          "  MessageOptions.documentation_url at protos/zero/zero.proto:7:1",
-      )
-    }
+    wireRun.execute(fs, logger)
+    assertThat(fs.findFiles("generated/java")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/java/same/package/DocumentationUrlFieldOption.java",
+      "generated/java/same/package/DocumentationUrlMessageOption.java",
+    )
   }
 
   @Test fun javaDoesNotClaimServices() {
@@ -1427,13 +1422,13 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
     assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
-      "generated/java/squareup/options/DocumentationUrlOption.java",
-      "generated/kt/squareup/options/DocumentationUrlOption.kt",
+      "generated/java/squareup/options/DocumentationUrlMessageOption.java",
+      "generated/kt/squareup/options/DocumentationUrlMessageOption.kt",
     )
-    assertThat(fs.readUtf8("generated/java/squareup/options/DocumentationUrlOption.java"))
-      .contains("public @interface DocumentationUrlOption")
-    assertThat(fs.readUtf8("generated/kt/squareup/options/DocumentationUrlOption.kt"))
-      .contains("annotation class DocumentationUrlOption")
+    assertThat(fs.readUtf8("generated/java/squareup/options/DocumentationUrlMessageOption.java"))
+      .contains("public @interface DocumentationUrlMessageOption")
+    assertThat(fs.readUtf8("generated/kt/squareup/options/DocumentationUrlMessageOption.kt"))
+      .contains("annotation class DocumentationUrlMessageOption")
   }
 
   @Test
@@ -1484,9 +1479,9 @@ class WireRunTest {
       "generated/kt/squareup/polygons/Octagon.kt",
     )
     assertThat(fs.readUtf8("generated/java/squareup/polygons/Octagon.java"))
-      .contains("@DocumentationUrlOption(\"https://en.wikipedia.org/wiki/Octagon\")")
+      .contains("@DocumentationUrlMessageOption(\"https://en.wikipedia.org/wiki/Octagon\")")
     assertThat(fs.readUtf8("generated/kt/squareup/polygons/Octagon.kt"))
-      .contains("@DocumentationUrlOption(\"https://en.wikipedia.org/wiki/Octagon\")")
+      .contains("@DocumentationUrlMessageOption(\"https://en.wikipedia.org/wiki/Octagon\")")
   }
 
   @Test

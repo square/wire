@@ -2746,7 +2746,7 @@ class KotlinGenerator private constructor(
     if (!eligibleAsAnnotationMember(schema, field)) return null
 
     val protoFile: ProtoFile = schema.protoFile(field.location.path) ?: return null
-    val type: ClassName = annotationName(protoFile, field, ClassNameFactory())
+    val type: ClassName = annotationName(protoFile, protoMember.type, field, ClassNameFactory())
     val fieldValue = defaultFieldInitializer(field.type!!, value, annotation = true)
 
     return AnnotationSpec.builder(type)
@@ -3078,7 +3078,7 @@ class KotlinGenerator private constructor(
         for (field in extend.fields) {
           if (!eligibleAsAnnotationMember(schema, field)) continue
           val protoMember = extend.member(field)
-          memberToKotlinName[protoMember] = annotationName(protoFile, field, ClassNameFactory())
+          memberToKotlinName[protoMember] = annotationName(protoFile, extend.type!!, field, ClassNameFactory())
         }
       }
       for (type in types) {
