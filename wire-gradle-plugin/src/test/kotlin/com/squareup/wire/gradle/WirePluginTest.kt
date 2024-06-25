@@ -1314,6 +1314,36 @@ class WirePluginTest {
   }
 
   @Test
+  fun emitOptionsWithoutConflicts() {
+    val fixtureRoot = File("src/test/projects/emit-options-without-conflicts")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull()
+    assertThat(result.output).contains("Writing squareup.options.DocumentationUrlOption")
+    assertThat(result.output).contains("Writing squareup.options.DocumentationUrlFieldOption")
+
+    val generatedProto = File(
+      fixtureRoot,
+      "build/generated/source/wire/squareup/polygons/Octagon.kt",
+    )
+    val octagon = generatedProto.readText()
+    assertThat(octagon)
+      .contains(
+        """@DocumentationUrlOption("https://en.wikipedia.org/wiki/Octagon")
+          |public class Octagon(
+        """.trimMargin(),
+      )
+    // Although we didn't generate the annotation, we still apply it!
+    assertThat(octagon)
+      .contains(
+        """  @DocumentationUrlFieldOption("https://en.wikipedia.org/wiki/stop")
+          |  @field:WireField(
+        """.trimMargin(),
+      )
+  }
+
+  @Test
   fun kotlinEnumMode() {
     val fixtureRoot = File("src/test/projects/kotlin-enum-mode")
 

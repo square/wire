@@ -423,7 +423,22 @@ public final class JavaGenerator {
         if (!eligibleAsAnnotationMember(schema, field)) continue;
 
         ProtoMember protoMember = extend.member(field);
-        memberToJavaName.put(protoMember, annotationName(protoFile, field, new ClassNameFactory()));
+        ClassName annotationName =
+            annotationName(protoFile, field, new ClassNameFactory(), "Option");
+        if (memberToJavaName.containsValue(annotationName)) {
+          // To avoid conflicts for same named options of different types, we generate a more
+          // precise name. i.e. 'ObjectiveOption' will become 'ObjectiveFieldOption'.
+          String extendSimpleName = extend.getType().getSimpleName();
+          memberToJavaName.put(
+              protoMember,
+              annotationName(
+                  protoFile,
+                  field,
+                  new ClassNameFactory(),
+                  extendSimpleName.substring(0, extendSimpleName.length() - 1)));
+        } else {
+          memberToJavaName.put(protoMember, annotationName);
+        }
       }
     }
 
@@ -2383,8 +2398,7 @@ public final class JavaGenerator {
     if (field == null) return null;
     if (!eligibleAsAnnotationMember(schema, field)) return null;
 
-    ProtoFile protoFile = schema.protoFile(field.getLocation().getPath());
-    ClassName type = annotationName(protoFile, field, new ClassNameFactory());
+    ClassName type = (ClassName) memberToJavaName.get(protoMember);
     CodeBlock fieldValue = fieldInitializer(field.getType(), value, true);
 
     return AnnotationSpec.builder(type).addMember("value", fieldValue).build();

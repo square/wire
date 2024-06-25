@@ -181,8 +181,13 @@ fun legacyQualifiedFieldName(field: Field): String {
   //   be the fully-qualified name, not this weird hybrid.
 }
 
-fun <T> annotationName(protoFile: ProtoFile, extension: Field, factory: NameFactory<T>): T {
-  val simpleName = camelCase(extension.name, true) + "Option"
+fun <T> annotationName(
+  protoFile: ProtoFile,
+  extension: Field,
+  factory: NameFactory<T>,
+  simpleNameSuffix: String = "Option",
+): T {
+  val simpleName = camelCase(extension.name, upperCamel = true) + simpleNameSuffix
   // collect class names: all enclosing message names plus simpleName
   val names = when (extension.namespaces.size) {
     // 0 means no package and no enclosing messages

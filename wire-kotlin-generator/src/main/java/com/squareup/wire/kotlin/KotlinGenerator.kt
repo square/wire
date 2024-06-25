@@ -2745,8 +2745,7 @@ class KotlinGenerator private constructor(
     val field: Field = schema.getField(protoMember) ?: return null
     if (!eligibleAsAnnotationMember(schema, field)) return null
 
-    val protoFile: ProtoFile = schema.protoFile(field.location.path) ?: return null
-    val type: ClassName = annotationName(protoFile, field, ClassNameFactory())
+    val type: ClassName = memberToKotlinName[protoMember] as ClassName
     val fieldValue = defaultFieldInitializer(field.type!!, value, annotation = true)
 
     return AnnotationSpec.builder(type)
@@ -3078,7 +3077,19 @@ class KotlinGenerator private constructor(
         for (field in extend.fields) {
           if (!eligibleAsAnnotationMember(schema, field)) continue
           val protoMember = extend.member(field)
-          memberToKotlinName[protoMember] = annotationName(protoFile, field, ClassNameFactory())
+          val annotationName = annotationName(protoFile, field, ClassNameFactory())
+          if (memberToKotlinName.containsValue(annotationName)) {
+            // To avoid conflicts for same named options of different types, we generate a more
+            // precise name. i.e. 'ObjectiveOption' will become 'ObjectiveFieldOption'.
+            memberToKotlinName[protoMember] = annotationName(
+              protoFile = protoFile,
+              extension = field,
+              factory = ClassNameFactory(),
+              simpleNameSuffix = extend.type!!.simpleName.substringBeforeLast('s'),
+            )
+          } else {
+            memberToKotlinName[protoMember] = annotationName
+          }
         }
       }
       for (type in types) {
