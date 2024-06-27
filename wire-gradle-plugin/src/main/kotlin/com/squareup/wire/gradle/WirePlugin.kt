@@ -190,17 +190,6 @@ class WirePlugin : Plugin<Project> {
           }
       }
 
-      // TODO: pair up generatedSourceDirectories with their targets so we can be precise.
-      for (generatedSourcesDirectory in generatedSourcesDirectories) {
-        val relativePath = generatedSourcesDirectory.toRelativeString(project.projectDir)
-        if (hasJavaOutput) {
-          source.javaSourceDirectorySet?.srcDir(relativePath)
-        }
-        if (hasKotlinOutput) {
-          source.kotlinSourceDirectorySet?.srcDir(relativePath)
-        }
-      }
-
       val taskName = "generate${source.name.capitalize()}Protos"
       val task = project.tasks.register(taskName, WireTask::class.java) { task: WireTask ->
         task.group = GROUP

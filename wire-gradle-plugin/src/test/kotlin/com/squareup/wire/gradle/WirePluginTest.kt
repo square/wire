@@ -1563,7 +1563,6 @@ class WirePluginTest {
     }
   }
 
-
   private fun GradleRunner.runFixture(
     root: File,
     action: GradleRunner.() -> BuildResult,
