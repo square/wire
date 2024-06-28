@@ -1200,7 +1200,7 @@ class WireRunTest {
     }
   }
 
-  @Test fun crashWhenExtendGenerationConflicts() {
+  @Test fun optionNameIsPreciseToAvoidConflict_java() {
     fs.add(
       "protos/zero/zero.proto",
       """
@@ -1227,16 +1227,45 @@ class WireRunTest {
       ),
     )
 
-    try {
-      wireRun.execute(fs, logger)
-      fail()
-    } catch (expected: IllegalStateException) {
-      assertThat(expected).hasMessage(
-        "Same file generated/java/same/package/DocumentationUrlOption.java is getting generated for different extends:\n" +
-          "  FieldOptions.documentation_url at protos/zero/zero.proto:4:1\n" +
-          "  MessageOptions.documentation_url at protos/zero/zero.proto:7:1",
-      )
-    }
+    wireRun.execute(fs, logger)
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/java/same/package/DocumentationUrlMessageOption.java",
+      "generated/java/same/package/DocumentationUrlOption.java",
+    )
+  }
+
+  @Test fun optionNameIsPreciseToAvoidConflict_kotlin() {
+    fs.add(
+      "protos/zero/zero.proto",
+      """
+          |package zero;
+          |option java_package = "same.package";
+          |import "google/protobuf/descriptor.proto";
+          |extend google.protobuf.FieldOptions {
+          |  optional string documentation_url = 60001;
+          |}
+          |extend google.protobuf.MessageOptions {
+          |  optional string documentation_url = 60002;
+          |}
+          |
+      """.trimMargin(),
+    )
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("protos")),
+      targets = listOf(
+        KotlinTarget(
+          outDirectory = "generated/kotlin",
+          emitDeclaredOptions = true,
+          emitAppliedOptions = true,
+        ),
+      ),
+    )
+
+    wireRun.execute(fs, logger)
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/kotlin/same/package/DocumentationUrlMessageOption.kt",
+      "generated/kotlin/same/package/DocumentationUrlOption.kt",
+    )
   }
 
   @Test fun javaDoesNotClaimServices() {
