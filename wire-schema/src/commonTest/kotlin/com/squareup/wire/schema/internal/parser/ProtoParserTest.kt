@@ -3178,6 +3178,19 @@ class ProtoParserTest {
     }
   }
 
+  @Test fun weDoNotSupportEdition() {
+    val proto = """
+          |  edition = "2023";
+    """.trimMargin()
+    try {
+      ProtoParser.parse(location, proto)
+      fail()
+    } catch (expected: IllegalStateException) {
+      assertThat(expected)
+        .messageContains("Syntax error in file.proto:1:10: edition is not currently supported")
+    }
+  }
+
   @Test fun oneOfOptions() {
     val proto = """
         |message SearchRequest {

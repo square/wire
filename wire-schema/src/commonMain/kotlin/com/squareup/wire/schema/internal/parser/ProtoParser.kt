@@ -169,6 +169,10 @@ class ProtoParser internal constructor(
         readEnumConstant(documentation, location, label)
       }
 
+      label == "edition" && context.permitsEdition() -> {
+        throw reader.unexpected("edition is not currently supported")
+      }
+
       else -> throw reader.unexpected("unexpected label: $label", location)
     }
   }
@@ -645,6 +649,8 @@ class ProtoParser internal constructor(
     fun permitsPackage() = this == FILE
 
     fun permitsSyntax() = this == FILE
+
+    fun permitsEdition() = this == FILE
 
     fun permitsImport() = this == FILE
 
