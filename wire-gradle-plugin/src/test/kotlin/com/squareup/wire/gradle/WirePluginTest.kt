@@ -1580,6 +1580,19 @@ class WirePluginTest {
     assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
   }
 
+  @Test
+  fun kotlinSourcesJarHasSingleCopyOnly() {
+    val fixtureRoot = File("src/test/projects/kotlinsourcesjar")
+
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("clean", "kotlinSourcesJar", "--stacktrace", "--info").build()
+    }
+
+    ZipFile(File(fixtureRoot, "build/libs/kotlinsourcesjar-sources.jar")).use {
+      assertThat(it.stream().filter { it.name.contains("Period.kt") }.count()).isEqualTo(1)
+    }
+  }
+
   private fun GradleRunner.runFixture(
     root: File,
     action: GradleRunner.() -> BuildResult,

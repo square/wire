@@ -82,7 +82,7 @@ internal fun WirePlugin.sourceRoots(kotlin: Boolean, java: Boolean): List<Source
     Source(
       type = KotlinPlatformType.jvm,
       kotlinSourceDirectorySet = sourceDirectorySet,
-      javaSourceDirectorySet = sourceDirectorySet,
+      javaSourceDirectorySet = null,
       name = "main",
       sourceSets = listOf("main"),
     ),
