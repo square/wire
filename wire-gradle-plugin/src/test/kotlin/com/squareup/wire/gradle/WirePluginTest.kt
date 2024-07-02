@@ -1580,6 +1580,17 @@ class WirePluginTest {
     assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
   }
 
+  @Test
+  fun taskDependency() {
+    val fixtureRoot = File("src/test/projects/task-dependency")
+
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("clean", "generateMainProtos", "--stacktrace", "--info").build()
+    }
+    assertThat(result.output).isEqualTo("Hello")
+    assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+  }
+
   private fun GradleRunner.runFixture(
     root: File,
     action: GradleRunner.() -> BuildResult,
