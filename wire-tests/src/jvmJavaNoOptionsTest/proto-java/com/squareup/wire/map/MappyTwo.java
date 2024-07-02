@@ -197,7 +197,7 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
 
     private static final class ProtoAdapter_ValueEnum extends EnumAdapter<ValueEnum> {
       ProtoAdapter_ValueEnum() {
-        super(ValueEnum.class, Syntax.PROTO_2, ValueEnum.DEFAULT);
+        super(ValueEnum.class, Syntax.PROTO_2.INSTANCE, ValueEnum.DEFAULT);
       }
 
       @Override
@@ -217,7 +217,7 @@ public final class MappyTwo extends Message<MappyTwo, MappyTwo.Builder> {
     private ProtoAdapter<Map<Integer, Thing>> int_things_two;
 
     public ProtoAdapter_MappyTwo() {
-      super(FieldEncoding.LENGTH_DELIMITED, MappyTwo.class, "type.googleapis.com/com.squareup.wire.map.MappyTwo", Syntax.PROTO_2, null, "map.proto");
+      super(FieldEncoding.LENGTH_DELIMITED, MappyTwo.class, "type.googleapis.com/com.squareup.wire.map.MappyTwo", Syntax.PROTO_2.INSTANCE, null, "map.proto");
     }
 
     @Override

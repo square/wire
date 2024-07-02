@@ -20,7 +20,7 @@ import java.util.Map;
 import okio.ByteString;
 
 public final class AllWrappers extends Message<AllWrappers, AllWrappers.Builder> {
-  public static final ProtoAdapter<AllWrappers> ADAPTER = ProtoAdapter.newMessageAdapter(AllWrappers.class, "type.googleapis.com/squareup.proto3.AllWrappers", Syntax.PROTO_3);
+  public static final ProtoAdapter<AllWrappers> ADAPTER = ProtoAdapter.newMessageAdapter(AllWrappers.class, "type.googleapis.com/squareup.proto3.AllWrappers", Syntax.PROTO_3.INSTANCE);
 
   private static final long serialVersionUID = 0L;
 

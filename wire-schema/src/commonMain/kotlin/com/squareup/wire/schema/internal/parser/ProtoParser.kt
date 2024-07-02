@@ -121,15 +121,15 @@ class ProtoParser internal constructor(
         null
       }
 
-      label == "syntax" && context.permitsSyntax() -> {
-        reader.expect(syntax == null, location) { "too many syntax definitions" }
+      (label == "syntax" || label == "edition") && context.permitsSyntax() -> {
+        reader.expect(syntax == null, location) { "too many syntax or edition definitions" }
         reader.require('=')
         reader.expect(index == 0, location) {
-          "'syntax' element must be the first declaration in a file"
+          "'syntax' or 'edition' element must be the first declaration in a file"
         }
         val syntaxString = reader.readQuotedString()
         try {
-          syntax = Syntax[syntaxString]
+          syntax = Syntax.get(syntaxString, edition = label == "edition")
         } catch (e: IllegalArgumentException) {
           throw reader.unexpected(e.message!!, location)
         }

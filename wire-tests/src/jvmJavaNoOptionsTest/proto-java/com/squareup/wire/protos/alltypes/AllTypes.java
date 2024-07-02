@@ -3031,7 +3031,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     private static final class ProtoAdapter_NestedEnum extends EnumAdapter<NestedEnum> {
       ProtoAdapter_NestedEnum() {
-        super(NestedEnum.class, Syntax.PROTO_2, NestedEnum.UNKNOWN);
+        super(NestedEnum.class, Syntax.PROTO_2.INSTANCE, NestedEnum.UNKNOWN);
       }
 
       @Override
@@ -3117,7 +3117,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     private static final class ProtoAdapter_NestedMessage extends ProtoAdapter<NestedMessage> {
       public ProtoAdapter_NestedMessage() {
-        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes.NestedMessage", Syntax.PROTO_2, null, "all_types.proto");
+        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes.NestedMessage", Syntax.PROTO_2.INSTANCE, null, "all_types.proto");
       }
 
       @Override
@@ -3175,7 +3175,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     private ProtoAdapter<Map<String, NestedEnum>> map_string_enum;
 
     public ProtoAdapter_AllTypes() {
-      super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes", Syntax.PROTO_2, null, "all_types.proto");
+      super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes", Syntax.PROTO_2.INSTANCE, null, "all_types.proto");
     }
 
     @Override

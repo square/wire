@@ -252,7 +252,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
 
     private static final class ProtoAdapter_PhoneType extends EnumAdapter<PhoneType> {
       ProtoAdapter_PhoneType() {
-        super(PhoneType.class, Syntax.PROTO_2, PhoneType.MOBILE);
+        super(PhoneType.class, Syntax.PROTO_2.INSTANCE, PhoneType.MOBILE);
       }
 
       @Override
@@ -376,7 +376,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
 
     private static final class ProtoAdapter_PhoneNumber extends ProtoAdapter<PhoneNumber> {
       public ProtoAdapter_PhoneNumber() {
-        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class, "type.googleapis.com/squareup.protos.person.Person.PhoneNumber", Syntax.PROTO_2, null, "person.proto");
+        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class, "type.googleapis.com/squareup.protos.person.Person.PhoneNumber", Syntax.PROTO_2.INSTANCE, null, "person.proto");
       }
 
       @Override
@@ -437,7 +437,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
 
   private static final class ProtoAdapter_Person extends ProtoAdapter<Person> {
     public ProtoAdapter_Person() {
-      super(FieldEncoding.LENGTH_DELIMITED, Person.class, "type.googleapis.com/squareup.protos.person.Person", Syntax.PROTO_2, null, "person.proto");
+      super(FieldEncoding.LENGTH_DELIMITED, Person.class, "type.googleapis.com/squareup.protos.person.Person", Syntax.PROTO_2.INSTANCE, null, "person.proto");
     }
 
     @Override

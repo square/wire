@@ -77,7 +77,7 @@ public final class MessageWithOptions extends Message<MessageWithOptions, Messag
 
   private static final class ProtoAdapter_MessageWithOptions extends ProtoAdapter<MessageWithOptions> {
     public ProtoAdapter_MessageWithOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, MessageWithOptions.class, "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions", Syntax.PROTO_2, null, "custom_options.proto");
+      super(FieldEncoding.LENGTH_DELIMITED, MessageWithOptions.class, "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions", Syntax.PROTO_2.INSTANCE, null, "custom_options.proto");
     }
 
     @Override
