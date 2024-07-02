@@ -32,6 +32,7 @@ open class WireExtension(
 
   internal val protoSourceProtoRootSets = mutableListOf<ProtoRootSet>()
   internal val protoPathProtoRootSets = mutableListOf<ProtoRootSet>()
+  internal val protoFiles2 = project.files()
   internal val roots = mutableSetOf<String>()
   internal val prunes = mutableSetOf<String>()
   internal val moves = mutableListOf<Move>()
@@ -162,6 +163,18 @@ open class WireExtension(
   /** Add a [EventListener.Factory] by name. The referred class must have a no-arguments constructor. */
   fun eventListenerFactoryClass(eventListenerFactoryClass: String) {
     this.eventListenerFactoryClasses.add(eventListenerFactoryClass)
+  }
+
+  /**
+   * Adds the given proto files to the compilation search path.
+   * The proto files are only used for resolution and do not generate sources.
+   *
+   * @param src interpreted as in [Project.file]
+   * @see sourcePath
+   *
+   */
+  fun protoPath2(src: Any) {
+    protoFiles2.setFrom(src)
   }
 
   /**

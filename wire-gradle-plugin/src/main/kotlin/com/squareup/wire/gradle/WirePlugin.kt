@@ -241,7 +241,8 @@ class WirePlugin : Plugin<Project> {
           task.protoLibraryOutput.set(File(project.libraryProtoOutputPath()))
         }
         task.sourceInput.set(project.provider { protoSourceProtoRootSets.inputLocations })
-        task.protoInput.set(project.provider { protoPathProtoRootSets.inputLocations })
+        task.protoInput.set(project.provider { protoPathProtoRootSets.inputLocations})
+        task.protoInput2.from(extension.protoFiles2)
         task.roots.set(extension.roots.toList())
         task.prunes.set(extension.prunes.toList())
         task.moves.set(extension.moves.toList())

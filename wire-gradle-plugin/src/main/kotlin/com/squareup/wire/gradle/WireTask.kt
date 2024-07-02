@@ -19,6 +19,7 @@ import com.squareup.wire.DryRunFileSystem
 import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.internal.GradleWireLogger
 import com.squareup.wire.schema.EventListener
+import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
 import javax.inject.Inject
@@ -80,6 +81,10 @@ abstract class WireTask @Inject constructor(
 
   @get:Input
   internal abstract val protoInput: ListProperty<InputLocation>
+
+  @get:InputFiles
+  @get:PathSensitive(PathSensitivity.RELATIVE)
+  internal abstract val protoInput2: ConfigurableFileCollection
 
   @get:Input
   abstract val roots: ListProperty<String>
@@ -156,7 +161,7 @@ abstract class WireTask @Inject constructor(
     val allTargets = targets.get()
     val wireRun = WireRun(
       sourcePath = sourceInput.get().flatMap { it.toLocations(fileOperations, projectDirAsFile) },
-      protoPath = protoInput.get().flatMap { it.toLocations(fileOperations, projectDirAsFile) },
+      protoPath = protoInput.get().flatMap { it.toLocations(fileOperations, projectDirAsFile) } + protoInput2.files.map { Location(it.parentFile.absolutePath, it.name) },
       treeShakingRoots = roots.get().ifEmpty { includes },
       treeShakingRubbish = prunes.get().ifEmpty { excludes },
       moves = moves.get().map { it.toTypeMoverMove() },
