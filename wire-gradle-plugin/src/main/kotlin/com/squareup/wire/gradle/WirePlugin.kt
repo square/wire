@@ -17,6 +17,8 @@
 
 package com.squareup.wire.gradle
 
+import java.lang.reflect.Array as JavaArray
+import com.android.build.api.attributes.BuildTypeAttr
 import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
@@ -26,7 +28,6 @@ import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.newEventListenerFactory
 import java.io.File
-import java.lang.reflect.Array as JavaArray
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -37,6 +38,7 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
@@ -68,7 +70,11 @@ class WirePlugin : Plugin<Project> {
         // TODO(Benoit) If another project, on which this one depends, exposes multiple variants,
         //  Wire won't be able to pick one. We force the resolution to JVM. On the other hand, this
         //  breaks inter-module dependencies for non-jvm modules. We need to fix it.
-        attributesContainer.attribute(KotlinPlatformType.attribute, KotlinPlatformType.jvm)
+        attributesContainer.attribute(KotlinPlatformType.attribute, KotlinPlatformType.androidJvm)
+        attributesContainer.attribute(
+          BuildTypeAttr.ATTRIBUTE,
+          project.objects.named(BuildTypeAttr::class.java, "debug"),
+        )
       }
     }
 
@@ -120,7 +126,8 @@ class WirePlugin : Plugin<Project> {
 
     val protoSourceConfiguration = project.configurations.getByName("protoSource")
     val protoPathConfiguration = project.configurations.getByName("protoPath")
-    val projectDependenciesJvmConfiguration = project.configurations.getByName("protoProjectDependenciesJvm")
+    val projectDependenciesJvmConfiguration =
+      project.configurations.getByName("protoProjectDependenciesJvm")
 
     val outputs = extension.outputs
     check(outputs.isNotEmpty()) {
@@ -258,7 +265,8 @@ class WirePlugin : Plugin<Project> {
         task.projectDirProperty.set(project.layout.projectDirectory)
         task.buildDirProperty.set(project.layout.buildDirectory)
 
-        val factories = extension.eventListenerFactories + extension.eventListenerFactoryClasses().map(::newEventListenerFactory)
+        val factories = extension.eventListenerFactories + extension.eventListenerFactoryClasses()
+          .map(::newEventListenerFactory)
         task.eventListenerFactories.set(factories)
       }
 
@@ -271,17 +279,27 @@ class WirePlugin : Plugin<Project> {
 
       val protoOutputDirectory = task.map { it.protoLibraryOutput }
       if (extension.protoLibrary) {
-        val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
-        // Note that there are no source sets for some platforms such as native.
-        // TODO(Benoit) Probably should be checking for other names than `main`. As well, source
-        //  sets might be created 'afterEvaluate'. Does that mean we should do this work in
-        //  `afterEvaluate` as well? See: https://kotlinlang.org/docs/multiplatform-dsl-reference.html#source-sets
-        if (sourceSets.findByName("main") != null) {
-          sourceSets.getByName("main") { main: SourceSet ->
-            main.resources.srcDir(protoOutputDirectory)
+        val sourceContainerNames = project.extensions.extensionsSchema.map { it.name }
+        sourceContainerNames.forEach { sourceContainerName ->
+          val extension = project.extensions.getByName(sourceContainerName)
+          when (extension) {
+            is SourceSetContainer -> {
+              extension.findByName("main")?.let { main: SourceSet ->
+                main.resources.srcDir(protoOutputDirectory)
+              }
+            }
+
+            is KotlinProjectExtension -> {
+              extension.sourceSets.findByName("main")?.resources?.srcDir(protoOutputDirectory)
+            }
+
+            else -> {
+              project.logger.warn(
+                "${project.displayName} doesn't have a 'main' source sets. The .proto files will not automatically be added to the artifact.",
+              )
+            }
           }
-        } else {
-          project.logger.warn("${project.displayName} doesn't have a 'main' source sets. The .proto files will not automatically be added to the artifact.")
+          (project.extensions.getByName("kotlin") as? KotlinProjectExtension)?.sourceSets
         }
       }
 
