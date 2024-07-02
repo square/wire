@@ -15,8 +15,11 @@
  */
 package com.squareup.wire.gradle
 
+import com.android.build.api.attributes.BuildTypeAttr
+import com.android.build.gradle.internal.attributes.VariantAttr
 import com.squareup.wire.schema.EventListener
 import java.io.File
+import java.io.Serializable
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
@@ -24,6 +27,7 @@ import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderConvertible
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 open class WireExtension(
   private val project: Project,
@@ -285,6 +289,12 @@ open class WireExtension(
       .apply {
         isCanBeConsumed = false
         isTransitive = false
+          attributes { attributesContainer ->
+            attributesContainer.attribute(
+              BuildTypeAttr.ATTRIBUTE,
+              project.objects.named(BuildTypeAttr::class.java, "debug")
+            )
+          }
       }
     internal val sourceDirectoriesAndLocalJars = mutableListOf<File>()
 
