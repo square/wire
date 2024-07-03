@@ -1593,6 +1593,20 @@ class WirePluginTest {
     }
   }
 
+  @Test
+  fun taskDependency() {
+    val fixtureRoot = File("src/test/projects/task-dependency")
+
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("clean", "generateMainProtos", "--stacktrace", "--info").build()
+    }
+    assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+    assertThat(result.output)
+      .contains("Writing .Dinosaur")
+      .contains("Writing .Period")
+      .contains("src/test/projects/task-dependency/build/generated/source/wire".withPlatformSlashes())
+  }
+
   private fun GradleRunner.runFixture(
     root: File,
     action: GradleRunner.() -> BuildResult,

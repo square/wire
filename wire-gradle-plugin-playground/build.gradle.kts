@@ -1,4 +1,5 @@
 import com.squareup.wire.schema.EventListener
+import org.gradle.api.internal.file.FileOperations
 
 plugins {
   id("java-library")
@@ -12,11 +13,50 @@ class MyEventListenerFactory : EventListener.Factory {
   }
 }
 
+@CacheableTask
+abstract class ProtoWritingTask @Inject constructor(
+  objects: ObjectFactory,
+  private val fileOperations: FileOperations,
+) : DefaultTask() {
+
+  @get:OutputDirectory
+  abstract val outputDirectory: DirectoryProperty
+
+  @TaskAction
+  fun generateWireFiles() {
+    val outFile1 = outputDirectory.get().asFile.resolve("period.proto")
+    outFile1.writeText(
+      """
+      syntax = "proto2";
+
+      enum Period {
+        CRETACEOUS = 1;
+      }
+    """
+    )
+    val outFile2 = outputDirectory.get().asFile.resolve("moment.proto")
+    outFile2.writeText(
+      """
+      syntax = "proto2";
+
+      enum Moment {
+        VRAIMENT = 1;
+      }
+    """
+    )
+  }
+}
+
+val doItTask = tasks.register("do_it", ProtoWritingTask::class.java) {
+  outputDirectory.set(layout.buildDirectory.dir("generated/proto/"))
+}
+
 wire {
   protoLibrary = true
 
   sourcePath {
-    srcDir("src/main/proto")
+    srcDir(doItTask)
+    include("period.proto")
   }
 
   eventListenerFactory(MyEventListenerFactory())

@@ -17,9 +17,11 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.schema.EventListener
 import java.io.File
+import kotlin.LazyThreadSafetyMode.NONE
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.provider.Provider
@@ -291,17 +293,32 @@ open class WireExtension(
     /** Calling this will resolve the configuration. */
     internal val roots: Set<File>
       get() = configuration.files + sourceDirectoriesAndLocalJars
+    private val files: ConfigurableFileCollection by lazy(NONE) {
+      val files = project.files()
+      project.dependencies.add(configuration.name, files)
+      files
+    }
 
     internal val includes = mutableListOf<String>()
     internal val excludes = mutableListOf<String>()
 
+    /**
+     * Adds a set of source. The given paths are evaluated as per [Project.files][org.gradle.api.Project.files].
+     */
+    fun srcDir(fileCollection: Any) {
+      isEmpty = false
+      files.from(fileCollection)
+    }
+
     /** Sets a directory. Example: "src/main/proto". */
+    @Deprecated("Deprecated in favor of 'srcDir(fileCollection)'")
     fun srcDir(dir: String) {
       isEmpty = false
       sourceDirectoriesAndLocalJars += project.file(dir)
     }
 
     /** Sets one or more directories. */
+    @Deprecated("Deprecated in favor of 'srcDir(fileCollection)'")
     fun srcDirs(vararg dirs: String) {
       isEmpty = false
       sourceDirectoriesAndLocalJars += dirs.map { project.file(it) }

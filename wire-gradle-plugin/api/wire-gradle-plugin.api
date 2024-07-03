@@ -137,6 +137,7 @@ public class com/squareup/wire/gradle/WireExtension {
 public final class com/squareup/wire/gradle/WireExtension$ProtoRootSet {
 	public final fun exclude ([Ljava/lang/String;)V
 	public final fun include ([Ljava/lang/String;)V
+	public final fun srcDir (Ljava/lang/Object;)V
 	public final fun srcDir (Ljava/lang/String;)V
 	public final fun srcDirs ([Ljava/lang/String;)V
 	public final fun srcJar (Ljava/lang/String;)V
