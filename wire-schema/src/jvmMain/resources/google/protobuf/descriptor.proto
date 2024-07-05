@@ -494,6 +494,7 @@ message FileOptions {
   optional bool java_generic_services = 17 [default = false];
   optional bool py_generic_services = 18 [default = false];
   reserved 42;  // removed php_generic_services
+  reserved "php_generic_services";
 
   // Is this file deprecated?
   // Depending on the target platform, this can emit Deprecated annotations
@@ -634,13 +635,14 @@ message MessageOptions {
 }
 
 message FieldOptions {
+  // NOTE: ctype is deprecated. Use `features.(pb.cpp).string_type` instead.
   // The ctype option instructs the C++ code generator to use a different
   // representation of the field than it normally would.  See the specific
   // options below.  This option is only implemented to support use of
   // [ctype=CORD] and [ctype=STRING] (the default) on non-repeated fields of
-  // type "bytes" in the open source release -- sorry, we'll try to include
-  // other types in a future version!
-  optional CType ctype = 1 [default = STRING];
+  // type "bytes" in the open source release.
+  // TODO: make ctype actually deprecated.
+  optional CType ctype = 1 [/*deprecated = true,*/ default = STRING];
   enum CType {
     // Default mode.
     STRING = 0;
@@ -858,6 +860,9 @@ message EnumValueOptions {
   // credentials.
   optional bool debug_redact = 3 [default = false];
 
+  // Information about the support window of a feature value.
+  optional FieldOptions.FeatureSupport feature_support = 4;
+
   // The parser stores options it doesn't recognize here. See above.
   repeated UninterpretedOption uninterpreted_option = 999;
 
@@ -970,11 +975,10 @@ message FeatureSet {
     retention = RETENTION_RUNTIME,
     targets = TARGET_TYPE_FIELD,
     targets = TARGET_TYPE_FILE,
-    // TODO Enable this in google3 once protoc rolls out.
     feature_support = {
       edition_introduced: EDITION_2023,
     },
-    edition_defaults = { edition: EDITION_PROTO2, value: "EXPLICIT" },
+    edition_defaults = { edition: EDITION_LEGACY, value: "EXPLICIT" },
     edition_defaults = { edition: EDITION_PROTO3, value: "IMPLICIT" },
     edition_defaults = { edition: EDITION_2023, value: "EXPLICIT" }
   ];
@@ -988,11 +992,10 @@ message FeatureSet {
     retention = RETENTION_RUNTIME,
     targets = TARGET_TYPE_ENUM,
     targets = TARGET_TYPE_FILE,
-    // TODO Enable this in google3 once protoc rolls out.
     feature_support = {
       edition_introduced: EDITION_2023,
     },
-    edition_defaults = { edition: EDITION_PROTO2, value: "CLOSED" },
+    edition_defaults = { edition: EDITION_LEGACY, value: "CLOSED" },
     edition_defaults = { edition: EDITION_PROTO3, value: "OPEN" }
   ];
 
@@ -1005,11 +1008,10 @@ message FeatureSet {
     retention = RETENTION_RUNTIME,
     targets = TARGET_TYPE_FIELD,
     targets = TARGET_TYPE_FILE,
-    // TODO Enable this in google3 once protoc rolls out.
     feature_support = {
       edition_introduced: EDITION_2023,
     },
-    edition_defaults = { edition: EDITION_PROTO2, value: "EXPANDED" },
+    edition_defaults = { edition: EDITION_LEGACY, value: "EXPANDED" },
     edition_defaults = { edition: EDITION_PROTO3, value: "PACKED" }
   ];
 
@@ -1017,16 +1019,16 @@ message FeatureSet {
     UTF8_VALIDATION_UNKNOWN = 0;
     VERIFY = 2;
     NONE = 3;
+    reserved 1;
   }
   optional Utf8Validation utf8_validation = 4 [
     retention = RETENTION_RUNTIME,
     targets = TARGET_TYPE_FIELD,
     targets = TARGET_TYPE_FILE,
-    // TODO Enable this in google3 once protoc rolls out.
     feature_support = {
       edition_introduced: EDITION_2023,
     },
-    edition_defaults = { edition: EDITION_PROTO2, value: "NONE" },
+    edition_defaults = { edition: EDITION_LEGACY, value: "NONE" },
     edition_defaults = { edition: EDITION_PROTO3, value: "VERIFY" }
   ];
 
@@ -1039,11 +1041,10 @@ message FeatureSet {
     retention = RETENTION_RUNTIME,
     targets = TARGET_TYPE_FIELD,
     targets = TARGET_TYPE_FILE,
-    // TODO Enable this in google3 once protoc rolls out.
     feature_support = {
       edition_introduced: EDITION_2023,
     },
-    edition_defaults = { edition: EDITION_PROTO2, value: "LENGTH_PREFIXED" }
+    edition_defaults = { edition: EDITION_LEGACY, value: "LENGTH_PREFIXED" }
   ];
 
   enum JsonFormat {
@@ -1056,21 +1057,33 @@ message FeatureSet {
     targets = TARGET_TYPE_MESSAGE,
     targets = TARGET_TYPE_ENUM,
     targets = TARGET_TYPE_FILE,
-    // TODO Enable this in google3 once protoc rolls out.
     feature_support = {
       edition_introduced: EDITION_2023,
     },
-    edition_defaults = { edition: EDITION_PROTO2, value: "LEGACY_BEST_EFFORT" },
+    edition_defaults = { edition: EDITION_LEGACY, value: "LEGACY_BEST_EFFORT" },
     edition_defaults = { edition: EDITION_PROTO3, value: "ALLOW" }
   ];
 
   reserved 999;
 
-  extensions 1000;  // for Protobuf C++
-  extensions 1001;  // for Protobuf Java
-  extensions 1002;  // for Protobuf Go
-
-  extensions 9990;  // for deprecated Java Proto1
+  extensions 1000 to 9994 [
+    declaration = {
+      number: 1000,
+      full_name: ".pb.cpp",
+      type: ".pb.CppFeatures"
+    },
+    declaration = {
+      number: 1001,
+      full_name: ".pb.java",
+      type: ".pb.JavaFeatures"
+    },
+    declaration = { number: 1002, full_name: ".pb.go", type: ".pb.GoFeatures" },
+    declaration = {
+      number: 9990,
+      full_name: ".pb.proto1",
+      type: ".pb.Proto1Features"
+    }
+  ];
 
   extensions 9995 to 9999;  // For internal testing
   extensions 10000;         // for https://github.com/bufbuild/protobuf-es
@@ -1093,6 +1106,9 @@ message FeatureSetDefaults {
 
     // Defaults of features that can't be overridden in this edition.
     optional FeatureSet fixed_features = 5;
+
+    reserved 1, 2;
+    reserved "features";
   }
   repeated FeatureSetEditionDefault defaults = 1;
 
