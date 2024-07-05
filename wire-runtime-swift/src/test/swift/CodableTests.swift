@@ -200,6 +200,7 @@ extension CodableTests {
         let json = """
         {
           "map_int32_string":{},
+          "packed_int32":[],
           "repeated_int32":[],
           "repeated_string":[]
         }

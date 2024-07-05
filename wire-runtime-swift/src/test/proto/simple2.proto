@@ -40,6 +40,7 @@ message SimpleOptional2 {
   repeated int32 repeated_int32 = 10;
   repeated string repeated_string = 11;
   map<int32, string> map_int32_string = 12;
+  repeated int32 packed_int32 = 13 [packed = true];
 }
 
 message SimpleRequired2 {

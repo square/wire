@@ -16,6 +16,8 @@
 package com.squareup.wire
 
 import com.squareup.wire.protos.kotlin.alltypes.AllTypes
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -290,10 +292,47 @@ class TestAllTypes {
     assertEquals(TestAllTypesData.expectedOutput, ByteString.of(*output))
   }
 
+  @OptIn(ExperimentalEncodingApi::class)
   @Test fun testReadSource() {
     val data = adapter.encode(allTypes)
     val input = Buffer().write(data)
-    val parsed = adapter.decode(input)
+    /*
+     * Packed content for unpacked field:
+     *
+     * $> echo -n "kkUEAQIDBA==" | base64 -d | protoscope
+     * 1106: {`01020304`}
+     */
+    input.write(Base64.decode("kkUEAQIDBA=="))
+
+    var parsed = adapter.decode(input)
+    assertEquals(parsed.ext_rep_int64, listOf<Long>(1, 2, 3, 4))
+
+    parsed = allTypes.copy(ext_rep_int64 = listOf())
+    assertEquals(allTypes, parsed)
+    assertEquals(true, allTypes.ext_opt_bool)
+    assertEquals(list(true), allTypes.ext_rep_bool)
+    assertEquals(list(true), allTypes.ext_pack_bool)
+  }
+
+  @OptIn(ExperimentalEncodingApi::class)
+  @Test fun testReadSource2() {
+    val data = adapter.encode(allTypes)
+    val input = Buffer().write(data)
+    /*
+     * Also the opposite: non-packed content for packed field:
+     *
+     * $> echo -n "kBMLkBMWkBMhkBMs" | base64 -d | protoscope
+     * 306: 11
+     * 306: 22
+     * 306: 33
+     * 306: 44
+     */
+    input.write(Base64.decode("kBMLkBMWkBMhkBMs"))
+
+    var parsed = adapter.decode(input)
+    assertEquals(parsed.pack_int64, allTypes.pack_int64 + listOf(11, 22, 33, 44))
+
+    parsed = allTypes.copy(pack_int64= allTypes.pack_int64)
     assertEquals(allTypes, parsed)
     assertEquals(true, allTypes.ext_opt_bool)
     assertEquals(list(true), allTypes.ext_rep_bool)
