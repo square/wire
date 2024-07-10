@@ -6,48 +6,41 @@
 // - Show declarations: true
 
 // Library unique name: <com.squareup.wire:wire-grpc-client>
-open annotation class com.squareup.wire/WireGrpcExperimental : kotlin/Annotation { // com.squareup.wire/WireGrpcExperimental|null[0]
-    constructor <init>() // com.squareup.wire/WireGrpcExperimental.<init>|<init>(){}[0]
+abstract class com.squareup.wire/GrpcClient { // com.squareup.wire/GrpcClient|null[0]
+    abstract fun <#A1: kotlin/Any, #B1: kotlin/Any> newCall(com.squareup.wire/GrpcMethod<#A1, #B1>): com.squareup.wire/GrpcCall<#A1, #B1> // com.squareup.wire/GrpcClient.newCall|newCall(com.squareup.wire.GrpcMethod<0:0,0:1>){0§<kotlin.Any>;1§<kotlin.Any>}[0]
+    abstract fun <#A1: kotlin/Any, #B1: kotlin/Any> newStreamingCall(com.squareup.wire/GrpcMethod<#A1, #B1>): com.squareup.wire/GrpcStreamingCall<#A1, #B1> // com.squareup.wire/GrpcClient.newStreamingCall|newStreamingCall(com.squareup.wire.GrpcMethod<0:0,0:1>){0§<kotlin.Any>;1§<kotlin.Any>}[0]
+    constructor <init>() // com.squareup.wire/GrpcClient.<init>|<init>(){}[0]
 }
-
+abstract class com.squareup.wire/GrpcRequestBody { // com.squareup.wire/GrpcRequestBody|null[0]
+    constructor <init>() // com.squareup.wire/GrpcRequestBody.<init>|<init>(){}[0]
+}
+abstract class com.squareup.wire/GrpcResponseBody { // com.squareup.wire/GrpcResponseBody|null[0]
+    abstract fun source(): okio/BufferedSource // com.squareup.wire/GrpcResponseBody.source|source(){}[0]
+    constructor <init>() // com.squareup.wire/GrpcResponseBody.<init>|<init>(){}[0]
+}
 abstract interface <#A: kotlin/Any, #B: kotlin/Any> com.squareup.wire/GrpcCall { // com.squareup.wire/GrpcCall|null[0]
-    abstract val method // com.squareup.wire/GrpcCall.method|{}method[0]
-        abstract fun <get-method>(): com.squareup.wire/GrpcMethod<#A, #B> // com.squareup.wire/GrpcCall.method.<get-method>|<get-method>(){}[0]
-    abstract val responseMetadata // com.squareup.wire/GrpcCall.responseMetadata|{}responseMetadata[0]
-        abstract fun <get-responseMetadata>(): kotlin.collections/Map<kotlin/String, kotlin/String>? // com.squareup.wire/GrpcCall.responseMetadata.<get-responseMetadata>|<get-responseMetadata>(){}[0]
-    abstract val timeout // com.squareup.wire/GrpcCall.timeout|{}timeout[0]
-        abstract fun <get-timeout>(): okio/Timeout // com.squareup.wire/GrpcCall.timeout.<get-timeout>|<get-timeout>(){}[0]
-
-    abstract var requestMetadata // com.squareup.wire/GrpcCall.requestMetadata|{}requestMetadata[0]
-        abstract fun <get-requestMetadata>(): kotlin.collections/Map<kotlin/String, kotlin/String> // com.squareup.wire/GrpcCall.requestMetadata.<get-requestMetadata>|<get-requestMetadata>(){}[0]
-        abstract fun <set-requestMetadata>(kotlin.collections/Map<kotlin/String, kotlin/String>) // com.squareup.wire/GrpcCall.requestMetadata.<set-requestMetadata>|<set-requestMetadata>(kotlin.collections.Map<kotlin.String,kotlin.String>){}[0]
-
     abstract fun cancel() // com.squareup.wire/GrpcCall.cancel|cancel(){}[0]
     abstract fun clone(): com.squareup.wire/GrpcCall<#A, #B> // com.squareup.wire/GrpcCall.clone|clone(){}[0]
     abstract fun enqueue(#A, com.squareup.wire/GrpcCall.Callback<#A, #B>) // com.squareup.wire/GrpcCall.enqueue|enqueue(1:0;com.squareup.wire.GrpcCall.Callback<1:0,1:1>){}[0]
     abstract fun executeBlocking(#A): #B // com.squareup.wire/GrpcCall.executeBlocking|executeBlocking(1:0){}[0]
     abstract fun isCanceled(): kotlin/Boolean // com.squareup.wire/GrpcCall.isCanceled|isCanceled(){}[0]
     abstract fun isExecuted(): kotlin/Boolean // com.squareup.wire/GrpcCall.isExecuted|isExecuted(){}[0]
-    abstract suspend fun execute(#A): #B // com.squareup.wire/GrpcCall.execute|execute(1:0){}[0]
-
     abstract interface <#A1: kotlin/Any, #B1: kotlin/Any> Callback { // com.squareup.wire/GrpcCall.Callback|null[0]
         abstract fun onFailure(com.squareup.wire/GrpcCall<#A1, #B1>, okio/IOException) // com.squareup.wire/GrpcCall.Callback.onFailure|onFailure(com.squareup.wire.GrpcCall<1:0,1:1>;okio.IOException){}[0]
         abstract fun onSuccess(com.squareup.wire/GrpcCall<#A1, #B1>, #B1) // com.squareup.wire/GrpcCall.Callback.onSuccess|onSuccess(com.squareup.wire.GrpcCall<1:0,1:1>;1:1){}[0]
     }
+    abstract suspend fun execute(#A): #B // com.squareup.wire/GrpcCall.execute|execute(1:0){}[0]
+    abstract val method // com.squareup.wire/GrpcCall.method|{}method[0]
+        abstract fun <get-method>(): com.squareup.wire/GrpcMethod<#A, #B> // com.squareup.wire/GrpcCall.method.<get-method>|<get-method>(){}[0]
+    abstract val responseMetadata // com.squareup.wire/GrpcCall.responseMetadata|{}responseMetadata[0]
+        abstract fun <get-responseMetadata>(): kotlin.collections/Map<kotlin/String, kotlin/String>? // com.squareup.wire/GrpcCall.responseMetadata.<get-responseMetadata>|<get-responseMetadata>(){}[0]
+    abstract val timeout // com.squareup.wire/GrpcCall.timeout|{}timeout[0]
+        abstract fun <get-timeout>(): okio/Timeout // com.squareup.wire/GrpcCall.timeout.<get-timeout>|<get-timeout>(){}[0]
+    abstract var requestMetadata // com.squareup.wire/GrpcCall.requestMetadata|{}requestMetadata[0]
+        abstract fun <get-requestMetadata>(): kotlin.collections/Map<kotlin/String, kotlin/String> // com.squareup.wire/GrpcCall.requestMetadata.<get-requestMetadata>|<get-requestMetadata>(){}[0]
+        abstract fun <set-requestMetadata>(kotlin.collections/Map<kotlin/String, kotlin/String>) // com.squareup.wire/GrpcCall.requestMetadata.<set-requestMetadata>|<set-requestMetadata>(kotlin.collections.Map<kotlin.String,kotlin.String>){}[0]
 }
-
 abstract interface <#A: kotlin/Any, #B: kotlin/Any> com.squareup.wire/GrpcStreamingCall { // com.squareup.wire/GrpcStreamingCall|null[0]
-    abstract val method // com.squareup.wire/GrpcStreamingCall.method|{}method[0]
-        abstract fun <get-method>(): com.squareup.wire/GrpcMethod<#A, #B> // com.squareup.wire/GrpcStreamingCall.method.<get-method>|<get-method>(){}[0]
-    abstract val responseMetadata // com.squareup.wire/GrpcStreamingCall.responseMetadata|{}responseMetadata[0]
-        abstract fun <get-responseMetadata>(): kotlin.collections/Map<kotlin/String, kotlin/String>? // com.squareup.wire/GrpcStreamingCall.responseMetadata.<get-responseMetadata>|<get-responseMetadata>(){}[0]
-    abstract val timeout // com.squareup.wire/GrpcStreamingCall.timeout|{}timeout[0]
-        abstract fun <get-timeout>(): okio/Timeout // com.squareup.wire/GrpcStreamingCall.timeout.<get-timeout>|<get-timeout>(){}[0]
-
-    abstract var requestMetadata // com.squareup.wire/GrpcStreamingCall.requestMetadata|{}requestMetadata[0]
-        abstract fun <get-requestMetadata>(): kotlin.collections/Map<kotlin/String, kotlin/String> // com.squareup.wire/GrpcStreamingCall.requestMetadata.<get-requestMetadata>|<get-requestMetadata>(){}[0]
-        abstract fun <set-requestMetadata>(kotlin.collections/Map<kotlin/String, kotlin/String>) // com.squareup.wire/GrpcStreamingCall.requestMetadata.<set-requestMetadata>|<set-requestMetadata>(kotlin.collections.Map<kotlin.String,kotlin.String>){}[0]
-
     abstract fun cancel() // com.squareup.wire/GrpcStreamingCall.cancel|cancel(){}[0]
     abstract fun clone(): com.squareup.wire/GrpcStreamingCall<#A, #B> // com.squareup.wire/GrpcStreamingCall.clone|clone(){}[0]
     abstract fun execute(): kotlin/Pair<kotlinx.coroutines.channels/SendChannel<#A>, kotlinx.coroutines.channels/ReceiveChannel<#B>> // com.squareup.wire/GrpcStreamingCall.execute|execute(){}[0]
@@ -55,28 +48,18 @@ abstract interface <#A: kotlin/Any, #B: kotlin/Any> com.squareup.wire/GrpcStream
     abstract fun executeIn(kotlinx.coroutines/CoroutineScope): kotlin/Pair<kotlinx.coroutines.channels/SendChannel<#A>, kotlinx.coroutines.channels/ReceiveChannel<#B>> // com.squareup.wire/GrpcStreamingCall.executeIn|executeIn(kotlinx.coroutines.CoroutineScope){}[0]
     abstract fun isCanceled(): kotlin/Boolean // com.squareup.wire/GrpcStreamingCall.isCanceled|isCanceled(){}[0]
     abstract fun isExecuted(): kotlin/Boolean // com.squareup.wire/GrpcStreamingCall.isExecuted|isExecuted(){}[0]
+    abstract val method // com.squareup.wire/GrpcStreamingCall.method|{}method[0]
+        abstract fun <get-method>(): com.squareup.wire/GrpcMethod<#A, #B> // com.squareup.wire/GrpcStreamingCall.method.<get-method>|<get-method>(){}[0]
+    abstract val responseMetadata // com.squareup.wire/GrpcStreamingCall.responseMetadata|{}responseMetadata[0]
+        abstract fun <get-responseMetadata>(): kotlin.collections/Map<kotlin/String, kotlin/String>? // com.squareup.wire/GrpcStreamingCall.responseMetadata.<get-responseMetadata>|<get-responseMetadata>(){}[0]
+    abstract val timeout // com.squareup.wire/GrpcStreamingCall.timeout|{}timeout[0]
+        abstract fun <get-timeout>(): okio/Timeout // com.squareup.wire/GrpcStreamingCall.timeout.<get-timeout>|<get-timeout>(){}[0]
+    abstract var requestMetadata // com.squareup.wire/GrpcStreamingCall.requestMetadata|{}requestMetadata[0]
+        abstract fun <get-requestMetadata>(): kotlin.collections/Map<kotlin/String, kotlin/String> // com.squareup.wire/GrpcStreamingCall.requestMetadata.<get-requestMetadata>|<get-requestMetadata>(){}[0]
+        abstract fun <set-requestMetadata>(kotlin.collections/Map<kotlin/String, kotlin/String>) // com.squareup.wire/GrpcStreamingCall.requestMetadata.<set-requestMetadata>|<set-requestMetadata>(kotlin.collections.Map<kotlin.String,kotlin.String>){}[0]
 }
-
-abstract class com.squareup.wire/GrpcClient { // com.squareup.wire/GrpcClient|null[0]
-    constructor <init>() // com.squareup.wire/GrpcClient.<init>|<init>(){}[0]
-
-    abstract fun <#A1: kotlin/Any, #B1: kotlin/Any> newCall(com.squareup.wire/GrpcMethod<#A1, #B1>): com.squareup.wire/GrpcCall<#A1, #B1> // com.squareup.wire/GrpcClient.newCall|newCall(com.squareup.wire.GrpcMethod<0:0,0:1>){0§<kotlin.Any>;1§<kotlin.Any>}[0]
-    abstract fun <#A1: kotlin/Any, #B1: kotlin/Any> newStreamingCall(com.squareup.wire/GrpcMethod<#A1, #B1>): com.squareup.wire/GrpcStreamingCall<#A1, #B1> // com.squareup.wire/GrpcClient.newStreamingCall|newStreamingCall(com.squareup.wire.GrpcMethod<0:0,0:1>){0§<kotlin.Any>;1§<kotlin.Any>}[0]
-}
-
-abstract class com.squareup.wire/GrpcRequestBody { // com.squareup.wire/GrpcRequestBody|null[0]
-    constructor <init>() // com.squareup.wire/GrpcRequestBody.<init>|<init>(){}[0]
-}
-
-abstract class com.squareup.wire/GrpcResponseBody { // com.squareup.wire/GrpcResponseBody|null[0]
-    constructor <init>() // com.squareup.wire/GrpcResponseBody.<init>|<init>(){}[0]
-
-    abstract fun source(): okio/BufferedSource // com.squareup.wire/GrpcResponseBody.source|source(){}[0]
-}
-
 final class <#A: kotlin/Any, #B: kotlin/Any> com.squareup.wire/GrpcMethod { // com.squareup.wire/GrpcMethod|null[0]
     constructor <init>(kotlin/String, com.squareup.wire/ProtoAdapter<#A>, com.squareup.wire/ProtoAdapter<#B>) // com.squareup.wire/GrpcMethod.<init>|<init>(kotlin.String;com.squareup.wire.ProtoAdapter<1:0>;com.squareup.wire.ProtoAdapter<1:1>){}[0]
-
     final val path // com.squareup.wire/GrpcMethod.path|{}path[0]
         final fun <get-path>(): kotlin/String // com.squareup.wire/GrpcMethod.path.<get-path>|<get-path>(){}[0]
     final val requestAdapter // com.squareup.wire/GrpcMethod.requestAdapter|{}requestAdapter[0]
@@ -84,11 +67,9 @@ final class <#A: kotlin/Any, #B: kotlin/Any> com.squareup.wire/GrpcMethod { // c
     final val responseAdapter // com.squareup.wire/GrpcMethod.responseAdapter|{}responseAdapter[0]
         final fun <get-responseAdapter>(): com.squareup.wire/ProtoAdapter<#B> // com.squareup.wire/GrpcMethod.responseAdapter.<get-responseAdapter>|<get-responseAdapter>(){}[0]
 }
-
 final class com.squareup.wire/GrpcException : okio/IOException { // com.squareup.wire/GrpcException|null[0]
     constructor <init>(com.squareup.wire/GrpcStatus, kotlin/String?, kotlin/ByteArray? =...) // com.squareup.wire/GrpcException.<init>|<init>(com.squareup.wire.GrpcStatus;kotlin.String?;kotlin.ByteArray?){}[0]
     constructor <init>(com.squareup.wire/GrpcStatus, kotlin/String?, kotlin/ByteArray? =..., kotlin/String? =...) // com.squareup.wire/GrpcException.<init>|<init>(com.squareup.wire.GrpcStatus;kotlin.String?;kotlin.ByteArray?;kotlin.String?){}[0]
-
     final val grpcMessage // com.squareup.wire/GrpcException.grpcMessage|{}grpcMessage[0]
         final fun <get-grpcMessage>(): kotlin/String? // com.squareup.wire/GrpcException.grpcMessage.<get-grpcMessage>|<get-grpcMessage>(){}[0]
     final val grpcStatus // com.squareup.wire/GrpcException.grpcStatus|{}grpcStatus[0]
@@ -98,30 +79,20 @@ final class com.squareup.wire/GrpcException : okio/IOException { // com.squareup
     final val url // com.squareup.wire/GrpcException.url|{}url[0]
         final fun <get-url>(): kotlin/String? // com.squareup.wire/GrpcException.url.<get-url>|<get-url>(){}[0]
 }
-
 final class com.squareup.wire/GrpcHeaders { // com.squareup.wire/GrpcHeaders|null[0]
     constructor <init>() // com.squareup.wire/GrpcHeaders.<init>|<init>(){}[0]
-
     final fun get(kotlin/String): kotlin/String? // com.squareup.wire/GrpcHeaders.get|get(kotlin.String){}[0]
 }
-
 final class com.squareup.wire/GrpcHttpUrl { // com.squareup.wire/GrpcHttpUrl|null[0]
     constructor <init>() // com.squareup.wire/GrpcHttpUrl.<init>|<init>(){}[0]
-
     final fun resolve(kotlin/String): com.squareup.wire/GrpcHttpUrl? // com.squareup.wire/GrpcHttpUrl.resolve|resolve(kotlin.String){}[0]
 }
-
 final class com.squareup.wire/GrpcRequest { // com.squareup.wire/GrpcRequest|null[0]
     constructor <init>() // com.squareup.wire/GrpcRequest.<init>|<init>(){}[0]
 }
-
 final class com.squareup.wire/GrpcStatus : com.squareup.wire.internal/Serializable { // com.squareup.wire/GrpcStatus|null[0]
-    final val code // com.squareup.wire/GrpcStatus.code|{}code[0]
-        final fun <get-code>(): kotlin/Int // com.squareup.wire/GrpcStatus.code.<get-code>|<get-code>(){}[0]
-    final val name // com.squareup.wire/GrpcStatus.name|{}name[0]
-        final fun <get-name>(): kotlin/String // com.squareup.wire/GrpcStatus.name.<get-name>|<get-name>(){}[0]
-
     final object Companion { // com.squareup.wire/GrpcStatus.Companion|null[0]
+        final fun get(kotlin/Int): com.squareup.wire/GrpcStatus // com.squareup.wire/GrpcStatus.Companion.get|get(kotlin.Int){}[0]
         final val ABORTED // com.squareup.wire/GrpcStatus.Companion.ABORTED|{}ABORTED[0]
             final fun <get-ABORTED>(): com.squareup.wire/GrpcStatus // com.squareup.wire/GrpcStatus.Companion.ABORTED.<get-ABORTED>|<get-ABORTED>(){}[0]
         final val ALREADY_EXISTS // com.squareup.wire/GrpcStatus.Companion.ALREADY_EXISTS|{}ALREADY_EXISTS[0]
@@ -156,18 +127,20 @@ final class com.squareup.wire/GrpcStatus : com.squareup.wire.internal/Serializab
             final fun <get-UNIMPLEMENTED>(): com.squareup.wire/GrpcStatus // com.squareup.wire/GrpcStatus.Companion.UNIMPLEMENTED.<get-UNIMPLEMENTED>|<get-UNIMPLEMENTED>(){}[0]
         final val UNKNOWN // com.squareup.wire/GrpcStatus.Companion.UNKNOWN|{}UNKNOWN[0]
             final fun <get-UNKNOWN>(): com.squareup.wire/GrpcStatus // com.squareup.wire/GrpcStatus.Companion.UNKNOWN.<get-UNKNOWN>|<get-UNKNOWN>(){}[0]
-
-        final fun get(kotlin/Int): com.squareup.wire/GrpcStatus // com.squareup.wire/GrpcStatus.Companion.get|get(kotlin.Int){}[0]
     }
+    final val code // com.squareup.wire/GrpcStatus.code|{}code[0]
+        final fun <get-code>(): kotlin/Int // com.squareup.wire/GrpcStatus.code.<get-code>|<get-code>(){}[0]
+    final val name // com.squareup.wire/GrpcStatus.name|{}name[0]
+        final fun <get-name>(): kotlin/String // com.squareup.wire/GrpcStatus.name.<get-name>|<get-name>(){}[0]
 }
-
+final fun (kotlin/String).com.squareup.wire/toHttpUrl(): com.squareup.wire/GrpcHttpUrl // com.squareup.wire/toHttpUrl|toHttpUrl@kotlin.String(){}[0]
+open annotation class com.squareup.wire/WireGrpcExperimental : kotlin/Annotation { // com.squareup.wire/WireGrpcExperimental|null[0]
+    constructor <init>() // com.squareup.wire/WireGrpcExperimental.<init>|<init>(){}[0]
+}
 open class com.squareup.wire/GrpcRequestBuilder { // com.squareup.wire/GrpcRequestBuilder|null[0]
     constructor <init>() // com.squareup.wire/GrpcRequestBuilder.<init>|<init>(){}[0]
-
     open fun addHeader(kotlin/String, kotlin/String): com.squareup.wire/GrpcRequestBuilder // com.squareup.wire/GrpcRequestBuilder.addHeader|addHeader(kotlin.String;kotlin.String){}[0]
     open fun build(): com.squareup.wire/GrpcRequest // com.squareup.wire/GrpcRequestBuilder.build|build(){}[0]
     open fun method(kotlin/String, com.squareup.wire/GrpcRequestBody?): com.squareup.wire/GrpcRequestBuilder // com.squareup.wire/GrpcRequestBuilder.method|method(kotlin.String;com.squareup.wire.GrpcRequestBody?){}[0]
     open fun url(com.squareup.wire/GrpcHttpUrl): com.squareup.wire/GrpcRequestBuilder // com.squareup.wire/GrpcRequestBuilder.url|url(com.squareup.wire.GrpcHttpUrl){}[0]
 }
-
-final fun (kotlin/String).com.squareup.wire/toHttpUrl(): com.squareup.wire/GrpcHttpUrl // com.squareup.wire/toHttpUrl|toHttpUrl@kotlin.String(){}[0]

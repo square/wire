@@ -8,17 +8,20 @@
 // Library unique name: <com.squareup.wire:wire-schema-tests>
 final class com.squareup.wire/SchemaBuilder { // com.squareup.wire/SchemaBuilder|null[0]
     constructor <init>() // com.squareup.wire/SchemaBuilder.<init>|<init>(){}[0]
-
     final fun add(okio/Path, kotlin/String): com.squareup.wire/SchemaBuilder // com.squareup.wire/SchemaBuilder.add|add(okio.Path;kotlin.String){}[0]
     final fun add(okio/Path, kotlin/String, okio/Path): com.squareup.wire/SchemaBuilder // com.squareup.wire/SchemaBuilder.add|add(okio.Path;kotlin.String;okio.Path){}[0]
     final fun addOpaqueTypes(kotlin/Array<out com.squareup.wire.schema/ProtoType>...): com.squareup.wire/SchemaBuilder // com.squareup.wire/SchemaBuilder.addOpaqueTypes|addOpaqueTypes(kotlin.Array<out|com.squareup.wire.schema.ProtoType>...){}[0]
     final fun addProtoPath(okio/Path, kotlin/String): com.squareup.wire/SchemaBuilder // com.squareup.wire/SchemaBuilder.addProtoPath|addProtoPath(okio.Path;kotlin.String){}[0]
     final fun build(): com.squareup.wire.schema/Schema // com.squareup.wire/SchemaBuilder.build|build(){}[0]
 }
-
 final class com.squareup.wire/WireTestLogger : com.squareup.wire/WireLogger { // com.squareup.wire/WireTestLogger|null[0]
     constructor <init>() // com.squareup.wire/WireTestLogger.<init>|<init>(){}[0]
-
+    final fun artifactHandled(okio/Path, kotlin/String, kotlin/String) // com.squareup.wire/WireTestLogger.artifactHandled|artifactHandled(okio.Path;kotlin.String;kotlin.String){}[0]
+    final fun artifactSkipped(com.squareup.wire.schema/ProtoType, kotlin/String) // com.squareup.wire/WireTestLogger.artifactSkipped|artifactSkipped(com.squareup.wire.schema.ProtoType;kotlin.String){}[0]
+    final fun unusedExcludesInTarget(kotlin.collections/Set<kotlin/String>) // com.squareup.wire/WireTestLogger.unusedExcludesInTarget|unusedExcludesInTarget(kotlin.collections.Set<kotlin.String>){}[0]
+    final fun unusedIncludesInTarget(kotlin.collections/Set<kotlin/String>) // com.squareup.wire/WireTestLogger.unusedIncludesInTarget|unusedIncludesInTarget(kotlin.collections.Set<kotlin.String>){}[0]
+    final fun unusedPrunes(kotlin.collections/Set<kotlin/String>) // com.squareup.wire/WireTestLogger.unusedPrunes|unusedPrunes(kotlin.collections.Set<kotlin.String>){}[0]
+    final fun unusedRoots(kotlin.collections/Set<kotlin/String>) // com.squareup.wire/WireTestLogger.unusedRoots|unusedRoots(kotlin.collections.Set<kotlin.String>){}[0]
     final val artifactHandled // com.squareup.wire/WireTestLogger.artifactHandled|{}artifactHandled[0]
         final fun <get-artifactHandled>(): kotlin.collections/ArrayDeque<kotlin/Triple<okio/Path, kotlin/String, kotlin/String>> // com.squareup.wire/WireTestLogger.artifactHandled.<get-artifactHandled>|<get-artifactHandled>(){}[0]
     final val artifactSkipped // com.squareup.wire/WireTestLogger.artifactSkipped|{}artifactSkipped[0]
@@ -31,14 +34,6 @@ final class com.squareup.wire/WireTestLogger : com.squareup.wire/WireLogger { //
         final fun <get-unusedPrunes>(): kotlin.collections/ArrayDeque<kotlin.collections/Set<kotlin/String>> // com.squareup.wire/WireTestLogger.unusedPrunes.<get-unusedPrunes>|<get-unusedPrunes>(){}[0]
     final val unusedRoots // com.squareup.wire/WireTestLogger.unusedRoots|{}unusedRoots[0]
         final fun <get-unusedRoots>(): kotlin.collections/ArrayDeque<kotlin.collections/Set<kotlin/String>> // com.squareup.wire/WireTestLogger.unusedRoots.<get-unusedRoots>|<get-unusedRoots>(){}[0]
-
-    final fun artifactHandled(okio/Path, kotlin/String, kotlin/String) // com.squareup.wire/WireTestLogger.artifactHandled|artifactHandled(okio.Path;kotlin.String;kotlin.String){}[0]
-    final fun artifactSkipped(com.squareup.wire.schema/ProtoType, kotlin/String) // com.squareup.wire/WireTestLogger.artifactSkipped|artifactSkipped(com.squareup.wire.schema.ProtoType;kotlin.String){}[0]
-    final fun unusedExcludesInTarget(kotlin.collections/Set<kotlin/String>) // com.squareup.wire/WireTestLogger.unusedExcludesInTarget|unusedExcludesInTarget(kotlin.collections.Set<kotlin.String>){}[0]
-    final fun unusedIncludesInTarget(kotlin.collections/Set<kotlin/String>) // com.squareup.wire/WireTestLogger.unusedIncludesInTarget|unusedIncludesInTarget(kotlin.collections.Set<kotlin.String>){}[0]
-    final fun unusedPrunes(kotlin.collections/Set<kotlin/String>) // com.squareup.wire/WireTestLogger.unusedPrunes|unusedPrunes(kotlin.collections.Set<kotlin.String>){}[0]
-    final fun unusedRoots(kotlin.collections/Set<kotlin/String>) // com.squareup.wire/WireTestLogger.unusedRoots|unusedRoots(kotlin.collections.Set<kotlin.String>){}[0]
 }
-
 final fun (com.squareup.wire/SchemaBuilder).com.squareup.wire/addFakeRuntimeProtos(): com.squareup.wire/SchemaBuilder // com.squareup.wire/addFakeRuntimeProtos|addFakeRuntimeProtos@com.squareup.wire.SchemaBuilder(){}[0]
 final inline fun com.squareup.wire/buildSchema(kotlin/Function1<com.squareup.wire/SchemaBuilder, kotlin/Unit>): com.squareup.wire.schema/Schema // com.squareup.wire/buildSchema|buildSchema(kotlin.Function1<com.squareup.wire.SchemaBuilder,kotlin.Unit>){}[0]
