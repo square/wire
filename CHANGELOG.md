@@ -1,6 +1,18 @@
 Change Log
 ==========
 
+Version 5.0.0
+---------------------
+
+_2024-07-15_
+
+### Common
+
+* Prevent conflicts for options of different types but with similar names (#3005)
+* Support all Gradle entries for file collections (#2946)
+  * `srcDir(String)` has been deprecated in favor of `srcDir(Any)` which better leverages Gradle to
+  handle dependencies.
+
 Version 5.0.0-alpha04
 ---------------------
 
