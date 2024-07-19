@@ -311,17 +311,13 @@ open class WireExtension(
     }
 
     /** Sets a directory. Example: "src/main/proto". */
-    @Deprecated("Deprecated in favor of 'srcDir(fileCollection)'")
     fun srcDir(dir: String) {
-      isEmpty = false
-      sourceDirectoriesAndLocalJars += project.file(dir)
+      srcDir(project.file(dir))
     }
 
     /** Sets one or more directories. */
-    @Deprecated("Deprecated in favor of 'srcDir(fileCollection)'")
     fun srcDirs(vararg dirs: String) {
-      isEmpty = false
-      sourceDirectoriesAndLocalJars += dirs.map { project.file(it) }
+      srcDir(dirs.map { project.file(it) })
     }
 
     /** Sets a local or a remote jar. Examples: "libs/protos.jar", or "com.example:protos:1.0.0". */
