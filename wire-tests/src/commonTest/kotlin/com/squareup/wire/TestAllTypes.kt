@@ -293,7 +293,8 @@ class TestAllTypes {
   }
 
   @OptIn(ExperimentalEncodingApi::class)
-  @Test fun testReadSource() {
+  @Test
+  fun testReadSource() {
     val data = adapter.encode(allTypes)
     val input = Buffer().write(data)
     /*
@@ -315,7 +316,8 @@ class TestAllTypes {
   }
 
   @OptIn(ExperimentalEncodingApi::class)
-  @Test fun testReadSource2() {
+  @Test
+  fun testReadSource2() {
     val data = adapter.encode(allTypes)
     val input = Buffer().write(data)
     /*
@@ -332,7 +334,7 @@ class TestAllTypes {
     var parsed = adapter.decode(input)
     assertEquals(parsed.pack_int64, allTypes.pack_int64 + listOf(11, 22, 33, 44))
 
-    parsed = allTypes.copy(pack_int64= allTypes.pack_int64)
+    parsed = allTypes.copy(pack_int64 = allTypes.pack_int64)
     assertEquals(allTypes, parsed)
     assertEquals(true, allTypes.ext_opt_bool)
     assertEquals(list(true), allTypes.ext_rep_bool)
