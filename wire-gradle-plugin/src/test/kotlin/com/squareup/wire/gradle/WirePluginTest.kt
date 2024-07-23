@@ -554,9 +554,8 @@ class WirePluginTest {
     val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull()
-    assertThat(result.output)
-      .doesNotContain("Writing com.squareup.geology.Period")
 
+    assertThat(File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")).doesNotExist()
     val generatedProto =
       File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
@@ -572,9 +571,8 @@ class WirePluginTest {
     val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull()
-    assertThat(result.output)
-      .doesNotContain("Writing com.squareup.geology.Period")
 
+    assertThat(File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")).doesNotExist()
     val generatedProto =
       File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
@@ -618,9 +616,8 @@ class WirePluginTest {
     val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull()
-    assertThat(result.output)
-      .doesNotContain("Writing com.squareup.geology.Period")
 
+    assertThat(File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")).doesNotExist()
     val generatedProto =
       File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
@@ -637,10 +634,10 @@ class WirePluginTest {
     val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull()
+    assertThat(File(outputRoot, "com/squareup/geology/Period.kt")).exists()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt"))
       .exists()
       .content().doesNotContain("val name")
-    assertThat(File(outputRoot, "com/squareup/geology/Period.kt"))
   }
 
   @Test
@@ -975,7 +972,7 @@ class WirePluginTest {
         "--stacktrace",
         "-Dkjs=$kmpJsEnabled",
         "-Dknative=$kmpNativeEnabled",
-        "--info",
+        "--debug",
       ).build()
     }
 
@@ -1287,7 +1284,7 @@ class WirePluginTest {
 
     val fixtureRoot = File("src/test/projects/cache-include-paths-1")
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
+      withArguments("generateProtos", "--build-cache", "--stacktrace", "--debug").build()
     }
 
     assertThat(result.task(":generateProtos")).isNotNull()
@@ -1299,7 +1296,7 @@ class WirePluginTest {
     assertThat(buildCacheDir.exists()).isTrue()
 
     val cachedResult = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
+      withArguments("generateProtos", "--build-cache", "--stacktrace", "--debug").build()
     }
 
     assertThat(cachedResult.task(":generateProtos")).isNotNull()
@@ -1339,7 +1336,7 @@ class WirePluginTest {
     // expect the new task to run again, without using the cache.
     val modifiedFixtureRoot = File("src/test/projects/cache-include-paths-2")
     val modifiedResult = gradleRunner.runFixture(modifiedFixtureRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
+      withArguments("generateProtos", "--build-cache", "--stacktrace", "--debug").build()
     }
 
     assertThat(modifiedResult.task(":generateProtos")).isNotNull()
