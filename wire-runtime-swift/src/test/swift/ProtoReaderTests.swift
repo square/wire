@@ -646,6 +646,50 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
+    func testDecodePackedRepeatedFixedUInt32Empty() throws {
+        let data = Foundation.Data(hexEncoded: """
+            0A       // (Tag 1 | Length Delimited)
+            00       // Length 0
+        """)!
+
+        try test(data: data) { reader in
+            var values: [UInt64] = []
+            try reader.decode(tag: 1) { try reader.decode(into: &values, encoding: .fixed) }
+
+            XCTAssertEqual(values, [])
+        }
+    }
+
+    func testDecodePackedRepeatedFixedUInt64() throws {
+        let data = Foundation.Data(hexEncoded: """
+            0A               // (Tag 1 | Length Delimited)
+            10               // Length 16
+            0100000000000000 // Value 1
+            FFFFFFFFFFFFFFFF // Value UInt64.max
+        """)!
+
+        try test(data: data) { reader in
+            var values: [UInt64] = []
+            try reader.decode(tag: 1) { try reader.decode(into: &values, encoding: .fixed) }
+
+            XCTAssertEqual(values, [1, .max])
+        }
+    }
+
+    func testDecodePackedRepeatedFixedUInt64Empty() throws {
+        let data = Foundation.Data(hexEncoded: """
+            0A       // (Tag 1 | Length Delimited)
+            00       // Length 0
+        """)!
+
+        try test(data: data) { reader in
+            var values: [UInt64] = []
+            try reader.decode(tag: 1) { try reader.decode(into: &values, encoding: .fixed) }
+
+            XCTAssertEqual(values, [])
+        }
+    }
+
     func testDecodeRepeatedVarintUInt32() throws {
         let data = Foundation.Data(hexEncoded: """
             08         // (Tag 1 | Varint)
