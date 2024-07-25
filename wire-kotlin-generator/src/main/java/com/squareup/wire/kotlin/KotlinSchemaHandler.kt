@@ -154,12 +154,12 @@ class KotlinSchemaHandler(
     val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
       .addFileComment(CODE_GENERATED_BY_WIRE)
       .addFileComment("\nSource: %L in %L", source, location.withPathOnly())
-      // If a file contains deprecation, we don't want to pollute the consumer's logs with something
-      // they might not be able to control.
+      // DEPRECATION: Don't warn about Wire's internal use of deprecated symbols.
+      // RUNTIME_ANNOTATION_NOT_SUPPORTED: Don't warn about @WireField in Kotlin/JS.
       .addAnnotation(
         AnnotationSpec.builder(Suppress::class)
           .useSiteTarget(FILE)
-          .addMember("%S", "DEPRECATION")
+          .addMember("%S", "DEPRECATION", "RUNTIME_ANNOTATION_NOT_SUPPORTED")
           .build(),
       )
       .addType(typeSpec)
