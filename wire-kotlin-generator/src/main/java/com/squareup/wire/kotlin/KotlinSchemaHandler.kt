@@ -159,7 +159,8 @@ class KotlinSchemaHandler(
       .addAnnotation(
         AnnotationSpec.builder(Suppress::class)
           .useSiteTarget(FILE)
-          .addMember("%S", "DEPRECATION", "RUNTIME_ANNOTATION_NOT_SUPPORTED")
+          .addMember("%S", "DEPRECATION")
+          .addMember("%S", "RUNTIME_ANNOTATION_NOT_SUPPORTED")
           .build(),
       )
       .addType(typeSpec)
