@@ -240,7 +240,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
 
     private static final class ProtoAdapter_KeywordJavaEnum extends EnumAdapter<KeywordJavaEnum> {
       ProtoAdapter_KeywordJavaEnum() {
-        super(KeywordJavaEnum.class, Syntax.PROTO_2, KeywordJavaEnum.final_);
+        super(KeywordJavaEnum.class, Syntax.PROTO_2.INSTANCE, KeywordJavaEnum.final_);
       }
 
       @Override
@@ -254,7 +254,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
     private ProtoAdapter<Map<String, String>> package_;
 
     public ProtoAdapter_KeywordJava() {
-      super(FieldEncoding.LENGTH_DELIMITED, KeywordJava.class, "type.googleapis.com/squareup.proto2.keywords.KeywordJava", Syntax.PROTO_2, null, "keyword_java.proto");
+      super(FieldEncoding.LENGTH_DELIMITED, KeywordJava.class, "type.googleapis.com/squareup.proto2.keywords.KeywordJava", Syntax.PROTO_2.INSTANCE, null, "keyword_java.proto");
     }
 
     @Override

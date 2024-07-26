@@ -370,7 +370,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     private static final class ProtoAdapter_Nested extends ProtoAdapter<Nested> {
       public ProtoAdapter_Nested() {
-        super(FieldEncoding.LENGTH_DELIMITED, Nested.class, "type.googleapis.com/squareup.protos.custom_options.FooBar.Nested", Syntax.PROTO_2, null, "custom_options.proto");
+        super(FieldEncoding.LENGTH_DELIMITED, Nested.class, "type.googleapis.com/squareup.protos.custom_options.FooBar.Nested", Syntax.PROTO_2.INSTANCE, null, "custom_options.proto");
       }
 
       @Override
@@ -502,7 +502,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     private static final class ProtoAdapter_More extends ProtoAdapter<More> {
       public ProtoAdapter_More() {
-        super(FieldEncoding.LENGTH_DELIMITED, More.class, "type.googleapis.com/squareup.protos.custom_options.FooBar.More", Syntax.PROTO_2, null, "custom_options.proto");
+        super(FieldEncoding.LENGTH_DELIMITED, More.class, "type.googleapis.com/squareup.protos.custom_options.FooBar.More", Syntax.PROTO_2.INSTANCE, null, "custom_options.proto");
       }
 
       @Override
@@ -584,7 +584,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     private static final class ProtoAdapter_FooBarBazEnum extends EnumAdapter<FooBarBazEnum> {
       ProtoAdapter_FooBarBazEnum() {
-        super(FooBarBazEnum.class, Syntax.PROTO_2, null);
+        super(FooBarBazEnum.class, Syntax.PROTO_2.INSTANCE, null);
       }
 
       @Override
@@ -596,7 +596,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
   private static final class ProtoAdapter_FooBar extends ProtoAdapter<FooBar> {
     public ProtoAdapter_FooBar() {
-      super(FieldEncoding.LENGTH_DELIMITED, FooBar.class, "type.googleapis.com/squareup.protos.custom_options.FooBar", Syntax.PROTO_2, null, "custom_options.proto");
+      super(FieldEncoding.LENGTH_DELIMITED, FooBar.class, "type.googleapis.com/squareup.protos.custom_options.FooBar", Syntax.PROTO_2.INSTANCE, null, "custom_options.proto");
     }
 
     @Override

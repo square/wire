@@ -15,20 +15,51 @@
  */
 package com.squareup.wire
 
-/** Syntax version. */
-enum class Syntax(private val string: String) {
-  PROTO_2("proto2"),
-  PROTO_3("proto3"),
-  ;
+/** Syntax and edition version. */
+sealed class Syntax(internal val string: String) {
+  data object PROTO_2 : Syntax("proto2") {
+    override fun toString(): String = string
+  }
+  data object PROTO_3 : Syntax("proto3") {
+    override fun toString(): String = string
+  }
+  data class Edition(val value: String) : Syntax(value) {
+    override fun toString(): String = value
+  }
 
-  override fun toString(): String = string
+  // Created for backward capability with when Syntax used to be an enum.
+  fun name(): String {
+    return when (this) {
+      // TODO(Benoit) Edition needs to return something like `Edition(<value>)`.
+      is Edition,
+      PROTO_2,
+      -> "PROTO_2"
+      PROTO_3 -> "PROTO_3"
+    }
+  }
 
   companion object {
+    @Deprecated("Use get(string: String, edition: Boolean) instead", ReplaceWith("Syntax.get(string, edition)"))
     operator fun get(string: String): Syntax {
-      for (syntax in values()) {
-        if (syntax.string == string) return syntax
-      }
+      if (string == PROTO_2.toString()) return PROTO_2
+      if (string == PROTO_3.toString()) return PROTO_3
       throw IllegalArgumentException("unexpected syntax: $string")
     }
+
+    fun get(string: String, edition: Boolean): Syntax {
+      if (edition) {
+        if (string in KNOWN_EDITIONS) return Edition(string)
+        throw IllegalArgumentException("unknown edition: $string")
+      } else {
+        if (string == PROTO_2.toString()) return PROTO_2
+        if (string == PROTO_3.toString()) return PROTO_3
+        throw IllegalArgumentException("unexpected syntax: $string")
+      }
+    }
+
+    private val KNOWN_EDITIONS = listOf(
+      "2023",
+      "2024",
+    )
   }
 }

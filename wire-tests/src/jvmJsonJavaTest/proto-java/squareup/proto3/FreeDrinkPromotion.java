@@ -13,7 +13,7 @@ import java.lang.Override;
 import okio.ByteString;
 
 public final class FreeDrinkPromotion extends Message<FreeDrinkPromotion, FreeDrinkPromotion.Builder> {
-  public static final ProtoAdapter<FreeDrinkPromotion> ADAPTER = ProtoAdapter.newMessageAdapter(FreeDrinkPromotion.class, "type.googleapis.com/squareup.proto3.FreeDrinkPromotion", Syntax.PROTO_3);
+  public static final ProtoAdapter<FreeDrinkPromotion> ADAPTER = ProtoAdapter.newMessageAdapter(FreeDrinkPromotion.class, "type.googleapis.com/squareup.proto3.FreeDrinkPromotion", Syntax.PROTO_3.INSTANCE);
 
   private static final long serialVersionUID = 0L;
 

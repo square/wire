@@ -415,18 +415,6 @@ final enum class com.squareup.wire/FieldEncoding : kotlin/Enum<com.squareup.wire
     final val entries // com.squareup.wire/FieldEncoding.entries|#static{}entries[0]
         final fun <get-entries>(): kotlin.enums/EnumEntries<com.squareup.wire/FieldEncoding> // com.squareup.wire/FieldEncoding.entries.<get-entries>|<get-entries>#static(){}[0]
 }
-final enum class com.squareup.wire/Syntax : kotlin/Enum<com.squareup.wire/Syntax> { // com.squareup.wire/Syntax|null[0]
-    enum entry PROTO_2 // com.squareup.wire/Syntax.PROTO_2|null[0]
-    enum entry PROTO_3 // com.squareup.wire/Syntax.PROTO_3|null[0]
-    final fun toString(): kotlin/String // com.squareup.wire/Syntax.toString|toString(){}[0]
-    final fun valueOf(kotlin/String): com.squareup.wire/Syntax // com.squareup.wire/Syntax.valueOf|valueOf#static(kotlin.String){}[0]
-    final fun values(): kotlin/Array<com.squareup.wire/Syntax> // com.squareup.wire/Syntax.values|values#static(){}[0]
-    final object Companion { // com.squareup.wire/Syntax.Companion|null[0]
-        final fun get(kotlin/String): com.squareup.wire/Syntax // com.squareup.wire/Syntax.Companion.get|get(kotlin.String){}[0]
-    }
-    final val entries // com.squareup.wire/Syntax.entries|#static{}entries[0]
-        final fun <get-entries>(): kotlin.enums/EnumEntries<com.squareup.wire/Syntax> // com.squareup.wire/Syntax.entries.<get-entries>|<get-entries>#static(){}[0]
-}
 final fun <#A: kotlin/Any?, #B: kotlin/Any?> (kotlin.collections/Map<#A, #B>).com.squareup.wire.internal/redactElements(com.squareup.wire/ProtoAdapter<#B>): kotlin.collections/Map<#A, #B> // com.squareup.wire.internal/redactElements|redactElements@kotlin.collections.Map<0:0,0:1>(com.squareup.wire.ProtoAdapter<0:1>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
 final fun <#A: kotlin/Any?, #B: kotlin/Any?> com.squareup.wire.internal/copyOf(kotlin.collections/Map<#A, #B>): kotlin.collections/MutableMap<#A, #B> // com.squareup.wire.internal/copyOf|copyOf(kotlin.collections.Map<0:0,0:1>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
 final fun <#A: kotlin/Any?, #B: kotlin/Any?> com.squareup.wire.internal/copyOf(kotlin/String, kotlin.collections/Map<#A, #B>?): kotlin.collections/MutableMap<#A, #B> // com.squareup.wire.internal/copyOf|copyOf(kotlin.String;kotlin.collections.Map<0:0,0:1>?){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
@@ -551,6 +539,34 @@ open annotation class com.squareup.wire/WireRpc : kotlin/Annotation { // com.squ
         final fun <get-responseAdapter>(): kotlin/String // com.squareup.wire/WireRpc.responseAdapter.<get-responseAdapter>|<get-responseAdapter>(){}[0]
     final val sourceFile // com.squareup.wire/WireRpc.sourceFile|{}sourceFile[0]
         final fun <get-sourceFile>(): kotlin/String // com.squareup.wire/WireRpc.sourceFile.<get-sourceFile>|<get-sourceFile>(){}[0]
+}
+sealed class com.squareup.wire/Syntax { // com.squareup.wire/Syntax|null[0]
+    constructor <init>(kotlin/String) // com.squareup.wire/Syntax.<init>|<init>(kotlin.String){}[0]
+    final class Edition : com.squareup.wire/Syntax { // com.squareup.wire/Syntax.Edition|null[0]
+        constructor <init>(kotlin/String) // com.squareup.wire/Syntax.Edition.<init>|<init>(kotlin.String){}[0]
+        final fun component1(): kotlin/String // com.squareup.wire/Syntax.Edition.component1|component1(){}[0]
+        final fun copy(kotlin/String =...): com.squareup.wire/Syntax.Edition // com.squareup.wire/Syntax.Edition.copy|copy(kotlin.String){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.squareup.wire/Syntax.Edition.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.squareup.wire/Syntax.Edition.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.squareup.wire/Syntax.Edition.toString|toString(){}[0]
+        final val value // com.squareup.wire/Syntax.Edition.value|{}value[0]
+            final fun <get-value>(): kotlin/String // com.squareup.wire/Syntax.Edition.value.<get-value>|<get-value>(){}[0]
+    }
+    final fun name(): kotlin/String // com.squareup.wire/Syntax.name|name(){}[0]
+    final object Companion { // com.squareup.wire/Syntax.Companion|null[0]
+        final fun get(kotlin/String): com.squareup.wire/Syntax // com.squareup.wire/Syntax.Companion.get|get(kotlin.String){}[0]
+        final fun get(kotlin/String, kotlin/Boolean): com.squareup.wire/Syntax // com.squareup.wire/Syntax.Companion.get|get(kotlin.String;kotlin.Boolean){}[0]
+    }
+    final object PROTO_2 : com.squareup.wire/Syntax { // com.squareup.wire/Syntax.PROTO_2|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.squareup.wire/Syntax.PROTO_2.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.squareup.wire/Syntax.PROTO_2.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.squareup.wire/Syntax.PROTO_2.toString|toString(){}[0]
+    }
+    final object PROTO_3 : com.squareup.wire/Syntax { // com.squareup.wire/Syntax.PROTO_3|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.squareup.wire/Syntax.PROTO_3.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.squareup.wire/Syntax.PROTO_3.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.squareup.wire/Syntax.PROTO_3.toString|toString(){}[0]
+    }
 }
 // Targets: [iosArm64, iosX64, macos, tvosArm64, tvosX64]
 final fun <#A: kotlin/Any?> (com.squareup.wire/ProtoAdapter<#A>).com.squareup.wire/decode(platform.Foundation/NSData): #A // com.squareup.wire/decode|decode@com.squareup.wire.ProtoAdapter<0:0>(platform.Foundation.NSData){0§<kotlin.Any?>}[0]
