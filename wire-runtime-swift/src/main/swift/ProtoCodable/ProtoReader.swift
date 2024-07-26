@@ -861,6 +861,12 @@ public final class ProtoReader {
     private func decode<T>(into array: inout [T], decode: () throws -> T?) throws {
         switch state {
         case let .lengthDelimited(length):
+            guard length > 0 else {
+                // If the array is empty, there's nothing to do.
+                state = .tag
+                return
+            }
+
             // Preallocate space for the unpacked data.
             // It's allowable to have a packed field spread across multiple places
             // in the buffer, so add to the existing capacity.
