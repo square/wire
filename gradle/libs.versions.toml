@@ -36,7 +36,7 @@ assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
 checker-qual = { module = "org.checkerframework:checker-qual", version.ref = "checkerQual" }
 contour = { module = "app.cash.contour:contour", version = "1.1.0" }
-googleJavaFormat = "com.google.googlejavaformat:google-java-format:1.22.0"
+googleJavaFormat = "com.google.googlejavaformat:google-java-format:1.23.0"
 grpc-genJava = { module = "io.grpc:protoc-gen-grpc-java", version.ref = "grpc" }
 grpc-netty = { module = "io.grpc:grpc-netty", version.ref = "grpc" }
 grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
