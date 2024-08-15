@@ -21,6 +21,7 @@ import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import assertk.assertions.messageContains
+import com.squareup.wire.Syntax.Edition
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.schema.Field.Label.OPTIONAL
@@ -628,6 +629,48 @@ class ProtoParserTest {
   }
 
   @Test
+  fun editionParsing() {
+    val proto = """
+        |edition = "2024";
+        |message Foo {}
+    """.trimMargin()
+    val parsed = ProtoParser.parse(location, proto)
+    assertThat(parsed.syntax).isEqualTo(Edition("2024"))
+  }
+
+  @Test
+  fun syntaxAndEditionConflictAreNotAllowed() {
+    val proto = """
+        |edition = "2024";
+        |syntax = "proto2";
+        |message Foo {}
+    """.trimMargin()
+    try {
+      ProtoParser.parse(location, proto)
+      fail()
+    } catch (e: IllegalStateException) {
+      assertThat(e).hasMessage("Syntax error in file.proto:2:1: too many syntax or edition definitions")
+    }
+  }
+
+  @Test
+  fun rejectUnknownEditions() {
+    for (edition in listOf("something", "EDITION_2023", "2025")) {
+      val proto = """
+        |edition = "2025";
+        |syntax = "proto2";
+        |message Foo {}
+      """.trimMargin()
+      try {
+        ProtoParser.parse(location, proto)
+        fail("Excepted to fail for edition $edition")
+      } catch (e: IllegalStateException) {
+        assertThat(e).hasMessage("Syntax error in file.proto:1:1: unknown edition: 2025")
+      }
+    }
+  }
+
+  @Test
   fun syntaxSpecified() {
     val proto = """
         |syntax = "proto3";
@@ -671,7 +714,7 @@ class ProtoParserTest {
       fail()
     } catch (expected: IllegalStateException) {
       assertThat(expected).hasMessage(
-        "Syntax error in file.proto:2:1: 'syntax' element must be the first declaration in a file",
+        "Syntax error in file.proto:2:1: 'syntax' or 'edition' element must be the first declaration in a file",
       )
     }
   }
@@ -3174,7 +3217,7 @@ class ProtoParserTest {
       fail()
     } catch (expected: IllegalStateException) {
       assertThat(expected)
-        .messageContains("Syntax error in file.proto:2:3: too many syntax definitions")
+        .messageContains("Syntax error in file.proto:2:3: too many syntax or edition definitions")
     }
   }
 

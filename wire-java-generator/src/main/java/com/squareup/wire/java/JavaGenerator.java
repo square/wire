@@ -965,7 +965,7 @@ public final class JavaGenerator {
         FieldSpec.builder(adapterOf(javaType), adapterName).addModifiers(PUBLIC, STATIC, FINAL);
     if (emitCompact) {
       result.initializer(
-          "$T.newMessageAdapter($T.class, $S, $T.$L)",
+          "$T.newMessageAdapter($T.class, $S, $T.$L.INSTANCE)",
           ProtoAdapter.class,
           javaType,
           protoType.getTypeUrl(),
@@ -1110,7 +1110,7 @@ public final class JavaGenerator {
         .addMethod(
             MethodSpec.constructorBuilder()
                 .addStatement(
-                    "super($T.class, $T.$L, $L)",
+                    "super($T.class, $T.$L.INSTANCE, $L)",
                     javaType,
                     Syntax.class,
                     enumType.getSyntax().name(),
@@ -1147,7 +1147,7 @@ public final class JavaGenerator {
         MethodSpec.constructorBuilder()
             .addModifiers(PUBLIC)
             .addStatement(
-                "super($T.LENGTH_DELIMITED, $T.class, $S, $T.$L, null, $S)",
+                "super($T.LENGTH_DELIMITED, $T.class, $S, $T.$L.INSTANCE, null, $S)",
                 FieldEncoding.class,
                 javaType,
                 type.getType().getTypeUrl(),

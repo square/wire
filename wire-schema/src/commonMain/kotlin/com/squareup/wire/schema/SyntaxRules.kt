@@ -40,8 +40,9 @@ interface SyntaxRules {
   companion object {
     fun get(syntax: Syntax?): SyntaxRules {
       return when (syntax) {
-        PROTO_3 -> PROTO_3_SYNTAX_RULES
-        PROTO_2,
+        is PROTO_3 -> PROTO_3_SYNTAX_RULES
+        is Syntax.Edition,
+        is PROTO_2,
         null,
         -> PROTO_2_SYNTAX_RULES
       }

@@ -1555,7 +1555,7 @@ class KotlinGenerator private constructor(
       .addSuperclassConstructorParameter("\n%S", type.type.typeUrl!!)
       .addSuperclassConstructorParameter(
         "\n%M",
-        MemberName(Syntax::class.asClassName(), type.syntax.name),
+        MemberName(Syntax::class.asClassName(), type.syntax.name()),
       )
       .addSuperclassConstructorParameter("\nnull")
       .addSuperclassConstructorParameter("\n%S\n⇤", type.location.path)
@@ -2469,7 +2469,7 @@ class KotlinGenerator private constructor(
       .addSuperclassConstructorParameter("\n⇥%T::class", parentClassName)
       .addSuperclassConstructorParameter(
         "\n%M",
-        MemberName(Syntax::class.asClassName(), message.syntax.name),
+        MemberName(Syntax::class.asClassName(), message.syntax.name()),
       )
       .addSuperclassConstructorParameter("\n%L\n⇤", message.identity())
       .addFunction(
