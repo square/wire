@@ -437,6 +437,26 @@ public final class JavaGeneratorTest {
                 + "  public abstract static class AbstractBAdapter extends ProtoAdapter<String> {\n");
   }
 
+  @Test
+  public void builderFactoryMethodIsGenerated() throws IOException {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "syntax = \"proto2\";\n"
+                    + "message SomeMessage {\n"
+                    + "  optional string a = 1;\n"
+                    + "}\n")
+            .build();
+    String javaOutput = new JavaWithProfilesGenerator(schema).generateJava("SomeMessage");
+    assertThat(javaOutput)
+        .contains(
+            "  public static final Builder builder() {\n"
+                + "    return new Builder();\n"
+                + "  }\n");
+  }
+
   /** https://github.com/square/wire/issues/655 */
   @Test
   public void defaultValues() throws IOException {

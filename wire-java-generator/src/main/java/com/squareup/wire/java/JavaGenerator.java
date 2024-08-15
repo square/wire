@@ -844,6 +844,7 @@ public final class JavaGenerator {
     builder.addMethod(messageConstructor(nameAllocator, type, builderJavaType));
 
     builder.addMethod(newBuilder(nameAllocator, type));
+    builder.addMethod(staticBuilder(type));
 
     builder.addMethod(messageEquals(nameAllocator, type));
     builder.addMethod(messageHashCode(nameAllocator, type));
@@ -2074,6 +2075,23 @@ public final class JavaGenerator {
 
     result.addStatement("$L.addUnknownFields(unknownFields())", builderName);
     result.addStatement("return $L", builderName);
+    return result.build();
+  }
+
+  // Example:
+  //
+  // public static final Builder builder() {
+  //   return new Builder();
+  // }
+  private MethodSpec staticBuilder(MessageType message) {
+    ClassName javaType = (ClassName) typeName(message.getType());
+    ClassName builderJavaType = javaType.nestedClass("Builder");
+
+    MethodSpec.Builder result =
+        MethodSpec.methodBuilder("builder")
+            .addModifiers(PUBLIC, STATIC, FINAL)
+            .returns(builderJavaType)
+            .addStatement("return new $1T()", builderJavaType);
     return result.build();
   }
 
