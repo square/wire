@@ -164,6 +164,7 @@ data class EnumType(
       reserveds = reserveds,
     )
     result.allowAlias = allowAlias
+    result.deprecated = deprecated
     return result
   }
 

@@ -1728,6 +1728,7 @@ class PrunerTest {
              |}
              |enum Enum {
              |  option allow_alias = true;
+             |  option deprecated = true;
              |  A = 1;
              |  B = 1;
              |}
@@ -1752,6 +1753,7 @@ class PrunerTest {
 
     val enumType = pruned.getType("Enum") as EnumType
     assertThat(enumType.allowAlias()).isTrue()
+    assertThat(enumType.isDeprecated).isTrue()
   }
 
   @Test
