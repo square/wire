@@ -47,6 +47,24 @@ kotlin {
         dependsOn(jvmKotlinAndroidTest)
       }
     }
+    val kotlinProtoReader32Test by compilations.creating {
+      defaultSourceSet {
+        kotlin.srcDir("src/jvmKotlinProtoReader32Test/proto-kotlin")
+        dependencies {
+          implementation(projects.wireRuntime)
+          implementation(libs.kotlin.test.junit)
+          implementation(libs.assertj)
+          implementation(libs.kotlin.reflect)
+        }
+      }
+      val jvmProtoReader32Test by tasks.creating(Test::class) {
+        classpath = compileDependencyFiles + runtimeDependencyFiles + output.allOutputs
+        testClassesDirs = output.classesDirs
+      }
+      val jvmTest by tasks.getting {
+        dependsOn(jvmProtoReader32Test)
+      }
+    }
     // FIXME(egor): withJava() has to be declared after all custom compilations.
     // See https://youtrack.jetbrains.com/issue/KT-41506.
     withJava()
@@ -288,6 +306,7 @@ configure<SpotlessExtension> {
       "src/jvmJavaTest/proto-java/**/*.kt",
       "src/jvmKotlinAndroidTest/proto-kotlin/**/*.kt",
       "src/jvmKotlinInteropTest/proto-kotlin/**/*.kt",
+      "src/jvmKotlinProtoReader32Test/proto-kotlin/**/*.kt",
       "src/jvmJsonJavaTest/proto-java/**/*.kt",
       "src/jvmJsonKotlinTest/proto-kotlin/**/*.kt",
     )
@@ -302,6 +321,7 @@ configure<SpotlessExtension> {
       "src/jvmJavaAndroidCompactTest/proto-java/**/*.java",
       "src/jvmJavaTest/proto-java/**/*.java",
       "src/jvmKotlinInteropTest/proto-kotlin/**/*.java",
+      "src/jvmKotlinProtoReader32Test/proto-kotlin/**/*.java",
       "src/jvmJsonJavaTest/proto-java/**/*.java",
     )
   }

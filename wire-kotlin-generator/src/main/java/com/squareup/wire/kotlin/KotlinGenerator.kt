@@ -53,7 +53,6 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.joinToCode
-import com.squareup.wire.ProtoReader32
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.GrpcCall
@@ -65,6 +64,7 @@ import com.squareup.wire.MessageSink
 import com.squareup.wire.MessageSource
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
+import com.squareup.wire.ProtoReader32
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
@@ -1843,10 +1843,17 @@ class KotlinGenerator private constructor(
       val fields = message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs().filterIsInstance<Field>()
       val boxOneOfs = message.boxOneOfs()
       if (fields.isEmpty() && boxOneOfs.isEmpty()) {
-        addStatement("val unknownFields = reader.%M(reader::readUnknownField)", FOR_EACH_TAG)
+        addStatement(
+          "val unknownFields = reader.%L(reader::readUnknownField)",
+          protoReaderType.forEachTag,
+        )
       } else {
         val tag = nameAllocator.newName("tag")
-        addStatement("val unknownFields = reader.%M { %N ->", FOR_EACH_TAG, tag)
+        addStatement(
+          "val unknownFields = reader.%L { %N ->",
+          protoReaderType.forEachTag,
+          tag,
+        )
         addStatement("⇥when (%N) {⇥", tag)
 
         fields.forEach { field ->
@@ -1910,6 +1917,13 @@ class KotlinGenerator private constructor(
       .addModifiers(OVERRIDE)
       .build()
   }
+
+  /** Returns a call to `ProtoReader.forEachTag {}`. This needs an import for [PROTO_READER_32]. */
+  private val ClassName.forEachTag: CodeBlock
+    get() = when (PROTO_READER_32) {
+      this -> CodeBlock.of("%M", FOR_EACH_TAG)
+      else -> CodeBlock.of("%L", FOR_EACH_TAG.simpleName)
+    }
 
   private fun decodeAndAssign(
     protoReaderType: ClassName,
