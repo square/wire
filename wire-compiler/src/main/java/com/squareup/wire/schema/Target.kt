@@ -136,6 +136,12 @@ data class KotlinTarget(
 
   /** enum_class or sealed_class. See [EnumMode][com.squareup.wire.kotlin.EnumMode]. */
   val enumMode: EnumMode = EnumMode.ENUM_CLASS,
+
+  /**
+   * If true, adapters will generate decode functions for `ProtoReader32`. Use this optimization
+   * when targeting Kotlin/JS, where `Long` cursors are inefficient.
+   */
+  private val emitProtoReader32: Boolean = false,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
     return KotlinSchemaHandler(
@@ -152,6 +158,7 @@ data class KotlinTarget(
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,
       enumMode = enumMode,
+      emitProtoReader32 = emitProtoReader32,
     )
   }
 

@@ -135,6 +135,7 @@ class KotlinGenerator private constructor(
   private val buildersOnly: Boolean,
   private val escapeKotlinKeywords: Boolean,
   private val enumMode: EnumMode,
+  private val emitProtoReader32: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -1564,7 +1565,11 @@ class KotlinGenerator private constructor(
       .addFunction(encodeFun(type, reverse = false))
       .addFunction(encodeFun(type, reverse = true))
       .addFunction(decodeFun(PROTO_READER, type))
-      .addFunction(decodeFun(PROTO_READER_32, type))
+      .apply {
+        if (emitProtoReader32) {
+          addFunction(decodeFun(PROTO_READER_32, type))
+        }
+      }
       .addFunction(redactFun(type))
 
     for (field in type.fields) {
@@ -2817,7 +2822,11 @@ class KotlinGenerator private constructor(
           .build(),
       )
       .addFunction(boxedOneOfDecode(PROTO_READER, boxClassName, typeVariable))
-      .addFunction(boxedOneOfDecode(PROTO_READER_32, boxClassName, typeVariable))
+      .apply {
+        if (emitProtoReader32) {
+          addFunction(boxedOneOfDecode(PROTO_READER_32, boxClassName, typeVariable))
+        }
+      }
       .build()
   }
 
@@ -3034,6 +3043,7 @@ class KotlinGenerator private constructor(
       buildersOnly: Boolean = false,
       escapeKotlinKeywords: Boolean = false,
       enumMode: EnumMode = ENUM_CLASS,
+      emitProtoReader32: Boolean = false,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -3083,6 +3093,7 @@ class KotlinGenerator private constructor(
         buildersOnly = buildersOnly,
         escapeKotlinKeywords = escapeKotlinKeywords,
         enumMode = enumMode,
+        emitProtoReader32 = emitProtoReader32,
       )
     }
 

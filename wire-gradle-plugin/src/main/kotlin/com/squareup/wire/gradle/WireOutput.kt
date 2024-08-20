@@ -148,6 +148,12 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   /** enum_class or sealed_class. See [EnumMode][com.squareup.wire.kotlin.EnumMode]. */
   var enumMode: String = "enum_class"
 
+  /**
+   * If true, adapters will generate decode functions for `ProtoReader32`. Use this optimization
+   * when targeting Kotlin/JS, where `Long` cursors are inefficient.
+   */
+  var emitProtoReader32: Boolean = false
+
   override fun toTarget(outputDirectory: String): KotlinTarget {
     if (grpcServerCompatible) {
       throw IllegalArgumentException(
@@ -190,6 +196,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,
       enumMode = enumMode,
+      emitProtoReader32 = emitProtoReader32,
     )
   }
 }

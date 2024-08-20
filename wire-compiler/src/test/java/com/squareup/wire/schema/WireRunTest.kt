@@ -1615,6 +1615,49 @@ class WireRunTest {
       .contains("public val documentation_url: String")
   }
 
+  @Test
+  fun emitProtoReader32() {
+    writeBlueProto()
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      protoPath = listOf(Location.get("polygons/src/main/proto")),
+      targets = listOf(
+        KotlinTarget(
+          outDirectory = "generated/kt",
+          emitProtoReader32 = true,
+        ),
+      ),
+    )
+
+    wireRun.execute(fs, logger)
+    assertThat(fs.readUtf8("generated/kt/squareup/colors/Blue.kt"))
+      .contains("override fun decode(reader: ProtoReader32): Blue")
+  }
+
+  @Test
+  fun skipProtoReader32() {
+    writeBlueProto()
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      protoPath = listOf(Location.get("polygons/src/main/proto")),
+      targets = listOf(
+        KotlinTarget(
+          outDirectory = "generated/kt",
+          emitProtoReader32 = false,
+        ),
+      ),
+    )
+
+    wireRun.execute(fs, logger)
+    println(fs.readUtf8("generated/kt/squareup/colors/Blue.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/colors/Blue.kt"))
+      .doesNotContain("ProtoReader32")
+  }
+
   private fun writeOrangeProto() {
     fs.add(
       "colors/src/main/proto/squareup/colors/orange.proto",
