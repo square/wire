@@ -52,5 +52,13 @@ class LongArrayList(initialCapacity: Int) {
         .toInt()
       return LongArrayList(minElements)
     }
+
+    fun forDecoding(
+      minLengthInBytes: Int,
+      minimumElementByteSize: Int,
+    ): LongArrayList {
+      val minElements = (minLengthInBytes / minimumElementByteSize)
+      return LongArrayList(minElements)
+    }
   }
 }

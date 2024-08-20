@@ -53,6 +53,7 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.joinToCode
+import com.squareup.wire.ProtoReader32
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.GrpcCall
@@ -1562,7 +1563,8 @@ class KotlinGenerator private constructor(
       .addFunction(encodedSizeFun(type))
       .addFunction(encodeFun(type, reverse = false))
       .addFunction(encodeFun(type, reverse = true))
-      .addFunction(decodeFun(type))
+      .addFunction(decodeFun(PROTO_READER, type))
+      .addFunction(decodeFun(PROTO_READER_32, type))
       .addFunction(redactFun(type))
 
     for (field in type.fields) {
@@ -1720,7 +1722,7 @@ class KotlinGenerator private constructor(
       .build()
   }
 
-  private fun decodeFun(message: MessageType): FunSpec {
+  private fun decodeFun(protoReaderType: ClassName, message: MessageType): FunSpec {
     val className = typeToKotlinName.getValue(message.type)
     val nameAllocator = nameAllocator(message).copy()
     // The builder's fields will be of immutable types. In order to optimize decoding, we'll create
@@ -1836,10 +1838,10 @@ class KotlinGenerator private constructor(
       val fields = message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs().filterIsInstance<Field>()
       val boxOneOfs = message.boxOneOfs()
       if (fields.isEmpty() && boxOneOfs.isEmpty()) {
-        addStatement("val unknownFields = reader.forEachTag(reader::readUnknownField)")
+        addStatement("val unknownFields = reader.%M(reader::readUnknownField)", FOR_EACH_TAG)
       } else {
         val tag = nameAllocator.newName("tag")
-        addStatement("val unknownFields = reader.forEachTag { %N ->", tag)
+        addStatement("val unknownFields = reader.%M { %N ->", FOR_EACH_TAG, tag)
         addStatement("⇥when (%N) {⇥", tag)
 
         fields.forEach { field ->
@@ -1849,7 +1851,7 @@ class KotlinGenerator private constructor(
           when {
             field.type!!.isEnum -> {
               beginControlFlow("%L -> try", field.tag)
-              addStatement("%L", decodeAndAssign(field, fieldName, adapterName))
+              addStatement("%L", decodeAndAssign(protoReaderType, field, fieldName, adapterName))
               nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
               addStatement(
                 "reader.addUnknownField(%L, %T.VARINT, e.value.toLong())",
@@ -1860,11 +1862,15 @@ class KotlinGenerator private constructor(
             }
             field.isPacked && field.isScalar -> {
               beginControlFlow("%L ->", field.tag)
-              add(decodeAndAssign(field, fieldName, adapterName))
+              add(decodeAndAssign(protoReaderType, field, fieldName, adapterName))
               endControlFlow()
             }
             else -> {
-              addStatement("%L -> %L", field.tag, decodeAndAssign(field, fieldName, adapterName))
+              addStatement(
+                "%L -> %L",
+                field.tag,
+                decodeAndAssign(protoReaderType, field, fieldName, adapterName),
+              )
             }
           }
         }
@@ -1891,7 +1897,7 @@ class KotlinGenerator private constructor(
     }
 
     return FunSpec.builder("decode")
-      .addParameter("reader", ProtoReader::class)
+      .addParameter("reader", protoReaderType)
       .returns(className)
       .addCode(declarationBody)
       .addCode(decodeBlock)
@@ -1900,7 +1906,12 @@ class KotlinGenerator private constructor(
       .build()
   }
 
-  private fun decodeAndAssign(field: Field, fieldName: String, adapterName: CodeBlock): CodeBlock {
+  private fun decodeAndAssign(
+    protoReaderType: ClassName,
+    field: Field,
+    fieldName: String,
+    adapterName: CodeBlock,
+  ): CodeBlock {
     val decode = if (field.useArray) {
       CodeBlock.of(
         "%M(reader)",
@@ -1934,9 +1945,11 @@ class KotlinGenerator private constructor(
           beginControlFlow("if (%N == null)", fieldName)
           addStatement("val minimumByteSize = ${field.getMinimumByteSize()}")
           addStatement("val initialCapacity = (reader.nextFieldMinLengthInBytes() / minimumByteSize)")
-          addStatement("⇥.coerceAtMost(Int.MAX_VALUE.toLong())")
-          addStatement(".toInt()")
-          addStatement("⇤%N = %L(initialCapacity)", fieldName, ArrayList::class.simpleName)
+          if (protoReaderType == PROTO_READER) {
+            addStatement("⇥.coerceAtMost(Int.MAX_VALUE.toLong())")
+            addStatement(".toInt()⇤")
+          }
+          addStatement("%N = %L(initialCapacity)", fieldName, ArrayList::class.simpleName)
           endControlFlow()
           addStatement("%1N!!.add(%2L)", fieldName, decode)
         }
@@ -2803,20 +2816,25 @@ class KotlinGenerator private constructor(
           )
           .build(),
       )
-      .addFunction(
-        FunSpec.builder("decode")
-          .addParameter("reader", ProtoReader::class)
-          .returns(
-            com.squareup.wire.OneOf::class.asClassName().parameterizedBy(
-              boxClassName.parameterizedBy(typeVariable),
-              typeVariable,
-            ),
-          )
-          .addStatement("return create(%L.decode(%L))", "adapter", "reader")
-          .build(),
-      )
+      .addFunction(boxedOneOfDecode(PROTO_READER, boxClassName, typeVariable))
+      .addFunction(boxedOneOfDecode(PROTO_READER_32, boxClassName, typeVariable))
       .build()
   }
+
+  private fun boxedOneOfDecode(
+    protoReaderType: ClassName,
+    boxClassName: ClassName,
+    typeVariable: TypeVariableName,
+  ) = FunSpec.builder("decode")
+    .addParameter("reader", protoReaderType)
+    .returns(
+      com.squareup.wire.OneOf::class.asClassName().parameterizedBy(
+        boxClassName.parameterizedBy(typeVariable),
+        typeVariable,
+      ),
+    )
+    .addStatement("return create(%L.decode(%L))", "adapter", "reader")
+    .build()
 
   /**
    * Example:
@@ -2996,6 +3014,9 @@ class KotlinGenerator private constructor(
     )
     private val MESSAGE = Message::class.asClassName()
     private val ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage")
+    private val PROTO_READER = ProtoReader::class.asClassName()
+    private val PROTO_READER_32 = ProtoReader32::class.asClassName()
+    private val FOR_EACH_TAG = MemberName("com.squareup.wire", "forEachTag")
 
     @JvmStatic
     @JvmName("get")

@@ -37,6 +37,8 @@ actual abstract class EnumAdapter<E : WireEnum> protected actual constructor(
 
   actual override fun decode(reader: ProtoReader): E = commonDecode(reader, this::fromValue)
 
+  actual override fun decode(reader: ProtoReader32): E = commonDecode(reader, this::fromValue)
+
   actual override fun redact(value: E): E = commonRedact(value)
 
   /**

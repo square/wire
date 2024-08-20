@@ -142,6 +142,12 @@ actual abstract class ProtoAdapter<E> actual constructor(
   @Throws(IOException::class)
   actual abstract fun decode(reader: ProtoReader): E
 
+  /** Read a non-null value from `reader`. */
+  @Throws(IOException::class)
+  actual open fun decode(reader: ProtoReader32): E {
+    return decode(reader.asProtoReader())
+  }
+
   @Throws(IOException::class)
   actual fun decode(bytes: ByteArray): E {
     return commonDecode(bytes)
@@ -159,6 +165,11 @@ actual abstract class ProtoAdapter<E> actual constructor(
 
   @Throws(IOException::class)
   actual fun tryDecode(reader: ProtoReader, destination: MutableList<E>) {
+    return commonTryDecode(reader, destination)
+  }
+
+  @Throws(IOException::class)
+  actual fun tryDecode(reader: ProtoReader32, destination: MutableList<E>) {
     return commonTryDecode(reader, destination)
   }
 
@@ -405,6 +416,8 @@ actual abstract class ProtoAdapter<E> actual constructor(
       override fun encode(writer: ReverseProtoWriter, value: Nothing) =
         throw IllegalStateException("Operation not supported.")
       override fun decode(reader: ProtoReader): Nothing =
+        throw IllegalStateException("Operation not supported.")
+      override fun decode(reader: ProtoReader32): Nothing =
         throw IllegalStateException("Operation not supported.")
     }
   }

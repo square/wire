@@ -52,5 +52,13 @@ class DoubleArrayList(initialCapacity: Int) {
         .toInt()
       return DoubleArrayList(minElements)
     }
+
+    fun forDecoding(
+      minLengthInBytes: Int,
+      minimumElementByteSize: Int,
+    ): DoubleArrayList {
+      val minElements = (minLengthInBytes / minimumElementByteSize)
+      return DoubleArrayList(minElements)
+    }
   }
 }

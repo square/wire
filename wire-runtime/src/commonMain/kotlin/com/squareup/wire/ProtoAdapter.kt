@@ -132,6 +132,10 @@ expect abstract class ProtoAdapter<E>(
   @Throws(IOException::class)
   abstract fun decode(reader: ProtoReader): E
 
+  /** Read a non-null value from `reader`. */
+  @Throws(IOException::class)
+  open fun decode(reader: ProtoReader32): E
+
   /** Read an encoded message from `bytes`. */
   @Throws(IOException::class)
   fun decode(bytes: ByteArray): E
@@ -150,6 +154,13 @@ expect abstract class ProtoAdapter<E>(
    */
   @Throws(IOException::class)
   fun tryDecode(reader: ProtoReader, destination: MutableList<E>)
+
+  /**
+   * Reads a value and appends it to [destination] if this has data available. Otherwise, it
+   * will only clear the reader state.
+   */
+  @Throws(IOException::class)
+  fun tryDecode(reader: ProtoReader32, destination: MutableList<E>)
 
   /** Returns a human-readable version of the given `value`. */
   open fun toString(value: E): String
@@ -356,12 +367,12 @@ internal inline fun <E> ProtoAdapter<E>.commonEncodeByteString(value: E): ByteSt
 
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteArray): E {
-  return decode(Buffer().write(bytes))
+  return decode(ProtoReader32(bytes))
 }
 
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteString): E {
-  return decode(Buffer().write(bytes))
+  return decode(ProtoReader32(bytes))
 }
 
 @Suppress("NOTHING_TO_INLINE")
@@ -372,6 +383,16 @@ internal inline fun <E> ProtoAdapter<E>.commonDecode(source: BufferedSource): E 
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun <E> ProtoAdapter<E>.commonTryDecode(
   reader: ProtoReader,
+  destination: MutableList<E>,
+) {
+  if (reader.beforePossiblyPackedScalar()) {
+    destination.add(decode(reader))
+  }
+}
+
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonTryDecode(
+  reader: ProtoReader32,
   destination: MutableList<E>,
 ) {
   if (reader.beforePossiblyPackedScalar()) {
@@ -450,6 +471,9 @@ internal class PackedProtoAdapter<E>(
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): List<E> = listOf(originalAdapter.decode(reader))
 
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): List<E> = listOf(originalAdapter.decode(reader))
+
   override fun redact(value: List<E>): List<E> = emptyList()
 }
 
@@ -507,6 +531,9 @@ internal class RepeatedProtoAdapter<E>(
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): List<E> = listOf(originalAdapter.decode(reader))
 
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): List<E> = listOf(originalAdapter.decode(reader))
+
   override fun redact(value: List<E>): List<E> = emptyList()
 }
 
@@ -561,6 +588,10 @@ internal class DoubleArrayProtoAdapter(
 
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): DoubleArray =
+    doubleArrayOf(Double.fromBits(reader.readFixed64()))
+
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): DoubleArray =
     doubleArrayOf(Double.fromBits(reader.readFixed64()))
 
   override fun redact(value: DoubleArray): DoubleArray = doubleArrayOf()
@@ -618,6 +649,9 @@ internal class LongArrayProtoAdapter(
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): LongArray = longArrayOf(originalAdapter.decode(reader))
 
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): LongArray = longArrayOf(originalAdapter.decode(reader))
+
   override fun redact(value: LongArray): LongArray = longArrayOf()
 }
 
@@ -672,6 +706,10 @@ internal class FloatArrayProtoAdapter(
 
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): FloatArray =
+    floatArrayOf(Float.fromBits(reader.readFixed32()))
+
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): FloatArray =
     floatArrayOf(Float.fromBits(reader.readFixed32()))
 
   override fun redact(value: FloatArray): FloatArray = floatArrayOf()
@@ -729,6 +767,9 @@ internal class IntArrayProtoAdapter(
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): IntArray = intArrayOf(originalAdapter.decode(reader))
 
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): IntArray = intArrayOf(originalAdapter.decode(reader))
+
   override fun redact(value: IntArray): IntArray = intArrayOf()
 }
 
@@ -783,6 +824,28 @@ internal class MapProtoAdapter<K, V> internal constructor(
 
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Map<K, V> {
+    var key: K? = entryAdapter.keyAdapter.identity
+    var value: V? = entryAdapter.valueAdapter.identity
+
+    val token = reader.beginMessage()
+    while (true) {
+      val tag = reader.nextTag()
+      if (tag == -1) break
+      when (tag) {
+        1 -> key = entryAdapter.keyAdapter.decode(reader)
+        2 -> value = entryAdapter.valueAdapter.decode(reader)
+        // Ignore unknown tags in map entries.
+      }
+    }
+    reader.endMessageAndGetUnknownFields(token)
+
+    check(key != null) { "Map entry with null key" }
+    check(value != null) { "Map entry with null value" }
+    return mapOf(key to value)
+  }
+
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): Map<K, V> {
     var key: K? = entryAdapter.keyAdapter.identity
     var value: V? = entryAdapter.valueAdapter.identity
 
@@ -880,6 +943,13 @@ internal fun commonBool(): ProtoAdapter<Boolean> = object : ProtoAdapter<Boolean
     else -> true
   }
 
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): Boolean = when (reader.readVarint32()) {
+    0 -> false
+    // We are lenient to match protoc behavior.
+    else -> true
+  }
+
   override fun redact(value: Boolean): Boolean = throw UnsupportedOperationException()
 }
 
@@ -904,6 +974,9 @@ internal fun commonInt32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
 
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Int = reader.readVarint32()
+
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): Int = reader.readVarint32()
 
   override fun redact(value: Int): Int = throw UnsupportedOperationException()
 }
@@ -930,6 +1003,9 @@ internal fun commonUint32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Int = reader.readVarint32()
 
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): Int = reader.readVarint32()
+
   override fun redact(value: Int): Int = throw UnsupportedOperationException()
 }
 
@@ -955,6 +1031,9 @@ internal fun commonSint32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Int = decodeZigZag32(reader.readVarint32())
 
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): Int = decodeZigZag32(reader.readVarint32())
+
   override fun redact(value: Int): Int = throw UnsupportedOperationException()
 }
 
@@ -979,6 +1058,9 @@ internal fun commonFixed32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
 
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Int = reader.readFixed32()
+
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): Int = reader.readFixed32()
 
   override fun redact(value: Int): Int = throw UnsupportedOperationException()
 }
@@ -1006,6 +1088,9 @@ internal fun commonInt64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
 
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Long = reader.readVarint64()
+
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): Long = reader.readVarint64()
 
   override fun redact(value: Long): Long = throw UnsupportedOperationException()
 }
@@ -1036,6 +1121,9 @@ internal fun commonUint64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Long = reader.readVarint64()
 
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): Long = reader.readVarint64()
+
   override fun redact(value: Long): Long = throw UnsupportedOperationException()
 }
 
@@ -1060,6 +1148,9 @@ internal fun commonSint64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
 
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Long = decodeZigZag64(reader.readVarint64())
+
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): Long = decodeZigZag64(reader.readVarint64())
 
   override fun redact(value: Long): Long = throw UnsupportedOperationException()
 }
@@ -1086,6 +1177,9 @@ internal fun commonFixed64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Long = reader.readFixed64()
 
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): Long = reader.readFixed64()
+
   override fun redact(value: Long): Long = throw UnsupportedOperationException()
 }
 
@@ -1108,6 +1202,11 @@ internal class FloatProtoAdapter : ProtoAdapter<Float>(
 
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Float {
+    return Float.fromBits(reader.readFixed32())
+  }
+
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): Float {
     return Float.fromBits(reader.readFixed32())
   }
 
@@ -1141,6 +1240,9 @@ internal class DoubleProtoAdapter : ProtoAdapter<Double>(
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Double = Double.fromBits(reader.readFixed64())
 
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): Double = Double.fromBits(reader.readFixed64())
+
   override fun redact(value: Double): Double = throw UnsupportedOperationException()
 }
 
@@ -1168,6 +1270,9 @@ internal fun commonString(): ProtoAdapter<String> = object : ProtoAdapter<String
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): String = reader.readString()
 
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): String = reader.readString()
+
   override fun redact(value: String): String = throw UnsupportedOperationException()
 }
 
@@ -1192,6 +1297,9 @@ internal fun commonBytes(): ProtoAdapter<ByteString> = object : ProtoAdapter<Byt
 
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): ByteString = reader.readBytes()
+
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): ByteString = reader.readBytes()
 
   override fun redact(value: ByteString): ByteString = throw UnsupportedOperationException()
 }
@@ -1226,6 +1334,19 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
   }
 
   override fun decode(reader: ProtoReader): Duration {
+    var seconds = 0L
+    var nanos = 0
+    reader.forEachTag { tag ->
+      when (tag) {
+        1 -> seconds = INT64.decode(reader)
+        2 -> nanos = INT32.decode(reader)
+        else -> reader.readUnknownField(tag)
+      }
+    }
+    return durationOfSeconds(seconds, nanos.toLong())
+  }
+
+  override fun decode(reader: ProtoReader32): Duration {
     var seconds = 0L
     var nanos = 0
     reader.forEachTag { tag ->
@@ -1307,6 +1428,19 @@ internal fun commonInstant(): ProtoAdapter<Instant> = object : ProtoAdapter<Inst
     return ofEpochSecond(seconds, nanos.toLong())
   }
 
+  override fun decode(reader: ProtoReader32): Instant {
+    var seconds = 0L
+    var nanos = 0
+    reader.forEachTag { tag ->
+      when (tag) {
+        1 -> seconds = INT64.decode(reader)
+        2 -> nanos = INT32.decode(reader)
+        else -> reader.readUnknownField(tag)
+      }
+    }
+    return ofEpochSecond(seconds, nanos.toLong())
+  }
+
   override fun redact(value: Instant): Instant = value
 }
 
@@ -1323,6 +1457,10 @@ internal fun commonEmpty(): ProtoAdapter<Unit> = object : ProtoAdapter<Unit>(
   override fun encode(writer: ReverseProtoWriter, value: Unit) = Unit
 
   override fun decode(reader: ProtoReader) {
+    reader.forEachTag { tag -> reader.readUnknownField(tag) }
+  }
+
+  override fun decode(reader: ProtoReader32) {
     reader.forEachTag { tag -> reader.readUnknownField(tag) }
   }
 
@@ -1392,6 +1530,25 @@ internal fun commonStructMap(): ProtoAdapter<Map<String, *>?> = object : ProtoAd
     return result
   }
 
+  override fun decode(reader: ProtoReader32): Map<String, *>? {
+    val result = mutableMapOf<String, Any?>()
+    reader.forEachTag { entryTag ->
+      if (entryTag != 1) return@forEachTag reader.skip()
+
+      var key: String? = null
+      var value: Any? = null
+      reader.forEachTag { tag ->
+        when (tag) {
+          1 -> key = STRING.decode(reader)
+          2 -> value = STRUCT_VALUE.decode(reader)
+          else -> reader.readUnknownField(tag)
+        }
+      }
+      if (key != null) result[key!!] = value
+    }
+    return result
+  }
+
   override fun redact(value: Map<String, *>?) = value?.mapValues { STRUCT_VALUE.redact(it) }
 }
 
@@ -1426,6 +1583,15 @@ internal fun commonStructList(): ProtoAdapter<List<*>?> = object : ProtoAdapter<
   }
 
   override fun decode(reader: ProtoReader): List<*>? {
+    val result = mutableListOf<Any?>()
+    reader.forEachTag { entryTag ->
+      if (entryTag != 1) return@forEachTag reader.skip()
+      result.add(STRUCT_VALUE.decode(reader))
+    }
+    return result
+  }
+
+  override fun decode(reader: ProtoReader32): List<*>? {
     val result = mutableListOf<Any?>()
     reader.forEachTag { entryTag ->
       if (entryTag != 1) return@forEachTag reader.skip()
@@ -1469,6 +1635,12 @@ internal fun commonStructNull(): ProtoAdapter<Nothing?> = object : ProtoAdapter<
   }
 
   override fun decode(reader: ProtoReader): Nothing? {
+    val value = reader.readVarint32()
+    if (value != 0) throw IOException("expected 0 but was $value")
+    return null
+  }
+
+  override fun decode(reader: ProtoReader32): Nothing? {
     val value = reader.readVarint32()
     if (value != 0) throw IOException("expected 0 but was $value")
     return null
@@ -1568,6 +1740,22 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
     return result
   }
 
+  override fun decode(reader: ProtoReader32): Any? {
+    var result: Any? = null
+    reader.forEachTag { tag ->
+      when (tag) {
+        1 -> result = STRUCT_NULL.decode(reader)
+        2 -> result = DOUBLE.decode(reader)
+        3 -> result = STRING.decode(reader)
+        4 -> result = BOOL.decode(reader)
+        5 -> result = STRUCT_MAP.decode(reader)
+        6 -> result = STRUCT_LIST.decode(reader)
+        else -> reader.skip()
+      }
+    }
+    return result
+  }
+
   override fun redact(value: Any?): Any? {
     @Suppress("UNCHECKED_CAST") // Assume map keys are strings.
     return when (value) {
@@ -1613,6 +1801,17 @@ internal fun <T : Any> commonWrapper(delegate: ProtoAdapter<T>, typeUrl: String)
     }
 
     override fun decode(reader: ProtoReader): T? {
+      var result: T? = delegate.identity
+      reader.forEachTag { tag ->
+        when (tag) {
+          1 -> result = delegate.decode(reader)
+          else -> reader.readUnknownField(tag)
+        }
+      }
+      return result
+    }
+
+    override fun decode(reader: ProtoReader32): T? {
       var result: T? = delegate.identity
       reader.forEachTag { tag ->
         when (tag) {

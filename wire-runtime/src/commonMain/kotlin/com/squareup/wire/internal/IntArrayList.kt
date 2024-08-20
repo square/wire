@@ -52,5 +52,13 @@ class IntArrayList(initialCapacity: Int) {
         .toInt()
       return IntArrayList(minElements)
     }
+
+    fun forDecoding(
+      minLengthInBytes: Int,
+      minimumElementByteSize: Int,
+    ): IntArrayList {
+      val minElements = (minLengthInBytes / minimumElementByteSize)
+      return IntArrayList(minElements)
+    }
   }
 }

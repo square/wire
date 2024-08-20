@@ -52,5 +52,13 @@ class FloatArrayList(initialCapacity: Int) {
         .toInt()
       return FloatArrayList(minElements)
     }
+
+    fun forDecoding(
+      minLengthInBytes: Int,
+      minimumElementByteSize: Int,
+    ): FloatArrayList {
+      val minElements = (minLengthInBytes / minimumElementByteSize)
+      return FloatArrayList(minElements)
+    }
   }
 }

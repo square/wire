@@ -92,6 +92,11 @@ actual abstract class ProtoAdapter<E> actual constructor(
   /** Read a non-null value from `reader`. */
   actual abstract fun decode(reader: ProtoReader): E
 
+  /** Read a non-null value from `reader`. */
+  actual open fun decode(reader: ProtoReader32): E {
+    return decode(reader.asProtoReader())
+  }
+
   /** Read an encoded message from `bytes`. */
   actual fun decode(bytes: ByteArray): E {
     return commonDecode(bytes)
@@ -108,6 +113,10 @@ actual abstract class ProtoAdapter<E> actual constructor(
   }
 
   actual fun tryDecode(reader: ProtoReader, destination: MutableList<E>) {
+    return commonTryDecode(reader, destination)
+  }
+
+  actual fun tryDecode(reader: ProtoReader32, destination: MutableList<E>) {
     return commonTryDecode(reader, destination)
   }
 
