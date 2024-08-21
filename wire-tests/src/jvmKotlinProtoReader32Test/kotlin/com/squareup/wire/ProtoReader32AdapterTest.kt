@@ -15,8 +15,12 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.protos.kotlin.alltypes.AllTypes
+import com.squareup.wire.protos.kotlin.alltypes.AllTypes.NestedMessage
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import okio.Buffer
 import okio.ByteString
 import org.assertj.core.api.Assertions.assertThat
 
@@ -122,5 +126,66 @@ class ProtoReader32AdapterTest {
   fun decodeProtoReader32AsProtoReader() {
     val protoReader = ProtoReader32(allTypes.encode()).asProtoReader()
     assertThat(AllTypes.ADAPTER.decode(protoReader)).isEqualTo(allTypes)
+  }
+
+  /**
+   * Exercise the mix-and-match cases where a type that doesn't implement the [ProtoReader32] decode
+   * function has a field that does. (The regular [ProtoReader] function is used everywhere.)
+   */
+  @Test
+  fun decodeMixAndMatchProtoReaderEnclosed() {
+    val abc = Abc("one", allTypes, "three")
+    val abcBytes = Abc.ADAPTER.encodeByteString(abc)
+    val protoReader = ProtoReader(Buffer().write(abcBytes))
+    assertEquals(abc, Abc.ADAPTER.decode(protoReader))
+  }
+
+  data class Abc(
+    val a: String?,
+    val b: AllTypes?,
+    val c: String?,
+  ) {
+    companion object {
+      /** Note that this implements the decode overload that accepts a [ProtoReader32]. */
+      val ADAPTER: ProtoAdapter<Abc> = object : ProtoAdapter<Abc>(
+        FieldEncoding.LENGTH_DELIMITED,
+        NestedMessage::class,
+        "type.googleapis.com/Abc",
+        PROTO_2,
+        null,
+        "abc.proto",
+      ) {
+        override fun encodedSize(value: Abc) = error("unexpected call")
+
+        override fun encode(writer: ProtoWriter, value: Abc) = error("unexpected call")
+
+        override fun encode(writer: ReverseProtoWriter, value: Abc) {
+          STRING.encodeWithTag(writer, 1, value.a)
+          AllTypes.ADAPTER.encodeWithTag(writer, 2, value.b)
+          STRING.encodeWithTag(writer, 3, value.c)
+        }
+
+        override fun decode(reader: ProtoReader): Abc {
+          var a: String? = null
+          var b: AllTypes? = null
+          var c: String? = null
+          reader.forEachTag { tag ->
+            when (tag) {
+              1 -> a = STRING.decode(reader)
+              2 -> b = AllTypes.ADAPTER.decode(reader)
+              3 -> c = STRING.decode(reader)
+              else -> reader.readUnknownField(tag)
+            }
+          }
+          return Abc(
+            a = a,
+            b = b,
+            c = c,
+          )
+        }
+
+        override fun redact(value: Abc) = error("unexpected call")
+      }
+    }
   }
 }
