@@ -24,6 +24,7 @@ import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Instant
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
+import com.squareup.wire.ProtoReader32
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import kotlin.jvm.JvmMultifileClass
@@ -346,26 +347,30 @@ fun encodeArray_double(array: DoubleArray, writer: ReverseProtoWriter, tag: Int)
   }
 }
 
-fun decodePrimitive_int32(reader: ProtoReader): Int = reader.readVarint32()
-fun decodePrimitive_uint32(reader: ProtoReader): Int = reader.readVarint32()
-fun decodePrimitive_sint32(reader: ProtoReader): Int =
-  ProtoWriter.decodeZigZag32(reader.readVarint32())
+fun decodePrimitive_double(reader: ProtoReader32): Double = Double.fromBits(reader.readFixed64())
+fun decodePrimitive_double(reader: ProtoReader): Double = Double.fromBits(reader.readFixed64())
+fun decodePrimitive_fixed32(reader: ProtoReader32): Int = reader.readFixed32()
 fun decodePrimitive_fixed32(reader: ProtoReader): Int = reader.readFixed32()
+fun decodePrimitive_fixed64(reader: ProtoReader32): Long = reader.readFixed64()
+fun decodePrimitive_fixed64(reader: ProtoReader): Long = reader.readFixed64()
+fun decodePrimitive_float(reader: ProtoReader32): Float = Float.fromBits(reader.readFixed32())
+fun decodePrimitive_float(reader: ProtoReader): Float = Float.fromBits(reader.readFixed32())
+fun decodePrimitive_int32(reader: ProtoReader32): Int = reader.readVarint32()
+fun decodePrimitive_int32(reader: ProtoReader): Int = reader.readVarint32()
+fun decodePrimitive_int64(reader: ProtoReader32): Long = reader.readVarint64()
+fun decodePrimitive_int64(reader: ProtoReader): Long = reader.readVarint64()
+fun decodePrimitive_sfixed32(reader: ProtoReader32): Int = reader.readFixed32()
 fun decodePrimitive_sfixed32(reader: ProtoReader): Int = reader.readFixed32()
-fun decodePrimitive_int64(reader: ProtoReader): Long =
-  reader.readVarint64()
-fun decodePrimitive_uint64(reader: ProtoReader): Long =
-  reader.readVarint64()
-fun decodePrimitive_sint64(reader: ProtoReader): Long =
-  ProtoWriter.decodeZigZag64(reader.readVarint64())
-fun decodePrimitive_fixed64(reader: ProtoReader): Long =
-  reader.readFixed64()
-fun decodePrimitive_sfixed64(reader: ProtoReader): Long =
-  reader.readFixed64()
-fun decodePrimitive_float(reader: ProtoReader): Float =
-  Float.fromBits(reader.readFixed32())
-fun decodePrimitive_double(reader: ProtoReader): Double =
-  Double.fromBits(reader.readFixed64())
+fun decodePrimitive_sfixed64(reader: ProtoReader32): Long = reader.readFixed64()
+fun decodePrimitive_sfixed64(reader: ProtoReader): Long = reader.readFixed64()
+fun decodePrimitive_sint32(reader: ProtoReader32): Int = ProtoWriter.decodeZigZag32(reader.readVarint32())
+fun decodePrimitive_sint32(reader: ProtoReader): Int = ProtoWriter.decodeZigZag32(reader.readVarint32())
+fun decodePrimitive_sint64(reader: ProtoReader32): Long = ProtoWriter.decodeZigZag64(reader.readVarint64())
+fun decodePrimitive_sint64(reader: ProtoReader): Long = ProtoWriter.decodeZigZag64(reader.readVarint64())
+fun decodePrimitive_uint32(reader: ProtoReader32): Int = reader.readVarint32()
+fun decodePrimitive_uint32(reader: ProtoReader): Int = reader.readVarint32()
+fun decodePrimitive_uint64(reader: ProtoReader32): Long = reader.readVarint64()
+fun decodePrimitive_uint64(reader: ProtoReader): Long = reader.readVarint64()
 
 internal fun Instant.commonEquals(other: Any?): Boolean {
   if (this === other) return true

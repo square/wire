@@ -38,6 +38,9 @@ expect abstract class EnumAdapter<E : WireEnum> protected constructor(
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): E
 
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader32): E
+
   override fun redact(value: E): E
 
   /**
@@ -65,6 +68,15 @@ internal inline fun <E : WireEnum> commonEncode(writer: ReverseProtoWriter, valu
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun <E : WireEnum> EnumAdapter<E>.commonDecode(
   reader: ProtoReader,
+  fromValue: (Int) -> E?,
+): E {
+  val value = reader.readVarint32()
+  return fromValue(value) ?: throw ProtoAdapter.EnumConstantNotFoundException(value, type)
+}
+
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E : WireEnum> EnumAdapter<E>.commonDecode(
+  reader: ProtoReader32,
   fromValue: (Int) -> E?,
 ): E {
   val value = reader.readVarint32()

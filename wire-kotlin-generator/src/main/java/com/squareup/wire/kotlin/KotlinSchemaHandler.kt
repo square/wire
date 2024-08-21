@@ -80,6 +80,12 @@ class KotlinSchemaHandler(
 
   /** enum_class or sealed_class. See [EnumMode][com.squareup.wire.kotlin.EnumMode]. */
   val enumMode: EnumMode = EnumMode.ENUM_CLASS,
+
+  /**
+   * If true, adapters will generate decode functions for `ProtoReader32`. Use this optimization
+   * when targeting Kotlin/JS, where `Long` cursors are inefficient.
+   */
+  private val emitProtoReader32: Boolean = false,
 ) : SchemaHandler() {
   private lateinit var kotlinGenerator: KotlinGenerator
 
@@ -100,6 +106,7 @@ class KotlinSchemaHandler(
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,
       enumMode = enumMode,
+      emitProtoReader32 = emitProtoReader32,
     )
     context.fileSystem.createDirectories(context.outDirectory)
     super.handle(schema, context)

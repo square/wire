@@ -133,6 +133,7 @@ class WireCompiler internal constructor(
   val kotlinNameSuffix: String?,
   val kotlinBuildersOnly: Boolean,
   val kotlinEscapeKeywords: Boolean,
+  val emitProtoReader32: Boolean,
   val eventListenerFactoryClasses: List<String>,
   val customOptions: Map<String, String>,
 ) {
@@ -164,6 +165,7 @@ class WireCompiler internal constructor(
         nameSuffix = kotlinNameSuffix,
         buildersOnly = kotlinBuildersOnly,
         escapeKotlinKeywords = kotlinEscapeKeywords,
+        emitProtoReader32 = emitProtoReader32,
       )
     } else if (swiftOut != null) {
       targets += SwiftTarget(
@@ -266,6 +268,7 @@ class WireCompiler internal constructor(
     private const val KOTLIN_NAME_SUFFIX = "--kotlin_name_suffix="
     private const val KOTLIN_BUILDERS_ONLY = "--kotlin_builders_only"
     private const val KOTLIN_ESCAPE_KEYWORDS = "--kotlin_escape_keywords"
+    private const val EMIT_PROTO_READER_32 = "--emit_proto_reader_32"
     private const val CUSTOM_OPTION_FLAG = "--custom_option="
 
     @Throws(IOException::class)
@@ -326,6 +329,7 @@ class WireCompiler internal constructor(
       var kotlinNameSuffix: String? = null
       var kotlinBuildersOnly = false
       var kotlinEscapeKeywords = false
+      var emitProtoReader32 = false
       var dryRun = false
       val customOptions = mutableMapOf<String, String>()
 
@@ -433,6 +437,7 @@ class WireCompiler internal constructor(
           arg == SKIP_APPLIED_OPTIONS -> emitAppliedOptions = false
           arg == PERMIT_PACKAGE_CYCLES_OPTIONS -> permitPackageCycles = true
           arg == JAVA_INTEROP -> javaInterop = true
+          arg == EMIT_PROTO_READER_32 -> emitProtoReader32 = true
           arg.startsWith("--") -> throw IllegalArgumentException("Unknown argument '$arg'.")
           else -> sourceFileNames.add(arg)
         }
@@ -480,6 +485,7 @@ class WireCompiler internal constructor(
         kotlinNameSuffix = kotlinNameSuffix,
         kotlinBuildersOnly = kotlinBuildersOnly,
         kotlinEscapeKeywords = kotlinEscapeKeywords,
+        emitProtoReader32 = emitProtoReader32,
         eventListenerFactoryClasses = eventListenerFactoryClasses,
         customOptions = customOptions,
       )

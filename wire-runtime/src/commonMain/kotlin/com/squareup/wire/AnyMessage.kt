@@ -118,6 +118,19 @@ class AnyMessage(
         return AnyMessage(typeUrl = typeUrl, value = value)
       }
 
+      override fun decode(reader: ProtoReader32): AnyMessage {
+        var typeUrl = ""
+        var value = ByteString.EMPTY
+        reader.forEachTag { tag ->
+          when (tag) {
+            1 -> typeUrl = STRING.decode(reader)
+            2 -> value = BYTES.decode(reader)
+            else -> reader.readUnknownField(tag)
+          }
+        }
+        return AnyMessage(typeUrl = typeUrl, value = value)
+      }
+
       // TODO: this is a hazard.
       override fun redact(value: AnyMessage) =
         AnyMessage("square.github.io/wire/redacted", ByteString.EMPTY)

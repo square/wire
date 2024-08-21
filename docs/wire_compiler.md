@@ -514,6 +514,10 @@ wire {
 
     // Defines how an protobuf enum type is to be generated. See `com.squareup.wire.kotlin.EnumMode`
     enumMode = "enum_class"
+
+    // True to emit a adapters that include a decode() function that accepts a `ProtoReader32`.
+    // Use this optimization when targeting Kotlin/JS, where `Long` cursors are inefficient.
+    emitProtoReader32 = false
   }
 }
 ```

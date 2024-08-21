@@ -43,6 +43,8 @@ public abstract class com/squareup/wire/EnumAdapter : com/squareup/wire/ProtoAda
 	public fun <init> (Lkotlin/reflect/KClass;)V
 	public fun <init> (Lkotlin/reflect/KClass;Lcom/squareup/wire/Syntax;)V
 	protected fun <init> (Lkotlin/reflect/KClass;Lcom/squareup/wire/Syntax;Lcom/squareup/wire/WireEnum;)V
+	public fun decode (Lcom/squareup/wire/ProtoReader32;)Lcom/squareup/wire/WireEnum;
+	public synthetic fun decode (Lcom/squareup/wire/ProtoReader32;)Ljava/lang/Object;
 	public fun decode (Lcom/squareup/wire/ProtoReader;)Lcom/squareup/wire/WireEnum;
 	public synthetic fun decode (Lcom/squareup/wire/ProtoReader;)Ljava/lang/Object;
 	public fun encode (Lcom/squareup/wire/ProtoWriter;Lcom/squareup/wire/WireEnum;)V
@@ -198,6 +200,7 @@ public abstract class com/squareup/wire/ProtoAdapter {
 	public synthetic fun <init> (Lcom/squareup/wire/FieldEncoding;Lkotlin/reflect/KClass;Ljava/lang/String;Lcom/squareup/wire/Syntax;Ljava/lang/Object;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun asPacked ()Lcom/squareup/wire/ProtoAdapter;
 	public final fun asRepeated ()Lcom/squareup/wire/ProtoAdapter;
+	public fun decode (Lcom/squareup/wire/ProtoReader32;)Ljava/lang/Object;
 	public abstract fun decode (Lcom/squareup/wire/ProtoReader;)Ljava/lang/Object;
 	public final fun decode (Ljava/io/InputStream;)Ljava/lang/Object;
 	public final fun decode (Lokio/BufferedSource;)Ljava/lang/Object;
@@ -230,6 +233,7 @@ public abstract class com/squareup/wire/ProtoAdapter {
 	public static final fun newMessageAdapter (Ljava/lang/Class;Ljava/lang/String;Lcom/squareup/wire/Syntax;Ljava/lang/ClassLoader;)Lcom/squareup/wire/ProtoAdapter;
 	public abstract fun redact (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun toString (Ljava/lang/Object;)Ljava/lang/String;
+	public final fun tryDecode (Lcom/squareup/wire/ProtoReader32;Ljava/util/List;)V
 	public final fun tryDecode (Lcom/squareup/wire/ProtoReader;Ljava/util/List;)V
 }
 
@@ -248,6 +252,8 @@ public final class com/squareup/wire/ProtoAdapter$Companion {
 
 public final class com/squareup/wire/ProtoAdapter$Companion$UnsupportedTypeProtoAdapter : com/squareup/wire/ProtoAdapter {
 	public fun <init> ()V
+	public synthetic fun decode (Lcom/squareup/wire/ProtoReader32;)Ljava/lang/Object;
+	public fun decode (Lcom/squareup/wire/ProtoReader32;)Ljava/lang/Void;
 	public synthetic fun decode (Lcom/squareup/wire/ProtoReader;)Ljava/lang/Object;
 	public fun decode (Lcom/squareup/wire/ProtoReader;)Ljava/lang/Void;
 	public synthetic fun encode (Lcom/squareup/wire/ProtoWriter;Ljava/lang/Object;)V
@@ -266,29 +272,57 @@ public final class com/squareup/wire/ProtoAdapter$EnumConstantNotFoundException 
 	public fun <init> (ILkotlin/reflect/KClass;)V
 }
 
-public final class com/squareup/wire/ProtoReader {
+public class com/squareup/wire/ProtoReader {
 	public static final field Companion Lcom/squareup/wire/ProtoReader$Companion;
 	public final fun -forEachTag (Lkotlin/jvm/functions/Function1;)Lokio/ByteString;
 	public fun <init> (Lokio/BufferedSource;)V
-	public final fun addUnknownField (ILcom/squareup/wire/FieldEncoding;Ljava/lang/Object;)V
-	public final fun beginMessage ()J
+	public fun addUnknownField (ILcom/squareup/wire/FieldEncoding;Ljava/lang/Object;)V
+	public fun beginMessage ()J
 	public final fun endMessage (J)V
-	public final fun endMessageAndGetUnknownFields (J)Lokio/ByteString;
-	public final fun nextFieldMinLengthInBytes ()J
-	public final fun nextLengthDelimited ()I
-	public final fun nextTag ()I
-	public final fun peekFieldEncoding ()Lcom/squareup/wire/FieldEncoding;
-	public final fun readBytes ()Lokio/ByteString;
-	public final fun readFixed32 ()I
-	public final fun readFixed64 ()J
-	public final fun readString ()Ljava/lang/String;
-	public final fun readUnknownField (I)V
-	public final fun readVarint32 ()I
-	public final fun readVarint64 ()J
-	public final fun skip ()V
+	public fun endMessageAndGetUnknownFields (J)Lokio/ByteString;
+	public fun nextFieldMinLengthInBytes ()J
+	public fun nextLengthDelimited ()I
+	public fun nextTag ()I
+	public fun peekFieldEncoding ()Lcom/squareup/wire/FieldEncoding;
+	public fun readBytes ()Lokio/ByteString;
+	public fun readFixed32 ()I
+	public fun readFixed64 ()J
+	public fun readString ()Ljava/lang/String;
+	public fun readUnknownField (I)V
+	public fun readVarint32 ()I
+	public fun readVarint64 ()J
+	public fun skip ()V
 }
 
 public final class com/squareup/wire/ProtoReader$Companion {
+}
+
+public abstract interface class com/squareup/wire/ProtoReader32 {
+	public abstract fun addUnknownField (ILcom/squareup/wire/FieldEncoding;Ljava/lang/Object;)V
+	public abstract fun asProtoReader ()Lcom/squareup/wire/ProtoReader;
+	public abstract fun beforePossiblyPackedScalar ()Z
+	public abstract fun beginMessage ()I
+	public abstract fun endMessageAndGetUnknownFields (I)Lokio/ByteString;
+	public abstract fun nextFieldMinLengthInBytes ()I
+	public abstract fun nextLengthDelimited ()I
+	public abstract fun nextTag ()I
+	public abstract fun peekFieldEncoding ()Lcom/squareup/wire/FieldEncoding;
+	public abstract fun readBytes ()Lokio/ByteString;
+	public abstract fun readFixed32 ()I
+	public abstract fun readFixed64 ()J
+	public abstract fun readString ()Ljava/lang/String;
+	public abstract fun readUnknownField (I)V
+	public abstract fun readVarint32 ()I
+	public abstract fun readVarint64 ()J
+	public abstract fun skip ()V
+}
+
+public final class com/squareup/wire/ProtoReader32Kt {
+	public static final fun -forEachTag (Lcom/squareup/wire/ProtoReader32;Lkotlin/jvm/functions/Function1;)Lokio/ByteString;
+	public static final fun ProtoReader32 (Lokio/ByteString;II)Lcom/squareup/wire/ProtoReader32;
+	public static final fun ProtoReader32 ([BII)Lcom/squareup/wire/ProtoReader32;
+	public static synthetic fun ProtoReader32$default (Lokio/ByteString;IIILjava/lang/Object;)Lcom/squareup/wire/ProtoReader32;
+	public static synthetic fun ProtoReader32$default ([BIIILjava/lang/Object;)Lcom/squareup/wire/ProtoReader32;
 }
 
 public final class com/squareup/wire/ProtoWriter {
@@ -404,6 +438,7 @@ public final class com/squareup/wire/internal/DoubleArrayList {
 }
 
 public final class com/squareup/wire/internal/DoubleArrayList$Companion {
+	public final fun forDecoding (II)Lcom/squareup/wire/internal/DoubleArrayList;
 	public final fun forDecoding (JJ)Lcom/squareup/wire/internal/DoubleArrayList;
 }
 
@@ -480,6 +515,7 @@ public final class com/squareup/wire/internal/FloatArrayList {
 }
 
 public final class com/squareup/wire/internal/FloatArrayList$Companion {
+	public final fun forDecoding (II)Lcom/squareup/wire/internal/FloatArrayList;
 	public final fun forDecoding (JJ)Lcom/squareup/wire/internal/FloatArrayList;
 }
 
@@ -501,6 +537,7 @@ public final class com/squareup/wire/internal/IntArrayList {
 }
 
 public final class com/squareup/wire/internal/IntArrayList$Companion {
+	public final fun forDecoding (II)Lcom/squareup/wire/internal/IntArrayList;
 	public final fun forDecoding (JJ)Lcom/squareup/wire/internal/IntArrayList;
 }
 
@@ -519,17 +556,29 @@ public final class com/squareup/wire/internal/Internal {
 	public static final fun countNonNull (Ljava/lang/Object;Ljava/lang/Object;)I
 	public static final fun countNonNull (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)I
 	public static final fun countNonNull (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)I
+	public static final fun decodePrimitive_double (Lcom/squareup/wire/ProtoReader32;)D
 	public static final fun decodePrimitive_double (Lcom/squareup/wire/ProtoReader;)D
+	public static final fun decodePrimitive_fixed32 (Lcom/squareup/wire/ProtoReader32;)I
 	public static final fun decodePrimitive_fixed32 (Lcom/squareup/wire/ProtoReader;)I
+	public static final fun decodePrimitive_fixed64 (Lcom/squareup/wire/ProtoReader32;)J
 	public static final fun decodePrimitive_fixed64 (Lcom/squareup/wire/ProtoReader;)J
+	public static final fun decodePrimitive_float (Lcom/squareup/wire/ProtoReader32;)F
 	public static final fun decodePrimitive_float (Lcom/squareup/wire/ProtoReader;)F
+	public static final fun decodePrimitive_int32 (Lcom/squareup/wire/ProtoReader32;)I
 	public static final fun decodePrimitive_int32 (Lcom/squareup/wire/ProtoReader;)I
+	public static final fun decodePrimitive_int64 (Lcom/squareup/wire/ProtoReader32;)J
 	public static final fun decodePrimitive_int64 (Lcom/squareup/wire/ProtoReader;)J
+	public static final fun decodePrimitive_sfixed32 (Lcom/squareup/wire/ProtoReader32;)I
 	public static final fun decodePrimitive_sfixed32 (Lcom/squareup/wire/ProtoReader;)I
+	public static final fun decodePrimitive_sfixed64 (Lcom/squareup/wire/ProtoReader32;)J
 	public static final fun decodePrimitive_sfixed64 (Lcom/squareup/wire/ProtoReader;)J
+	public static final fun decodePrimitive_sint32 (Lcom/squareup/wire/ProtoReader32;)I
 	public static final fun decodePrimitive_sint32 (Lcom/squareup/wire/ProtoReader;)I
+	public static final fun decodePrimitive_sint64 (Lcom/squareup/wire/ProtoReader32;)J
 	public static final fun decodePrimitive_sint64 (Lcom/squareup/wire/ProtoReader;)J
+	public static final fun decodePrimitive_uint32 (Lcom/squareup/wire/ProtoReader32;)I
 	public static final fun decodePrimitive_uint32 (Lcom/squareup/wire/ProtoReader;)I
+	public static final fun decodePrimitive_uint64 (Lcom/squareup/wire/ProtoReader32;)J
 	public static final fun decodePrimitive_uint64 (Lcom/squareup/wire/ProtoReader;)J
 	public static final fun encodeArray_double ([DLcom/squareup/wire/ReverseProtoWriter;I)V
 	public static final fun encodeArray_fixed32 ([ILcom/squareup/wire/ReverseProtoWriter;I)V
@@ -583,6 +632,7 @@ public final class com/squareup/wire/internal/LongArrayList {
 }
 
 public final class com/squareup/wire/internal/LongArrayList$Companion {
+	public final fun forDecoding (II)Lcom/squareup/wire/internal/LongArrayList;
 	public final fun forDecoding (JJ)Lcom/squareup/wire/internal/LongArrayList;
 }
 

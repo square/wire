@@ -151,7 +151,9 @@ if (project.rootProject.name == "wire") {
     kotlin {
       targetExclude(
         // Google license for Protobuf.
+        "src/commonMain/kotlin/com/squareup/wire/ByteArrayProtoReader32.kt",
         "src/commonMain/kotlin/com/squareup/wire/ProtoReader.kt",
+        "src/commonMain/kotlin/com/squareup/wire/ProtoReader32.kt",
         // Google license for R8.
         "src/commonMain/kotlin/com/squareup/wire/internal/MathMethods.kt",
         // Apache 2-licensed files from Jetbrains.

@@ -47,6 +47,7 @@ public class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/Wi
 	public final fun getBuildersOnly ()Z
 	public final fun getEmitAppliedOptions ()Z
 	public final fun getEmitDeclaredOptions ()Z
+	public final fun getEmitProtoReader32 ()Z
 	public final fun getEnumMode ()Ljava/lang/String;
 	public final fun getEscapeKotlinKeywords ()Z
 	public final fun getExcludes ()Ljava/util/List;
@@ -63,6 +64,7 @@ public class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/Wi
 	public final fun setBuildersOnly (Z)V
 	public final fun setEmitAppliedOptions (Z)V
 	public final fun setEmitDeclaredOptions (Z)V
+	public final fun setEmitProtoReader32 (Z)V
 	public final fun setEnumMode (Ljava/lang/String;)V
 	public final fun setEscapeKotlinKeywords (Z)V
 	public final fun setExcludes (Ljava/util/List;)V

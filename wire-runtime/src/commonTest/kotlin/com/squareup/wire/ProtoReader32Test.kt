@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Square, Inc.
+ * Copyright (C) 2024 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,12 @@ package com.squareup.wire
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import okio.Buffer
 import okio.ByteString.Companion.decodeHex
 
-class ProtoReaderTest {
+class ProtoReader32Test {
   @Test fun packedExposedAsRepeated() {
     val packedEncoded = "d20504d904bd05".decodeHex()
-    val reader = ProtoReader(Buffer().write(packedEncoded))
+    val reader = ProtoReader32(packedEncoded)
     val token = reader.beginMessage()
     assertEquals(90, reader.nextTag())
     assertEquals(601, ProtoAdapter.INT32.decode(reader))
@@ -40,7 +39,7 @@ class ProtoReaderTest {
         "06" + // varint32 length = 6
         "08ffffffff07" // 1: int32 = 2,147,483,647
       ).decodeHex()
-    val reader = ProtoReader(Buffer().write(encoded))
+    val reader = ProtoReader32(encoded)
 
     assertEquals(2, reader.nextLengthDelimited())
 
@@ -59,5 +58,5 @@ class ProtoReaderTest {
     reader.endMessageAndGetUnknownFields(secondToken)
   }
 
-  // Consider pasting new tests into ProtoReader32Test.kt also.
+  // Consider pasting new tests into ProtoReaderTest.kt also.
 }

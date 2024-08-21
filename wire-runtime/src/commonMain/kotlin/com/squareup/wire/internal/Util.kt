@@ -23,4 +23,7 @@ import kotlin.jvm.JvmName
 internal inline infix fun Byte.and(other: Int): Int = toInt() and other
 
 @Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
+internal inline infix fun Byte.and(other: Long): Long = toLong() and other
+
+@Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
 internal inline infix fun Byte.shl(other: Int): Int = toInt() shl other

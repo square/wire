@@ -1,5 +1,4 @@
 import okio.FileSystem
-import okio.Path
 import okio.Path.Companion.toPath
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
@@ -356,6 +355,21 @@ val generateKotlinServicesAllFlagsTests by tasks.creating(JavaExec::class) {
   )
 }
 
+// KOTLIN EMIT_PROTO_READER_32
+
+val generateProtoReader32KotlinTests by tasks.creating(JavaExec::class) {
+  group = "Generate Tests"
+  description = "Generates Kotlin classes that use emit_proto_reader_32"
+  classpath = wire
+  mainClass.set("com.squareup.wire.WireCompiler")
+  args = listOf(
+    "--proto_path=wire-tests/src/commonTest/proto/kotlin",
+    "--kotlin_out=wire-tests/src/jvmKotlinProtoReader32Test/proto-kotlin",
+    "--emit_proto_reader_32",
+    "all_types.proto",
+  )
+}
+
 // KOTLIN ANDROID
 
 val generateKotlinAndroidTests by tasks.creating(JavaExec::class) {
@@ -696,6 +710,7 @@ val generateTests by tasks.creating {
     generateMoshiTests,
     generateProto3KotlinTests,
     generateProto3JavaTests,
+    generateProtoReader32KotlinTests,
     generateSharedJson,
   )
 }
@@ -719,6 +734,7 @@ val cleanGeneratedTests by tasks.creating(Delete::class) {
     "wire-tests/src/jvmJavaTest/proto-java",
     "wire-tests/src/jvmKotlinAndroidTest/proto-kotlin",
     "wire-tests/src/jvmKotlinInteropTest/proto-kotlin",
+    "wire-tests/src/jvmKotlinProtoReader32Test/proto-kotlin",
     "wire-tests/src/jvmJsonJavaTest/proto-java",
     "wire-tests/src/jvmJsonKotlinTest/proto-kotlin"
   )
