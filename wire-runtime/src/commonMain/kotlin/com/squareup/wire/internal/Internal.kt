@@ -19,12 +19,12 @@
 
 package com.squareup.wire.internal
 
-import com.squareup.wire.ProtoReader32
 import com.squareup.wire.Duration
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Instant
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
+import com.squareup.wire.ProtoReader32
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import kotlin.jvm.JvmMultifileClass
