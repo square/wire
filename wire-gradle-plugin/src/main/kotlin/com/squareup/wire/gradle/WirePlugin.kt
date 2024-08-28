@@ -297,7 +297,7 @@ class WirePlugin : Plugin<Project> {
     if (!hasJavaOutput && !hasKotlinOutput) return
 
     // Indicates when the plugin is applied inside the Wire repo to Wire's own modules.
-    val isInternalBuild = project.properties["com.squareup.wire.internal"].toString() == "true"
+    val isInternalBuild = project.providers.gradleProperty("com.squareup.wire.internal").getOrElse("false").toBoolean()
     val isMultiplatform = project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")
     val isJsOnly =
       if (isMultiplatform) false else project.plugins.hasPlugin("org.jetbrains.kotlin.js")
