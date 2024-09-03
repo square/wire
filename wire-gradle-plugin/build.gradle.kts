@@ -5,7 +5,7 @@ plugins {
   kotlin("jvm")
   id("com.github.gmazzo.buildconfig")
   id("java-gradle-plugin")
-  id("com.gradle.plugin-publish").version("1.2.1").apply(false)
+  id("com.gradle.plugin-publish").version("1.2.2").apply(false)
 }
 
 // This module is included in two projects:
