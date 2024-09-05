@@ -15,9 +15,7 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.internal.Throws
 import kotlin.reflect.KClass
-import okio.IOException
 
 /**
  * An abstract [ProtoAdapter] that converts values of an enum to and from integers.
@@ -29,16 +27,12 @@ expect abstract class EnumAdapter<E : WireEnum> protected constructor(
 ) : ProtoAdapter<E> {
   override fun encodedSize(value: E): Int
 
-  @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: E)
 
-  @Throws(IOException::class)
   override fun encode(writer: ReverseProtoWriter, value: E)
 
-  @Throws(IOException::class)
   override fun decode(reader: ProtoReader): E
 
-  @Throws(IOException::class)
   override fun decode(reader: ProtoReader32): E
 
   override fun redact(value: E): E

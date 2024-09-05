@@ -10,6 +10,9 @@ classes
 gen/
 out/
 
+# Kotlin
+.kotlin
+
 # Gradle
 .gradle
 build

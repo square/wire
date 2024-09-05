@@ -15,7 +15,7 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.internal.Throws
+import kotlin.Throws
 import okio.IOException
 
 actual interface MessageSink<in T : Any> {

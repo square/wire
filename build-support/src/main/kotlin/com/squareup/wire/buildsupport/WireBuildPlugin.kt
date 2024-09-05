@@ -206,6 +206,7 @@ class WireBuildPlugin : Plugin<Project> {
         freeCompilerArgs += listOf(
           // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
           "-progressive",
+          "-Xexpect-actual-classes",
         )
       }
     }

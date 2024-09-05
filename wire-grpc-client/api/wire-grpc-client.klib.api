@@ -68,8 +68,8 @@ final class <#A: kotlin/Any, #B: kotlin/Any> com.squareup.wire/GrpcMethod { // c
         final fun <get-responseAdapter>(): com.squareup.wire/ProtoAdapter<#B> // com.squareup.wire/GrpcMethod.responseAdapter.<get-responseAdapter>|<get-responseAdapter>(){}[0]
 }
 final class com.squareup.wire/GrpcException : okio/IOException { // com.squareup.wire/GrpcException|null[0]
-    constructor <init>(com.squareup.wire/GrpcStatus, kotlin/String?, kotlin/ByteArray? =...) // com.squareup.wire/GrpcException.<init>|<init>(com.squareup.wire.GrpcStatus;kotlin.String?;kotlin.ByteArray?){}[0]
-    constructor <init>(com.squareup.wire/GrpcStatus, kotlin/String?, kotlin/ByteArray? =..., kotlin/String? =...) // com.squareup.wire/GrpcException.<init>|<init>(com.squareup.wire.GrpcStatus;kotlin.String?;kotlin.ByteArray?;kotlin.String?){}[0]
+    constructor <init>(com.squareup.wire/GrpcStatus, kotlin/String?, kotlin/ByteArray? = ...) // com.squareup.wire/GrpcException.<init>|<init>(com.squareup.wire.GrpcStatus;kotlin.String?;kotlin.ByteArray?){}[0]
+    constructor <init>(com.squareup.wire/GrpcStatus, kotlin/String?, kotlin/ByteArray? = ..., kotlin/String? = ...) // com.squareup.wire/GrpcException.<init>|<init>(com.squareup.wire.GrpcStatus;kotlin.String?;kotlin.ByteArray?;kotlin.String?){}[0]
     final val grpcMessage // com.squareup.wire/GrpcException.grpcMessage|{}grpcMessage[0]
         final fun <get-grpcMessage>(): kotlin/String? // com.squareup.wire/GrpcException.grpcMessage.<get-grpcMessage>|<get-grpcMessage>(){}[0]
     final val grpcStatus // com.squareup.wire/GrpcException.grpcStatus|{}grpcStatus[0]

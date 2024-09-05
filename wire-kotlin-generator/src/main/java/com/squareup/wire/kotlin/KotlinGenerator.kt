@@ -2408,6 +2408,7 @@ class KotlinGenerator private constructor(
         }
         builder.addType(
           TypeSpec.classBuilder("Unrecognized")
+            .addAnnotation(ClassName("kotlin", "ConsistentCopyVisibility"))
             .addModifiers(DATA)
             .addProperty(
               PropertySpec

@@ -15,15 +15,9 @@
  */
 package com.squareup.wire.internal
 
-import kotlin.reflect.KClass
 import okio.IOException
 
 expect interface Serializable
-
-// TODO(egorand): Remove when https://youtrack.jetbrains.com/issue/KT-26283 lands
-@OptionalExpectation
-@OptIn(ExperimentalMultiplatform::class)
-expect annotation class Throws(vararg val exceptionClasses: KClass<out Throwable>)
 
 @OptionalExpectation
 @OptIn(ExperimentalMultiplatform::class)

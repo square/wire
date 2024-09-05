@@ -58,8 +58,7 @@ public final class com/squareup/wire/schema/ClaimedPaths {
 public final class com/squareup/wire/schema/CoreLoader : com/squareup/wire/schema/Loader {
 	public static final field INSTANCE Lcom/squareup/wire/schema/CoreLoader;
 	public fun load (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoFile;
-	public fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/CoreLoader;
-	public synthetic fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/Loader;
+	public fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/Loader;
 }
 
 public final class com/squareup/wire/schema/CoreLoaderKt {
@@ -896,8 +895,7 @@ public final class com/squareup/wire/schema/SchemaLoader : com/squareup/wire/sch
 	public final fun setLoadExhaustively (Z)V
 	public final fun setOpaqueTypes (Ljava/util/List;)V
 	public final fun setPermitPackageCycles (Z)V
-	public synthetic fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/Loader;
-	public fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/SchemaLoader;
+	public fun withErrors (Lcom/squareup/wire/schema/ErrorCollector;)Lcom/squareup/wire/schema/Loader;
 }
 
 public final class com/squareup/wire/schema/Service {

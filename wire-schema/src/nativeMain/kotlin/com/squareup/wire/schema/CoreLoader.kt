@@ -16,9 +16,9 @@
 package com.squareup.wire.schema
 
 actual object CoreLoader : Loader {
-  override fun load(path: String): ProtoFile {
+  actual override fun load(path: String): ProtoFile {
     error("Wire cannot load $path on native. Please manually add it to the proto path.")
   }
 
-  override fun withErrors(errors: ErrorCollector) = this
+  actual override fun withErrors(errors: ErrorCollector): Loader = this
 }

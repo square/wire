@@ -34,7 +34,7 @@
 package com.squareup.wire
 
 import com.squareup.wire.internal.ProtocolException
-import com.squareup.wire.internal.Throws
+import kotlin.Throws
 import com.squareup.wire.internal.and
 import com.squareup.wire.internal.shl
 import kotlin.jvm.JvmName

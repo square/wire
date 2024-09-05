@@ -17,8 +17,8 @@ package com.squareup.wire
 
 import com.squareup.wire.ProtoWriter.Companion.varint32Size
 import com.squareup.wire.ProtoWriter.Companion.varint64Size
-import com.squareup.wire.internal.Throws
 import kotlin.LazyThreadSafetyMode.NONE
+import kotlin.Throws
 import okio.Buffer
 import okio.BufferedSink
 import okio.ByteString
