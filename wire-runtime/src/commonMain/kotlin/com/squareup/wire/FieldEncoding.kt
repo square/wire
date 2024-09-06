@@ -16,7 +16,7 @@
 package com.squareup.wire
 
 import com.squareup.wire.internal.ProtocolException
-import com.squareup.wire.internal.Throws
+import kotlin.Throws
 import kotlin.jvm.JvmStatic
 import okio.IOException
 

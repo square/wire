@@ -14,6 +14,7 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
 import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmStatic
+import kotlin.ConsistentCopyVisibility
 import kotlin.Int
 import kotlin.Suppress
 
@@ -32,6 +33,7 @@ public sealed class EasterAnimal(
   @WireEnumConstant(declaredName = "object")
   public data object object_ : EasterAnimal(15)
 
+  @ConsistentCopyVisibility
   public data class Unrecognized internal constructor(
     override val `value`: Int,
   ) : EasterAnimal(value)

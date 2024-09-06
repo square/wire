@@ -29,7 +29,7 @@ actual class SchemaLoader : Loader, ProfileLoader {
     delegate = CommonSchemaLoader(enclosing, errors)
   }
 
-  override fun withErrors(errors: ErrorCollector) = SchemaLoader(delegate, errors)
+  actual override fun withErrors(errors: ErrorCollector): Loader = SchemaLoader(delegate, errors)
 
   /** Strict by default. Note that golang cannot build protos with package cycles. */
   actual var permitPackageCycles: Boolean
@@ -66,9 +66,9 @@ actual class SchemaLoader : Loader, ProfileLoader {
     delegate.initRoots(sourcePath, protoPath)
   }
 
-  override fun loadProfile(name: String, schema: Schema) = delegate.loadProfile(name, schema)
+  actual override fun loadProfile(name: String, schema: Schema) = delegate.loadProfile(name, schema)
 
-  override fun load(path: String) = delegate.load(path)
+  actual override fun load(path: String) = delegate.load(path)
 
   actual fun loadSchema(): Schema = delegate.loadSchema()
 }

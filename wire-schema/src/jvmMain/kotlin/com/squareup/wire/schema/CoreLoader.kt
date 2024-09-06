@@ -34,7 +34,7 @@ actual object CoreLoader : Loader {
     CoreLoader::class.java.classLoader.asResourceFileSystem()
   }
 
-  override fun load(path: String): ProtoFile {
+  actual override fun load(path: String): ProtoFile {
     if (isWireRuntimeProto(path)) {
       resourceFileSystem.read("/".toPath() / path) {
         val data = readUtf8()
@@ -47,5 +47,5 @@ actual object CoreLoader : Loader {
     error("unexpected load: $path")
   }
 
-  override fun withErrors(errors: ErrorCollector) = this
+  actual override fun withErrors(errors: ErrorCollector): Loader = this
 }

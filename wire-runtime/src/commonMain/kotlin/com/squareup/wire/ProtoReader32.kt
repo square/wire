@@ -33,7 +33,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.squareup.wire
 
-import com.squareup.wire.internal.Throws
+import kotlin.Throws
 import kotlin.jvm.JvmName
 import okio.ByteString
 import okio.IOException

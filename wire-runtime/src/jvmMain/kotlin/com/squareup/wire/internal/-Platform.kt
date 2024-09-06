@@ -19,8 +19,6 @@ import java.util.Collections
 
 actual typealias Serializable = java.io.Serializable
 
-actual typealias Throws = kotlin.jvm.Throws
-
 actual typealias JvmDefaultWithCompatibility = kotlin.jvm.JvmDefaultWithCompatibility
 
 actual typealias JvmField = kotlin.jvm.JvmField

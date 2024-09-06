@@ -49,7 +49,7 @@ package com.squareup.wire
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import com.squareup.wire.internal.Throws
+import kotlin.Throws
 import okio.BufferedSink
 import okio.ByteString
 import okio.IOException

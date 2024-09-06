@@ -86,7 +86,7 @@ internal class CommonSchemaLoader : Loader, ProfileLoader {
     this.baseToRoots = enclosing.baseToRoots
   }
 
-  override fun withErrors(errors: ErrorCollector) = CommonSchemaLoader(this, errors)
+  override fun withErrors(errors: ErrorCollector): Loader = CommonSchemaLoader(this, errors)
 
   /** Initialize the [WireRun.sourcePath] and [WireRun.protoPath] from which files are loaded. */
   fun initRoots(

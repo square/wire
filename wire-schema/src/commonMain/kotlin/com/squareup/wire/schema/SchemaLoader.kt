@@ -23,6 +23,13 @@ import okio.IOException
  * loaded from where so that we can use that information later when deciding what to generate.
  */
 expect class SchemaLoader(fileSystem: FileSystem) : Loader, ProfileLoader {
+  override fun load(path: String): ProtoFile
+
+  /** Returns a new loader that reports failures to [errors]. */
+  override fun withErrors(errors: ErrorCollector): Loader
+
+  override fun loadProfile(name: String, schema: Schema): Profile
+
   /** Strict by default. Note that golang cannot build protos with package cycles. */
   var permitPackageCycles: Boolean
 
