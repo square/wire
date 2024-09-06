@@ -374,9 +374,6 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
 
     project.extensions.getByType(ApiValidationExtension::class.java).apply {
       ignoredPackages += "grpc.reflection.v1alpha"
-      klib {
-        enabled = true
-      }
     }
   }
 
