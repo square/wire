@@ -522,7 +522,7 @@ open class ProtoReader(private val source: BufferedSource) {
 
   companion object {
     /** The standard number of levels of message nesting to allow. */
-    internal const val RECURSION_LIMIT = 65
+    internal const val RECURSION_LIMIT = 100
 
     internal const val FIELD_ENCODING_MASK = 0x7
     internal const val TAG_FIELD_ENCODING_BITS = 3
