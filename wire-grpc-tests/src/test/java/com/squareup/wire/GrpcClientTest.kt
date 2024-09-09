@@ -53,7 +53,9 @@ import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import okio.ByteString
+import okio.ForwardingSource
 import okio.IOException
+import okio.buffer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Assert.assertThrows
@@ -94,12 +96,19 @@ class GrpcClientTest {
     override fun intercept(chain: Chain) = chain.proceed(chain.request())
   }
 
+  private var networkInterceptor: Interceptor = object : Interceptor {
+    override fun intercept(chain: Chain) = chain.proceed(chain.request())
+  }
+
   @Before
   fun setUp() {
     okhttpClient = OkHttpClient.Builder()
       .addInterceptor { chain ->
         callReference.set(chain.call())
         interceptor.intercept(chain)
+      }
+      .addNetworkInterceptor { chain ->
+        networkInterceptor.intercept(chain)
       }
       .protocols(listOf(H2_PRIOR_KNOWLEDGE))
       .callTimeout(okHttpClientTimeout)
@@ -549,6 +558,50 @@ class GrpcClientTest {
         fail()
       } catch (expected: GrpcException) {
         assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.FAILED_PRECONDITION)
+      }
+
+      assertThat(responseChannel.isClosedForReceive).isTrue()
+    }
+  }
+
+  /**
+   * Force an IOException in the gRPC response body stream, and confirm that Wire fails with the
+   * right exception (IOException). We've had bugs where we incorrectly attempt to read trailers
+   * while handling an exception.
+   */
+  @Test
+  fun duplexSuspend_responseBodyThrows() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueSendNote(message = "marco")
+
+    // This interceptor throws an exception at the start of the stream instead of returning -1L.
+    networkInterceptor = object : Interceptor {
+      override fun intercept(chain: Chain): Response {
+        val response = chain.proceed(chain.request())
+        return response.newBuilder()
+          .body(object : ResponseBody() {
+            override fun contentLength() = response.body.contentLength()
+            override fun contentType() = response.body.contentType()
+            override fun source() = object : ForwardingSource(response.body.source()) {
+              override fun read(sink: Buffer, byteCount: Long) = throw IOException("boom!")
+            }.buffer()
+          })
+          .build()
+      }
+    }
+
+    runBlocking {
+      val (_, responseChannel) = routeGuideService.RouteChat().executeIn(this)
+
+      try {
+        responseChannel.receive()
+        fail()
+      } catch (expected: IOException) {
+        assertThat(expected)
+          .hasMessage("gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)")
+          .cause() // Synthetic exception added by coroutines in StackTraceRecovery.kt.
+          .cause()
+          .hasMessage("boom!")
       }
 
       assertThat(responseChannel.isClosedForReceive).isTrue()

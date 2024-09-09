@@ -202,10 +202,12 @@ private fun Response.checkGrpcResponse() {
 internal fun Response.grpcResponseToException(suppressed: IOException? = null): IOException? {
   var trailers = headersOf()
   var transportException = suppressed
-  try {
-    trailers = trailers()
-  } catch (e: IOException) {
-    if (transportException == null) transportException = e
+  if (suppressed == null) {
+    try {
+      trailers = trailers()
+    } catch (e: IOException) {
+      transportException = e
+    }
   }
 
   val grpcStatus = trailers["grpc-status"] ?: header("grpc-status")
