@@ -1,6 +1,6 @@
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "1.9.22"
-  id("com.squareup.wire")
+  id("org.jetbrains.kotlin.jvm") version libs.versions.kotlin
+  id("com.squareup.wire") version("$wireVersion")
 }
 
 wire {

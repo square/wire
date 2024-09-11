@@ -35,14 +35,15 @@ gradlePlugin {
 dependencies {
   compileOnly(gradleApi())
   compileOnly(libs.pluginz.android)
+  compileOnly(libs.pluginz.kotlin)
 
   implementation(projects.wireCompiler)
   implementation(projects.wireKotlinGenerator)
   implementation(libs.swiftpoet)
-  implementation(libs.pluginz.kotlin)
 
   testImplementation(libs.junit)
   testImplementation(libs.assertj)
+  testImplementation(libs.pluginz.kotlin)
   testImplementation(projects.wireTestUtils)
 }
 
@@ -55,6 +56,13 @@ tasks.withType<Test>().configureEach {
   jvmArgs("--add-opens", "java.base/java.util=ALL-UNNAMED")
   dependsOn(installProtoJars)
   dependsOn(":wire-runtime:installLocally")
+  dependsOn(":wire-java-generator:publishAllPublicationsToLocalMavenRepository")
+  dependsOn(":wire-kotlin-generator:publishAllPublicationsToLocalMavenRepository")
+  dependsOn(":wire-swift-generator:publishAllPublicationsToLocalMavenRepository")
+  dependsOn(":wire-schema:publishAllPublicationsToLocalMavenRepository")
+  dependsOn(":wire-grpc-client:publishAllPublicationsToLocalMavenRepository")
+  dependsOn(":wire-compiler:publishAllPublicationsToLocalMavenRepository")
+  dependsOn(":wire-gradle-plugin:publishAllPublicationsToLocalMavenRepository")
 }
 
 val test by tasks.getting(Test::class) {

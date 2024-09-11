@@ -10,8 +10,8 @@ import org.slf4j.Logger
 
 plugins {
   id 'application'
-  id 'org.jetbrains.kotlin.jvm'
-  id 'com.squareup.wire'
+  id 'org.jetbrains.kotlin.jvm' version libs.versions.kotlin
+  id 'com.squareup.wire' version "$wireVersion"
 }
 
 class MyEventListenerFactory implements EventListener.Factory {

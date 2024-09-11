@@ -1,8 +1,8 @@
 import org.gradle.api.internal.file.FileOperations
 
 plugins {
-  id("com.squareup.wire")
-  id("org.jetbrains.kotlin.jvm") version "1.9.22"
+  id("com.squareup.wire") version "5.1.0-SNAPSHOT"
+  id("org.jetbrains.kotlin.jvm") version libs.versions.kotlin
 }
 
 @CacheableTask
