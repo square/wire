@@ -1,6 +1,32 @@
 Change Log
 ==========
 
+Version 5.1.0
+---------------------
+
+_2024-09-11_
+
+### Common
+
+* Support for Kotlin `2.0.20`. (#3093)
+* `srcDir(String)` has been undeprecated. (#3039)
+* Some loggings now happen at the debug level, instead of info. (#3041)
+* Remove some unactionable warnings on Kotlin/JS (#3047)
+* Propagate the deprecated flag on EnumType after pruning by wire-gradle-plugin (#3076 by [Aaron Edwards][aaron-edwards])
+* Introduce `ProtoReader32`, a specialization for Kotlin/JS (#3077)
+    This is an alternative to `ProtoReader`, which uses `Long` as a cursor. It originates as an optimization for Kotlin/JS, where `Long` cursors are prohibitively expensive.
+* Fix Gradle project isolation issue when reading a property (#3078 by [Aurimas][liutikas])
+* Change the recursion limit to match grpc's default (#3091)
+
+### Kotlin
+
+* New enum option `enum_mode` to take precedence over the `enumMode` option added in `5.0.0-alpha02`. Use this if you want to migrate your enums granularly. (#2993)
+* Don't throw if reading trailers fail (#3087)
+
+### Swift
+
+* Avoid crash when parsing an empty repeated `[packed=true]` for fixed-length types. (#3044 by [Sasha Weiss][sashaweiss-signal])
+
 Version 5.0.0
 ---------------------
 
@@ -1477,27 +1503,30 @@ Initial version.
 
 
  [Egorand]: https://github.com/Egorand
+ [Endeavour233]: https://github.com/Endeavour233
  [JGulbronson]: https://github.com/JGulbronson
  [JakeWharton]: https://github.com/JakeWharton
  [MariusVolkhart]: https://github.com/MariusVolkhart
  [ShayOinif]: https://github.com/ShayOinif
+ [aaron-edwards]: https://github.com/aaron-edwards
  [bom]: https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import
  [custom-handlers-doc]: https://square.github.io/wire/wire_compiler/#custom-handlers
  [custom-handlers-recipes]: https://github.com/square/wire/tree/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
  [damianw]: https://github.com/damianw
  [dnkoutso]: https://github.com/dnkoutso
- [traviscj]: https://github.com/traviscj
- [Endeavour233]: https://github.com/Endeavour233
  [event_listener]: https://github.com/square/wire/blob/3e300c492a74e80260581e3aee624d9cf3e5b1f8/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/EventListener.kt#L105-L111
  [frojasg]: https://github.com/frojasg
  [javapoet]: https://github.com/square/javapoet
  [jimfs]: https://github.com/google/jimfs
  [lickel]: https://github.com/lickel
+ [liutikas]: https://github.com/liutikas
  [mpeyper]: https://github.com/mpeyper
  [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
  [okio_3_0_0]: https://square.github.io/okio/changelog/#version-300
  [okio_3_0_0_a_3]: https://square.github.io/okio/changelog/#version-300-alpha3
  [quanturium]: https://github.com/quanturium
  [reflect]: https://github.com/grpc/grpc/blob/master/doc/server-reflection.md
+ [sashaweiss-signal]: https://github.com/sashaweiss-signal
  [swiftblogpost]: https://cashapp.github.io/2020-08-19/wire-support-for-swift-part-1
+ [traviscj]: https://github.com/traviscj
  [wire-customizing-output]: https://square.github.io/wire/wire_compiler/#customizing-output
