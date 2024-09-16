@@ -88,10 +88,11 @@ class WireCompilerTest {
   fun testPersonDryRun() {
     val sources = arrayOf("person.proto")
 
-    val args = ArrayList<String>()
-    args.add(TargetLanguage.JAVA.protoPathArg())
-    args.add(TargetLanguage.JAVA.outArg("/".toPath() / testDir))
-    args.add("--dry_run")
+    val args = mutableListOf(
+      TargetLanguage.JAVA.protoPathArg(),
+      TargetLanguage.JAVA.outArg("/".toPath() / testDir),
+      "--dry_run",
+    )
     args.addAll(sources)
 
     val logs = mutableListOf<String>()
@@ -105,8 +106,7 @@ class WireCompilerTest {
       override fun unusedIncludesInTarget(unusedIncludes: Set<String>) = Unit
       override fun unusedExcludesInTarget(unusedExcludes: Set<String>) = Unit
     }
-    val fs = fileSystem
-    val compiler = WireCompiler.forArgs(fs, logger, *args.toTypedArray<String>())
+    val compiler = WireCompiler.forArgs(fileSystem, logger, *args.toTypedArray<String>())
     compiler.compile()
 
     // We assert nothing has been generated.
@@ -119,13 +119,14 @@ class WireCompilerTest {
   fun runMultipleTargets() {
     val sources = arrayOf("person.proto")
 
-    val args = ArrayList<String>()
-    args.add(TargetLanguage.JAVA.protoPathArg())
-    args.add(TargetLanguage.JAVA.outArg("/".toPath() / testDir))
-    args.add(TargetLanguage.KOTLIN.protoPathArg())
-    args.add(TargetLanguage.KOTLIN.outArg("/".toPath() / testDir))
-    args.add("--no_kotlin_exclusive")
-    args.add("--dry_run")
+    val args = mutableListOf(
+      TargetLanguage.JAVA.protoPathArg(),
+      TargetLanguage.JAVA.outArg("/".toPath() / testDir),
+      TargetLanguage.KOTLIN.protoPathArg(),
+      TargetLanguage.KOTLIN.outArg("/".toPath() / testDir),
+      "--no_kotlin_exclusive",
+      "--dry_run",
+    )
     args.addAll(sources)
 
     val logs = mutableListOf<String>()
@@ -139,8 +140,7 @@ class WireCompilerTest {
       override fun unusedIncludesInTarget(unusedIncludes: Set<String>) = Unit
       override fun unusedExcludesInTarget(unusedExcludes: Set<String>) = Unit
     }
-    val fs = fileSystem
-    val compiler = WireCompiler.forArgs(fs, logger, *args.toTypedArray<String>())
+    val compiler = WireCompiler.forArgs(fileSystem, logger, *args.toTypedArray<String>())
     compiler.compile()
 
     // We assert nothing has been generated.
@@ -150,6 +150,49 @@ class WireCompilerTest {
     // But we logged things because we're dry-running.
     assertThat(logs).containsExactly(
       "artifactHandled(com.squareup.wire.protos.person.Person, Kotlin)",
+      "artifactHandled(com.squareup.wire.protos.person.Person, Java)",
+    )
+  }
+
+  @Test
+  fun notExclusiveTargets() {
+    val sources = arrayOf("person.proto")
+
+    val args = mutableListOf(
+      TargetLanguage.JAVA.protoPathArg(),
+      TargetLanguage.JAVA.outArg("/".toPath() / testDir),
+      TargetLanguage.KOTLIN.protoPathArg(),
+      TargetLanguage.KOTLIN.outArg("/".toPath() / testDir),
+      TargetLanguage.SWIFT.protoPathArg(),
+      TargetLanguage.SWIFT.outArg("/".toPath() / testDir),
+      "--no_kotlin_exclusive",
+      "--no_swift_exclusive",
+      "--dry_run",
+    )
+    args.addAll(sources)
+
+    val logs = mutableListOf<String>()
+    val logger = object : WireLogger {
+      override fun artifactHandled(outputPath: Path, qualifiedName: String, targetName: String) {
+        logs.add("artifactHandled($qualifiedName, $targetName)")
+      }
+      override fun artifactSkipped(type: ProtoType, targetName: String) = Unit
+      override fun unusedRoots(unusedRoots: Set<String>) = Unit
+      override fun unusedPrunes(unusedPrunes: Set<String>) = Unit
+      override fun unusedIncludesInTarget(unusedIncludes: Set<String>) = Unit
+      override fun unusedExcludesInTarget(unusedExcludes: Set<String>) = Unit
+    }
+    val compiler = WireCompiler.forArgs(fileSystem, logger, *args.toTypedArray<String>())
+    compiler.compile()
+
+    // We assert nothing has been generated.
+    assertJavaOutputs(arrayOf())
+    assertKotlinOutputs(arrayOf())
+    assertSwiftOutputs(arrayOf())
+    // But we logged things because we're dry-running.
+    assertThat(logs).containsExactly(
+      "artifactHandled(com.squareup.wire.protos.person.Person, Kotlin)",
+      "artifactHandled(.Person declared in person.proto, Swift)",
       "artifactHandled(com.squareup.wire.protos.person.Person, Java)",
     )
   }
@@ -495,9 +538,10 @@ class WireCompilerTest {
   @Test
   fun sourceInJar() {
     val sources = arrayOf("squareup/geology/period.proto", "squareup/dinosaurs/dinosaur.proto")
-    val args = ArrayList<String>()
-    args.add("--proto_path=../wire-tests/src/commonTest/proto/kotlin/protos.jar")
-    args.add(TargetLanguage.KOTLIN.outArg("/".toPath() / testDir))
+    val args = mutableListOf(
+      "--proto_path=../wire-tests/src/commonTest/proto/kotlin/protos.jar",
+      TargetLanguage.KOTLIN.outArg("/".toPath() / testDir),
+    )
     Collections.addAll(args, *sources)
     logger = StringWireLogger()
     val compiler = WireCompiler.forArgs(fileSystem, logger!!, *args.toTypedArray())
@@ -514,9 +558,10 @@ class WireCompilerTest {
   fun sourceDependsOnJar() {
     // `dinosaur.proto` depends on `period.proto` which both are in `protos.jar`.
     val sources = arrayOf("squareup/dinosaurs/dinosaur.proto")
-    val args = ArrayList<String>()
-    args.add("--proto_path=../wire-tests/src/commonTest/proto/kotlin/protos.jar")
-    args.add(TargetLanguage.KOTLIN.outArg("/".toPath() / testDir))
+    val args = mutableListOf(
+      "--proto_path=../wire-tests/src/commonTest/proto/kotlin/protos.jar",
+      TargetLanguage.KOTLIN.outArg("/".toPath() / testDir),
+    )
     Collections.addAll(args, *sources)
     logger = StringWireLogger()
     val compiler = WireCompiler.forArgs(fileSystem, logger!!, *args.toTypedArray())
@@ -747,15 +792,15 @@ class WireCompilerTest {
     sources: Array<String>,
     vararg extraArgs: String,
   ) {
-    val args = ArrayList<String>()
-    args.add(target.protoPathArg())
-    args.add(target.outArg("/".toPath() / testDir))
+    val args = mutableListOf(
+      target.protoPathArg(),
+      target.outArg("/".toPath() / testDir),
+    )
     Collections.addAll(args, *extraArgs)
     Collections.addAll(args, *sources)
 
     logger = StringWireLogger()
-    val fs = fileSystem
-    val compiler = WireCompiler.forArgs(fs, logger!!, *args.toTypedArray())
+    val compiler = WireCompiler.forArgs(fileSystem, logger!!, *args.toTypedArray())
     compiler.compile()
   }
 

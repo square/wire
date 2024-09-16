@@ -23,6 +23,7 @@ public final class com/squareup/wire/WireCompiler {
 	public final fun getEmitProtoReader32 ()Z
 	public final fun getEventListenerFactoryClasses ()Ljava/util/List;
 	public final fun getFs ()Lokio/FileSystem;
+	public final fun getJavaExclusive ()Z
 	public final fun getJavaInterop ()Z
 	public final fun getJavaOut ()Ljava/lang/String;
 	public final fun getKotlinBoxOneOfsMinSize ()I
@@ -40,6 +41,7 @@ public final class com/squareup/wire/WireCompiler {
 	public final fun getProtoPaths ()Ljava/util/List;
 	public final fun getSchemaHandlerFactoryClass ()Ljava/lang/String;
 	public final fun getSourceFileNames ()Ljava/util/List;
+	public final fun getSwiftExclusive ()Z
 	public final fun getSwiftOut ()Ljava/lang/String;
 	public final fun getTreeShakingRoots ()Ljava/util/List;
 	public final fun getTreeShakingRubbish ()Ljava/util/List;

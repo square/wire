@@ -126,7 +126,9 @@ class WireCompiler internal constructor(
   val permitPackageCycles: Boolean,
   val javaInterop: Boolean,
   val kotlinBoxOneOfsMinSize: Int,
+  val javaExclusive: Boolean,
   val kotlinExclusive: Boolean,
+  val swiftExclusive: Boolean,
   val kotlinRpcCallStyle: RpcCallStyle,
   val kotlinRpcRole: RpcRole,
   val kotlinSingleMethodServices: Boolean,
@@ -149,6 +151,7 @@ class WireCompiler internal constructor(
         compact = emitCompact,
         emitDeclaredOptions = emitDeclaredOptions,
         emitAppliedOptions = emitAppliedOptions,
+        exclusive = javaExclusive,
       )
     }
     if (kotlinOut != null) {
@@ -172,6 +175,7 @@ class WireCompiler internal constructor(
     if (swiftOut != null) {
       targets += SwiftTarget(
         outDirectory = swiftOut,
+        exclusive = swiftExclusive,
       )
     }
     if (customOut != null || schemaHandlerFactoryClass != null) {
@@ -263,7 +267,9 @@ class WireCompiler internal constructor(
     private const val JAVA_INTEROP = "--java_interop"
     private const val DRY_RUN = "--dry_run"
     private const val KOTLIN_BOX_ONEOFS_MIN_SIZE = "--kotlin_box_oneofs_min_size="
+    private const val NO_JAVA_EXCLUSIVE = "--no_java_exclusive"
     private const val NO_KOTLIN_EXCLUSIVE = "--no_kotlin_exclusive"
+    private const val NO_SWIFT_EXCLUSIVE = "--no_swift_exclusive"
     private const val KOTLIN_RPC_CALL_STYLE = "--kotlin_rpc_call_style="
     private const val KOTLIN_RPC_ROLE = "--kotlin_rpc_role="
     private const val KOTLIN_SINGLE_METHOD_SERVICES = "--kotlin_single_method_services"
@@ -325,7 +331,9 @@ class WireCompiler internal constructor(
       var permitPackageCycles = false
       var javaInterop = false
       var kotlinBoxOneOfsMinSize = 5_000
+      var javaExclusive = true
       var kotlinExclusive = true
+      var swiftExclusive = true
       var kotlinRpcCallStyle = RpcCallStyle.SUSPENDING
       var kotlinRpcRole = RpcRole.CLIENT
       var kotlinSingleMethodServices = false
@@ -422,7 +430,9 @@ class WireCompiler internal constructor(
             modules = parseManifestModules(yaml)
           }
 
+          arg == NO_JAVA_EXCLUSIVE -> javaExclusive = false
           arg == NO_KOTLIN_EXCLUSIVE -> kotlinExclusive = false
+          arg == NO_SWIFT_EXCLUSIVE -> swiftExclusive = false
           arg == KOTLIN_SINGLE_METHOD_SERVICES -> kotlinSingleMethodServices = true
           arg == KOTLIN_GRPC_SERVER_COMPATIBLE -> {
             throw IllegalArgumentException(
@@ -481,7 +491,9 @@ class WireCompiler internal constructor(
         permitPackageCycles = permitPackageCycles,
         javaInterop = javaInterop,
         kotlinBoxOneOfsMinSize = kotlinBoxOneOfsMinSize,
+        javaExclusive = javaExclusive,
         kotlinExclusive = kotlinExclusive,
+        swiftExclusive = swiftExclusive,
         kotlinRpcCallStyle = kotlinRpcCallStyle,
         kotlinRpcRole = kotlinRpcRole,
         kotlinSingleMethodServices = kotlinSingleMethodServices,
