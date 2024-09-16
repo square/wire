@@ -150,7 +150,8 @@ class WireCompiler internal constructor(
         emitDeclaredOptions = emitDeclaredOptions,
         emitAppliedOptions = emitAppliedOptions,
       )
-    } else if (kotlinOut != null) {
+    }
+    if (kotlinOut != null) {
       targets += KotlinTarget(
         exclusive = kotlinExclusive,
         outDirectory = kotlinOut,
@@ -167,11 +168,13 @@ class WireCompiler internal constructor(
         escapeKotlinKeywords = kotlinEscapeKeywords,
         emitProtoReader32 = emitProtoReader32,
       )
-    } else if (swiftOut != null) {
+    }
+    if (swiftOut != null) {
       targets += SwiftTarget(
         outDirectory = swiftOut,
       )
-    } else if (customOut != null || schemaHandlerFactoryClass != null) {
+    }
+    if (customOut != null || schemaHandlerFactoryClass != null) {
       if (customOut == null || schemaHandlerFactoryClass == null) {
         throw IllegalArgumentException("Both custom_out and schema_handler_factory_class need to be set")
       }

@@ -116,6 +116,45 @@ class WireCompilerTest {
   }
 
   @Test
+  fun runMultipleTargets() {
+    val sources = arrayOf("person.proto")
+
+    val args = ArrayList<String>()
+    args.add(TargetLanguage.JAVA.protoPathArg())
+    args.add(TargetLanguage.JAVA.outArg("/".toPath() / testDir))
+    args.add(TargetLanguage.KOTLIN.protoPathArg())
+    args.add(TargetLanguage.KOTLIN.outArg("/".toPath() / testDir))
+    args.add("--no_kotlin_exclusive")
+    args.add("--dry_run")
+    args.addAll(sources)
+
+    val logs = mutableListOf<String>()
+    val logger = object : WireLogger {
+      override fun artifactHandled(outputPath: Path, qualifiedName: String, targetName: String) {
+        logs.add("artifactHandled($qualifiedName, $targetName)")
+      }
+      override fun artifactSkipped(type: ProtoType, targetName: String) = Unit
+      override fun unusedRoots(unusedRoots: Set<String>) = Unit
+      override fun unusedPrunes(unusedPrunes: Set<String>) = Unit
+      override fun unusedIncludesInTarget(unusedIncludes: Set<String>) = Unit
+      override fun unusedExcludesInTarget(unusedExcludes: Set<String>) = Unit
+    }
+    val fs = fileSystem
+    val compiler = WireCompiler.forArgs(fs, logger, *args.toTypedArray<String>())
+    compiler.compile()
+
+    // We assert nothing has been generated.
+    assertJavaOutputs(arrayOf())
+    assertKotlinOutputs(arrayOf())
+    assertSwiftOutputs(arrayOf())
+    // But we logged things because we're dry-running.
+    assertThat(logs).containsExactly(
+      "artifactHandled(com.squareup.wire.protos.person.Person, Kotlin)",
+      "artifactHandled(com.squareup.wire.protos.person.Person, Java)",
+    )
+  }
+
+  @Test
   fun testPersonAndroid() {
     val sources = arrayOf("person.proto")
     compileToJava(sources, "--android")
@@ -726,6 +765,9 @@ class WireCompilerTest {
   private fun assertKotlinOutputs(outputs: Array<String>, suffix: String = "") =
     assertOutputs(TargetLanguage.KOTLIN, outputs, suffix)
 
+  private fun assertSwiftOutputs(outputs: Array<String>, suffix: String = "") =
+    assertOutputs(TargetLanguage.SWIFT, outputs, suffix)
+
   private fun assertOutputs(target: TargetLanguage, outputs: Array<String>, suffix: String = "") {
     val filesAfter = paths
     assertThat(filesAfter.size)
@@ -769,6 +811,11 @@ class WireCompilerTest {
       override fun protoPathArg() = "--proto_path=../wire-tests/src/commonTest/proto/kotlin"
       override fun outArg(testDirPath: Path) = "--kotlin_out=$testDirPath"
       override fun protoFolderSuffix() = "kotlin"
+    },
+    SWIFT {
+      override fun protoPathArg() = "--proto_path=../wire-tests/src/commonTest/proto/kotlin"
+      override fun outArg(testDirPath: Path) = "--swift_out=$testDirPath"
+      override fun protoFolderSuffix() = "swift"
     },
     ;
 
