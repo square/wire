@@ -4,6 +4,7 @@ public final class com/squareup/wire/swift/SwiftGenerator {
 	public final fun generateTypeTo (Lcom/squareup/wire/schema/Type;Lio/outfoxx/swiftpoet/FileSpec$Builder;)V
 	public final fun generatedTypeName (Lcom/squareup/wire/schema/Type;)Lio/outfoxx/swiftpoet/DeclaredTypeName;
 	public static final fun get (Lcom/squareup/wire/schema/Schema;Ljava/util/Map;)Lcom/squareup/wire/swift/SwiftGenerator;
+	public final fun getSafeDeclaredTypeName (Lcom/squareup/wire/schema/Type;)Lio/outfoxx/swiftpoet/DeclaredTypeName;
 	public final fun getSchema ()Lcom/squareup/wire/schema/Schema;
 }
 
@@ -11,6 +12,11 @@ public final class com/squareup/wire/swift/SwiftGenerator$Companion {
 	public final fun builtInType (Lcom/squareup/wire/schema/ProtoType;)Z
 	public final fun get (Lcom/squareup/wire/schema/Schema;Ljava/util/Map;)Lcom/squareup/wire/swift/SwiftGenerator;
 	public static synthetic fun get$default (Lcom/squareup/wire/swift/SwiftGenerator$Companion;Lcom/squareup/wire/schema/Schema;Ljava/util/Map;ILjava/lang/Object;)Lcom/squareup/wire/swift/SwiftGenerator;
+	public final fun getDeclaredFieldsAndOneOfFields (Lcom/squareup/wire/schema/MessageType;)Ljava/util/List;
+	public final fun getSafeName (Lcom/squareup/wire/schema/Field;)Ljava/lang/String;
+	public final fun getSafeName (Lcom/squareup/wire/schema/ProtoType;)Ljava/lang/String;
+	public final fun isExtensible (Lcom/squareup/wire/schema/MessageType;)Z
+	public final fun isHeapAllocated (Lcom/squareup/wire/schema/MessageType;)Z
 }
 
 public final class com/squareup/wire/swift/SwiftSchemaHandler : com/squareup/wire/schema/SchemaHandler {
