@@ -159,13 +159,6 @@ class SwiftGenerator private constructor(
       else -> isMap || isRepeated
     }
 
-  // TODO use a NameAllocator
-  private val Field.safeName: String
-    get() = when (name) {
-      "description" -> "description_"
-      else -> name
-    }
-
   private val Field.codableDefaultValue: String?
     get() = default?.let {
       return it
@@ -252,6 +245,11 @@ class SwiftGenerator private constructor(
       }
     }
 
+  val Type.safeDeclaredTypeName: DeclaredTypeName
+    get() = generatedTypeName(this).let { result ->
+      if (result.simpleName == "Error") result.peerType("Error_") else result
+    }
+
   fun generateTypeTo(type: Type, builder: FileSpec.Builder) {
     val fileMembers = mutableListOf<FileMemberSpec>()
 
@@ -293,8 +291,6 @@ class SwiftGenerator private constructor(
     }
     return field.type in referenceCycleIndirections.getOrDefault(type.type, emptySet())
   }
-
-  private val MessageType.isHeapAllocated get() = declaredFields.size + oneOfs.size >= 16
 
   /**
    * Checks that every enum in a proto3 message contains a value with tag 0.
@@ -1771,6 +1767,31 @@ class SwiftGenerator private constructor(
 
     fun builtInType(protoType: ProtoType): Boolean = protoType in BUILT_IN_TYPES.keys
 
+    // TODO use a NameAllocator
+    val ProtoType.safeName: String
+      get() {
+        return when (this.simpleName) {
+          "Type" -> "Type_"
+          "Error" -> "Error_"
+          else -> this.simpleName
+        }
+      }
+
+    // TODO use a NameAllocator
+    val Field.safeName: String
+      get() = when (name) {
+        "description" -> "description_"
+        else -> name
+      }
+
+    val MessageType.isExtensible: Boolean
+      get() = extensionsList.isNotEmpty()
+
+    val MessageType.declaredFieldsAndOneOfFields: List<Field>
+      get() = declaredFields + oneOfs.flatMap { it.fields }
+
+    val MessageType.isHeapAllocated get() = declaredFields.size + oneOfs.size >= 16
+
     private val SWIFT_COMMON_TYPES = setOf(
       "Any",
       "AnyClass",
@@ -1845,32 +1866,17 @@ class SwiftGenerator private constructor(
       fun putAll(enclosingClassName: DeclaredTypeName?, types: List<Type>) {
         for (type in types) {
           val protoType = type.type
-          val simpleName = protoType.simpleName
 
           val className = if (enclosingClassName != null) {
-            // TODO use a NameAllocator
-            val safeName = if (simpleName == "Type") {
-              // Foo.Type is effectively reserved for the comppiler
-              "Type_"
-            } else {
-              simpleName
-            }
-
-            enclosingClassName.nestedType(safeName, alwaysQualify = true)
+            enclosingClassName.nestedType(protoType.safeName, alwaysQualify = true)
           } else {
-            // TODO use a NameAllocator
-            val safeName = if (simpleName == "Error") {
-              // Error is _way_ too common to pollute the developer's namespace
-              "Error_"
-            } else {
-              simpleName
-            }
+            val safeName = protoType.safeName
 
             val moduleName = existingTypeModuleName[protoType] ?: ""
             // In some cases a proto declares a message that collides with built-in Foundation and Swift stdlib
             // types. For those we always qualify the type name to disambiguate.
 
-            if (simpleName in SWIFT_COMMON_TYPES) {
+            if (protoType.simpleName in SWIFT_COMMON_TYPES) {
               DeclaredTypeName.qualifiedTypeName("$moduleName.$safeName")
             } else {
               DeclaredTypeName(moduleName, safeName)
@@ -1947,11 +1953,5 @@ class SwiftGenerator private constructor(
 
       return indirections
     }
-
-    private val MessageType.isExtensible: Boolean
-      get() = extensionsList.isNotEmpty()
-
-    private val MessageType.declaredFieldsAndOneOfFields: List<Field>
-      get() = declaredFields + oneOfs.flatMap { it.fields }
   }
 }

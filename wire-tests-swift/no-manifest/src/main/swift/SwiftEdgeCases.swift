@@ -6,7 +6,7 @@ public struct SwiftEdgeCases {
 
     @ProtoDefaulted
     public var `return`: String?
-    public var error: SwiftEdgeCases.Error?
+    public var error: SwiftEdgeCases.Error_?
     public var type: SwiftEdgeCases.Type_?
     public var unknownFields: UnknownFields = .init()
 
@@ -48,14 +48,14 @@ extension SwiftEdgeCases : Proto2Codable {
 
     public init(from protoReader: ProtoReader) throws {
         var `return`: String? = nil
-        var error: SwiftEdgeCases.Error? = nil
+        var error: SwiftEdgeCases.Error_? = nil
         var type: SwiftEdgeCases.Type_? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: `return` = try protoReader.decode(String.self)
-            case 2: error = try protoReader.decode(SwiftEdgeCases.Error.self)
+            case 2: error = try protoReader.decode(SwiftEdgeCases.Error_.self)
             case 3: type = try protoReader.decode(SwiftEdgeCases.Type_.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
@@ -82,7 +82,7 @@ extension SwiftEdgeCases : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self._return.wrappedValue = try container.decodeIfPresent(String.self, forKey: "return")
-        self.error = try container.decodeIfPresent(SwiftEdgeCases.Error.self, forKey: "error")
+        self.error = try container.decodeIfPresent(SwiftEdgeCases.Error_.self, forKey: "error")
         self.type = try container.decodeIfPresent(SwiftEdgeCases.Type_.self, forKey: "type")
     }
 
@@ -102,7 +102,7 @@ extension SwiftEdgeCases : Codable {
  */
 extension SwiftEdgeCases {
 
-    public enum Error : Int32, CaseIterable, Proto2Enum {
+    public enum Error_ : Int32, CaseIterable, Proto2Enum {
 
         case UNKNOWN = 0
         case INNER_BAD_VALUE = 1
@@ -132,7 +132,7 @@ extension SwiftEdgeCases {
 
 }
 
-extension SwiftEdgeCases.Error : Sendable {
+extension SwiftEdgeCases.Error_ : Sendable {
 }
 
 extension SwiftEdgeCases.Type_ : Sendable {
