@@ -15,10 +15,13 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.ReverseProtoWriterTest.Person
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import okio.Buffer
 import okio.ByteString.Companion.decodeHex
+import okio.IOException
 
 class ProtoReaderTest {
   @Test fun packedExposedAsRepeated() {
@@ -57,6 +60,21 @@ class ProtoReaderTest {
     assertEquals(Int.MAX_VALUE, ProtoAdapter.INT32.decode(reader))
     assertEquals(-1, reader.nextTag())
     reader.endMessageAndGetUnknownFields(secondToken)
+  }
+
+  /** We had a bug where we weren't enforcing recursion limits for groups. */
+  @Test fun testSkipGroupNested() {
+    val data = ByteArray(50000) {
+      when {
+        it % 2 == 0 -> 0xa3.toByte()
+        else -> 0x01.toByte()
+      }
+    }
+
+    val failed = assertFailsWith<IOException> {
+      Person.ADAPTER.decode(Buffer().write(data))
+    }
+    assertEquals("Wire recursion limit exceeded", failed.message)
   }
 
   // Consider pasting new tests into ProtoReader32Test.kt also.
