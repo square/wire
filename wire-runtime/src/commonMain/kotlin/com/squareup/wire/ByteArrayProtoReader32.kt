@@ -210,7 +210,18 @@ internal class ByteArrayProtoReader32(
       if (tagAndFieldEncoding == 0) throw ProtocolException("Unexpected tag 0")
       val tag = tagAndFieldEncoding shr TAG_FIELD_ENCODING_BITS
       when (val groupOrFieldEncoding = tagAndFieldEncoding and FIELD_ENCODING_MASK) {
-        STATE_START_GROUP -> skipGroup(tag) // Nested group.
+        STATE_START_GROUP -> {
+          recursionDepth++
+          try {
+            if (recursionDepth > RECURSION_LIMIT) {
+              throw IOException("Wire recursion limit exceeded")
+            }
+            // Nested group.
+            skipGroup(tag)
+          } finally {
+            recursionDepth--
+          }
+        }
         STATE_END_GROUP -> {
           if (tag == expectedEndTag) return // Success!
           throw ProtocolException("Unexpected end group")
