@@ -205,7 +205,7 @@ class KotlinGeneratorTest {
     assertThat(code).contains(
       """
       |@WireEnclosingType
-      |class A private constructor() {
+      |public class A private constructor() {
       """.trimMargin()
     )
     assertWithMessage(code).that(code.contains("class B(.*) : Message<B, Nothing>".toRegex(DOT_MATCHES_ALL))).isTrue()
