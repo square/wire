@@ -604,7 +604,7 @@ public final class JavaGeneratorTest {
     assertThat(javaOutput)
         .contains(
             ""
-                + "@WireEnclosingType"
+                + "@WireEnclosingType\n"
                 + "public final class A {\n"
                 + "  private A() {\n"
                 + "    throw new AssertionError();\n"
