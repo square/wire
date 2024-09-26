@@ -36,7 +36,7 @@ jobs:
 
       - name: Check test files
         run: |
-          ./gradlew generateTests --stacktrace --warning-mode all
+          ./gradlew generateTests -Pswift=false --stacktrace --warning-mode all
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
       - name: Test Native and JS

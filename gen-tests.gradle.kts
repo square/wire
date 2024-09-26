@@ -522,12 +522,14 @@ val generateSwiftProto2Tests by tasks.creating(JavaExec::class) {
 val generateSwiftTests by tasks.creating {
   group = "Generate Tests"
   description = "Generates Swift classes from the test protos"
-  dependsOn(
-    generateSwiftProto2ManifestTests,
-    generateSwiftProto2Tests,
-    generateSwiftProto3Tests,
-    ":wire-runtime-swift:generateTestProtos"
-  )
+  if (project.properties.get("swift") != "false") {
+    dependsOn(
+      generateSwiftProto2ManifestTests,
+      generateSwiftProto2Tests,
+      generateSwiftProto3Tests,
+      ":wire-runtime-swift:generateTestProtos"
+    )
+  }
 }
 
 // GRPC
