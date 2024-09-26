@@ -21,6 +21,7 @@ import kotlin.LazyThreadSafetyMode.NONE
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
+import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.gradle.api.internal.file.FileOrUriNotationConverter
@@ -351,7 +352,13 @@ open class WireExtension(
     }
 
     /** Sets a project. */
+    @Deprecated("Use srcProject(ProjectDependency) instead. This method will be removed in a future version of Wire.")
     fun srcProject(project: DelegatingProjectDependency) {
+      addDependency(project)
+    }
+
+    /** Sets a project. */
+    fun srcProject(project: ProjectDependency) {
       addDependency(project)
     }
 
