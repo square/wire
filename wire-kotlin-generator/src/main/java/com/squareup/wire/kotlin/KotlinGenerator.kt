@@ -53,6 +53,7 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.joinToCode
+import com.squareup.wire.WireEnclosingType
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.GrpcCall
@@ -2547,6 +2548,7 @@ class KotlinGenerator private constructor(
 
   private fun generateEnclosing(type: EnclosingType): TypeSpec {
     val classBuilder = TypeSpec.classBuilder(type.typeName as ClassName)
+      .addAnnotation(WIRE_ENCLOSING_TYPE)
       .primaryConstructor(FunSpec.constructorBuilder().addModifiers(PRIVATE).build())
 
     type.nestedTypes.forEach { classBuilder.addType(generateType(it)) }
@@ -3037,6 +3039,7 @@ class KotlinGenerator private constructor(
       ProtoType.UINT32 to CodeBlock.of("0"),
     )
     private val MESSAGE = Message::class.asClassName()
+    private val WIRE_ENCLOSING_TYPE = WireEnclosingType::class.asClassName()
     private val ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage")
     private val PROTO_READER = ProtoReader::class.asClassName()
     private val PROTO_READER_32 = ProtoReader32::class.asClassName()

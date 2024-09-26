@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
+import com.squareup.wire.WireEnclosingType;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -23,6 +24,7 @@ import okio.ByteString;
 /**
  * <b>NOTE:</b> This type only exists to maintain class structure for its nested types and is not an actual message.
  */
+@WireEnclosingType
 public final class E {
   private E() {
     throw new AssertionError();

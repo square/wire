@@ -51,6 +51,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.WildcardTypeName;
+import com.squareup.wire.WireEnclosingType;
 import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
@@ -113,6 +114,7 @@ public final class JavaGenerator {
   static final ClassName STRING = ClassName.get(String.class);
   static final ClassName LIST = ClassName.get(List.class);
   static final ClassName MESSAGE = ClassName.get(Message.class);
+  static final ClassName WIRE_ENCLOSING_TYPE = ClassName.get(WireEnclosingType.class);
   static final ClassName ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage");
   static final ClassName ADAPTER = ClassName.get(ProtoAdapter.class);
   static final ClassName BUILDER = ClassName.get(Message.Builder.class);
@@ -884,7 +886,9 @@ public final class JavaGenerator {
     ClassName javaType = (ClassName) typeName(type.getType());
 
     TypeSpec.Builder builder =
-        TypeSpec.classBuilder(javaType.simpleName()).addModifiers(PUBLIC, FINAL);
+        TypeSpec.classBuilder(javaType.simpleName())
+            .addModifiers(PUBLIC, FINAL)
+            .addAnnotation(WIRE_ENCLOSING_TYPE);
     if (javaType.enclosingClassName() != null) {
       builder.addModifiers(STATIC);
     }
