@@ -53,7 +53,6 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.joinToCode
-import com.squareup.wire.WireEnclosingType
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.GrpcCall
@@ -69,6 +68,7 @@ import com.squareup.wire.ProtoReader32
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
+import com.squareup.wire.WireEnclosingType
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
 import com.squareup.wire.WireField
