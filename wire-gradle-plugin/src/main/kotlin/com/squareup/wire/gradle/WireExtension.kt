@@ -352,7 +352,10 @@ open class WireExtension(
     }
 
     /** Sets a project. */
-    @Deprecated("Use srcProject(ProjectDependency) instead. This method will be removed in a future version of Wire.")
+    @Deprecated(
+      message = "Use srcProject(ProjectDependency) instead. This method will be removed in a future version of Wire.",
+      level = DeprecationLevel.HIDDEN,
+    )
     fun srcProject(project: DelegatingProjectDependency) {
       addDependency(project)
     }
