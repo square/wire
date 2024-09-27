@@ -147,7 +147,7 @@ public final class com/squareup/wire/gradle/WireExtension$ProtoRootSet {
 	public final fun srcJar (Lorg/gradle/api/provider/ProviderConvertible;)V
 	public final fun srcProject (Ljava/lang/String;)V
 	public final fun srcProject (Lorg/gradle/api/artifacts/ProjectDependency;)V
-	public final fun srcProject (Lorg/gradle/api/internal/catalog/DelegatingProjectDependency;)V
+	public final synthetic fun srcProject (Lorg/gradle/api/internal/catalog/DelegatingProjectDependency;)V
 }
 
 public abstract class com/squareup/wire/gradle/WireOutput {
