@@ -23,4 +23,6 @@ package com.squareup.wire
  *
  * https://developer.android.com/build/shrink-code
  */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class WireEnclosingType
