@@ -439,13 +439,13 @@ class ProtoParserTest {
   }
 
   @Test
-  fun messageFieldTrailingComment() {
+  fun messageFieldTrailingCommentWithCarriageReturn() {
     // Trailing message field comment.
     val proto = """
         |message Test {
         |  optional string name = 1; // Test all the things!
         |}
-    """.trimMargin()
+    """.trimMargin().replace("\n", "\r\n")
     val parsed = ProtoParser.parse(location, proto)
     val message = parsed.types[0] as MessageElement
     val field = message.fields[0]
@@ -3156,6 +3156,51 @@ class ProtoParserTest {
               name = "extensions",
               requestType = "google.protobuf.StringValue",
               responseType = "google.protobuf.StringValue",
+            ),
+          ),
+        ),
+      ),
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
+  @Test fun parsingTrailingComments() {
+    val proto = """
+      |enum ImageState {
+      |    IMAGE_STATE_UNSPECIFIED = 0;
+      |    IMAGE_STATE_READONLY = 1;     /* unlocked */
+      |    IMAGE_STATE_MUSTLOCK = 2;     /* must be locked */
+      |}
+    """.trimMargin()
+    val expected = ProtoFileElement(
+      location = location,
+      types = listOf(
+        EnumElement(
+          location = location.at(1, 1),
+          name = "ImageState",
+          documentation = "",
+          options = listOf(),
+          constants = listOf(
+            EnumConstantElement(
+              location = location.at(2, 5),
+              name = "IMAGE_STATE_UNSPECIFIED",
+              tag = 0,
+              documentation = "",
+              options = listOf(),
+            ),
+            EnumConstantElement(
+              location = location.at(3, 5),
+              name = "IMAGE_STATE_READONLY",
+              tag = 1,
+              documentation = "unlocked",
+              options = listOf(),
+            ),
+            EnumConstantElement(
+              location = location.at(4, 5),
+              name = "IMAGE_STATE_MUSTLOCK",
+              tag = 2,
+              documentation = "must be locked",
+              options = listOf(),
             ),
           ),
         ),
