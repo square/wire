@@ -1,0 +1,24 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.squareup.wire.kotlin.grpcserver////PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/FlowAdapter///PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-flow-adapter/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/FlowAdapter/bidiStream/#kotlin.coroutines.CoroutineContext#kotlinx.coroutines.flow.Flow[TypeParam(bounds=[kotlin.Any])]#kotlin.coroutines.SuspendFunction2[kotlinx.coroutines.channels.ReceiveChannel[TypeParam(bounds=[kotlin.Any])],kotlinx.coroutines.channels.SendChannel[TypeParam(bounds=[kotlin.Any])],kotlin.Unit]/PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-flow-adapter/bidi-stream.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/FlowAdapter/clientStream/#kotlin.coroutines.CoroutineContext#kotlinx.coroutines.flow.Flow[TypeParam(bounds=[kotlin.Any])]#kotlin.coroutines.SuspendFunction1[kotlinx.coroutines.channels.ReceiveChannel[TypeParam(bounds=[kotlin.Any])],TypeParam(bounds=[kotlin.Any])]/PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-flow-adapter/client-stream.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/FlowAdapter/serverStream/#kotlin.coroutines.CoroutineContext#TypeParam(bounds=[kotlin.Any])#kotlin.coroutines.SuspendFunction2[TypeParam(bounds=[kotlin.Any]),kotlinx.coroutines.channels.SendChannel[TypeParam(bounds=[kotlin.Any])],kotlin.Unit]/PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-flow-adapter/server-stream.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/MessageSinkAdapter///PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-message-sink-adapter/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/MessageSinkAdapter/MessageSinkAdapter/#io.grpc.stub.StreamObserver[TypeParam(bounds=[kotlin.Any])]/PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-message-sink-adapter/-message-sink-adapter.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/MessageSinkAdapter/cancel/#/PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-message-sink-adapter/cancel.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/MessageSinkAdapter/close/#/PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-message-sink-adapter/close.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/MessageSinkAdapter/write/#TypeParam(bounds=[kotlin.Any])/PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-message-sink-adapter/write.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/MessageSourceAdapter///PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-message-source-adapter/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/MessageSourceAdapter/MessageSourceAdapter/#/PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-message-source-adapter/-message-source-adapter.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/MessageSourceAdapter/close/#/PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-message-source-adapter/close.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/MessageSourceAdapter/onCompleted/#/PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-message-source-adapter/on-completed.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/MessageSourceAdapter/onError/#kotlin.Throwable/PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-message-source-adapter/on-error.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/MessageSourceAdapter/onNext/#TypeParam(bounds=[kotlin.Any])/PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-message-source-adapter/on-next.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/MessageSourceAdapter/read/#/PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-message-source-adapter/read.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/WireBindableService///PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-wire-bindable-service/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/WireMethodMarshaller///PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-wire-method-marshaller/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/WireMethodMarshaller/marshalledClass/#/PointingToDeclaration/wire-grpc-server/com.squareup.wire.kotlin.grpcserver/-wire-method-marshaller/marshalled-class.html
+com.squareup.wire.kotlin.grpcserver
+

@@ -1,0 +1,37 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.squareup.wire.kotlin////PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/index.html
+$dokka.location:com.squareup.wire.kotlin/KotlinGenerator.Companion///PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-generator/-companion/index.html
+$dokka.location:com.squareup.wire.kotlin/KotlinGenerator.Companion/builtInType/#com.squareup.wire.schema.ProtoType/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-generator/-companion/built-in-type.html
+$dokka.location:com.squareup.wire.kotlin/KotlinGenerator.Companion/invoke/#com.squareup.wire.schema.Schema#com.squareup.wire.schema.Profile#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#com.squareup.wire.kotlin.RpcCallStyle#com.squareup.wire.kotlin.RpcRole#kotlin.Int#kotlin.Boolean#kotlin.String?#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-generator/-companion/invoke.html
+$dokka.location:com.squareup.wire.kotlin/KotlinGenerator///PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-generator/index.html
+$dokka.location:com.squareup.wire.kotlin/KotlinGenerator/generateGrpcServerAdapter/#com.squareup.wire.schema.Service/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-generator/generate-grpc-server-adapter.html
+$dokka.location:com.squareup.wire.kotlin/KotlinGenerator/generateOptionType/#com.squareup.wire.schema.Extend#com.squareup.wire.schema.Field/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-generator/generate-option-type.html
+$dokka.location:com.squareup.wire.kotlin/KotlinGenerator/generateServiceTypeSpecs/#com.squareup.wire.schema.Service#com.squareup.wire.schema.Rpc?/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-generator/generate-service-type-specs.html
+$dokka.location:com.squareup.wire.kotlin/KotlinGenerator/generateType/#com.squareup.wire.schema.Type/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-generator/generate-type.html
+$dokka.location:com.squareup.wire.kotlin/KotlinGenerator/generatedServiceName/#com.squareup.wire.schema.Service#com.squareup.wire.schema.Rpc?#kotlin.Boolean/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-generator/generated-service-name.html
+$dokka.location:com.squareup.wire.kotlin/KotlinGenerator/generatedTypeName/#com.squareup.wire.schema.ProtoMember/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-generator/generated-type-name.html
+$dokka.location:com.squareup.wire.kotlin/KotlinGenerator/generatedTypeName/#com.squareup.wire.schema.Type/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-generator/generated-type-name.html
+$dokka.location:com.squareup.wire.kotlin/KotlinGenerator/schema/#/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-generator/schema.html
+$dokka.location:com.squareup.wire.kotlin/KotlinSchemaHandler.Companion///PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-schema-handler/-companion/index.html
+$dokka.location:com.squareup.wire.kotlin/KotlinSchemaHandler///PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-schema-handler/index.html
+$dokka.location:com.squareup.wire.kotlin/KotlinSchemaHandler/KotlinSchemaHandler/#kotlin.String#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#com.squareup.wire.kotlin.RpcCallStyle#com.squareup.wire.kotlin.RpcRole#kotlin.Boolean#kotlin.Int#kotlin.Boolean#kotlin.String?#kotlin.Boolean#kotlin.Boolean/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-schema-handler/-kotlin-schema-handler.html
+$dokka.location:com.squareup.wire.kotlin/KotlinSchemaHandler/handle/#com.squareup.wire.schema.Extend#com.squareup.wire.schema.Field#com.squareup.wire.schema.SchemaHandler.Context/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-schema-handler/handle.html
+$dokka.location:com.squareup.wire.kotlin/KotlinSchemaHandler/handle/#com.squareup.wire.schema.Schema#com.squareup.wire.schema.SchemaHandler.Context/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-schema-handler/handle.html
+$dokka.location:com.squareup.wire.kotlin/KotlinSchemaHandler/handle/#com.squareup.wire.schema.Service#com.squareup.wire.schema.SchemaHandler.Context/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-schema-handler/handle.html
+$dokka.location:com.squareup.wire.kotlin/KotlinSchemaHandler/handle/#com.squareup.wire.schema.Type#com.squareup.wire.schema.SchemaHandler.Context/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-kotlin-schema-handler/handle.html
+$dokka.location:com.squareup.wire.kotlin/RpcCallStyle.BLOCKING///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}wire-kotlin-generator/com.squareup.wire.kotlin/-rpc-call-style/-b-l-o-c-k-i-n-g/index.html
+$dokka.location:com.squareup.wire.kotlin/RpcCallStyle.SUSPENDING///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}wire-kotlin-generator/com.squareup.wire.kotlin/-rpc-call-style/-s-u-s-p-e-n-d-i-n-g/index.html
+$dokka.location:com.squareup.wire.kotlin/RpcCallStyle///PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-rpc-call-style/index.html
+$dokka.location:com.squareup.wire.kotlin/RpcCallStyle/entries/#/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-rpc-call-style/entries.html
+$dokka.location:com.squareup.wire.kotlin/RpcCallStyle/valueOf/#kotlin.String/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-rpc-call-style/value-of.html
+$dokka.location:com.squareup.wire.kotlin/RpcCallStyle/values/#/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-rpc-call-style/values.html
+$dokka.location:com.squareup.wire.kotlin/RpcRole.CLIENT///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}wire-kotlin-generator/com.squareup.wire.kotlin/-rpc-role/-c-l-i-e-n-t/index.html
+$dokka.location:com.squareup.wire.kotlin/RpcRole.NONE///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}wire-kotlin-generator/com.squareup.wire.kotlin/-rpc-role/-n-o-n-e/index.html
+$dokka.location:com.squareup.wire.kotlin/RpcRole.SERVER///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}wire-kotlin-generator/com.squareup.wire.kotlin/-rpc-role/-s-e-r-v-e-r/index.html
+$dokka.location:com.squareup.wire.kotlin/RpcRole///PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-rpc-role/index.html
+$dokka.location:com.squareup.wire.kotlin/RpcRole/entries/#/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-rpc-role/entries.html
+$dokka.location:com.squareup.wire.kotlin/RpcRole/valueOf/#kotlin.String/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-rpc-role/value-of.html
+$dokka.location:com.squareup.wire.kotlin/RpcRole/values/#/PointingToDeclaration/wire-kotlin-generator/com.squareup.wire.kotlin/-rpc-role/values.html
+com.squareup.wire.kotlin
+

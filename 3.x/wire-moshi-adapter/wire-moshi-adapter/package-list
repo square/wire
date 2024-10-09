@@ -1,0 +1,11 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.squareup.wire////PointingToDeclaration/wire-moshi-adapter/com.squareup.wire/index.html
+$dokka.location:com.squareup.wire//redacting/com.squareup.moshi.JsonAdapter[TypeParam(bounds=[kotlin.Any?])]#/PointingToDeclaration/wire-moshi-adapter/com.squareup.wire/redacting.html
+$dokka.location:com.squareup.wire/WireJsonAdapterFactory///PointingToDeclaration/wire-moshi-adapter/com.squareup.wire/-wire-json-adapter-factory/index.html
+$dokka.location:com.squareup.wire/WireJsonAdapterFactory/WireJsonAdapterFactory/#kotlin.collections.Map[kotlin.String,com.squareup.wire.ProtoAdapter[*]]#kotlin.Boolean/PointingToDeclaration/wire-moshi-adapter/com.squareup.wire/-wire-json-adapter-factory/-wire-json-adapter-factory.html
+$dokka.location:com.squareup.wire/WireJsonAdapterFactory/create/#java.lang.reflect.Type#kotlin.collections.Set[kotlin.Annotation]#com.squareup.moshi.Moshi/PointingToDeclaration/wire-moshi-adapter/com.squareup.wire/-wire-json-adapter-factory/create.html
+$dokka.location:com.squareup.wire/WireJsonAdapterFactory/plus/#com.squareup.wire.ProtoAdapter[*]/PointingToDeclaration/wire-moshi-adapter/com.squareup.wire/-wire-json-adapter-factory/plus.html
+$dokka.location:com.squareup.wire/WireJsonAdapterFactory/plus/#kotlin.collections.List[com.squareup.wire.ProtoAdapter[*]]/PointingToDeclaration/wire-moshi-adapter/com.squareup.wire/-wire-json-adapter-factory/plus.html
+com.squareup.wire
+

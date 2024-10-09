@@ -1,0 +1,21 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.squareup.wire.kotlin.grpcserver////PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/BindableAdapterGenerator///PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-bindable-adapter-generator/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/BlockingStubGenerator///PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-blocking-stub-generator/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/FileDescriptorGenerator///PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-file-descriptor-generator/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/FileDescriptorGenerator/addDescriptorDataProperty/#com.squareup.kotlinpoet.TypeSpec.Builder#com.squareup.wire.schema.ProtoFile?#com.squareup.wire.schema.Schema/PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-file-descriptor-generator/add-descriptor-data-property.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/ImplBaseGenerator///PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-impl-base-generator/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/KotlinGrpcGenerator.Companion.Options///PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-kotlin-grpc-generator/-companion/-options/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/KotlinGrpcGenerator.Companion.Options/Options/#kotlin.Boolean#kotlin.Boolean/PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-kotlin-grpc-generator/-companion/-options/-options.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/KotlinGrpcGenerator.Companion.Options/singleMethodServices/#/PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-kotlin-grpc-generator/-companion/-options/single-method-services.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/KotlinGrpcGenerator.Companion.Options/suspendingCalls/#/PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-kotlin-grpc-generator/-companion/-options/suspending-calls.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/KotlinGrpcGenerator.Companion///PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-kotlin-grpc-generator/-companion/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/KotlinGrpcGenerator///PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-kotlin-grpc-generator/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/KotlinGrpcGenerator/KotlinGrpcGenerator/#kotlin.collections.Map[com.squareup.wire.schema.ProtoType,com.squareup.kotlinpoet.TypeName]#kotlin.Boolean#kotlin.Boolean/PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-kotlin-grpc-generator/-kotlin-grpc-generator.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/KotlinGrpcGenerator/generateGrpcServer/#com.squareup.wire.schema.Service#com.squareup.wire.schema.ProtoFile?#com.squareup.wire.schema.Schema/PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-kotlin-grpc-generator/generate-grpc-server.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/MethodDescriptorGenerator///PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-method-descriptor-generator/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/ServiceDescriptorGenerator///PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-service-descriptor-generator/index.html
+$dokka.location:com.squareup.wire.kotlin.grpcserver/StubGenerator///PointingToDeclaration/wire-grpc-server-generator/com.squareup.wire.kotlin.grpcserver/-stub-generator/index.html
+com.squareup.wire.kotlin.grpcserver
+
