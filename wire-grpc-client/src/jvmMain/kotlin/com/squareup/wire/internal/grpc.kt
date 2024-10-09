@@ -19,7 +19,6 @@ import com.squareup.wire.GrpcException
 import com.squareup.wire.GrpcStatus
 import com.squareup.wire.ProtoAdapter
 import java.io.Closeable
-import java.util.Base64
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
@@ -33,6 +32,8 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okhttp3.Response
 import okio.BufferedSink
+import okio.ByteString
+import okio.ByteString.Companion.decodeBase64
 import okio.IOException
 
 internal val APPLICATION_GRPC_MEDIA_TYPE: MediaType = "application/grpc".toMediaType()
@@ -213,12 +214,12 @@ internal fun Response.grpcResponseToException(suppressed: IOException? = null): 
   val grpcStatus = trailers["grpc-status"] ?: header("grpc-status")
   val grpcMessage = trailers["grpc-message"] ?: header("grpc-message")
   val url = request.url.toString()
-  var grpcStatusDetailsBin: ByteArray? = null
+  var grpcStatusDetailsBin: ByteString? = null
 
   grpcStatus?.toIntOrNull()?.takeIf { it != 0 }?.let { grpcStatusInt ->
     (trailers["grpc-status-details-bin"] ?: header("grpc-status-details-bin"))?.let {
       try {
-        grpcStatusDetailsBin = Base64.getDecoder().decode(it)
+        grpcStatusDetailsBin = it.decodeBase64()
       } catch (e: IllegalArgumentException) {
         throw IOException(
           "gRPC transport failure, invalid grpc-status-details-bin" +
@@ -228,7 +229,7 @@ internal fun Response.grpcResponseToException(suppressed: IOException? = null): 
       }
     }
 
-    return GrpcException(GrpcStatus.get(grpcStatusInt), grpcMessage, grpcStatusDetailsBin, url)
+    return GrpcException(GrpcStatus.get(grpcStatusInt), grpcMessage, grpcStatusDetailsBin?.toByteArray(), url)
   }
 
   if (transportException != null || grpcStatus?.toIntOrNull() == null) {
