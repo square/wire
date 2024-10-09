@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 4.9.11
+---------------------
+
+_2024-10-09_
+
+### Common
+
+* Fix Gradle project isolation issue when reading a property (#3078 by [Aurimas][liutikas])
+
 Version 5.1.0
 ---------------------
 
