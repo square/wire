@@ -19,14 +19,9 @@ jobs:
           distribution: 'zulu'
           java-version: 19
 
-      - name: Setup Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest-stable
-
       - name: Upload Artifacts
         run: |
-          ./gradlew publish --stacktrace --warning-mode all --no-daemon
+          ./gradlew publish -Pswift=false --stacktrace --warning-mode all --no-daemon
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
@@ -34,7 +29,7 @@ jobs:
 
       - name: Publish plugin to Gradle portal
         run: |
-          ./gradlew publishPluginToGradlePortalIfRelease --stacktrace --warning-mode all
+          ./gradlew publishPluginToGradlePortalIfRelease -Pswift=false --stacktrace --warning-mode all
         env:
           GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
           GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
