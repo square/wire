@@ -1,5 +1,0 @@
-include ':dinosaurs'
-include ':geology'
-include ':location'
-
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

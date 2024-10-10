@@ -3,7 +3,8 @@ import org.jetbrains.annotations.NotNull
 
 plugins {
   id 'application'
-  id 'com.squareup.wire'
+  id 'org.jetbrains.kotlin.jvm' version libs.versions.kotlin
+  id 'com.squareup.wire' version "$wireVersion"
 }
 
 class MyCustomHandlerFactory implements SchemaHandler.Factory {
