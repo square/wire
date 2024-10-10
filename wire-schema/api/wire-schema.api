@@ -18,15 +18,15 @@ public abstract interface class com/squareup/wire/WireLogger$Factory : java/io/S
 
 public final class com/squareup/wire/schema/AdapterConstant {
 	public static final field Companion Lcom/squareup/wire/schema/AdapterConstant$Companion;
-	public final field javaClassName Lcom/squareup/javapoet/ClassName;
+	public final field javaClassName Lcom/palantir/javapoet/ClassName;
 	public final field kotlinClassName Lcom/squareup/kotlinpoet/ClassName;
 	public final field memberName Ljava/lang/String;
-	public fun <init> (Lcom/squareup/javapoet/ClassName;Lcom/squareup/kotlinpoet/ClassName;Ljava/lang/String;)V
-	public final fun component1 ()Lcom/squareup/javapoet/ClassName;
+	public fun <init> (Lcom/palantir/javapoet/ClassName;Lcom/squareup/kotlinpoet/ClassName;Ljava/lang/String;)V
+	public final fun component1 ()Lcom/palantir/javapoet/ClassName;
 	public final fun component2 ()Lcom/squareup/kotlinpoet/ClassName;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Lcom/squareup/javapoet/ClassName;Lcom/squareup/kotlinpoet/ClassName;Ljava/lang/String;)Lcom/squareup/wire/schema/AdapterConstant;
-	public static synthetic fun copy$default (Lcom/squareup/wire/schema/AdapterConstant;Lcom/squareup/javapoet/ClassName;Lcom/squareup/kotlinpoet/ClassName;Ljava/lang/String;ILjava/lang/Object;)Lcom/squareup/wire/schema/AdapterConstant;
+	public final fun copy (Lcom/palantir/javapoet/ClassName;Lcom/squareup/kotlinpoet/ClassName;Ljava/lang/String;)Lcom/squareup/wire/schema/AdapterConstant;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/AdapterConstant;Lcom/palantir/javapoet/ClassName;Lcom/squareup/kotlinpoet/ClassName;Ljava/lang/String;ILjava/lang/Object;)Lcom/squareup/wire/schema/AdapterConstant;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -562,7 +562,7 @@ public final class com/squareup/wire/schema/Profile {
 	public fun <init> (Ljava/util/List;)V
 	public synthetic fun <init> (Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getAdapter (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/wire/schema/AdapterConstant;
-	public final fun javaTarget (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/javapoet/TypeName;
+	public final fun javaTarget (Lcom/squareup/wire/schema/ProtoType;)Lcom/palantir/javapoet/TypeName;
 	public final fun kotlinTarget (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/kotlinpoet/TypeName;
 }
 

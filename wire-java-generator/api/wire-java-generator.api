@@ -1,15 +1,15 @@
 public final class com/squareup/wire/java/JavaGenerator {
-	public fun abstractAdapterName (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/javapoet/ClassName;
+	public fun abstractAdapterName (Lcom/squareup/wire/schema/ProtoType;)Lcom/palantir/javapoet/ClassName;
 	public static fun builtInType (Lcom/squareup/wire/schema/ProtoType;)Z
-	public fun generateAdapterForCustomType (Lcom/squareup/wire/schema/Type;)Lcom/squareup/javapoet/TypeSpec;
-	public fun generateOptionType (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Field;)Lcom/squareup/javapoet/TypeSpec;
-	public fun generateType (Lcom/squareup/wire/schema/Type;)Lcom/squareup/javapoet/TypeSpec;
-	public fun generatedTypeName (Lcom/squareup/wire/schema/ProtoMember;)Lcom/squareup/javapoet/ClassName;
-	public fun generatedTypeName (Lcom/squareup/wire/schema/Type;)Lcom/squareup/javapoet/ClassName;
+	public fun generateAdapterForCustomType (Lcom/squareup/wire/schema/Type;)Lcom/palantir/javapoet/TypeSpec;
+	public fun generateOptionType (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Field;)Lcom/palantir/javapoet/TypeSpec;
+	public fun generateType (Lcom/squareup/wire/schema/Type;)Lcom/palantir/javapoet/TypeSpec;
+	public fun generatedTypeName (Lcom/squareup/wire/schema/ProtoMember;)Lcom/palantir/javapoet/ClassName;
+	public fun generatedTypeName (Lcom/squareup/wire/schema/Type;)Lcom/palantir/javapoet/ClassName;
 	public static fun get (Lcom/squareup/wire/schema/Schema;)Lcom/squareup/wire/java/JavaGenerator;
 	public fun isEnum (Lcom/squareup/wire/schema/ProtoType;)Z
 	public fun schema ()Lcom/squareup/wire/schema/Schema;
-	public fun typeName (Lcom/squareup/wire/schema/ProtoType;)Lcom/squareup/javapoet/TypeName;
+	public fun typeName (Lcom/squareup/wire/schema/ProtoType;)Lcom/palantir/javapoet/TypeName;
 	public fun withAndroid (Z)Lcom/squareup/wire/java/JavaGenerator;
 	public fun withAndroidAnnotations (Z)Lcom/squareup/wire/java/JavaGenerator;
 	public fun withBuildersOnly (Z)Lcom/squareup/wire/java/JavaGenerator;
