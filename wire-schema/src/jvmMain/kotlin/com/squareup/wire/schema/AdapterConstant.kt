@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.javapoet.ClassName
+import com.palantir.javapoet.ClassName
 import com.squareup.kotlinpoet.ClassName as KClassName
 
 /**

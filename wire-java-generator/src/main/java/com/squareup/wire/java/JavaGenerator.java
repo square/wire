@@ -39,18 +39,18 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ordering;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ArrayTypeName;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.NameAllocator;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.WildcardTypeName;
+import com.palantir.javapoet.AnnotationSpec;
+import com.palantir.javapoet.ArrayTypeName;
+import com.palantir.javapoet.ClassName;
+import com.palantir.javapoet.CodeBlock;
+import com.palantir.javapoet.FieldSpec;
+import com.palantir.javapoet.MethodSpec;
+import com.palantir.javapoet.NameAllocator;
+import com.palantir.javapoet.ParameterSpec;
+import com.palantir.javapoet.ParameterizedTypeName;
+import com.palantir.javapoet.TypeName;
+import com.palantir.javapoet.TypeSpec;
+import com.palantir.javapoet.WildcardTypeName;
 import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
@@ -510,7 +510,7 @@ public final class JavaGenerator {
     if (typeName instanceof ClassName) {
       javaName = (ClassName) typeName;
     } else if (typeName instanceof ParameterizedTypeName) {
-      javaName = ((ParameterizedTypeName) typeName).rawType;
+      javaName = ((ParameterizedTypeName) typeName).rawType();
     } else {
       throw new IllegalArgumentException("Unexpected typeName :" + typeName);
     }
@@ -1641,7 +1641,7 @@ public final class JavaGenerator {
   private String reflectionName(TypeName typeName) {
     ClassName className;
     if (typeName instanceof ParameterizedTypeName) {
-      className = ((ParameterizedTypeName) typeName).rawType;
+      className = ((ParameterizedTypeName) typeName).rawType();
     } else {
       className = (ClassName) typeName;
     }

@@ -19,8 +19,8 @@ import static com.google.common.truth.Truth.assertThat;
 import static com.squareup.wire.schema.SchemaHelpersJvmKt.addFromTest;
 import static org.junit.Assert.fail;
 
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
+import com.palantir.javapoet.JavaFile;
+import com.palantir.javapoet.TypeSpec;
 import com.squareup.wire.SchemaBuilder;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.PruningRules;

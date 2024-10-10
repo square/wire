@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.java
 
-import com.squareup.javapoet.JavaFile
+import com.palantir.javapoet.JavaFile
 import com.squareup.wire.schema.Extend
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Location
@@ -86,8 +86,8 @@ class JavaSchemaHandler(
   }
 
   private fun write(
-    javaTypeName: com.squareup.javapoet.ClassName,
-    typeSpec: com.squareup.javapoet.TypeSpec,
+    javaTypeName: com.palantir.javapoet.ClassName,
+    typeSpec: com.palantir.javapoet.TypeSpec,
     source: Any,
     location: Location,
     context: Context,
@@ -98,12 +98,12 @@ class JavaSchemaHandler(
       .addFileComment("\nSource: \$L in \$L", source, location.withPathOnly())
       .build()
     val filePath = outDirectory /
-      javaFile.packageName.replace(".", "/") /
+      javaFile.packageName().replace(".", "/") /
       "${javaTypeName.simpleName()}.java"
 
     context.logger.artifactHandled(
       outDirectory,
-      "${javaFile.packageName}.${javaFile.typeSpec.name}",
+      "${javaFile.packageName()}.${javaFile.typeSpec().name()}",
       "Java",
     )
     try {
@@ -113,7 +113,7 @@ class JavaSchemaHandler(
       }
     } catch (e: IOException) {
       throw IOException(
-        "Error emitting ${javaFile.packageName}.${javaFile.typeSpec.name} to $outDirectory",
+        "Error emitting ${javaFile.packageName()}.${javaFile.typeSpec().name()} to $outDirectory",
         e,
       )
     }

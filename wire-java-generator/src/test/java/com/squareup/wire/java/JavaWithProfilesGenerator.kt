@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.java
 
-import com.squareup.javapoet.JavaFile
+import com.palantir.javapoet.JavaFile
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Profile
 import com.squareup.wire.schema.Schema
