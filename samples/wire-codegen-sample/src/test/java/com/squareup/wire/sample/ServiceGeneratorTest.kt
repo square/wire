@@ -15,8 +15,8 @@
  */
 package com.squareup.wire.sample
 
-import com.squareup.javapoet.JavaFile
-import com.squareup.javapoet.TypeSpec
+import com.palantir.javapoet.JavaFile
+import com.palantir.javapoet.TypeSpec
 import com.squareup.wire.java.JavaGenerator
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Schema
