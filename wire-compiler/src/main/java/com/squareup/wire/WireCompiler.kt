@@ -98,6 +98,11 @@ import okio.openZip
  *
  * The `--android-annotations` flag will add the `Nullable` annotation to optional fields.
  *
+ * The `--opaque_types` takes a list of qualified named Protobuf types separated by a ','. All types
+ * in the list will be evaluated as being of type `bytes`. On code generation, the fields of such
+ * types will be using the platform equivalent of `bytes`, like [okio.ByteString] for the JVM. Note
+ * that scalar types cannot be opaqued. The opaque step will happen before the tree shaking one.
+ *
  * The `--compact` flag will emit code that uses reflection for reading, writing, and
  * toString methods which are normally implemented with code generation.
  *
@@ -138,6 +143,7 @@ class WireCompiler internal constructor(
   val emitProtoReader32: Boolean,
   val eventListenerFactoryClasses: List<String>,
   val customOptions: Map<String, String>,
+  val opaqueTypes: List<String> = listOf(),
 ) {
 
   @Throws(IOException::class)
@@ -212,6 +218,7 @@ class WireCompiler internal constructor(
       modules = modules,
       permitPackageCycles = permitPackageCycles,
       eventListeners = eventListenerFactoryClasses.map { newEventListenerFactory(it).create() },
+      opaqueTypes = opaqueTypes,
     )
 
     wireRun.execute(fs, log)
@@ -279,6 +286,7 @@ class WireCompiler internal constructor(
     private const val KOTLIN_ESCAPE_KEYWORDS = "--kotlin_escape_keywords"
     private const val EMIT_PROTO_READER_32 = "--emit_proto_reader_32"
     private const val CUSTOM_OPTION_FLAG = "--custom_option="
+    private const val OPAQUE_TYPES_FLAG = "--opaque_types="
 
     @Throws(IOException::class)
     @JvmStatic
@@ -343,6 +351,7 @@ class WireCompiler internal constructor(
       var emitProtoReader32 = false
       var dryRun = false
       val customOptions = mutableMapOf<String, String>()
+      val opaqueTypes = mutableListOf<String>()
 
       for (arg in args) {
         when {
@@ -401,6 +410,14 @@ class WireCompiler internal constructor(
               .substring(CUSTOM_OPTION_FLAG.length)
               .split(',', limit = 2)
             customOptions[key] = value
+          }
+
+          arg.startsWith(OPAQUE_TYPES_FLAG) -> {
+            opaqueTypes.addAll(
+              arg
+                .substring(OPAQUE_TYPES_FLAG.length)
+                .split(','),
+            )
           }
 
           arg.startsWith(FILES_FLAG) -> {
@@ -503,6 +520,7 @@ class WireCompiler internal constructor(
         emitProtoReader32 = emitProtoReader32,
         eventListenerFactoryClasses = eventListenerFactoryClasses,
         customOptions = customOptions,
+        opaqueTypes = opaqueTypes,
       )
     }
   }
