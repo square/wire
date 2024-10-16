@@ -3,6 +3,8 @@ plugins {
 }
 
 kotlin {
+  applyDefaultHierarchyTemplate()
+
   jvm {
     withJava()
   }
@@ -45,24 +47,6 @@ kotlin {
     val jvmMain by getting {
       dependencies {
         api(libs.okhttp.core)
-      }
-    }
-    if (System.getProperty("knative", "true").toBoolean()) {
-      val nativeMain by creating {
-        dependsOn(commonMain)
-      }
-      val iosX64Main by getting
-      val iosArm64Main by getting
-      val iosSimulatorArm64Main by getting
-      val linuxX64Main by getting
-      val macosX64Main by getting
-      val macosArm64Main by getting
-      val mingwX64Main by getting
-      val tvosX64Main by getting
-      val tvosArm64Main by getting
-      val tvosSimulatorArm64Main by getting
-      for (it in listOf(iosX64Main, iosArm64Main, iosSimulatorArm64Main, linuxX64Main, macosX64Main, macosArm64Main, mingwX64Main, tvosX64Main, tvosArm64Main, tvosSimulatorArm64Main)) {
-        it.dependsOn(nativeMain)
       }
     }
   }
