@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package human;
+
+message Person {
+  string name = 1;
+  PhoneNumber phone_number = 2;
+
+  message PhoneNumber {
+    string area = 1;
+    string number = 2;
+  }
+}

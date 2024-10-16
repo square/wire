@@ -41,6 +41,7 @@ class KotlinMapTest {
   }
 
   @IgnoreJs
+  @IgnoreWasmJs
   @IgnoreNative
   @Test
   fun mapsAreImmutable() {
