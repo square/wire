@@ -213,6 +213,26 @@ val generateAndroidCompactTests by tasks.creating(JavaExec::class) {
   )
 }
 
+// OPAQUE TYPES
+
+val generateOpaqueTypeTests by tasks.creating(JavaExec::class) {
+  group = "Generate Tests"
+  description = "Generates Java, Kotlin, and Swift code to demonstrate opaque types"
+  classpath = wire
+  mainClass.set("com.squareup.wire.WireCompiler")
+  args = listOf(
+    "--proto_path=wire-tests/src/commonTest/proto/kotlin",
+    "--java_out=wire-tests/src/jvmJavaTest/proto-java",
+    "--no_java_exclusive",
+    "--kotlin_out=wire-tests/src/commonTest/proto-kotlin",
+    "--no_kotlin_exclusive",
+    "--swift_out=wire-tests-swift/opaques",
+    "--no_swift_exclusive",
+    "--opaque_types=squareup.protos.opaque_types.OuterOpaqueType.InnerOpaqueType1",
+    "opaque_types.proto"
+  )
+}
+
 // KOTLIN
 
 val generateKotlinTests by tasks.creating(JavaExec::class) {
@@ -493,11 +513,9 @@ val generateSwiftProto2Tests by tasks.creating(JavaExec::class) {
     "custom_options.proto",
     "deprecated.proto",
     "deprecated_enum.proto",
-//      'edge_cases.proto',
     "external_message.proto",
     "foreign.proto",
     "form.proto",
-//      'keyword.proto',
     "map.proto",
     "negative_value_enum.proto",
     "no_fields.proto",
@@ -508,14 +526,11 @@ val generateSwiftProto2Tests by tasks.creating(JavaExec::class) {
     "percents_in_kdoc.proto",
     "person.proto",
     "redacted_one_of.proto",
-//      'redacted_test.proto',
     "recursive_map.proto",
     "same_name_enum.proto",
     "swift_edge_cases.proto",
-//      'simple_message.proto',
     "to_string.proto",
     "unknown_fields.proto"
-//      'uses_any.proto',
   )
 }
 
@@ -714,6 +729,7 @@ val generateTests by tasks.creating {
     generateProto3JavaTests,
     generateProtoReader32KotlinTests,
     generateSharedJson,
+    generateOpaqueTypeTests,
   )
 }
 

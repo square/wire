@@ -346,6 +346,17 @@ class WireCompilerTest {
   }
 
   @Test
+  fun testOpaqueTypes() {
+    val sources = arrayOf("opaque_types.proto")
+    compileToKotlin(sources, "--opaque_types=squareup.protos.opaque_types.OuterOpaqueType.InnerOpaqueType1")
+
+    val outputs = arrayOf(
+      "squareup/protos/opaque_types/OuterOpaqueType.kt",
+    )
+    assertKotlinOutputs(outputs)
+  }
+
+  @Test
   fun testCustomOptionsNoOptions() {
     val sources = arrayOf("custom_options.proto", "option_redacted.proto")
     compileToJava(sources, "--excludes=google.protobuf.*")
