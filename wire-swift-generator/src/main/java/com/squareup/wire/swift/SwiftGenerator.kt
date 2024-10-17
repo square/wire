@@ -1363,6 +1363,9 @@ class SwiftGenerator private constructor(
             if (oneOf.documentation.isNotBlank()) {
               addDoc("%N\n", oneOf.documentation.sanitizeDoc())
             }
+            if (oneOf.fields.any { oneOfField -> isIndirect(type, oneOfField) }) {
+              addAttribute(AttributeSpec.builder(indirect).build())
+            }
           }
           .build(),
       )

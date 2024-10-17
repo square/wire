@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright (C) 2024 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,38 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-syntax = "proto2";
+import Foundation
+import Wire
+import XCTest
 
-message A {
-  optional B b = 1;
-  optional C c = 2;
+final class CyclesTests: XCTestCase {
+    func testOneOfFieldCycle() throws {
+        let f = F {
+            $0.action = .g(G())
+        }
 
-  // Should NOT be indirect!
-  repeated A repeated_a = 3;
+        let encoder = ProtoEncoder()
+        let data = try encoder.encode(f)
 
-  // Should NOT be indirect!
-  map<string, A> map_to_a = 4;
-}
+        let decoder = ProtoDecoder()
+        let decodedMessage = try decoder.decode(F.self, from: data)
 
-message B {
-  optional C c = 1;
-}
-
-message C {
-  optional D d = 1;
-}
-
-message D {
-  optional A a = 1;
-}
-
-message F {
-  oneof action {
-    G g = 1;
-    string s = 2;
-  }
-}
-
-message G {
-  optional F f = 1;
+        XCTAssertEqual(decodedMessage, f)
+    }
 }
