@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 @propertyWrapper
-public enum Indirect<Value : ProtoCodable> {
+public enum Indirect<Value> {
     // Dedicated .none case for nil means the runtime size of this case is equal to a single
     // pointer rather than the two for the .some case.
     case none
