@@ -25,6 +25,11 @@ kotlin {
       browser()
     }
   }
+  if (System.getProperty("kwasm", "true").toBoolean()) {
+    wasmJs {
+      browser()
+    }
+  }
   if (System.getProperty("knative", "true").toBoolean()) {
     iosX64()
     iosArm64()
@@ -66,6 +71,13 @@ kotlin {
       val jsTest by getting {
         dependencies {
           implementation(libs.kotlin.test.js)
+        }
+      }
+    }
+    if (System.getProperty("kwasm", "true").toBoolean()) {
+      val wasmJsTest by getting {
+        dependencies {
+          implementation(libs.kotlin.test.wasm.js)
         }
       }
     }
