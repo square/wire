@@ -47,7 +47,6 @@ class WirePluginTest {
   @Before
   fun setUp() {
     gradleRunner = GradleRunner.create()
-      .withPluginClasspath()
       // Ensure individual tests are isolated and not reusing each other's previous outputs
       // by setting project dir and gradle home directly.
       .withProjectDir(tmpFolder.newFolder("project-dir"))
@@ -58,6 +57,7 @@ class WirePluginTest {
         "--stacktrace",
         "--info",
         "--configuration-cache",
+        "-PwireVersion=$VERSION",
       )
       .withDebug(true)
   }
@@ -456,7 +456,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/project-dependencies-typesafe-accessor")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateMainProtos", "--stacktrace", "--info").build()
+      withArguments("generateMainProtos", "--stacktrace", "--info", "-PwireVersion=$VERSION").build()
     }
 
     assertThat(result.task(":dinosaurs:generateMainProtos")?.outcome)
@@ -646,7 +646,7 @@ class WirePluginTest {
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace", "--info").build()
+      withArguments("run", "--stacktrace", "--info", "-PwireVersion=$VERSION").build()
     }
 
     assertThat(result.task(":generateMainProtos")).isNotNull()
@@ -660,7 +660,7 @@ class WirePluginTest {
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace", "--info").build()
+      withArguments("run", "--stacktrace", "--info", "-PwireVersion=$VERSION").build()
     }
 
     assertThat(result.task(":generateMainProtos")).isNotNull()
@@ -674,7 +674,7 @@ class WirePluginTest {
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace", "--info").build()
+      withArguments("run", "--stacktrace", "--info", "-PwireVersion=$VERSION").build()
     }
 
     assertThat(result.task(":generateMainProtos")).isNotNull()
@@ -688,7 +688,7 @@ class WirePluginTest {
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace", "--info").build()
+      withArguments("run", "--stacktrace", "--info", "-PwireVersion=$VERSION").build()
     }
 
     assertThat(result.task(":generateMainProtos")).isNotNull()
@@ -701,7 +701,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/proto-library")
 
     gradleRunner.runFixture(fixtureRoot) {
-      withArguments("jar", "--stacktrace", "--info").build()
+      withArguments("jar", "--stacktrace", "--info", "-PwireVersion=$VERSION").build()
     }
 
     ZipFile(File(fixtureRoot, "build/libs/proto-library.jar")).use {
@@ -729,7 +729,7 @@ class WirePluginTest {
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace", "--info").build()
+      withArguments("run", "--stacktrace", "--info", "-PwireVersion=$VERSION").build()
     }
 
     assertThat(result.task(":generateMainProtos")).isNotNull()
@@ -973,6 +973,7 @@ class WirePluginTest {
         "-Dkjs=$kmpJsEnabled",
         "-Dknative=$kmpNativeEnabled",
         "--debug",
+        "-PwireVersion=$VERSION",
       ).build()
     }
 
@@ -1219,7 +1220,7 @@ class WirePluginTest {
     val geologyOutputRoot = File(fixtureRoot, "geology/build/generated/source/wire")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateMainProtos", "--stacktrace", "--info").build()
+      withArguments("generateMainProtos", "--stacktrace", "--info", "-PwireVersion=$VERSION").build()
     }
 
     assertThat(result.task(":dinosaurs:generateMainProtos")?.outcome)
@@ -1247,7 +1248,7 @@ class WirePluginTest {
 
     val fixtureRoot = File("src/test/projects/cache-relocation-1")
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
+      withArguments("generateProtos", "--build-cache", "--stacktrace", "--info", "-PwireVersion=$VERSION").build()
     }
 
     assertThat(result.task(":generateProtos")).isNotNull()
@@ -1261,7 +1262,7 @@ class WirePluginTest {
 
     val relocatedRoot = File("src/test/projects/cache-relocation-2")
     val relocatedResult = gradleRunner.runFixture(relocatedRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
+      withArguments("generateProtos", "--build-cache", "--stacktrace", "--info", "-PwireVersion=$VERSION").build()
     }
 
     assertThat(relocatedResult.task(":generateProtos")).isNotNull()
@@ -1284,7 +1285,7 @@ class WirePluginTest {
 
     val fixtureRoot = File("src/test/projects/cache-include-paths-1")
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--debug").build()
+      withArguments("generateProtos", "--build-cache", "--stacktrace", "--debug", "-PwireVersion=$VERSION").build()
     }
 
     assertThat(result.task(":generateProtos")).isNotNull()
@@ -1296,7 +1297,7 @@ class WirePluginTest {
     assertThat(buildCacheDir.exists()).isTrue()
 
     val cachedResult = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--debug").build()
+      withArguments("generateProtos", "--build-cache", "--stacktrace", "--debug", "-PwireVersion=$VERSION").build()
     }
 
     assertThat(cachedResult.task(":generateProtos")).isNotNull()
@@ -1320,7 +1321,7 @@ class WirePluginTest {
 
     val fixtureRoot = File("src/test/projects/cache-include-paths-1")
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
+      withArguments("generateProtos", "--build-cache", "--stacktrace", "--info", "-PwireVersion=$VERSION").build()
     }
 
     assertThat(result.task(":generateProtos")).isNotNull()
@@ -1336,7 +1337,7 @@ class WirePluginTest {
     // expect the new task to run again, without using the cache.
     val modifiedFixtureRoot = File("src/test/projects/cache-include-paths-2")
     val modifiedResult = gradleRunner.runFixture(modifiedFixtureRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--debug").build()
+      withArguments("generateProtos", "--build-cache", "--stacktrace", "--debug", "-PwireVersion=$VERSION").build()
     }
 
     assertThat(modifiedResult.task(":generateProtos")).isNotNull()
@@ -1355,7 +1356,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/configuration-cache-failure")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("clean", "generateMainProtos", "--stacktrace", "--info").build()
+      withArguments("clean", "generateMainProtos", "--stacktrace", "--info", "-PwireVersion=$VERSION").build()
     }
     assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
   }
@@ -1365,7 +1366,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/kotlinsourcesjar")
 
     gradleRunner.runFixture(fixtureRoot) {
-      withArguments("clean", "kotlinSourcesJar", "--stacktrace", "--info").build()
+      withArguments("clean", "kotlinSourcesJar", "--stacktrace", "--info", "-PwireVersion=$VERSION").build()
     }
 
     ZipFile(File(fixtureRoot, "build/libs/kotlinsourcesjar-sources.jar")).use {
@@ -1379,7 +1380,7 @@ class WirePluginTest {
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("clean", "generateMainProtos", "--stacktrace", "--info").build()
+      withArguments("clean", "generateMainProtos", "--stacktrace", "--info", "-PwireVersion=$VERSION").build()
     }
     assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
     assertThat(File(outputRoot, "Dinosaur.kt")).exists()
@@ -1391,12 +1392,33 @@ class WirePluginTest {
     action: GradleRunner.() -> BuildResult,
   ): BuildResult {
     var generatedSettings = false
-    val settings = File(root, "settings.gradle")
+    val settings = File(root, "settings.gradle.kts")
     var generatedGradleProperties = false
     val gradleProperties = File(root, "gradle.properties")
     return try {
       if (!settings.exists()) {
         settings.createNewFile()
+        settings.writeText(
+          """
+            |pluginManagement {
+            |  listOf(repositories, dependencyResolutionManagement.repositories).forEach {
+            |    it.apply {
+            |      mavenCentral()
+            |      maven {
+            |        url = uri(rootDir.resolve("../../../../../build/localMaven").absolutePath)
+            |      }
+            |    }
+            |  }
+            |}
+            |
+            |dependencyResolutionManagement {
+            |  versionCatalogs {
+            |    create("libs").from(files(rootDir.resolve("../../../../../gradle/libs.versions.toml").absolutePath))
+            |  }
+            |}
+            |
+          """.trimMargin(),
+        )
         generatedSettings = true
       }
 

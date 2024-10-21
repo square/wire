@@ -1,5 +1,5 @@
 plugins {
-  id 'com.squareup.wire'
+  id 'com.squareup.wire' version "$wireVersion"
 }
 
 wire{

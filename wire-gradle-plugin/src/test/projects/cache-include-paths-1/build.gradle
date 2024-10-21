@@ -1,6 +1,6 @@
 plugins {
-  id 'org.jetbrains.kotlin.jvm'
-  id 'com.squareup.wire'
+  id 'org.jetbrains.kotlin.jvm' version libs.versions.kotlin
+  id 'com.squareup.wire' version "$wireVersion"
 }
 
 // This file should be kept in sync with `cache-include-paths-2/build.gradle` with the exception of
