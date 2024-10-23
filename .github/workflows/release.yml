@@ -22,7 +22,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: 15.4.0
 
       # We set `SDKROOT` as a workaround for https://github.com/gradle/gradle/pull/29227
       - name: Upload Artifacts
@@ -55,6 +55,11 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 19
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 15.4.0
 
       - name: Set up Python
         uses: actions/setup-python@v5
