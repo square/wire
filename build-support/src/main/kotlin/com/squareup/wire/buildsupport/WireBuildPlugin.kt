@@ -178,7 +178,7 @@ class WireBuildPlugin : Plugin<Project> {
     plugins.withId("com.android.base") {
       val android = extensions.getByName("android") as BaseExtension
       android.apply {
-        compileSdkVersion(34)
+        compileSdkVersion(35)
         compileOptions {
           sourceCompatibility = JavaVersion.VERSION_1_8
           targetCompatibility = JavaVersion.VERSION_1_8
