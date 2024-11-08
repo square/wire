@@ -5,6 +5,7 @@ plugins {
 }
 
 library {
+  sourceCompatibility = SwiftVersion.SWIFT5
   dependencies {
     api(projects.wireRuntimeSwift)
   }

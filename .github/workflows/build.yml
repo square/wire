@@ -63,7 +63,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: 15.4.0
+          xcode-version: latest-stable
 
       # We set `SDKROOT` as a workaround for https://github.com/gradle/gradle/pull/29227
       - name: Check test files
@@ -129,7 +129,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: 15.4.0
+          xcode-version: latest-stable
 
       # We set `SDKROOT` as a workaround for https://github.com/gradle/gradle/pull/29227
       - name: Test Swift Runtime
@@ -206,7 +206,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: 15.4.0
+          xcode-version: latest-stable
 
       # We set `SDKROOT` as a workaround for https://github.com/gradle/gradle/pull/29227
       - name: Upload Artifacts
