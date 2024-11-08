@@ -42,8 +42,7 @@ public class NegativeValueMessage(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -69,13 +68,12 @@ public class NegativeValueMessage(
     return result.joinToString(prefix = "NegativeValueMessage{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(value_: NegativeValueEnum? = this.value_, unknownFields: ByteString =
-      this.unknownFields): NegativeValueMessage = NegativeValueMessage(value_, unknownFields)
+  public fun copy(value_: NegativeValueEnum? = this.value_, unknownFields: ByteString = this.unknownFields): NegativeValueMessage = NegativeValueMessage(value_, unknownFields)
 
   public companion object {
     @JvmField
-    public val ADAPTER: ProtoAdapter<NegativeValueMessage> = object :
-        ProtoAdapter<NegativeValueMessage>(
+    public val ADAPTER: ProtoAdapter<NegativeValueMessage> =
+        object : ProtoAdapter<NegativeValueMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
       NegativeValueMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.NegativeValueMessage", 

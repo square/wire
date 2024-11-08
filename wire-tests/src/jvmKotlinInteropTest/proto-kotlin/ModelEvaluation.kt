@@ -161,8 +161,8 @@ public class ModelEvaluation(
       null, 
       "recursive_map.proto"
     ) {
-      private val modelsAdapter: ProtoAdapter<Map<String, ModelEvaluation>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER) }
+      private val modelsAdapter: ProtoAdapter<Map<String, ModelEvaluation>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER) }
 
       override fun encodedSize(`value`: ModelEvaluation): Int {
         var size = value.unknownFields.size
@@ -215,7 +215,6 @@ public class ModelEvaluation(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): ModelEvaluation =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): ModelEvaluation = Builder().apply(body).build()
   }
 }

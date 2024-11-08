@@ -74,8 +74,7 @@ public class Mappy(
     return result.joinToString(prefix = "Mappy{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(things: Map<String, Thing> = this.things, unknownFields: ByteString =
-      this.unknownFields): Mappy = Mappy(things, unknownFields)
+  public fun copy(things: Map<String, Thing> = this.things, unknownFields: ByteString = this.unknownFields): Mappy = Mappy(things, unknownFields)
 
   public class Builder : Message.Builder<Mappy, Builder>() {
     @JvmField
@@ -102,8 +101,8 @@ public class Mappy(
       null, 
       "map.proto"
     ) {
-      private val thingsAdapter: ProtoAdapter<Map<String, Thing>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER) }
+      private val thingsAdapter: ProtoAdapter<Map<String, Thing>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER) }
 
       override fun encodedSize(`value`: Mappy): Int {
         var size = value.unknownFields.size

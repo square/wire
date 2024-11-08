@@ -64,8 +64,7 @@ public class BoxedOneOfs(
     return result.joinToString(prefix = "BoxedOneOfs{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(value_: OneOf<Value<*>, *>? = this.value_, unknownFields: ByteString =
-      this.unknownFields): BoxedOneOfs = BoxedOneOfs(value_, unknownFields)
+  public fun copy(value_: OneOf<Value<*>, *>? = this.value_, unknownFields: ByteString = this.unknownFields): BoxedOneOfs = BoxedOneOfs(value_, unknownFields)
 
   public class Builder : Message.Builder<BoxedOneOfs, Builder>() {
     @JvmField
@@ -144,18 +143,18 @@ public class BoxedOneOfs(
       )
     }
 
-    public val VALUE_FIRST_VALUE: Value<String> = Value<String>(tag = 1, adapter =
-        ProtoAdapter.STRING, declaredName = "first_value")
+    public val VALUE_FIRST_VALUE: Value<String> =
+        Value<String>(tag = 1, adapter = ProtoAdapter.STRING, declaredName = "first_value")
 
-    public val VALUE_SECOND_VALUE: Value<String> = Value<String>(tag = 2, adapter =
-        ProtoAdapter.STRING, declaredName = "second_value")
+    public val VALUE_SECOND_VALUE: Value<String> =
+        Value<String>(tag = 2, adapter = ProtoAdapter.STRING, declaredName = "second_value")
 
-    public val VALUE_VALUE: Value<String> = Value<String>(tag = 3, adapter = ProtoAdapter.STRING,
-        declaredName = "value")
+    public val VALUE_VALUE: Value<String> =
+        Value<String>(tag = 3, adapter = ProtoAdapter.STRING, declaredName = "value")
 
     @JvmStatic
-    public val VALUE__KEYS: Set<Value<*>> = setOf(VALUE_FIRST_VALUE, VALUE_SECOND_VALUE,
-        VALUE_VALUE)
+    public val VALUE__KEYS: Set<Value<*>> =
+        setOf(VALUE_FIRST_VALUE, VALUE_SECOND_VALUE, VALUE_VALUE)
 
     private const val serialVersionUID: Long = 0L
 

@@ -44,8 +44,7 @@ public class OptionalEnumUser(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -71,8 +70,7 @@ public class OptionalEnumUser(
     return result.joinToString(prefix = "OptionalEnumUser{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(optional_enum: OptionalEnum? = this.optional_enum, unknownFields: ByteString =
-      this.unknownFields): OptionalEnumUser = OptionalEnumUser(optional_enum, unknownFields)
+  public fun copy(optional_enum: OptionalEnum? = this.optional_enum, unknownFields: ByteString = this.unknownFields): OptionalEnumUser = OptionalEnumUser(optional_enum, unknownFields)
 
   public companion object {
     @JvmField

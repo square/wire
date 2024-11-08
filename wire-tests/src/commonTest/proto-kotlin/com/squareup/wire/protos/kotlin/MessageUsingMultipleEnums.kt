@@ -50,8 +50,7 @@ public class MessageUsingMultipleEnums(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -77,8 +76,7 @@ public class MessageUsingMultipleEnums(
     val result = mutableListOf<String>()
     if (a != null) result += """a=$a"""
     if (b != null) result += """b=$b"""
-    return result.joinToString(prefix = "MessageUsingMultipleEnums{", separator = ", ", postfix =
-        "}")
+    return result.joinToString(prefix = "MessageUsingMultipleEnums{", separator = ", ", postfix = "}")
   }
 
   public fun copy(
@@ -89,8 +87,8 @@ public class MessageUsingMultipleEnums(
 
   public companion object {
     @JvmField
-    public val ADAPTER: ProtoAdapter<MessageUsingMultipleEnums> = object :
-        ProtoAdapter<MessageUsingMultipleEnums>(
+    public val ADAPTER: ProtoAdapter<MessageUsingMultipleEnums> =
+        object : ProtoAdapter<MessageUsingMultipleEnums>(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageUsingMultipleEnums::class, 
       "type.googleapis.com/squareup.protos.kotlin.MessageUsingMultipleEnums", 
@@ -142,8 +140,7 @@ public class MessageUsingMultipleEnums(
         )
       }
 
-      override fun redact(`value`: MessageUsingMultipleEnums): MessageUsingMultipleEnums =
-          value.copy(
+      override fun redact(`value`: MessageUsingMultipleEnums): MessageUsingMultipleEnums = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

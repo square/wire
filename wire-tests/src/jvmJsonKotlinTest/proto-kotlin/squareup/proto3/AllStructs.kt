@@ -183,8 +183,8 @@ public class AllStructs(
     schemaIndex = 12,
   )
   @JvmField
-  public val rep_null_value: List<Nothing?> = immutableCopyOfStruct("rep_null_value",
-      rep_null_value)
+  public val rep_null_value: List<Nothing?> =
+      immutableCopyOfStruct("rep_null_value", rep_null_value)
 
   @field:WireField(
     tag = 201,
@@ -355,8 +355,7 @@ public class AllStructs(
     if (map_int32_struct.isNotEmpty()) result += """map_int32_struct=$map_int32_struct"""
     if (map_int32_list.isNotEmpty()) result += """map_int32_list=$map_int32_list"""
     if (map_int32_value_a.isNotEmpty()) result += """map_int32_value_a=$map_int32_value_a"""
-    if (map_int32_null_value.isNotEmpty()) result +=
-        """map_int32_null_value=$map_int32_null_value"""
+    if (map_int32_null_value.isNotEmpty()) result += """map_int32_null_value=$map_int32_null_value"""
     return result.joinToString(prefix = "AllStructs{", separator = ", ", postfix = "}")
   }
 
@@ -381,9 +380,7 @@ public class AllStructs(
     map_int32_value_a: Map<Int, Any?> = this.map_int32_value_a,
     map_int32_null_value: Map<Int, Nothing?> = this.map_int32_null_value,
     unknownFields: ByteString = this.unknownFields,
-  ): AllStructs = AllStructs(struct, list, null_value, value_a, value_b, value_c, value_d, value_e,
-      value_f, rep_struct, rep_list, rep_value_a, rep_null_value, oneof_struct, oneof_list,
-      map_int32_struct, map_int32_list, map_int32_value_a, map_int32_null_value, unknownFields)
+  ): AllStructs = AllStructs(struct, list, null_value, value_a, value_b, value_c, value_d, value_e, value_f, rep_struct, rep_list, rep_value_a, rep_null_value, oneof_struct, oneof_list, map_int32_struct, map_int32_list, map_int32_value_a, map_int32_null_value, unknownFields)
 
   public class Builder : Message.Builder<AllStructs, Builder>() {
     @JvmField
@@ -578,17 +575,17 @@ public class AllStructs(
       null, 
       "all_structs.proto"
     ) {
-      private val map_int32_structAdapter: ProtoAdapter<Map<Int, Map<String, *>?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_MAP) }
+      private val map_int32_structAdapter: ProtoAdapter<Map<Int, Map<String, *>?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_MAP) }
 
-      private val map_int32_listAdapter: ProtoAdapter<Map<Int, List<*>?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_LIST) }
+      private val map_int32_listAdapter: ProtoAdapter<Map<Int, List<*>?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_LIST) }
 
-      private val map_int32_value_aAdapter: ProtoAdapter<Map<Int, Any?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_VALUE) }
+      private val map_int32_value_aAdapter: ProtoAdapter<Map<Int, Any?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_VALUE) }
 
-      private val map_int32_null_valueAdapter: ProtoAdapter<Map<Int, Nothing?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_NULL) }
+      private val map_int32_null_valueAdapter: ProtoAdapter<Map<Int, Nothing?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_NULL) }
 
       override fun encodedSize(`value`: AllStructs): Int {
         var size = value.unknownFields.size

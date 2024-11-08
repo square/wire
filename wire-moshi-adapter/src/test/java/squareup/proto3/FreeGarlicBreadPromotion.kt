@@ -43,8 +43,7 @@ public class FreeGarlicBreadPromotion(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -67,18 +66,15 @@ public class FreeGarlicBreadPromotion(
   override fun toString(): String {
     val result = mutableListOf<String>()
     result += """is_extra_cheesey=$is_extra_cheesey"""
-    return result.joinToString(prefix = "FreeGarlicBreadPromotion{", separator = ", ", postfix =
-        "}")
+    return result.joinToString(prefix = "FreeGarlicBreadPromotion{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(is_extra_cheesey: Boolean = this.is_extra_cheesey, unknownFields: ByteString =
-      this.unknownFields): FreeGarlicBreadPromotion = FreeGarlicBreadPromotion(is_extra_cheesey,
-      unknownFields)
+  public fun copy(is_extra_cheesey: Boolean = this.is_extra_cheesey, unknownFields: ByteString = this.unknownFields): FreeGarlicBreadPromotion = FreeGarlicBreadPromotion(is_extra_cheesey, unknownFields)
 
   public companion object {
     @JvmField
-    public val ADAPTER: ProtoAdapter<FreeGarlicBreadPromotion> = object :
-        ProtoAdapter<FreeGarlicBreadPromotion>(
+    public val ADAPTER: ProtoAdapter<FreeGarlicBreadPromotion> =
+        object : ProtoAdapter<FreeGarlicBreadPromotion>(
       FieldEncoding.LENGTH_DELIMITED, 
       FreeGarlicBreadPromotion::class, 
       "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion", 

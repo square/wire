@@ -152,8 +152,7 @@ public class ExternalMessage(
     nested_message_ext: SimpleMessage.NestedMessage? = this.nested_message_ext,
     nested_enum_ext: SimpleMessage.NestedEnum? = this.nested_enum_ext,
     unknownFields: ByteString = this.unknownFields,
-  ): ExternalMessage = ExternalMessage(f, fooext, barext, bazext, nested_message_ext,
-      nested_enum_ext, unknownFields)
+  ): ExternalMessage = ExternalMessage(f, fooext, barext, bazext, nested_message_ext, nested_enum_ext, unknownFields)
 
   public class Builder : Message.Builder<ExternalMessage, Builder>() {
     @JvmField
@@ -234,8 +233,7 @@ public class ExternalMessage(
         size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(125, value.fooext)
         size += ProtoAdapter.INT32.encodedSizeWithTag(126, value.barext)
         size += ProtoAdapter.INT32.encodedSizeWithTag(127, value.bazext)
-        size += SimpleMessage.NestedMessage.ADAPTER.encodedSizeWithTag(128,
-            value.nested_message_ext)
+        size += SimpleMessage.NestedMessage.ADAPTER.encodedSizeWithTag(128, value.nested_message_ext)
         size += SimpleMessage.NestedEnum.ADAPTER.encodedSizeWithTag(129, value.nested_enum_ext)
         return size
       }
@@ -294,8 +292,7 @@ public class ExternalMessage(
       }
 
       override fun redact(`value`: ExternalMessage): ExternalMessage = value.copy(
-        nested_message_ext =
-            value.nested_message_ext?.let(SimpleMessage.NestedMessage.ADAPTER::redact),
+        nested_message_ext = value.nested_message_ext?.let(SimpleMessage.NestedMessage.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )
     }
@@ -303,7 +300,6 @@ public class ExternalMessage(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): ExternalMessage =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): ExternalMessage = Builder().apply(body).build()
   }
 }

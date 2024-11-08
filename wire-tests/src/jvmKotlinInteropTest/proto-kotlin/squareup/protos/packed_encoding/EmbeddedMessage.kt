@@ -47,8 +47,8 @@ public class EmbeddedMessage(
     schemaIndex = 0,
   )
   @JvmField
-  public val inner_repeated_number: List<Int> = immutableCopyOf("inner_repeated_number",
-      inner_repeated_number)
+  public val inner_repeated_number: List<Int> =
+      immutableCopyOf("inner_repeated_number", inner_repeated_number)
 
   override fun newBuilder(): Builder {
     val builder = Builder()
@@ -80,8 +80,7 @@ public class EmbeddedMessage(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (inner_repeated_number.isNotEmpty()) result +=
-        """inner_repeated_number=$inner_repeated_number"""
+    if (inner_repeated_number.isNotEmpty()) result += """inner_repeated_number=$inner_repeated_number"""
     if (inner_number_after != null) result += """inner_number_after=$inner_number_after"""
     return result.joinToString(prefix = "EmbeddedMessage{", separator = ", ", postfix = "}")
   }
@@ -180,7 +179,6 @@ public class EmbeddedMessage(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): EmbeddedMessage =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): EmbeddedMessage = Builder().apply(body).build()
   }
 }

@@ -208,8 +208,8 @@ public class KeywordKotlin(
       null, 
       "keyword_kotlin.proto"
     ) {
-      private val funAdapter: ProtoAdapter<Map<String, String>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
+      private val funAdapter: ProtoAdapter<Map<String, String>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
 
       override fun encodedSize(`value`: KeywordKotlin): Int {
         var size = value.unknownFields.size
@@ -306,8 +306,7 @@ public class KeywordKotlin(
         PROTO_2, 
         KeywordKotlinEnum.object_
       ) {
-        override fun fromValue(`value`: Int): KeywordKotlinEnum? =
-            KeywordKotlinEnum.fromValue(`value`)
+        override fun fromValue(`value`: Int): KeywordKotlinEnum? = KeywordKotlinEnum.fromValue(`value`)
       }
 
       @JvmStatic

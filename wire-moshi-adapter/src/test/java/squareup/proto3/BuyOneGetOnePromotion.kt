@@ -43,8 +43,7 @@ public class BuyOneGetOnePromotion(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -70,13 +69,12 @@ public class BuyOneGetOnePromotion(
     return result.joinToString(prefix = "BuyOneGetOnePromotion{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(coupon: String = this.coupon, unknownFields: ByteString = this.unknownFields):
-      BuyOneGetOnePromotion = BuyOneGetOnePromotion(coupon, unknownFields)
+  public fun copy(coupon: String = this.coupon, unknownFields: ByteString = this.unknownFields): BuyOneGetOnePromotion = BuyOneGetOnePromotion(coupon, unknownFields)
 
   public companion object {
     @JvmField
-    public val ADAPTER: ProtoAdapter<BuyOneGetOnePromotion> = object :
-        ProtoAdapter<BuyOneGetOnePromotion>(
+    public val ADAPTER: ProtoAdapter<BuyOneGetOnePromotion> =
+        object : ProtoAdapter<BuyOneGetOnePromotion>(
       FieldEncoding.LENGTH_DELIMITED, 
       BuyOneGetOnePromotion::class, 
       "type.googleapis.com/squareup.proto3.BuyOneGetOnePromotion", 

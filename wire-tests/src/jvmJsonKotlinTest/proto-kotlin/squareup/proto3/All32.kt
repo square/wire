@@ -254,8 +254,8 @@ public class All32(
     schemaIndex = 20,
   )
   @JvmField
-  public val map_int32_fixed32: Map<Int, Int> = immutableCopyOf("map_int32_fixed32",
-      map_int32_fixed32)
+  public val map_int32_fixed32: Map<Int, Int> =
+      immutableCopyOf("map_int32_fixed32", map_int32_fixed32)
 
   @field:WireField(
     tag = 505,
@@ -265,8 +265,8 @@ public class All32(
     schemaIndex = 21,
   )
   @JvmField
-  public val map_int32_sfixed32: Map<Int, Int> = immutableCopyOf("map_int32_sfixed32",
-      map_int32_sfixed32)
+  public val map_int32_sfixed32: Map<Int, Int> =
+      immutableCopyOf("map_int32_sfixed32", map_int32_sfixed32)
 
   init {
     require(countNonNull(oneof_int32, oneof_sfixed32) <= 1) {
@@ -413,10 +413,7 @@ public class All32(
     map_int32_fixed32: Map<Int, Int> = this.map_int32_fixed32,
     map_int32_sfixed32: Map<Int, Int> = this.map_int32_sfixed32,
     unknownFields: ByteString = this.unknownFields,
-  ): All32 = All32(my_int32, my_uint32, my_sint32, my_fixed32, my_sfixed32, rep_int32, rep_uint32,
-      rep_sint32, rep_fixed32, rep_sfixed32, pack_int32, pack_uint32, pack_sint32, pack_fixed32,
-      pack_sfixed32, oneof_int32, oneof_sfixed32, map_int32_int32, map_int32_uint32,
-      map_int32_sint32, map_int32_fixed32, map_int32_sfixed32, unknownFields)
+  ): All32 = All32(my_int32, my_uint32, my_sint32, my_fixed32, my_sfixed32, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, oneof_int32, oneof_sfixed32, map_int32_int32, map_int32_uint32, map_int32_sint32, map_int32_fixed32, map_int32_sfixed32, unknownFields)
 
   public class Builder : Message.Builder<All32, Builder>() {
     @JvmField
@@ -647,20 +644,20 @@ public class All32(
       null, 
       "all32.proto"
     ) {
-      private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
+      private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
 
-      private val map_int32_uint32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.UINT32) }
+      private val map_int32_uint32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.UINT32) }
 
-      private val map_int32_sint32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.SINT32) }
+      private val map_int32_sint32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.SINT32) }
 
-      private val map_int32_fixed32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.FIXED32) }
+      private val map_int32_fixed32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.FIXED32) }
 
-      private val map_int32_sfixed32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.SFIXED32) }
+      private val map_int32_sfixed32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.SFIXED32) }
 
       override fun encodedSize(`value`: All32): Int {
         var size = value.unknownFields.size

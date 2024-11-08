@@ -46,15 +46,14 @@ public class EmbeddedMessage(
     label = WireField.Label.PACKED,
     schemaIndex = 0,
   )
-  public val inner_repeated_number: List<Int> = immutableCopyOf("inner_repeated_number",
-      inner_repeated_number)
+  public val inner_repeated_number: List<Int> =
+      immutableCopyOf("inner_repeated_number", inner_repeated_number)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -78,8 +77,7 @@ public class EmbeddedMessage(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (inner_repeated_number.isNotEmpty()) result +=
-        """inner_repeated_number=$inner_repeated_number"""
+    if (inner_repeated_number.isNotEmpty()) result += """inner_repeated_number=$inner_repeated_number"""
     if (inner_number_after != null) result += """inner_number_after=$inner_number_after"""
     return result.joinToString(prefix = "EmbeddedMessage{", separator = ", ", postfix = "}")
   }

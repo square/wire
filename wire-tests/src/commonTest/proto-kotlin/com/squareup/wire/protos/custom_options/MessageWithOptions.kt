@@ -47,8 +47,7 @@ public class MessageWithOptions(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -61,13 +60,12 @@ public class MessageWithOptions(
 
   override fun toString(): String = "MessageWithOptions{}"
 
-  public fun copy(unknownFields: ByteString = this.unknownFields): MessageWithOptions =
-      MessageWithOptions(unknownFields)
+  public fun copy(unknownFields: ByteString = this.unknownFields): MessageWithOptions = MessageWithOptions(unknownFields)
 
   public companion object {
     @JvmField
-    public val ADAPTER: ProtoAdapter<MessageWithOptions> = object :
-        ProtoAdapter<MessageWithOptions>(
+    public val ADAPTER: ProtoAdapter<MessageWithOptions> =
+        object : ProtoAdapter<MessageWithOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageWithOptions::class, 
       "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions", 

@@ -215,8 +215,8 @@ public class AllWrappers(
     schemaIndex = 17,
   )
   @JvmField
-  public val rep_bytes_value: List<ByteString?> = immutableCopyOf("rep_bytes_value",
-      rep_bytes_value)
+  public val rep_bytes_value: List<ByteString?> =
+      immutableCopyOf("rep_bytes_value", rep_bytes_value)
 
   @field:WireField(
     tag = 301,
@@ -226,8 +226,8 @@ public class AllWrappers(
     schemaIndex = 18,
   )
   @JvmField
-  public val map_int32_double_value: Map<Int, Double?> = immutableCopyOf("map_int32_double_value",
-      map_int32_double_value)
+  public val map_int32_double_value: Map<Int, Double?> =
+      immutableCopyOf("map_int32_double_value", map_int32_double_value)
 
   @field:WireField(
     tag = 302,
@@ -237,8 +237,8 @@ public class AllWrappers(
     schemaIndex = 19,
   )
   @JvmField
-  public val map_int32_float_value: Map<Int, Float?> = immutableCopyOf("map_int32_float_value",
-      map_int32_float_value)
+  public val map_int32_float_value: Map<Int, Float?> =
+      immutableCopyOf("map_int32_float_value", map_int32_float_value)
 
   @field:WireField(
     tag = 303,
@@ -248,8 +248,8 @@ public class AllWrappers(
     schemaIndex = 20,
   )
   @JvmField
-  public val map_int32_int64_value: Map<Int, Long?> = immutableCopyOf("map_int32_int64_value",
-      map_int32_int64_value)
+  public val map_int32_int64_value: Map<Int, Long?> =
+      immutableCopyOf("map_int32_int64_value", map_int32_int64_value)
 
   @field:WireField(
     tag = 304,
@@ -259,8 +259,8 @@ public class AllWrappers(
     schemaIndex = 21,
   )
   @JvmField
-  public val map_int32_uint64_value: Map<Int, Long?> = immutableCopyOf("map_int32_uint64_value",
-      map_int32_uint64_value)
+  public val map_int32_uint64_value: Map<Int, Long?> =
+      immutableCopyOf("map_int32_uint64_value", map_int32_uint64_value)
 
   @field:WireField(
     tag = 305,
@@ -270,8 +270,8 @@ public class AllWrappers(
     schemaIndex = 22,
   )
   @JvmField
-  public val map_int32_int32_value: Map<Int, Int?> = immutableCopyOf("map_int32_int32_value",
-      map_int32_int32_value)
+  public val map_int32_int32_value: Map<Int, Int?> =
+      immutableCopyOf("map_int32_int32_value", map_int32_int32_value)
 
   @field:WireField(
     tag = 306,
@@ -281,8 +281,8 @@ public class AllWrappers(
     schemaIndex = 23,
   )
   @JvmField
-  public val map_int32_uint32_value: Map<Int, Int?> = immutableCopyOf("map_int32_uint32_value",
-      map_int32_uint32_value)
+  public val map_int32_uint32_value: Map<Int, Int?> =
+      immutableCopyOf("map_int32_uint32_value", map_int32_uint32_value)
 
   @field:WireField(
     tag = 307,
@@ -292,8 +292,8 @@ public class AllWrappers(
     schemaIndex = 24,
   )
   @JvmField
-  public val map_int32_bool_value: Map<Int, Boolean?> = immutableCopyOf("map_int32_bool_value",
-      map_int32_bool_value)
+  public val map_int32_bool_value: Map<Int, Boolean?> =
+      immutableCopyOf("map_int32_bool_value", map_int32_bool_value)
 
   @field:WireField(
     tag = 308,
@@ -303,8 +303,8 @@ public class AllWrappers(
     schemaIndex = 25,
   )
   @JvmField
-  public val map_int32_string_value: Map<Int, String?> = immutableCopyOf("map_int32_string_value",
-      map_int32_string_value)
+  public val map_int32_string_value: Map<Int, String?> =
+      immutableCopyOf("map_int32_string_value", map_int32_string_value)
 
   @field:WireField(
     tag = 309,
@@ -314,8 +314,8 @@ public class AllWrappers(
     schemaIndex = 26,
   )
   @JvmField
-  public val map_int32_bytes_value: Map<Int, ByteString?> = immutableCopyOf("map_int32_bytes_value",
-      map_int32_bytes_value)
+  public val map_int32_bytes_value: Map<Int, ByteString?> =
+      immutableCopyOf("map_int32_bytes_value", map_int32_bytes_value)
 
   override fun newBuilder(): Builder {
     val builder = Builder()
@@ -440,24 +440,15 @@ public class AllWrappers(
     if (rep_bool_value.isNotEmpty()) result += """rep_bool_value=$rep_bool_value"""
     if (rep_string_value.isNotEmpty()) result += """rep_string_value=$rep_string_value"""
     if (rep_bytes_value.isNotEmpty()) result += """rep_bytes_value=$rep_bytes_value"""
-    if (map_int32_double_value.isNotEmpty()) result +=
-        """map_int32_double_value=$map_int32_double_value"""
-    if (map_int32_float_value.isNotEmpty()) result +=
-        """map_int32_float_value=$map_int32_float_value"""
-    if (map_int32_int64_value.isNotEmpty()) result +=
-        """map_int32_int64_value=$map_int32_int64_value"""
-    if (map_int32_uint64_value.isNotEmpty()) result +=
-        """map_int32_uint64_value=$map_int32_uint64_value"""
-    if (map_int32_int32_value.isNotEmpty()) result +=
-        """map_int32_int32_value=$map_int32_int32_value"""
-    if (map_int32_uint32_value.isNotEmpty()) result +=
-        """map_int32_uint32_value=$map_int32_uint32_value"""
-    if (map_int32_bool_value.isNotEmpty()) result +=
-        """map_int32_bool_value=$map_int32_bool_value"""
-    if (map_int32_string_value.isNotEmpty()) result +=
-        """map_int32_string_value=$map_int32_string_value"""
-    if (map_int32_bytes_value.isNotEmpty()) result +=
-        """map_int32_bytes_value=$map_int32_bytes_value"""
+    if (map_int32_double_value.isNotEmpty()) result += """map_int32_double_value=$map_int32_double_value"""
+    if (map_int32_float_value.isNotEmpty()) result += """map_int32_float_value=$map_int32_float_value"""
+    if (map_int32_int64_value.isNotEmpty()) result += """map_int32_int64_value=$map_int32_int64_value"""
+    if (map_int32_uint64_value.isNotEmpty()) result += """map_int32_uint64_value=$map_int32_uint64_value"""
+    if (map_int32_int32_value.isNotEmpty()) result += """map_int32_int32_value=$map_int32_int32_value"""
+    if (map_int32_uint32_value.isNotEmpty()) result += """map_int32_uint32_value=$map_int32_uint32_value"""
+    if (map_int32_bool_value.isNotEmpty()) result += """map_int32_bool_value=$map_int32_bool_value"""
+    if (map_int32_string_value.isNotEmpty()) result += """map_int32_string_value=$map_int32_string_value"""
+    if (map_int32_bytes_value.isNotEmpty()) result += """map_int32_bytes_value=$map_int32_bytes_value"""
     return result.joinToString(prefix = "AllWrappers{", separator = ", ", postfix = "}")
   }
 
@@ -490,12 +481,7 @@ public class AllWrappers(
     map_int32_string_value: Map<Int, String?> = this.map_int32_string_value,
     map_int32_bytes_value: Map<Int, ByteString?> = this.map_int32_bytes_value,
     unknownFields: ByteString = this.unknownFields,
-  ): AllWrappers = AllWrappers(double_value, float_value, int64_value, uint64_value, int32_value,
-      uint32_value, bool_value, string_value, bytes_value, rep_double_value, rep_float_value,
-      rep_int64_value, rep_uint64_value, rep_int32_value, rep_uint32_value, rep_bool_value,
-      rep_string_value, rep_bytes_value, map_int32_double_value, map_int32_float_value,
-      map_int32_int64_value, map_int32_uint64_value, map_int32_int32_value, map_int32_uint32_value,
-      map_int32_bool_value, map_int32_string_value, map_int32_bytes_value, unknownFields)
+  ): AllWrappers = AllWrappers(double_value, float_value, int64_value, uint64_value, int32_value, uint32_value, bool_value, string_value, bytes_value, rep_double_value, rep_float_value, rep_int64_value, rep_uint64_value, rep_int32_value, rep_uint32_value, rep_bool_value, rep_string_value, rep_bytes_value, map_int32_double_value, map_int32_float_value, map_int32_int64_value, map_int32_uint64_value, map_int32_int32_value, map_int32_uint32_value, map_int32_bool_value, map_int32_string_value, map_int32_bytes_value, unknownFields)
 
   public class Builder : Message.Builder<AllWrappers, Builder>() {
     @JvmField
@@ -765,32 +751,32 @@ public class AllWrappers(
       null, 
       "all_wrappers.proto"
     ) {
-      private val map_int32_double_valueAdapter: ProtoAdapter<Map<Int, Double?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.DOUBLE_VALUE) }
+      private val map_int32_double_valueAdapter: ProtoAdapter<Map<Int, Double?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.DOUBLE_VALUE) }
 
-      private val map_int32_float_valueAdapter: ProtoAdapter<Map<Int, Float?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.FLOAT_VALUE) }
+      private val map_int32_float_valueAdapter: ProtoAdapter<Map<Int, Float?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.FLOAT_VALUE) }
 
-      private val map_int32_int64_valueAdapter: ProtoAdapter<Map<Int, Long?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT64_VALUE) }
+      private val map_int32_int64_valueAdapter: ProtoAdapter<Map<Int, Long?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT64_VALUE) }
 
-      private val map_int32_uint64_valueAdapter: ProtoAdapter<Map<Int, Long?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.UINT64_VALUE) }
+      private val map_int32_uint64_valueAdapter: ProtoAdapter<Map<Int, Long?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.UINT64_VALUE) }
 
-      private val map_int32_int32_valueAdapter: ProtoAdapter<Map<Int, Int?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32_VALUE) }
+      private val map_int32_int32_valueAdapter: ProtoAdapter<Map<Int, Int?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32_VALUE) }
 
-      private val map_int32_uint32_valueAdapter: ProtoAdapter<Map<Int, Int?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.UINT32_VALUE) }
+      private val map_int32_uint32_valueAdapter: ProtoAdapter<Map<Int, Int?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.UINT32_VALUE) }
 
-      private val map_int32_bool_valueAdapter: ProtoAdapter<Map<Int, Boolean?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.BOOL_VALUE) }
+      private val map_int32_bool_valueAdapter: ProtoAdapter<Map<Int, Boolean?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.BOOL_VALUE) }
 
-      private val map_int32_string_valueAdapter: ProtoAdapter<Map<Int, String?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRING_VALUE) }
+      private val map_int32_string_valueAdapter: ProtoAdapter<Map<Int, String?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRING_VALUE) }
 
-      private val map_int32_bytes_valueAdapter: ProtoAdapter<Map<Int, ByteString?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.BYTES_VALUE) }
+      private val map_int32_bytes_valueAdapter: ProtoAdapter<Map<Int, ByteString?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.BYTES_VALUE) }
 
       override fun encodedSize(`value`: AllWrappers): Int {
         var size = value.unknownFields.size
@@ -821,18 +807,14 @@ public class AllWrappers(
         if (value.bytes_value != null) {
           size += ProtoAdapter.BYTES_VALUE.encodedSizeWithTag(9, value.bytes_value)
         }
-        size += ProtoAdapter.DOUBLE_VALUE.asRepeated().encodedSizeWithTag(101,
-            value.rep_double_value)
+        size += ProtoAdapter.DOUBLE_VALUE.asRepeated().encodedSizeWithTag(101, value.rep_double_value)
         size += ProtoAdapter.FLOAT_VALUE.asRepeated().encodedSizeWithTag(102, value.rep_float_value)
         size += ProtoAdapter.INT64_VALUE.asRepeated().encodedSizeWithTag(103, value.rep_int64_value)
-        size += ProtoAdapter.UINT64_VALUE.asRepeated().encodedSizeWithTag(104,
-            value.rep_uint64_value)
+        size += ProtoAdapter.UINT64_VALUE.asRepeated().encodedSizeWithTag(104, value.rep_uint64_value)
         size += ProtoAdapter.INT32_VALUE.asRepeated().encodedSizeWithTag(105, value.rep_int32_value)
-        size += ProtoAdapter.UINT32_VALUE.asRepeated().encodedSizeWithTag(106,
-            value.rep_uint32_value)
+        size += ProtoAdapter.UINT32_VALUE.asRepeated().encodedSizeWithTag(106, value.rep_uint32_value)
         size += ProtoAdapter.BOOL_VALUE.asRepeated().encodedSizeWithTag(107, value.rep_bool_value)
-        size += ProtoAdapter.STRING_VALUE.asRepeated().encodedSizeWithTag(108,
-            value.rep_string_value)
+        size += ProtoAdapter.STRING_VALUE.asRepeated().encodedSizeWithTag(108, value.rep_string_value)
         size += ProtoAdapter.BYTES_VALUE.asRepeated().encodedSizeWithTag(109, value.rep_bytes_value)
         size += map_int32_double_valueAdapter.encodedSizeWithTag(301, value.map_int32_double_value)
         size += map_int32_float_valueAdapter.encodedSizeWithTag(302, value.map_int32_float_value)
@@ -1055,23 +1037,15 @@ public class AllWrappers(
         rep_bool_value = value.rep_bool_value.redactElements(ProtoAdapter.BOOL_VALUE),
         rep_string_value = value.rep_string_value.redactElements(ProtoAdapter.STRING_VALUE),
         rep_bytes_value = value.rep_bytes_value.redactElements(ProtoAdapter.BYTES_VALUE),
-        map_int32_double_value =
-            value.map_int32_double_value.redactElements(ProtoAdapter.DOUBLE_VALUE),
-        map_int32_float_value =
-            value.map_int32_float_value.redactElements(ProtoAdapter.FLOAT_VALUE),
-        map_int32_int64_value =
-            value.map_int32_int64_value.redactElements(ProtoAdapter.INT64_VALUE),
-        map_int32_uint64_value =
-            value.map_int32_uint64_value.redactElements(ProtoAdapter.UINT64_VALUE),
-        map_int32_int32_value =
-            value.map_int32_int32_value.redactElements(ProtoAdapter.INT32_VALUE),
-        map_int32_uint32_value =
-            value.map_int32_uint32_value.redactElements(ProtoAdapter.UINT32_VALUE),
+        map_int32_double_value = value.map_int32_double_value.redactElements(ProtoAdapter.DOUBLE_VALUE),
+        map_int32_float_value = value.map_int32_float_value.redactElements(ProtoAdapter.FLOAT_VALUE),
+        map_int32_int64_value = value.map_int32_int64_value.redactElements(ProtoAdapter.INT64_VALUE),
+        map_int32_uint64_value = value.map_int32_uint64_value.redactElements(ProtoAdapter.UINT64_VALUE),
+        map_int32_int32_value = value.map_int32_int32_value.redactElements(ProtoAdapter.INT32_VALUE),
+        map_int32_uint32_value = value.map_int32_uint32_value.redactElements(ProtoAdapter.UINT32_VALUE),
         map_int32_bool_value = value.map_int32_bool_value.redactElements(ProtoAdapter.BOOL_VALUE),
-        map_int32_string_value =
-            value.map_int32_string_value.redactElements(ProtoAdapter.STRING_VALUE),
-        map_int32_bytes_value =
-            value.map_int32_bytes_value.redactElements(ProtoAdapter.BYTES_VALUE),
+        map_int32_string_value = value.map_int32_string_value.redactElements(ProtoAdapter.STRING_VALUE),
+        map_int32_bytes_value = value.map_int32_bytes_value.redactElements(ProtoAdapter.BYTES_VALUE),
         unknownFields = ByteString.EMPTY
       )
     }

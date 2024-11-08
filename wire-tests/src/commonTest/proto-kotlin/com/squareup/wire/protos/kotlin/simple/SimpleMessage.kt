@@ -159,8 +159,7 @@ public class SimpleMessage(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other_: Any?): Boolean {
     if (other_ === this) return true
@@ -211,8 +210,7 @@ public class SimpleMessage(
     result_ += """required_int32=$required_int32"""
     if (repeated_double.isNotEmpty()) result_ += """repeated_double=$repeated_double"""
     if (default_foreign_enum != null) result_ += """default_foreign_enum=$default_foreign_enum"""
-    if (no_default_foreign_enum != null) result_ +=
-        """no_default_foreign_enum=$no_default_foreign_enum"""
+    if (no_default_foreign_enum != null) result_ += """no_default_foreign_enum=$no_default_foreign_enum"""
     if (package_ != null) result_ += """package_=${sanitize(package_)}"""
     if (result != null) result_ += """result=${sanitize(result)}"""
     if (other != null) result_ += """other=${sanitize(other)}"""
@@ -234,9 +232,7 @@ public class SimpleMessage(
     other: String? = this.other,
     o: String? = this.o,
     unknownFields: ByteString = this.unknownFields,
-  ): SimpleMessage = SimpleMessage(optional_int32, optional_nested_msg, optional_external_msg,
-      default_nested_enum, required_int32, repeated_double, default_foreign_enum,
-      no_default_foreign_enum, package_, result, other, o, unknownFields)
+  ): SimpleMessage = SimpleMessage(optional_int32, optional_nested_msg, optional_external_msg, default_nested_enum, required_int32, repeated_double, default_foreign_enum, no_default_foreign_enum, package_, result, other, o, unknownFields)
 
   public companion object {
     public const val DEFAULT_OPTIONAL_INT32: Int = 123
@@ -354,8 +350,7 @@ public class SimpleMessage(
           optional_nested_msg = optional_nested_msg,
           optional_external_msg = optional_external_msg,
           default_nested_enum = default_nested_enum,
-          required_int32 = required_int32 ?: throw missingRequiredFields(required_int32,
-              "required_int32"),
+          required_int32 = required_int32 ?: throw missingRequiredFields(required_int32, "required_int32"),
           repeated_double = repeated_double,
           default_foreign_enum = default_foreign_enum,
           no_default_foreign_enum = no_default_foreign_enum,
@@ -393,8 +388,7 @@ public class SimpleMessage(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN,
     )
-    override fun newBuilder(): Nothing = throw
-        AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+    override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -420,8 +414,7 @@ public class SimpleMessage(
       return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
     }
 
-    public fun copy(bb: Int? = this.bb, unknownFields: ByteString = this.unknownFields):
-        NestedMessage = NestedMessage(bb, unknownFields)
+    public fun copy(bb: Int? = this.bb, unknownFields: ByteString = this.unknownFields): NestedMessage = NestedMessage(bb, unknownFields)
 
     public companion object {
       @JvmField

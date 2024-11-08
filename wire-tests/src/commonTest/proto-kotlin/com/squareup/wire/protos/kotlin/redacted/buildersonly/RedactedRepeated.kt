@@ -178,7 +178,6 @@ public class RedactedRepeated private constructor(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): RedactedRepeated =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): RedactedRepeated = Builder().apply(body).build()
   }
 }

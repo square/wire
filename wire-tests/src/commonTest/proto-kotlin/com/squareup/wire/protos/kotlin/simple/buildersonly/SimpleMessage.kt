@@ -61,8 +61,7 @@ public class SimpleMessage private constructor(
   @Deprecated(message = "optional_nested_msg is deprecated")
   @field:WireField(
     tag = 2,
-    adapter =
-        "com.squareup.wire.protos.kotlin.simple.buildersonly.SimpleMessage${'$'}NestedMessage#ADAPTER",
+    adapter = "com.squareup.wire.protos.kotlin.simple.buildersonly.SimpleMessage${'$'}NestedMessage#ADAPTER",
     schemaIndex = 1,
   )
   @JvmField
@@ -81,8 +80,7 @@ public class SimpleMessage private constructor(
 
   @field:WireField(
     tag = 4,
-    adapter =
-        "com.squareup.wire.protos.kotlin.simple.buildersonly.SimpleMessage${'$'}NestedEnum#ADAPTER",
+    adapter = "com.squareup.wire.protos.kotlin.simple.buildersonly.SimpleMessage${'$'}NestedEnum#ADAPTER",
     schemaIndex = 3,
   )
   @JvmField
@@ -111,8 +109,8 @@ public class SimpleMessage private constructor(
     schemaIndex = 5,
   )
   @JvmField
-  public val repeated_double: List<Double> = immutableCopyOf("repeated_double",
-      builder.repeated_double)
+  public val repeated_double: List<Double> =
+      immutableCopyOf("repeated_double", builder.repeated_double)
 
   /**
    * enum from another package with an explicit default
@@ -248,8 +246,7 @@ public class SimpleMessage private constructor(
     result_ += """required_int32=$required_int32"""
     if (repeated_double.isNotEmpty()) result_ += """repeated_double=$repeated_double"""
     if (default_foreign_enum != null) result_ += """default_foreign_enum=$default_foreign_enum"""
-    if (no_default_foreign_enum != null) result_ +=
-        """no_default_foreign_enum=$no_default_foreign_enum"""
+    if (no_default_foreign_enum != null) result_ += """no_default_foreign_enum=$no_default_foreign_enum"""
     if (package_ != null) result_ += """package_=${sanitize(package_)}"""
     if (result != null) result_ += """result=${sanitize(result)}"""
     if (other != null) result_ += """other=${sanitize(other)}"""
@@ -631,8 +628,7 @@ public class SimpleMessage private constructor(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): NestedMessage =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): NestedMessage = Builder().apply(body).build()
     }
   }
 

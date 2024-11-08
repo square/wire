@@ -179,17 +179,17 @@ public class MappyTwo(
       null, 
       "map.proto"
     ) {
-      private val string_enumsAdapter: ProtoAdapter<Map<String, ValueEnum>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ValueEnum.ADAPTER) }
+      private val string_enumsAdapter: ProtoAdapter<Map<String, ValueEnum>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ValueEnum.ADAPTER) }
 
-      private val int_thingsAdapter: ProtoAdapter<Map<Long, Thing>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.SINT64, Thing.ADAPTER) }
+      private val int_thingsAdapter: ProtoAdapter<Map<Long, Thing>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.SINT64, Thing.ADAPTER) }
 
-      private val string_intsAdapter: ProtoAdapter<Map<String, Long>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.SINT64) }
+      private val string_intsAdapter: ProtoAdapter<Map<String, Long>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.SINT64) }
 
-      private val int_things_twoAdapter: ProtoAdapter<Map<Int, Thing>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.SINT32, Thing.ADAPTER) }
+      private val int_things_twoAdapter: ProtoAdapter<Map<Int, Thing>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.SINT32, Thing.ADAPTER) }
 
       override fun encodedSize(`value`: MappyTwo): Int {
         var size = value.unknownFields.size

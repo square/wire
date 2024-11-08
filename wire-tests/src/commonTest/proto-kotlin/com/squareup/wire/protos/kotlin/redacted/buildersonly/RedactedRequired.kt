@@ -127,14 +127,12 @@ public class RedactedRequired private constructor(
         )
       }
 
-      override fun redact(`value`: RedactedRequired): RedactedRequired = throw
-          UnsupportedOperationException("Field 'a' is required and cannot be redacted.")
+      override fun redact(`value`: RedactedRequired): RedactedRequired = throw UnsupportedOperationException("Field 'a' is required and cannot be redacted.")
     }
 
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): RedactedRequired =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): RedactedRequired = Builder().apply(body).build()
   }
 }

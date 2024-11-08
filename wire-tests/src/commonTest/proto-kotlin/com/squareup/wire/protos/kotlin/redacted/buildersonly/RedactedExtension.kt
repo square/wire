@@ -160,7 +160,6 @@ public class RedactedExtension private constructor(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): RedactedExtension =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): RedactedExtension = Builder().apply(body).build()
   }
 }

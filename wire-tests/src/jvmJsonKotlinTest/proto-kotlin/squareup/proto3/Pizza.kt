@@ -74,8 +74,7 @@ public class Pizza(
     return result.joinToString(prefix = "Pizza{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(toppings: List<String> = this.toppings, unknownFields: ByteString =
-      this.unknownFields): Pizza = Pizza(toppings, unknownFields)
+  public fun copy(toppings: List<String> = this.toppings, unknownFields: ByteString = this.unknownFields): Pizza = Pizza(toppings, unknownFields)
 
   public class Builder : Message.Builder<Pizza, Builder>() {
     @JvmField

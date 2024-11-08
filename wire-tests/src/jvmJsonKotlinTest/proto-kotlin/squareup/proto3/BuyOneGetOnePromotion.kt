@@ -69,8 +69,7 @@ public class BuyOneGetOnePromotion(
     return result.joinToString(prefix = "BuyOneGetOnePromotion{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(coupon: String = this.coupon, unknownFields: ByteString = this.unknownFields):
-      BuyOneGetOnePromotion = BuyOneGetOnePromotion(coupon, unknownFields)
+  public fun copy(coupon: String = this.coupon, unknownFields: ByteString = this.unknownFields): BuyOneGetOnePromotion = BuyOneGetOnePromotion(coupon, unknownFields)
 
   public class Builder : Message.Builder<BuyOneGetOnePromotion, Builder>() {
     @JvmField
@@ -89,8 +88,8 @@ public class BuyOneGetOnePromotion(
 
   public companion object {
     @JvmField
-    public val ADAPTER: ProtoAdapter<BuyOneGetOnePromotion> = object :
-        ProtoAdapter<BuyOneGetOnePromotion>(
+    public val ADAPTER: ProtoAdapter<BuyOneGetOnePromotion> =
+        object : ProtoAdapter<BuyOneGetOnePromotion>(
       FieldEncoding.LENGTH_DELIMITED, 
       BuyOneGetOnePromotion::class, 
       "type.googleapis.com/squareup.proto3.BuyOneGetOnePromotion", 
@@ -142,7 +141,6 @@ public class BuyOneGetOnePromotion(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): BuyOneGetOnePromotion =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): BuyOneGetOnePromotion = Builder().apply(body).build()
   }
 }

@@ -234,8 +234,7 @@ public class SimpleMessage(
     result_ += """required_int32=$required_int32"""
     if (repeated_double.isNotEmpty()) result_ += """repeated_double=$repeated_double"""
     if (default_foreign_enum != null) result_ += """default_foreign_enum=$default_foreign_enum"""
-    if (no_default_foreign_enum != null) result_ +=
-        """no_default_foreign_enum=$no_default_foreign_enum"""
+    if (no_default_foreign_enum != null) result_ += """no_default_foreign_enum=$no_default_foreign_enum"""
     if (package_ != null) result_ += """package_=${sanitize(package_)}"""
     if (result != null) result_ += """result=${sanitize(result)}"""
     if (other != null) result_ += """other=${sanitize(other)}"""
@@ -257,9 +256,7 @@ public class SimpleMessage(
     other: String? = this.other,
     o: String? = this.o,
     unknownFields: ByteString = this.unknownFields,
-  ): SimpleMessage = SimpleMessage(optional_int32, optional_nested_msg, optional_external_msg,
-      default_nested_enum, required_int32, repeated_double, default_foreign_enum,
-      no_default_foreign_enum, package_, result, other, o, unknownFields)
+  ): SimpleMessage = SimpleMessage(optional_int32, optional_nested_msg, optional_external_msg, default_nested_enum, required_int32, repeated_double, default_foreign_enum, no_default_foreign_enum, package_, result, other, o, unknownFields)
 
   public class Builder : Message.Builder<SimpleMessage, Builder>() {
     @JvmField
@@ -399,8 +396,7 @@ public class SimpleMessage(
       optional_nested_msg = optional_nested_msg,
       optional_external_msg = optional_external_msg,
       default_nested_enum = default_nested_enum,
-      required_int32 = required_int32 ?: throw missingRequiredFields(required_int32,
-          "required_int32"),
+      required_int32 = required_int32 ?: throw missingRequiredFields(required_int32, "required_int32"),
       repeated_double = repeated_double,
       default_foreign_enum = default_foreign_enum,
       no_default_foreign_enum = no_default_foreign_enum,
@@ -528,8 +524,7 @@ public class SimpleMessage(
           optional_nested_msg = optional_nested_msg,
           optional_external_msg = optional_external_msg,
           default_nested_enum = default_nested_enum,
-          required_int32 = required_int32 ?: throw missingRequiredFields(required_int32,
-              "required_int32"),
+          required_int32 = required_int32 ?: throw missingRequiredFields(required_int32, "required_int32"),
           repeated_double = repeated_double,
           default_foreign_enum = default_foreign_enum,
           no_default_foreign_enum = no_default_foreign_enum,
@@ -598,8 +593,7 @@ public class SimpleMessage(
       return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
     }
 
-    public fun copy(bb: Int? = this.bb, unknownFields: ByteString = this.unknownFields):
-        NestedMessage = NestedMessage(bb, unknownFields)
+    public fun copy(bb: Int? = this.bb, unknownFields: ByteString = this.unknownFields): NestedMessage = NestedMessage(bb, unknownFields)
 
     public class Builder : Message.Builder<NestedMessage, Builder>() {
       @JvmField
@@ -667,8 +661,7 @@ public class SimpleMessage(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): NestedMessage =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): NestedMessage = Builder().apply(body).build()
     }
   }
 

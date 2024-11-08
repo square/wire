@@ -45,8 +45,7 @@ public class VeryLongProtoNameCausingBrokenLineBreaks(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -69,18 +68,15 @@ public class VeryLongProtoNameCausingBrokenLineBreaks(
   override fun toString(): String {
     val result = mutableListOf<String>()
     if (foo != null) result += """foo=${sanitize(foo)}"""
-    return result.joinToString(prefix = "VeryLongProtoNameCausingBrokenLineBreaks{", separator =
-        ", ", postfix = "}")
+    return result.joinToString(prefix = "VeryLongProtoNameCausingBrokenLineBreaks{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(foo: String? = this.foo, unknownFields: ByteString = this.unknownFields):
-      VeryLongProtoNameCausingBrokenLineBreaks = VeryLongProtoNameCausingBrokenLineBreaks(foo,
-      unknownFields)
+  public fun copy(foo: String? = this.foo, unknownFields: ByteString = this.unknownFields): VeryLongProtoNameCausingBrokenLineBreaks = VeryLongProtoNameCausingBrokenLineBreaks(foo, unknownFields)
 
   public companion object {
     @JvmField
-    public val ADAPTER: ProtoAdapter<VeryLongProtoNameCausingBrokenLineBreaks> = object :
-        ProtoAdapter<VeryLongProtoNameCausingBrokenLineBreaks>(
+    public val ADAPTER: ProtoAdapter<VeryLongProtoNameCausingBrokenLineBreaks> =
+        object : ProtoAdapter<VeryLongProtoNameCausingBrokenLineBreaks>(
       FieldEncoding.LENGTH_DELIMITED, 
       VeryLongProtoNameCausingBrokenLineBreaks::class, 
       "type.googleapis.com/squareup.protos.tostring.VeryLongProtoNameCausingBrokenLineBreaks", 
@@ -99,8 +95,7 @@ public class VeryLongProtoNameCausingBrokenLineBreaks(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun encode(writer: ReverseProtoWriter,
-          `value`: VeryLongProtoNameCausingBrokenLineBreaks) {
+      override fun encode(writer: ReverseProtoWriter, `value`: VeryLongProtoNameCausingBrokenLineBreaks) {
         writer.writeBytes(value.unknownFields)
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
       }
@@ -119,8 +114,7 @@ public class VeryLongProtoNameCausingBrokenLineBreaks(
         )
       }
 
-      override fun redact(`value`: VeryLongProtoNameCausingBrokenLineBreaks):
-          VeryLongProtoNameCausingBrokenLineBreaks = value.copy(
+      override fun redact(`value`: VeryLongProtoNameCausingBrokenLineBreaks): VeryLongProtoNameCausingBrokenLineBreaks = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

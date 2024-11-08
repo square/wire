@@ -48,8 +48,7 @@ public class Mappy(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -75,8 +74,7 @@ public class Mappy(
     return result.joinToString(prefix = "Mappy{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(things: Map<String, Thing> = this.things, unknownFields: ByteString =
-      this.unknownFields): Mappy = Mappy(things, unknownFields)
+  public fun copy(things: Map<String, Thing> = this.things, unknownFields: ByteString = this.unknownFields): Mappy = Mappy(things, unknownFields)
 
   public companion object {
     @JvmField
@@ -88,8 +86,8 @@ public class Mappy(
       null, 
       "map.proto"
     ) {
-      private val thingsAdapter: ProtoAdapter<Map<String, Thing>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER) }
+      private val thingsAdapter: ProtoAdapter<Map<String, Thing>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER) }
 
       override fun encodedSize(`value`: Mappy): Int {
         var size = value.unknownFields.size

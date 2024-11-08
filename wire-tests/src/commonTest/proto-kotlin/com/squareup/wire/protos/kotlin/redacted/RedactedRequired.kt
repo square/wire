@@ -45,8 +45,7 @@ public class RedactedRequired(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -72,8 +71,7 @@ public class RedactedRequired(
     return result.joinToString(prefix = "RedactedRequired{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(a: String = this.a, unknownFields: ByteString = this.unknownFields):
-      RedactedRequired = RedactedRequired(a, unknownFields)
+  public fun copy(a: String = this.a, unknownFields: ByteString = this.unknownFields): RedactedRequired = RedactedRequired(a, unknownFields)
 
   public companion object {
     @JvmField
@@ -115,8 +113,7 @@ public class RedactedRequired(
         )
       }
 
-      override fun redact(`value`: RedactedRequired): RedactedRequired = throw
-          UnsupportedOperationException("Field 'a' is required and cannot be redacted.")
+      override fun redact(`value`: RedactedRequired): RedactedRequired = throw UnsupportedOperationException("Field 'a' is required and cannot be redacted.")
     }
 
     private const val serialVersionUID: Long = 0L

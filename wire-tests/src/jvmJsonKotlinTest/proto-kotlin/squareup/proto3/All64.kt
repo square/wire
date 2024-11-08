@@ -234,8 +234,8 @@ public class All64(
     schemaIndex = 18,
   )
   @JvmField
-  public val map_int64_uint64: Map<Long, Long> = immutableCopyOf("map_int64_uint64",
-      map_int64_uint64)
+  public val map_int64_uint64: Map<Long, Long> =
+      immutableCopyOf("map_int64_uint64", map_int64_uint64)
 
   @field:WireField(
     tag = 503,
@@ -245,8 +245,8 @@ public class All64(
     schemaIndex = 19,
   )
   @JvmField
-  public val map_int64_sint64: Map<Long, Long> = immutableCopyOf("map_int64_sint64",
-      map_int64_sint64)
+  public val map_int64_sint64: Map<Long, Long> =
+      immutableCopyOf("map_int64_sint64", map_int64_sint64)
 
   @field:WireField(
     tag = 504,
@@ -256,8 +256,8 @@ public class All64(
     schemaIndex = 20,
   )
   @JvmField
-  public val map_int64_fixed64: Map<Long, Long> = immutableCopyOf("map_int64_fixed64",
-      map_int64_fixed64)
+  public val map_int64_fixed64: Map<Long, Long> =
+      immutableCopyOf("map_int64_fixed64", map_int64_fixed64)
 
   @field:WireField(
     tag = 505,
@@ -267,8 +267,8 @@ public class All64(
     schemaIndex = 21,
   )
   @JvmField
-  public val map_int64_sfixed64: Map<Long, Long> = immutableCopyOf("map_int64_sfixed64",
-      map_int64_sfixed64)
+  public val map_int64_sfixed64: Map<Long, Long> =
+      immutableCopyOf("map_int64_sfixed64", map_int64_sfixed64)
 
   init {
     require(countNonNull(oneof_int64, oneof_sfixed64) <= 1) {
@@ -415,10 +415,7 @@ public class All64(
     map_int64_fixed64: Map<Long, Long> = this.map_int64_fixed64,
     map_int64_sfixed64: Map<Long, Long> = this.map_int64_sfixed64,
     unknownFields: ByteString = this.unknownFields,
-  ): All64 = All64(my_int64, my_uint64, my_sint64, my_fixed64, my_sfixed64, rep_int64, rep_uint64,
-      rep_sint64, rep_fixed64, rep_sfixed64, pack_int64, pack_uint64, pack_sint64, pack_fixed64,
-      pack_sfixed64, oneof_int64, oneof_sfixed64, map_int64_int64, map_int64_uint64,
-      map_int64_sint64, map_int64_fixed64, map_int64_sfixed64, unknownFields)
+  ): All64 = All64(my_int64, my_uint64, my_sint64, my_fixed64, my_sfixed64, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, oneof_int64, oneof_sfixed64, map_int64_int64, map_int64_uint64, map_int64_sint64, map_int64_fixed64, map_int64_sfixed64, unknownFields)
 
   public class Builder : Message.Builder<All64, Builder>() {
     @JvmField
@@ -649,20 +646,20 @@ public class All64(
       null, 
       "all64.proto"
     ) {
-      private val map_int64_int64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.INT64) }
+      private val map_int64_int64Adapter: ProtoAdapter<Map<Long, Long>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.INT64) }
 
-      private val map_int64_uint64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.UINT64) }
+      private val map_int64_uint64Adapter: ProtoAdapter<Map<Long, Long>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.UINT64) }
 
-      private val map_int64_sint64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.SINT64) }
+      private val map_int64_sint64Adapter: ProtoAdapter<Map<Long, Long>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.SINT64) }
 
-      private val map_int64_fixed64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.FIXED64) }
+      private val map_int64_fixed64Adapter: ProtoAdapter<Map<Long, Long>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.FIXED64) }
 
-      private val map_int64_sfixed64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.SFIXED64) }
+      private val map_int64_sfixed64Adapter: ProtoAdapter<Map<Long, Long>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.SFIXED64) }
 
       override fun encodedSize(`value`: All64): Int {
         var size = value.unknownFields.size

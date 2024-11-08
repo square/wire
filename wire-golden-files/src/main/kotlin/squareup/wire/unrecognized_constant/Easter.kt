@@ -63,8 +63,8 @@ public class Easter private constructor(
     schemaIndex = 2,
   )
   @JvmField
-  public val easter_animals: List<EasterAnimal> = immutableCopyOf("easter_animals",
-      builder.easter_animals)
+  public val easter_animals: List<EasterAnimal> =
+      immutableCopyOf("easter_animals", builder.easter_animals)
 
   override fun newBuilder(): Builder {
     val builder = Builder()
@@ -99,8 +99,7 @@ public class Easter private constructor(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (optional_easter_animal != null) result +=
-        """optional_easter_animal=$optional_easter_animal"""
+    if (optional_easter_animal != null) result += """optional_easter_animal=$optional_easter_animal"""
     result += """identity_easter_animal=$identity_easter_animal"""
     if (easter_animals.isNotEmpty()) result += """easter_animals=$easter_animals"""
     return result.joinToString(prefix = "Easter{", separator = ", ", postfix = "}")
@@ -151,8 +150,7 @@ public class Easter private constructor(
       override fun encodedSize(`value`: Easter): Int {
         var size = value.unknownFields.size
         size += EasterAnimal.ADAPTER.encodedSizeWithTag(2, value.optional_easter_animal)
-        if (value.identity_easter_animal !=
-            squareup.wire.unrecognized_constant.EasterAnimal.EASTER_ANIMAL_DEFAULT) {
+        if (value.identity_easter_animal != squareup.wire.unrecognized_constant.EasterAnimal.EASTER_ANIMAL_DEFAULT) {
           size += EasterAnimal.ADAPTER.encodedSizeWithTag(3, value.identity_easter_animal)
         }
         size += EasterAnimal.ADAPTER.asRepeated().encodedSizeWithTag(4, value.easter_animals)
@@ -161,8 +159,7 @@ public class Easter private constructor(
 
       override fun encode(writer: ProtoWriter, `value`: Easter) {
         EasterAnimal.ADAPTER.encodeWithTag(writer, 2, value.optional_easter_animal)
-        if (value.identity_easter_animal !=
-            squareup.wire.unrecognized_constant.EasterAnimal.EASTER_ANIMAL_DEFAULT) {
+        if (value.identity_easter_animal != squareup.wire.unrecognized_constant.EasterAnimal.EASTER_ANIMAL_DEFAULT) {
           EasterAnimal.ADAPTER.encodeWithTag(writer, 3, value.identity_easter_animal)
         }
         EasterAnimal.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.easter_animals)
@@ -172,8 +169,7 @@ public class Easter private constructor(
       override fun encode(writer: ReverseProtoWriter, `value`: Easter) {
         writer.writeBytes(value.unknownFields)
         EasterAnimal.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.easter_animals)
-        if (value.identity_easter_animal !=
-            squareup.wire.unrecognized_constant.EasterAnimal.EASTER_ANIMAL_DEFAULT) {
+        if (value.identity_easter_animal != squareup.wire.unrecognized_constant.EasterAnimal.EASTER_ANIMAL_DEFAULT) {
           EasterAnimal.ADAPTER.encodeWithTag(writer, 3, value.identity_easter_animal)
         }
         EasterAnimal.ADAPTER.encodeWithTag(writer, 2, value.optional_easter_animal)

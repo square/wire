@@ -78,8 +78,7 @@ public class MessageUsingMultipleEnums(
     val result = mutableListOf<String>()
     if (a != null) result += """a=$a"""
     if (b != null) result += """b=$b"""
-    return result.joinToString(prefix = "MessageUsingMultipleEnums{", separator = ", ", postfix =
-        "}")
+    return result.joinToString(prefix = "MessageUsingMultipleEnums{", separator = ", ", postfix = "}")
   }
 
   public fun copy(
@@ -114,8 +113,8 @@ public class MessageUsingMultipleEnums(
 
   public companion object {
     @JvmField
-    public val ADAPTER: ProtoAdapter<MessageUsingMultipleEnums> = object :
-        ProtoAdapter<MessageUsingMultipleEnums>(
+    public val ADAPTER: ProtoAdapter<MessageUsingMultipleEnums> =
+        object : ProtoAdapter<MessageUsingMultipleEnums>(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageUsingMultipleEnums::class, 
       "type.googleapis.com/squareup.protos.kotlin.MessageUsingMultipleEnums", 
@@ -167,8 +166,7 @@ public class MessageUsingMultipleEnums(
         )
       }
 
-      override fun redact(`value`: MessageUsingMultipleEnums): MessageUsingMultipleEnums =
-          value.copy(
+      override fun redact(`value`: MessageUsingMultipleEnums): MessageUsingMultipleEnums = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -176,7 +174,6 @@ public class MessageUsingMultipleEnums(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): MessageUsingMultipleEnums =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): MessageUsingMultipleEnums = Builder().apply(body).build()
   }
 }

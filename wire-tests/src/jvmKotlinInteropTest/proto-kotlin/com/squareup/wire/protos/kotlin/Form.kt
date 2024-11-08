@@ -187,81 +187,74 @@ public class Form(
       )
     }
 
-    public val CHOICE_BUTTON_ELEMENT: Choice<ButtonElement> = Choice<ButtonElement>(tag = 1, adapter
-        = ButtonElement.ADAPTER, declaredName = "button_element")
+    public val CHOICE_BUTTON_ELEMENT: Choice<ButtonElement> =
+        Choice<ButtonElement>(tag = 1, adapter = ButtonElement.ADAPTER, declaredName = "button_element")
 
-    public val CHOICE_LOCAL_IMAGE_ELEMENT: Choice<LocalImageElement> = Choice<LocalImageElement>(tag
-        = 2, adapter = LocalImageElement.ADAPTER, declaredName = "local_image_element")
+    public val CHOICE_LOCAL_IMAGE_ELEMENT: Choice<LocalImageElement> =
+        Choice<LocalImageElement>(tag = 2, adapter = LocalImageElement.ADAPTER, declaredName = "local_image_element")
 
     public val CHOICE_REMOTE_IMAGE_ELEMENT: Choice<RemoteImageElement> =
-        Choice<RemoteImageElement>(tag = 3, adapter = RemoteImageElement.ADAPTER, declaredName =
-        "remote_image_element")
+        Choice<RemoteImageElement>(tag = 3, adapter = RemoteImageElement.ADAPTER, declaredName = "remote_image_element")
 
-    public val CHOICE_MONEY_ELEMENT: Choice<MoneyElement> = Choice<MoneyElement>(tag = 4, adapter =
-        MoneyElement.ADAPTER, declaredName = "money_element")
+    public val CHOICE_MONEY_ELEMENT: Choice<MoneyElement> =
+        Choice<MoneyElement>(tag = 4, adapter = MoneyElement.ADAPTER, declaredName = "money_element")
 
-    public val CHOICE_SPACER_ELEMENT: Choice<SpacerElement> = Choice<SpacerElement>(tag = 5, adapter
-        = SpacerElement.ADAPTER, declaredName = "spacer_element")
+    public val CHOICE_SPACER_ELEMENT: Choice<SpacerElement> =
+        Choice<SpacerElement>(tag = 5, adapter = SpacerElement.ADAPTER, declaredName = "spacer_element")
 
-    public val CHOICE_TEXT_ELEMENT: Choice<TextElement> = Choice<TextElement>(tag = 6, adapter =
-        TextElement.ADAPTER, declaredName = "text_element")
+    public val CHOICE_TEXT_ELEMENT: Choice<TextElement> =
+        Choice<TextElement>(tag = 6, adapter = TextElement.ADAPTER, declaredName = "text_element")
 
     public val CHOICE_CUSTOMIZED_CARD_ELEMENT: Choice<CustomizedCardElement> =
-        Choice<CustomizedCardElement>(tag = 7, adapter = CustomizedCardElement.ADAPTER, declaredName
-        = "customized_card_element")
+        Choice<CustomizedCardElement>(tag = 7, adapter = CustomizedCardElement.ADAPTER, declaredName = "customized_card_element")
 
-    public val CHOICE_ADDRESS_ELEMENT: Choice<AddressElement> = Choice<AddressElement>(tag = 8,
-        adapter = AddressElement.ADAPTER, declaredName = "address_element")
+    public val CHOICE_ADDRESS_ELEMENT: Choice<AddressElement> =
+        Choice<AddressElement>(tag = 8, adapter = AddressElement.ADAPTER, declaredName = "address_element")
 
-    public val CHOICE_TEXT_INPUT_ELEMENT: Choice<TextInputElement> = Choice<TextInputElement>(tag =
-        9, adapter = TextInputElement.ADAPTER, declaredName = "text_input_element")
+    public val CHOICE_TEXT_INPUT_ELEMENT: Choice<TextInputElement> =
+        Choice<TextInputElement>(tag = 9, adapter = TextInputElement.ADAPTER, declaredName = "text_input_element")
 
     @Deprecated(message = "option_picker_element is deprecated")
     public val CHOICE_OPTION_PICKER_ELEMENT: Choice<OptionPickerElement> =
-        Choice<OptionPickerElement>(tag = 10, adapter = OptionPickerElement.ADAPTER, declaredName =
-        "option_picker_element")
+        Choice<OptionPickerElement>(tag = 10, adapter = OptionPickerElement.ADAPTER, declaredName = "option_picker_element")
 
-    public val CHOICE_DETAIL_ROW_ELEMENT: Choice<DetailRowElement> = Choice<DetailRowElement>(tag =
-        11, adapter = DetailRowElement.ADAPTER, declaredName = "detail_row_element")
+    public val CHOICE_DETAIL_ROW_ELEMENT: Choice<DetailRowElement> =
+        Choice<DetailRowElement>(tag = 11, adapter = DetailRowElement.ADAPTER, declaredName = "detail_row_element")
 
     public val CHOICE_CURRENCY_CONVERSION_FLAGS_ELEMENT: Choice<CurrencyConversionFlagsElement> =
-        Choice<CurrencyConversionFlagsElement>(tag = 12, adapter =
-        CurrencyConversionFlagsElement.ADAPTER, declaredName = "currency_conversion_flags_element")
+        Choice<CurrencyConversionFlagsElement>(tag = 12, adapter = CurrencyConversionFlagsElement.ADAPTER, declaredName = "currency_conversion_flags_element")
 
     @JvmStatic
-    public val CHOICE_KEYS: Set<Choice<*>> = setOf(CHOICE_BUTTON_ELEMENT,
-        CHOICE_LOCAL_IMAGE_ELEMENT, CHOICE_REMOTE_IMAGE_ELEMENT, CHOICE_MONEY_ELEMENT,
-        CHOICE_SPACER_ELEMENT, CHOICE_TEXT_ELEMENT, CHOICE_CUSTOMIZED_CARD_ELEMENT,
-        CHOICE_ADDRESS_ELEMENT, CHOICE_TEXT_INPUT_ELEMENT, CHOICE_OPTION_PICKER_ELEMENT,
-        CHOICE_DETAIL_ROW_ELEMENT, CHOICE_CURRENCY_CONVERSION_FLAGS_ELEMENT)
+    public val CHOICE_KEYS: Set<Choice<*>> =
+        setOf(CHOICE_BUTTON_ELEMENT, CHOICE_LOCAL_IMAGE_ELEMENT, CHOICE_REMOTE_IMAGE_ELEMENT, CHOICE_MONEY_ELEMENT, CHOICE_SPACER_ELEMENT, CHOICE_TEXT_ELEMENT, CHOICE_CUSTOMIZED_CARD_ELEMENT, CHOICE_ADDRESS_ELEMENT, CHOICE_TEXT_INPUT_ELEMENT, CHOICE_OPTION_PICKER_ELEMENT, CHOICE_DETAIL_ROW_ELEMENT, CHOICE_CURRENCY_CONVERSION_FLAGS_ELEMENT)
 
-    public val DECISION_A: Decision<String> = Decision<String>(tag = 101, adapter =
-        ProtoAdapter.STRING, declaredName = "a")
+    public val DECISION_A: Decision<String> =
+        Decision<String>(tag = 101, adapter = ProtoAdapter.STRING, declaredName = "a")
 
-    public val DECISION_B: Decision<String> = Decision<String>(tag = 102, adapter =
-        ProtoAdapter.STRING, declaredName = "b")
+    public val DECISION_B: Decision<String> =
+        Decision<String>(tag = 102, adapter = ProtoAdapter.STRING, declaredName = "b")
 
-    public val DECISION_C: Decision<String> = Decision<String>(tag = 103, adapter =
-        ProtoAdapter.STRING, declaredName = "c")
+    public val DECISION_C: Decision<String> =
+        Decision<String>(tag = 103, adapter = ProtoAdapter.STRING, declaredName = "c")
 
-    public val DECISION_D: Decision<String> = Decision<String>(tag = 104, adapter =
-        ProtoAdapter.STRING, declaredName = "d")
+    public val DECISION_D: Decision<String> =
+        Decision<String>(tag = 104, adapter = ProtoAdapter.STRING, declaredName = "d")
 
-    public val DECISION_E: Decision<String> = Decision<String>(tag = 105, adapter =
-        ProtoAdapter.STRING, declaredName = "e")
+    public val DECISION_E: Decision<String> =
+        Decision<String>(tag = 105, adapter = ProtoAdapter.STRING, declaredName = "e")
 
-    public val DECISION_F: Decision<String> = Decision<String>(tag = 106, adapter =
-        ProtoAdapter.STRING, declaredName = "f")
+    public val DECISION_F: Decision<String> =
+        Decision<String>(tag = 106, adapter = ProtoAdapter.STRING, declaredName = "f")
 
-    public val DECISION_G: Decision<String> = Decision<String>(tag = 107, adapter =
-        ProtoAdapter.STRING, declaredName = "g")
+    public val DECISION_G: Decision<String> =
+        Decision<String>(tag = 107, adapter = ProtoAdapter.STRING, declaredName = "g")
 
-    public val DECISION_H: Decision<String> = Decision<String>(tag = 108, adapter =
-        ProtoAdapter.STRING, declaredName = "h")
+    public val DECISION_H: Decision<String> =
+        Decision<String>(tag = 108, adapter = ProtoAdapter.STRING, declaredName = "h")
 
     @JvmStatic
-    public val DECISION_KEYS: Set<Decision<*>> = setOf(DECISION_A, DECISION_B, DECISION_C,
-        DECISION_D, DECISION_E, DECISION_F, DECISION_G, DECISION_H)
+    public val DECISION_KEYS: Set<Decision<*>> =
+        setOf(DECISION_A, DECISION_B, DECISION_C, DECISION_D, DECISION_E, DECISION_F, DECISION_G, DECISION_H)
 
     private const val serialVersionUID: Long = 0L
 
@@ -289,8 +282,7 @@ public class Form(
 
     override fun toString(): String = "ButtonElement{}"
 
-    public fun copy(unknownFields: ByteString = this.unknownFields): ButtonElement =
-        ButtonElement(unknownFields)
+    public fun copy(unknownFields: ByteString = this.unknownFields): ButtonElement = ButtonElement(unknownFields)
 
     public class Builder : Message.Builder<ButtonElement, Builder>() {
       override fun build(): ButtonElement = ButtonElement(
@@ -336,8 +328,7 @@ public class Form(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): ButtonElement =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): ButtonElement = Builder().apply(body).build()
     }
   }
 
@@ -361,8 +352,7 @@ public class Form(
 
     override fun toString(): String = "LocalImageElement{}"
 
-    public fun copy(unknownFields: ByteString = this.unknownFields): LocalImageElement =
-        LocalImageElement(unknownFields)
+    public fun copy(unknownFields: ByteString = this.unknownFields): LocalImageElement = LocalImageElement(unknownFields)
 
     public class Builder : Message.Builder<LocalImageElement, Builder>() {
       override fun build(): LocalImageElement = LocalImageElement(
@@ -372,8 +362,8 @@ public class Form(
 
     public companion object {
       @JvmField
-      public val ADAPTER: ProtoAdapter<LocalImageElement> = object :
-          ProtoAdapter<LocalImageElement>(
+      public val ADAPTER: ProtoAdapter<LocalImageElement> =
+          object : ProtoAdapter<LocalImageElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         LocalImageElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.LocalImageElement", 
@@ -409,8 +399,7 @@ public class Form(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): LocalImageElement =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): LocalImageElement = Builder().apply(body).build()
     }
   }
 
@@ -434,8 +423,7 @@ public class Form(
 
     override fun toString(): String = "RemoteImageElement{}"
 
-    public fun copy(unknownFields: ByteString = this.unknownFields): RemoteImageElement =
-        RemoteImageElement(unknownFields)
+    public fun copy(unknownFields: ByteString = this.unknownFields): RemoteImageElement = RemoteImageElement(unknownFields)
 
     public class Builder : Message.Builder<RemoteImageElement, Builder>() {
       override fun build(): RemoteImageElement = RemoteImageElement(
@@ -445,8 +433,8 @@ public class Form(
 
     public companion object {
       @JvmField
-      public val ADAPTER: ProtoAdapter<RemoteImageElement> = object :
-          ProtoAdapter<RemoteImageElement>(
+      public val ADAPTER: ProtoAdapter<RemoteImageElement> =
+          object : ProtoAdapter<RemoteImageElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         RemoteImageElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.RemoteImageElement", 
@@ -482,8 +470,7 @@ public class Form(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): RemoteImageElement =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): RemoteImageElement = Builder().apply(body).build()
     }
   }
 
@@ -507,8 +494,7 @@ public class Form(
 
     override fun toString(): String = "MoneyElement{}"
 
-    public fun copy(unknownFields: ByteString = this.unknownFields): MoneyElement =
-        MoneyElement(unknownFields)
+    public fun copy(unknownFields: ByteString = this.unknownFields): MoneyElement = MoneyElement(unknownFields)
 
     public class Builder : Message.Builder<MoneyElement, Builder>() {
       override fun build(): MoneyElement = MoneyElement(
@@ -554,8 +540,7 @@ public class Form(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): MoneyElement =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): MoneyElement = Builder().apply(body).build()
     }
   }
 
@@ -579,8 +564,7 @@ public class Form(
 
     override fun toString(): String = "SpacerElement{}"
 
-    public fun copy(unknownFields: ByteString = this.unknownFields): SpacerElement =
-        SpacerElement(unknownFields)
+    public fun copy(unknownFields: ByteString = this.unknownFields): SpacerElement = SpacerElement(unknownFields)
 
     public class Builder : Message.Builder<SpacerElement, Builder>() {
       override fun build(): SpacerElement = SpacerElement(
@@ -626,8 +610,7 @@ public class Form(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): SpacerElement =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): SpacerElement = Builder().apply(body).build()
     }
   }
 
@@ -672,8 +655,7 @@ public class Form(
       return result.joinToString(prefix = "TextElement{", separator = ", ", postfix = "}")
     }
 
-    public fun copy(text: String? = this.text, unknownFields: ByteString = this.unknownFields):
-        TextElement = TextElement(text, unknownFields)
+    public fun copy(text: String? = this.text, unknownFields: ByteString = this.unknownFields): TextElement = TextElement(text, unknownFields)
 
     public class Builder : Message.Builder<TextElement, Builder>() {
       @JvmField
@@ -762,8 +744,7 @@ public class Form(
 
     override fun toString(): String = "CustomizedCardElement{}"
 
-    public fun copy(unknownFields: ByteString = this.unknownFields): CustomizedCardElement =
-        CustomizedCardElement(unknownFields)
+    public fun copy(unknownFields: ByteString = this.unknownFields): CustomizedCardElement = CustomizedCardElement(unknownFields)
 
     public class Builder : Message.Builder<CustomizedCardElement, Builder>() {
       override fun build(): CustomizedCardElement = CustomizedCardElement(
@@ -773,8 +754,8 @@ public class Form(
 
     public companion object {
       @JvmField
-      public val ADAPTER: ProtoAdapter<CustomizedCardElement> = object :
-          ProtoAdapter<CustomizedCardElement>(
+      public val ADAPTER: ProtoAdapter<CustomizedCardElement> =
+          object : ProtoAdapter<CustomizedCardElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         CustomizedCardElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CustomizedCardElement", 
@@ -810,8 +791,7 @@ public class Form(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): CustomizedCardElement =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): CustomizedCardElement = Builder().apply(body).build()
     }
   }
 
@@ -835,8 +815,7 @@ public class Form(
 
     override fun toString(): String = "AddressElement{}"
 
-    public fun copy(unknownFields: ByteString = this.unknownFields): AddressElement =
-        AddressElement(unknownFields)
+    public fun copy(unknownFields: ByteString = this.unknownFields): AddressElement = AddressElement(unknownFields)
 
     public class Builder : Message.Builder<AddressElement, Builder>() {
       override fun build(): AddressElement = AddressElement(
@@ -882,8 +861,7 @@ public class Form(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): AddressElement =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): AddressElement = Builder().apply(body).build()
     }
   }
 
@@ -907,8 +885,7 @@ public class Form(
 
     override fun toString(): String = "TextInputElement{}"
 
-    public fun copy(unknownFields: ByteString = this.unknownFields): TextInputElement =
-        TextInputElement(unknownFields)
+    public fun copy(unknownFields: ByteString = this.unknownFields): TextInputElement = TextInputElement(unknownFields)
 
     public class Builder : Message.Builder<TextInputElement, Builder>() {
       override fun build(): TextInputElement = TextInputElement(
@@ -954,8 +931,7 @@ public class Form(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): TextInputElement =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): TextInputElement = Builder().apply(body).build()
     }
   }
 
@@ -979,8 +955,7 @@ public class Form(
 
     override fun toString(): String = "OptionPickerElement{}"
 
-    public fun copy(unknownFields: ByteString = this.unknownFields): OptionPickerElement =
-        OptionPickerElement(unknownFields)
+    public fun copy(unknownFields: ByteString = this.unknownFields): OptionPickerElement = OptionPickerElement(unknownFields)
 
     public class Builder : Message.Builder<OptionPickerElement, Builder>() {
       override fun build(): OptionPickerElement = OptionPickerElement(
@@ -990,8 +965,8 @@ public class Form(
 
     public companion object {
       @JvmField
-      public val ADAPTER: ProtoAdapter<OptionPickerElement> = object :
-          ProtoAdapter<OptionPickerElement>(
+      public val ADAPTER: ProtoAdapter<OptionPickerElement> =
+          object : ProtoAdapter<OptionPickerElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         OptionPickerElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.OptionPickerElement", 
@@ -1027,8 +1002,7 @@ public class Form(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): OptionPickerElement =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): OptionPickerElement = Builder().apply(body).build()
     }
   }
 
@@ -1052,8 +1026,7 @@ public class Form(
 
     override fun toString(): String = "DetailRowElement{}"
 
-    public fun copy(unknownFields: ByteString = this.unknownFields): DetailRowElement =
-        DetailRowElement(unknownFields)
+    public fun copy(unknownFields: ByteString = this.unknownFields): DetailRowElement = DetailRowElement(unknownFields)
 
     public class Builder : Message.Builder<DetailRowElement, Builder>() {
       override fun build(): DetailRowElement = DetailRowElement(
@@ -1099,15 +1072,13 @@ public class Form(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): DetailRowElement =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): DetailRowElement = Builder().apply(body).build()
     }
   }
 
   public class CurrencyConversionFlagsElement(
     unknownFields: ByteString = ByteString.EMPTY,
-  ) : Message<CurrencyConversionFlagsElement, CurrencyConversionFlagsElement.Builder>(ADAPTER,
-      unknownFields) {
+  ) : Message<CurrencyConversionFlagsElement, CurrencyConversionFlagsElement.Builder>(ADAPTER, unknownFields) {
     override fun newBuilder(): Builder {
       val builder = Builder()
       builder.addUnknownFields(unknownFields)
@@ -1125,8 +1096,7 @@ public class Form(
 
     override fun toString(): String = "CurrencyConversionFlagsElement{}"
 
-    public fun copy(unknownFields: ByteString = this.unknownFields): CurrencyConversionFlagsElement
-        = CurrencyConversionFlagsElement(unknownFields)
+    public fun copy(unknownFields: ByteString = this.unknownFields): CurrencyConversionFlagsElement = CurrencyConversionFlagsElement(unknownFields)
 
     public class Builder : Message.Builder<CurrencyConversionFlagsElement, Builder>() {
       override fun build(): CurrencyConversionFlagsElement = CurrencyConversionFlagsElement(
@@ -1136,8 +1106,8 @@ public class Form(
 
     public companion object {
       @JvmField
-      public val ADAPTER: ProtoAdapter<CurrencyConversionFlagsElement> = object :
-          ProtoAdapter<CurrencyConversionFlagsElement>(
+      public val ADAPTER: ProtoAdapter<CurrencyConversionFlagsElement> =
+          object : ProtoAdapter<CurrencyConversionFlagsElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         CurrencyConversionFlagsElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CurrencyConversionFlagsElement", 
@@ -1165,8 +1135,7 @@ public class Form(
           )
         }
 
-        override fun redact(`value`: CurrencyConversionFlagsElement): CurrencyConversionFlagsElement
-            = value.copy(
+        override fun redact(`value`: CurrencyConversionFlagsElement): CurrencyConversionFlagsElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -1174,8 +1143,7 @@ public class Form(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): CurrencyConversionFlagsElement =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): CurrencyConversionFlagsElement = Builder().apply(body).build()
     }
   }
 }

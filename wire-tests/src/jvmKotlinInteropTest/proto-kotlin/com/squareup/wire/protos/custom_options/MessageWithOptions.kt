@@ -58,8 +58,7 @@ public class MessageWithOptions(
 
   override fun toString(): String = "MessageWithOptions{}"
 
-  public fun copy(unknownFields: ByteString = this.unknownFields): MessageWithOptions =
-      MessageWithOptions(unknownFields)
+  public fun copy(unknownFields: ByteString = this.unknownFields): MessageWithOptions = MessageWithOptions(unknownFields)
 
   public class Builder : Message.Builder<MessageWithOptions, Builder>() {
     override fun build(): MessageWithOptions = MessageWithOptions(
@@ -69,8 +68,8 @@ public class MessageWithOptions(
 
   public companion object {
     @JvmField
-    public val ADAPTER: ProtoAdapter<MessageWithOptions> = object :
-        ProtoAdapter<MessageWithOptions>(
+    public val ADAPTER: ProtoAdapter<MessageWithOptions> =
+        object : ProtoAdapter<MessageWithOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageWithOptions::class, 
       "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions", 
@@ -106,7 +105,6 @@ public class MessageWithOptions(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): MessageWithOptions =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): MessageWithOptions = Builder().apply(body).build()
   }
 }
