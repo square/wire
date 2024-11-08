@@ -41,8 +41,7 @@ public class NestedVersionOne(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -68,8 +67,7 @@ public class NestedVersionOne(
     return result.joinToString(prefix = "NestedVersionOne{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(i: Int? = this.i, unknownFields: ByteString = this.unknownFields):
-      NestedVersionOne = NestedVersionOne(i, unknownFields)
+  public fun copy(i: Int? = this.i, unknownFields: ByteString = this.unknownFields): NestedVersionOne = NestedVersionOne(i, unknownFields)
 
   public companion object {
     @JvmField

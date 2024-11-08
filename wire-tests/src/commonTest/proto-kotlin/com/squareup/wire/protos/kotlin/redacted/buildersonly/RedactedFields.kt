@@ -212,7 +212,6 @@ public class RedactedFields private constructor(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): RedactedFields =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): RedactedFields = Builder().apply(body).build()
   }
 }

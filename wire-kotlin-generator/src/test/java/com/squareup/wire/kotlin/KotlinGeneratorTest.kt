@@ -149,8 +149,8 @@ class KotlinGeneratorTest {
     assertThat(code).contains("const val DEFAULT_I: Double = 10_000_000_000.0")
     assertThat(code).contains("const val DEFAULT_J: Double = -0.01")
     assertThat(code).contains(
-      "public const val DEFAULT_K: Double\n" +
-        "        = -1_230_000_000_000_000_000_000_000_000_000_000_000_000_000_000.0",
+      "public const val DEFAULT_K: Double =\n" +
+        "        -1_230_000_000_000_000_000_000_000_000_000_000_000_000_000_000.0",
     )
     assertThat(code).contains("const val DEFAULT_L: Double = 255.0")
     assertThat(code).contains("const val DEFAULT_M: Double = Double.POSITIVE_INFINITY")
@@ -721,8 +721,7 @@ class KotlinGeneratorTest {
           |  /**
           |   * Records a route made up of the provided \[Point\]s.
           |   */
-          |  override fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary> =
-          |      client.newStreamingCall(GrpcMethod(
+          |  override fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary> = client.newStreamingCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/RecordRoute",
           |      requestAdapter = Point.ADAPTER,
           |      responseAdapter = RouteSummary.ADAPTER
@@ -790,8 +789,7 @@ class KotlinGeneratorTest {
           |  /**
           |   * List the features available in the area defined by \[Rectangle\].
           |   */
-          |  override fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature> =
-          |      client.newStreamingCall(GrpcMethod(
+          |  override fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature> = client.newStreamingCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/ListFeatures",
           |      requestAdapter = Rectangle.ADAPTER,
           |      responseAdapter = Feature.ADAPTER
@@ -862,8 +860,7 @@ class KotlinGeneratorTest {
           /**
            * Chat with someone using a \[RouteNote\].
            */
-          override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
-              client.newStreamingCall(GrpcMethod(
+          override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> = client.newStreamingCall(GrpcMethod(
               path = "/routeguide.RouteGuide/RouteChat",
               requestAdapter = RouteNote.ADAPTER,
               responseAdapter = RouteNote.ADAPTER
@@ -932,8 +929,7 @@ class KotlinGeneratorTest {
            /**
             * Chat with someone using a \[RouteNote\].
             */
-           override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
-               client.newStreamingCall(GrpcMethod(
+           override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> = client.newStreamingCall(GrpcMethod(
                path = "/routeguide.RouteGuide/RouteChat",
                requestAdapter = RouteNote.ADAPTER,
                responseAdapter = RouteNote.ADAPTER
@@ -1072,8 +1068,7 @@ class KotlinGeneratorTest {
           |  /**
           |   * Chat with someone using a \[RouteNote\].
           |   */
-          |  override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
-          |      client.newStreamingCall(GrpcMethod(
+          |  override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> = client.newStreamingCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/RouteChat",
           |      requestAdapter = RouteNote.ADAPTER,
           |      responseAdapter = RouteNote.ADAPTER
@@ -1185,8 +1180,7 @@ class KotlinGeneratorTest {
           |public class GrpcRouteGuideRouteChatClient(
           |  private val client: GrpcClient,
           |) : RouteGuideRouteChatClient {
-          |  override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
-          |      client.newStreamingCall(GrpcMethod(
+          |  override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> = client.newStreamingCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/RouteChat",
           |      requestAdapter = RouteNote.ADAPTER,
           |      responseAdapter = RouteNote.ADAPTER
@@ -1489,16 +1483,12 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin(longType)
-    val expectedEqualsConditionImplementation = """
-          |        ($longMember
-          |        !=
-          |        other.$longMember)
-    """.trimMargin()
+    val expectedEqualsConditionImplementation = "if ($longMember != other.$longMember) return false"
 
     assertThat(code).contains("return false")
     assertThat(code).contains("return $longType(")
     assertThat(code).contains(expectedEqualsConditionImplementation)
-    assertThat(code).contains("$longMember =\n")
+    assertThat(code).contains("$longMember = ")
   }
 
   @Test fun constructorForProto3() {

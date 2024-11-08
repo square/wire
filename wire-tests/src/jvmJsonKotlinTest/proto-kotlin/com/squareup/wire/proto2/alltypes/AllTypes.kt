@@ -822,8 +822,8 @@ public class AllTypes(
     schemaIndex = 50,
   )
   @JvmField
-  public val rep_nested_message: List<NestedMessage> = immutableCopyOf("rep_nested_message",
-      rep_nested_message)
+  public val rep_nested_message: List<NestedMessage> =
+      immutableCopyOf("rep_nested_message", rep_nested_message)
 
   @field:WireField(
     tag = 301,
@@ -949,8 +949,8 @@ public class AllTypes(
     schemaIndex = 64,
   )
   @JvmField
-  public val pack_nested_enum: List<NestedEnum> = immutableCopyOf("pack_nested_enum",
-      pack_nested_enum)
+  public val pack_nested_enum: List<NestedEnum> =
+      immutableCopyOf("pack_nested_enum", pack_nested_enum)
 
   @field:WireField(
     tag = 501,
@@ -968,8 +968,8 @@ public class AllTypes(
     schemaIndex = 82,
   )
   @JvmField
-  public val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
-      map_string_string)
+  public val map_string_string: Map<String, String> =
+      immutableCopyOf("map_string_string", map_string_string)
 
   @field:WireField(
     tag = 503,
@@ -978,8 +978,8 @@ public class AllTypes(
     schemaIndex = 83,
   )
   @JvmField
-  public val map_string_message: Map<String, NestedMessage> = immutableCopyOf("map_string_message",
-      map_string_message)
+  public val map_string_message: Map<String, NestedMessage> =
+      immutableCopyOf("map_string_message", map_string_message)
 
   @field:WireField(
     tag = 504,
@@ -988,8 +988,8 @@ public class AllTypes(
     schemaIndex = 84,
   )
   @JvmField
-  public val map_string_enum: Map<String, NestedEnum> = immutableCopyOf("map_string_enum",
-      map_string_enum)
+  public val map_string_enum: Map<String, NestedEnum> =
+      immutableCopyOf("map_string_enum", map_string_enum)
 
   /**
    * Extension source: all_types_proto2.proto
@@ -1181,8 +1181,8 @@ public class AllTypes(
     schemaIndex = 120,
   )
   @JvmField
-  public val ext_rep_nested_enum: List<NestedEnum> = immutableCopyOf("ext_rep_nested_enum",
-      ext_rep_nested_enum)
+  public val ext_rep_nested_enum: List<NestedEnum> =
+      immutableCopyOf("ext_rep_nested_enum", ext_rep_nested_enum)
 
   /**
    * Extension source: all_types_proto2.proto
@@ -1194,8 +1194,8 @@ public class AllTypes(
     schemaIndex = 121,
   )
   @JvmField
-  public val ext_rep_nested_message: List<NestedMessage> = immutableCopyOf("ext_rep_nested_message",
-      ext_rep_nested_message)
+  public val ext_rep_nested_message: List<NestedMessage> =
+      immutableCopyOf("ext_rep_nested_message", ext_rep_nested_message)
 
   /**
    * Extension source: all_types_proto2.proto
@@ -1363,8 +1363,8 @@ public class AllTypes(
     schemaIndex = 135,
   )
   @JvmField
-  public val ext_pack_nested_enum: List<NestedEnum> = immutableCopyOf("ext_pack_nested_enum",
-      ext_pack_nested_enum)
+  public val ext_pack_nested_enum: List<NestedEnum> =
+      immutableCopyOf("ext_pack_nested_enum", ext_pack_nested_enum)
 
   init {
     require(countNonNull(oneof_string, oneof_int32, oneof_nested_message) <= 1) {
@@ -1908,8 +1908,7 @@ public class AllTypes(
     if (ext_opt_string != null) result += """ext_opt_string=${sanitize(ext_opt_string)}"""
     if (ext_opt_bytes != null) result += """ext_opt_bytes=$ext_opt_bytes"""
     if (ext_opt_nested_enum != null) result += """ext_opt_nested_enum=$ext_opt_nested_enum"""
-    if (ext_opt_nested_message != null) result +=
-        """ext_opt_nested_message=$ext_opt_nested_message"""
+    if (ext_opt_nested_message != null) result += """ext_opt_nested_message=$ext_opt_nested_message"""
     if (ext_rep_int32.isNotEmpty()) result += """ext_rep_int32=$ext_rep_int32"""
     if (ext_rep_uint32.isNotEmpty()) result += """ext_rep_uint32=$ext_rep_uint32"""
     if (ext_rep_sint32.isNotEmpty()) result += """ext_rep_sint32=$ext_rep_sint32"""
@@ -1926,8 +1925,7 @@ public class AllTypes(
     if (ext_rep_string.isNotEmpty()) result += """ext_rep_string=${sanitize(ext_rep_string)}"""
     if (ext_rep_bytes.isNotEmpty()) result += """ext_rep_bytes=$ext_rep_bytes"""
     if (ext_rep_nested_enum.isNotEmpty()) result += """ext_rep_nested_enum=$ext_rep_nested_enum"""
-    if (ext_rep_nested_message.isNotEmpty()) result +=
-        """ext_rep_nested_message=$ext_rep_nested_message"""
+    if (ext_rep_nested_message.isNotEmpty()) result += """ext_rep_nested_message=$ext_rep_nested_message"""
     if (ext_pack_int32.isNotEmpty()) result += """ext_pack_int32=$ext_pack_int32"""
     if (ext_pack_uint32.isNotEmpty()) result += """ext_pack_uint32=$ext_pack_uint32"""
     if (ext_pack_sint32.isNotEmpty()) result += """ext_pack_sint32=$ext_pack_sint32"""
@@ -1941,8 +1939,7 @@ public class AllTypes(
     if (ext_pack_bool.isNotEmpty()) result += """ext_pack_bool=$ext_pack_bool"""
     if (ext_pack_float.isNotEmpty()) result += """ext_pack_float=$ext_pack_float"""
     if (ext_pack_double.isNotEmpty()) result += """ext_pack_double=$ext_pack_double"""
-    if (ext_pack_nested_enum.isNotEmpty()) result +=
-        """ext_pack_nested_enum=$ext_pack_nested_enum"""
+    if (ext_pack_nested_enum.isNotEmpty()) result += """ext_pack_nested_enum=$ext_pack_nested_enum"""
     return result.joinToString(prefix = "AllTypes{", separator = ", ", postfix = "}")
   }
 
@@ -2084,30 +2081,7 @@ public class AllTypes(
     ext_pack_double: List<Double> = this.ext_pack_double,
     ext_pack_nested_enum: List<NestedEnum> = this.ext_pack_nested_enum,
     unknownFields: ByteString = this.unknownFields,
-  ): AllTypes = AllTypes(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64,
-      opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double,
-      opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32,
-      req_fixed32, req_sfixed32, req_int64, req_uint64, req_sint64, req_fixed64, req_sfixed64,
-      req_bool, req_float, req_double, req_string, req_bytes, req_nested_enum, req_nested_message,
-      rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64,
-      rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes,
-      rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32,
-      pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool,
-      pack_float, pack_double, pack_nested_enum, default_int32, default_uint32, default_sint32,
-      default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64,
-      default_fixed64, default_sfixed64, default_bool, default_float, default_double,
-      default_string, default_bytes, default_nested_enum, map_int32_int32, map_string_string,
-      map_string_message, map_string_enum, oneof_string, oneof_int32, oneof_nested_message,
-      ext_opt_int32, ext_opt_uint32, ext_opt_sint32, ext_opt_fixed32, ext_opt_sfixed32,
-      ext_opt_int64, ext_opt_uint64, ext_opt_sint64, ext_opt_fixed64, ext_opt_sfixed64,
-      ext_opt_bool, ext_opt_float, ext_opt_double, ext_opt_string, ext_opt_bytes,
-      ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32, ext_rep_uint32, ext_rep_sint32,
-      ext_rep_fixed32, ext_rep_sfixed32, ext_rep_int64, ext_rep_uint64, ext_rep_sint64,
-      ext_rep_fixed64, ext_rep_sfixed64, ext_rep_bool, ext_rep_float, ext_rep_double,
-      ext_rep_string, ext_rep_bytes, ext_rep_nested_enum, ext_rep_nested_message, ext_pack_int32,
-      ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32, ext_pack_sfixed32, ext_pack_int64,
-      ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64, ext_pack_sfixed64, ext_pack_bool,
-      ext_pack_float, ext_pack_double, ext_pack_nested_enum, unknownFields)
+  ): AllTypes = AllTypes(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32, req_fixed32, req_sfixed32, req_int64, req_uint64, req_sint64, req_fixed64, req_sfixed64, req_bool, req_float, req_double, req_string, req_bytes, req_nested_enum, req_nested_message, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, default_int32, default_uint32, default_sint32, default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64, default_fixed64, default_sfixed64, default_bool, default_float, default_double, default_string, default_bytes, default_nested_enum, map_int32_int32, map_string_string, map_string_message, map_string_enum, oneof_string, oneof_int32, oneof_nested_message, ext_opt_int32, ext_opt_uint32, ext_opt_sint32, ext_opt_fixed32, ext_opt_sfixed32, ext_opt_int64, ext_opt_uint64, ext_opt_sint64, ext_opt_fixed64, ext_opt_sfixed64, ext_opt_bool, ext_opt_float, ext_opt_double, ext_opt_string, ext_opt_bytes, ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32, ext_rep_uint32, ext_rep_sint32, ext_rep_fixed32, ext_rep_sfixed32, ext_rep_int64, ext_rep_uint64, ext_rep_sint64, ext_rep_fixed64, ext_rep_sfixed64, ext_rep_bool, ext_rep_float, ext_rep_double, ext_rep_string, ext_rep_bytes, ext_rep_nested_enum, ext_rep_nested_message, ext_pack_int32, ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32, ext_pack_sfixed32, ext_pack_int64, ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64, ext_pack_sfixed64, ext_pack_bool, ext_pack_float, ext_pack_double, ext_pack_nested_enum, unknownFields)
 
   public class Builder : Message.Builder<AllTypes, Builder>() {
     @JvmField
@@ -3299,10 +3273,8 @@ public class AllTypes(
       req_double = req_double ?: throw missingRequiredFields(req_double, "req_double"),
       req_string = req_string ?: throw missingRequiredFields(req_string, "req_string"),
       req_bytes = req_bytes ?: throw missingRequiredFields(req_bytes, "req_bytes"),
-      req_nested_enum = req_nested_enum ?: throw missingRequiredFields(req_nested_enum,
-          "req_nested_enum"),
-      req_nested_message = req_nested_message ?: throw missingRequiredFields(req_nested_message,
-          "req_nested_message"),
+      req_nested_enum = req_nested_enum ?: throw missingRequiredFields(req_nested_enum, "req_nested_enum"),
+      req_nested_message = req_nested_message ?: throw missingRequiredFields(req_nested_message, "req_nested_message"),
       rep_int32 = rep_int32,
       rep_uint32 = rep_uint32,
       rep_sint32 = rep_sint32,
@@ -3456,17 +3428,17 @@ public class AllTypes(
       null, 
       "all_types_proto2.proto"
     ) {
-      private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
+      private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
 
-      private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
+      private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
 
-      private val map_string_messageAdapter: ProtoAdapter<Map<String, NestedMessage>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER) }
+      private val map_string_messageAdapter: ProtoAdapter<Map<String, NestedMessage>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER) }
 
-      private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
+      private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
 
       override fun encodedSize(`value`: AllTypes): Int {
         var size = value.unknownFields.size
@@ -3591,8 +3563,7 @@ public class AllTypes(
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1_114, value.ext_rep_string)
         size += ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(1_115, value.ext_rep_bytes)
         size += NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(1_116, value.ext_rep_nested_enum)
-        size += NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(1_117,
-            value.ext_rep_nested_message)
+        size += NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(1_117, value.ext_rep_nested_message)
         size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1_201, value.ext_pack_int32)
         size += ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(1_202, value.ext_pack_uint32)
         size += ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(1_203, value.ext_pack_sint32)
@@ -3729,8 +3700,7 @@ public class AllTypes(
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1_114, value.ext_rep_string)
         ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 1_115, value.ext_rep_bytes)
         NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 1_116, value.ext_rep_nested_enum)
-        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 1_117,
-            value.ext_rep_nested_message)
+        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 1_117, value.ext_rep_nested_message)
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1_201, value.ext_pack_int32)
         ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 1_202, value.ext_pack_uint32)
         ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 1_203, value.ext_pack_sint32)
@@ -3770,8 +3740,7 @@ public class AllTypes(
         ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 1_203, value.ext_pack_sint32)
         ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 1_202, value.ext_pack_uint32)
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1_201, value.ext_pack_int32)
-        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 1_117,
-            value.ext_rep_nested_message)
+        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 1_117, value.ext_rep_nested_message)
         NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 1_116, value.ext_rep_nested_enum)
         ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 1_115, value.ext_rep_bytes)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1_114, value.ext_rep_string)
@@ -4469,10 +4438,8 @@ public class AllTypes(
           req_double = req_double ?: throw missingRequiredFields(req_double, "req_double"),
           req_string = req_string ?: throw missingRequiredFields(req_string, "req_string"),
           req_bytes = req_bytes ?: throw missingRequiredFields(req_bytes, "req_bytes"),
-          req_nested_enum = req_nested_enum ?: throw missingRequiredFields(req_nested_enum,
-              "req_nested_enum"),
-          req_nested_message = req_nested_message ?: throw missingRequiredFields(req_nested_message,
-              "req_nested_message"),
+          req_nested_enum = req_nested_enum ?: throw missingRequiredFields(req_nested_enum, "req_nested_enum"),
+          req_nested_message = req_nested_message ?: throw missingRequiredFields(req_nested_message, "req_nested_message"),
           rep_int32 = rep_int32,
           rep_uint32 = rep_uint32,
           rep_sint32 = rep_sint32,
@@ -4664,8 +4631,7 @@ public class AllTypes(
       return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
     }
 
-    public fun copy(a: Int? = this.a, unknownFields: ByteString = this.unknownFields): NestedMessage
-        = NestedMessage(a, unknownFields)
+    public fun copy(a: Int? = this.a, unknownFields: ByteString = this.unknownFields): NestedMessage = NestedMessage(a, unknownFields)
 
     public class Builder : Message.Builder<NestedMessage, Builder>() {
       @JvmField
@@ -4730,8 +4696,7 @@ public class AllTypes(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): NestedMessage =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): NestedMessage = Builder().apply(body).build()
     }
   }
 }

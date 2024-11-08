@@ -151,8 +151,7 @@ public class PizzaDelivery(
     result += """address=${sanitize(address)}"""
     if (pizzas.isNotEmpty()) result += """pizzas=$pizzas"""
     if (promotion != null) result += """promotion=$promotion"""
-    if (delivered_within_or_free != null) result +=
-        """delivered_within_or_free=$delivered_within_or_free"""
+    if (delivered_within_or_free != null) result += """delivered_within_or_free=$delivered_within_or_free"""
     if (loyalty != null) result += """loyalty=$loyalty"""
     if (ordered_at != null) result += """ordered_at=$ordered_at"""
     return result.joinToString(prefix = "PizzaDelivery{", separator = ", ", postfix = "}")
@@ -167,8 +166,7 @@ public class PizzaDelivery(
     loyalty: Map<String, *>? = this.loyalty,
     ordered_at: Instant? = this.ordered_at,
     unknownFields: ByteString = this.unknownFields,
-  ): PizzaDelivery = PizzaDelivery(phone_number, address, pizzas, promotion,
-      delivered_within_or_free, loyalty, ordered_at, unknownFields)
+  ): PizzaDelivery = PizzaDelivery(phone_number, address, pizzas, promotion, delivered_within_or_free, loyalty, ordered_at, unknownFields)
 
   public class Builder : Message.Builder<PizzaDelivery, Builder>() {
     @JvmField
@@ -355,8 +353,7 @@ public class PizzaDelivery(
       override fun redact(`value`: PizzaDelivery): PizzaDelivery = value.copy(
         pizzas = value.pizzas.redactElements(Pizza.ADAPTER),
         promotion = value.promotion?.let(AnyMessage.ADAPTER::redact),
-        delivered_within_or_free =
-            value.delivered_within_or_free?.let(ProtoAdapter.DURATION::redact),
+        delivered_within_or_free = value.delivered_within_or_free?.let(ProtoAdapter.DURATION::redact),
         loyalty = value.loyalty?.let(ProtoAdapter.STRUCT_MAP::redact),
         ordered_at = value.ordered_at?.let(ProtoAdapter.INSTANT::redact),
         unknownFields = ByteString.EMPTY

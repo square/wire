@@ -68,8 +68,7 @@ public class Thing(
     return result.joinToString(prefix = "Thing{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(name: String? = this.name, unknownFields: ByteString = this.unknownFields): Thing
-      = Thing(name, unknownFields)
+  public fun copy(name: String? = this.name, unknownFields: ByteString = this.unknownFields): Thing = Thing(name, unknownFields)
 
   public class Builder : Message.Builder<Thing, Builder>() {
     @JvmField

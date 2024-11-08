@@ -74,8 +74,7 @@ public class Repeated(
     return result.joinToString(prefix = "Repeated{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(things: List<Thing> = this.things, unknownFields: ByteString =
-      this.unknownFields): Repeated = Repeated(things, unknownFields)
+  public fun copy(things: List<Thing> = this.things, unknownFields: ByteString = this.unknownFields): Repeated = Repeated(things, unknownFields)
 
   public class Builder : Message.Builder<Repeated, Builder>() {
     @JvmField

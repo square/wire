@@ -47,8 +47,7 @@ public class NoFields(
 
   override fun toString(): String = "NoFields{}"
 
-  public fun copy(unknownFields: ByteString = this.unknownFields): NoFields =
-      NoFields(unknownFields)
+  public fun copy(unknownFields: ByteString = this.unknownFields): NoFields = NoFields(unknownFields)
 
   public class Builder : Message.Builder<NoFields, Builder>() {
     override fun build(): NoFields = NoFields(

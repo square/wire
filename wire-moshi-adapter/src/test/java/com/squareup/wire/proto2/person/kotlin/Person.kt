@@ -117,8 +117,7 @@ public class Person(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -171,8 +170,7 @@ public class Person(
     area_numbers: Map<Int, String> = this.area_numbers,
     is_canadian: Boolean? = this.is_canadian,
     unknownFields: ByteString = this.unknownFields,
-  ): Person = Person(name, id, email, phone, favorite_numbers, area_numbers, is_canadian,
-      unknownFields)
+  ): Person = Person(name, id, email, phone, favorite_numbers, area_numbers, is_canadian, unknownFields)
 
   public companion object {
     @JvmField
@@ -184,8 +182,8 @@ public class Person(
       null, 
       "person_kotlin.proto"
     ) {
-      private val area_numbersAdapter: ProtoAdapter<Map<Int, String>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRING) }
+      private val area_numbersAdapter: ProtoAdapter<Map<Int, String>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRING) }
 
       override fun encodedSize(`value`: Person): Int {
         var size = value.unknownFields.size
@@ -331,8 +329,7 @@ public class Person(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN,
     )
-    override fun newBuilder(): Nothing = throw
-        AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+    override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
     override fun equals(other: Any?): Boolean {
       if (other === this) return true

@@ -85,8 +85,7 @@ public class KeywordKotlin(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -143,8 +142,8 @@ public class KeywordKotlin(
       null, 
       "keyword_kotlin.proto"
     ) {
-      private val funAdapter: ProtoAdapter<Map<String, String>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
+      private val funAdapter: ProtoAdapter<Map<String, String>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
 
       override fun encodedSize(`value`: KeywordKotlin): Int {
         var size = value.unknownFields.size
@@ -233,8 +232,7 @@ public class KeywordKotlin(
         PROTO_2, 
         KeywordKotlinEnum.`object`
       ) {
-        override fun fromValue(`value`: Int): KeywordKotlinEnum? =
-            KeywordKotlinEnum.fromValue(`value`)
+        override fun fromValue(`value`: Int): KeywordKotlinEnum? = KeywordKotlinEnum.fromValue(`value`)
       }
 
       @JvmStatic

@@ -51,8 +51,8 @@ public class MapTypes(
     schemaIndex = 0,
   )
   @JvmField
-  public val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
-      map_string_string)
+  public val map_string_string: Map<String, String> =
+      immutableCopyOf("map_string_string", map_string_string)
 
   @field:WireField(
     tag = 2,
@@ -72,8 +72,8 @@ public class MapTypes(
     schemaIndex = 2,
   )
   @JvmField
-  public val map_sint32_sint32: Map<Int, Int> = immutableCopyOf("map_sint32_sint32",
-      map_sint32_sint32)
+  public val map_sint32_sint32: Map<Int, Int> =
+      immutableCopyOf("map_sint32_sint32", map_sint32_sint32)
 
   @field:WireField(
     tag = 4,
@@ -83,8 +83,8 @@ public class MapTypes(
     schemaIndex = 3,
   )
   @JvmField
-  public val map_sfixed32_sfixed32: Map<Int, Int> = immutableCopyOf("map_sfixed32_sfixed32",
-      map_sfixed32_sfixed32)
+  public val map_sfixed32_sfixed32: Map<Int, Int> =
+      immutableCopyOf("map_sfixed32_sfixed32", map_sfixed32_sfixed32)
 
   @field:WireField(
     tag = 5,
@@ -94,8 +94,8 @@ public class MapTypes(
     schemaIndex = 4,
   )
   @JvmField
-  public val map_fixed32_fixed32: Map<Int, Int> = immutableCopyOf("map_fixed32_fixed32",
-      map_fixed32_fixed32)
+  public val map_fixed32_fixed32: Map<Int, Int> =
+      immutableCopyOf("map_fixed32_fixed32", map_fixed32_fixed32)
 
   @field:WireField(
     tag = 6,
@@ -105,8 +105,8 @@ public class MapTypes(
     schemaIndex = 5,
   )
   @JvmField
-  public val map_uint32_uint32: Map<Int, Int> = immutableCopyOf("map_uint32_uint32",
-      map_uint32_uint32)
+  public val map_uint32_uint32: Map<Int, Int> =
+      immutableCopyOf("map_uint32_uint32", map_uint32_uint32)
 
   @field:WireField(
     tag = 7,
@@ -126,8 +126,8 @@ public class MapTypes(
     schemaIndex = 7,
   )
   @JvmField
-  public val map_sfixed64_sfixed64: Map<Long, Long> = immutableCopyOf("map_sfixed64_sfixed64",
-      map_sfixed64_sfixed64)
+  public val map_sfixed64_sfixed64: Map<Long, Long> =
+      immutableCopyOf("map_sfixed64_sfixed64", map_sfixed64_sfixed64)
 
   @field:WireField(
     tag = 9,
@@ -137,8 +137,8 @@ public class MapTypes(
     schemaIndex = 8,
   )
   @JvmField
-  public val map_sint64_sint64: Map<Long, Long> = immutableCopyOf("map_sint64_sint64",
-      map_sint64_sint64)
+  public val map_sint64_sint64: Map<Long, Long> =
+      immutableCopyOf("map_sint64_sint64", map_sint64_sint64)
 
   @field:WireField(
     tag = 10,
@@ -148,8 +148,8 @@ public class MapTypes(
     schemaIndex = 9,
   )
   @JvmField
-  public val map_fixed64_fixed64: Map<Long, Long> = immutableCopyOf("map_fixed64_fixed64",
-      map_fixed64_fixed64)
+  public val map_fixed64_fixed64: Map<Long, Long> =
+      immutableCopyOf("map_fixed64_fixed64", map_fixed64_fixed64)
 
   @field:WireField(
     tag = 11,
@@ -159,8 +159,8 @@ public class MapTypes(
     schemaIndex = 10,
   )
   @JvmField
-  public val map_uint64_uint64: Map<Long, Long> = immutableCopyOf("map_uint64_uint64",
-      map_uint64_uint64)
+  public val map_uint64_uint64: Map<Long, Long> =
+      immutableCopyOf("map_uint64_uint64", map_uint64_uint64)
 
   override fun newBuilder(): Builder {
     val builder = Builder()
@@ -222,13 +222,11 @@ public class MapTypes(
     if (map_string_string.isNotEmpty()) result += """map_string_string=$map_string_string"""
     if (map_int32_int32.isNotEmpty()) result += """map_int32_int32=$map_int32_int32"""
     if (map_sint32_sint32.isNotEmpty()) result += """map_sint32_sint32=$map_sint32_sint32"""
-    if (map_sfixed32_sfixed32.isNotEmpty()) result +=
-        """map_sfixed32_sfixed32=$map_sfixed32_sfixed32"""
+    if (map_sfixed32_sfixed32.isNotEmpty()) result += """map_sfixed32_sfixed32=$map_sfixed32_sfixed32"""
     if (map_fixed32_fixed32.isNotEmpty()) result += """map_fixed32_fixed32=$map_fixed32_fixed32"""
     if (map_uint32_uint32.isNotEmpty()) result += """map_uint32_uint32=$map_uint32_uint32"""
     if (map_int64_int64.isNotEmpty()) result += """map_int64_int64=$map_int64_int64"""
-    if (map_sfixed64_sfixed64.isNotEmpty()) result +=
-        """map_sfixed64_sfixed64=$map_sfixed64_sfixed64"""
+    if (map_sfixed64_sfixed64.isNotEmpty()) result += """map_sfixed64_sfixed64=$map_sfixed64_sfixed64"""
     if (map_sint64_sint64.isNotEmpty()) result += """map_sint64_sint64=$map_sint64_sint64"""
     if (map_fixed64_fixed64.isNotEmpty()) result += """map_fixed64_fixed64=$map_fixed64_fixed64"""
     if (map_uint64_uint64.isNotEmpty()) result += """map_uint64_uint64=$map_uint64_uint64"""
@@ -248,10 +246,7 @@ public class MapTypes(
     map_fixed64_fixed64: Map<Long, Long> = this.map_fixed64_fixed64,
     map_uint64_uint64: Map<Long, Long> = this.map_uint64_uint64,
     unknownFields: ByteString = this.unknownFields,
-  ): MapTypes = MapTypes(map_string_string, map_int32_int32, map_sint32_sint32,
-      map_sfixed32_sfixed32, map_fixed32_fixed32, map_uint32_uint32, map_int64_int64,
-      map_sfixed64_sfixed64, map_sint64_sint64, map_fixed64_fixed64, map_uint64_uint64,
-      unknownFields)
+  ): MapTypes = MapTypes(map_string_string, map_int32_int32, map_sint32_sint32, map_sfixed32_sfixed32, map_fixed32_fixed32, map_uint32_uint32, map_int64_int64, map_sfixed64_sfixed64, map_sint64_sint64, map_fixed64_fixed64, map_uint64_uint64, unknownFields)
 
   public class Builder : Message.Builder<MapTypes, Builder>() {
     @JvmField
@@ -368,38 +363,38 @@ public class MapTypes(
       null, 
       "map_types.proto"
     ) {
-      private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
+      private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
 
-      private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
+      private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
 
-      private val map_sint32_sint32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.SINT32, ProtoAdapter.SINT32) }
+      private val map_sint32_sint32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.SINT32, ProtoAdapter.SINT32) }
 
-      private val map_sfixed32_sfixed32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.SFIXED32, ProtoAdapter.SFIXED32) }
+      private val map_sfixed32_sfixed32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.SFIXED32, ProtoAdapter.SFIXED32) }
 
-      private val map_fixed32_fixed32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.FIXED32, ProtoAdapter.FIXED32) }
+      private val map_fixed32_fixed32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.FIXED32, ProtoAdapter.FIXED32) }
 
-      private val map_uint32_uint32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.UINT32, ProtoAdapter.UINT32) }
+      private val map_uint32_uint32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.UINT32, ProtoAdapter.UINT32) }
 
-      private val map_int64_int64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.INT64) }
+      private val map_int64_int64Adapter: ProtoAdapter<Map<Long, Long>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.INT64) }
 
-      private val map_sfixed64_sfixed64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.SFIXED64, ProtoAdapter.SFIXED64) }
+      private val map_sfixed64_sfixed64Adapter: ProtoAdapter<Map<Long, Long>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.SFIXED64, ProtoAdapter.SFIXED64) }
 
-      private val map_sint64_sint64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.SINT64, ProtoAdapter.SINT64) }
+      private val map_sint64_sint64Adapter: ProtoAdapter<Map<Long, Long>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.SINT64, ProtoAdapter.SINT64) }
 
-      private val map_fixed64_fixed64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.FIXED64, ProtoAdapter.FIXED64) }
+      private val map_fixed64_fixed64Adapter: ProtoAdapter<Map<Long, Long>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.FIXED64, ProtoAdapter.FIXED64) }
 
-      private val map_uint64_uint64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.UINT64, ProtoAdapter.UINT64) }
+      private val map_uint64_uint64Adapter: ProtoAdapter<Map<Long, Long>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.UINT64, ProtoAdapter.UINT64) }
 
       override fun encodedSize(`value`: MapTypes): Int {
         var size = value.unknownFields.size

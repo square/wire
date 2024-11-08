@@ -67,8 +67,7 @@ public class NestedVersionOne(
     return result.joinToString(prefix = "NestedVersionOne{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(i: Int? = this.i, unknownFields: ByteString = this.unknownFields):
-      NestedVersionOne = NestedVersionOne(i, unknownFields)
+  public fun copy(i: Int? = this.i, unknownFields: ByteString = this.unknownFields): NestedVersionOne = NestedVersionOne(i, unknownFields)
 
   public class Builder : Message.Builder<NestedVersionOne, Builder>() {
     @JvmField
@@ -133,7 +132,6 @@ public class NestedVersionOne(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): NestedVersionOne =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): NestedVersionOne = Builder().apply(body).build()
   }
 }

@@ -39,8 +39,7 @@ public class BoxedOneOfs(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -66,8 +65,7 @@ public class BoxedOneOfs(
     return result.joinToString(prefix = "BoxedOneOfs{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(OneOf: OneOf<OneOf_<*>, *>? = this.OneOf, unknownFields: ByteString =
-      this.unknownFields): BoxedOneOfs = BoxedOneOfs(OneOf, unknownFields)
+  public fun copy(OneOf: OneOf<OneOf_<*>, *>? = this.OneOf, unknownFields: ByteString = this.unknownFields): BoxedOneOfs = BoxedOneOfs(OneOf, unknownFields)
 
   public class OneOf_<T>(
     tag: Int,
@@ -131,39 +129,39 @@ public class BoxedOneOfs(
       )
     }
 
-    public val ONEOF_ARRAY: OneOf_<String> = OneOf_<String>(tag = 1, adapter = ProtoAdapter.STRING,
-        declaredName = "array")
+    public val ONEOF_ARRAY: OneOf_<String> =
+        OneOf_<String>(tag = 1, adapter = ProtoAdapter.STRING, declaredName = "array")
 
-    public val ONEOF_BOOLEAN: OneOf_<String> = OneOf_<String>(tag = 2, adapter =
-        ProtoAdapter.STRING, declaredName = "boolean")
+    public val ONEOF_BOOLEAN: OneOf_<String> =
+        OneOf_<String>(tag = 2, adapter = ProtoAdapter.STRING, declaredName = "boolean")
 
-    public val ONEOF_CLASS: OneOf_<String> = OneOf_<String>(tag = 3, adapter = ProtoAdapter.STRING,
-        declaredName = "class")
+    public val ONEOF_CLASS: OneOf_<String> =
+        OneOf_<String>(tag = 3, adapter = ProtoAdapter.STRING, declaredName = "class")
 
-    public val ONEOF_OPEN: OneOf_<String> = OneOf_<String>(tag = 4, adapter = ProtoAdapter.STRING,
-        declaredName = "open")
+    public val ONEOF_OPEN: OneOf_<String> =
+        OneOf_<String>(tag = 4, adapter = ProtoAdapter.STRING, declaredName = "open")
 
-    public val ONEOF_FUN: OneOf_<String> = OneOf_<String>(tag = 5, adapter = ProtoAdapter.STRING,
-        declaredName = "fun")
+    public val ONEOF_FUN: OneOf_<String> =
+        OneOf_<String>(tag = 5, adapter = ProtoAdapter.STRING, declaredName = "fun")
 
-    public val ONEOF_VAL: OneOf_<String> = OneOf_<String>(tag = 6, adapter = ProtoAdapter.STRING,
-        declaredName = "val")
+    public val ONEOF_VAL: OneOf_<String> =
+        OneOf_<String>(tag = 6, adapter = ProtoAdapter.STRING, declaredName = "val")
 
-    public val ONEOF_PRIVATE: OneOf_<String> = OneOf_<String>(tag = 7, adapter =
-        ProtoAdapter.STRING, declaredName = "private")
+    public val ONEOF_PRIVATE: OneOf_<String> =
+        OneOf_<String>(tag = 7, adapter = ProtoAdapter.STRING, declaredName = "private")
 
-    public val ONEOF_RETURN: OneOf_<String> = OneOf_<String>(tag = 8, adapter = ProtoAdapter.STRING,
-        declaredName = "return")
+    public val ONEOF_RETURN: OneOf_<String> =
+        OneOf_<String>(tag = 8, adapter = ProtoAdapter.STRING, declaredName = "return")
 
-    public val ONEOF_RESULT: OneOf_<String> = OneOf_<String>(tag = 9, adapter = ProtoAdapter.STRING,
-        declaredName = "result")
+    public val ONEOF_RESULT: OneOf_<String> =
+        OneOf_<String>(tag = 9, adapter = ProtoAdapter.STRING, declaredName = "result")
 
-    public val ONEOF_PUBLIC: OneOf_<String> = OneOf_<String>(tag = 10, adapter =
-        ProtoAdapter.STRING, declaredName = "public")
+    public val ONEOF_PUBLIC: OneOf_<String> =
+        OneOf_<String>(tag = 10, adapter = ProtoAdapter.STRING, declaredName = "public")
 
     @JvmStatic
-    public val ONEOF_KEYS: Set<OneOf_<*>> = setOf(ONEOF_ARRAY, ONEOF_BOOLEAN, ONEOF_CLASS,
-        ONEOF_OPEN, ONEOF_FUN, ONEOF_VAL, ONEOF_PRIVATE, ONEOF_RETURN, ONEOF_RESULT, ONEOF_PUBLIC)
+    public val ONEOF_KEYS: Set<OneOf_<*>> =
+        setOf(ONEOF_ARRAY, ONEOF_BOOLEAN, ONEOF_CLASS, ONEOF_OPEN, ONEOF_FUN, ONEOF_VAL, ONEOF_PRIVATE, ONEOF_RETURN, ONEOF_RESULT, ONEOF_PUBLIC)
 
     private const val serialVersionUID: Long = 0L
   }

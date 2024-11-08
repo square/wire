@@ -124,8 +124,7 @@ public class CamelCase(
     IDitIt_my_wAy: String = this.IDitIt_my_wAy,
     map_int32_Int32: Map<Int, Int> = this.map_int32_Int32,
     unknownFields: ByteString = this.unknownFields,
-  ): CamelCase = CamelCase(nested__message, _Rep_int32, IDitIt_my_wAy, map_int32_Int32,
-      unknownFields)
+  ): CamelCase = CamelCase(nested__message, _Rep_int32, IDitIt_my_wAy, map_int32_Int32, unknownFields)
 
   public class Builder : Message.Builder<CamelCase, Builder>() {
     @JvmField
@@ -180,8 +179,8 @@ public class CamelCase(
       null, 
       "camel_case.proto"
     ) {
-      private val map_int32_Int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
+      private val map_int32_Int32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
 
       override fun encodedSize(`value`: CamelCase): Int {
         var size = value.unknownFields.size
@@ -307,8 +306,7 @@ public class CamelCase(
       return result.joinToString(prefix = "NestedCamelCase{", separator = ", ", postfix = "}")
     }
 
-    public fun copy(one_int32: Int = this.one_int32, unknownFields: ByteString =
-        this.unknownFields): NestedCamelCase = NestedCamelCase(one_int32, unknownFields)
+    public fun copy(one_int32: Int = this.one_int32, unknownFields: ByteString = this.unknownFields): NestedCamelCase = NestedCamelCase(one_int32, unknownFields)
 
     public class Builder : Message.Builder<NestedCamelCase, Builder>() {
       @JvmField
@@ -379,8 +377,7 @@ public class CamelCase(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): NestedCamelCase =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): NestedCamelCase = Builder().apply(body).build()
     }
   }
 }

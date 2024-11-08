@@ -622,8 +622,8 @@ public class AllTypes(
     jsonName = "repNestedMessage",
     schemaIndex = 56,
   )
-  public val rep_nested_message: List<NestedMessage> = immutableCopyOf("rep_nested_message",
-      rep_nested_message)
+  public val rep_nested_message: List<NestedMessage> =
+      immutableCopyOf("rep_nested_message", rep_nested_message)
 
   @field:WireField(
     tag = 218,
@@ -659,8 +659,8 @@ public class AllTypes(
     jsonName = "repListValue",
     schemaIndex = 60,
   )
-  public val rep_list_value: List<List<*>?> = immutableCopyOfStruct("rep_list_value",
-      rep_list_value)
+  public val rep_list_value: List<List<*>?> =
+      immutableCopyOfStruct("rep_list_value", rep_list_value)
 
   @field:WireField(
     tag = 222,
@@ -678,8 +678,8 @@ public class AllTypes(
     jsonName = "repNullValue",
     schemaIndex = 62,
   )
-  public val rep_null_value: List<Nothing?> = immutableCopyOfStruct("rep_null_value",
-      rep_null_value)
+  public val rep_null_value: List<Nothing?> =
+      immutableCopyOfStruct("rep_null_value", rep_null_value)
 
   @field:WireField(
     tag = 224,
@@ -823,8 +823,8 @@ public class AllTypes(
     jsonName = "packNestedEnum",
     schemaIndex = 78,
   )
-  public val pack_nested_enum: List<NestedEnum> = immutableCopyOf("pack_nested_enum",
-      pack_nested_enum)
+  public val pack_nested_enum: List<NestedEnum> =
+      immutableCopyOf("pack_nested_enum", pack_nested_enum)
 
   @field:WireField(
     tag = 323,
@@ -833,8 +833,8 @@ public class AllTypes(
     jsonName = "packNullValue",
     schemaIndex = 79,
   )
-  public val pack_null_value: List<Nothing?> = immutableCopyOfStruct("pack_null_value",
-      pack_null_value)
+  public val pack_null_value: List<Nothing?> =
+      immutableCopyOfStruct("pack_null_value", pack_null_value)
 
   @field:WireField(
     tag = 501,
@@ -852,8 +852,8 @@ public class AllTypes(
     jsonName = "mapStringString",
     schemaIndex = 81,
   )
-  public val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
-      map_string_string)
+  public val map_string_string: Map<String, String> =
+      immutableCopyOf("map_string_string", map_string_string)
 
   @field:WireField(
     tag = 503,
@@ -862,8 +862,8 @@ public class AllTypes(
     jsonName = "mapStringMessage",
     schemaIndex = 82,
   )
-  public val map_string_message: Map<String, NestedMessage> = immutableCopyOf("map_string_message",
-      map_string_message)
+  public val map_string_message: Map<String, NestedMessage> =
+      immutableCopyOf("map_string_message", map_string_message)
 
   @field:WireField(
     tag = 504,
@@ -872,8 +872,8 @@ public class AllTypes(
     jsonName = "mapStringEnum",
     schemaIndex = 83,
   )
-  public val map_string_enum: Map<String, NestedEnum> = immutableCopyOf("map_string_enum",
-      map_string_enum)
+  public val map_string_enum: Map<String, NestedEnum> =
+      immutableCopyOf("map_string_enum", map_string_enum)
 
   @field:WireField(
     tag = 518,
@@ -891,8 +891,8 @@ public class AllTypes(
     jsonName = "mapInt32Duration",
     schemaIndex = 85,
   )
-  public val map_int32_duration: Map<Int, Duration> = immutableCopyOf("map_int32_duration",
-      map_int32_duration)
+  public val map_int32_duration: Map<Int, Duration> =
+      immutableCopyOf("map_int32_duration", map_int32_duration)
 
   @field:WireField(
     tag = 520,
@@ -921,8 +921,8 @@ public class AllTypes(
     jsonName = "mapInt32Value",
     schemaIndex = 88,
   )
-  public val map_int32_value: Map<Int, Any?> = immutableCopyOfMapWithStructValues("map_int32_value",
-      map_int32_value)
+  public val map_int32_value: Map<Int, Any?> =
+      immutableCopyOfMapWithStructValues("map_int32_value", map_int32_value)
 
   @field:WireField(
     tag = 523,
@@ -950,8 +950,8 @@ public class AllTypes(
     jsonName = "mapInt32Timestamp",
     schemaIndex = 91,
   )
-  public val map_int32_timestamp: Map<Int, Instant> = immutableCopyOf("map_int32_timestamp",
-      map_int32_timestamp)
+  public val map_int32_timestamp: Map<Int, Instant> =
+      immutableCopyOf("map_int32_timestamp", map_int32_timestamp)
 
   @field:WireField(
     tag = 620,
@@ -969,12 +969,11 @@ public class AllTypes(
     oneofName = "choice",
     schemaIndex = 98,
   )
-  public val oneof_list_value: List<*>? = immutableCopyOfStruct("oneof_list_value",
-      oneof_list_value)
+  public val oneof_list_value: List<*>? =
+      immutableCopyOfStruct("oneof_list_value", oneof_list_value)
 
   init {
-    require(countNonNull(oneof_string, oneof_int32, oneof_nested_message, oneof_any, oneof_duration,
-        oneof_struct, oneof_list_value, oneof_empty, oneof_timestamp) <= 1) {
+    require(countNonNull(oneof_string, oneof_int32, oneof_nested_message, oneof_any, oneof_duration, oneof_struct, oneof_list_value, oneof_empty, oneof_timestamp) <= 1) {
       "At most one of oneof_string, oneof_int32, oneof_nested_message, oneof_any, oneof_duration, oneof_struct, oneof_list_value, oneof_empty, oneof_timestamp may be non-null"
     }
   }
@@ -983,8 +982,7 @@ public class AllTypes(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -1293,11 +1291,9 @@ public class AllTypes(
     if (map_int32_any.isNotEmpty()) result += """map_int32_any=$map_int32_any"""
     if (map_int32_duration.isNotEmpty()) result += """map_int32_duration=$map_int32_duration"""
     if (map_int32_struct.isNotEmpty()) result += """map_int32_struct=$map_int32_struct"""
-    if (map_int32_list_value.isNotEmpty()) result +=
-        """map_int32_list_value=$map_int32_list_value"""
+    if (map_int32_list_value.isNotEmpty()) result += """map_int32_list_value=$map_int32_list_value"""
     if (map_int32_value.isNotEmpty()) result += """map_int32_value=$map_int32_value"""
-    if (map_int32_null_value.isNotEmpty()) result +=
-        """map_int32_null_value=$map_int32_null_value"""
+    if (map_int32_null_value.isNotEmpty()) result += """map_int32_null_value=$map_int32_null_value"""
     if (map_int32_empty.isNotEmpty()) result += """map_int32_empty=$map_int32_empty"""
     if (map_int32_timestamp.isNotEmpty()) result += """map_int32_timestamp=$map_int32_timestamp"""
     if (oneof_string != null) result += """oneof_string=${sanitize(oneof_string)}"""
@@ -1415,24 +1411,7 @@ public class AllTypes(
     oneof_empty: Unit? = this.oneof_empty,
     oneof_timestamp: Instant? = this.oneof_timestamp,
     unknownFields: ByteString = this.unknownFields,
-  ): AllTypes = AllTypes(proto3_kotlin_int32, proto3_kotlin_uint32, proto3_kotlin_sint32,
-      proto3_kotlin_fixed32, proto3_kotlin_sfixed32, proto3_kotlin_int64, proto3_kotlin_uint64,
-      proto3_kotlin_sint64, proto3_kotlin_fixed64, proto3_kotlin_sfixed64, proto3_kotlin_bool,
-      proto3_kotlin_float, proto3_kotlin_double, proto3_kotlin_string, proto3_kotlin_bytes,
-      nested_enum, nested_message, any, duration, struct, list_value, value_, null_value, empty,
-      timestamp, opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64,
-      opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double,
-      opt_string, opt_bytes, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32,
-      rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double,
-      rep_string, rep_bytes, rep_nested_enum, rep_nested_message, rep_any, rep_duration, rep_struct,
-      rep_list_value, rep_value, rep_null_value, rep_empty, rep_timestamp, pack_int32, pack_uint32,
-      pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64,
-      pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, pack_null_value,
-      map_int32_int32, map_string_string, map_string_message, map_string_enum, map_int32_any,
-      map_int32_duration, map_int32_struct, map_int32_list_value, map_int32_value,
-      map_int32_null_value, map_int32_empty, map_int32_timestamp, oneof_string, oneof_int32,
-      oneof_nested_message, oneof_any, oneof_duration, oneof_struct, oneof_list_value, oneof_empty,
-      oneof_timestamp, unknownFields)
+  ): AllTypes = AllTypes(proto3_kotlin_int32, proto3_kotlin_uint32, proto3_kotlin_sint32, proto3_kotlin_fixed32, proto3_kotlin_sfixed32, proto3_kotlin_int64, proto3_kotlin_uint64, proto3_kotlin_sint64, proto3_kotlin_fixed64, proto3_kotlin_sfixed64, proto3_kotlin_bool, proto3_kotlin_float, proto3_kotlin_double, proto3_kotlin_string, proto3_kotlin_bytes, nested_enum, nested_message, any, duration, struct, list_value, value_, null_value, empty, timestamp, opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, rep_any, rep_duration, rep_struct, rep_list_value, rep_value, rep_null_value, rep_empty, rep_timestamp, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, pack_null_value, map_int32_int32, map_string_string, map_string_message, map_string_enum, map_int32_any, map_int32_duration, map_int32_struct, map_int32_list_value, map_int32_value, map_int32_null_value, map_int32_empty, map_int32_timestamp, oneof_string, oneof_int32, oneof_nested_message, oneof_any, oneof_duration, oneof_struct, oneof_list_value, oneof_empty, oneof_timestamp, unknownFields)
 
   public companion object {
     @JvmField
@@ -1444,41 +1423,41 @@ public class AllTypes(
       null, 
       "all_types.proto"
     ) {
-      private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
+      private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
 
-      private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
+      private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
 
-      private val map_string_messageAdapter: ProtoAdapter<Map<String, NestedMessage>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER) }
+      private val map_string_messageAdapter: ProtoAdapter<Map<String, NestedMessage>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER) }
 
-      private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
+      private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
 
-      private val map_int32_anyAdapter: ProtoAdapter<Map<Int, AnyMessage>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, AnyMessage.ADAPTER) }
+      private val map_int32_anyAdapter: ProtoAdapter<Map<Int, AnyMessage>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, AnyMessage.ADAPTER) }
 
-      private val map_int32_durationAdapter: ProtoAdapter<Map<Int, Duration>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.DURATION) }
+      private val map_int32_durationAdapter: ProtoAdapter<Map<Int, Duration>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.DURATION) }
 
-      private val map_int32_structAdapter: ProtoAdapter<Map<Int, Map<String, *>?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_MAP) }
+      private val map_int32_structAdapter: ProtoAdapter<Map<Int, Map<String, *>?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_MAP) }
 
-      private val map_int32_list_valueAdapter: ProtoAdapter<Map<Int, List<*>?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_LIST) }
+      private val map_int32_list_valueAdapter: ProtoAdapter<Map<Int, List<*>?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_LIST) }
 
-      private val map_int32_valueAdapter: ProtoAdapter<Map<Int, Any?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_VALUE) }
+      private val map_int32_valueAdapter: ProtoAdapter<Map<Int, Any?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_VALUE) }
 
-      private val map_int32_null_valueAdapter: ProtoAdapter<Map<Int, Nothing?>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_NULL) }
+      private val map_int32_null_valueAdapter: ProtoAdapter<Map<Int, Nothing?>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_NULL) }
 
-      private val map_int32_emptyAdapter: ProtoAdapter<Map<Int, Unit>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.EMPTY) }
+      private val map_int32_emptyAdapter: ProtoAdapter<Map<Int, Unit>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.EMPTY) }
 
-      private val map_int32_timestampAdapter: ProtoAdapter<Map<Int, Instant>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INSTANT) }
+      private val map_int32_timestampAdapter: ProtoAdapter<Map<Int, Instant>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INSTANT) }
 
       override fun encodedSize(`value`: AllTypes): Int {
         var size = value.unknownFields.size
@@ -1527,8 +1506,7 @@ public class AllTypes(
         if (value.proto3_kotlin_bytes != okio.ByteString.EMPTY) {
           size += ProtoAdapter.BYTES.encodedSizeWithTag(15, value.proto3_kotlin_bytes)
         }
-        if (value.nested_enum !=
-            com.squareup.wire.proto3.kotlin.all_types.AllTypes.NestedEnum.UNKNOWN) {
+        if (value.nested_enum != com.squareup.wire.proto3.kotlin.all_types.AllTypes.NestedEnum.UNKNOWN) {
           size += NestedEnum.ADAPTER.encodedSizeWithTag(16, value.nested_enum)
         }
         if (value.nested_message != null) {
@@ -1683,8 +1661,7 @@ public class AllTypes(
         if (value.proto3_kotlin_bytes != okio.ByteString.EMPTY) {
           ProtoAdapter.BYTES.encodeWithTag(writer, 15, value.proto3_kotlin_bytes)
         }
-        if (value.nested_enum !=
-            com.squareup.wire.proto3.kotlin.all_types.AllTypes.NestedEnum.UNKNOWN) {
+        if (value.nested_enum != com.squareup.wire.proto3.kotlin.all_types.AllTypes.NestedEnum.UNKNOWN) {
           NestedEnum.ADAPTER.encodeWithTag(writer, 16, value.nested_enum)
         }
         if (value.nested_message != null) {
@@ -1898,8 +1875,7 @@ public class AllTypes(
         if (value.nested_message != null) {
           NestedMessage.ADAPTER.encodeWithTag(writer, 17, value.nested_message)
         }
-        if (value.nested_enum !=
-            com.squareup.wire.proto3.kotlin.all_types.AllTypes.NestedEnum.UNKNOWN) {
+        if (value.nested_enum != com.squareup.wire.proto3.kotlin.all_types.AllTypes.NestedEnum.UNKNOWN) {
           NestedEnum.ADAPTER.encodeWithTag(writer, 16, value.nested_enum)
         }
         if (value.proto3_kotlin_bytes != okio.ByteString.EMPTY) {
@@ -2483,8 +2459,7 @@ public class AllTypes(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN,
     )
-    override fun newBuilder(): Nothing = throw
-        AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+    override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -2510,8 +2485,7 @@ public class AllTypes(
       return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
     }
 
-    public fun copy(a: Int = this.a, unknownFields: ByteString = this.unknownFields): NestedMessage
-        = NestedMessage(a, unknownFields)
+    public fun copy(a: Int = this.a, unknownFields: ByteString = this.unknownFields): NestedMessage = NestedMessage(a, unknownFields)
 
     public companion object {
       @JvmField

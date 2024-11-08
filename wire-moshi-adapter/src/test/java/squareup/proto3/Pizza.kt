@@ -47,8 +47,7 @@ public class Pizza(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -74,8 +73,7 @@ public class Pizza(
     return result.joinToString(prefix = "Pizza{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(toppings: List<String> = this.toppings, unknownFields: ByteString =
-      this.unknownFields): Pizza = Pizza(toppings, unknownFields)
+  public fun copy(toppings: List<String> = this.toppings, unknownFields: ByteString = this.unknownFields): Pizza = Pizza(toppings, unknownFields)
 
   public companion object {
     @JvmField

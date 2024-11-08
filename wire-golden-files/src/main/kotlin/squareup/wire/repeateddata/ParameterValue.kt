@@ -48,8 +48,7 @@ public class ParameterValue(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -75,8 +74,7 @@ public class ParameterValue(
     return result.joinToString(prefix = "ParameterValue{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(data_: List<Float> = this.data_, unknownFields: ByteString = this.unknownFields):
-      ParameterValue = ParameterValue(data_, unknownFields)
+  public fun copy(data_: List<Float> = this.data_, unknownFields: ByteString = this.unknownFields): ParameterValue = ParameterValue(data_, unknownFields)
 
   public companion object {
     @JvmField

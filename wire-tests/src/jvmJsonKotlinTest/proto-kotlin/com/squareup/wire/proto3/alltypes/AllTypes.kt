@@ -545,8 +545,8 @@ public class AllTypes(
     schemaIndex = 48,
   )
   @JvmField
-  public val rep_nested_message: List<NestedMessage> = immutableCopyOf("rep_nested_message",
-      rep_nested_message)
+  public val rep_nested_message: List<NestedMessage> =
+      immutableCopyOf("rep_nested_message", rep_nested_message)
 
   @field:WireField(
     tag = 301,
@@ -686,8 +686,8 @@ public class AllTypes(
     schemaIndex = 62,
   )
   @JvmField
-  public val pack_nested_enum: List<NestedEnum> = immutableCopyOf("pack_nested_enum",
-      pack_nested_enum)
+  public val pack_nested_enum: List<NestedEnum> =
+      immutableCopyOf("pack_nested_enum", pack_nested_enum)
 
   @field:WireField(
     tag = 501,
@@ -707,8 +707,8 @@ public class AllTypes(
     schemaIndex = 64,
   )
   @JvmField
-  public val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
-      map_string_string)
+  public val map_string_string: Map<String, String> =
+      immutableCopyOf("map_string_string", map_string_string)
 
   @field:WireField(
     tag = 503,
@@ -718,8 +718,8 @@ public class AllTypes(
     schemaIndex = 65,
   )
   @JvmField
-  public val map_string_message: Map<String, NestedMessage> = immutableCopyOf("map_string_message",
-      map_string_message)
+  public val map_string_message: Map<String, NestedMessage> =
+      immutableCopyOf("map_string_message", map_string_message)
 
   @field:WireField(
     tag = 504,
@@ -729,8 +729,8 @@ public class AllTypes(
     schemaIndex = 66,
   )
   @JvmField
-  public val map_string_enum: Map<String, NestedEnum> = immutableCopyOf("map_string_enum",
-      map_string_enum)
+  public val map_string_enum: Map<String, NestedEnum> =
+      immutableCopyOf("map_string_enum", map_string_enum)
 
   init {
     require(countNonNull(oneof_string, oneof_int32, oneof_nested_message) <= 1) {
@@ -1117,17 +1117,7 @@ public class AllTypes(
     oneof_int32: Int? = this.oneof_int32,
     oneof_nested_message: NestedMessage? = this.oneof_nested_message,
     unknownFields: ByteString = this.unknownFields,
-  ): AllTypes = AllTypes(my_int32, my_uint32, my_sint32, my_fixed32, my_sfixed32, my_int64,
-      my_uint64, my_sint64, my_fixed64, my_sfixed64, my_bool, my_float, my_double, my_string,
-      my_bytes, nested_enum, nested_message, opt_int32, opt_uint32, opt_sint32, opt_fixed32,
-      opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool,
-      opt_float, opt_double, opt_string, opt_bytes, rep_int32, rep_uint32, rep_sint32, rep_fixed32,
-      rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool,
-      rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32,
-      pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64,
-      pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum,
-      map_int32_int32, map_string_string, map_string_message, map_string_enum, oneof_string,
-      oneof_int32, oneof_nested_message, unknownFields)
+  ): AllTypes = AllTypes(my_int32, my_uint32, my_sint32, my_fixed32, my_sfixed32, my_int64, my_uint64, my_sint64, my_fixed64, my_sfixed64, my_bool, my_float, my_double, my_string, my_bytes, nested_enum, nested_message, opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, map_int32_int32, map_string_string, map_string_message, map_string_enum, oneof_string, oneof_int32, oneof_nested_message, unknownFields)
 
   public class Builder : Message.Builder<AllTypes, Builder>() {
     @JvmField
@@ -1812,17 +1802,17 @@ public class AllTypes(
       null, 
       "all_types_proto3_test_proto3_optional.proto"
     ) {
-      private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
+      private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
 
-      private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
+      private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
 
-      private val map_string_messageAdapter: ProtoAdapter<Map<String, NestedMessage>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER) }
+      private val map_string_messageAdapter: ProtoAdapter<Map<String, NestedMessage>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER) }
 
-      private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
+      private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
 
       override fun encodedSize(`value`: AllTypes): Int {
         var size = value.unknownFields.size
@@ -2582,8 +2572,7 @@ public class AllTypes(
       return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
     }
 
-    public fun copy(a: Int = this.a, unknownFields: ByteString = this.unknownFields): NestedMessage
-        = NestedMessage(a, unknownFields)
+    public fun copy(a: Int = this.a, unknownFields: ByteString = this.unknownFields): NestedMessage = NestedMessage(a, unknownFields)
 
     public class Builder : Message.Builder<NestedMessage, Builder>() {
       @JvmField
@@ -2654,8 +2643,7 @@ public class AllTypes(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): NestedMessage =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): NestedMessage = Builder().apply(body).build()
     }
   }
 }

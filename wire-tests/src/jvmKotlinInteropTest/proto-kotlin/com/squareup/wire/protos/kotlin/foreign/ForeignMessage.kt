@@ -165,7 +165,6 @@ public class ForeignMessage(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): ForeignMessage =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): ForeignMessage = Builder().apply(body).build()
   }
 }

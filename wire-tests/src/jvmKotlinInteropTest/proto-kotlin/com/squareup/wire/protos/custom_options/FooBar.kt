@@ -487,8 +487,7 @@ public class FooBar(
       return result.joinToString(prefix = "Nested{", separator = ", ", postfix = "}")
     }
 
-    public fun copy(value_: FooBarBazEnum? = this.value_, unknownFields: ByteString =
-        this.unknownFields): Nested = Nested(value_, unknownFields)
+    public fun copy(value_: FooBarBazEnum? = this.value_, unknownFields: ByteString = this.unknownFields): Nested = Nested(value_, unknownFields)
 
     public class Builder : Message.Builder<Nested, Builder>() {
       @JvmField
@@ -605,8 +604,7 @@ public class FooBar(
       return result.joinToString(prefix = "More{", separator = ", ", postfix = "}")
     }
 
-    public fun copy(serial: List<Int> = this.serial, unknownFields: ByteString =
-        this.unknownFields): More = More(serial, unknownFields)
+    public fun copy(serial: List<Int> = this.serial, unknownFields: ByteString = this.unknownFields): More = More(serial, unknownFields)
 
     public class Builder : Message.Builder<More, Builder>() {
       @JvmField

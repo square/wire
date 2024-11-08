@@ -278,7 +278,6 @@ public class NestedVersionTwo(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): NestedVersionTwo =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): NestedVersionTwo = Builder().apply(body).build()
   }
 }

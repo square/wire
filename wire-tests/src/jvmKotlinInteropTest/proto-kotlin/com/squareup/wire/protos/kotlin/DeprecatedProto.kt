@@ -70,8 +70,7 @@ public class DeprecatedProto(
     return result.joinToString(prefix = "DeprecatedProto{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(foo: String? = this.foo, unknownFields: ByteString = this.unknownFields):
-      DeprecatedProto = DeprecatedProto(foo, unknownFields)
+  public fun copy(foo: String? = this.foo, unknownFields: ByteString = this.unknownFields): DeprecatedProto = DeprecatedProto(foo, unknownFields)
 
   public class Builder : Message.Builder<DeprecatedProto, Builder>() {
     @JvmField
@@ -137,7 +136,6 @@ public class DeprecatedProto(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): DeprecatedProto =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): DeprecatedProto = Builder().apply(body).build()
   }
 }

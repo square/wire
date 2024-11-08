@@ -37,8 +37,7 @@ public class OtherMessageWithStatus(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -51,13 +50,12 @@ public class OtherMessageWithStatus(
 
   override fun toString(): String = "OtherMessageWithStatus{}"
 
-  public fun copy(unknownFields: ByteString = this.unknownFields): OtherMessageWithStatus =
-      OtherMessageWithStatus(unknownFields)
+  public fun copy(unknownFields: ByteString = this.unknownFields): OtherMessageWithStatus = OtherMessageWithStatus(unknownFields)
 
   public companion object {
     @JvmField
-    public val ADAPTER: ProtoAdapter<OtherMessageWithStatus> = object :
-        ProtoAdapter<OtherMessageWithStatus>(
+    public val ADAPTER: ProtoAdapter<OtherMessageWithStatus> =
+        object : ProtoAdapter<OtherMessageWithStatus>(
       FieldEncoding.LENGTH_DELIMITED, 
       OtherMessageWithStatus::class, 
       "type.googleapis.com/squareup.protos.kotlin.OtherMessageWithStatus", 

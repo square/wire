@@ -29,8 +29,7 @@ public enum class NegativeValueEnum(
       PROTO_2, 
       null
     ) {
-      override fun fromValue(`value`: Int): NegativeValueEnum? =
-          NegativeValueEnum.fromValue(`value`)
+      override fun fromValue(`value`: Int): NegativeValueEnum? = NegativeValueEnum.fromValue(`value`)
     }
 
     @JvmStatic

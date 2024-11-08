@@ -243,8 +243,7 @@ public class SomeMessage private constructor(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): NestedMessage =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): NestedMessage = Builder().apply(body).build()
     }
   }
 }

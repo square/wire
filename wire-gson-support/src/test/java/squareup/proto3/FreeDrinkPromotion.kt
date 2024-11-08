@@ -45,8 +45,7 @@ public class FreeDrinkPromotion(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -72,13 +71,12 @@ public class FreeDrinkPromotion(
     return result.joinToString(prefix = "FreeDrinkPromotion{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(drink: Drink = this.drink, unknownFields: ByteString = this.unknownFields):
-      FreeDrinkPromotion = FreeDrinkPromotion(drink, unknownFields)
+  public fun copy(drink: Drink = this.drink, unknownFields: ByteString = this.unknownFields): FreeDrinkPromotion = FreeDrinkPromotion(drink, unknownFields)
 
   public companion object {
     @JvmField
-    public val ADAPTER: ProtoAdapter<FreeDrinkPromotion> = object :
-        ProtoAdapter<FreeDrinkPromotion>(
+    public val ADAPTER: ProtoAdapter<FreeDrinkPromotion> =
+        object : ProtoAdapter<FreeDrinkPromotion>(
       FieldEncoding.LENGTH_DELIMITED, 
       FreeDrinkPromotion::class, 
       "type.googleapis.com/squareup.proto3.FreeDrinkPromotion", 

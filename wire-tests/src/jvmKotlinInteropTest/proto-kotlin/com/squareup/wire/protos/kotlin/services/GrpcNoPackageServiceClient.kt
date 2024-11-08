@@ -15,8 +15,7 @@ import kotlin.Suppress
 public class GrpcNoPackageServiceClient(
   private val client: GrpcClient,
 ) : NoPackageServiceClient {
-  override fun NoPackageMethod(): GrpcCall<NoPackageRequest, NoPackageResponse> =
-      client.newCall(GrpcMethod(
+  override fun NoPackageMethod(): GrpcCall<NoPackageRequest, NoPackageResponse> = client.newCall(GrpcMethod(
       path = "/NoPackageService/NoPackageMethod",
       requestAdapter = NoPackageRequest.ADAPTER,
       responseAdapter = NoPackageResponse.ADAPTER

@@ -506,8 +506,8 @@ public class AllTypes private constructor(
     schemaIndex = 49,
   )
   @JvmField
-  public val rep_nested_enum: List<NestedEnum> = immutableCopyOf("rep_nested_enum",
-      builder.rep_nested_enum)
+  public val rep_nested_enum: List<NestedEnum> =
+      immutableCopyOf("rep_nested_enum", builder.rep_nested_enum)
 
   @field:WireField(
     tag = 217,
@@ -516,8 +516,8 @@ public class AllTypes private constructor(
     schemaIndex = 50,
   )
   @JvmField
-  public val rep_nested_message: List<NestedMessage> = immutableCopyOf("rep_nested_message",
-      builder.rep_nested_message)
+  public val rep_nested_message: List<NestedMessage> =
+      immutableCopyOf("rep_nested_message", builder.rep_nested_message)
 
   @field:WireField(
     tag = 301,
@@ -643,8 +643,8 @@ public class AllTypes private constructor(
     schemaIndex = 64,
   )
   @JvmField
-  public val pack_nested_enum: List<NestedEnum> = immutableCopyOf("pack_nested_enum",
-      builder.pack_nested_enum)
+  public val pack_nested_enum: List<NestedEnum> =
+      immutableCopyOf("pack_nested_enum", builder.pack_nested_enum)
 
   @field:WireField(
     tag = 401,
@@ -781,8 +781,8 @@ public class AllTypes private constructor(
     schemaIndex = 81,
   )
   @JvmField
-  public val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32",
-      builder.map_int32_int32)
+  public val map_int32_int32: Map<Int, Int> =
+      immutableCopyOf("map_int32_int32", builder.map_int32_int32)
 
   @field:WireField(
     tag = 502,
@@ -791,8 +791,8 @@ public class AllTypes private constructor(
     schemaIndex = 82,
   )
   @JvmField
-  public val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
-      builder.map_string_string)
+  public val map_string_string: Map<String, String> =
+      immutableCopyOf("map_string_string", builder.map_string_string)
 
   @field:WireField(
     tag = 503,
@@ -801,8 +801,8 @@ public class AllTypes private constructor(
     schemaIndex = 83,
   )
   @JvmField
-  public val map_string_message: Map<String, NestedMessage> = immutableCopyOf("map_string_message",
-      builder.map_string_message)
+  public val map_string_message: Map<String, NestedMessage> =
+      immutableCopyOf("map_string_message", builder.map_string_message)
 
   @field:WireField(
     tag = 504,
@@ -811,8 +811,8 @@ public class AllTypes private constructor(
     schemaIndex = 84,
   )
   @JvmField
-  public val map_string_enum: Map<String, NestedEnum> = immutableCopyOf("map_string_enum",
-      builder.map_string_enum)
+  public val map_string_enum: Map<String, NestedEnum> =
+      immutableCopyOf("map_string_enum", builder.map_string_enum)
 
   @field:WireField(
     tag = 601,
@@ -1155,8 +1155,8 @@ public class AllTypes private constructor(
     schemaIndex = 117,
   )
   @JvmField
-  public val ext_rep_fixed32: List<Int> = immutableCopyOf("ext_rep_fixed32",
-      builder.ext_rep_fixed32)
+  public val ext_rep_fixed32: List<Int> =
+      immutableCopyOf("ext_rep_fixed32", builder.ext_rep_fixed32)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1168,8 +1168,8 @@ public class AllTypes private constructor(
     schemaIndex = 118,
   )
   @JvmField
-  public val ext_rep_sfixed32: List<Int> = immutableCopyOf("ext_rep_sfixed32",
-      builder.ext_rep_sfixed32)
+  public val ext_rep_sfixed32: List<Int> =
+      immutableCopyOf("ext_rep_sfixed32", builder.ext_rep_sfixed32)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1217,8 +1217,8 @@ public class AllTypes private constructor(
     schemaIndex = 122,
   )
   @JvmField
-  public val ext_rep_fixed64: List<Long> = immutableCopyOf("ext_rep_fixed64",
-      builder.ext_rep_fixed64)
+  public val ext_rep_fixed64: List<Long> =
+      immutableCopyOf("ext_rep_fixed64", builder.ext_rep_fixed64)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1230,8 +1230,8 @@ public class AllTypes private constructor(
     schemaIndex = 123,
   )
   @JvmField
-  public val ext_rep_sfixed64: List<Long> = immutableCopyOf("ext_rep_sfixed64",
-      builder.ext_rep_sfixed64)
+  public val ext_rep_sfixed64: List<Long> =
+      immutableCopyOf("ext_rep_sfixed64", builder.ext_rep_sfixed64)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1267,8 +1267,8 @@ public class AllTypes private constructor(
     schemaIndex = 126,
   )
   @JvmField
-  public val ext_rep_double: List<Double> = immutableCopyOf("ext_rep_double",
-      builder.ext_rep_double)
+  public val ext_rep_double: List<Double> =
+      immutableCopyOf("ext_rep_double", builder.ext_rep_double)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1280,8 +1280,8 @@ public class AllTypes private constructor(
     schemaIndex = 127,
   )
   @JvmField
-  public val ext_rep_string: List<String> = immutableCopyOf("ext_rep_string",
-      builder.ext_rep_string)
+  public val ext_rep_string: List<String> =
+      immutableCopyOf("ext_rep_string", builder.ext_rep_string)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1293,8 +1293,8 @@ public class AllTypes private constructor(
     schemaIndex = 128,
   )
   @JvmField
-  public val ext_rep_bytes: List<ByteString> = immutableCopyOf("ext_rep_bytes",
-      builder.ext_rep_bytes)
+  public val ext_rep_bytes: List<ByteString> =
+      immutableCopyOf("ext_rep_bytes", builder.ext_rep_bytes)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1306,8 +1306,8 @@ public class AllTypes private constructor(
     schemaIndex = 129,
   )
   @JvmField
-  public val ext_rep_nested_enum: List<NestedEnum> = immutableCopyOf("ext_rep_nested_enum",
-      builder.ext_rep_nested_enum)
+  public val ext_rep_nested_enum: List<NestedEnum> =
+      immutableCopyOf("ext_rep_nested_enum", builder.ext_rep_nested_enum)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1319,8 +1319,8 @@ public class AllTypes private constructor(
     schemaIndex = 130,
   )
   @JvmField
-  public val ext_rep_nested_message: List<NestedMessage> = immutableCopyOf("ext_rep_nested_message",
-      builder.ext_rep_nested_message)
+  public val ext_rep_nested_message: List<NestedMessage> =
+      immutableCopyOf("ext_rep_nested_message", builder.ext_rep_nested_message)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1344,8 +1344,8 @@ public class AllTypes private constructor(
     schemaIndex = 132,
   )
   @JvmField
-  public val ext_pack_uint32: List<Int> = immutableCopyOf("ext_pack_uint32",
-      builder.ext_pack_uint32)
+  public val ext_pack_uint32: List<Int> =
+      immutableCopyOf("ext_pack_uint32", builder.ext_pack_uint32)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1357,8 +1357,8 @@ public class AllTypes private constructor(
     schemaIndex = 133,
   )
   @JvmField
-  public val ext_pack_sint32: List<Int> = immutableCopyOf("ext_pack_sint32",
-      builder.ext_pack_sint32)
+  public val ext_pack_sint32: List<Int> =
+      immutableCopyOf("ext_pack_sint32", builder.ext_pack_sint32)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1370,8 +1370,8 @@ public class AllTypes private constructor(
     schemaIndex = 134,
   )
   @JvmField
-  public val ext_pack_fixed32: List<Int> = immutableCopyOf("ext_pack_fixed32",
-      builder.ext_pack_fixed32)
+  public val ext_pack_fixed32: List<Int> =
+      immutableCopyOf("ext_pack_fixed32", builder.ext_pack_fixed32)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1383,8 +1383,8 @@ public class AllTypes private constructor(
     schemaIndex = 135,
   )
   @JvmField
-  public val ext_pack_sfixed32: List<Int> = immutableCopyOf("ext_pack_sfixed32",
-      builder.ext_pack_sfixed32)
+  public val ext_pack_sfixed32: List<Int> =
+      immutableCopyOf("ext_pack_sfixed32", builder.ext_pack_sfixed32)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1408,8 +1408,8 @@ public class AllTypes private constructor(
     schemaIndex = 137,
   )
   @JvmField
-  public val ext_pack_uint64: List<Long> = immutableCopyOf("ext_pack_uint64",
-      builder.ext_pack_uint64)
+  public val ext_pack_uint64: List<Long> =
+      immutableCopyOf("ext_pack_uint64", builder.ext_pack_uint64)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1421,8 +1421,8 @@ public class AllTypes private constructor(
     schemaIndex = 138,
   )
   @JvmField
-  public val ext_pack_sint64: List<Long> = immutableCopyOf("ext_pack_sint64",
-      builder.ext_pack_sint64)
+  public val ext_pack_sint64: List<Long> =
+      immutableCopyOf("ext_pack_sint64", builder.ext_pack_sint64)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1434,8 +1434,8 @@ public class AllTypes private constructor(
     schemaIndex = 139,
   )
   @JvmField
-  public val ext_pack_fixed64: List<Long> = immutableCopyOf("ext_pack_fixed64",
-      builder.ext_pack_fixed64)
+  public val ext_pack_fixed64: List<Long> =
+      immutableCopyOf("ext_pack_fixed64", builder.ext_pack_fixed64)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1447,8 +1447,8 @@ public class AllTypes private constructor(
     schemaIndex = 140,
   )
   @JvmField
-  public val ext_pack_sfixed64: List<Long> = immutableCopyOf("ext_pack_sfixed64",
-      builder.ext_pack_sfixed64)
+  public val ext_pack_sfixed64: List<Long> =
+      immutableCopyOf("ext_pack_sfixed64", builder.ext_pack_sfixed64)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1484,8 +1484,8 @@ public class AllTypes private constructor(
     schemaIndex = 143,
   )
   @JvmField
-  public val ext_pack_double: List<Double> = immutableCopyOf("ext_pack_double",
-      builder.ext_pack_double)
+  public val ext_pack_double: List<Double> =
+      immutableCopyOf("ext_pack_double", builder.ext_pack_double)
 
   /**
    * Extension source: squareup/wire/all_types.proto
@@ -1497,8 +1497,8 @@ public class AllTypes private constructor(
     schemaIndex = 144,
   )
   @JvmField
-  public val ext_pack_nested_enum: List<NestedEnum> = immutableCopyOf("ext_pack_nested_enum",
-      builder.ext_pack_nested_enum)
+  public val ext_pack_nested_enum: List<NestedEnum> =
+      immutableCopyOf("ext_pack_nested_enum", builder.ext_pack_nested_enum)
 
   override fun newBuilder(): Builder {
     val builder = Builder()
@@ -2048,14 +2048,12 @@ public class AllTypes private constructor(
     if (array_uint32.isNotEmpty()) result += """array_uint32=${array_uint32.contentToString()}"""
     if (array_sint32.isNotEmpty()) result += """array_sint32=${array_sint32.contentToString()}"""
     if (array_fixed32.isNotEmpty()) result += """array_fixed32=${array_fixed32.contentToString()}"""
-    if (array_sfixed32.isNotEmpty()) result +=
-        """array_sfixed32=${array_sfixed32.contentToString()}"""
+    if (array_sfixed32.isNotEmpty()) result += """array_sfixed32=${array_sfixed32.contentToString()}"""
     if (array_int64.isNotEmpty()) result += """array_int64=${array_int64.contentToString()}"""
     if (array_uint64.isNotEmpty()) result += """array_uint64=${array_uint64.contentToString()}"""
     if (array_sint64.isNotEmpty()) result += """array_sint64=${array_sint64.contentToString()}"""
     if (array_fixed64.isNotEmpty()) result += """array_fixed64=${array_fixed64.contentToString()}"""
-    if (array_sfixed64.isNotEmpty()) result +=
-        """array_sfixed64=${array_sfixed64.contentToString()}"""
+    if (array_sfixed64.isNotEmpty()) result += """array_sfixed64=${array_sfixed64.contentToString()}"""
     if (array_float.isNotEmpty()) result += """array_float=${array_float.contentToString()}"""
     if (array_double.isNotEmpty()) result += """array_double=${array_double.contentToString()}"""
     if (ext_opt_int32 != null) result += """ext_opt_int32=$ext_opt_int32"""
@@ -2074,8 +2072,7 @@ public class AllTypes private constructor(
     if (ext_opt_string != null) result += """ext_opt_string=${sanitize(ext_opt_string)}"""
     if (ext_opt_bytes != null) result += """ext_opt_bytes=$ext_opt_bytes"""
     if (ext_opt_nested_enum != null) result += """ext_opt_nested_enum=$ext_opt_nested_enum"""
-    if (ext_opt_nested_message != null) result +=
-        """ext_opt_nested_message=$ext_opt_nested_message"""
+    if (ext_opt_nested_message != null) result += """ext_opt_nested_message=$ext_opt_nested_message"""
     if (ext_rep_int32.isNotEmpty()) result += """ext_rep_int32=$ext_rep_int32"""
     if (ext_rep_uint32.isNotEmpty()) result += """ext_rep_uint32=$ext_rep_uint32"""
     if (ext_rep_sint32.isNotEmpty()) result += """ext_rep_sint32=$ext_rep_sint32"""
@@ -2092,8 +2089,7 @@ public class AllTypes private constructor(
     if (ext_rep_string.isNotEmpty()) result += """ext_rep_string=${sanitize(ext_rep_string)}"""
     if (ext_rep_bytes.isNotEmpty()) result += """ext_rep_bytes=$ext_rep_bytes"""
     if (ext_rep_nested_enum.isNotEmpty()) result += """ext_rep_nested_enum=$ext_rep_nested_enum"""
-    if (ext_rep_nested_message.isNotEmpty()) result +=
-        """ext_rep_nested_message=$ext_rep_nested_message"""
+    if (ext_rep_nested_message.isNotEmpty()) result += """ext_rep_nested_message=$ext_rep_nested_message"""
     if (ext_pack_int32.isNotEmpty()) result += """ext_pack_int32=$ext_pack_int32"""
     if (ext_pack_uint32.isNotEmpty()) result += """ext_pack_uint32=$ext_pack_uint32"""
     if (ext_pack_sint32.isNotEmpty()) result += """ext_pack_sint32=$ext_pack_sint32"""
@@ -2107,8 +2103,7 @@ public class AllTypes private constructor(
     if (ext_pack_bool.isNotEmpty()) result += """ext_pack_bool=$ext_pack_bool"""
     if (ext_pack_float.isNotEmpty()) result += """ext_pack_float=$ext_pack_float"""
     if (ext_pack_double.isNotEmpty()) result += """ext_pack_double=$ext_pack_double"""
-    if (ext_pack_nested_enum.isNotEmpty()) result +=
-        """ext_pack_nested_enum=$ext_pack_nested_enum"""
+    if (ext_pack_nested_enum.isNotEmpty()) result += """ext_pack_nested_enum=$ext_pack_nested_enum"""
     return result.joinToString(prefix = "AllTypes{", separator = ", ", postfix = "}")
   }
 
@@ -3388,17 +3383,17 @@ public class AllTypes private constructor(
       null, 
       "squareup/wire/all_types.proto"
     ) {
-      private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
+      private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
 
-      private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
+      private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
 
-      private val map_string_messageAdapter: ProtoAdapter<Map<String, NestedMessage>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER) }
+      private val map_string_messageAdapter: ProtoAdapter<Map<String, NestedMessage>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER) }
 
-      private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
+      private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by
+          lazy { ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
 
       override fun encodedSize(`value`: AllTypes): Int {
         var size = value.unknownFields.size
@@ -3532,8 +3527,7 @@ public class AllTypes private constructor(
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1_114, value.ext_rep_string)
         size += ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(1_115, value.ext_rep_bytes)
         size += NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(1_116, value.ext_rep_nested_enum)
-        size += NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(1_117,
-            value.ext_rep_nested_message)
+        size += NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(1_117, value.ext_rep_nested_message)
         size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1_201, value.ext_pack_int32)
         size += ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(1_202, value.ext_pack_uint32)
         size += ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(1_203, value.ext_pack_sint32)
@@ -3682,8 +3676,7 @@ public class AllTypes private constructor(
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1_114, value.ext_rep_string)
         ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 1_115, value.ext_rep_bytes)
         NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 1_116, value.ext_rep_nested_enum)
-        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 1_117,
-            value.ext_rep_nested_message)
+        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 1_117, value.ext_rep_nested_message)
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1_201, value.ext_pack_int32)
         ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 1_202, value.ext_pack_uint32)
         ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 1_203, value.ext_pack_sint32)
@@ -3717,8 +3710,7 @@ public class AllTypes private constructor(
         ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 1_203, value.ext_pack_sint32)
         ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 1_202, value.ext_pack_uint32)
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1_201, value.ext_pack_int32)
-        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 1_117,
-            value.ext_rep_nested_message)
+        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 1_117, value.ext_rep_nested_message)
         NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 1_116, value.ext_rep_nested_enum)
         ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 1_115, value.ext_rep_bytes)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1_114, value.ext_rep_string)
@@ -4642,8 +4634,7 @@ public class AllTypes private constructor(
       private const val serialVersionUID: Long = 0L
 
       @JvmSynthetic
-      public inline fun build(body: Builder.() -> Unit): NestedMessage =
-          Builder().apply(body).build()
+      public inline fun build(body: Builder.() -> Unit): NestedMessage = Builder().apply(body).build()
     }
   }
 }

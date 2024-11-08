@@ -41,8 +41,7 @@ public class OneBytesField(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw
-      AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -68,8 +67,7 @@ public class OneBytesField(
     return result.joinToString(prefix = "OneBytesField{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(opt_bytes: ByteString? = this.opt_bytes, unknownFields: ByteString =
-      this.unknownFields): OneBytesField = OneBytesField(opt_bytes, unknownFields)
+  public fun copy(opt_bytes: ByteString? = this.opt_bytes, unknownFields: ByteString = this.unknownFields): OneBytesField = OneBytesField(opt_bytes, unknownFields)
 
   public companion object {
     @JvmField

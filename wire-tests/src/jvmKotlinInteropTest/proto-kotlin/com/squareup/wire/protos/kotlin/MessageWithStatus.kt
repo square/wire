@@ -48,8 +48,7 @@ public class MessageWithStatus(
 
   override fun toString(): String = "MessageWithStatus{}"
 
-  public fun copy(unknownFields: ByteString = this.unknownFields): MessageWithStatus =
-      MessageWithStatus(unknownFields)
+  public fun copy(unknownFields: ByteString = this.unknownFields): MessageWithStatus = MessageWithStatus(unknownFields)
 
   public class Builder : Message.Builder<MessageWithStatus, Builder>() {
     override fun build(): MessageWithStatus = MessageWithStatus(
@@ -95,8 +94,7 @@ public class MessageWithStatus(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): MessageWithStatus =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): MessageWithStatus = Builder().apply(body).build()
   }
 
   public enum class Status(

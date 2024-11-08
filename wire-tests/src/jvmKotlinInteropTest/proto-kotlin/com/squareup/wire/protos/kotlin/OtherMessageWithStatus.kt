@@ -48,8 +48,7 @@ public class OtherMessageWithStatus(
 
   override fun toString(): String = "OtherMessageWithStatus{}"
 
-  public fun copy(unknownFields: ByteString = this.unknownFields): OtherMessageWithStatus =
-      OtherMessageWithStatus(unknownFields)
+  public fun copy(unknownFields: ByteString = this.unknownFields): OtherMessageWithStatus = OtherMessageWithStatus(unknownFields)
 
   public class Builder : Message.Builder<OtherMessageWithStatus, Builder>() {
     override fun build(): OtherMessageWithStatus = OtherMessageWithStatus(
@@ -59,8 +58,8 @@ public class OtherMessageWithStatus(
 
   public companion object {
     @JvmField
-    public val ADAPTER: ProtoAdapter<OtherMessageWithStatus> = object :
-        ProtoAdapter<OtherMessageWithStatus>(
+    public val ADAPTER: ProtoAdapter<OtherMessageWithStatus> =
+        object : ProtoAdapter<OtherMessageWithStatus>(
       FieldEncoding.LENGTH_DELIMITED, 
       OtherMessageWithStatus::class, 
       "type.googleapis.com/squareup.protos.kotlin.OtherMessageWithStatus", 
@@ -96,8 +95,7 @@ public class OtherMessageWithStatus(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): OtherMessageWithStatus =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): OtherMessageWithStatus = Builder().apply(body).build()
   }
 
   public enum class Status(

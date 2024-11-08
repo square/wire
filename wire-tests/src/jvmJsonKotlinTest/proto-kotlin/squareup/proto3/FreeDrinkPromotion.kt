@@ -71,8 +71,7 @@ public class FreeDrinkPromotion(
     return result.joinToString(prefix = "FreeDrinkPromotion{", separator = ", ", postfix = "}")
   }
 
-  public fun copy(drink: Drink = this.drink, unknownFields: ByteString = this.unknownFields):
-      FreeDrinkPromotion = FreeDrinkPromotion(drink, unknownFields)
+  public fun copy(drink: Drink = this.drink, unknownFields: ByteString = this.unknownFields): FreeDrinkPromotion = FreeDrinkPromotion(drink, unknownFields)
 
   public class Builder : Message.Builder<FreeDrinkPromotion, Builder>() {
     @JvmField
@@ -91,8 +90,8 @@ public class FreeDrinkPromotion(
 
   public companion object {
     @JvmField
-    public val ADAPTER: ProtoAdapter<FreeDrinkPromotion> = object :
-        ProtoAdapter<FreeDrinkPromotion>(
+    public val ADAPTER: ProtoAdapter<FreeDrinkPromotion> =
+        object : ProtoAdapter<FreeDrinkPromotion>(
       FieldEncoding.LENGTH_DELIMITED, 
       FreeDrinkPromotion::class, 
       "type.googleapis.com/squareup.proto3.FreeDrinkPromotion", 
@@ -148,8 +147,7 @@ public class FreeDrinkPromotion(
     private const val serialVersionUID: Long = 0L
 
     @JvmSynthetic
-    public inline fun build(body: Builder.() -> Unit): FreeDrinkPromotion =
-        Builder().apply(body).build()
+    public inline fun build(body: Builder.() -> Unit): FreeDrinkPromotion = Builder().apply(body).build()
   }
 
   public enum class Drink(

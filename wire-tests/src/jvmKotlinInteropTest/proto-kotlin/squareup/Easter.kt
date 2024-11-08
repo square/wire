@@ -69,8 +69,8 @@ public class Easter(
     schemaIndex = 3,
   )
   @JvmField
-  public val easter_animals_packed: List<EasterAnimal> = immutableCopyOf("easter_animals_packed",
-      easter_animals_packed)
+  public val easter_animals_packed: List<EasterAnimal> =
+      immutableCopyOf("easter_animals_packed", easter_animals_packed)
 
   override fun newBuilder(): Builder {
     val builder = Builder()
@@ -108,12 +108,10 @@ public class Easter(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (optional_easter_animal != null) result +=
-        """optional_easter_animal=$optional_easter_animal"""
+    if (optional_easter_animal != null) result += """optional_easter_animal=$optional_easter_animal"""
     result += """identity_easter_animal=$identity_easter_animal"""
     if (easter_animals.isNotEmpty()) result += """easter_animals=$easter_animals"""
-    if (easter_animals_packed.isNotEmpty()) result +=
-        """easter_animals_packed=$easter_animals_packed"""
+    if (easter_animals_packed.isNotEmpty()) result += """easter_animals_packed=$easter_animals_packed"""
     return result.joinToString(prefix = "Easter{", separator = ", ", postfix = "}")
   }
 
@@ -123,8 +121,7 @@ public class Easter(
     easter_animals: List<EasterAnimal> = this.easter_animals,
     easter_animals_packed: List<EasterAnimal> = this.easter_animals_packed,
     unknownFields: ByteString = this.unknownFields,
-  ): Easter = Easter(optional_easter_animal, identity_easter_animal, easter_animals,
-      easter_animals_packed, unknownFields)
+  ): Easter = Easter(optional_easter_animal, identity_easter_animal, easter_animals, easter_animals_packed, unknownFields)
 
   public class Builder : Message.Builder<Easter, Builder>() {
     @JvmField
