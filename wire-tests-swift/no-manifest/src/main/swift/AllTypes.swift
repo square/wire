@@ -7,11 +7,11 @@ import Wire
 public struct AllTypes {
 
     @CopyOnWrite
-    private var storage: Storage
+    private var storage: AllTypes.Storage
     /**
      * Access the underlying storage
      */
-    public subscript<Property>(dynamicMember keyPath: WritableKeyPath<Storage, Property>) -> Property {
+    public subscript<Property>(dynamicMember keyPath: WritableKeyPath<AllTypes.Storage, Property>) -> Property {
         get {
             storage[keyPath: keyPath]
         }
@@ -824,7 +824,7 @@ public struct AllTypes {
         req_nested_message: AllTypes.NestedMessage,
         configure: (inout Self.Storage) -> Swift.Void = { _ in }
     ) {
-        self.storage = Storage(
+        self.storage = AllTypes.Storage(
                 req_int32: req_int32,
                 req_uint32: req_uint32,
                 req_sint32: req_sint32,
