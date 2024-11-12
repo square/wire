@@ -215,12 +215,43 @@ public final class ProtoEncoder {
 
         let writer = ProtoWriter(
             data: .init(capacity: structSize),
-            outputFormatting: [],
+            outputFormatting: outputFormatting,
             rootMessageProtoSyntax: syntax
         )
-        writer.outputFormatting = outputFormatting
+
         try encoder(writer)
 
         return Data(writer.buffer, copyBytes: false)
     }
+
+    public func encodeSizeDelimited<T: ProtoEncodable>(_ values: [T]) throws -> Data {
+        // Use the size of the struct as an initial estimate for the space needed.
+        let structSize = MemoryLayout.size(ofValue: T.self)
+
+        // Reserve space for the largest varint size.
+        let varintSize = 8
+
+        let fullBuffer = WriteBuffer(capacity: (structSize + varintSize) * values.count)
+
+        for value in values {
+            let writer = ProtoWriter(
+                data: .init(),
+                outputFormatting: outputFormatting,
+                rootMessageProtoSyntax: T.self.protoSyntax ?? .proto2
+            )
+
+            try value.encode(to: writer)
+
+            if writer.buffer.count == 0 {
+                continue
+            }
+
+            // Write this value's size + contents to the main buffer.
+            fullBuffer.writeVarint(UInt64(writer.buffer.count), at: fullBuffer.count)
+            fullBuffer.append(writer.buffer)
+        }
+
+        return Data(fullBuffer, copyBytes: false)
+    }
+
 }
