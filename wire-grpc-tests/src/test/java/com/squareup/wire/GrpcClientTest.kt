@@ -17,6 +17,22 @@
 
 package com.squareup.wire
 
+import assertk.all
+import assertk.assertThat
+import assertk.assertions.cause
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isIn
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotEmpty
+import assertk.assertions.isNotNull
+import assertk.assertions.isNotZero
+import assertk.assertions.isNull
+import assertk.assertions.isTrue
+import assertk.assertions.message
+import assertk.assertions.messageContains
+import assertk.assertions.startsWith
 import com.google.common.util.concurrent.SettableFuture
 import com.squareup.wire.MockRouteGuideService.Action.Delay
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveCall
@@ -56,7 +72,6 @@ import okio.ByteString
 import okio.ForwardingSource
 import okio.IOException
 import okio.buffer
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Assert.assertThrows
 import org.junit.Assert.fail
@@ -335,7 +350,7 @@ class GrpcClientTest {
       delay(200)
       responseChannel.cancel()
       mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled()).isTrue()
+      assertThat(callReference.get()!!.isCanceled()).isTrue()
     }
   }
 
@@ -348,7 +363,7 @@ class GrpcClientTest {
     Thread.sleep(200)
     responseDeferred.close()
     mockService.awaitSuccessBlocking()
-    assertThat(callReference.get()?.isCanceled()).isTrue()
+    assertThat(callReference.get()!!.isCanceled()).isTrue()
   }
 
   @Test
@@ -404,7 +419,7 @@ class GrpcClientTest {
       assertThat(responseChannel.receive()).isEqualTo(Feature(name = "tree"))
       responseChannel.cancel()
       mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled()).isTrue()
+      assertThat(callReference.get()!!.isCanceled()).isTrue()
     }
   }
 
@@ -424,7 +439,7 @@ class GrpcClientTest {
     assertThat(responseChannel.read()).isEqualTo(Feature(name = "tree"))
     responseChannel.close()
     mockService.awaitSuccessBlocking()
-    assertThat(callReference.get()?.isCanceled()).isTrue()
+    assertThat(callReference.get()!!.isCanceled()).isTrue()
   }
 
   @Test
@@ -459,7 +474,7 @@ class GrpcClientTest {
 
       val latch = Mutex(locked = true)
       requestChannel.invokeOnClose { expected ->
-        assertThat(expected).isInstanceOf(CancellationException::class.java)
+        assertThat(expected!!).isInstanceOf<CancellationException>()
         latch.unlock()
       }
 
@@ -473,7 +488,7 @@ class GrpcClientTest {
         requestChannel.send(RouteNote(message = "léo"))
         fail()
       } catch (expected: Throwable) {
-        assertThat(expected).isInstanceOf(CancellationException::class.java)
+        assertThat(expected).isInstanceOf<CancellationException>()
       }
     }
   }
@@ -489,7 +504,7 @@ class GrpcClientTest {
 
       val latch = Mutex(locked = true)
       requestChannel.invokeOnClose { expected ->
-        assertThat(expected).isInstanceOf(CancellationException::class.java)
+        assertThat(expected!!).isInstanceOf<CancellationException>()
         latch.unlock()
       }
 
@@ -503,7 +518,7 @@ class GrpcClientTest {
         requestChannel.send(RouteNote(message = "léo"))
         fail()
       } catch (expected: Throwable) {
-        assertThat(expected).isInstanceOf(CancellationException::class.java)
+        assertThat(expected).isInstanceOf<CancellationException>()
       }
     }
   }
@@ -519,7 +534,7 @@ class GrpcClientTest {
 
       val latch = Mutex(locked = true)
       requestChannel.invokeOnClose { expected ->
-        assertThat(expected).isInstanceOf(CancellationException::class.java)
+        assertThat(expected!!).isInstanceOf<CancellationException>()
         latch.unlock()
       }
 
@@ -536,7 +551,7 @@ class GrpcClientTest {
         requestChannel.send(RouteNote(message = "rené"))
         fail()
       } catch (expected: Throwable) {
-        assertThat(expected).isInstanceOf(CancellationException::class.java)
+        assertThat(expected).isInstanceOf<CancellationException>()
       }
     }
   }
@@ -593,14 +608,16 @@ class GrpcClientTest {
     runBlocking {
       val (_, responseChannel) = routeGuideService.RouteChat().executeIn(this)
 
-      try {
+      val expected = assertFailsWith<IOException> {
         responseChannel.receive()
-        fail()
-      } catch (expected: IOException) {
-        assertThat(expected)
-          .hasMessage("gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)")
-          .cause() // Synthetic exception added by coroutines in StackTraceRecovery.kt.
+      }
+      assertThat(expected).all {
+        hasMessage("gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)")
+        // Synthetic exception added by coroutines in StackTraceRecovery.kt.
+        cause()
+          .isNotNull()
           .cause()
+          .isNotNull()
           .hasMessage("boom!")
       }
 
@@ -624,7 +641,7 @@ class GrpcClientTest {
         responseChannel.receive()
         fail()
       } catch (expected: IOException) {
-        assertThat(expected.message).startsWith("gRPC transport failure")
+        assertThat(expected.message!!).startsWith("gRPC transport failure")
       }
 
       assertThat(responseChannel.isClosedForReceive).isTrue()
@@ -706,7 +723,7 @@ class GrpcClientTest {
       assertThat((requestChannel as Channel).isClosedForReceive).isTrue()
       assertThat(requestChannel.isClosedForSend).isTrue()
       mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled()).isTrue()
+      assertThat(callReference.get()!!.isCanceled()).isTrue()
     }
   }
 
@@ -727,7 +744,7 @@ class GrpcClientTest {
       assertThat((requestChannel as Channel).isClosedForReceive).isTrue()
       assertThat(requestChannel.isClosedForSend).isTrue()
       mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled()).isTrue()
+      assertThat(callReference.get()!!.isCanceled()).isTrue()
     }
   }
 
@@ -753,7 +770,7 @@ class GrpcClientTest {
       assertThat((requestChannel as Channel).isClosedForReceive).isTrue()
       assertThat(requestChannel.isClosedForSend).isTrue()
       mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled()).isTrue()
+      assertThat(callReference.get()!!.isCanceled()).isTrue()
     }
   }
 
@@ -782,7 +799,7 @@ class GrpcClientTest {
       responseChannel.cancel()
       assertThat((requestChannel as Channel).isClosedForReceive).isTrue()
       assertThat(requestChannel.isClosedForSend).isTrue()
-      assertThat(callReference.get()?.isCanceled()).isTrue()
+      assertThat(callReference.get()!!.isCanceled()).isTrue()
     }
   }
 
@@ -794,7 +811,7 @@ class GrpcClientTest {
     Thread.sleep(500)
     responseChannel.close()
     mockService.awaitSuccessBlocking()
-    assertThat(callReference.get()?.isCanceled()).isTrue()
+    assertThat(callReference.get()!!.isCanceled()).isTrue()
   }
 
   @Test fun cancelDuplexBlockingAfterRequestCompletes() {
@@ -810,7 +827,7 @@ class GrpcClientTest {
 
     responseChannel.close()
     mockService.awaitSuccessBlocking()
-    assertThat(callReference.get()?.isCanceled()).isTrue()
+    assertThat(callReference.get()!!.isCanceled()).isTrue()
   }
 
   @Test fun cancelDuplexBlockingBeforeResponseCompletes() {
@@ -831,7 +848,7 @@ class GrpcClientTest {
 
     responseChannel.close()
     mockService.awaitSuccessBlocking()
-    assertThat(callReference.get()?.isCanceled()).isTrue()
+    assertThat(callReference.get()!!.isCanceled()).isTrue()
   }
 
   @Test fun cancelDuplexBlockingAfterResponseCompletes() {
@@ -855,7 +872,7 @@ class GrpcClientTest {
     Thread.sleep(500)
 
     responseChannel.close()
-    assertThat(callReference.get()?.isCanceled()).isTrue()
+    assertThat(callReference.get()!!.isCanceled()).isTrue()
   }
 
   @Test
@@ -1247,7 +1264,7 @@ class GrpcClientTest {
       fail()
     } catch (expected: GrpcException) {
       assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
-      assertThat(expected).hasMessageMatching(
+      assertThat(expected).messageContains(
         "grpc-status=13 grpc-status-name=INTERNAL grpc-message=boom url=" +
           mockService.url + "routeguide.RouteGuide/GetFeature",
       )
@@ -1272,7 +1289,7 @@ class GrpcClientTest {
       assertThat(expected).hasMessage(
         "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)",
       )
-      assertThat(expected.cause).hasMessage("stream was reset: CANCEL")
+      assertThat(expected.cause!!).hasMessage("stream was reset: CANCEL")
     }
   }
 
@@ -1297,7 +1314,7 @@ class GrpcClientTest {
         "gRPC transport failure (HTTP status=200, grpc-status=0, grpc-message=null)",
         "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)",
       )
-      assertThat(expected.cause).hasMessage("expected 1 message but got multiple")
+      assertThat(expected.cause!!).hasMessage("expected 1 message but got multiple")
     }
   }
 
@@ -1317,7 +1334,7 @@ class GrpcClientTest {
       assertThat(expected).hasMessage(
         "gRPC transport failure (HTTP status=200, grpc-status=0, grpc-message=null)",
       )
-      assertThat(expected.cause).hasMessage("expected 1 message but got none")
+      assertThat(expected.cause!!).hasMessage("expected 1 message but got none")
     }
   }
 
@@ -1635,7 +1652,7 @@ class GrpcClientTest {
         grpcCall.execute(Point(latitude = 5, longitude = 6))
         fail()
       } catch (expected: Throwable) {
-        assertThat(expected).isInstanceOf(IOException::class.java)
+        assertThat(expected).isInstanceOf<IOException>()
         assertThat(grpcCall.isCanceled()).isTrue()
       }
     }
@@ -1657,7 +1674,7 @@ class GrpcClientTest {
         receive.receive()
         fail()
       } catch (expected: Throwable) {
-        assertThat(expected).isInstanceOf(IOException::class.java)
+        assertThat(expected).isInstanceOf<IOException>()
         assertThat(grpcCall.isCanceled()).isTrue()
       }
     }
@@ -1684,7 +1701,7 @@ class GrpcClientTest {
       fail()
     } catch (expected: GrpcException) {
       assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
-      assertThat(expected).hasMessageMatching(
+      assertThat(expected).messageContains(
         "grpc-status=13 grpc-status-name=INTERNAL grpc-message=boom url=" +
           mockService.url + "routeguide.RouteGuide/GetFeature",
       )
@@ -1713,7 +1730,7 @@ class GrpcClientTest {
         responses.receive()
         fail()
       } catch (expected: IOException) {
-        assertThat(expected).isInstanceOf(IOException::class.java)
+        assertThat(expected).isInstanceOf<IOException>()
         assertThat(expected.message).isEqualTo("expected gRPC but was HTTP status=520, content-type=application/grpc")
         assertThat(call.isCanceled()).isTrue()
       }

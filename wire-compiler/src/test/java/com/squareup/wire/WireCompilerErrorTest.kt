@@ -15,12 +15,15 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.doesNotContain
+import assertk.assertions.hasMessage
 import com.squareup.wire.schema.SchemaException
 import kotlin.test.assertFailsWith
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class WireCompilerErrorTest {

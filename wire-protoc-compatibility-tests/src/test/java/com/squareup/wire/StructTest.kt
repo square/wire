@@ -15,10 +15,14 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.containsOnly
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
+import assertk.assertions.isTrue
 import com.google.protobuf.ListValue
 import com.google.protobuf.NullValue
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.entry
 import org.junit.Assert.fail
 import org.junit.Test
 import squareup.proto3.java.alltypes.AllStructs as AllStructsJ
@@ -377,7 +381,7 @@ class StructTest {
     (list[1] as MutableList<*>).clear()
     list.clear()
 
-    assertThat(allStructs.list)
+    assertThat(allStructs.list!!)
       .containsExactly(mapOf("a" to "b"), listOf("c"), "d", 5.0, false, null)
   }
 
@@ -401,13 +405,13 @@ class StructTest {
     (map["b"] as MutableList<*>).clear()
     map.clear()
 
-    assertThat(allStructs.struct).containsExactly(
-      entry("a", mapOf("g" to "h")),
-      entry("b", listOf("i")),
-      entry("c", "j"),
-      entry("d", 5.0),
-      entry("e", false),
-      entry("f", null),
+    assertThat(allStructs.struct!!).containsOnly(
+      "a" to mapOf("g" to "h"),
+      "b" to listOf("i"),
+      "c" to "j",
+      "d" to 5.0,
+      "e" to false,
+      "f" to null,
     )
   }
 
@@ -431,13 +435,13 @@ class StructTest {
     (map["b"] as MutableList<*>).clear()
     map.clear()
 
-    assertThat(allStructs.struct).containsExactly(
-      entry("a", mapOf("g" to "h")),
-      entry("b", listOf("i")),
-      entry("c", "j"),
-      entry("d", 5.0),
-      entry("e", false),
-      entry("f", null),
+    assertThat(allStructs.struct!!).containsOnly(
+      "a" to mapOf("g" to "h"),
+      "b" to listOf("i"),
+      "c" to "j",
+      "d" to 5.0,
+      "e" to false,
+      "f" to null,
     )
   }
 
@@ -465,7 +469,7 @@ class StructTest {
     // Mutate the values used to create the map. Wire should have defensive copies.
     map.clear()
 
-    assertThat(allStructs.map_int32_struct).containsExactly(entry(5, mapOf("a" to "b")))
+    assertThat(allStructs.map_int32_struct!!).containsOnly(5 to mapOf("a" to "b"))
   }
 
   @Test fun kotlinStructsInMapValuesAreDeeplyImmutable() {
@@ -479,7 +483,7 @@ class StructTest {
     // Mutate the values used to create the map. Wire should have defensive copies.
     map.clear()
 
-    assertThat(allStructs.map_int32_struct).containsExactly(entry(5, mapOf("a" to "b")))
+    assertThat(allStructs.map_int32_struct).containsOnly(5 to mapOf("a" to "b"))
   }
 
   @Test fun javaStructsInListValuesAreDeeplyImmutable() {

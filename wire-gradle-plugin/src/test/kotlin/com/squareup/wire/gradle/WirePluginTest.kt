@@ -17,6 +17,21 @@
 
 package com.squareup.wire.gradle
 
+import assertk.Assert
+import assertk.all
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.containsExactly
+import assertk.assertions.doesNotContain
+import assertk.assertions.exists
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isIn
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
+import assertk.assertions.isTrue
+import assertk.assertions.support.expected
 import com.squareup.wire.VERSION
 import com.squareup.wire.testing.withPlatformSlashes
 import java.io.File
@@ -24,7 +39,6 @@ import java.io.IOException
 import java.util.zip.ZipFile
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
-import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -120,9 +134,10 @@ class WirePluginTest {
     val result = gradleRunner.runFixture(fixtureRoot) { withDebug(false).build() }
     assertThat(result.task(":copyProtos")).isNotNull()
     assertThat(result.task(":generateProtos")).isNotNull()
-    assertThat(result.output)
-      .contains("Writing com.squareup.geology.Period")
-      .contains("src/test/projects/sourcepath-build-dir/build/generated/source/wire".withPlatformSlashes())
+    assertThat(result.output).all {
+      contains("Writing com.squareup.geology.Period")
+      contains("src/test/projects/sourcepath-build-dir/build/generated/source/wire".withPlatformSlashes())
+    }
   }
 
   @Test
@@ -240,19 +255,20 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/listener")
 
     val result = gradleRunner.runFixture(fixtureRoot) { build() }
-    assertThat(result.output)
-      .contains("runStart")
-      .contains("loadSchemaStart")
-      .contains("loadSchemaSuccess")
-      .contains("treeShakeStart")
-      .contains("treeShakeEnd")
-      .contains("moveTypesStart")
-      .contains("moveTypesEnd")
-      .contains("schemaHandlersStart")
-      .contains("schemaHandlerStart")
-      .contains("schemaHandlerEnd")
-      .contains("schemaHandlersEnd")
-      .contains("runSuccess")
+    assertThat(result.output).all {
+      contains("runStart")
+      contains("loadSchemaStart")
+      contains("loadSchemaSuccess")
+      contains("treeShakeStart")
+      contains("treeShakeEnd")
+      contains("moveTypesStart")
+      contains("moveTypesEnd")
+      contains("schemaHandlersStart")
+      contains("schemaHandlerStart")
+      contains("schemaHandlerEnd")
+      contains("schemaHandlersEnd")
+      contains("runSuccess")
+    }
   }
 
   @Test
@@ -561,7 +577,7 @@ class WirePluginTest {
     assertThat(generatedProto).exists()
 
     val generatedProtoSource = generatedProto.readText()
-    assertThat(fieldsFromProtoSource(generatedProtoSource)).containsOnly("val name")
+    assertThat(fieldsFromProtoSource(generatedProtoSource)).containsExactly("val name")
   }
 
   @Test
@@ -579,7 +595,7 @@ class WirePluginTest {
 
     val generatedProtoSource = generatedProto.readText()
     assertThat(fieldsFromProtoSource(generatedProtoSource))
-      .containsOnly("val name", "val length_meters")
+      .containsExactly("val name", "val length_meters")
   }
 
   @Test
@@ -590,9 +606,9 @@ class WirePluginTest {
     val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull()
-    assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt"))
-      .exists()
-      .content()
+    val actual = File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")
+    assertThat(actual).exists()
+    assertThat(actual.readText())
       .doesNotContain("val name")
   }
 
@@ -604,8 +620,9 @@ class WirePluginTest {
     val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull()
-    assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt"))
-      .content()
+    val actual = File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")
+    assertThat(actual).exists()
+    assertThat(actual.readText())
       .doesNotContain("val name", "val length_meters")
   }
 
@@ -623,7 +640,7 @@ class WirePluginTest {
     assertThat(generatedProto).exists()
 
     val generatedProtoSource = generatedProto.readText()
-    assertThat(fieldsFromProtoSource(generatedProtoSource)).containsOnly("val name")
+    assertThat(fieldsFromProtoSource(generatedProtoSource)).containsExactly("val name")
   }
 
   @Test
@@ -635,9 +652,9 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/geology/Period.kt")).exists()
-    assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt"))
-      .exists()
-      .content().doesNotContain("val name")
+    val actual = File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")
+    assertThat(actual).exists()
+    assertThat(actual.readText()).doesNotContain("val name")
   }
 
   @Test
@@ -938,11 +955,13 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull()
 
-    assertThat(File(outputRoot, "com/squareup/media/NewsFlash.kt")).exists()
-      .content()
-      .contains("val tv")
-      .contains("val website")
-      .doesNotContain("val radio")
+    val actual = File(outputRoot, "com/squareup/media/NewsFlash.kt")
+    assertThat(actual).exists()
+    assertThat(actual.readText()).all {
+      contains("val tv")
+      contains("val website")
+      doesNotContain("val radio")
+    }
   }
 
   @Test
@@ -953,11 +972,13 @@ class WirePluginTest {
     val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull()
-    assertThat(File(outputRoot, "com/squareup/media/NewsFlash.kt")).exists()
-      .content()
-      .contains("val tv")
-      .doesNotContain("val website")
-      .doesNotContain("val radio")
+    val actual = File(outputRoot, "com/squareup/media/NewsFlash.kt")
+    assertThat(actual).exists()
+    assertThat(actual.readText()).all {
+      contains("val tv")
+      doesNotContain("val website")
+      doesNotContain("val radio")
+    }
   }
 
   @Test
@@ -978,10 +999,11 @@ class WirePluginTest {
 
     println(result.tasks.joinToString { it.toString() })
     assertThat(result.task(":generateCommonMainProtos")).isNotNull()
-    assertThat(result.output)
-      .contains("Writing com.squareup.dinosaurs.Dinosaur")
-      .contains("Writing com.squareup.geology.Period")
-      .contains("src/test/projects/kotlin-multiplatform/build/generated/source/wire".withPlatformSlashes())
+    assertThat(result.output).all {
+      contains("Writing com.squareup.dinosaurs.Dinosaur")
+      contains("Writing com.squareup.geology.Period")
+      contains("src/test/projects/kotlin-multiplatform/build/generated/source/wire".withPlatformSlashes())
+    }
 
     val generatedProto1 =
       File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
@@ -1066,12 +1088,10 @@ class WirePluginTest {
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
 
-    assertThat(File(outputRoot, "squareup/dinosaurs/dinosaur.proto"))
-      .content()
+    assertThat(File(outputRoot, "squareup/dinosaurs/dinosaur.proto").readText())
       .contains("import \"squareup/geology/geology.proto\";")
 
-    assertThat(File(outputRoot, "squareup/geology/geology.proto"))
-      .content()
+    assertThat(File(outputRoot, "squareup/geology/geology.proto").readText())
       .contains("enum Period {")
   }
 
@@ -1085,10 +1105,10 @@ class WirePluginTest {
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
 
-    assertThat(File(outputRoot, "cafe/cafe.proto"))
-      .content()
-      .contains("repeated bytes shots")
-      .doesNotContain("repeated EspressoShot shots")
+    assertThat(File(outputRoot, "cafe/cafe.proto").readText()).all {
+      contains("repeated bytes shots")
+      doesNotContain("repeated EspressoShot shots")
+    }
   }
 
   @Test
@@ -1100,8 +1120,7 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull()
 
-    assertThat(File(outputRoot, "squareup/polygons/Octagon.java"))
-      .content()
+    assertThat(File(outputRoot, "squareup/polygons/Octagon.java").readText())
       .contains("""@DocumentationUrlOption("https://en.wikipedia.org/wiki/Octagon")""")
   }
 
@@ -1114,8 +1133,7 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull()
 
-    assertThat(File(outputRoot, "squareup/polygons/Octagon.kt"))
-      .content()
+    assertThat(File(outputRoot, "squareup/polygons/Octagon.kt").readText())
       .contains("""@DocumentationUrlOption("https://en.wikipedia.org/wiki/Octagon")""")
   }
 
@@ -1128,10 +1146,10 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull()
 
-    assertThat(File(outputRoot, "squareup/polygons/Octagon.kt"))
-      .content()
-      .contains("""@DocumentationUrlOption("https://en.wikipedia.org/wiki/Octagon")""")
-      .contains("""@CustomerSupportUrlOption("https://en.wikipedia.org/wiki/Customer_support")""")
+    assertThat(File(outputRoot, "squareup/polygons/Octagon.kt").readText()).all {
+      contains("""@DocumentationUrlOption("https://en.wikipedia.org/wiki/Octagon")""")
+      contains("""@CustomerSupportUrlOption("https://en.wikipedia.org/wiki/Customer_support")""")
+    }
     assertThat(File(outputRoot, "squareup/other_options/CustomerSupportUrlOption.kt"))
       .doesNotExist()
   }
@@ -1145,19 +1163,19 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNotNull()
 
-    assertThat(File(outputRoot, "squareup/polygons/Octagon.kt"))
-      .content()
-      .contains(
+    assertThat(File(outputRoot, "squareup/polygons/Octagon.kt").readText()).all {
+      contains(
         """@DocumentationUrlOption("https://en.wikipedia.org/wiki/Octagon")
           |public class Octagon(
         """.trimMargin(),
       )
       // Although we didn't generate the annotation, we still apply it!
-      .contains(
+      contains(
         """  @DocumentationUrlFieldOption("https://en.wikipedia.org/wiki/stop")
           |  @field:WireField(
         """.trimMargin(),
       )
+    }
   }
 
   @Test
@@ -1172,23 +1190,17 @@ class WirePluginTest {
     // Wire has been configured so that `Continent` should always be the opposite of the global
     // setting while `Period` and `Drink` match it.
 
-    assertThat(File(outputRoot, "com/squareup/enum/geology/Period.kt"))
-      .content()
+    assertThat(File(outputRoot, "com/squareup/enum/geology/Period.kt").readText())
       .contains("enum class Period")
-    assertThat(File(outputRoot, "com/squareup/enum/geology/Continent.kt"))
-      .content()
+    assertThat(File(outputRoot, "com/squareup/enum/geology/Continent.kt").readText())
       .contains("sealed class Continent")
-    assertThat(File(outputRoot, "com/squareup/enum/geology/Drink.kt"))
-      .content()
+    assertThat(File(outputRoot, "com/squareup/enum/geology/Drink.kt").readText())
       .contains("enum class Drink")
-    assertThat(File(outputRoot, "com/squareup/sealed/geology/Period.kt"))
-      .content()
+    assertThat(File(outputRoot, "com/squareup/sealed/geology/Period.kt").readText())
       .contains("sealed class Period")
-    assertThat(File(outputRoot, "com/squareup/sealed/geology/Continent.kt"))
-      .content()
+    assertThat(File(outputRoot, "com/squareup/sealed/geology/Continent.kt").readText())
       .contains("enum class Continent")
-    assertThat(File(outputRoot, "com/squareup/sealed/geology/Drink.kt"))
-      .content()
+    assertThat(File(outputRoot, "com/squareup/sealed/geology/Drink.kt").readText())
       .contains("sealed class Drink")
   }
 
@@ -1447,4 +1459,12 @@ class WirePluginTest {
       f.delete()
     }
   }
+}
+
+/**
+ * Asserts the file does not exists.
+ */
+private fun Assert<File>.doesNotExist() = given { actual ->
+  if (!actual.exists()) return
+  expected("not to exist")
 }

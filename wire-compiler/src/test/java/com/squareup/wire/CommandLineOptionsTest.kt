@@ -15,12 +15,17 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.containsOnly
+import assertk.assertions.hasMessage
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
 import com.squareup.wire.schema.WireRun
 import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintWriter
 import kotlin.test.assertFailsWith
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class CommandLineOptionsTest {

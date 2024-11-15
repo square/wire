@@ -15,6 +15,8 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.protos.kotlin.alltypes.AllTypes
 import com.squareup.wire.protos.kotlin.alltypes.AllTypes.NestedMessage
@@ -22,7 +24,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import okio.Buffer
 import okio.ByteString
-import org.assertj.core.api.Assertions.assertThat
 
 class ProtoReader32AdapterTest {
   private val bytes = ByteString.of(125.toByte(), 225.toByte())

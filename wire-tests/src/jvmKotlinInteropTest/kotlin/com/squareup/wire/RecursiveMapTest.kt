@@ -18,7 +18,8 @@
 package com.squareup.wire
 
 import ModelEvaluation
-import org.assertj.core.api.Assertions.assertThat
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import org.junit.Test
 
 class RecursiveMapTest {

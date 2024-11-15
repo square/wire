@@ -72,7 +72,7 @@ dependencies {
   testImplementation(projects.wireCompiler)
   testImplementation(projects.wireGsonSupport)
   testImplementation(projects.wireMoshiAdapter)
-  testImplementation(libs.assertj)
+  testImplementation(libs.assertk)
   testImplementation(libs.junit)
   testImplementation(libs.protobuf.javaUtil)
   testImplementation(projects.wireTestUtils)

@@ -15,6 +15,8 @@
  */
 package com.squareup.wire.sample
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.palantir.javapoet.JavaFile
 import com.palantir.javapoet.TypeSpec
 import com.squareup.wire.java.JavaGenerator
@@ -26,7 +28,6 @@ import java.io.IOException
 import java.nio.file.FileSystems
 import okio.buffer
 import okio.sink
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder

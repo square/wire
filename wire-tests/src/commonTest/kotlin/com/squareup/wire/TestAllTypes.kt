@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import assertk.assertions.message
 import com.squareup.wire.TestAllTypesData.list
 import com.squareup.wire.TestAllTypesData.message
 import com.squareup.wire.protos.kotlin.alltypes.AllTypes

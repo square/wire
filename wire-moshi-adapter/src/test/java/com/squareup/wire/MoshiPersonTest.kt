@@ -15,6 +15,8 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
 import com.squareup.wire.proto2.kotlin.Getters
@@ -22,7 +24,6 @@ import com.squareup.wire.proto2.person.java.Person as JavaPerson
 import com.squareup.wire.proto2.person.javainteropkotlin.Person as JavaInteropKotlinPerson
 import com.squareup.wire.proto2.person.kotlin.Person as KotlinPerson
 import com.squareup.wire.proto2.person.kotlin.Person.PhoneNumber
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class MoshiPersonTest {

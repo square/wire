@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import assertk.assertions.message
 import com.squareup.wire.protos.kotlin.Form
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import assertk.assertions.isTrue
 import com.squareup.wire.proto3.kotlin.person.Person
 import com.squareup.wire.protos.kotlin.bool.TrueBoolean
 import kotlin.test.Test

@@ -15,6 +15,14 @@
  */
 package com.squareup.wire.schema
 
+import assertk.all
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.doesNotContain
+import assertk.assertions.hasMessage
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotEmpty
 import com.squareup.wire.StringWireLogger
 import com.squareup.wire.WireLogger
 import com.squareup.wire.WireLogger.Companion.NONE
@@ -30,7 +38,6 @@ import kotlin.test.assertFailsWith
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
 
@@ -145,12 +152,13 @@ class WireRunTest {
     assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/kt/squareup/routes/RouteBlockingServer.kt",
     )
-    assertThat(fs.readUtf8("generated/kt/squareup/routes/RouteBlockingServer.kt"))
-      .contains(
+    assertThat(fs.readUtf8("generated/kt/squareup/routes/RouteBlockingServer.kt")).all {
+      contains(
         "interface RouteBlockingServer : Service",
         "fun GetUpdatedRed",
       )
-      .doesNotContain("suspend fun GetUpdatedRed")
+      doesNotContain("suspend fun GetUpdatedRed")
+    }
   }
 
   @Test
@@ -182,16 +190,18 @@ class WireRunTest {
       .contains("interface RouteGetUpdatedBlueClient : Service")
     assertThat(fs.readUtf8("generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt"))
       .contains("interface RouteGetUpdatedRedClient : Service")
-    assertThat(fs.readUtf8("generated/kt/squareup/routes/GrpcRouteGetUpdatedBlueClient.kt"))
-      .contains(
+    assertThat(fs.readUtf8("generated/kt/squareup/routes/GrpcRouteGetUpdatedBlueClient.kt")).all {
+      contains(
         "class GrpcRouteGetUpdatedBlueClient(\n  private val client: GrpcClient,\n) : RouteGetUpdatedBlueClient",
       )
-      .doesNotContain("RouteGetUpdatedRedClient")
-    assertThat(fs.readUtf8("generated/kt/squareup/routes/GrpcRouteGetUpdatedRedClient.kt"))
-      .contains(
+      doesNotContain("RouteGetUpdatedRedClient")
+    }
+    assertThat(fs.readUtf8("generated/kt/squareup/routes/GrpcRouteGetUpdatedRedClient.kt")).all {
+      contains(
         "class GrpcRouteGetUpdatedRedClient(\n  private val client: GrpcClient,\n) : RouteGetUpdatedRedClient",
       )
-      .doesNotContain("RouteGetUpdatedBlueClient")
+      doesNotContain("RouteGetUpdatedBlueClient")
+    }
   }
 
   @Test
@@ -290,10 +300,11 @@ class WireRunTest {
     assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/kt/squareup/colors/Blue.kt",
     )
-    assertThat(fs.readUtf8("generated/kt/squareup/colors/Blue.kt"))
-      .contains("class Blue")
+    assertThat(fs.readUtf8("generated/kt/squareup/colors/Blue.kt")).all {
+      contains("class Blue")
       // The type `Triangle` has been opaqued.
-      .contains("public val triangle: ByteString? = null")
+      contains("public val triangle: ByteString? = null")
+    }
   }
 
   @Test

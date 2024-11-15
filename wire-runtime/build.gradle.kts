@@ -47,6 +47,7 @@ kotlin {
     }
     val commonTest by getting {
       dependencies {
+        implementation(libs.assertk)
         implementation(libs.kotlin.test.common)
         implementation(libs.kotlin.test.annotations)
       }
@@ -58,7 +59,6 @@ kotlin {
     }
     val jvmTest by getting {
       dependencies {
-        implementation(libs.assertj)
         implementation(libs.kotlin.test.junit)
       }
     }

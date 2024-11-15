@@ -67,7 +67,7 @@ kotlin {
         api(libs.javapoet)
         api(libs.kotlinpoet)
         implementation(libs.protobuf.java)
-        implementation(libs.assertj)
+        implementation(libs.assertk)
       }
     }
   }

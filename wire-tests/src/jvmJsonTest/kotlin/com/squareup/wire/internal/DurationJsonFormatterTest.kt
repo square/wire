@@ -15,10 +15,11 @@
  */
 package com.squareup.wire.internal
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.durationOfSeconds
 import com.squareup.wire.internal.DurationJsonFormatter.fromString
 import com.squareup.wire.internal.DurationJsonFormatter.toStringOrNumber
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class DurationJsonFormatterTest {

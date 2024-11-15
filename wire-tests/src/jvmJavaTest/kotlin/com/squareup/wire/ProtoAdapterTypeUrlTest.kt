@@ -15,13 +15,16 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
+import assertk.assertions.startsWith
 import com.squareup.wire.protos.person.Person
 import com.squareup.wire.protos.person.Person.PhoneType
 import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 import kotlin.test.Test
 import okio.ByteString
-import org.assertj.core.api.Assertions.assertThat
 
 class ProtoAdapterTypeUrlTest {
   @Test fun allBuiltInAdaptersHaveReasonableTypeUrls() {
@@ -46,7 +49,7 @@ class ProtoAdapterTypeUrlTest {
           assertThat(protoAdapter.typeUrl).isNull()
         }
         else -> {
-          assertThat(protoAdapter.typeUrl).startsWith("type.googleapis.com/")
+          assertThat(protoAdapter.typeUrl!!).startsWith("type.googleapis.com/")
         }
       }
     }

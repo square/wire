@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import assertk.assertions.message
 import com.squareup.wire.internal.ProtocolException
 import com.squareup.wire.protos.kotlin.edgecases.OneBytesField
 import com.squareup.wire.protos.kotlin.edgecases.OneField

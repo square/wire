@@ -12,5 +12,5 @@ dependencies {
   api(libs.kotlinpoet)
   testImplementation(projects.wireTestUtils)
   testImplementation(libs.kotlin.test.junit)
-  testImplementation(libs.truth)
+  testImplementation(libs.assertk)
 }

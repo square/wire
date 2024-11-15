@@ -11,5 +11,5 @@ dependencies {
   implementation(libs.guava)
   implementation(libs.javapoet)
   testImplementation(libs.junit)
-  testImplementation(libs.assertj)
+  testImplementation(libs.assertk)
 }

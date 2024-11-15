@@ -16,6 +16,7 @@
 package com.squareup.wire.recipes
 
 import assertk.assertThat
+import assertk.assertions.message
 import assertk.assertions.startsWith
 import com.squareup.wire.WireTestLogger
 import com.squareup.wire.addFakeRuntimeProtos

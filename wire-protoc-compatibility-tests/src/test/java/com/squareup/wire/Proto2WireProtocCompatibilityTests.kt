@@ -15,12 +15,15 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import com.google.protobuf.ExtensionRegistry
 import com.squareup.wire.proto2.kotlin.simple.SimpleMessage as SimpleMessageK
 import com.squareup.wire.proto2.kotlin.simple.SimpleMessageOuterClass
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import squareup.proto2.java.interop.InteropMessage as InteropMessageJ
 import squareup.proto2.java.interop.type.EnumProto2 as EnumProto2J

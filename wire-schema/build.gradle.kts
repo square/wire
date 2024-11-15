@@ -60,7 +60,7 @@ kotlin {
     }
     val jvmTest by getting {
       dependencies {
-        implementation(libs.assertj)
+        implementation(libs.assertk)
         implementation(libs.jimfs)
         implementation(libs.protobuf.java)
       }

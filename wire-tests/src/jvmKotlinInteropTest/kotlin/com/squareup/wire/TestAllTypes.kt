@@ -15,6 +15,9 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotSameInstanceAs
 import com.squareup.wire.protos.kotlin.alltypes.AllTypes
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -24,7 +27,6 @@ import okio.ByteString
 import okio.ForwardingSource
 import okio.Source
 import okio.buffer
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class TestAllTypes {
@@ -116,7 +118,7 @@ class TestAllTypes {
     val builder = allTypes.newBuilder()
     assertThat(builder.build()).isEqualTo(allTypes)
     builder.opt_bool = false
-    assertThat(builder.build()).isNotSameAs(allTypes)
+    assertThat(builder.build()).isNotSameInstanceAs(allTypes)
   }
 
   @Test fun testWriteStream() {

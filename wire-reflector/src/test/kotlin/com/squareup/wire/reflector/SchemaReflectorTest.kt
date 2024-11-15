@@ -15,6 +15,11 @@
  */
 package com.squareup.wire.reflector
 
+import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
+import assertk.assertions.prop
 import com.google.protobuf.DescriptorProtos
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.addLocal
@@ -23,7 +28,6 @@ import grpc.reflection.v1alpha.ServerReflectionRequest
 import grpc.reflection.v1alpha.ServerReflectionResponse
 import grpc.reflection.v1alpha.ServiceResponse
 import okio.Path.Companion.toPath
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 internal class SchemaReflectorTest {
@@ -57,7 +61,7 @@ internal class SchemaReflectorTest {
           file_by_filename = "src/test/proto/RouteGuideProto.proto",
         ),
       ),
-    ).extracting { it.file_descriptor_response }.isNotNull()
+    ).prop(ServerReflectionResponse::file_descriptor_response).isNotNull()
   }
 
   @Test
@@ -72,7 +76,7 @@ internal class SchemaReflectorTest {
           file_containing_symbol = "routeguide.RouteGuide",
         ),
       ),
-    ).extracting { it.file_descriptor_response }.isNotNull()
+    ).prop(ServerReflectionResponse::file_descriptor_response).isNotNull()
   }
 
   @Test

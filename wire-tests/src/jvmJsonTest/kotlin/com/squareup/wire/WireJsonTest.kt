@@ -15,6 +15,11 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
+import assertk.assertions.messageContains
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
@@ -28,7 +33,6 @@ import java.util.Collections
 import okio.ByteString
 import okio.buffer
 import okio.source
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -274,7 +278,7 @@ class WireJsonTest {
     } catch (expected: JsonSyntaxException) {
       // Gson.
       assertThat(expected)
-        .hasMessageContaining(
+        .messageContains(
           "Cannot resolve type: " +
             "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion in \$.promotion",
         )
@@ -307,7 +311,7 @@ class WireJsonTest {
     } catch (expected: JsonIOException) {
       // Gson.
       assertThat(expected)
-        .hasMessageContaining(
+        .messageContains(
           "Cannot find type for url: " +
             "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion",
         )
@@ -323,7 +327,7 @@ class WireJsonTest {
       assertThat(expected).hasMessage("expected @type in \$.promotion")
     } catch (expected: JsonSyntaxException) {
       // Gson.
-      assertThat(expected).hasMessageContaining("expected @type in \$.promotion")
+      assertThat(expected).messageContains("expected @type in \$.promotion")
     }
   }
 
