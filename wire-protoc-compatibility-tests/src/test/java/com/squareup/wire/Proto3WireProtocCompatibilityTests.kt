@@ -17,6 +17,10 @@
 
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import com.google.protobuf.Any
 import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.Duration
@@ -34,7 +38,6 @@ import okio.ByteString
 import okio.ByteString.Companion.decodeHex
 import okio.buffer
 import okio.source
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
 import squareup.proto2.java.interop.type.MessageProto2 as MessageProto2J

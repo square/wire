@@ -17,9 +17,10 @@
 
 package com.squareup.wire.json
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.moshi.JsonReader
 import okio.Buffer
-import org.assertj.core.api.Assertions.assertThat
 
 fun assertJsonEquals(expected: String, value: String) {
   assertThat(JsonReader.of(Buffer().writeUtf8(value)).readJsonValue())

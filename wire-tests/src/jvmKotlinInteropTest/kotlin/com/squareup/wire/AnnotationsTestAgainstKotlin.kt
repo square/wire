@@ -17,6 +17,10 @@
 
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import com.squareup.wire.protos.custom_options.EnumOptionOption
 import com.squareup.wire.protos.custom_options.EnumValueOptionOption
 import com.squareup.wire.protos.custom_options.FooBar
@@ -35,7 +39,6 @@ import com.squareup.wire.protos.custom_options.MyMessageOptionTwoOption
 import com.squareup.wire.protos.custom_options.RepeatedEnumValueOptionTwoOption
 import com.squareup.wire.protos.kotlin.foreign.ForeignEnum
 import com.squareup.wire.protos.kotlin.foreign.ForeignEnumValueOptionOption
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 // TODO(Benoit) This tests exactly match some others in `AnnotationsTestAgainstJava`. We should

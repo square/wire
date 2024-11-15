@@ -15,6 +15,9 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.message
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveCall
 import io.grpc.ForwardingServerCall.SimpleForwardingServerCall
 import io.grpc.Metadata
@@ -35,7 +38,6 @@ import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import okhttp3.HttpUrl
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement

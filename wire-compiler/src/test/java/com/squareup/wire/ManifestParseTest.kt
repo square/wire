@@ -15,7 +15,10 @@
  */
 package com.squareup.wire
 
-import org.assertj.core.api.Assertions.assertThat
+import assertk.assertThat
+import assertk.assertions.containsExactlyInAnyOrder
+import assertk.assertions.containsOnly
+import assertk.assertions.messageContains
 import org.junit.Assert.fail
 import org.junit.Test
 
@@ -56,7 +59,7 @@ class ManifestParseTest {
       parseManifestModules(yaml)
       fail()
     } catch (e: Exception) {
-      assertThat(e).hasMessageContaining("Unknown property 'includes'")
+      assertThat(e).messageContains("Unknown property 'includes'")
     }
   }
 
@@ -69,7 +72,7 @@ class ManifestParseTest {
     """.trimMargin()
 
     val modules = parseManifestModules(yaml)
-    assertThat(modules.keys).containsExactly("one", "two")
-    assertThat(modules.getValue("one").dependencies).containsExactly("two")
+    assertThat(modules.keys).containsOnly("one", "two")
+    assertThat(modules.getValue("one").dependencies).containsOnly("two")
   }
 }

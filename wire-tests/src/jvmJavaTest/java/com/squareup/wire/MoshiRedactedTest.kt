@@ -15,11 +15,12 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.moshi.Moshi
 import com.squareup.wire.protos.redacted.NotRedacted
 import com.squareup.wire.protos.redacted.RedactedChild
 import com.squareup.wire.protos.redacted.RedactedFields
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class MoshiRedactedTest {

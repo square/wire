@@ -15,8 +15,9 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.google.protobuf.Duration
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class DurationRoundTripTest {

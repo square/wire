@@ -19,6 +19,7 @@ import assertk.assertThat
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
+import assertk.assertions.message
 import com.palantir.javapoet.ClassName
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip

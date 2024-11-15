@@ -15,6 +15,8 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.squareup.wire.json.assertJsonEquals
@@ -24,7 +26,6 @@ import com.squareup.wire.proto2.dinosaurs.kotlin.Dinosaur as DinosaurKotlin
 import com.squareup.wire.proto2.geology.java.Period as PeriodJava
 import com.squareup.wire.proto2.geology.javainteropkotlin.Period as PeriodInterop
 import com.squareup.wire.proto2.geology.kotlin.Period as PeriodKotlin
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Ignore
 import org.junit.Test
 

@@ -15,6 +15,11 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isNull
 import com.squareup.wire.FieldEncoding.LENGTH_DELIMITED
 import com.squareup.wire.protos.person.Person
 import com.squareup.wire.protos.person.Person.PhoneType
@@ -23,7 +28,6 @@ import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 import kotlin.test.Test
 import okio.ByteString
-import org.assertj.core.api.Assertions.assertThat
 
 class ProtoAdapterIdentityTest {
   @Test fun generatedAdaptersHaveNullIdentities() {
@@ -37,16 +41,16 @@ class ProtoAdapterIdentityTest {
           assertThat(protoAdapter.identity).isNull()
         }
         protoAdapter.type == DoubleArray::class -> {
-          assertThat(protoAdapter.identity).isEqualTo(doubleArrayOf())
+          assertThat(protoAdapter.identity!!).isInstanceOf<DoubleArray>().isEmpty()
         }
         protoAdapter.type == FloatArray::class -> {
-          assertThat(protoAdapter.identity).isEqualTo(floatArrayOf())
+          assertThat(protoAdapter.identity!!).isInstanceOf<FloatArray>().isEmpty()
         }
         protoAdapter.type == LongArray::class -> {
-          assertThat(protoAdapter.identity).isEqualTo(longArrayOf())
+          assertThat(protoAdapter.identity!!).isInstanceOf<LongArray>().isEmpty()
         }
         protoAdapter.type == IntArray::class -> {
-          assertThat(protoAdapter.identity).isEqualTo(intArrayOf())
+          assertThat(protoAdapter.identity!!).isInstanceOf<IntArray>().isEmpty()
         }
         protoAdapter.type.isPrimitive && protoAdapter.syntax === Syntax.PROTO_2 -> {
           // All other primitive types are numbers and must have 0 as their identity value.

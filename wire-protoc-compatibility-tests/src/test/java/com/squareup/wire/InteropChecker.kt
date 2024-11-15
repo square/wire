@@ -15,6 +15,9 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.message
 import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
 import com.google.protobuf.Message
@@ -23,7 +26,6 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
-import org.assertj.core.api.Assertions.assertThat
 
 class InteropChecker(
   private val protocMessage: Message,
@@ -106,13 +108,12 @@ class InteropChecker(
 
     assertThat(adapter.toJson(message)).isEqualTo(wireCanonicalJson)
     val fromJson = adapter.fromJson(wireCanonicalJson)
-    assertThat(fromJson)
-      .overridingErrorMessage {
-        """
-        |Expected :$message (unknownFields: `${(message as com.squareup.wire.Message<*, *>).unknownFields.hex()}`)
-        |Actual   :$fromJson (unknownFields: `${(fromJson as com.squareup.wire.Message<*, *>).unknownFields.hex()}`)
-        """.trimMargin()
-      }
+    assertThat(fromJson, displayActual = {
+      """
+      |Expected :$message (unknownFields: `${(message as com.squareup.wire.Message<*, *>).unknownFields.hex()}`)
+      |Actual   :$fromJson (unknownFields: `${(fromJson as com.squareup.wire.Message<*, *>).unknownFields.hex()}`)
+      """.trimMargin()
+    })
       .isEqualTo(message)
     for (json in alternateJsons + wireAlternateJsons) {
       assertThat(adapter.fromJson(json)).isEqualTo(message)
@@ -125,13 +126,13 @@ class InteropChecker(
 
     assertThat(adapter.toJson(message)).isEqualTo(wireCanonicalJson)
     val fromJson = adapter.fromJson(wireCanonicalJson)
-    assertThat(fromJson)
-      .overridingErrorMessage {
-        """
-        |Expected :$message (unknownFields: `${(message as com.squareup.wire.Message<*, *>).unknownFields.hex()}`)
-        |Actual   :$fromJson (unknownFields: `${(fromJson as com.squareup.wire.Message<*, *>).unknownFields.hex()}`)
-        """.trimMargin()
-      }.isEqualTo(message)
+    assertThat(fromJson, displayActual = {
+      """
+      |Expected :$message (unknownFields: `${(message as com.squareup.wire.Message<*, *>).unknownFields.hex()}`)
+      |Actual   :$fromJson (unknownFields: `${(fromJson as com.squareup.wire.Message<*, *>).unknownFields.hex()}`)
+      """.trimMargin()
+    })
+      .isEqualTo(message)
     for (json in alternateJsons + wireAlternateJsons) {
       assertThat(adapter.fromJson(json)).isEqualTo(message)
     }

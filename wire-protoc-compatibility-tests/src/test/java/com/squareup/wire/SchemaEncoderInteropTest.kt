@@ -15,6 +15,8 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto
 import com.google.protobuf.ExtensionRegistry
 import com.squareup.wire.schema.Location
@@ -22,7 +24,6 @@ import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.SchemaLoader
 import com.squareup.wire.schema.internal.SchemaEncoder
 import java.nio.file.FileSystems
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import squareup.proto2.kotlin.alloptions.AllOptions as AllOptionsP2
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass as AllTypesOuterClassP2

@@ -15,6 +15,8 @@
  */
 package com.squareup.wire.reflector
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Schema
@@ -24,7 +26,6 @@ import grpc.reflection.v1alpha.ServerReflectionRequest
 import grpc.reflection.v1alpha.ServerReflectionResponse
 import okio.ByteString.Companion.decodeBase64
 import okio.FileSystem
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 // Reference golang reflection tests https://github.com/juliaogris/reflect

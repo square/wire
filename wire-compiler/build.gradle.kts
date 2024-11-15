@@ -29,7 +29,7 @@ dependencies {
   implementation(libs.kotlin.serialization)
   implementation(libs.kaml)
   testImplementation(libs.junit)
-  testImplementation(libs.assertj)
+  testImplementation(libs.assertk)
   testImplementation(libs.kotlin.test.junit)
   testImplementation(projects.wireTestUtils)
 }

@@ -17,13 +17,17 @@
 
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotEmpty
+import assertk.assertions.size
 import com.squareup.wire.schema.ProtoType
 import java.util.Collections
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
 import okio.Path.Companion.toPath
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -826,8 +830,8 @@ class WireCompilerTest {
 
   private fun assertOutputs(target: TargetLanguage, outputs: Array<String>, suffix: String = "") {
     val filesAfter = paths
-    assertThat(filesAfter.size)
-      .overridingErrorMessage(filesAfter.toString())
+    assertThat(filesAfter)
+      .size()
       .isEqualTo(outputs.size)
 
     for (output in outputs) {

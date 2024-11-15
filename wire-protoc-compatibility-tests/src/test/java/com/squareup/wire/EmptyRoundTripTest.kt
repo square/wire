@@ -15,8 +15,9 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.google.protobuf.Empty
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import squareup.proto3.java.alltypes.AllEmpty as AllEmptyJ
 import squareup.proto3.kotlin.alltypes.AllEmpty as AllEmptyK

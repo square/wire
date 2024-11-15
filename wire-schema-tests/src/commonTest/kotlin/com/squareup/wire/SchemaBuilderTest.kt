@@ -18,6 +18,7 @@ package com.squareup.wire
 import assertk.assertThat
 import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEqualTo
+import assertk.assertions.message
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.SchemaException
 import kotlin.test.Test

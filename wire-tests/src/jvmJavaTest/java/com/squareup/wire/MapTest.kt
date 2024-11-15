@@ -15,13 +15,16 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import com.squareup.wire.internal.createRuntimeMessageAdapter
 import com.squareup.wire.map.Mappy
 import com.squareup.wire.map.Thing
 import java.io.IOException
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized

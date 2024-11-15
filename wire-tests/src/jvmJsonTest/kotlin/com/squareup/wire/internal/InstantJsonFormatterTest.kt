@@ -15,10 +15,11 @@
  */
 package com.squareup.wire.internal
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.internal.InstantJsonFormatter.fromString
 import com.squareup.wire.internal.InstantJsonFormatter.toStringOrNumber
 import com.squareup.wire.ofEpochSecond
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class InstantJsonFormatterTest {

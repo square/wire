@@ -15,8 +15,9 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.moshi.Moshi
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import squareup.proto3.BuyOneGetOnePromotion
 

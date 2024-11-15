@@ -15,8 +15,11 @@
  */
 package com.squareup.wire.kotlin
 
-import com.google.common.truth.Truth.assertThat
-import com.google.common.truth.Truth.assertWithMessage
+import assertk.all
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.containsMatch
+import assertk.assertions.doesNotContain
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.buildSchema
 import com.squareup.wire.kotlin.EnumMode.SEALED_CLASS
@@ -201,14 +204,17 @@ class KotlinGeneratorTest {
 
     val kotlinGenerator = KotlinGenerator.invoke(pruned)
     val typeSpec = kotlinGenerator.generateType(pruned.getType("A")!!)
-    val code = FileSpec.get("", typeSpec).toString()
-    assertThat(code).contains(
-      """
+    assertThat(FileSpec.get("", typeSpec).toString()).all {
+      contains(
+        """
       |@WireEnclosingType
       |public class A private constructor() {
-      """.trimMargin(),
-    )
-    assertWithMessage(code).that(code.contains("class B(.*) : Message<B, Nothing>".toRegex(DOT_MATCHES_ALL))).isTrue()
+        """.trimMargin(),
+      )
+      containsMatch(
+        "class B(.*) : Message<B, Nothing>".toRegex(DOT_MATCHES_ALL),
+      )
+    }
   }
 
   @Test fun requestResponse() {

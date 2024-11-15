@@ -15,11 +15,13 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isSameInstanceAs
 import com.squareup.wire.protos.kotlin.person.Person
 import kotlin.test.Test
 import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.toByteString
-import org.assertj.core.api.Assertions.assertThat
 
 class ProtoAdapterTest {
   @Test fun fromClass() {
@@ -40,6 +42,6 @@ class ProtoAdapterTest {
       .build()
     val instanceAdapter = ProtoAdapter.get(person)
     val classAdapter = ProtoAdapter.get(Person::class.java)
-    assertThat(instanceAdapter).isSameAs(classAdapter)
+    assertThat(instanceAdapter).isSameInstanceAs(classAdapter)
   }
 }

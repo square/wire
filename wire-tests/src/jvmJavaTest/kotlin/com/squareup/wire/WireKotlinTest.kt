@@ -17,10 +17,11 @@
 
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isSameInstanceAs
 import com.squareup.wire.protos.person.Person
 import com.squareup.wire.protos.person.Person.PhoneNumber
 import com.squareup.wire.protos.person.Person.PhoneType
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
 
@@ -42,10 +43,10 @@ class WireKotlinTest {
     } catch (expected: UnsupportedOperationException) {
     }
 
-    assertThat(personNoPhone.phone).isSameAs(emptyList<Any>())
+    assertThat(personNoPhone.phone).isSameInstanceAs(emptyList<Any>())
 
     // Round-trip these instances through the builder and ensure the lists are the same instances.
-    assertThat(personWithPhone.newBuilder().build().phone).isSameAs(personWithPhone.phone)
-    assertThat(personNoPhone.newBuilder().build().phone).isSameAs(personNoPhone.phone)
+    assertThat(personWithPhone.newBuilder().build().phone).isSameInstanceAs(personWithPhone.phone)
+    assertThat(personNoPhone.newBuilder().build().phone).isSameInstanceAs(personNoPhone.phone)
   }
 }

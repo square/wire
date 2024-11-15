@@ -15,10 +15,14 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
+import assertk.assertions.message
 import com.squareup.wire.protos.kotlin.Form
 import com.squareup.wire.protos.kotlin.OneOfMessage
 import kotlin.test.assertEquals
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
 

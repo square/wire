@@ -42,7 +42,7 @@ dependencies {
   implementation(libs.pluginz.kotlin)
 
   testImplementation(libs.junit)
-  testImplementation(libs.assertj)
+  testImplementation(libs.assertk)
   testImplementation(projects.wireTestUtils)
 }
 

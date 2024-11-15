@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import assertk.assertions.message
 import com.squareup.wire.protos.kotlin.edgecases.NoFields
 import com.squareup.wire.protos.kotlin.edgecases.OneField
 import com.squareup.wire.protos.usesany.UsesAny

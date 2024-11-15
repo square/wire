@@ -19,6 +19,7 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
+import assertk.assertions.message
 import com.squareup.wire.buildSchema
 import kotlin.test.Test
 import okio.Path.Companion.toPath

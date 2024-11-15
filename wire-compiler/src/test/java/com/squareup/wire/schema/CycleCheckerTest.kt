@@ -17,11 +17,12 @@
 
 package com.squareup.wire.schema
 
+import assertk.assertThat
+import assertk.assertions.hasMessage
 import com.squareup.wire.testing.add
 import kotlin.test.assertFailsWith
 import okio.Path
 import okio.fakefilesystem.FakeFileSystem
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class CycleCheckerTest {

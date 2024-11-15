@@ -74,7 +74,7 @@ dependencies {
   implementation(projects.wireSchema)
   implementation(projects.wireGsonSupport)
   implementation(projects.wireMoshiAdapter)
-  implementation(libs.assertj)
+  implementation(libs.assertk)
   implementation(libs.junit)
   implementation(libs.protobuf.javaUtil)
   implementation(projects.wireTestUtils)

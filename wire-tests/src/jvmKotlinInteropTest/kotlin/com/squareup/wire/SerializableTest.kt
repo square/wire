@@ -15,6 +15,9 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.message
 import com.squareup.wire.protos.kotlin.NoFields
 import com.squareup.wire.protos.kotlin.person.Person
 import com.squareup.wire.protos.kotlin.simple.SimpleMessage
@@ -23,7 +26,6 @@ import java.io.ObjectOutputStream
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeBase64
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class SerializableTest {

@@ -65,7 +65,7 @@ dependencies {
   }
   compileOnly(libs.android)
   testImplementation(libs.junit)
-  testImplementation(libs.assertj)
+  testImplementation(libs.assertk)
   testImplementation(libs.grpc.netty)
   testImplementation(libs.grpc.protobuf)
   testImplementation(libs.grpc.stub)
