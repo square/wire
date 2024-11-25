@@ -203,10 +203,10 @@ private fun Response.checkGrpcResponse() {
 internal fun Response.grpcResponseToException(suppressed: IOException? = null): IOException? {
   var trailers = headersOf()
   var transportException = suppressed
-  if (suppressed == null) {
-    try {
-      trailers = trailers()
-    } catch (e: IOException) {
+  try {
+    trailers = trailers()
+  } catch (e: IOException) {
+    if (suppressed == null) {
       transportException = e
     }
   }
