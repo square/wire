@@ -625,6 +625,28 @@ class GrpcClientTest {
     }
   }
 
+  // Should correctly read status from trailers even while response is empty
+  @Test
+  fun emptyResponseErrorStatusWithTrailers() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendError(Status.INTERNAL.withDescription("empty").asRuntimeException())
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = incompatibleRouteGuideService.RouteChat()
+    try {
+      grpcCall.executeBlocking(RouteNote(message = "marco"))
+      fail()
+    } catch (expected: GrpcException) {
+      assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
+      assertThat(expected).hasMessage(
+        "grpc-status=13 grpc-status-name=INTERNAL grpc-message=empty url=" +
+          mockService.url + "routeguide.RouteGuide/RouteChat"
+      )
+    }
+  }
+
   @Test
   fun duplexSuspend_responseChannelThrowsWhenCallCanceledByClient() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
