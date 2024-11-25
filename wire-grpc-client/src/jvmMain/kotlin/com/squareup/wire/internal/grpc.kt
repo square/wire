@@ -203,10 +203,13 @@ private fun Response.checkGrpcResponse() {
 internal fun Response.grpcResponseToException(suppressed: IOException? = null): IOException? {
   var trailers = headersOf()
   var transportException = suppressed
-  try {
-    trailers = trailers()
-  } catch (e: IOException) {
-    if (suppressed == null) {
+  // If content-length is 0,
+  // then IO exception is due to reading body when there is none
+  val contentLen = header("content-length") ?: -1
+  if (suppressed == null || contentLen == 0) {
+    try {
+      trailers = trailers()
+    } catch (e: IOException) {
       transportException = e
     }
   }
