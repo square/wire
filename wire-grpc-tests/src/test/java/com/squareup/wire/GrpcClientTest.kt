@@ -67,6 +67,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
+import okhttp3.Headers
 import okio.Buffer
 import okio.ByteString
 import okio.ForwardingSource
@@ -627,23 +628,41 @@ class GrpcClientTest {
 
   // Should correctly read status from trailers even while response is empty
   @Test
+  @OptIn(okhttp3.ExperimentalOkHttpApi::class)
   fun emptyResponseErrorStatusWithTrailers() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
-    mockService.enqueueReceiveNote(message = "marco")
-    mockService.enqueue(ReceiveComplete)
-    mockService.enqueueSendError(Status.INTERNAL.withDescription("empty").asRuntimeException())
-    mockService.enqueue(SendCompleted)
+    mockService.enqueueSendNote(message = "marco")
 
-    val grpcCall = incompatibleRouteGuideService.RouteChat()
-    try {
-      grpcCall.executeBlocking(RouteNote(message = "marco"))
-      fail()
-    } catch (expected: GrpcException) {
+    // We shall create empty body with grpc-status in trailers to verify that we can handle it
+    networkInterceptor = object : Interceptor {
+      override fun intercept(chain: Chain): Response {
+        val response = chain.proceed(chain.request())
+        val trailers = fun(): Headers {
+          return Headers.Builder().add("grpc-status", "13").add("grpc-message", "empty").build()
+        }
+
+        return response.newBuilder()
+          .protocol(HTTP_2)
+          .code(200)
+          .removeHeader("grpc-status")
+          .body(ByteString.EMPTY.toResponseBody("application/grpc".toMediaType()))
+          .trailers(trailers)
+          .build()
+      }
+    }
+
+    runBlocking {
+      val (_, responseChannel) = routeGuideService.RouteChat().executeIn(this)
+
+      val expected = assertFailsWith<GrpcException> {
+        responseChannel.receive()
+      }
       assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
       assertThat(expected).hasMessage(
         "grpc-status=13 grpc-status-name=INTERNAL grpc-message=empty url=" +
           mockService.url + "routeguide.RouteGuide/RouteChat"
       )
+      assertThat(responseChannel.isClosedForReceive).isTrue()
     }
   }
 
