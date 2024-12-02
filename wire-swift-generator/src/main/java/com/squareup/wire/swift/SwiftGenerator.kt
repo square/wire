@@ -1661,6 +1661,7 @@ class SwiftGenerator private constructor(
     val enumName = type.typeName
     return TypeSpec.enumBuilder(enumName)
       .addModifiers(PUBLIC)
+      .addAttribute("objc")
       .addSuperTypes(listOf(INT32, CASE_ITERABLE, type.protoCodableType))
       .apply {
         type.protoDefaultedName?.let { protoDefaultedName ->
