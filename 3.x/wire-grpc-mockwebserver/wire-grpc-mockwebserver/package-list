@@ -1,0 +1,19 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.squareup.wire.mockwebserver////PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/index.html
+$dokka.location:com.squareup.wire.mockwebserver/GrpcDispatcher.Companion.NullCall///PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/-grpc-dispatcher/-companion/-null-call/index.html
+$dokka.location:com.squareup.wire.mockwebserver/GrpcDispatcher.Companion.NullCall/cancel/#/PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/-grpc-dispatcher/-companion/-null-call/cancel.html
+$dokka.location:com.squareup.wire.mockwebserver/GrpcDispatcher.Companion.NullCall/clone/#/PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/-grpc-dispatcher/-companion/-null-call/clone.html
+$dokka.location:com.squareup.wire.mockwebserver/GrpcDispatcher.Companion.NullCall/enqueue/#okhttp3.Callback/PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/-grpc-dispatcher/-companion/-null-call/enqueue.html
+$dokka.location:com.squareup.wire.mockwebserver/GrpcDispatcher.Companion.NullCall/execute/#/PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/-grpc-dispatcher/-companion/-null-call/execute.html
+$dokka.location:com.squareup.wire.mockwebserver/GrpcDispatcher.Companion.NullCall/isCanceled/#/PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/-grpc-dispatcher/-companion/-null-call/is-canceled.html
+$dokka.location:com.squareup.wire.mockwebserver/GrpcDispatcher.Companion.NullCall/isExecuted/#/PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/-grpc-dispatcher/-companion/-null-call/is-executed.html
+$dokka.location:com.squareup.wire.mockwebserver/GrpcDispatcher.Companion.NullCall/request/#/PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/-grpc-dispatcher/-companion/-null-call/request.html
+$dokka.location:com.squareup.wire.mockwebserver/GrpcDispatcher.Companion.NullCall/timeout/#/PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/-grpc-dispatcher/-companion/-null-call/timeout.html
+$dokka.location:com.squareup.wire.mockwebserver/GrpcDispatcher.Companion///PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/-grpc-dispatcher/-companion/index.html
+$dokka.location:com.squareup.wire.mockwebserver/GrpcDispatcher///PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/-grpc-dispatcher/index.html
+$dokka.location:com.squareup.wire.mockwebserver/GrpcDispatcher/GrpcDispatcher/#kotlin.collections.List[com.squareup.wire.Service]#okhttp3.mockwebserver.Dispatcher/PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/-grpc-dispatcher/-grpc-dispatcher.html
+$dokka.location:com.squareup.wire.mockwebserver/GrpcDispatcher/delegate/#/PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/-grpc-dispatcher/delegate.html
+$dokka.location:com.squareup.wire.mockwebserver/GrpcDispatcher/dispatch/#okhttp3.mockwebserver.RecordedRequest/PointingToDeclaration/wire-grpc-mockwebserver/com.squareup.wire.mockwebserver/-grpc-dispatcher/dispatch.html
+com.squareup.wire.mockwebserver
+
