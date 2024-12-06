@@ -708,13 +708,13 @@ public final class ProtoWriter {
         }
 
         if let isProto3 = isProto3 {
-            messageStackIndex += 1
-            if messageStackIndex >= messageStackCapacity {
+            if messageStackIndex + 1 >= messageStackCapacity {
                 expandMessageStack()
             }
             let frame = MessageFrame(
                 isProto3: isProto3
             )
+            messageStackIndex += 1
             messageStack.advanced(by: messageStackIndex).initialize(to: frame)
 
             // Cache this value as an ivar for quick access.

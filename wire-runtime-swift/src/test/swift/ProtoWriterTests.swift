@@ -255,6 +255,56 @@ final class ProtoWriterTests: XCTestCase {
         """)
     }
 
+    func testEncodeMessageWithStackExpansion() throws {
+        let writer = ProtoWriter()
+        let message = Nested1(name: "name1") { v1 in
+          v1.nested = Nested2(name: "name2") { v2 in
+            v2.nested = Nested3(name: "name3") { v3 in
+              v3.nested = Nested4(name: "name4") { v4 in
+                v4.nested = Nested5(name: "name5") { v5 in
+                  v5.nested = Nested6(name: "name6")
+                }
+              }
+            }
+          }
+        }
+
+        try writer.encode(tag: 1, value: message)
+
+        assertBufferEqual(writer, """
+            0A       // (Tag 1 | Length Delimited)
+            34       // Length 52 for Nested1
+              0A         // (Tag 1 | Length Delimited)
+              05         // Length 5 for name1
+              6E616D6531 // UTF-8 Value "name1"
+              12         // (Tag 2 | Length Delimited)
+              2B         // Length 43
+                0A         // (Tag 1 | Length Delimited)
+                05         // Length 5 for name2
+                6E616D6532 // UTF-8 Value "name2"
+                12         // (Tag 2 | Length Delimited)
+                22         // Length 34
+                  0A         // (Tag 1 | Length Delimited)
+                  05         // Length 5 for name3
+                  6E616D6533 // UTF-8 Value "name3"
+                  12         // (Tag 2 | Length Delimited)
+                  19         // Length 25
+                    0A         // (Tag 1 | Length Delimited)
+                    05         // Length 5 for name4
+                    6E616D6534 // UTF-8 Value "name4"
+                    12         // (Tag 2 | Length Delimited)
+                    10         // Length 16
+                      0A         // (Tag 1 | Length Delimited)
+                      05         // Length 5 for name5
+                      6E616D6535 // UTF-8 Value "name5" 
+                      12         // (Tag 2 | Length Delimited)
+                      07         // Length 7
+                        0A         // (Tag 1 | Length Delimited)
+                        05         // Length 5 for name6
+                        6E616D6536 // UTF-8 Value "name6"
+        """)
+    }
+
     func testEncodeString() throws {
         let writer = ProtoWriter()
         try writer.encode(tag: 1, value: "foo")
