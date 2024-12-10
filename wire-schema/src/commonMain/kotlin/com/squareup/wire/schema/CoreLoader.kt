@@ -33,14 +33,13 @@ fun isWireRuntimeProto(location: Location): Boolean {
 /** Returns true if [path] is bundled in the wire runtime. */
 fun isWireRuntimeProto(path: String): Boolean {
   return path == ANY_PROTO ||
-    path == API_PROTO ||
+    path == API_ANNOTATIONS_PROTO ||
+    path == API_HTTP_PROTO ||
     path == DESCRIPTOR_PROTO ||
     path == DURATION_PROTO ||
     path == EMPTY_PROTO ||
-    path == SOURCE_CONTEXT_PROTO ||
     path == STRUCT_PROTO ||
     path == TIMESTAMP_PROTO ||
-    path == TYPE_PROTO ||
     path == WIRE_EXTENSIONS_PROTO ||
     path == WRAPPERS_PROTO
 }
@@ -49,13 +48,12 @@ internal const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
 internal const val WIRE_EXTENSIONS_PROTO = "wire/extensions.proto"
 
 private const val ANY_PROTO = "google/protobuf/any.proto"
-private const val API_PROTO = "google/protobuf/api.proto"
+private const val API_ANNOTATIONS_PROTO = "google/api/annotations.proto"
+private const val API_HTTP_PROTO = "google/api/http.proto"
 private const val DURATION_PROTO = "google/protobuf/duration.proto"
 private const val EMPTY_PROTO = "google/protobuf/empty.proto"
-private const val SOURCE_CONTEXT_PROTO = "google/protobuf/source_context.proto"
 private const val STRUCT_PROTO = "google/protobuf/struct.proto"
 private const val TIMESTAMP_PROTO = "google/protobuf/timestamp.proto"
-private const val TYPE_PROTO = "google/protobuf/type.proto"
 private const val WRAPPERS_PROTO = "google/protobuf/wrappers.proto"
 
 /** A special base directory used for Wire's built-in .proto files. */

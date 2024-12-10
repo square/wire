@@ -17,12 +17,18 @@ package squareup.wire.protos.roots;
 
 option java_package = "com.squareup.wire.protos.roots";
 
+import "google/api/annotations.proto";
+
 message TheRequest {}
 message TheResponse {}
 message UnnecessaryResponse {}
 
 service TheService {
-  rpc TheMethod (TheRequest) returns (TheResponse);
+  rpc TheMethod (TheRequest) returns (TheResponse) {
+    option (google.api.http) = {
+      post: "/the/service/the/method"
+    };
+  };
 }
 
 service UnnecessaryService {
