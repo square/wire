@@ -1812,14 +1812,6 @@ class WireRunTest {
       """.trimMargin(),
     )
     fs.add(
-      "google/src/main/proto/google/protobuf/api.proto",
-      """
-        |syntax = "proto2";
-        |package google.protobuf;
-        |message Api {}
-      """.trimMargin(),
-    )
-    fs.add(
       "google/src/main/proto/google/protobuf/duration.proto",
       """
         |syntax = "proto2";
@@ -1836,14 +1828,6 @@ class WireRunTest {
       """.trimMargin(),
     )
     fs.add(
-      "google/src/main/proto/google/protobuf/source_context.proto",
-      """
-        |syntax = "proto2";
-        |package google.protobuf;
-        |message SourceContext {}
-      """.trimMargin(),
-    )
-    fs.add(
       "google/src/main/proto/google/protobuf/struct.proto",
       """
         |syntax = "proto2";
@@ -1857,14 +1841,6 @@ class WireRunTest {
         |syntax = "proto2";
         |package google.protobuf;
         |message Timestamp {}
-      """.trimMargin(),
-    )
-    fs.add(
-      "google/src/main/proto/google/protobuf/type.proto",
-      """
-        |syntax = "proto2";
-        |package google.protobuf;
-        |message Type {}
       """.trimMargin(),
     )
     fs.add(
