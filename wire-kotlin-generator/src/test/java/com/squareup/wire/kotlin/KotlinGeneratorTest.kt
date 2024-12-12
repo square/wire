@@ -1982,27 +1982,30 @@ class KotlinGeneratorTest {
   @Test
   fun redactedWithManyFieldsForProto3() {
     val schema = buildSchema {
-      add("message.proto".toPath(), buildString {
-        append(
-          """
-          |syntax = "proto3";
-          |import "option_redacted.proto";
-          |message BazillionFields {
-          """.trimMargin(),
-        )
-        appendLine()
-        for (index in 1..150) {
-          appendLine("  FieldData field$index = $index;")
-        }
-        append(
-          """
-          |}
-          |
-          |message FieldData {}
-          |
-          """.trimMargin(),
-        )
-      }.also { println(it) })
+      add(
+        "message.proto".toPath(),
+        buildString {
+          append(
+            """
+            |syntax = "proto3";
+            |import "option_redacted.proto";
+            |message BazillionFields {
+            """.trimMargin(),
+          )
+          appendLine()
+          for (index in 1..150) {
+            appendLine("  FieldData field$index = $index;")
+          }
+          append(
+            """
+            |}
+            |
+            |message FieldData {}
+            |
+            """.trimMargin(),
+          )
+        }.also { println(it) },
+      )
       addFromTest("option_redacted.proto".toPath())
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("BazillionFields")

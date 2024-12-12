@@ -2115,7 +2115,7 @@ class KotlinGenerator private constructor(
       return listOf(
         redactBuilder
           .addStatement("return %L", chunkedFields.first().toValueCopyExpression())
-          .build()
+          .build(),
       )
     }
     val resultFunctions = mutableListOf<FunSpec>()
