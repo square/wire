@@ -2111,6 +2111,13 @@ class KotlinGenerator private constructor(
     redactedFields += CodeBlock.of("unknownFields = %T.EMPTY", ByteString::class)
 
     val chunkedFields = redactedFields.chunked(FIELD_CHUNK_SIZE)
+    if (chunkedFields.size == 1) {
+      return listOf(
+        redactBuilder
+          .addStatement("return %L", chunkedFields.first().toValueCopyExpression())
+          .build()
+      )
+    }
     val resultFunctions = mutableListOf<FunSpec>()
     redactBuilder.addCode("var result = %L\n", chunkedFields.first().toValueCopyExpression())
     for ((index, chunkOfFields) in chunkedFields.withIndex()) {

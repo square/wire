@@ -1967,17 +1967,14 @@ class KotlinGeneratorTest {
     assertThat(code).contains("""public val secret_data: SecretData? = null,""")
     assertThat(code).contains(
       """
-      |      override fun redact(`value`: RedactedFields): RedactedFields {
-      |        var result = value.copy(
-      |          a = "",
-      |          b = 0,
-      |          c = null,
-      |          d = null,
-      |          secret_data = null,
-      |          unknownFields = ByteString.EMPTY
-      |        )
-      |        return result
-      |      }
+      |      override fun redact(`value`: RedactedFields): RedactedFields = value.copy(
+      |        a = "",
+      |        b = 0,
+      |        c = null,
+      |        d = null,
+      |        secret_data = null,
+      |        unknownFields = ByteString.EMPTY
+      |      )
       """.trimMargin(),
     )
   }
