@@ -1571,7 +1571,7 @@ class KotlinGenerator private constructor(
           addFunction(decodeFun(PROTO_READER_32, type))
         }
       }
-      .addFunction(redactFun(type))
+      .addFunctions(redactFunctions(type))
 
     for (field in type.fields) {
       if (field.isMap) {
@@ -2033,10 +2033,10 @@ class KotlinGenerator private constructor(
     companionBuilder.addFunction(buildFunction)
   }
 
-  private fun redactFun(message: MessageType): FunSpec {
+  private fun redactFunctions(message: MessageType): List<FunSpec> {
     val className = typeToKotlinName.getValue(message.type) as ClassName
     val nameAllocator = nameAllocator(message)
-    val result = FunSpec.builder("redact")
+    val redactBuilder = FunSpec.builder("redact")
       .addModifiers(OVERRIDE)
       .addParameter("value", className)
       .returns(className)
@@ -2044,7 +2044,7 @@ class KotlinGenerator private constructor(
     val redactedMessageFields = message.fields.filter { it.isRedacted }
     val requiredRedactedMessageFields = redactedMessageFields.filter { it.isRequired }
     if (requiredRedactedMessageFields.isNotEmpty()) {
-      result.addStatement(
+      redactBuilder.addStatement(
         "throw %T(%S)",
         ClassName("kotlin", "UnsupportedOperationException"),
         requiredRedactedMessageFields.joinToString(
@@ -2058,7 +2058,7 @@ class KotlinGenerator private constructor(
           transform = nameAllocator::get,
         ),
       )
-      return result.build()
+      return listOf(redactBuilder.build())
     }
 
     if (buildersOnly) {
@@ -2087,9 +2087,7 @@ class KotlinGenerator private constructor(
         add("unknownFields = %T.EMPTY,⇤\n", ByteString::class)
         add(")\n")
       }
-      return result
-        .addCode(newBuilderBlock)
-        .build()
+      return listOf(redactBuilder.addCode(newBuilderBlock).build())
     }
 
     val redactedFields = mutableListOf<CodeBlock>()
@@ -2111,13 +2109,33 @@ class KotlinGenerator private constructor(
       }
     }
     redactedFields += CodeBlock.of("unknownFields = %T.EMPTY", ByteString::class)
-    return result
-      .addStatement(
-        "return %L",
-        redactedFields.joinToCode(separator = ",\n", prefix = "value.copy(\n⇥", suffix = "\n⇤)"),
-      )
-      .build()
+
+    val chunkedFields = redactedFields.chunked(FIELD_CHUNK_SIZE)
+    val resultFunctions = mutableListOf<FunSpec>()
+    redactBuilder.addCode("var result = %L\n", chunkedFields.first().toValueCopyExpression())
+    for ((index, chunkOfFields) in chunkedFields.withIndex()) {
+      if (index == 0) {
+        continue
+      }
+      val function = FunSpec.builder("redact$index")
+        .addModifiers(PRIVATE)
+        .addParameter("value", className)
+        .returns(className)
+        .addStatement("return %L", chunkOfFields.toValueCopyExpression())
+        .build()
+      resultFunctions += function
+      redactBuilder.addStatement("result = %N(result)", function)
+    }
+    redactBuilder.addStatement("return result")
+
+    return listOf(redactBuilder.build()) + resultFunctions
   }
+
+  private fun List<CodeBlock>.toValueCopyExpression(): CodeBlock = joinToCode(
+    separator = ",\n",
+    prefix = "value.copy(\n⇥",
+    suffix = "\n⇤)",
+  )
 
   private fun Field.redact(fieldName: String): CodeBlock? {
     if (isRedacted) {
@@ -3183,6 +3201,12 @@ class KotlinGenerator private constructor(
     }
 
     private const val DOUBLE_FULL_BLOCK = "\u2588\u2588"
+
+    /**
+     * Maximum number of fields to process in a single function to avoid hitting bytecode limits. Right now this
+     * is only used in `redact` of [MessageType] adapters but may also be necessary in other functions in the future.
+     */
+    private const val FIELD_CHUNK_SIZE = 100
   }
 }
 
