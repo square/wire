@@ -2004,7 +2004,7 @@ class KotlinGeneratorTest {
             |
             """.trimMargin(),
           )
-        }.also { println(it) },
+        },
       )
       addFromTest("option_redacted.proto".toPath())
     }
