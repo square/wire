@@ -2118,20 +2118,20 @@ class KotlinGenerator private constructor(
           .build(),
       )
     }
-    val resultFunctions = mutableListOf<FunSpec>()
-    redactBuilder.addCode("var result = %L\n", chunkedFields.first().toValueCopyExpression())
-    for ((index, chunkOfFields) in chunkedFields.withIndex()) {
-      if (index == 0) {
-        continue
-      }
-      val function = FunSpec.builder("redact$index")
+    val resultFunctions = chunkedFields.withIndex().map { (index, chunkOfFields) ->
+      FunSpec.builder("redact$index")
         .addModifiers(PRIVATE)
         .addParameter("value", className)
         .returns(className)
         .addStatement("return %L", chunkOfFields.toValueCopyExpression())
         .build()
-      resultFunctions += function
-      redactBuilder.addStatement("result = %N(result)", function)
+    }
+    for ((index, resultFunction) in resultFunctions.withIndex()) {
+      if (index == 0) {
+        redactBuilder.addStatement("var result = %N(%N)", resultFunction, "value")
+      } else {
+        redactBuilder.addStatement("result = %N(result)", resultFunction)
+      }
     }
     redactBuilder.addStatement("return result")
 
