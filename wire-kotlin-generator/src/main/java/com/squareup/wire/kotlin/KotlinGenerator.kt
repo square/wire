@@ -137,6 +137,7 @@ class KotlinGenerator private constructor(
   private val escapeKotlinKeywords: Boolean,
   private val enumMode: EnumMode,
   private val emitProtoReader32: Boolean,
+  private val generateMutableMessages: Boolean
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -562,13 +563,19 @@ class KotlinGenerator private constructor(
       .superclass(superclass)
       .addSuperclassConstructorParameter(adapterName)
       .addSuperclassConstructorParameter(unknownFields)
-      .addFunction(generateNewBuilderMethod(type, builderClassName))
+      .apply {
+        if (!generateMutableMessages) {
+          // Only generate a builder if the message is not already mutable
+          addFunction(generateNewBuilderMethod(type, builderClassName))
+        }
+      }
       .addFunction(generateEqualsMethod(type, nameAllocator))
       .addFunction(generateHashCodeMethod(type, nameAllocator))
       .addFunction(generateToStringMethod(type, nameAllocator))
       .apply {
-        if (buildersOnly) {
-          // We expect consumers to use the `newBuilder` method instead of the `copy` method.
+        if (buildersOnly || generateMutableMessages) {
+          // buildersOnly: We expect consumers to use the `newBuilder` method instead of the `copy` method.
+          // generateMutableMessages: The messages are already mutable, so no need to generate a `copy` method.
           return@apply
         }
         addFunction(generateCopyMethod(type, nameAllocator))
@@ -578,7 +585,6 @@ class KotlinGenerator private constructor(
           addType(generateBuilderClass(type, className, builderClassName))
         }
       }
-
     if (emitAndroid) {
       addAndroidCreator(type, companionBuilder)
     }
@@ -700,7 +706,10 @@ class KotlinGenerator private constructor(
       .returns(BOOLEAN)
 
     val body = buildCodeBlock {
-      addStatement("if (%N === this) return·true", otherName)
+      if (!generateMutableMessages) {
+        // This is true iff the message is not mutable
+        addStatement("if (%N === this) return·true", otherName)
+      }
       addStatement("if (%N !is %T) return·false", otherName, kotlinType)
       addStatement("if (unknownFields != %N.unknownFields) return·false", otherName)
 
@@ -756,9 +765,12 @@ class KotlinGenerator private constructor(
     }
 
     val body = buildCodeBlock {
-      addStatement("var %N = super.hashCode", resultName)
-      beginControlFlow("if (%N == 0)", resultName)
-
+      if (!generateMutableMessages) {
+        addStatement("var %N = super.hashCode", resultName)
+        beginControlFlow("if (%N == 0)", resultName)
+      } else {
+        addStatement("var %N = 0", resultName)
+      }
       addStatement("%N = unknownFields.hashCode()", resultName)
 
       for (fieldOrOneOf in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
@@ -783,8 +795,10 @@ class KotlinGenerator private constructor(
         }
       }
 
-      addStatement("super.hashCode = %N", resultName)
-      endControlFlow()
+      if (!generateMutableMessages) {
+        addStatement("super.hashCode = %N", resultName)
+        endControlFlow()
+      }
       addStatement("return %N", resultName)
     }
     result.addCode(body)
@@ -1189,6 +1203,7 @@ class KotlinGenerator private constructor(
     }
 
     val propertySpec = PropertySpec.builder(fieldName, fieldClass)
+      .mutable(generateMutableMessages)
       .initializer(initializer)
       .apply {
         if (field.isDeprecated) {
@@ -1227,6 +1242,7 @@ class KotlinGenerator private constructor(
     parameterSpec.defaultValue(CodeBlock.of("null"))
 
     val propertySpec = PropertySpec.builder(fieldName, fieldClass)
+      .mutable(generateMutableMessages)
       .initializer(CodeBlock.of(if (buildersOnly) "builder.%N" else "%N", fieldName))
       .apply {
         if (javaInterOp) {
@@ -2040,6 +2056,15 @@ class KotlinGenerator private constructor(
       .addModifiers(OVERRIDE)
       .addParameter("value", className)
       .returns(className)
+
+    if (generateMutableMessages) {
+      redactBuilder.addStatement(
+        "throw %T(%S)",
+        ClassName("kotlin", "UnsupportedOperationException"),
+        "redact() is unsupported for Mutable message types"
+      )
+      return listOf(redactBuilder.build())
+    }
 
     val redactedMessageFields = message.fields.filter { it.isRedacted }
     val requiredRedactedMessageFields = redactedMessageFields.filter { it.isRequired }
@@ -3087,14 +3112,17 @@ class KotlinGenerator private constructor(
       escapeKotlinKeywords: Boolean = false,
       enumMode: EnumMode = ENUM_CLASS,
       emitProtoReader32: Boolean = false,
+      generateMutableMessages: Boolean = false,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
 
       fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
         for (type in types) {
-          val className = enclosingClassName?.nestedClass(type.type.simpleName)
-            ?: ClassName(kotlinPackage, type.type.simpleName)
+          val simpleName = type.type.simpleName
+          val name = if (generateMutableMessages) "Mutable$simpleName" else simpleName
+          val className = enclosingClassName?.nestedClass(name)
+            ?: ClassName(kotlinPackage, name)
           typeToKotlinName[type.type] = className
           putAll(kotlinPackage, className, type.nestedTypes)
         }
@@ -3137,6 +3165,7 @@ class KotlinGenerator private constructor(
         escapeKotlinKeywords = escapeKotlinKeywords,
         enumMode = enumMode,
         emitProtoReader32 = emitProtoReader32,
+        generateMutableMessages = generateMutableMessages
       )
     }
 
