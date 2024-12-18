@@ -2327,7 +2327,7 @@ class KotlinGeneratorTest {
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin(
       typeName = "Packet",
-      generateMutableMessages = true,
+      mutableTypes = true,
     )
     assertThat(code).contains("class MutablePacket")
     assertThat(code).contains("public var header_: MutableHeader? = null")
@@ -2336,7 +2336,10 @@ class KotlinGeneratorTest {
     assertThat(code).contains("MutablePayload#ADAPTER")
     assertThat(code).contains("var result = 0") // hashCode() is no longer calling super.hashCode().
     assertThat(code).contains(
-      "throw UnsupportedOperationException(\"redact() is unsupported for Mutable message types\")",
+      "throw UnsupportedOperationException(\"newBuilder() is unsupported for mutable message types\")",
+    )
+    assertThat(code).contains(
+      "throw UnsupportedOperationException(\"redact() is unsupported for mutable message types\")",
     )
   }
 
