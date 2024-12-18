@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-// import "google/protobuf/descriptor.proto";
-
 message HundredsFields {
   Field field1 = 1;
   Field field2 = 2;
