@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+package squareup.wire.mutable;
+
+message Header {
+  optional uint64 id = 1;
+}
+
+message Payload {
+  optional bytes content = 1;
+}
+
+message Packet {
+  optional Header header = 1;
+  optional Payload payload = 2;
+}

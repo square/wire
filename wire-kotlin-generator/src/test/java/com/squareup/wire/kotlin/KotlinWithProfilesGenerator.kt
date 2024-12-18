@@ -63,7 +63,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
       buildersOnly = buildersOnly,
       javaInterop = javaInterop,
       enumMode = enumMode,
-      generateMutableMessages = generateMutableMessages
+      generateMutableMessages = generateMutableMessages,
     )
     val type = schema.getType(typeName)!!
     val typeSpec = kotlinGenerator.generateType(type)

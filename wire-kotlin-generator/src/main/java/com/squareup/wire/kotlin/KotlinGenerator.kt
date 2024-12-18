@@ -137,7 +137,7 @@ class KotlinGenerator private constructor(
   private val escapeKotlinKeywords: Boolean,
   private val enumMode: EnumMode,
   private val emitProtoReader32: Boolean,
-  private val generateMutableMessages: Boolean
+  private val mutableTypes: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -563,19 +563,14 @@ class KotlinGenerator private constructor(
       .superclass(superclass)
       .addSuperclassConstructorParameter(adapterName)
       .addSuperclassConstructorParameter(unknownFields)
-      .apply {
-        if (!generateMutableMessages) {
-          // Only generate a builder if the message is not already mutable
-          addFunction(generateNewBuilderMethod(type, builderClassName))
-        }
-      }
+      .addFunction(generateNewBuilderMethod(type, builderClassName))
       .addFunction(generateEqualsMethod(type, nameAllocator))
       .addFunction(generateHashCodeMethod(type, nameAllocator))
       .addFunction(generateToStringMethod(type, nameAllocator))
       .apply {
-        if (buildersOnly || generateMutableMessages) {
+        if (buildersOnly || mutableTypes) {
           // buildersOnly: We expect consumers to use the `newBuilder` method instead of the `copy` method.
-          // generateMutableMessages: The messages are already mutable, so no need to generate a `copy` method.
+          // mutableTypes: The messages are already mutable, so no need to generate a `copy` method.
           return@apply
         }
         addFunction(generateCopyMethod(type, nameAllocator))
@@ -648,7 +643,7 @@ class KotlinGenerator private constructor(
     val funBuilder = FunSpec.builder("newBuilder")
       .addModifiers(OVERRIDE)
 
-    if (!javaInterOp) {
+    if (mutableTypes || !javaInterOp) {
       return funBuilder
         .addAnnotation(
           AnnotationSpec.builder(Deprecated::class)
@@ -706,7 +701,7 @@ class KotlinGenerator private constructor(
       .returns(BOOLEAN)
 
     val body = buildCodeBlock {
-      if (!generateMutableMessages) {
+      if (!mutableTypes) {
         // This is true iff the message is not mutable
         addStatement("if (%N === this) return·true", otherName)
       }
@@ -765,7 +760,7 @@ class KotlinGenerator private constructor(
     }
 
     val body = buildCodeBlock {
-      if (!generateMutableMessages) {
+      if (!mutableTypes) {
         addStatement("var %N = super.hashCode", resultName)
         beginControlFlow("if (%N == 0)", resultName)
       } else {
@@ -795,7 +790,7 @@ class KotlinGenerator private constructor(
         }
       }
 
-      if (!generateMutableMessages) {
+      if (!mutableTypes) {
         addStatement("super.hashCode = %N", resultName)
         endControlFlow()
       }
@@ -1203,7 +1198,7 @@ class KotlinGenerator private constructor(
     }
 
     val propertySpec = PropertySpec.builder(fieldName, fieldClass)
-      .mutable(generateMutableMessages)
+      .mutable(mutableTypes)
       .initializer(initializer)
       .apply {
         if (field.isDeprecated) {
@@ -1242,7 +1237,7 @@ class KotlinGenerator private constructor(
     parameterSpec.defaultValue(CodeBlock.of("null"))
 
     val propertySpec = PropertySpec.builder(fieldName, fieldClass)
-      .mutable(generateMutableMessages)
+      .mutable(mutableTypes)
       .initializer(CodeBlock.of(if (buildersOnly) "builder.%N" else "%N", fieldName))
       .apply {
         if (javaInterOp) {
@@ -2057,11 +2052,11 @@ class KotlinGenerator private constructor(
       .addParameter("value", className)
       .returns(className)
 
-    if (generateMutableMessages) {
+    if (mutableTypes) {
       redactBuilder.addStatement(
         "throw %T(%S)",
         ClassName("kotlin", "UnsupportedOperationException"),
-        "redact() is unsupported for Mutable message types"
+        "redact() is unsupported for Mutable message types",
       )
       return listOf(redactBuilder.build())
     }
@@ -3112,7 +3107,7 @@ class KotlinGenerator private constructor(
       escapeKotlinKeywords: Boolean = false,
       enumMode: EnumMode = ENUM_CLASS,
       emitProtoReader32: Boolean = false,
-      generateMutableMessages: Boolean = false,
+      mutableTypes: Boolean = false,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -3120,7 +3115,7 @@ class KotlinGenerator private constructor(
       fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
         for (type in types) {
           val simpleName = type.type.simpleName
-          val name = if (generateMutableMessages) "Mutable$simpleName" else simpleName
+          val name = if (mutableTypes) "Mutable$simpleName" else simpleName
           val className = enclosingClassName?.nestedClass(name)
             ?: ClassName(kotlinPackage, name)
           typeToKotlinName[type.type] = className
@@ -3165,7 +3160,7 @@ class KotlinGenerator private constructor(
         escapeKotlinKeywords = escapeKotlinKeywords,
         enumMode = enumMode,
         emitProtoReader32 = emitProtoReader32,
-        generateMutableMessages = generateMutableMessages
+        mutableTypes = mutableTypes,
       )
     }
 

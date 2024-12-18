@@ -6,6 +6,12 @@ plugins {
 
 wire {
   kotlin {
+    includes = listOf("squareup.wire.mutable.*")
+    out = "src/main/kotlin"
+    mutableTypes = true
+  }
+
+  kotlin {
     includes = listOf("squareup.wire.unrecognized_constant.*")
     out = "src/main/kotlin"
     buildersOnly = true
