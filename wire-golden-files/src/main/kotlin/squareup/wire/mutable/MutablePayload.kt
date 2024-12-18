@@ -17,7 +17,6 @@ import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
 import kotlin.Any
-import kotlin.AssertionError
 import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
@@ -42,7 +41,7 @@ public class MutablePayload(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
   )
-  override fun newBuilder(): Nothing = throw AssertionError("Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+  override fun newBuilder(): Nothing = throw UnsupportedOperationException("newBuilder() is unsupported for mutable message types")
 
   override fun equals(other: Any?): Boolean {
     if (other !is MutablePayload) return false
@@ -104,7 +103,7 @@ public class MutablePayload(
         )
       }
 
-      override fun redact(`value`: MutablePayload): MutablePayload = throw UnsupportedOperationException("redact() is unsupported for Mutable message types")
+      override fun redact(`value`: MutablePayload): MutablePayload = throw UnsupportedOperationException("redact() is unsupported for mutable message types")
     }
 
     private const val serialVersionUID: Long = 0L

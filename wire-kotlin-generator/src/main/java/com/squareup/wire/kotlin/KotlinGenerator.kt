@@ -644,6 +644,22 @@ class KotlinGenerator private constructor(
       .addModifiers(OVERRIDE)
 
     if (mutableTypes || !javaInterOp) {
+      val codeBlock = buildCodeBlock {
+        if (mutableTypes) {
+          addStatement(
+            "throw %T(%S)",
+            ClassName("kotlin", "UnsupportedOperationException"),
+            "newBuilder() is unsupported for mutable message types",
+          )
+        } else {
+          addStatement(
+            "throw %T(%S)",
+            ClassName("kotlin", "AssertionError"),
+            "Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin",
+          )
+        }
+      }
+
       return funBuilder
         .addAnnotation(
           AnnotationSpec.builder(Deprecated::class)
@@ -652,7 +668,7 @@ class KotlinGenerator private constructor(
             .build(),
         )
         .returns(NOTHING)
-        .addStatement("throw %T(%S)", ClassName("kotlin", "AssertionError"), "Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
+        .addCode(codeBlock)
         .build()
     }
 
@@ -702,7 +718,7 @@ class KotlinGenerator private constructor(
 
     val body = buildCodeBlock {
       if (!mutableTypes) {
-        // This is true iff the message is not mutable
+        // We cannot rely on referential equality if the message is mutable.
         addStatement("if (%N === this) return·true", otherName)
       }
       addStatement("if (%N !is %T) return·false", otherName, kotlinType)
@@ -2056,7 +2072,7 @@ class KotlinGenerator private constructor(
       redactBuilder.addStatement(
         "throw %T(%S)",
         ClassName("kotlin", "UnsupportedOperationException"),
-        "redact() is unsupported for Mutable message types",
+        "redact() is unsupported for mutable message types",
       )
       return listOf(redactBuilder.build())
     }
