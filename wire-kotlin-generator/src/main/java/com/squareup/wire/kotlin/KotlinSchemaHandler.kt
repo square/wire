@@ -86,6 +86,11 @@ class KotlinSchemaHandler(
    * when targeting Kotlin/JS, where `Long` cursors are inefficient.
    */
   private val emitProtoReader32: Boolean = false,
+
+  /**
+   * If true, the generated classes will be mutable..
+   */
+  private val mutableTypes: Boolean = false,
 ) : SchemaHandler() {
   private lateinit var kotlinGenerator: KotlinGenerator
 
@@ -107,6 +112,7 @@ class KotlinSchemaHandler(
       escapeKotlinKeywords = escapeKotlinKeywords,
       enumMode = enumMode,
       emitProtoReader32 = emitProtoReader32,
+      mutableTypes = mutableTypes,
     )
     context.fileSystem.createDirectories(context.outDirectory)
     super.handle(schema, context)
