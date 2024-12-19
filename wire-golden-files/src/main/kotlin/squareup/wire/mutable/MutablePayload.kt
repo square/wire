@@ -35,7 +35,7 @@ public class MutablePayload(
     schemaIndex = 0,
   )
   public var content: ByteString? = null,
-  unknownFields: ByteString = ByteString.EMPTY,
+  override var unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MutablePayload, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
