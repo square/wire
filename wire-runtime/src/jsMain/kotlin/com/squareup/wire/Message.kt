@@ -28,7 +28,7 @@ protected actual constructor(
    * Returns a byte string containing the proto encoding of this message's unknown fields. Returns
    * an empty byte string if this message has no unknown fields.
    */
-  actual val unknownFields: ByteString,
+  actual open val unknownFields: ByteString,
 ) {
   /** If non-zero, the hash code of this message. Accessed by generated code. */
   @JsName("cachedHashCode")

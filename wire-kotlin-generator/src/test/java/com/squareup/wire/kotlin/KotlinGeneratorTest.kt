@@ -2332,6 +2332,7 @@ class KotlinGeneratorTest {
     assertThat(code).contains("class MutablePacket")
     assertThat(code).contains("public var header_: MutableHeader? = null")
     assertThat(code).contains("public var payload: MutablePayload? = null")
+    assertThat(code).contains("override var unknownFields: ByteString = ByteString.EMPTY")
     assertThat(code).contains("MutableHeader#ADAPTER") // should refer to adapters of Mutable message types.
     assertThat(code).contains("MutablePayload#ADAPTER")
     assertThat(code).contains("var result = 0") // hashCode() is no longer calling super.hashCode().

@@ -42,7 +42,7 @@ public class MutablePacket(
     schemaIndex = 1,
   )
   public var payload: MutablePayload? = null,
-  unknownFields: ByteString = ByteString.EMPTY,
+  override var unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MutablePacket, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

@@ -718,7 +718,7 @@ class KotlinGenerator private constructor(
 
     val body = buildCodeBlock {
       if (!mutableTypes) {
-        // We cannot rely on referential equality if the message is mutable.
+        // When messages are immutable, reference equality can be used as a quick check for equals().
         addStatement("if (%N === this) return·true", otherName)
       }
       addStatement("if (%N !is %T) return·false", otherName, kotlinType)
@@ -1094,7 +1094,15 @@ class KotlinGenerator private constructor(
         .defaultValue("%T.EMPTY", byteClass)
         .build(),
     )
-
+    if (mutableTypes) {
+      classBuilder.addProperty(
+        PropertySpec.builder(unknownFields, byteClass)
+          .addModifiers(OVERRIDE)
+          .mutable(true)
+          .initializer(unknownFields)
+          .build()
+      )
+    }
     classBuilder.primaryConstructor(constructorBuilder.build())
   }
 

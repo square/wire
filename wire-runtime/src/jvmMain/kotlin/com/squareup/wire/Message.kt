@@ -38,7 +38,8 @@ protected actual constructor(
    */
   @field:Transient
   @get:JvmName("unknownFields")
-  actual val unknownFields: ByteString = unknownFields
+  @Suppress("INAPPLICABLE_JVM_NAME") // https://youtrack.jetbrains.com/issue/KT-31420
+  actual open val unknownFields: ByteString = unknownFields
     get() {
       // Some naughty libraries construct Messages by reflection which causes this non-null field
       // to have a null value. We defend against this with an otherwise-redundant null check.

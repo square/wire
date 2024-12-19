@@ -35,7 +35,7 @@ public class MutableHeader(
     schemaIndex = 0,
   )
   public var id: Long? = null,
-  unknownFields: ByteString = ByteString.EMPTY,
+  override var unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MutableHeader, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
