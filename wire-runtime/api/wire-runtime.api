@@ -89,7 +89,7 @@ public abstract class com/squareup/wire/Message : java/io/Serializable {
 	public final fun encodeByteString ()Lokio/ByteString;
 	public abstract fun newBuilder ()Lcom/squareup/wire/Message$Builder;
 	public fun toString ()Ljava/lang/String;
-	public final fun unknownFields ()Lokio/ByteString;
+	public fun unknownFields ()Lokio/ByteString;
 	public final fun withoutUnknownFields ()Lcom/squareup/wire/Message;
 	protected final fun writeReplace ()Ljava/lang/Object;
 }

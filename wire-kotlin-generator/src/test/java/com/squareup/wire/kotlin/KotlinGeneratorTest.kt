@@ -2304,6 +2304,46 @@ class KotlinGeneratorTest {
     assertThat(code).contains("import wire_package.Person")
   }
 
+  @Test
+  fun generatesMutableMessages() {
+    val schema = buildSchema {
+      add(
+        "packet.proto".toPath(),
+        """
+          message Header {
+            optional uint64 id = 1;
+          }
+
+          message Payload {
+            optional bytes content = 1;
+          }
+
+          message Packet {
+            optional Header header = 1;
+            optional Payload payload = 2;
+          }
+        """.trimIndent(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin(
+      typeName = "Packet",
+      mutableTypes = true,
+    )
+    assertThat(code).contains("class MutablePacket")
+    assertThat(code).contains("public var header_: MutableHeader? = null")
+    assertThat(code).contains("public var payload: MutablePayload? = null")
+    assertThat(code).contains("override var unknownFields: ByteString = ByteString.EMPTY")
+    assertThat(code).contains("MutableHeader#ADAPTER") // should refer to adapters of Mutable message types.
+    assertThat(code).contains("MutablePayload#ADAPTER")
+    assertThat(code).contains("var result = 0") // hashCode() is no longer calling super.hashCode().
+    assertThat(code).contains(
+      "throw UnsupportedOperationException(\"newBuilder() is unsupported for mutable message types\")",
+    )
+    assertThat(code).contains(
+      "throw UnsupportedOperationException(\"redact() is unsupported for mutable message types\")",
+    )
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {
