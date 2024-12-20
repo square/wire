@@ -55,6 +55,7 @@ public class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/Wi
 	public final fun getGrpcServerCompatible ()Z
 	public final fun getIncludes ()Ljava/util/List;
 	public final fun getJavaInterop ()Z
+	public final fun getMutableTypes ()Z
 	public final fun getNameSuffix ()Ljava/lang/String;
 	public final fun getRpcCallStyle ()Ljava/lang/String;
 	public final fun getRpcRole ()Ljava/lang/String;
@@ -72,6 +73,7 @@ public class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/Wi
 	public final fun setGrpcServerCompatible (Z)V
 	public final fun setIncludes (Ljava/util/List;)V
 	public final fun setJavaInterop (Z)V
+	public final fun setMutableTypes (Z)V
 	public final fun setNameSuffix (Ljava/lang/String;)V
 	public final fun setRpcCallStyle (Ljava/lang/String;)V
 	public final fun setRpcRole (Ljava/lang/String;)V
