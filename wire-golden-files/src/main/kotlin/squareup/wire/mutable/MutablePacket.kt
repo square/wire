@@ -51,6 +51,7 @@ public class MutablePacket(
   override fun newBuilder(): Nothing = throw UnsupportedOperationException("newBuilder() is unsupported for mutable message types")
 
   override fun equals(other: Any?): Boolean {
+    if (other === this) return true
     if (other !is MutablePacket) return false
     if (unknownFields != other.unknownFields) return false
     if (header_ != other.header_) return false

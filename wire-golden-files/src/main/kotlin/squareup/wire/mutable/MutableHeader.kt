@@ -44,6 +44,7 @@ public class MutableHeader(
   override fun newBuilder(): Nothing = throw UnsupportedOperationException("newBuilder() is unsupported for mutable message types")
 
   override fun equals(other: Any?): Boolean {
+    if (other === this) return true
     if (other !is MutableHeader) return false
     if (unknownFields != other.unknownFields) return false
     if (id != other.id) return false

@@ -44,6 +44,7 @@ public class MutablePayload(
   override fun newBuilder(): Nothing = throw UnsupportedOperationException("newBuilder() is unsupported for mutable message types")
 
   override fun equals(other: Any?): Boolean {
+    if (other === this) return true
     if (other !is MutablePayload) return false
     if (unknownFields != other.unknownFields) return false
     if (content != other.content) return false

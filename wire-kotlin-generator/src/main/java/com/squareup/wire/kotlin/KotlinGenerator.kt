@@ -717,10 +717,7 @@ class KotlinGenerator private constructor(
       .returns(BOOLEAN)
 
     val body = buildCodeBlock {
-      if (!mutableTypes) {
-        // When messages are immutable, reference equality can be used as a quick check for equals().
-        addStatement("if (%N === this) return·true", otherName)
-      }
+      addStatement("if (%N === this) return·true", otherName)
       addStatement("if (%N !is %T) return·false", otherName, kotlinType)
       addStatement("if (unknownFields != %N.unknownFields) return·false", otherName)
 
@@ -734,10 +731,12 @@ class KotlinGenerator private constructor(
               addStatement("if (%1N != %2N.%1N) return·false", fieldName, otherName)
             }
           }
+
           is OneOf -> {
             val fieldName = localNameAllocator[fieldOrOneOf]
             addStatement("if (%1N != %2N.%1N) return·false", fieldName, otherName)
           }
+
           else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
         }
       }
@@ -1100,7 +1099,7 @@ class KotlinGenerator private constructor(
           .addModifiers(OVERRIDE)
           .mutable(true)
           .initializer(unknownFields)
-          .build()
+          .build(),
       )
     }
     classBuilder.primaryConstructor(constructorBuilder.build())
