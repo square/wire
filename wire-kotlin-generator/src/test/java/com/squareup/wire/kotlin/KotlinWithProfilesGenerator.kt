@@ -54,6 +54,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
     buildersOnly: Boolean = false,
     javaInterop: Boolean = false,
     enumMode: EnumMode = EnumMode.ENUM_CLASS,
+    mutableTypes: Boolean = false,
   ): String {
     val kotlinGenerator = KotlinGenerator(
       schema,
@@ -62,6 +63,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
       buildersOnly = buildersOnly,
       javaInterop = javaInterop,
       enumMode = enumMode,
+      mutableTypes = mutableTypes,
     )
     val type = schema.getType(typeName)!!
     val typeSpec = kotlinGenerator.generateType(type)

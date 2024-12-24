@@ -26,9 +26,6 @@ import kotlin.String
 import kotlin.Suppress
 import okio.ByteString
 
-/**
- * import "google/protobuf/descriptor.proto";
- */
 public class HundredsFields(
   @field:WireField(
     tag = 1,

@@ -142,6 +142,11 @@ data class KotlinTarget(
    * when targeting Kotlin/JS, where `Long` cursors are inefficient.
    */
   private val emitProtoReader32: Boolean = false,
+
+  /**
+   * If true, the generated classes will be mutable..
+   */
+  private val mutableTypes: Boolean = false,
 ) : Target() {
   override fun newHandler(): SchemaHandler {
     return KotlinSchemaHandler(
@@ -159,6 +164,7 @@ data class KotlinTarget(
       escapeKotlinKeywords = escapeKotlinKeywords,
       enumMode = enumMode,
       emitProtoReader32 = emitProtoReader32,
+      mutableTypes = mutableTypes,
     )
   }
 

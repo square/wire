@@ -154,6 +154,11 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
    */
   var emitProtoReader32: Boolean = false
 
+  /**
+   * If true, the generated classes will be mutable..
+   */
+  var mutableTypes: Boolean = false
+
   override fun toTarget(outputDirectory: String): KotlinTarget {
     if (grpcServerCompatible) {
       throw IllegalArgumentException(
@@ -197,6 +202,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       escapeKotlinKeywords = escapeKotlinKeywords,
       enumMode = enumMode,
       emitProtoReader32 = emitProtoReader32,
+      mutableTypes = mutableTypes,
     )
   }
 }
