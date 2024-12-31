@@ -26,6 +26,7 @@ data class ProtoFileElement(
   val syntax: Syntax? = null,
   val imports: List<String> = emptyList(),
   val publicImports: List<String> = emptyList(),
+  val weakImports: List<String> = emptyList(),
   val types: List<TypeElement> = emptyList(),
   val services: List<ServiceElement> = emptyList(),
   val extendDeclarations: List<ExtendElement> = emptyList(),
@@ -50,6 +51,9 @@ data class ProtoFileElement(
       }
       for (file in publicImports) {
         append("import public \"$file\";\n")
+      }
+      for (file in weakImports) {
+        append("import weak \"$file\";\n")
       }
     }
     if (options.isNotEmpty()) {
