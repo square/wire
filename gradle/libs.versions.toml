@@ -1,7 +1,7 @@
 [versions]
 android = "4.1.1.4"
 asm = "9.7.1"
-assertj = "3.27.0"
+assertj = "3.27.1"
 checkerQual = "3.48.4"
 coroutines = "1.9.0"
 dokka = "1.9.20"
