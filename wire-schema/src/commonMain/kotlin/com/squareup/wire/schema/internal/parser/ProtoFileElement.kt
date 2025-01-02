@@ -44,7 +44,7 @@ data class ProtoFileElement(
       append('\n')
       append("package $packageName;\n")
     }
-    if (imports.isNotEmpty() || publicImports.isNotEmpty()) {
+    if (imports.isNotEmpty() || publicImports.isNotEmpty() || weakImports.isNotEmpty()) {
       append('\n')
       for (file in imports) {
         append("import \"$file\";\n")
