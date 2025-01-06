@@ -1,6 +1,32 @@
 Change Log
 ==========
 
+Version 5.2.0
+---------------------
+
+_2025-01-06_
+
+### Common
+
+* Enforce recursion limit when parsing nested groups. (#3119)
+
+### CLI `wire-compiler`
+
+* It is now possible to set multiple targets. (#3106 & #3107)
+* The option `opaque_types` introduced in `4.9.2` for the Wire Gradle plugin is now available on CLI. (#3147)
+
+### JVM generation
+
+* [KotlinPoet has been updated to `2.0.0`](https://square.github.io/kotlinpoet/changelog/#version-200) which dramatically changes how generated Kotlin files are wrapped. This is neither a source nor a binary breaking changes.
+* A new `@WireEnclosingType` annotation is now applied to generated types so R8 doesn't prune too much. (#3123)
+* Split the redact method into chunks when a type has more than 100 fields to avoid compilation error. (#3214 by [Damian Wieczorek][damianw])
+* Add support for mutable messages in Wire's Kotlin Generator. (#3217 by [Rahul Ravikumar][tikurahul])
+  * You can opt-in by adding `mutableTypes = true` on your Kotlin target. This is unsafe and we do not recommend that you use it unless you have a sound use-case for it.
+
+### Swift
+
+* Fix buffer overflow and data corruption when a type has more than 5 layers of nesting (#3203 by [Eric Amorde][amorde])
+
 Version 4.9.11
 ---------------------
 
@@ -1518,6 +1544,7 @@ Initial version.
  [MariusVolkhart]: https://github.com/MariusVolkhart
  [ShayOinif]: https://github.com/ShayOinif
  [aaron-edwards]: https://github.com/aaron-edwards
+ [amorde]: https://github.com/amorde
  [bom]: https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import
  [custom-handlers-doc]: https://square.github.io/wire/wire_compiler/#custom-handlers
  [custom-handlers-recipes]: https://github.com/square/wire/tree/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
@@ -1537,5 +1564,6 @@ Initial version.
  [reflect]: https://github.com/grpc/grpc/blob/master/doc/server-reflection.md
  [sashaweiss-signal]: https://github.com/sashaweiss-signal
  [swiftblogpost]: https://cashapp.github.io/2020-08-19/wire-support-for-swift-part-1
+ [tikurahul]: https://github.com/tikurahul
  [traviscj]: https://github.com/traviscj
  [wire-customizing-output]: https://square.github.io/wire/wire_compiler/#customizing-output
