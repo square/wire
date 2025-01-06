@@ -207,7 +207,8 @@ data class ProtoFile(
     val retainedWeakImports = weakImports.filter { referencedImports.contains(it) }
 
     return if (imports.size != retainedImports.size || publicImports.size != retainedPublicImports.size ||
-               weakImports.size != retainedWeakImports.size) {
+      weakImports.size != retainedWeakImports.size
+    ) {
       val result = ProtoFile(
         location, retainedImports, retainedPublicImports, retainedWeakImports, packageName,
         types, services, extendList, options, syntax,

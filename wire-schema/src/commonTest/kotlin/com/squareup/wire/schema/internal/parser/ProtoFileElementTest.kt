@@ -152,15 +152,16 @@ class ProtoFileElementTest {
   }
 
   @Test
-  fun simpleWithBothImportsToSchema() {
+  fun simpleWithMultipleImportTypesToSchema() {
     val element = MessageElement(
-      location = location,
+      location = location.at(line = 8, column = 1),
       name = "Message",
     )
     val file = ProtoFileElement(
       location = location,
       imports = listOf("example.thing"),
       publicImports = listOf("example.other"),
+      weakImports = listOf("yet.other"),
       types = listOf(element),
     )
     val expected = """
@@ -169,11 +170,16 @@ class ProtoFileElementTest {
         |
         |import "example.thing";
         |import public "example.other";
+        |import weak "yet.other";
         |
         |message Message {}
         |
     """.trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
+
+    // Re-parse the expected string into a ProtoFile and ensure they're equal.
+    val parsed = ProtoParser.parse(location, expected)
+    assertThat(parsed).isEqualTo(file)
   }
 
   @Test
