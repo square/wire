@@ -2315,7 +2315,15 @@ class KotlinGeneratorTest {
           }
 
           message Payload {
+            enum Type {
+              TYPE_TEXT_PLAIN = 1;
+              TYPE_TEXT_HTML = 2;
+              TYPE_IMAGE_JPEG = 3;
+              TYPE_IMAGE_PNG = 4;
+              TYPE_UNKNOWN = 10;
+            }
             optional bytes content = 1;
+            optional Type type = 2;
           }
 
           message Packet {

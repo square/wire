@@ -7,6 +7,7 @@
 
 package squareup.wire.mutable
 
+import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
@@ -14,8 +15,12 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
+import com.squareup.wire.`internal`.JvmStatic
+import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Deprecated
@@ -26,17 +31,39 @@ import kotlin.Nothing
 import kotlin.String
 import kotlin.Suppress
 import kotlin.UnsupportedOperationException
+import kotlin.collections.List
 import okio.ByteString
 
 public class MutablePayload(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#BYTES",
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
     schemaIndex = 0,
   )
+  public var preamble: String? = null,
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.ProtoAdapter#BYTES",
+    schemaIndex = 1,
+  )
   public var content: ByteString? = null,
+  @field:WireField(
+    tag = 3,
+    adapter = "squareup.wire.mutable.MutablePayload${'$'}Type#ADAPTER",
+    schemaIndex = 2,
+  )
+  public var type: Type? = null,
+  footers: List<String> = emptyList(),
   override var unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MutablePayload, Nothing>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 4,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    label = WireField.Label.REPEATED,
+    schemaIndex = 3,
+  )
+  public var footers: List<String> = immutableCopyOf("footers", footers)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
@@ -47,20 +74,29 @@ public class MutablePayload(
     if (other === this) return true
     if (other !is MutablePayload) return false
     if (unknownFields != other.unknownFields) return false
+    if (preamble != other.preamble) return false
     if (content != other.content) return false
+    if (type != other.type) return false
+    if (footers != other.footers) return false
     return true
   }
 
   override fun hashCode(): Int {
     var result = 0
     result = unknownFields.hashCode()
+    result = result * 37 + (preamble?.hashCode() ?: 0)
     result = result * 37 + (content?.hashCode() ?: 0)
+    result = result * 37 + (type?.hashCode() ?: 0)
+    result = result * 37 + footers.hashCode()
     return result
   }
 
   override fun toString(): String {
     val result = mutableListOf<String>()
+    if (preamble != null) result += """preamble=${sanitize(preamble!!)}"""
     if (content != null) result += """content=$content"""
+    if (type != null) result += """type=$type"""
+    if (footers.isNotEmpty()) result += """footers=${sanitize(footers)}"""
     return result.joinToString(prefix = "MutablePayload{", separator = ", ", postfix = "}")
   }
 
@@ -76,30 +112,52 @@ public class MutablePayload(
     ) {
       override fun encodedSize(`value`: MutablePayload): Int {
         var size = value.unknownFields.size
-        size += ProtoAdapter.BYTES.encodedSizeWithTag(1, value.content)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.preamble)
+        size += ProtoAdapter.BYTES.encodedSizeWithTag(2, value.content)
+        size += Type.ADAPTER.encodedSizeWithTag(3, value.type)
+        size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(4, value.footers)
         return size
       }
 
       override fun encode(writer: ProtoWriter, `value`: MutablePayload) {
-        ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.content)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.preamble)
+        ProtoAdapter.BYTES.encodeWithTag(writer, 2, value.content)
+        Type.ADAPTER.encodeWithTag(writer, 3, value.type)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 4, value.footers)
         writer.writeBytes(value.unknownFields)
       }
 
       override fun encode(writer: ReverseProtoWriter, `value`: MutablePayload) {
         writer.writeBytes(value.unknownFields)
-        ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.content)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 4, value.footers)
+        Type.ADAPTER.encodeWithTag(writer, 3, value.type)
+        ProtoAdapter.BYTES.encodeWithTag(writer, 2, value.content)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.preamble)
       }
 
       override fun decode(reader: ProtoReader): MutablePayload {
+        var preamble: String? = null
         var content: ByteString? = null
+        var type: Type? = null
+        val footers = mutableListOf<String>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> content = ProtoAdapter.BYTES.decode(reader)
+            1 -> preamble = ProtoAdapter.STRING.decode(reader)
+            2 -> content = ProtoAdapter.BYTES.decode(reader)
+            3 -> try {
+              type = Type.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
+            4 -> footers.add(ProtoAdapter.STRING.decode(reader))
             else -> reader.readUnknownField(tag)
           }
         }
         return MutablePayload(
+          preamble = preamble,
           content = content,
+          type = type,
+          footers = footers,
           unknownFields = unknownFields
         )
       }
@@ -108,5 +166,37 @@ public class MutablePayload(
     }
 
     private const val serialVersionUID: Long = 0L
+  }
+
+  public enum class Type(
+    override val `value`: Int,
+  ) : WireEnum {
+    TYPE_TEXT_PLAIN(1),
+    TYPE_TEXT_HTML(2),
+    TYPE_IMAGE_JPEG(3),
+    TYPE_IMAGE_PNG(4),
+    TYPE_UNKNOWN(10),
+    ;
+
+    public companion object {
+      @JvmField
+      public val ADAPTER: ProtoAdapter<Type> = object : EnumAdapter<Type>(
+        Type::class, 
+        PROTO_2, 
+        null
+      ) {
+        override fun fromValue(`value`: Int): Type? = Type.fromValue(`value`)
+      }
+
+      @JvmStatic
+      public fun fromValue(`value`: Int): Type? = when (`value`) {
+        1 -> TYPE_TEXT_PLAIN
+        2 -> TYPE_TEXT_HTML
+        3 -> TYPE_IMAGE_JPEG
+        4 -> TYPE_IMAGE_PNG
+        10 -> TYPE_UNKNOWN
+        else -> null
+      }
+    }
   }
 }
