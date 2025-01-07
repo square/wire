@@ -1382,7 +1382,11 @@ class KotlinGenerator private constructor(
                     add("=$DOUBLE_FULL_BLOCK")
                   } else {
                     if (fieldOrOneOf.type == ProtoType.STRING) {
-                      add("=\${%M(%N)}", sanitizeMember, fieldName)
+                      if (mutableTypes && !fieldOrOneOf.isRepeated) {
+                        add("=\${%M(%N!!)}", sanitizeMember, fieldName)
+                      } else {
+                        add("=\${%M(%N)}", sanitizeMember, fieldName)
+                      }
                     } else if (fieldOrOneOf.useArray) {
                       add("=\${")
                       add("%N", fieldName)
@@ -3138,7 +3142,7 @@ class KotlinGenerator private constructor(
       fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
         for (type in types) {
           val simpleName = type.type.simpleName
-          val name = if (mutableTypes) "Mutable$simpleName" else simpleName
+          val name = if (mutableTypes && type !is EnumType) "Mutable$simpleName" else simpleName
           val className = enclosingClassName?.nestedClass(name)
             ?: ClassName(kotlinPackage, name)
           typeToKotlinName[type.type] = className

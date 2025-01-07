@@ -7,7 +7,16 @@ message Header {
 }
 
 message Payload {
-  optional bytes content = 1;
+  enum Type {
+    TYPE_TEXT_PLAIN = 1;
+    TYPE_TEXT_HTML = 2;
+    TYPE_IMAGE_JPEG = 3;
+    TYPE_IMAGE_PNG = 4;
+    TYPE_UNKNOWN = 10;
+  }
+  optional string preamble = 1;
+  optional bytes content = 2;
+  optional Type type = 3;
 }
 
 message Packet {
