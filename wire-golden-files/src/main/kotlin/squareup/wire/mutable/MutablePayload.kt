@@ -19,6 +19,7 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmStatic
+import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
@@ -30,6 +31,7 @@ import kotlin.Nothing
 import kotlin.String
 import kotlin.Suppress
 import kotlin.UnsupportedOperationException
+import kotlin.collections.List
 import okio.ByteString
 
 public class MutablePayload(
@@ -51,8 +53,17 @@ public class MutablePayload(
     schemaIndex = 2,
   )
   public var type: Type? = null,
+  footers: List<String> = emptyList(),
   override var unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<MutablePayload, Nothing>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 4,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    label = WireField.Label.REPEATED,
+    schemaIndex = 3,
+  )
+  public var footers: List<String> = immutableCopyOf("footers", footers)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
@@ -66,6 +77,7 @@ public class MutablePayload(
     if (preamble != other.preamble) return false
     if (content != other.content) return false
     if (type != other.type) return false
+    if (footers != other.footers) return false
     return true
   }
 
@@ -75,6 +87,7 @@ public class MutablePayload(
     result = result * 37 + (preamble?.hashCode() ?: 0)
     result = result * 37 + (content?.hashCode() ?: 0)
     result = result * 37 + (type?.hashCode() ?: 0)
+    result = result * 37 + footers.hashCode()
     return result
   }
 
@@ -83,6 +96,7 @@ public class MutablePayload(
     if (preamble != null) result += """preamble=${sanitize(preamble!!)}"""
     if (content != null) result += """content=$content"""
     if (type != null) result += """type=$type"""
+    if (footers.isNotEmpty()) result += """footers=${sanitize(footers)}"""
     return result.joinToString(prefix = "MutablePayload{", separator = ", ", postfix = "}")
   }
 
@@ -101,6 +115,7 @@ public class MutablePayload(
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.preamble)
         size += ProtoAdapter.BYTES.encodedSizeWithTag(2, value.content)
         size += Type.ADAPTER.encodedSizeWithTag(3, value.type)
+        size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(4, value.footers)
         return size
       }
 
@@ -108,11 +123,13 @@ public class MutablePayload(
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.preamble)
         ProtoAdapter.BYTES.encodeWithTag(writer, 2, value.content)
         Type.ADAPTER.encodeWithTag(writer, 3, value.type)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 4, value.footers)
         writer.writeBytes(value.unknownFields)
       }
 
       override fun encode(writer: ReverseProtoWriter, `value`: MutablePayload) {
         writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 4, value.footers)
         Type.ADAPTER.encodeWithTag(writer, 3, value.type)
         ProtoAdapter.BYTES.encodeWithTag(writer, 2, value.content)
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.preamble)
@@ -122,6 +139,7 @@ public class MutablePayload(
         var preamble: String? = null
         var content: ByteString? = null
         var type: Type? = null
+        val footers = mutableListOf<String>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> preamble = ProtoAdapter.STRING.decode(reader)
@@ -131,6 +149,7 @@ public class MutablePayload(
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
+            4 -> footers.add(ProtoAdapter.STRING.decode(reader))
             else -> reader.readUnknownField(tag)
           }
         }
@@ -138,6 +157,7 @@ public class MutablePayload(
           preamble = preamble,
           content = content,
           type = type,
+          footers = footers,
           unknownFields = unknownFields
         )
       }

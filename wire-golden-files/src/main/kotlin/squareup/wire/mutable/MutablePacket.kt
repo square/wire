@@ -16,6 +16,7 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
+import com.squareup.wire.`internal`.immutableCopyOf
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Deprecated
@@ -26,6 +27,7 @@ import kotlin.Nothing
 import kotlin.String
 import kotlin.Suppress
 import kotlin.UnsupportedOperationException
+import kotlin.collections.List
 import okio.ByteString
 
 public class MutablePacket(
@@ -36,14 +38,17 @@ public class MutablePacket(
     schemaIndex = 0,
   )
   public var header_: MutableHeader? = null,
+  payload: List<MutablePayload> = emptyList(),
+  override var unknownFields: ByteString = ByteString.EMPTY,
+) : Message<MutablePacket, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 2,
     adapter = "squareup.wire.mutable.MutablePayload#ADAPTER",
+    label = WireField.Label.REPEATED,
     schemaIndex = 1,
   )
-  public var payload: MutablePayload? = null,
-  override var unknownFields: ByteString = ByteString.EMPTY,
-) : Message<MutablePacket, Nothing>(ADAPTER, unknownFields) {
+  public var payload: List<MutablePayload> = immutableCopyOf("payload", payload)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
@@ -63,14 +68,14 @@ public class MutablePacket(
     var result = 0
     result = unknownFields.hashCode()
     result = result * 37 + (header_?.hashCode() ?: 0)
-    result = result * 37 + (payload?.hashCode() ?: 0)
+    result = result * 37 + payload.hashCode()
     return result
   }
 
   override fun toString(): String {
     val result = mutableListOf<String>()
     if (header_ != null) result += """header_=$header_"""
-    if (payload != null) result += """payload=$payload"""
+    if (payload.isNotEmpty()) result += """payload=$payload"""
     return result.joinToString(prefix = "MutablePacket{", separator = ", ", postfix = "}")
   }
 
@@ -87,29 +92,29 @@ public class MutablePacket(
       override fun encodedSize(`value`: MutablePacket): Int {
         var size = value.unknownFields.size
         size += MutableHeader.ADAPTER.encodedSizeWithTag(1, value.header_)
-        size += MutablePayload.ADAPTER.encodedSizeWithTag(2, value.payload)
+        size += MutablePayload.ADAPTER.asRepeated().encodedSizeWithTag(2, value.payload)
         return size
       }
 
       override fun encode(writer: ProtoWriter, `value`: MutablePacket) {
         MutableHeader.ADAPTER.encodeWithTag(writer, 1, value.header_)
-        MutablePayload.ADAPTER.encodeWithTag(writer, 2, value.payload)
+        MutablePayload.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.payload)
         writer.writeBytes(value.unknownFields)
       }
 
       override fun encode(writer: ReverseProtoWriter, `value`: MutablePacket) {
         writer.writeBytes(value.unknownFields)
-        MutablePayload.ADAPTER.encodeWithTag(writer, 2, value.payload)
+        MutablePayload.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.payload)
         MutableHeader.ADAPTER.encodeWithTag(writer, 1, value.header_)
       }
 
       override fun decode(reader: ProtoReader): MutablePacket {
         var header_: MutableHeader? = null
-        var payload: MutablePayload? = null
+        val payload = mutableListOf<MutablePayload>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> header_ = MutableHeader.ADAPTER.decode(reader)
-            2 -> payload = MutablePayload.ADAPTER.decode(reader)
+            2 -> payload.add(MutablePayload.ADAPTER.decode(reader))
             else -> reader.readUnknownField(tag)
           }
         }
