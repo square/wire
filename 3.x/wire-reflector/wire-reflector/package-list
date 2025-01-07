@@ -1,0 +1,8 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.squareup.wire.reflector////PointingToDeclaration/wire-reflector/com.squareup.wire.reflector/index.html
+$dokka.location:com.squareup.wire.reflector/SchemaReflector///PointingToDeclaration/wire-reflector/com.squareup.wire.reflector/-schema-reflector/index.html
+$dokka.location:com.squareup.wire.reflector/SchemaReflector/SchemaReflector/#com.squareup.wire.schema.Schema#kotlin.Boolean/PointingToDeclaration/wire-reflector/com.squareup.wire.reflector/-schema-reflector/-schema-reflector.html
+$dokka.location:com.squareup.wire.reflector/SchemaReflector/process/#[Error type: Unresolved type for ServerReflectionRequest]/PointingToDeclaration/wire-reflector/com.squareup.wire.reflector/-schema-reflector/process.html
+com.squareup.wire.reflector
+
