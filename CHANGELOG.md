@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 5.2.1
+---------------------
+
+_2025-01-07_
+
+### JVM generation
+
+* Fix support for mutable messages in Wire's Kotlin Generator. (#3233 by [Rahul Ravikumar][tikurahul])
+
 Version 5.2.0
 ---------------------
 
