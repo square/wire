@@ -31,6 +31,7 @@ _2025-01-06_
 * Split the redact method into chunks when a type has more than 100 fields to avoid compilation error. (#3214 by [Damian Wieczorek][damianw])
 * Add support for mutable messages in Wire's Kotlin Generator. (#3217 by [Rahul Ravikumar][tikurahul])
   * You can opt-in by adding `mutableTypes = true` on your Kotlin target. This is unsafe and we do not recommend that you use it unless you have a sound use-case for it.
+* Wire is now using Palantir's JavaPoet instead of Square's JavaPoet.
 
 ### Swift
 
