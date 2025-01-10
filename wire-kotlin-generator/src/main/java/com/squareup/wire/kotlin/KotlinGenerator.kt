@@ -1383,7 +1383,7 @@ class KotlinGenerator private constructor(
                   } else {
                     if (fieldOrOneOf.type == ProtoType.STRING) {
                       if (mutableTypes && !fieldOrOneOf.isRepeated) {
-                        add("=\${%M(%N!!)}", sanitizeMember, fieldName)
+                        add("=\${%M(%N ?: %L)}", sanitizeMember, fieldName, "\"\"")
                       } else {
                         add("=\${%M(%N)}", sanitizeMember, fieldName)
                       }

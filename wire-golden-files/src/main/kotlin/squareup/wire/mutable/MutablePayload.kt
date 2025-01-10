@@ -93,7 +93,7 @@ public class MutablePayload(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (preamble != null) result += """preamble=${sanitize(preamble!!)}"""
+    if (preamble != null) result += """preamble=${sanitize(preamble ?: "")}"""
     if (content != null) result += """content=$content"""
     if (type != null) result += """type=$type"""
     if (footers.isNotEmpty()) result += """footers=${sanitize(footers)}"""
