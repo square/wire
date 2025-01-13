@@ -25,6 +25,7 @@ data class ProtoFile(
   val location: Location,
   val imports: List<String>,
   val publicImports: List<String>,
+  val weakImports: List<String>,
   val packageName: String?,
   val types: List<Type>,
   val services: List<Service>,
@@ -42,6 +43,7 @@ data class ProtoFile(
       syntax,
       imports,
       publicImports,
+      weakImports,
       Type.toElements(types),
       Service.toElements(services),
       Extend.toElements(extendList),
@@ -102,7 +104,7 @@ data class ProtoFile(
     val retainedOptions = options.retainAll(schema, markSet)
 
     val result = ProtoFile(
-      location, imports, publicImports, packageName, retainedTypes,
+      location, imports, publicImports, weakImports, packageName, retainedTypes,
       retainedServices, retainedExtends, retainedOptions, syntax,
     )
     result.javaPackage = javaPackage
@@ -121,7 +123,7 @@ data class ProtoFile(
     val retainedOptions = options.retainLinked()
 
     val result = ProtoFile(
-      location, imports, publicImports, packageName, retainedTypes,
+      location, imports, publicImports, weakImports, packageName, retainedTypes,
       retainedServices, retainedExtends, retainedOptions, syntax,
     )
     result.javaPackage = javaPackage
@@ -202,10 +204,14 @@ data class ProtoFile(
 
     val retainedPublicImports = publicImports.filter { nonEmptyProtoFilesInSchema.contains(it) }
 
-    return if (imports.size != retainedImports.size || publicImports.size != retainedPublicImports.size) {
+    val retainedWeakImports = weakImports.filter { referencedImports.contains(it) }
+
+    return if (imports.size != retainedImports.size || publicImports.size != retainedPublicImports.size ||
+      weakImports.size != retainedWeakImports.size
+    ) {
       val result = ProtoFile(
-        location, retainedImports, retainedPublicImports, packageName, types, services,
-        extendList, options, syntax,
+        location, retainedImports, retainedPublicImports, retainedWeakImports, packageName,
+        types, services, extendList, options, syntax,
       )
       result.javaPackage = javaPackage
       result.wirePackage = wirePackage
@@ -251,8 +257,8 @@ data class ProtoFile(
 
       return ProtoFile(
         protoFileElement.location, protoFileElement.imports,
-        protoFileElement.publicImports, packageName, types, services, wireExtends, options,
-        protoFileElement.syntax,
+        protoFileElement.publicImports, protoFileElement.weakImports, packageName,
+        types, services, wireExtends, options, protoFileElement.syntax,
       )
     }
   }

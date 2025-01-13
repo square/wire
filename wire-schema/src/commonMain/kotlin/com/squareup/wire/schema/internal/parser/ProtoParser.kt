@@ -30,8 +30,9 @@ class ProtoParser internal constructor(
   data: CharArray,
 ) {
   private val reader: SyntaxReader = SyntaxReader(data, location)
-  private val publicImports = mutableListOf<String>()
   private val imports = mutableListOf<String>()
+  private val publicImports = mutableListOf<String>()
+  private val weakImports = mutableListOf<String>()
   private val nestedTypes = mutableListOf<TypeElement>()
   private val services = mutableListOf<ServiceElement>()
   private val extendsList = mutableListOf<ExtendElement>()
@@ -59,6 +60,7 @@ class ProtoParser internal constructor(
           syntax = syntax,
           imports = imports.map { it.toPath().withUnixSlashes().toString() },
           publicImports = publicImports.map { it.toPath().withUnixSlashes().toString() },
+          weakImports = weakImports.map { it.toPath().withUnixSlashes().toString() },
           types = nestedTypes,
           services = services,
           extendDeclarations = extendsList,
@@ -114,6 +116,7 @@ class ProtoParser internal constructor(
 
       label == "import" && context.permitsImport() -> {
         when (val importString = reader.readString()) {
+          "weak" -> weakImports.add(reader.readString())
           "public" -> publicImports.add(reader.readString())
           else -> imports.add(importString)
         }
