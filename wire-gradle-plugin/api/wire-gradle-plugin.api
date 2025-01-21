@@ -111,6 +111,8 @@ public class com/squareup/wire/gradle/WireExtension {
 	public final fun getRules ()Ljava/lang/String;
 	public final fun java (Lorg/gradle/api/Action;)V
 	public final fun kotlin (Lorg/gradle/api/Action;)V
+	public final fun loadExhaustively ()Z
+	public final fun loadExhaustively (Z)V
 	public final fun move (Lorg/gradle/api/Action;)V
 	public final fun moves ()Ljava/util/List;
 	public final fun onlyVersion ()Ljava/lang/String;
@@ -173,6 +175,7 @@ public abstract class com/squareup/wire/gradle/WireTask : org/gradle/api/tasks/S
 	public abstract fun getBuildDirProperty ()Lorg/gradle/api/file/DirectoryProperty;
 	public final fun getDryRun ()Lorg/gradle/api/provider/Property;
 	public abstract fun getEventListenerFactories ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getLoadExhaustively ()Lorg/gradle/api/provider/Property;
 	public abstract fun getMoves ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getOnlyVersion ()Lorg/gradle/api/provider/Property;
 	public abstract fun getOpaques ()Lorg/gradle/api/provider/ListProperty;
