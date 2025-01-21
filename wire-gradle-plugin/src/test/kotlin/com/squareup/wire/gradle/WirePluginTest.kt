@@ -1398,6 +1398,16 @@ class WirePluginTest {
     assertThat(File(outputRoot, "Period.kt")).exists()
   }
 
+  @Test
+  @Ignore("Probable ClassLoader problem which makes the test fails")
+  fun loadExhaustively() {
+    val fixtureRoot = File("src/test/projects/load-exhaustively")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { withDebug(true).build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull()
+  }
+
   private fun GradleRunner.runFixture(
     root: File,
     action: GradleRunner.() -> BuildResult,

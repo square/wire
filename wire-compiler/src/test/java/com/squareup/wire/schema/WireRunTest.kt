@@ -23,6 +23,7 @@ import assertk.assertions.hasMessage
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEmpty
+import assertk.assertions.prop
 import com.squareup.wire.StringWireLogger
 import com.squareup.wire.WireLogger
 import com.squareup.wire.WireLogger.Companion.NONE
@@ -932,6 +933,57 @@ class WireRunTest {
     wireRun.execute(fs, logger)
 
     assertThat(logger.log).isEmpty()
+  }
+
+  @Test
+  fun loadExhaustively() {
+    writeBlueProto()
+    writeRedProto()
+    writeTriangleProto()
+
+    lateinit var handledSchema: Schema
+
+    class CustomSchemaHandler : SchemaHandler() {
+
+      override fun handle(schema: Schema, context: Context) {
+        handledSchema = schema
+        super.handle(schema, context)
+      }
+
+      override fun handle(type: Type, context: Context): Path? = null
+
+      override fun handle(service: Service, context: Context): List<Path> = emptyList()
+
+      override fun handle(extend: Extend, field: Field, context: Context): Path? = null
+    }
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      protoPath = listOf(Location.get("polygons/src/main/proto")),
+      loadExhaustively = true,
+      targets = listOf(
+        CustomTarget(
+          outDirectory = "generated/out",
+          schemaHandlerFactory = object : SchemaHandler.Factory {
+            override fun create(
+              includes: List<String>,
+              excludes: List<String>,
+              exclusive: Boolean,
+              outDirectory: String,
+              options: Map<String, String>,
+            ): SchemaHandler = CustomSchemaHandler()
+          },
+        ),
+      ),
+    )
+
+    wireRun.execute(fs, logger)
+
+    // These fields would not be present by default, but are linked when using `loadExhaustively`.
+    assertThat(handledSchema)
+      .transform("Square type") { it.getType("squareup.polygons.Triangle") as MessageType }
+      .prop(MessageType::fields)
+      .isNotEmpty()
   }
 
   @Test

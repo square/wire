@@ -1,0 +1,67 @@
+import com.squareup.wire.schema.Extend
+import com.squareup.wire.schema.Field
+import com.squareup.wire.schema.MessageType
+import com.squareup.wire.schema.Schema
+import com.squareup.wire.schema.SchemaHandler
+import com.squareup.wire.schema.Service
+import com.squareup.wire.schema.Type
+import okio.Path
+import org.jetbrains.annotations.NotNull
+import org.jetbrains.annotations.Nullable
+
+plugins {
+  id 'application'
+  id 'com.squareup.wire'
+}
+
+class MyCustomHandler extends SchemaHandler {
+
+  @Override
+  void handle(@NotNull Schema schema, @NotNull SchemaHandler.Context context) {
+    MessageType officeType = schema.getType("locations.Office") as MessageType
+    if (officeType.fields().isEmpty()) {
+      throw new RuntimeException("Expected office fields to be linked")
+    }
+    super.handle(schema, context)
+  }
+
+  @Override
+  @Nullable
+  Path handle(@NotNull Type type, @NotNull SchemaHandler.Context context) {
+    return null
+  }
+
+  @Override
+  @NotNull
+  List<Path> handle(@NotNull Service service, @NotNull SchemaHandler.Context context) {
+    return List.of()
+  }
+
+  @Override
+  @Nullable
+  Path handle(@NotNull Extend extend, @NotNull Field field, @NotNull SchemaHandler.Context context) {
+    return null
+  }
+}
+
+class MyCustomHandlerFactory implements SchemaHandler.Factory {
+  @Override
+  SchemaHandler create(@NotNull List<String> includes, @NotNull List<String> excludes,
+      boolean exclusive, @NotNull String outDirectory, @NotNull Map<String, String> options) {
+    return new MyCustomHandler()
+  }
+}
+
+wire {
+  sourcePath {
+    srcDir 'src/main/proto'
+    include 'people/**'
+  }
+  protoPath {
+    srcDir 'src/main/proto'
+    include 'locations/**'
+  }
+  custom {
+    schemaHandlerFactory = new MyCustomHandlerFactory()
+  }
+}

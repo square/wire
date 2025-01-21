@@ -185,6 +185,12 @@ class WireRun(
   val permitPackageCycles: Boolean = false,
 
   /**
+   * If true, the schema loader will load the whole graph, including files and types not used by
+   * anything in the source path.
+   */
+  val loadExhaustively: Boolean = false,
+
+  /**
    * If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix.
    */
   val escapeKotlinKeywords: Boolean = false,
@@ -241,6 +247,7 @@ class WireRun(
 
     schemaLoader.permitPackageCycles = permitPackageCycles
     schemaLoader.opaqueTypes = opaqueTypes.map(ProtoType::get)
+    schemaLoader.loadExhaustively = loadExhaustively
     schemaLoader.initRoots(sourcePath, protoPath)
 
     // Validate the schema and resolve references

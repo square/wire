@@ -45,6 +45,7 @@ open class WireExtension(
   internal var sinceVersion: String? = null
   internal var untilVersion: String? = null
   internal var permitPackageCycles: Boolean = false
+  internal var loadExhaustively: Boolean = false
 
   fun roots() = roots.toSet()
 
@@ -98,6 +99,15 @@ open class WireExtension(
    */
   fun permitPackageCycles(permitPackageCycles: Boolean) {
     this.permitPackageCycles = permitPackageCycles
+  }
+
+  fun loadExhaustively() = loadExhaustively
+
+  /**
+   * See [com.squareup.wire.schema.WireRun.loadExhaustively].
+   */
+  fun loadExhaustively(loadExhaustively: Boolean) {
+    this.loadExhaustively = loadExhaustively
   }
 
   /**

@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+import "locations/office.proto";
+
+package people;
+
+message Employee {
+  optional locations.Office office = 1;
+}

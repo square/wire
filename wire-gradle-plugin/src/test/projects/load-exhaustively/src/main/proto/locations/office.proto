@@ -1,0 +1,7 @@
+syntax = "proto2";
+
+package locations;
+
+message Office {
+  string address = 1;
+}
