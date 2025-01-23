@@ -1911,6 +1911,14 @@ extension AllTypes : Proto2Codable {
 
 }
 
+extension AllTypes : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes"
+    }
+
+}
+
 #if !WIRE_REMOVE_CODABLE
 extension AllTypes : Codable {
 
