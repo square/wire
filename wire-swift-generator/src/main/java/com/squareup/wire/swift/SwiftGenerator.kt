@@ -461,6 +461,11 @@ class SwiftGenerator private constructor(
         .build()
       fileMembers += FileMemberSpec.builder(structProtoCodableExtension).build()
 
+      val structMessageConformanceExtension = ExtensionSpec.builder(structType)
+        .messageConformanceExtension(type)
+        .build()
+      fileMembers += FileMemberSpec.builder(structMessageConformanceExtension).build()
+
       val structCodableExtension = heapCodableExtension(structType, storageName, storageType)
       fileMembers += FileMemberSpec.builder(structCodableExtension)
         .addGuard("!$FLAG_REMOVE_CODABLE")
