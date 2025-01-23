@@ -129,6 +129,7 @@ class WireCompiler internal constructor(
   val emitDeclaredOptions: Boolean,
   val emitAppliedOptions: Boolean,
   val permitPackageCycles: Boolean,
+  val loadExhaustively: Boolean,
   val javaInterop: Boolean,
   val kotlinBoxOneOfsMinSize: Int,
   val javaExclusive: Boolean,
@@ -217,6 +218,7 @@ class WireCompiler internal constructor(
       targets = targets,
       modules = modules,
       permitPackageCycles = permitPackageCycles,
+      loadExhaustively = loadExhaustively,
       eventListeners = eventListenerFactoryClasses.map { newEventListenerFactory(it).create() },
       opaqueTypes = opaqueTypes,
     )
@@ -271,6 +273,7 @@ class WireCompiler internal constructor(
     private const val SKIP_DECLARED_OPTIONS = "--skip_declared_options"
     private const val SKIP_APPLIED_OPTIONS = "--skip_applied_options"
     private const val PERMIT_PACKAGE_CYCLES_OPTIONS = "--permit_package_cycles"
+    private const val LOAD_EXHAUSTIVELY = "--load_exhaustively"
     private const val JAVA_INTEROP = "--java_interop"
     private const val DRY_RUN = "--dry_run"
     private const val KOTLIN_BOX_ONEOFS_MIN_SIZE = "--kotlin_box_oneofs_min_size="
@@ -337,6 +340,7 @@ class WireCompiler internal constructor(
       var emitDeclaredOptions = true
       var emitAppliedOptions = true
       var permitPackageCycles = false
+      var loadExhaustively = false
       var javaInterop = false
       var kotlinBoxOneOfsMinSize = 5_000
       var javaExclusive = true
@@ -466,6 +470,7 @@ class WireCompiler internal constructor(
           arg == SKIP_DECLARED_OPTIONS -> emitDeclaredOptions = false
           arg == SKIP_APPLIED_OPTIONS -> emitAppliedOptions = false
           arg == PERMIT_PACKAGE_CYCLES_OPTIONS -> permitPackageCycles = true
+          arg == LOAD_EXHAUSTIVELY -> loadExhaustively = true
           arg == JAVA_INTEROP -> javaInterop = true
           arg == EMIT_PROTO_READER_32 -> emitProtoReader32 = true
           arg.startsWith("--") -> throw IllegalArgumentException("Unknown argument '$arg'.")
@@ -506,6 +511,7 @@ class WireCompiler internal constructor(
         emitDeclaredOptions = emitDeclaredOptions,
         emitAppliedOptions = emitAppliedOptions,
         permitPackageCycles = permitPackageCycles,
+        loadExhaustively = loadExhaustively,
         javaInterop = javaInterop,
         kotlinBoxOneOfsMinSize = kotlinBoxOneOfsMinSize,
         javaExclusive = javaExclusive,

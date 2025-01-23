@@ -116,6 +116,10 @@ abstract class WireTask @Inject constructor(
   val permitPackageCycles: Property<Boolean> = objects.property(Boolean::class.java)
     .convention(false)
 
+  @get:Input
+  val loadExhaustively: Property<Boolean> = objects.property(Boolean::class.java)
+    .convention(false)
+
   @get:Internal
   abstract val projectDirProperty: DirectoryProperty
 
@@ -167,6 +171,7 @@ abstract class WireTask @Inject constructor(
         target.copyTarget(outDirectory = projectDir.file(target.outDirectory).asFile.path)
       },
       permitPackageCycles = permitPackageCycles.get(),
+      loadExhaustively = loadExhaustively.get(),
       rejectUnusedRootsOrPrunes = rejectUnusedRootsOrPrunes.get(),
       eventListeners = eventListenerFactories.get().map(EventListener.Factory::create),
       opaqueTypes = opaques.get(),

@@ -989,11 +989,12 @@ public final class com/squareup/wire/schema/WireLoggersKt {
 }
 
 public final class com/squareup/wire/schema/WireRun {
-	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ZZLjava/util/List;ZLjava/util/List;)V
-	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ZZLjava/util/List;ZLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ZZZLjava/util/List;ZLjava/util/List;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ZZZLjava/util/List;ZLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun execute (Lokio/FileSystem;Lcom/squareup/wire/WireLogger;)V
 	public final fun getEscapeKotlinKeywords ()Z
 	public final fun getEventListeners ()Ljava/util/List;
+	public final fun getLoadExhaustively ()Z
 	public final fun getModules ()Ljava/util/Map;
 	public final fun getMoves ()Ljava/util/List;
 	public final fun getOnlyVersion ()Ljava/lang/String;

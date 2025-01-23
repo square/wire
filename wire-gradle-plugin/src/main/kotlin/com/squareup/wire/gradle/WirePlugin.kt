@@ -241,6 +241,7 @@ class WirePlugin : Plugin<Project> {
         task.rules.set(extension.rules)
         task.targets.set(targets)
         task.permitPackageCycles.set(extension.permitPackageCycles)
+        task.loadExhaustively.set(extension.loadExhaustively)
         task.dryRun.set(extension.dryRun)
         task.rejectUnusedRootsOrPrunes.set(extension.rejectUnusedRootsOrPrunes)
 
