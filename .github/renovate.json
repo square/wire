@@ -16,6 +16,10 @@
         "/^org\\.jetbrains\\.kotlin:(?:[\\w-]+)$/",
         "/^com\\.google\\.devtools\\.ksp:(?:[\\w-]+)$/"
       ]
+    },
+    {
+      "matchPackageNames": ["com.squareup.misk:misk"],
+      "schedule": ["weekly"]
     }
   ]
 }
