@@ -19,7 +19,7 @@
     },
     {
       "matchPackageNames": ["com.squareup.misk:misk"],
-      "schedule": ["weekly"]
+      "extends": ["schedule:weekly"]
     }
   ]
 }
