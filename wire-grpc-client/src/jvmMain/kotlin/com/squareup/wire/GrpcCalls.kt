@@ -17,6 +17,8 @@
 
 package com.squareup.wire
 
+import com.squareup.wire.internal.asGrpcClientStreamingCall
+import com.squareup.wire.internal.asGrpcServerStreamingCall
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -215,6 +217,25 @@ fun <S : Any, R : Any> GrpcStreamingCall(
       GrpcStreamingCall(function).also { it.requestMetadata += requestMetadata }
   }
 }
+
+@JvmName("grpcClientStreamingCall")
+fun <S : Any, R : Any> GrpcClientStreamingCall(
+  function: suspend ReceiveChannel<S>.() -> R,
+): GrpcClientStreamingCall<S, R> =
+  GrpcStreamingCall { requests, responses ->
+    val response = requests.function()
+    if (response != Unit) {
+      responses.send(response)
+    }
+  }.asGrpcClientStreamingCall()
+
+@JvmName("grpcServerStreamingCall")
+fun <S : Any, R : Any> GrpcServerStreamingCall(
+  function: suspend SendChannel<R>.(S) -> Unit,
+): GrpcServerStreamingCall<S, R> =
+  GrpcStreamingCall { requests, responses ->
+    function(responses, requests.receive())
+  }.asGrpcServerStreamingCall()
 
 internal fun <E : Any> Channel<E>.toMessageSource() = object : MessageSource<E> {
   override fun read(): E? {
