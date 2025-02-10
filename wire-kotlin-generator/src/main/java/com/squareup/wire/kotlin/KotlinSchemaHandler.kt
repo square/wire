@@ -91,6 +91,11 @@ class KotlinSchemaHandler(
    * If true, the generated classes will be mutable..
    */
   private val mutableTypes: Boolean = false,
+
+  /**
+   * If true, streaming calls will generate explicit call types for client,server, and bidirectional streaming.
+   */
+  private val explicitStreamingCalls: Boolean = false,
 ) : SchemaHandler() {
   private lateinit var kotlinGenerator: KotlinGenerator
 
@@ -113,6 +118,7 @@ class KotlinSchemaHandler(
       enumMode = enumMode,
       emitProtoReader32 = emitProtoReader32,
       mutableTypes = mutableTypes,
+      explicitStreamingCalls = explicitStreamingCalls,
     )
     context.fileSystem.createDirectories(context.outDirectory)
     super.handle(schema, context)

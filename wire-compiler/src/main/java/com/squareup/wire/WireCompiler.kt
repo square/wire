@@ -142,6 +142,7 @@ class WireCompiler internal constructor(
   val kotlinBuildersOnly: Boolean,
   val kotlinEscapeKeywords: Boolean,
   val emitProtoReader32: Boolean,
+  val kotlinExplicitStreamingCalls: Boolean,
   val eventListenerFactoryClasses: List<String>,
   val customOptions: Map<String, String>,
   val opaqueTypes: List<String> = listOf(),
@@ -177,6 +178,7 @@ class WireCompiler internal constructor(
         buildersOnly = kotlinBuildersOnly,
         escapeKotlinKeywords = kotlinEscapeKeywords,
         emitProtoReader32 = emitProtoReader32,
+        explicitStreamingCalls = kotlinExplicitStreamingCalls,
       )
     }
     if (swiftOut != null) {
@@ -290,6 +292,7 @@ class WireCompiler internal constructor(
     private const val EMIT_PROTO_READER_32 = "--emit_proto_reader_32"
     private const val CUSTOM_OPTION_FLAG = "--custom_option="
     private const val OPAQUE_TYPES_FLAG = "--opaque_types="
+    private const val KOTLIN_EXPLICIT_STREAMING_CALLS = "--kotlin_explicit_streaming_calls"
 
     @Throws(IOException::class)
     @JvmStatic
@@ -353,6 +356,7 @@ class WireCompiler internal constructor(
       var kotlinBuildersOnly = false
       var kotlinEscapeKeywords = false
       var emitProtoReader32 = false
+      var kotlinExplicitStreamingCalls = false
       var dryRun = false
       val customOptions = mutableMapOf<String, String>()
       val opaqueTypes = mutableListOf<String>()
@@ -473,6 +477,7 @@ class WireCompiler internal constructor(
           arg == LOAD_EXHAUSTIVELY -> loadExhaustively = true
           arg == JAVA_INTEROP -> javaInterop = true
           arg == EMIT_PROTO_READER_32 -> emitProtoReader32 = true
+          arg == KOTLIN_EXPLICIT_STREAMING_CALLS -> kotlinExplicitStreamingCalls = true
           arg.startsWith("--") -> throw IllegalArgumentException("Unknown argument '$arg'.")
           else -> sourceFileNames.add(arg)
         }
@@ -527,6 +532,7 @@ class WireCompiler internal constructor(
         eventListenerFactoryClasses = eventListenerFactoryClasses,
         customOptions = customOptions,
         opaqueTypes = opaqueTypes,
+        kotlinExplicitStreamingCalls = kotlinExplicitStreamingCalls,
       )
     }
   }
