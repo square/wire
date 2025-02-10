@@ -102,11 +102,11 @@ class GrpcOnMockWebServerTest {
       return@GrpcCall Feature(name = "tree")
     }
 
-    override fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature> {
+    override fun ListFeatures(): GrpcServerStreamingCall<Rectangle, Feature> {
       TODO("Not yet implemented")
     }
 
-    override fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary> {
+    override fun RecordRoute(): GrpcClientStreamingCall<Point, RouteSummary> {
       TODO("Not yet implemented")
     }
 

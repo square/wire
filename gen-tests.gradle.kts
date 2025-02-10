@@ -564,6 +564,7 @@ val generateGrpcTests by tasks.creating(JavaExec::class) {
   args = listOf(
           "--proto_path=wire-grpc-tests/src/test/proto",
           "--kotlin_out=wire-grpc-tests/src/test/proto-grpc",
+          "--kotlin_explicit_streaming_calls",
           "routeguide/RouteGuideProto.proto"
   ) + GRPC_PROTOS
 }

@@ -256,4 +256,249 @@ class GrpcStreamingCallsTest {
     } catch (expected: CancellationException) {
     }
   }
+
+  @Test
+  fun bidirectionalStream() {
+    val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
+      requests.consumeEach { responses.send(it.uppercase(US)) }
+      responses.close()
+    }
+    runBlocking {
+      val responses = grpcCall.bidirectionalStream(this) { requests, responses ->
+        requests.send("hello")
+        assertThat(responses.receive()).isEqualTo("HELLO")
+      }
+      assertThat(responses.receiveCatching().getOrNull()).isNull()
+    }
+  }
+
+  @Test
+  fun bidirectionalStreamInterleaved() {
+    val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
+      requests.consumeEach { responses.send(it.uppercase(US)) }
+      responses.close()
+    }
+    runBlocking {
+      val responses = grpcCall.bidirectionalStream(this) { requests, responses ->
+        requests.send("hello")
+        assertThat(responses.receive()).isEqualTo("HELLO")
+        requests.send("world")
+        assertThat(responses.receive()).isEqualTo("WORLD")
+      }
+      assertThat(responses.receiveCatching().getOrNull()).isNull()
+    }
+  }
+
+  @Test
+  fun bidirectionalStreamNonInterleaved() {
+    val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
+      requests.consumeEach { responses.send(it.uppercase(US)) }
+      responses.close()
+    }
+    runBlocking {
+      val responses = grpcCall.bidirectionalStream(this) { requests, responses ->
+        requests.send("hello")
+        requests.send("world")
+      }
+      assertThat(responses.receive()).isEqualTo("HELLO")
+      assertThat(responses.receive()).isEqualTo("WORLD")
+      assertThat(responses.receiveCatching().getOrNull()).isNull()
+    }
+  }
+
+  @Test
+  fun bidirectionalStreamBlocking() {
+    val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
+      requests.consumeEach { responses.send(it.uppercase(US)) }
+      responses.close()
+    }
+
+    val responses = grpcCall.bidirectionalStreamBlocking { requests, responses ->
+      requests.write("hello")
+      assertThat(responses.read()).isEqualTo("HELLO")
+    }
+    assertThat(responses.read()).isNull()
+  }
+
+  @Test
+  fun bidirectionalStreamBlockingInterleaved() {
+    val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
+      requests.consumeEach { responses.send(it.uppercase(US)) }
+      responses.close()
+    }
+
+    val responses = grpcCall.bidirectionalStreamBlocking { requests, responses ->
+      requests.write("hello")
+      assertThat(responses.read()).isEqualTo("HELLO")
+      requests.write("world")
+      assertThat(responses.read()).isEqualTo("WORLD")
+    }
+    assertThat(responses.read()).isNull()
+  }
+
+  @Test
+  fun bidirectionalStreamBlockingNonInterleaved() {
+    val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
+      requests.consumeEach { responses.send(it.uppercase(US)) }
+      responses.close()
+    }
+    val responses = grpcCall.bidirectionalStreamBlocking { requests, responses ->
+      requests.write("hello")
+      requests.write("world")
+    }
+    assertThat(responses.read()).isEqualTo("HELLO")
+    assertThat(responses.read()).isEqualTo("WORLD")
+    assertThat(responses.read()).isNull()
+  }
+
+  @Test
+  fun clientStreamingCallsWriteASingleResponse() {
+    val grpcCall = GrpcClientStreamingCall<String, String> {
+      buildString {
+        consumeEach {
+          append("$it:")
+        }
+      }.trimEnd(':')
+        .uppercase(US)
+    }
+
+    runBlocking {
+      val (requests, response) = grpcCall.executeIn(this)
+      requests.send("hello")
+      requests.send("world")
+      requests.close()
+      assertThat(response.await()).isEqualTo("HELLO:WORLD")
+    }
+  }
+
+  @Test
+  fun clientStreamingCallsWriteNoResponse() {
+    val grpcCall = GrpcClientStreamingCall<String, Unit> {
+      buildString {
+        consumeEach {
+          append("$it:")
+        }
+      }.trimEnd(':')
+        .uppercase(US)
+    }
+
+    try {
+      runBlocking {
+        val (requests, response) = grpcCall.executeIn(this)
+        requests.send("hello")
+        requests.send("world")
+        requests.close()
+        assertThat(response.await()).isEqualTo("HELLO:WORLD")
+        fail()
+      }
+    } catch (e: IllegalStateException) {
+    }
+  }
+
+  @Test
+  fun clientStream() {
+    val grpcCall = GrpcClientStreamingCall<String, String> {
+      buildString {
+        consumeEach {
+          append("$it:")
+        }
+      }.trimEnd(':')
+        .uppercase(US)
+    }
+
+    runBlocking {
+      val response = grpcCall.clientStream(this) {
+        send("hello")
+        send("world")
+      }
+      assertThat(response).isEqualTo("HELLO:WORLD")
+    }
+  }
+
+  @Test
+  fun blockingClientStreamingCallsWriteASingleResponse() {
+    val grpcCall = GrpcClientStreamingCall<String, String> {
+      buildString {
+        consumeEach {
+          append("$it:")
+        }
+      }.trimEnd(':')
+        .uppercase(US)
+    }
+    val (requests, response) = grpcCall.executeBlocking()
+    requests.write("hello")
+    requests.write("world")
+    requests.close()
+    assertThat(response.get()).isEqualTo("HELLO:WORLD")
+  }
+
+  @Test
+  fun blockingClientStreamingCallsWriteNoResponse() {
+    val grpcCall = GrpcClientStreamingCall<String, Unit> {
+      buildString {
+        consumeEach {
+          append("$it:")
+        }
+      }.trimEnd(':')
+        .uppercase(US)
+    }
+
+    try {
+      val (requests, response) = grpcCall.executeBlocking()
+      requests.write("hello")
+      requests.write("world")
+      requests.close()
+      assertThat(response.get()).isEqualTo("HELLO:WORLD")
+      fail()
+    } catch (e: IllegalStateException) {
+    }
+  }
+
+  @Test
+  fun clientStreamBlocking() {
+    val grpcCall = GrpcClientStreamingCall<String, String> {
+      buildString {
+        consumeEach {
+          append("$it:")
+        }
+      }.trimEnd(':')
+        .uppercase(US)
+    }
+
+    val response = grpcCall.clientStreamBlocking {
+      write("hello")
+      write("world")
+    }
+    assertThat(response).isEqualTo("HELLO:WORLD")
+  }
+
+  @Test
+  fun serverStreamingCallsReadASingleRequest() {
+    val grpcCall = GrpcServerStreamingCall<String, String> { request ->
+      send(request.uppercase(US))
+      send(request.replaceFirstChar { it.uppercase(US) })
+      close()
+    }
+
+    runBlocking {
+      val responses = grpcCall.executeIn(this, "hello")
+      assertThat(responses.receive()).isEqualTo("HELLO")
+      assertThat(responses.receive()).isEqualTo("Hello")
+      assertThat(responses.receiveCatching().getOrNull()).isNull()
+    }
+  }
+
+  @Test
+  fun blockingServerStreamingCallsReadASingleRequest() {
+    val grpcCall = GrpcServerStreamingCall<String, String> { request ->
+      send(request.uppercase(US))
+      send(request.replaceFirstChar { it.uppercase(US) })
+      close()
+    }
+
+    val responses = grpcCall.executeBlocking("hello")
+    assertThat(responses.read()).isEqualTo("HELLO")
+    assertThat(responses.read()).isEqualTo("Hello")
+    assertThat(responses.read()).isNull()
+  }
 }
