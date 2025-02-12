@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:OptIn(ExperimentalStdlibApi::class)
-
 package com.squareup.wire.gradle
 
 import com.squareup.wire.VERSION
@@ -31,7 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.UnknownConfigurationException
-import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
@@ -195,20 +192,15 @@ class WirePlugin : Plugin<Project> {
         task.group = GROUP
         task.description = "Generate protobuf implementation for ${source.name}"
 
-        var addedSourcesDependencies = 0
         // Flatten all the input files here. Changes to any of them will cause the task to re-run.
         for (rootSet in protoSourceProtoRootSets) {
           task.source(rootSet.configuration)
-          val sourceDirectoriesAndLocalJars = rootSet.sourceDirectoriesAndLocalJars.toTypedArray()
-          addedSourcesDependencies += sourceDirectoriesAndLocalJars.size
-          task.source(*sourceDirectoriesAndLocalJars)
         }
         // We only want to add ProtoPath sources if we have other sources already. The WireTask
         // would otherwise run even through we have no sources.
-        if (addedSourcesDependencies > 0) {
+        if (!task.source.isEmpty) {
           for (rootSet in protoPathProtoRootSets) {
             task.source(rootSet.configuration)
-            task.source(*rootSet.sourceDirectoriesAndLocalJars.toTypedArray())
           }
         }
 
@@ -339,13 +331,9 @@ class WirePlugin : Plugin<Project> {
   }
 
   private fun defaultSourceFolders(source: Source): Set<String> {
-    val parser = FileOrUriNotationConverter.parser()
-    return source.sourceSets.map { "src/$it/proto" }.filter { path ->
-      val converted = parser.parseNotation(path) as File
-      val file =
-        if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
-      return@filter file.exists()
-    }.toSet()
+    return source.sourceSets.map { "src/$it/proto" }
+      .filter { path -> File(project.projectDir, path).exists() }
+      .toSet()
   }
 
   internal companion object {

@@ -24,7 +24,6 @@ import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.internal.catalog.DelegatingProjectDependency
-import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderConvertible
 
@@ -299,11 +298,10 @@ open class WireExtension(
         isCanBeConsumed = false
         isTransitive = false
       }
-    internal val sourceDirectoriesAndLocalJars = mutableListOf<File>()
 
     /** Calling this will resolve the configuration. */
     internal val roots: Set<File>
-      get() = configuration.files + sourceDirectoriesAndLocalJars
+      get() = configuration.files
     private val files: ConfigurableFileCollection by lazy(NONE) {
       val files = project.files()
       project.dependencies.add(configuration.name, files)
@@ -333,16 +331,17 @@ open class WireExtension(
 
     /** Sets a local or a remote jar. Examples: "libs/protos.jar", or "com.example:protos:1.0.0". */
     fun srcJar(jar: String) {
-      srcFileOrConfiguration(jar)
-    }
+      // Attempt to parse 'jar' as a path or 'file:' URI.
+      val fileOrNull = try {
+        project.file(jar)
+      } catch (e: Exception) {
+        null // Probably a dependency string like "com.example:protos:1.0.0".
+      }
 
-    private fun srcFileOrConfiguration(jar: String) {
-      isEmpty = false
-      val parser = FileOrUriNotationConverter.parser()
-      val converted = parser.parseNotation(jar)
-      when (converted) {
-        is File -> sourceDirectoriesAndLocalJars += project.file(jar)
-        else -> addDependency(jar)
+      if (fileOrNull != null) {
+        addDependency(project.files(fileOrNull))
+      } else {
+        addDependency(jar)
       }
     }
 
