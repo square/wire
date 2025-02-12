@@ -198,7 +198,7 @@ class WirePlugin : Plugin<Project> {
         }
         // We only want to add ProtoPath sources if we have other sources already. The WireTask
         // would otherwise run even through we have no sources.
-        if (!protoSourceConfiguration.isEmpty) {
+        if (!task.source.isEmpty) {
           for (rootSet in protoPathProtoRootSets) {
             task.source(rootSet.configuration)
           }
