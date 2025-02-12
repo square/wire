@@ -151,7 +151,6 @@ public final class com/squareup/wire/gradle/WireExtension$ProtoRootSet {
 	public final fun srcJar (Lorg/gradle/api/provider/ProviderConvertible;)V
 	public final fun srcProject (Ljava/lang/String;)V
 	public final fun srcProject (Lorg/gradle/api/artifacts/ProjectDependency;)V
-	public final synthetic fun srcProject (Lorg/gradle/api/internal/catalog/DelegatingProjectDependency;)V
 }
 
 public abstract class com/squareup/wire/gradle/WireOutput {
@@ -170,7 +169,7 @@ public final class com/squareup/wire/gradle/WirePlugin : org/gradle/api/Plugin {
 }
 
 public abstract class com/squareup/wire/gradle/WireTask : org/gradle/api/tasks/SourceTask {
-	public fun <init> (Lorg/gradle/api/model/ObjectFactory;Lorg/gradle/api/internal/file/FileOperations;)V
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
 	public final fun generateWireFiles ()V
 	public abstract fun getBuildDirProperty ()Lorg/gradle/api/file/DirectoryProperty;
 	public final fun getDryRun ()Lorg/gradle/api/provider/Property;

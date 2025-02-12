@@ -20,7 +20,7 @@ import com.squareup.wire.schema.Location
 import java.io.EOFException
 import java.io.File
 import java.io.RandomAccessFile
-import org.gradle.api.internal.file.FileOperations
+import org.gradle.api.Project
 
 internal val List<ProtoRootSet>.inputLocations: List<InputLocation>
   get() = flatMap { rootSet ->
@@ -48,7 +48,7 @@ private fun ProtoRootSet.inputLocation(file: File): InputLocation {
  * excludes.
  */
 internal fun InputLocation.toLocations(
-  fileOperations: FileOperations,
+  project: Project,
   projectDir: File,
 ): List<Location> {
   val base = when {
@@ -57,8 +57,8 @@ internal fun InputLocation.toLocations(
   }
   return buildList {
     val fileTree = when {
-      base.isZip -> fileOperations.zipTree(base)
-      base.isDirectory -> fileOperations.fileTree(base)
+      base.isZip -> project.zipTree(base)
+      base.isDirectory -> project.fileTree(base)
       else -> throw IllegalArgumentException(
         """
         |Invalid path string: "$path".

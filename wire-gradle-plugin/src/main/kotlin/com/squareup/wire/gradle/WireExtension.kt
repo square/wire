@@ -17,14 +17,15 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.schema.EventListener
 import java.io.File
+import java.lang.IllegalArgumentException
+import java.net.URI
+import java.net.URISyntaxException
 import kotlin.LazyThreadSafetyMode.NONE
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.internal.catalog.DelegatingProjectDependency
-import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderConvertible
 
@@ -338,11 +339,38 @@ open class WireExtension(
 
     private fun srcFileOrConfiguration(jar: String) {
       isEmpty = false
-      val parser = FileOrUriNotationConverter.parser()
-      val converted = parser.parseNotation(jar)
-      when (converted) {
-        is File -> sourceDirectoriesAndLocalJars += project.file(jar)
-        else -> addDependency(jar)
+      try {
+        val uri = URI.create(jar)
+        if (uri.scheme != null) {
+          // If the URI has a scheme, it's likely a URI notation.
+          addDependency(jar)
+        } else {
+          // If the URI has no scheme, it's likely a file path.
+          val file = try {
+            File(uri)
+          } catch (e: IllegalArgumentException) {
+            // File creation would fail if `url` happened to be relative.
+            File(project.projectDir, uri.path)
+          }
+          if (file.exists()) {
+            sourceDirectoriesAndLocalJars += project.file(jar)
+          } else {
+            addDependency(jar)
+          }
+        }
+      } catch (e: URISyntaxException) {
+        // If creating a URI fails, treat it as a file path.
+        val file = try {
+          File(jar)
+        } catch (e: IllegalArgumentException) {
+          // File creation would fail if `url` happened to be relative.
+          File(project.projectDir, jar)
+        }
+        if (file.exists()) {
+          sourceDirectoriesAndLocalJars += project.file(jar)
+        } else {
+          addDependency(jar)
+        }
       }
     }
 
@@ -359,15 +387,6 @@ open class WireExtension(
     /** Sets a project. Example: ":protos". */
     fun srcProject(projectPath: String) {
       addDependency(project.project(projectPath))
-    }
-
-    /** Sets a project. */
-    @Deprecated(
-      message = "Use srcProject(ProjectDependency) instead. This method will be removed in a future version of Wire.",
-      level = DeprecationLevel.HIDDEN,
-    )
-    fun srcProject(project: DelegatingProjectDependency) {
-      addDependency(project)
     }
 
     /** Sets a project. */
