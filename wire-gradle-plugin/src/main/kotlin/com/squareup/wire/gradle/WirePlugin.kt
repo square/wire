@@ -196,6 +196,13 @@ class WirePlugin : Plugin<Project> {
         for (rootSet in protoSourceProtoRootSets) {
           task.source(rootSet.configuration)
         }
+        // We only want to add ProtoPath sources if we have other sources already. The WireTask
+        // would otherwise run even through we have no sources.
+        if (!protoSourceConfiguration.isEmpty) {
+          for (rootSet in protoPathProtoRootSets) {
+            task.source(rootSet.configuration)
+          }
+        }
 
         val outputDirectories: List<String> = buildList {
           addAll(
