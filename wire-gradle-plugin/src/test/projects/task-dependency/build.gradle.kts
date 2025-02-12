@@ -1,5 +1,3 @@
-import org.gradle.api.internal.file.FileOperations
-
 plugins {
   id("com.squareup.wire")
   id("org.jetbrains.kotlin.jvm") version "1.9.22"
@@ -8,7 +6,6 @@ plugins {
 @CacheableTask
 abstract class ProtoWritingTask @Inject constructor(
   objects: ObjectFactory,
-  private val fileOperations: FileOperations,
 ) : DefaultTask() {
 
   @get:OutputDirectory

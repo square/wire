@@ -27,11 +27,11 @@ import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.newEventListenerFactory
 import java.io.File
 import java.lang.reflect.Array as JavaArray
+import java.net.URI
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.UnknownConfigurationException
-import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
@@ -339,9 +339,12 @@ class WirePlugin : Plugin<Project> {
   }
 
   private fun defaultSourceFolders(source: Source): Set<String> {
-    val parser = FileOrUriNotationConverter.parser()
     return source.sourceSets.map { "src/$it/proto" }.filter { path ->
-      val converted = parser.parseNotation(path) as File
+      val converted = if (URI.create(path).isAbsolute) {
+        File(URI.create(path))
+      } else {
+        File(path)
+      }
       val file =
         if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
       return@filter file.exists()

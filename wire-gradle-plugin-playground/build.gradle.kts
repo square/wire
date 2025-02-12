@@ -1,5 +1,4 @@
 import com.squareup.wire.schema.EventListener
-import org.gradle.api.internal.file.FileOperations
 
 plugins {
   id("java-library")
@@ -16,7 +15,6 @@ class MyEventListenerFactory : EventListener.Factory {
 @CacheableTask
 abstract class ProtoWritingTask @Inject constructor(
   objects: ObjectFactory,
-  private val fileOperations: FileOperations,
 ) : DefaultTask() {
 
   @get:OutputDirectory

@@ -26,7 +26,6 @@ import okio.FileSystem
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
-import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -46,7 +45,6 @@ import org.gradle.api.tasks.TaskAction
 @CacheableTask
 abstract class WireTask @Inject constructor(
   objects: ObjectFactory,
-  private val fileOperations: FileOperations,
 ) : SourceTask() {
 
   @get:OutputDirectories
@@ -159,8 +157,8 @@ abstract class WireTask @Inject constructor(
     val projectDirAsFile = projectDir.asFile
     val allTargets = targets.get()
     val wireRun = WireRun(
-      sourcePath = sourceInput.get().flatMap { it.toLocations(fileOperations, projectDirAsFile) },
-      protoPath = protoInput.get().flatMap { it.toLocations(fileOperations, projectDirAsFile) },
+      sourcePath = sourceInput.get().flatMap { it.toLocations(project, projectDirAsFile) },
+      protoPath = protoInput.get().flatMap { it.toLocations(project, projectDirAsFile) },
       treeShakingRoots = roots.get().ifEmpty { includes },
       treeShakingRubbish = prunes.get().ifEmpty { excludes },
       moves = moves.get().map { it.toTypeMoverMove() },
