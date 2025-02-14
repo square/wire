@@ -1,6 +1,24 @@
 Change Log
 ==========
 
+Version 5.3.0
+---------------------
+
+_2025-02-14_
+
+### Common
+
+* Add support for weak imports in ProtoParser and ProtoFileElement (#3247 by [paul35621][paul35621])
+* Add Gradle and CLI options to load the protobuf schema exhaustively (#3254 by [Damian Wieczorek][damianw])
+
+### Swift
+
+* Fix conformance to ProtoMessage for heap allocated protos (#3260 by [Dimitris Koutsogiorgas][dnkoutso])
+
+### Gradle plugin
+
+* Removed usage of internal Gradle APIs in the Wire Gradle plugin which were crashing in Gradle `8.13`.
+
 Version 5.2.1
 ---------------------
 
@@ -1570,6 +1588,7 @@ Initial version.
  [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
  [okio_3_0_0]: https://square.github.io/okio/changelog/#version-300
  [okio_3_0_0_a_3]: https://square.github.io/okio/changelog/#version-300-alpha3
+ [paul35621]: https://github.com/paul35621
  [quanturium]: https://github.com/quanturium
  [reflect]: https://github.com/grpc/grpc/blob/master/doc/server-reflection.md
  [sashaweiss-signal]: https://github.com/sashaweiss-signal
