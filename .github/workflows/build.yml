@@ -105,7 +105,7 @@ jobs:
         uses: browser-actions/setup-chrome@latest
 
       - name: Test
-        uses: nick-fields/retry@v3.0.0
+        uses: nick-fields/retry@v3
         with:
           max_attempts: 5
           timeout_minutes: 90
