@@ -30,7 +30,6 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNotZero
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
-import assertk.assertions.message
 import assertk.assertions.messageContains
 import assertk.assertions.startsWith
 import com.google.common.util.concurrent.SettableFuture
@@ -279,12 +278,12 @@ class GrpcClientTest {
     mockService.enqueue(SendCompleted)
     mockService.enqueue(ReceiveComplete)
 
-    val (requestChannel, responseChannel) = routeGuideService.RecordRoute().execute()
     runBlocking {
+      val (requestChannel, deferredResponse) = routeGuideService.RecordRoute().executeIn(this)
       requestChannel.send(Point(3, 3))
       requestChannel.send(Point(9, 6))
       requestChannel.close()
-      assertThat(responseChannel.receive()).isEqualTo(RouteSummary(point_count = 2))
+      assertThat(deferredResponse.await()).isEqualTo(RouteSummary(point_count = 2))
     }
   }
 
@@ -301,7 +300,7 @@ class GrpcClientTest {
     requestChannel.write(Point(3, 3))
     requestChannel.write(Point(9, 6))
     requestChannel.close()
-    assertThat(deferredResponse.read()).isEqualTo(RouteSummary(point_count = 2))
+    assertThat(deferredResponse.get()).isEqualTo(RouteSummary(point_count = 2))
   }
 
   /**
@@ -333,7 +332,7 @@ class GrpcClientTest {
     val (requestChannel, deferredResponse) = routeGuideService.RecordRoute().executeBlocking()
     val e = assertFailsWith<IOException> {
       requestChannel.close()
-      deferredResponse.read()
+      deferredResponse.get()
     }
     assertThat(e).hasMessage("stream was reset: CANCEL")
     assertThat(e.cause).isNull()
@@ -343,12 +342,12 @@ class GrpcClientTest {
   fun cancelStreamingRequestSuspend() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RecordRoute"))
 
-    val (_, responseChannel) = routeGuideService.RecordRoute().execute()
     runBlocking {
+      val (_, deferredResponse) = routeGuideService.RecordRoute().executeIn(this)
       // TODO(benoit) Fix it so we don't have to wait.
       // We wait for the request to proceed.
       delay(200)
-      responseChannel.cancel()
+      deferredResponse.cancel()
       mockService.awaitSuccess()
       assertThat(callReference.get()!!.isCanceled()).isTrue()
     }
@@ -375,10 +374,11 @@ class GrpcClientTest {
     mockService.enqueueSendFeature(name = "house")
     mockService.enqueue(SendCompleted)
 
-    val (requestChannel, responseChannel) = routeGuideService.ListFeatures().execute()
     runBlocking {
-      requestChannel.send(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
-      requestChannel.close()
+      val responseChannel = routeGuideService.ListFeatures().executeIn(
+        this,
+        Rectangle(lo = Point(0, 0), hi = Point(4, 5)),
+      )
       assertThat(responseChannel.receive()).isEqualTo(Feature(name = "tree"))
       assertThat(responseChannel.receive()).isEqualTo(Feature(name = "house"))
       assertThat(responseChannel.receiveCatching().getOrNull()).isNull()
@@ -394,9 +394,9 @@ class GrpcClientTest {
     mockService.enqueueSendFeature(name = "house")
     mockService.enqueue(SendCompleted)
 
-    val (requestChannel, responseChannel) = routeGuideService.ListFeatures().executeBlocking()
-    requestChannel.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
-    requestChannel.close()
+    val responseChannel = routeGuideService.ListFeatures().executeBlocking(
+      Rectangle(lo = Point(0, 0), hi = Point(4, 5)),
+    )
     assertThat(responseChannel.read()).isEqualTo(Feature(name = "tree"))
     assertThat(responseChannel.read()).isEqualTo(Feature(name = "house"))
     assertThat(responseChannel.read()).isNull()
@@ -412,10 +412,11 @@ class GrpcClientTest {
     mockService.enqueueSendFeature(name = "house")
     mockService.enqueue(SendCompleted)
 
-    val (requestChannel, responseChannel) = routeGuideService.ListFeatures().execute()
     runBlocking {
-      requestChannel.send(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
-      requestChannel.close()
+      val responseChannel = routeGuideService.ListFeatures().executeIn(
+        this,
+        Rectangle(lo = Point(0, 0), hi = Point(4, 5)),
+      )
       assertThat(responseChannel.receive()).isEqualTo(Feature(name = "tree"))
       responseChannel.cancel()
       mockService.awaitSuccess()
@@ -433,9 +434,9 @@ class GrpcClientTest {
     mockService.enqueueSendFeature(name = "house")
     mockService.enqueue(SendCompleted)
 
-    val (requestChannel, responseChannel) = routeGuideService.ListFeatures().executeBlocking()
-    requestChannel.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
-    requestChannel.close()
+    val responseChannel = routeGuideService.ListFeatures().executeBlocking(
+      Rectangle(lo = Point(0, 0), hi = Point(4, 5)),
+    )
     assertThat(responseChannel.read()).isEqualTo(Feature(name = "tree"))
     responseChannel.close()
     mockService.awaitSuccessBlocking()
@@ -1558,9 +1559,10 @@ class GrpcClientTest {
     val grpcCall = routeGuideService.ListFeatures()
     grpcCall.requestMetadata = mapOf("request-lucky-number" to "twenty-two")
 
-    val (requestChannel, responseChannel) = grpcCall.executeBlocking()
-    requestChannel.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
-    requestChannel.close()
+    val responseChannel = grpcCall.executeBlocking(
+      Rectangle(lo = Point(0, 0), hi = Point(4, 5)),
+    )
+
     assertThat(responseChannel.read()).isEqualTo(Feature(name = "tree"))
     assertThat(responseChannel.read()).isEqualTo(Feature(name = "house"))
     assertThat(responseChannel.read()).isNull()
@@ -1615,9 +1617,9 @@ class GrpcClientTest {
     grpcCall.requestMetadata = callMetadata
 
     // First call.
-    val (requestChannel, responseChannel) = grpcCall.executeBlocking()
-    requestChannel.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
-    requestChannel.close()
+    val responseChannel = grpcCall.executeBlocking(
+      Rectangle(lo = Point(0, 0), hi = Point(4, 5)),
+    )
     assertThat(responseChannel.read()).isEqualTo(Feature(name = "tree"))
     assertThat(responseChannel.read()).isEqualTo(Feature(name = "house"))
     assertThat(responseChannel.read()).isNull()
@@ -1628,9 +1630,7 @@ class GrpcClientTest {
     // Modifying the original call's metadata should not affect the already cloned `clonedCall`.
     callMetadata["request-lucky-number"] = "one"
     clonedCall.requestMetadata += mapOf("all-in" to "true")
-    val (cloneRequestChannel, cloneResponseChannel) = clonedCall.executeBlocking()
-    cloneRequestChannel.write(Rectangle(lo = Point(0, 0), hi = Point(14, 15)))
-    cloneRequestChannel.close()
+    val cloneResponseChannel = clonedCall.executeBlocking(Rectangle(lo = Point(0, 0), hi = Point(14, 15)))
     assertThat(cloneResponseChannel.read()).isEqualTo(Feature(name = "forest"))
     assertThat(cloneResponseChannel.read()).isEqualTo(Feature(name = "cabane"))
     assertThat(cloneResponseChannel.read()).isNull()

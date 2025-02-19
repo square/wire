@@ -20,6 +20,8 @@ public abstract interface class com/squareup/wire/GrpcCall$Callback {
 
 public final class com/squareup/wire/GrpcCalls {
 	public static final fun grpcCall (Lkotlin/jvm/functions/Function1;)Lcom/squareup/wire/GrpcCall;
+	public static final fun grpcClientStreamingCall (Lkotlin/jvm/functions/Function2;)Lcom/squareup/wire/GrpcClientStreamingCall;
+	public static final fun grpcServerStreamingCall (Lkotlin/jvm/functions/Function3;)Lcom/squareup/wire/GrpcServerStreamingCall;
 	public static final fun grpcStreamingCall (Lkotlin/jvm/functions/Function3;)Lcom/squareup/wire/GrpcStreamingCall;
 }
 
@@ -28,6 +30,8 @@ public abstract class com/squareup/wire/GrpcClient {
 	public final fun create (Lkotlin/reflect/KClass;)Lcom/squareup/wire/Service;
 	public final fun newBuilder ()Lcom/squareup/wire/GrpcClient$Builder;
 	public abstract fun newCall (Lcom/squareup/wire/GrpcMethod;)Lcom/squareup/wire/GrpcCall;
+	public abstract fun newClientStreamingCall (Lcom/squareup/wire/GrpcMethod;)Lcom/squareup/wire/GrpcClientStreamingCall;
+	public abstract fun newServerStreamingCall (Lcom/squareup/wire/GrpcMethod;)Lcom/squareup/wire/GrpcServerStreamingCall;
 	public abstract fun newStreamingCall (Lcom/squareup/wire/GrpcMethod;)Lcom/squareup/wire/GrpcStreamingCall;
 }
 
@@ -39,6 +43,25 @@ public final class com/squareup/wire/GrpcClient$Builder {
 	public final fun callFactory (Lokhttp3/Call$Factory;)Lcom/squareup/wire/GrpcClient$Builder;
 	public final fun client (Lokhttp3/OkHttpClient;)Lcom/squareup/wire/GrpcClient$Builder;
 	public final fun minMessageToCompress (J)Lcom/squareup/wire/GrpcClient$Builder;
+}
+
+public abstract interface class com/squareup/wire/GrpcClientStreamingCall {
+	public abstract fun cancel ()V
+	public abstract fun clone ()Lcom/squareup/wire/GrpcClientStreamingCall;
+	public abstract fun executeBlocking ()Lkotlin/Pair;
+	public abstract fun executeIn (Lkotlinx/coroutines/CoroutineScope;)Lkotlin/Pair;
+	public abstract fun getMethod ()Lcom/squareup/wire/GrpcMethod;
+	public abstract fun getRequestMetadata ()Ljava/util/Map;
+	public abstract fun getResponseMetadata ()Ljava/util/Map;
+	public abstract fun getTimeout ()Lokio/Timeout;
+	public abstract fun isCanceled ()Z
+	public abstract fun isExecuted ()Z
+	public abstract fun setRequestMetadata (Ljava/util/Map;)V
+}
+
+public abstract interface class com/squareup/wire/GrpcDeferredResponse {
+	public abstract fun close ()V
+	public abstract fun get ()Ljava/lang/Object;
 }
 
 public final class com/squareup/wire/GrpcException : java/io/IOException {
@@ -61,6 +84,20 @@ public final class com/squareup/wire/GrpcMethod {
 	public final fun getPath ()Ljava/lang/String;
 	public final fun getRequestAdapter ()Lcom/squareup/wire/ProtoAdapter;
 	public final fun getResponseAdapter ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public abstract interface class com/squareup/wire/GrpcServerStreamingCall {
+	public abstract fun cancel ()V
+	public abstract fun clone ()Lcom/squareup/wire/GrpcServerStreamingCall;
+	public abstract fun executeBlocking (Ljava/lang/Object;)Lcom/squareup/wire/MessageSource;
+	public abstract fun executeIn (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getMethod ()Lcom/squareup/wire/GrpcMethod;
+	public abstract fun getRequestMetadata ()Ljava/util/Map;
+	public abstract fun getResponseMetadata ()Ljava/util/Map;
+	public abstract fun getTimeout ()Lokio/Timeout;
+	public abstract fun isCanceled ()Z
+	public abstract fun isExecuted ()Z
+	public abstract fun setRequestMetadata (Ljava/util/Map;)V
 }
 
 public final class com/squareup/wire/GrpcStatus : java/io/Serializable {
@@ -104,6 +141,13 @@ public abstract interface class com/squareup/wire/GrpcStreamingCall {
 	public abstract fun isCanceled ()Z
 	public abstract fun isExecuted ()Z
 	public abstract fun setRequestMetadata (Ljava/util/Map;)V
+}
+
+public final class com/squareup/wire/GrpcStreamingCallExtensionsKt {
+	public static final fun bidirectionalStream (Lcom/squareup/wire/GrpcStreamingCall;Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function3;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun bidirectionalStreamBlocking (Lcom/squareup/wire/GrpcStreamingCall;Lkotlin/jvm/functions/Function2;)Lcom/squareup/wire/MessageSource;
+	public static final fun clientStream (Lcom/squareup/wire/GrpcClientStreamingCall;Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun clientStreamBlocking (Lcom/squareup/wire/GrpcClientStreamingCall;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 }
 
 public abstract interface annotation class com/squareup/wire/WireGrpcExperimental : java/lang/annotation/Annotation {
