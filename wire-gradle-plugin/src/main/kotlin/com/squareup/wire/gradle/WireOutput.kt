@@ -159,6 +159,12 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
    */
   var mutableTypes: Boolean = false
 
+  /**
+   * If true, the generated gRPC client will use explicit classes for client, server,
+   * and bidirectional streaming calls.
+   */
+  var explicitStreamingCalls: Boolean = false
+
   override fun toTarget(outputDirectory: String): KotlinTarget {
     if (grpcServerCompatible) {
       throw IllegalArgumentException(
@@ -203,6 +209,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       enumMode = enumMode,
       emitProtoReader32 = emitProtoReader32,
       mutableTypes = mutableTypes,
+      explicitStreamingCalls = explicitStreamingCalls,
     )
   }
 }
