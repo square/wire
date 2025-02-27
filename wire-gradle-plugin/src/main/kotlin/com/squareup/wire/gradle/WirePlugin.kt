@@ -152,13 +152,7 @@ class WirePlugin : Plugin<Project> {
       }
 
       val targets = outputs.map { output ->
-        output.toTarget(
-          when (val out = output.out) {
-            null -> project.relativePath(source.outputDir(project))
-            project.libraryProtoOutputPath() -> project.relativePath(out)
-            else -> out
-          },
-        )
+        output.toTarget(project.relativePath(output.out ?: source.outputDir(project)))
       }
       val generatedSourcesDirectories: Set<File> =
         targets
