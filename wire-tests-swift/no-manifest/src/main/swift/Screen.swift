@@ -4,7 +4,7 @@ import Wire
 
 public struct Screen {
 
-    public var screen: Screen?
+    public var screen: Screen.Screen?
     public var unknownFields: UnknownFields = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
