@@ -8,6 +8,8 @@
 package routeguide
 
 import com.squareup.wire.GrpcCall
+import com.squareup.wire.GrpcClientStreamingCall
+import com.squareup.wire.GrpcServerStreamingCall
 import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.Service
 import kotlin.Suppress
@@ -34,7 +36,7 @@ public interface RouteGuideClient : Service {
    * repeated field), as the rectangle may cover a large area and contain a
    * huge number of features.
    */
-  public fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature>
+  public fun ListFeatures(): GrpcServerStreamingCall<Rectangle, Feature>
 
   /**
    * A client-to-server streaming RPC.
@@ -42,7 +44,7 @@ public interface RouteGuideClient : Service {
    * Accepts a stream of Points on a route being traversed, returning a
    * RouteSummary when traversal is completed.
    */
-  public fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary>
+  public fun RecordRoute(): GrpcClientStreamingCall<Point, RouteSummary>
 
   /**
    * A Bidirectional streaming RPC.
