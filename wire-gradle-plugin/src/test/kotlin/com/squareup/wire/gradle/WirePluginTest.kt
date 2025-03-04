@@ -1398,6 +1398,16 @@ class WirePluginTest {
     assertThat(File(outputRoot, "Period.kt")).exists()
   }
 
+  @Test
+  fun lazyConfigurationResolution() {
+    val fixtureRoot = File("src/test/projects/lazy-configuration-resolution")
+
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("wire-project:generateProtos", "--stacktrace", "--info").build()
+    }
+    assertThat(result.task(":wire-project:generateProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+  }
+
   private fun GradleRunner.runFixture(
     root: File,
     action: GradleRunner.() -> BuildResult,

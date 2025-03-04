@@ -1,0 +1,2 @@
+include ':wire-project'
+include ':dep-project'
