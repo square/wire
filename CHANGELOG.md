@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 5.3.1
+---------------------
+
+_2025-03-05_
+
+### Gradle plugin
+
+* Better remote cache support (#3295)
+* Avoid eagerly resolving the configuration (#3302 by [Kartikaya Gupta][staktrace])
+
 Version 5.3.0
 ---------------------
 
@@ -1592,6 +1602,7 @@ Initial version.
  [quanturium]: https://github.com/quanturium
  [reflect]: https://github.com/grpc/grpc/blob/master/doc/server-reflection.md
  [sashaweiss-signal]: https://github.com/sashaweiss-signal
+ [staktrace]: https://github.com/staktrace
  [swiftblogpost]: https://cashapp.github.io/2020-08-19/wire-support-for-swift-part-1
  [tikurahul]: https://github.com/tikurahul
  [traviscj]: https://github.com/traviscj
