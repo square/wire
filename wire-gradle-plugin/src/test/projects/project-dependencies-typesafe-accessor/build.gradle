@@ -1,8 +1,26 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+  id 'com.squareup.wire' apply false
+  id 'org.jetbrains.kotlin.jvm' apply false
+}
+
 allprojects {
   repositories {
     maven {
       url "file://${project.rootProject.projectDir}/../../../../../build/localMaven"
     }
     mavenCentral()
+  }
+
+  tasks.withType(JavaCompile).configureEach {
+    sourceCompatibility = JavaVersion.VERSION_11.toString()
+    targetCompatibility = JavaVersion.VERSION_11.toString()
+  }
+
+  tasks.withType(KotlinCompile).configureEach {
+    kotlinOptions {
+      jvmTarget = "11"
+    }
   }
 }
