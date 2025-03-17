@@ -1,4 +1,5 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
   kotlin("multiplatform")
@@ -39,6 +40,14 @@ kotlin {
     tvosArm64()
     tvosSimulatorArm64()
   }
+
+  if (System.getProperty("kwasm", "true").toBoolean()) {
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmWasi {
+      nodejs()
+    }
+  }
+
   sourceSets {
     val commonMain by getting {
       dependencies {
@@ -66,6 +75,13 @@ kotlin {
       val jsTest by getting {
         dependencies {
           implementation(libs.kotlin.test.js)
+        }
+      }
+    }
+    if (System.getProperty("kwasm", "true").toBoolean()) {
+      val wasmWasiTest by getting {
+        dependencies {
+          implementation(libs.kotlin.test)
         }
       }
     }
