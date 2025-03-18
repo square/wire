@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.internal.JsName
 import okio.Buffer
 import okio.BufferedSink
 import okio.ByteString
