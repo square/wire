@@ -4,8 +4,8 @@ import Wire
 
 public struct Form {
 
-    public var choice: Choice?
-    public var decision: Decision?
+    public var choice: Form.Choice?
+    public var decision: Form.Decision?
     public var unknownFields: UnknownFields = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
