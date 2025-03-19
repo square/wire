@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Square, Inc.
+ * Copyright (C) 2025 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire
+package com.squareup.wire.internal
 
-actual interface MessageSource<out T : Any> {
-  actual fun read(): T?
-
-  actual fun close()
-}
+/** This annotation is an empty placeholder. */
+actual annotation class JsName(actual val name: String)

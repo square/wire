@@ -29,13 +29,13 @@ jobs:
           ./gradlew generateTests -Pswift=false --stacktrace --warning-mode all
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
-      - name: Test Native and JS
+      - name: Test Native, JS and Wasm
         run: |
-          ./gradlew -Dkjs=true -Dknative=true -Pswift=false samples:native:build samples:js:build samples:multi-target:build --stacktrace --warning-mode all
+          ./gradlew -Dkjs=true -Dknative=true -Dkwasm=true -Pswift=false samples:native:build samples:js:build samples:multi-target:build --stacktrace --warning-mode all
 
       - name: Test
         run: |
-          ./gradlew -Dkjs=false -Dknative=false -Pswift=false build --stacktrace --warning-mode all -x samples:native:build -x samples:js:build -x samples:multi-target:build
+          ./gradlew -Dkjs=false -Dknative=false -Dkwasm=false -Pswift=false build --stacktrace --warning-mode all -x samples:native:build -x samples:js:build -x samples:multi-target:build
 
   multiplatform:
     runs-on: macos-latest

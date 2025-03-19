@@ -1,4 +1,5 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
   kotlin("multiplatform")
@@ -39,6 +40,17 @@ kotlin {
     tvosArm64()
     tvosSimulatorArm64()
   }
+
+  if (System.getProperty("kwasm", "true").toBoolean()) {
+    wasmJs {
+      browser()
+    }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmWasi {
+      nodejs()
+    }
+  }
+
   sourceSets {
     val commonMain by getting {
       dependencies {
@@ -62,10 +74,48 @@ kotlin {
         implementation(libs.kotlin.test.junit)
       }
     }
+    val nonJvmMain by creating {
+      dependsOn(commonMain)
+    }
+    val nonJvmTest by creating {
+      dependsOn(commonTest)
+    }
+    if (System.getProperty("knative", "true").toBoolean()) {
+      val nativeMain by getting {
+        dependsOn(nonJvmMain)
+      }
+      val nativeTest by getting {
+        dependsOn(nonJvmTest)
+      }
+    }
     if (System.getProperty("kjs", "true").toBoolean()) {
+      val jsMain by getting {
+        dependsOn(nonJvmMain)
+      }
       val jsTest by getting {
+        dependsOn(nonJvmTest)
         dependencies {
           implementation(libs.kotlin.test.js)
+        }
+      }
+    }
+    if (System.getProperty("kwasm", "true").toBoolean()) {
+      val wasmJsMain by getting {
+        dependsOn(nonJvmMain)
+      }
+      val wasmJsTest by getting {
+        dependsOn(nonJvmTest)
+        dependencies {
+          implementation(libs.kotlin.test.wasm.js)
+        }
+      }
+      val wasmWasiMain by getting {
+        dependsOn(nonJvmMain)
+      }
+      val wasmWasiTest by getting {
+        dependsOn(nonJvmTest)
+        dependencies {
+          implementation(libs.kotlin.test)
         }
       }
     }
