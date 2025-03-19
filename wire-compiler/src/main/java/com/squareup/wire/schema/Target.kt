@@ -147,6 +147,13 @@ data class KotlinTarget(
    * If true, the generated classes will be mutable..
    */
   private val mutableTypes: Boolean = false,
+
+  /**
+   * If true, the generated gRPC client will use explicit classes for client, server,
+   * and bidirectional streaming calls.
+   */
+  private val explicitStreamingCalls: Boolean = false,
+
 ) : Target() {
   override fun newHandler(): SchemaHandler {
     return KotlinSchemaHandler(
@@ -165,6 +172,7 @@ data class KotlinTarget(
       enumMode = enumMode,
       emitProtoReader32 = emitProtoReader32,
       mutableTypes = mutableTypes,
+      explicitStreamingCalls = explicitStreamingCalls,
     )
   }
 
