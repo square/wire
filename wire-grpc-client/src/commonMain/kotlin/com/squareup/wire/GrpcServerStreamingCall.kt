@@ -69,7 +69,7 @@ interface GrpcServerStreamingCall<S : Any, R : Any> {
   fun isCanceled(): Boolean
 
   /**
-   * Enqueues this call for execution, sends singe request, and returns a channel to receive the call's responses.
+   * Enqueues this call for execution, sends single request, and returns a channel to receive the call's responses.
    * This uses the [Dispatchers.IO] to transmit outbound messages.
    */
   suspend fun executeIn(scope: CoroutineScope, request: S): ReceiveChannel<R>
