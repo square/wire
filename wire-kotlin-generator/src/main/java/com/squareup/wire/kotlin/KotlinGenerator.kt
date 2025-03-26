@@ -57,7 +57,9 @@ import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcClient
+import com.squareup.wire.GrpcClientStreamingCall
 import com.squareup.wire.GrpcMethod
+import com.squareup.wire.GrpcServerStreamingCall
 import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.Message
 import com.squareup.wire.MessageSink
@@ -138,6 +140,7 @@ class KotlinGenerator private constructor(
   private val enumMode: EnumMode,
   private val emitProtoReader32: Boolean,
   private val mutableTypes: Boolean,
+  private val explicitStreamingCalls: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -207,6 +210,18 @@ class KotlinGenerator private constructor(
       ProtoType.DOUBLE -> CodeBlock.of("%T.DOUBLE_ARRAY", ProtoAdapter::class)
       else -> throw IllegalArgumentException("No Array adapter for $type")
     }
+
+  private val Rpc.clientStreaming: Boolean
+    get() = requestStreaming && !responseStreaming
+
+  private val Rpc.serverStreaming: Boolean
+    get() = !requestStreaming && responseStreaming
+
+  private val Rpc.bidirectionalStreaming: Boolean
+    get() = requestStreaming && responseStreaming
+
+  private val Rpc.streaming
+    get() = requestStreaming || responseStreaming
 
   /** Returns the full name of the class generated for [type].  */
   fun generatedTypeName(type: Type) = type.typeName as ClassName
@@ -385,17 +400,17 @@ class KotlinGenerator private constructor(
         funSpecBuilder.addModifiers(KModifier.SUSPEND)
       }
       when {
-        rpc.requestStreaming && rpc.responseStreaming -> {
+        rpc.bidirectionalStreaming -> {
           funSpecBuilder
             .addParameter("request", readableStreamOf(requestType))
             .addParameter("response", writableStreamOf(responseType))
         }
-        rpc.requestStreaming -> {
+        rpc.clientStreaming -> {
           funSpecBuilder
             .addParameter("request", readableStreamOf(requestType))
             .returns(responseType)
         }
-        rpc.responseStreaming -> {
+        rpc.serverStreaming -> {
           funSpecBuilder
             .addParameter("request", requestType)
             .addParameter("response", writableStreamOf(responseType))
@@ -415,7 +430,9 @@ class KotlinGenerator private constructor(
         .add("⇤⇤)")
         .build()
       when {
-        rpc.requestStreaming || rpc.responseStreaming -> {
+        // if explicitStreamingCalls is false use the GrpcStreamingCall for every streaming call (legacy).
+        // Otherwise, use it just for bidirectional streaming.
+        (rpc.streaming && !explicitStreamingCalls) || rpc.bidirectionalStreaming -> {
           funSpecBuilder
             .returns(
               GrpcStreamingCall::class.asClassName().parameterizedBy(requestType, responseType),
@@ -428,6 +445,33 @@ class KotlinGenerator private constructor(
             funSpecBuilder.addModifiers(ABSTRACT)
           }
         }
+        rpc.clientStreaming -> {
+          funSpecBuilder
+            .returns(
+              GrpcClientStreamingCall::class.asClassName().parameterizedBy(requestType, responseType),
+            )
+          if (isImplementation) {
+            funSpecBuilder
+              .addModifiers(OVERRIDE)
+              .addStatement("return client.newClientStreamingCall(%L)", grpcMethod)
+          } else {
+            funSpecBuilder.addModifiers(ABSTRACT)
+          }
+        }
+        rpc.serverStreaming -> {
+          funSpecBuilder
+            .returns(
+              GrpcServerStreamingCall::class.asClassName().parameterizedBy(requestType, responseType),
+            )
+          if (isImplementation) {
+            funSpecBuilder
+              .addModifiers(OVERRIDE)
+              .addStatement("return client.newServerStreamingCall(%L)", grpcMethod)
+          } else {
+            funSpecBuilder.addModifiers(ABSTRACT)
+          }
+        }
+
         else -> {
           funSpecBuilder
             .returns(
@@ -3135,6 +3179,7 @@ class KotlinGenerator private constructor(
       enumMode: EnumMode = ENUM_CLASS,
       emitProtoReader32: Boolean = false,
       mutableTypes: Boolean = false,
+      explicitStreamingCalls: Boolean = false,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -3188,6 +3233,7 @@ class KotlinGenerator private constructor(
         enumMode = enumMode,
         emitProtoReader32 = emitProtoReader32,
         mutableTypes = mutableTypes,
+        explicitStreamingCalls = explicitStreamingCalls,
       )
     }
 

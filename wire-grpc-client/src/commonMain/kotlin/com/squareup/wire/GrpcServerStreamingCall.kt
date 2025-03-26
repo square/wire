@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Square, Inc.
+ * Copyright (C) 2025 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,35 +18,21 @@ package com.squareup.wire
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.SendChannel
 import okio.IOException
 import okio.Timeout
 
 /**
- * A single streaming call to a remote server. This class handles three streaming call types:
+ * A single streaming call to a remote server.
  *
- *  * Single request, streaming response. The send channel or message sink accept exactly one
- *    message. The receive channel or message source produce zero or more messages. The outbound
- *    request message is sent before any inbound response messages.
- *    NOTE: This is deprecated for this use case in favor of using explicitStreamingCalls
- *    to a GrpcServerStreamingCall.
- *
- *  * Streaming request, single response. The send channel or message sink accept zero or more
- *    messages. The receive channel or message source produce exactly one message. All outbound
- *    request messages are sent before the inbound response message.
- *    NOTE: This is deprecated for this use case in favor of using explicitStreamingCalls
- *  *    to a GrpcClientStreamingCall.
- *
- *  * Streaming request, streaming response. The send channel or message sink accept zero or more
- *    messages, and the receive channel or message source produce any number of messages. Unlike
- *    the above two types, you are free to interleave request and response messages.
+ *  * This class handles a server streaming call . A single request is sent and the receive channel or
+ *    message source produce zero or more messages.
  *
  * A gRPC call cannot be executed twice.
  *
  * gRPC calls can be [suspending][executeIn] or [blocking][executeBlocking]. Use whichever mechanism
  * works at your call site: the bytes transmitted on the network are the same.
  */
-interface GrpcStreamingCall<S : Any, R : Any> {
+interface GrpcServerStreamingCall<S : Any, R : Any> {
   /** The method invoked by this call. */
   val method: GrpcMethod<S, R>
 
@@ -83,33 +69,16 @@ interface GrpcStreamingCall<S : Any, R : Any> {
   fun isCanceled(): Boolean
 
   /**
-   * Enqueues this call for execution and returns channels to send and receive the call's messages.
+   * Enqueues this call for execution, sends single request, and returns a channel to receive the call's responses.
    * This uses the [Dispatchers.IO] to transmit outbound messages.
    */
-  fun executeIn(scope: CoroutineScope): Pair<SendChannel<S>, ReceiveChannel<R>>
+  suspend fun executeIn(scope: CoroutineScope, request: S): ReceiveChannel<R>
 
   /**
-   * Enqueues this call for execution and returns channels to send and receive the call's messages.
-   * This uses the [Dispatchers.IO] to transmit outbound messages.
-   *
-   * This method is deprecated because it doesn't support structured concurrency. Instead, prefer
-   * [executeIn]. When its scope is canceled, resources held by the function will be released.
-   */
-  @Deprecated(
-    level = DeprecationLevel.WARNING,
-    message = "Provide a scope, preferably not GlobalScope",
-    replaceWith = ReplaceWith(
-      expression = "executeIn(GlobalScope)",
-      imports = ["kotlinx.coroutines.GlobalScope"],
-    ),
-  )
-  fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>>
-
-  /**
-   * Enqueues this call for execution and returns streams to send and receive the call's messages.
+   * Enqueues this call for execution, sends singe request, and returns a stream to  receive the call's responses.
    * Reads and writes on the returned streams are blocking.
    */
-  fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>>
+  fun executeBlocking(request: S): MessageSource<R>
 
   /**
    * Returns true if [executeIn] or [executeBlocking] was called. It is an error to execute a call
@@ -121,5 +90,5 @@ interface GrpcStreamingCall<S : Any, R : Any> {
    * Create a new, identical gRPC call to this one which can be enqueued or executed even if this
    * call has already been.
    */
-  fun clone(): GrpcStreamingCall<S, R>
+  fun clone(): GrpcServerStreamingCall<S, R>
 }
