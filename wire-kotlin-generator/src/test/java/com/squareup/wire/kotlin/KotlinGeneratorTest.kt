@@ -2352,6 +2352,29 @@ class KotlinGeneratorTest {
     )
   }
 
+  @Test
+  fun builderLambdaMethods() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |message Person {
+        |  optional string name = 1;
+        |  optional Address address = 2;
+        |  message Address {
+        |    optional string street = 1;
+        |    optional string city = 2;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("Person", buildersOnly = true)
+
+    assertThat(code).contains("public fun address(builder: Address.Builder.() -> Unit): Builder")
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {

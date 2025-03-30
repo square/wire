@@ -997,6 +997,30 @@ class KotlinGenerator private constructor(
           }
 
           builder.addProperty(propertyBuilder.build())
+
+          if (fieldOrOneOf.type!!.isMessage) {
+            val fieldType = fieldOrOneOf.type!!.typeName as ClassName
+            val fieldBuilderType = fieldType.nestedClass("Builder")
+
+            val lambdaMethod = FunSpec.builder(fieldName)
+              .addParameter(
+                "builder",
+                LambdaTypeName.get(
+                  receiver = fieldBuilderType,
+                  returnType = Unit::class.asClassName(),
+                ),
+              )
+              .returns(builderClassName)
+              .addStatement(
+                "this.%1N = (%1N?.newBuilder() ?: %2T()).apply(builder).build()",
+                fieldName,
+                fieldBuilderType
+              )
+              .addStatement("return this")
+              .build()
+
+            builder.addFunction(lambdaMethod)
+          }
         }
         is OneOf -> {
           val fieldName = nameAllocator[fieldOrOneOf]
