@@ -60,7 +60,7 @@ include(":wire-schema-tests")
 include(":wire-swift-generator")
 include(":wire-test-utils")
 include(":wire-tests")
-if (false && startParameter.projectProperties.get("swift") != "false") {
+if (startParameter.projectProperties.get("swift") != "false") {
   include(":wire-runtime-swift")
   include(":wire-tests-swift")
   include(":wire-tests-swift:no-manifest")
