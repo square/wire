@@ -48,6 +48,25 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
+/**
+ * Rewrites calls to Wire-generated constructors like this:
+ 
+ * ```kotlin
+ * val money = Money(
+ *   amount = 5,
+ *   currency = "USD",
+ * )
+ * ```
+ * 
+ * into calls to the corresponding builders:
+ * 
+ * ```kotlin
+ * val money = Money.Builder()
+ *   .amount(5)
+ *   .currency("USD")
+ *   .build()
+ * ```
+ */
 class WireConstructorCallRewriter(
   private val pluginContext: IrPluginContext,
   val constructorCall: IrConstructorCall,
