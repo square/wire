@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,16 +50,16 @@ import org.jetbrains.kotlin.name.Name
 
 /**
  * Rewrites calls to Wire-generated constructors like this:
- 
+
  * ```kotlin
  * val money = Money(
  *   amount = 5,
  *   currency = "USD",
  * )
  * ```
- * 
+ *
  * into calls to the corresponding builders:
- * 
+ *
  * ```kotlin
  * val money = Money.Builder()
  *   .amount(5)
@@ -114,7 +114,6 @@ class WireConstructorCallRewriter(
         val valueParameter = constructorCall.symbol.owner.valueParameters[i]
         val parameterFunction = builderSymbol.functions.find { it.owner.valueParameters.size == 1 && it.owner.name == valueParameter.name } ?: return null
 
-
         +irCall(
           callee = parameterFunction,
         ).apply {
@@ -140,7 +139,7 @@ fun IrFunction.isDeclaredByWireMessageOrBuilder(): Boolean {
   return (this.parent as? IrClass)?.superTypes?.any { it.isWireMessageOrBuilder() } ?: false
 }
 
-fun IrType.isWireMessageOrBuilder() : Boolean {
+fun IrType.isWireMessageOrBuilder(): Boolean {
   val classId = this.getClass()?.classId ?: return false
   return classId == wireMessage || classId == wireMessageBuilder
 }
