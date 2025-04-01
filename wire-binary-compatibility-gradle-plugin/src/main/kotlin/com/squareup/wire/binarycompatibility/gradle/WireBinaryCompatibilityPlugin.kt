@@ -28,9 +28,9 @@ class WireBinaryCompatibilityPlugin : KotlinCompilerPluginSupportPlugin {
   override fun getCompilerPluginId(): String = "com.squareup.wire.binarycompatibility.kotlin"
 
   override fun getPluginArtifact(): SubpluginArtifact = SubpluginArtifact(
-    groupId = "com.squareup.wire.binarycompatibility",
-    artifactId = "wire-binary-compatibility-kotlin-plugin",
-    version = "2.6.0-SNAPSHOT",
+    groupId = BuildConfig.KOTLIN_PLUGIN_GROUP,
+    artifactId = BuildConfig.KOTLIN_PLUGIN_NAME,
+    version = BuildConfig.KOTLIN_PLUGIN_VERSION,
   )
 
   override fun applyToCompilation(
