@@ -11,8 +11,8 @@ plugins {
 }
 
 dependencies {
-  implementation(kotlin("gradle-plugin-api"))
-  implementation(project(":wire-binary-compatibility-kotlin-plugin"))
+  compileOnly(kotlin("gradle-plugin-api"))
+  compileOnly(project(":wire-binary-compatibility-kotlin-plugin"))
   implementation(libs.kotlin.gradlePlugin)
 }
 
