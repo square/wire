@@ -6,14 +6,28 @@ plugins {
   id("java-gradle-plugin")
   `kotlin-dsl`
   kotlin("jvm")
+  id("com.github.gmazzo.buildconfig")
   id("org.jetbrains.dokka")
   id("com.vanniktech.maven.publish.base")
 }
 
 dependencies {
   implementation(kotlin("gradle-plugin-api"))
-  implementation(project(":wire-binary-compatibility-kotlin-plugin"))
+  implementation(projects.wireBinaryCompatibilityKotlinPlugin)
   compileOnly(libs.kotlin.gradlePlugin)
+}
+
+buildConfig {
+  useKotlinOutput {
+    internalVisibility = true
+  }
+  val compilerPlugin = projects.wireBinaryCompatibilityKotlinPlugin
+  val packageName = "com.squareup.wire.binarycompatibility.gradle"
+  packageName(packageName)
+  buildConfigField("String", "KOTLIN_PLUGIN_ID", "\"${packageName}\"")
+  buildConfigField("String", "KOTLIN_PLUGIN_GROUP", "\"${compilerPlugin.group}\"")
+  buildConfigField("String", "KOTLIN_PLUGIN_NAME", "\"${compilerPlugin.name}\"")
+  buildConfigField("String", "KOTLIN_PLUGIN_VERSION", "\"${compilerPlugin.version}\"")
 }
 
 gradlePlugin {
