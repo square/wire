@@ -12,9 +12,9 @@ plugins {
 }
 
 dependencies {
-  implementation(kotlin("gradle-plugin-api"))
-  implementation(projects.wireBinaryCompatibilityKotlinPlugin)
+  compileOnly(kotlin("gradle-plugin-api"))
   compileOnly(libs.kotlin.gradlePlugin)
+  implementation(projects.wireBinaryCompatibilityKotlinPlugin)
 }
 
 buildConfig {

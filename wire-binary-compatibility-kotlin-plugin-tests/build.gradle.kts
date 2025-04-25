@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+  testImplementation(kotlin("gradle-plugin-api"))
   testImplementation(project(":wire-binary-compatibility-kotlin-plugin"))
   testImplementation(kotlin("compiler-embeddable"))
   testImplementation(kotlin("test-junit"))
