@@ -122,7 +122,6 @@ class WireConstructorCallRewriter(
         }
       }
 
-      //   return builder.build()
       +irCall(
         callee = buildFunction,
       ).apply {
