@@ -118,6 +118,35 @@ public final class JavaGeneratorTest {
   }
 
   @Test
+  public void nullLabelIsHandledDuringOptionGeneration() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "syntax = \"proto3\";\n"
+                    + "import \"google/protobuf/descriptor.proto\";\n"
+                        + "message Message {\n"
+                        + "  extend google.protobuf.MessageOptions {\n"
+                        + "    string owner = 55682;\n"
+                        + "  }\n"
+                        + "}")
+            .build();
+    assertThat(
+        new JavaWithProfilesGenerator(schema).generateJava(
+            "Message", null, false, true
+        )
+    )
+        .contains(
+            ""
+                + "  @Retention(RetentionPolicy.RUNTIME)\n"
+                + "  @Target(ElementType.TYPE)\n"
+                + "  public @interface OwnerOption {\n"
+                + "    String value();\n"
+                + "  }");
+  }
+
+  @Test
   public void map() throws Exception {
     Schema schema =
         new SchemaBuilder()

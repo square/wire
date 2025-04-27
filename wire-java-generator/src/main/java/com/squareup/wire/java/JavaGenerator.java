@@ -2340,7 +2340,7 @@ public final class JavaGenerator {
 
     if (!eligibleAsAnnotationMember(schema, field)) return null;
     TypeName returnType;
-    if (field.getLabel().equals(Field.Label.REPEATED)) {
+    if (Field.Label.REPEATED.equals(field.getLabel())) {
       TypeName typeName = typeName(field.getType());
       if (typeName.equals(TypeName.LONG)
           || typeName.equals(TypeName.INT)

@@ -53,10 +53,13 @@ internal class JavaWithProfilesGenerator(private val schema: Schema) {
     typeName: String,
     profileName: String? = null,
     buildersOnly: Boolean = false,
+    emitDeclaredOptions: Boolean = false,
+    emitAppliedOptions: Boolean = false,
   ): String {
     val javaGenerator = JavaGenerator.get(schema)
       .withProfile(profile(profileName))
       .withBuildersOnly(buildersOnly)
+      .withOptions(emitDeclaredOptions, emitAppliedOptions)
     val type = schema.getType(typeName)
     val typeSpec = javaGenerator.generateType(type)
     val packageName = javaGenerator.generatedTypeName(type).packageName()
