@@ -126,17 +126,13 @@ public final class JavaGeneratorTest {
                 ""
                     + "syntax = \"proto3\";\n"
                     + "import \"google/protobuf/descriptor.proto\";\n"
-                        + "message Message {\n"
-                        + "  extend google.protobuf.MessageOptions {\n"
-                        + "    string owner = 55682;\n"
-                        + "  }\n"
-                        + "}")
+                    + "message Message {\n"
+                    + "  extend google.protobuf.MessageOptions {\n"
+                    + "    string owner = 55682;\n"
+                    + "  }\n"
+                    + "}")
             .build();
-    assertThat(
-        new JavaWithProfilesGenerator(schema).generateJava(
-            "Message", null, false, true
-        )
-    )
+    assertThat(new JavaWithProfilesGenerator(schema).generateJava("Message", null, false, true))
         .contains(
             ""
                 + "  @Retention(RetentionPolicy.RUNTIME)\n"
