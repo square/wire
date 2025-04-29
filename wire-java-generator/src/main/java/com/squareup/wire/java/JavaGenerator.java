@@ -879,7 +879,7 @@ public final class JavaGenerator {
 
   /** Decides if a constructor should take all fields or a builder as a parameter. */
   private boolean constructorTakesAllFields(MessageType type) {
-    return type.fields().size() < MAX_PARAMS_IN_CONSTRUCTOR;
+    return type.getFieldsAndOneOfFields().size() < MAX_PARAMS_IN_CONSTRUCTOR;
   }
 
   private TypeSpec generateEnclosingType(EnclosingType type) {
@@ -2340,7 +2340,7 @@ public final class JavaGenerator {
 
     if (!eligibleAsAnnotationMember(schema, field)) return null;
     TypeName returnType;
-    if (field.getLabel().equals(Field.Label.REPEATED)) {
+    if (Field.Label.REPEATED.equals(field.getLabel())) {
       TypeName typeName = typeName(field.getType());
       if (typeName.equals(TypeName.LONG)
           || typeName.equals(TypeName.INT)

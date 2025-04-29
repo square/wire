@@ -84,14 +84,62 @@ public final class JavaGeneratorTest {
                 ""
                     + "message Message {\n"
                     + s.toString()
-                    + "    oneof oneof_name {\n"
-                    + "       int32 foo = 257;\n"
-                    + "       int32 bar = 258;\n"
-                    + "    }\n"
+                    + "  oneof oneof_name {\n"
+                    + "    int32 foo = 257;\n"
+                    + "    int32 bar = 258;\n"
+                    + "  }\n"
                     + "}\n")
             .build();
     assertThat(new JavaWithProfilesGenerator(schema).generateJava("Message"))
         .contains("" + "public Message(Builder builder, ByteString unknownFields)");
+  }
+
+  @Test
+  public void tooManyFieldsInOneOfTest() throws Exception {
+    StringBuilder s = new StringBuilder();
+    for (int i = 3; i < 259; i++) {
+      s.append("    int32 field_" + i + " = " + i + ";\n");
+    }
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "message Message {\n"
+                    + "  repeated int32 foo = 1;\n"
+                    + "  repeated int32 bar = 2;\n"
+                    + "  oneof oneof_name {\n"
+                    + s.toString()
+                    + "  }\n"
+                    + "}\n")
+            .build();
+    assertThat(new JavaWithProfilesGenerator(schema).generateJava("Message"))
+        .contains("" + "public Message(Builder builder, ByteString unknownFields)");
+  }
+
+  @Test
+  public void nullLabelIsHandledDuringOptionGeneration() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "syntax = \"proto3\";\n"
+                    + "import \"google/protobuf/descriptor.proto\";\n"
+                    + "message Message {\n"
+                    + "  extend google.protobuf.MessageOptions {\n"
+                    + "    string owner = 55682;\n"
+                    + "  }\n"
+                    + "}")
+            .build();
+    assertThat(new JavaWithProfilesGenerator(schema).generateJava("Message", null, false, true))
+        .contains(
+            ""
+                + "  @Retention(RetentionPolicy.RUNTIME)\n"
+                + "  @Target(ElementType.TYPE)\n"
+                + "  public @interface OwnerOption {\n"
+                + "    String value();\n"
+                + "  }");
   }
 
   @Test
