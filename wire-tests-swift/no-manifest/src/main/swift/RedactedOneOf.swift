@@ -4,7 +4,7 @@ import Wire
 
 public struct RedactedOneOf {
 
-    public var a: A?
+    public var a: RedactedOneOf.A?
     public var unknownFields: UnknownFields = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
