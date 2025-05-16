@@ -34,6 +34,7 @@ import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.OutputDirectory
@@ -75,10 +76,10 @@ abstract class WireTask @Inject constructor(
   val pluginVersion: Property<String> = objects.property(String::class.java)
     .convention(VERSION)
 
-  @get:Input
+  @get:Nested
   internal abstract val sourceInput: ListProperty<InputLocation>
 
-  @get:Input
+  @get:Nested
   internal abstract val protoInput: ListProperty<InputLocation>
 
   @get:Input
@@ -156,11 +157,10 @@ abstract class WireTask @Inject constructor(
         }
     }
 
-    val projectDirAsFile = projectDir.asFile
     val allTargets = targets.get()
     val wireRun = WireRun(
-      sourcePath = sourceInput.get().flatMap { it.toLocations(fileOperations, projectDirAsFile) },
-      protoPath = protoInput.get().flatMap { it.toLocations(fileOperations, projectDirAsFile) },
+      sourcePath = sourceInput.get().flatMap { it.toLocations(fileOperations) },
+      protoPath = protoInput.get().flatMap { it.toLocations(fileOperations) },
       treeShakingRoots = roots.get().ifEmpty { includes },
       treeShakingRubbish = prunes.get().ifEmpty { excludes },
       moves = moves.get().map { it.toTypeMoverMove() },
