@@ -20,6 +20,8 @@ import com.squareup.wire.schema.Location
 import java.io.EOFException
 import java.io.File
 import java.io.RandomAccessFile
+import kotlin.io.relativeTo
+import kotlin.io.startsWith
 import org.gradle.api.internal.file.FileOperations
 
 internal val List<ProtoRootSet>.inputLocations: List<InputLocation>
@@ -39,6 +41,7 @@ private fun ProtoRootSet.inputLocation(): InputLocation {
  */
 internal fun InputLocation.toLocations(
   fileOperations: FileOperations,
+  projectFile: File,
 ): List<Location> {
   return configuration.files.flatMap { base ->
     return@flatMap buildList {
@@ -47,7 +50,7 @@ internal fun InputLocation.toLocations(
         base.isDirectory -> fileOperations.fileTree(base)
         else -> throw IllegalArgumentException(
           """
-          |Invalid path string: "$base".
+          |Invalid path string: "${if (base.startsWith(projectFile)) { base.relativeTo(projectFile) } else { base }}".
           |For individual files, use the following syntax:
           |wire {
           |  sourcePath {
