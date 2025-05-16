@@ -23,24 +23,14 @@ import java.io.RandomAccessFile
 import org.gradle.api.internal.file.FileOperations
 
 internal val List<ProtoRootSet>.inputLocations: List<InputLocation>
-  get() = flatMap { rootSet ->
-    rootSet.roots.map { file ->
-      rootSet.inputLocation(file)
-    }
-  }
+  get() = map { rootSet -> rootSet.inputLocation() }
 
-private fun ProtoRootSet.inputLocation(file: File): InputLocation {
+private fun ProtoRootSet.inputLocation(): InputLocation {
   val includes = when {
     includes.isEmpty() && excludes.isEmpty() -> listOf("**/*.proto")
     else -> includes
   }
-  // We store [file] relative to the [project] in order to not invalidate the cache when we don't
-  // have to.
-  val path = when {
-    file.toPath().startsWith(project.rootDir.toPath()) -> project.relativePath(file.path)
-    else -> file.path
-  }
-  return InputLocation(path, includes, excludes)
+  return InputLocation(configuration, includes, excludes)
 }
 
 /**
@@ -49,44 +39,41 @@ private fun ProtoRootSet.inputLocation(file: File): InputLocation {
  */
 internal fun InputLocation.toLocations(
   fileOperations: FileOperations,
-  projectDir: File,
 ): List<Location> {
-  val base = when {
-    File(path).isAbsolute -> File(path)
-    else -> File(projectDir, path)
-  }
-  return buildList {
-    val fileTree = when {
-      base.isZip -> fileOperations.zipTree(base)
-      base.isDirectory -> fileOperations.fileTree(base)
-      else -> throw IllegalArgumentException(
-        """
-        |Invalid path string: "$path".
-        |For individual files, use the following syntax:
-        |wire {
-        |  sourcePath {
-        |    srcDir("dirPath")
-        |    include("relativePath")
-        |  }
-        |}
-        """.trimMargin(),
-      )
-    }
+  return configuration.files.flatMap { base ->
+    return@flatMap buildList {
+      val fileTree = when {
+        base.isZip -> fileOperations.zipTree(base)
+        base.isDirectory -> fileOperations.fileTree(base)
+        else -> throw IllegalArgumentException(
+          """
+          |Invalid path string: "$base".
+          |For individual files, use the following syntax:
+          |wire {
+          |  sourcePath {
+          |    srcDir("dirPath")
+          |    include("relativePath")
+          |  }
+          |}
+          """.trimMargin(),
+        )
+      }
 
-    fileTree
-      .matching { pattern ->
-        when {
-          includes.isNotEmpty() || excludes.isNotEmpty() -> {
-            pattern.include(*includes.toTypedArray())
-            pattern.exclude(*excludes.toTypedArray())
+      fileTree
+        .matching { pattern ->
+          when {
+            includes.isNotEmpty() || excludes.isNotEmpty() -> {
+              pattern.include(*includes.toTypedArray())
+              pattern.exclude(*excludes.toTypedArray())
+            }
+
+            else -> pattern.include("**/*.proto")
           }
-
-          else -> pattern.include("**/*.proto")
         }
-      }
-      .visit { entry ->
-        if (!entry.isDirectory) add(Location(base.path, entry.path))
-      }
+        .visit { entry ->
+          if (!entry.isDirectory) add(Location(base.path, entry.path))
+        }
+    }
   }
 }
 
