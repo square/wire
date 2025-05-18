@@ -88,6 +88,7 @@ extension OptionalEnumUser : Codable {
  */
 extension OptionalEnumUser {
 
+    @objc
     public enum OptionalEnum : Int32, CaseIterable, Proto2Enum {
 
         case FOO = 1

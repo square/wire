@@ -102,6 +102,7 @@ extension SwiftEdgeCases : Codable {
  */
 extension SwiftEdgeCases {
 
+    @objc
     public enum Error_ : Int32, CaseIterable, Proto2Enum {
 
         case UNKNOWN = 0
@@ -116,6 +117,7 @@ extension SwiftEdgeCases {
 
     }
 
+    @objc
     public enum Type_ : Int32, CaseIterable, Proto2Enum {
 
         case INACTIVE = 0
