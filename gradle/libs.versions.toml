@@ -20,7 +20,7 @@ moshi = "1.15.2"
 okhttp = "5.0.0-alpha.14"
 okio = "3.9.1"
 protobuf = "4.29.3"
-protobufGradlePlugin = "0.9.4"
+protobufGradlePlugin = "0.9.5"
 
 [libraries]
 android = { module = "com.google.android:android", version.ref = "android" }
