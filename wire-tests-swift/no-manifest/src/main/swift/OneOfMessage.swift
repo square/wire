@@ -10,7 +10,7 @@ public struct OneOfMessage {
     /**
      * Must have a foo or a bar or a baz.
      */
-    public var choice: Choice?
+    public var choice: OneOfMessage.Choice?
     public var unknownFields: UnknownFields = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
