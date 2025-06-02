@@ -766,7 +766,7 @@ With Gradle:
 api "com.squareup.wire:wire-runtime:4.9.2"
 ```
 
-Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
+Snapshots of the development version are available in [the Central Portal Snapshots repository][snap].
 
 
 Unsupported
@@ -790,7 +790,7 @@ See [Google's excellent documentation][schema_docs] on the structure and syntax 
 [schema_docs]: https://developers.google.com/protocol-buffers/docs/proto
 [dl_runtime]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-runtime&v=LATEST
 [dl_compiler]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
-[snap]: https://s01.oss.sonatype.org/content/repositories/snapshots/
+[snap]: https://central.sonatype.com/repository/maven-snapshots/
 [wire]: https://square.github.io/wire/
 
 [compiler_docs]: wire_compiler.md
