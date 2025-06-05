@@ -17,6 +17,8 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.schema.EventListener
 import java.io.File
+import java.net.URI
+import java.net.URISyntaxException
 import kotlin.LazyThreadSafetyMode.NONE
 import org.gradle.api.Action
 import org.gradle.api.Project
@@ -331,7 +333,15 @@ open class WireExtension(
 
     /** Sets a local or a remote jar. Examples: "libs/protos.jar", or "com.example:protos:1.0.0". */
     fun srcJar(jar: String) {
-      // Attempt to parse 'jar' as a path or 'file:' URI.
+      try {
+        val uri = URI.create(jar)
+        if (uri.scheme != null) {
+          // It's likely a URI notation.
+          addDependency(jar)
+          return
+        }
+      } catch (e: URISyntaxException) {}
+
       val fileOrNull = try {
         project.file(jar)
       } catch (e: Exception) {
