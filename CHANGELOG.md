@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 5.3.3
+---------------------
+
+_2025-06-05_
+
+### Gradle plugin
+
+* Support for Gradle `14.1` which fixed a bug (#3303) introduced in Wire `5.3.0` when we removed internal Gradle APIs (#3293)
+
 Version 5.3.2
 ---------------------
 
