@@ -1,6 +1,6 @@
 [versions]
 android = "4.1.1.4"
-asm = "9.7.1"
+asm = "9.8"
 assertj = "3.27.3"
 checkerQual = "3.49.4"
 coroutines = "1.9.0"
