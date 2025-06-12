@@ -6,9 +6,20 @@ plugins {
 
 // The code in this test project should be identical to
 // the one in cache-relocation-2; the only difference is
-// that the pathname is different. The test ensures that
-// the gradle task is cacheable even when the project
-// gets relocated to a different filesystem path.
+// that the pathname and gradle user home dirs are different.
+// The test ensures that the gradle task is cacheable even
+// when the project and gradle user home dirs are relocated
+// to a different filesystem path. This ensures the plugin
+// tasks are compatible with being shared across machines
+// via a gradle remote cache.
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  protoPath("com.google.api.grpc:proto-google-common-protos:2.57.0")
+}
 
 wire {
   kotlin {

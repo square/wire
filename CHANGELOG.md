@@ -6,6 +6,32 @@ Unreleased
 
 * In-development snapshots are now published to the Central Portal Snapshots repository at https://central.sonatype.com/repository/maven-snapshots/.
 
+Version 5.3.3
+---------------------
+
+_2025-06-05_
+
+### Gradle plugin
+
+* Support for Gradle `14.1` which fixed a bug (#3303) introduced in Wire `5.3.0` when we removed internal Gradle APIs (#3293)
+
+Version 5.3.2
+---------------------
+
+_2025-06-03_
+
+### Common
+
+* Adding wasm target to wire runtime (#3304 by [Michael Pawliszyn][mpawliszyn])
+* Fix crash when inlined option map values have multiple fields (#3314 by [Tejas Gupta][tejasna])
+
+### Gradle plugin
+
+* Update InputLocation to be more cache-friendly (#3313 by [Kartikaya Gupta][staktrace])
+
+### Java
+
+* Include oneOfs in `constructorTakesAllFields()` and fix null check in `generateOptionType` (#3310 by [Bruno Freitas][brunofrts])
 
 Version 5.3.1
 ---------------------
@@ -1590,6 +1616,7 @@ Initial version.
  [aaron-edwards]: https://github.com/aaron-edwards
  [amorde]: https://github.com/amorde
  [bom]: https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import
+ [brunofrts]: https://github.com/brunofrts
  [custom-handlers-doc]: https://square.github.io/wire/wire_compiler/#custom-handlers
  [custom-handlers-recipes]: https://github.com/square/wire/tree/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
  [damianw]: https://github.com/damianw
@@ -1600,6 +1627,7 @@ Initial version.
  [jimfs]: https://github.com/google/jimfs
  [lickel]: https://github.com/lickel
  [liutikas]: https://github.com/liutikas
+ [mpawliszyn]: https://github.com/mpawliszyn
  [mpeyper]: https://github.com/mpeyper
  [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
  [okio_3_0_0]: https://square.github.io/okio/changelog/#version-300
@@ -1610,6 +1638,7 @@ Initial version.
  [sashaweiss-signal]: https://github.com/sashaweiss-signal
  [staktrace]: https://github.com/staktrace
  [swiftblogpost]: https://cashapp.github.io/2020-08-19/wire-support-for-swift-part-1
+ [tejasna]: https://github.com/tejasna
  [tikurahul]: https://github.com/tikurahul
  [traviscj]: https://github.com/traviscj
  [wire-customizing-output]: https://square.github.io/wire/wire_compiler/#customizing-output

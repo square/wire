@@ -1259,7 +1259,7 @@ class WirePluginTest {
 
     val fixtureRoot = File("src/test/projects/cache-relocation-1")
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
+      withArguments("-g", tmpFolder.newFolder("gradle-home-1").absolutePath, "generateProtos", "--build-cache", "--stacktrace", "--info").build()
     }
 
     assertThat(result.task(":generateProtos")).isNotNull()
@@ -1273,7 +1273,7 @@ class WirePluginTest {
 
     val relocatedRoot = File("src/test/projects/cache-relocation-2")
     val relocatedResult = gradleRunner.runFixture(relocatedRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
+      withArguments("-g", tmpFolder.newFolder("gradle-home-2").absolutePath, "generateProtos", "--build-cache", "--stacktrace", "--info").build()
     }
 
     assertThat(relocatedResult.task(":generateProtos")).isNotNull()
