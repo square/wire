@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Unreleased
+----------
+
+* In-development snapshots are now published to the Central Portal Snapshots repository at https://central.sonatype.com/repository/maven-snapshots/.
+
 Version 5.3.3
 ---------------------
 

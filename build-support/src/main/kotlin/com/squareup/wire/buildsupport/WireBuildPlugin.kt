@@ -317,7 +317,7 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
         // configure(KotlinJvm(javadocJar = Dokka("dokkaHtml"), sourcesJar = true))
       }
 
-      publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
+      publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
       val inMemoryKey = project.findProperty("signingInMemoryKey") as String?
       if (!inMemoryKey.isNullOrEmpty()) {
         signAllPublications()
