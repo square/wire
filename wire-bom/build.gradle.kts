@@ -25,9 +25,3 @@ dependencies {
     api(projects.wireSwiftGenerator)
   }
 }
-
-extensions.configure<PublishingExtension> {
-  publications.create("maven-java-platform", MavenPublication::class) {
-    from(project.components.getByName("javaPlatform"))
-  }
-}
