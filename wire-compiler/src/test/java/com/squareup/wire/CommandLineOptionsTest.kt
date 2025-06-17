@@ -21,6 +21,7 @@ import assertk.assertions.containsOnly
 import assertk.assertions.hasMessage
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import com.squareup.wire.kotlin.EnumMode
 import com.squareup.wire.schema.WireRun
 import java.io.File
 import java.io.FileOutputStream
@@ -153,6 +154,31 @@ class CommandLineOptionsTest {
     assertThat(compiler.modules).isEqualTo(
       mapOf("a" to WireRun.Module(), "b" to WireRun.Module(dependencies = setOf("a"))),
     )
+  }
+
+  @Test
+  fun kotlinEnumMode() {
+    var compiler = parseArgs("--kotlin_out=.")
+    assertThat(compiler.kotlinEnumMode).isEqualTo(EnumMode.ENUM_CLASS) // Default is ENUM_CLASS
+
+    compiler = parseArgs("--kotlin_out=.", "--kotlin_enum_mode=enum_class")
+    assertThat(compiler.kotlinEnumMode).isEqualTo(EnumMode.ENUM_CLASS)
+
+    compiler = parseArgs("--kotlin_out=.", "--kotlin_enum_mode=sealed_class")
+    assertThat(compiler.kotlinEnumMode).isEqualTo(EnumMode.SEALED_CLASS)
+
+    // Args should be case-insensitive
+    compiler = parseArgs("--kotlin_out=.", "--kotlin_enum_mode=ENUM_CLASS")
+    assertThat(compiler.kotlinEnumMode).isEqualTo(EnumMode.ENUM_CLASS)
+
+    compiler = parseArgs("--kotlin_out=.", "--kotlin_enum_mode=SEALED_CLASS")
+    assertThat(compiler.kotlinEnumMode).isEqualTo(EnumMode.SEALED_CLASS)
+
+    // Invalid values should throw an exception pointing to the EnumMode class and the invalid value
+    val e = assertFailsWith<IllegalArgumentException> {
+      parseArgs("--kotlin_out=.", "--kotlin_enum_mode=invalid")
+    }
+    assertThat(e).hasMessage("No enum constant com.squareup.wire.kotlin.EnumMode.INVALID")
   }
 
   private fun parseArgs(vararg args: String) = WireCompiler.forArgs(args = *args)
