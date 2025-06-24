@@ -51,7 +51,7 @@ abstract class SchemaHandler {
   abstract fun handle(type: Type, context: Context): Path?
 
   /**
-   * Returns the [Path]s of the files which [service] will have been generated into. Null if
+   * Returns the [Path]s of the files which [service] will have been generated into. Empty if
    * nothing has been generated.
    */
   abstract fun handle(service: Service, context: Context): List<Path>
