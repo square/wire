@@ -44,9 +44,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
-private lateinit var wireGroupId: String
-private lateinit var wireVersion: String
-
 // I cannot get the wireBuild extension to work in projects included via `includeBuild` within
 // `build-support`, so doing it here for now :sad:
 private val PROJECT_TO_PUBLISH = listOf(
@@ -73,9 +70,6 @@ class WireBuildPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
     libs = target.extensions.getByName("libs") as LibrariesForLibs
-
-    wireGroupId = target.property("GROUP") as String
-    wireVersion = target.property("VERSION_NAME") as String
 
     target.extensions.add(
       WireBuildExtension::class.java,
@@ -104,7 +98,8 @@ class WireBuildPlugin : Plugin<Project> {
     tasks.register("publishPluginToGradlePortalIfRelease") {
       // Snapshots cannot be released to the Gradle portal. And we don't want to release internal
       // square builds.
-      if (wireVersion.endsWith("-SNAPSHOT") || wireVersion.contains("square")) return@register
+      val version = version.toString()
+      if (version.endsWith("-SNAPSHOT") || "square" in version) return@register
       dependsOn(":wire-gradle-plugin:publishPlugins")
     }
   }
@@ -322,8 +317,6 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
       if (!inMemoryKey.isNullOrEmpty()) {
         signAllPublications()
       }
-
-      coordinates(wireGroupId, project.name, wireVersion)
 
       pom {
         name.set(project.name)
