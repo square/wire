@@ -18,6 +18,7 @@
 package com.squareup.wire
 
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEmpty
@@ -656,6 +657,42 @@ class WireCompilerTest {
 
     val outputs = arrayOf("com/squareup/wire/protos/kotlin/DeprecatedProto.kt")
     assertKotlinOutputs(outputs, ".java.interop")
+  }
+
+  @Test
+  fun testKotlinEnumModeEnum() {
+    val sources = arrayOf("same_name_enum.proto")
+    compileToKotlin(sources) // enums are generated as enum classes by default
+
+    val outputs = arrayOf(
+      "com/squareup/wire/protos/kotlin/MessageWithStatus.kt",
+      "com/squareup/wire/protos/kotlin/OtherMessageWithStatus.kt",
+      "com/squareup/wire/protos/kotlin/MessageUsingMultipleEnums.kt",
+    )
+    assertKotlinOutputs(outputs)
+
+    val messageWithStatusFile = fileSystem.read(testDir / "com/squareup/wire/protos/kotlin/MessageWithStatus.kt") { readUtf8() }
+    assertThat(messageWithStatusFile).contains("enum class Status")
+  }
+
+  @Test
+  fun testKotlinEnumModeSealed() {
+    val sources = arrayOf("same_name_enum.proto")
+    compileToKotlin(sources, "--kotlin_enum_mode=sealed_class")
+
+    val outputs = arrayOf(
+      "com/squareup/wire/protos/kotlin/MessageWithStatus.kt",
+      "com/squareup/wire/protos/kotlin/OtherMessageWithStatus.kt",
+      "com/squareup/wire/protos/kotlin/MessageUsingMultipleEnums.kt",
+    )
+
+    val filesAfter = paths
+    assertThat(filesAfter).size().isEqualTo(outputs.size)
+
+    val messageWithStatusFile = fileSystem.read(testDir / "com/squareup/wire/protos/kotlin/MessageWithStatus.kt") { readUtf8() }
+    assertThat(messageWithStatusFile).contains("sealed class Status")
+    assertThat(messageWithStatusFile).contains("data object A : Status(")
+    assertThat(messageWithStatusFile).contains("data class Unrecognized")
   }
 
   @Test
