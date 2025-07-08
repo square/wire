@@ -4,7 +4,22 @@ Change Log
 Unreleased
 ----------
 
+Version 5.3.4
+---------------------
+
+_2025-07-08_
+
+### Common
+
 * In-development snapshots are now published to the Central Portal Snapshots repository at https://central.sonatype.com/repository/maven-snapshots/.
+
+### Wire Compiler
+
+* Add Kotlin enum mode as a compiler arg (#3339 by [Justin Bisignano][JustinBis])
+
+### Swift
+
+* Mark generated enums with @objc (#3190 by [Dimitris Koutsogiorgas][dnkoutso])
 
 Version 5.3.3
 ---------------------
@@ -1627,6 +1642,7 @@ Initial version.
  [jimfs]: https://github.com/google/jimfs
  [lickel]: https://github.com/lickel
  [liutikas]: https://github.com/liutikas
+ [JustinBis]: https://github.com/JustinBis
  [mpawliszyn]: https://github.com/mpawliszyn
  [mpeyper]: https://github.com/mpeyper
  [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
