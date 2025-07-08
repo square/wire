@@ -72,6 +72,7 @@ extension MessageWithStatus : Codable {
  */
 extension MessageWithStatus {
 
+    @objc
     public enum Status : Int32, CaseIterable, Proto2Enum {
 
         case A = 1
