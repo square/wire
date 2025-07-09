@@ -4,6 +4,15 @@ Change Log
 Unreleased
 ----------
 
+Version 5.3.5
+---------------------
+
+_2025-07-09_
+
+### gRPC Client
+
+* Fix: use correct class loader for clients and builder (#3347 by [Stuart Douglas][stuartwdouglas])
+
 Version 5.3.4
 ---------------------
 
@@ -1643,6 +1652,7 @@ Initial version.
  [lickel]: https://github.com/lickel
  [liutikas]: https://github.com/liutikas
  [JustinBis]: https://github.com/JustinBis
+ [stuartwdouglas]: https://github.com/stuartwdouglas
  [mpawliszyn]: https://github.com/mpawliszyn
  [mpeyper]: https://github.com/mpeyper
  [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
