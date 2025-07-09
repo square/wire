@@ -107,7 +107,7 @@ private fun <M : Message<M, B>, B : Message.Builder<M, B>> getBuilderType(
   messageType: Class<M>,
 ): Class<B> {
   return runCatching {
-    Class.forName("${messageType.name}\$Builder") as Class<B>
+    Class.forName("${messageType.name}\$Builder", false, messageType.classLoader) as Class<B>
   }
     .getOrNull() ?: KotlinConstructorBuilder::class.java as Class<B>
 }

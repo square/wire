@@ -59,7 +59,7 @@ actual abstract class GrpcClient actual constructor() {
     val packageName = interfaceName.substring(0, simpleNameOffset)
     val interfaceSimpleName = interfaceName.substring(simpleNameOffset)
     val implementationName = "${packageName}Grpc$interfaceSimpleName"
-    return Class.forName(implementationName)
+    return Class.forName(implementationName, false, service.java.classLoader)
   }
 
   fun newBuilder(): Builder {
