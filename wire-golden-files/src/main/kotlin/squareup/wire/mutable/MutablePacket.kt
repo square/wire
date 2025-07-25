@@ -16,7 +16,6 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
-import com.squareup.wire.`internal`.immutableCopyOf
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Deprecated
@@ -38,17 +37,15 @@ public class MutablePacket(
     schemaIndex = 0,
   )
   public var header_: MutableHeader? = null,
-  payload: List<MutablePayload> = emptyList(),
-  override var unknownFields: ByteString = ByteString.EMPTY,
-) : Message<MutablePacket, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 2,
     adapter = "squareup.wire.mutable.MutablePayload#ADAPTER",
     label = WireField.Label.REPEATED,
     schemaIndex = 1,
   )
-  public var payload: List<MutablePayload> = immutableCopyOf("payload", payload)
-
+  public var payload: List<MutablePayload> = emptyList(),
+  override var unknownFields: ByteString = ByteString.EMPTY,
+) : Message<MutablePacket, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
