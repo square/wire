@@ -1251,12 +1251,17 @@ class KotlinGenerator private constructor(
         CodeBlock.of(if (buildersOnly) "builder.$fieldName" else fieldName)
       }
       field.isRepeated || field.isMap -> {
-        CodeBlock.of(
-          if (buildersOnly) "%M(%S, builder.%N)" else "%M(%S, %N)",
-          MemberName("com.squareup.wire.internal", "immutableCopyOf"),
-          fieldName,
-          fieldName,
-        )
+        if (mutableTypes) {
+          // For mutable types, don't bother using immutableCopyOf(...)
+          CodeBlock.of("%N", fieldName)
+        } else {
+          CodeBlock.of(
+            if (buildersOnly) "%M(%S, builder.%N)" else "%M(%S, %N)",
+            MemberName("com.squareup.wire.internal", "immutableCopyOf"),
+            fieldName,
+            fieldName,
+          )
+        }
       }
       !field.isRepeated && !field.isMap && field.isRequired && buildersOnly -> {
         CodeBlock.of("builder.%N!!", fieldName)
