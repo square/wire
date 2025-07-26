@@ -19,7 +19,6 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmStatic
-import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
@@ -53,17 +52,15 @@ public class MutablePayload(
     schemaIndex = 2,
   )
   public var type: Type? = null,
-  footers: List<String> = emptyList(),
-  override var unknownFields: ByteString = ByteString.EMPTY,
-) : Message<MutablePayload, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
     schemaIndex = 3,
   )
-  public var footers: List<String> = immutableCopyOf("footers", footers)
-
+  public var footers: List<String> = emptyList(),
+  override var unknownFields: ByteString = ByteString.EMPTY,
+) : Message<MutablePayload, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN,
