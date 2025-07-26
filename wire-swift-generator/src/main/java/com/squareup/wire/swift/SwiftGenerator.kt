@@ -626,7 +626,7 @@ class SwiftGenerator private constructor(
             addStatement("var %N: %T = %L", field.safeName, localType, initializer)
           }
           type.oneOfs.forEach { oneOf ->
-            val enumName = oneOfEnumNames.getValue(oneOf)
+            val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
             addStatement("var %N: %T = nil", oneOf.name, enumName.makeOptional())
           }
           if (type.declaredFieldsAndOneOfFields.isNotEmpty()) {
@@ -1063,7 +1063,7 @@ class SwiftGenerator private constructor(
     }
     if (includeOneOfs) {
       type.oneOfs.forEach { oneOf ->
-        val enumName = oneOfEnumNames.getValue(oneOf).makeOptional()
+        val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
         addParameter(
           ParameterSpec.builder(oneOf.name, enumName)
             .defaultValue("nil")
@@ -1360,7 +1360,7 @@ class SwiftGenerator private constructor(
     }
 
     type.oneOfs.forEach { oneOf ->
-      val enumName = oneOfEnumNames.getValue(oneOf)
+      val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
 
       addProperty(
         PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
@@ -1515,7 +1515,7 @@ class SwiftGenerator private constructor(
     }
 
     type.oneOfs.forEach { oneOf ->
-      val enumName = oneOfEnumNames.getValue(oneOf)
+      val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
 
       addProperty(
         PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
@@ -1560,7 +1560,7 @@ class SwiftGenerator private constructor(
     fileMembers: MutableList<FileMemberSpec>,
   ) {
     type.oneOfs.forEach { oneOf ->
-      val enumName = oneOfEnumNames.getValue(oneOf)
+      val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
 
       // TODO use a NameAllocator
       val writer = if (oneOf.fields.any { it.name == "protoWriter" }) "_protoWriter" else "protoWriter"
@@ -1647,6 +1647,27 @@ class SwiftGenerator private constructor(
           .build()
       }
     }
+  }
+
+  private fun oneOfSafeDeclaredTypeName(
+    oneOf: OneOf,
+    type: MessageType,
+    oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
+  ): DeclaredTypeName {
+    var currentType: ProtoType? = type.type
+
+    while (currentType != null) {
+      val simpleName = currentType.simpleName
+      if (oneOf.name.equals(simpleName, ignoreCase = true)) {
+        val oneOfTypeName = oneOfEnumNames.getValue(oneOf)
+        return oneOfTypeName.peerType("${oneOfTypeName.simpleName}_OneOf")
+      }
+
+      val enclosingName = currentType.enclosingTypeOrPackage ?: break
+      currentType = schema.getType(enclosingName)?.type
+    }
+
+    return oneOfEnumNames.getValue(oneOf)
   }
 
   private val ProtoType.encoding: String?
