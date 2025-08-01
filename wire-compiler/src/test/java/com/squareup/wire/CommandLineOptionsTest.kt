@@ -21,6 +21,7 @@ import assertk.assertions.containsOnly
 import assertk.assertions.hasMessage
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import com.squareup.wire.kotlin.EnumMode
 import com.squareup.wire.schema.WireRun
 import java.io.File
@@ -112,6 +113,9 @@ class CommandLineOptionsTest {
 
     compiler = parseArgs("--java_out=.", "--includes=com.example.Foo,com.example.Bar")
     assertThat(compiler.treeShakingRoots).containsExactly("com.example.Foo", "com.example.Bar")
+
+    compiler = parseArgs("--java_out=.", "--ignore_unused_roots_and_prunes")
+    assertThat(compiler.rejectUnusedRootsOrPrunes).isFalse()
   }
 
   @Test
