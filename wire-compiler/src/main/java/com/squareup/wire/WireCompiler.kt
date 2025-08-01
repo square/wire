@@ -128,6 +128,7 @@ class WireCompiler internal constructor(
   val sourceFileNames: List<String>,
   val treeShakingRoots: List<String>,
   val treeShakingRubbish: List<String>,
+  val rejectUnusedRootsOrPrunes: Boolean,
   val modules: Map<String, WireRun.Module>,
   val emitAndroid: Boolean,
   val emitAndroidAnnotations: Boolean,
@@ -230,6 +231,7 @@ class WireCompiler internal constructor(
       permitPackageCycles = permitPackageCycles,
       loadExhaustively = loadExhaustively,
       eventListeners = eventListenerFactoryClasses.map { newEventListenerFactory(it).create() },
+      rejectUnusedRootsOrPrunes = rejectUnusedRootsOrPrunes,
       opaqueTypes = opaqueTypes,
     )
 
@@ -301,6 +303,7 @@ class WireCompiler internal constructor(
     private const val KOTLIN_ENUM_MODE = "--kotlin_enum_mode="
     private const val CUSTOM_OPTION_FLAG = "--custom_option="
     private const val OPAQUE_TYPES_FLAG = "--opaque_types="
+    private const val IGNORE_UNUSED_ROOTS_AND_PRUNES = "--ignore_unused_roots_and_prunes"
     private const val KOTLIN_EXPLICIT_STREAMING_CALLS = "--kotlin_explicit_streaming_calls"
 
     @Throws(IOException::class)
@@ -369,6 +372,7 @@ class WireCompiler internal constructor(
       var kotlinExplicitStreamingCalls = false
       var dryRun = false
       val customOptions = mutableMapOf<String, String>()
+      var rejectUnusedRootsOrPrunes = true
       val opaqueTypes = mutableListOf<String>()
 
       for (arg in args) {
@@ -492,6 +496,7 @@ class WireCompiler internal constructor(
           arg == JAVA_INTEROP -> javaInterop = true
           arg == EMIT_PROTO_READER_32 -> emitProtoReader32 = true
           arg == KOTLIN_EXPLICIT_STREAMING_CALLS -> kotlinExplicitStreamingCalls = true
+          arg == IGNORE_UNUSED_ROOTS_AND_PRUNES -> rejectUnusedRootsOrPrunes = false
           arg.startsWith("--") -> throw IllegalArgumentException("Unknown argument '$arg'.")
           else -> sourceFileNames.add(arg)
         }
@@ -547,6 +552,7 @@ class WireCompiler internal constructor(
         eventListenerFactoryClasses = eventListenerFactoryClasses,
         customOptions = customOptions,
         opaqueTypes = opaqueTypes,
+        rejectUnusedRootsOrPrunes = rejectUnusedRootsOrPrunes,
         kotlinExplicitStreamingCalls = kotlinExplicitStreamingCalls,
       )
     }
