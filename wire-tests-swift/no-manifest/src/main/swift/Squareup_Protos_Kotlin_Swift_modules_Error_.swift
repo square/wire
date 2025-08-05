@@ -3,7 +3,7 @@
 import Wire
 
 @objc
-public enum Error_ : Int32, CaseIterable, Proto2Enum {
+public enum Squareup_Protos_Kotlin_Swift_modules_Error_ : Int32, CaseIterable, Proto2Enum {
 
     case UNKNOWN = 0
     case BAD_VALUE = 1
@@ -17,5 +17,5 @@ public enum Error_ : Int32, CaseIterable, Proto2Enum {
 
 }
 
-extension Error_ : Sendable {
+extension Squareup_Protos_Kotlin_Swift_modules_Error_ : Sendable {
 }

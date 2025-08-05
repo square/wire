@@ -7,7 +7,7 @@ public struct SwiftModuleTwoMessage {
 
     @ProtoDefaulted
     public var name: String?
-    public var order: module_one.SortOrder?
+    public var order: module_one.Squareup_Protos_Kotlin_Swift_modules_SortOrder?
     public var unknownFields: UnknownFields = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -48,13 +48,13 @@ extension SwiftModuleTwoMessage : Proto2Codable {
 
     public init(from protoReader: ProtoReader) throws {
         var name: String? = nil
-        var order: module_one.SortOrder? = nil
+        var order: module_one.Squareup_Protos_Kotlin_Swift_modules_SortOrder? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: name = try protoReader.decode(String.self)
-            case 2: order = try protoReader.decode(module_one.SortOrder.self)
+            case 2: order = try protoReader.decode(module_one.Squareup_Protos_Kotlin_Swift_modules_SortOrder.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -78,7 +78,7 @@ extension SwiftModuleTwoMessage : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self._name.wrappedValue = try container.decodeIfPresent(String.self, forKey: "name")
-        self.order = try container.decodeIfPresent(module_one.SortOrder.self, forKey: "order")
+        self.order = try container.decodeIfPresent(module_one.Squareup_Protos_Kotlin_Swift_modules_SortOrder.self, forKey: "order")
     }
 
     public func encode(to encoder: Encoder) throws {
