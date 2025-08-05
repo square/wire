@@ -1941,11 +1941,7 @@ class SwiftGenerator private constructor(
                 safeName
               }
               
-              if (moduleName.isNotEmpty()) {
-                DeclaredTypeName.qualifiedTypeName("$moduleName.$qualifiedName")
-              } else {
-                DeclaredTypeName.qualifiedTypeName(".$qualifiedName")
-              }
+              DeclaredTypeName.qualifiedTypeName("$moduleName.$qualifiedName")
             } else {
               DeclaredTypeName(moduleName, safeName)
             }
