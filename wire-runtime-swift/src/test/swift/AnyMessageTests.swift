@@ -19,7 +19,7 @@ import XCTest
 
 final class AnyMessageTests: XCTestCase {
     func testPackingAny() throws {
-        let data = Data(json_data: "")
+        let data = Squareup_Protos_Person_Data(json_data: "")
         let person = Person(name: "foo bar", id: 12345, data: data)
         let any = try AnyMessage.pack(person)
         XCTAssertEqual(any.typeURL, Person.protoMessageTypeURL())
@@ -27,14 +27,14 @@ final class AnyMessageTests: XCTestCase {
     }
 
     func testUnpackingAnyToCorrectType() throws {
-        let data = Data(json_data: "")
+        let data = Squareup_Protos_Person_Data(json_data: "")
         let person = Person(name: "foo bar", id: 12345, data: data)
         let any = try AnyMessage.pack(person)
         XCTAssertEqual(person, try any.unpack(Person.self))
     }
 
     func testUnpackingAnyToIncorrectTypeThrows() throws {
-        let data = Data(json_data: "")
+        let data = Squareup_Protos_Person_Data(json_data: "")
         let person = Person(name: "foo bar", id: 12345, data: data)
         let any = try AnyMessage.pack(person)
         XCTAssertThrowsError(try any.unpack(Parent.self)) { error in
@@ -43,7 +43,7 @@ final class AnyMessageTests: XCTestCase {
     }
 
     func testSerializingAndDeserializingAny() throws {
-        let data = Data(json_data: "")
+        let data = Squareup_Protos_Person_Data(json_data: "")
         let person = Person(name: "foo bar", id: 12345, data: data)
         let any = try AnyMessage.pack(person)
         let anyData = try ProtoEncoder().encode(any)

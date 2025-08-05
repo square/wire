@@ -235,7 +235,7 @@ final class ProtoWriterTests: XCTestCase {
 
     func testEncodeMessage() throws {
         let writer = ProtoWriter()
-        let data = Data(json_data: "12")
+        let data = Squareup_Protos_Person_Data(json_data: "12")
         let message = Person(name: "Luke", id: 5, data: data)
         try writer.encode(tag: 1, value: message)
 
@@ -617,7 +617,7 @@ final class ProtoWriterTests: XCTestCase {
 
     func testEncodePackedRepeatedProto2Default() throws {
         let writer = ProtoWriter()
-        let data = Data(json_data: "12")
+        let data = Squareup_Protos_Person_Data(json_data: "12")
         let person = Person(name: "name", id: 1, data: data) {
             $0.email = "email"
             $0.ids = [1, 2, 3]

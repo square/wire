@@ -20,7 +20,7 @@ import XCTest
 final class RoundTripTests: XCTestCase {
 
     func testPersonEncodeDecode() throws {
-        let personData = Data(json_data: "")
+        let personData = Squareup_Protos_Person_Data(json_data: "")
         let person = Person(name: "Luke Skywalker", id: 42, data: personData) {
             $0.email = "luke@skywalker.net"
             $0.phone = [

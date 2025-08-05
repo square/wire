@@ -137,7 +137,7 @@ final class ProtoReaderTests: XCTestCase {
               3132     // UTF-8 Value '12'
         """)!
         try test(data: data) { reader in
-            let data = Data(json_data: "12")
+            let data = Squareup_Protos_Person_Data(json_data: "12")
             let message = Person(name: "Luke", id: 5, data: data)
             XCTAssertEqual(try reader.decode(Person.self), message)
         }

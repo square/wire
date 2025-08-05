@@ -28,7 +28,7 @@ final class ExtensibleTests: XCTestCase {
             $0.ext_bytes = Foundation.Data("test".utf8)
             $0.ext_int32 = -4
             $0.ext_uint32 = 42
-            $0.ext_person = Person(name: "Someone", id: 1, data: Data(json_data: ""))
+            $0.ext_person = Person(name: "Someone", id: 1, data: Squareup_Protos_Person_Data(json_data: ""))
             $0.ext_phone_type = .MOBILE
         }
         let encoder = ProtoEncoder()
@@ -101,7 +101,7 @@ final class ExtensibleTests: XCTestCase {
             $0.rep_ext_double = [3.14159, 1.41421]
             $0.rep_ext_string = ["one", "two", "three"]
             $0.rep_ext_bytes = [Foundation.Data("one".utf8), Foundation.Data("two".utf8)]
-            $0.rep_ext_person = [Person(name: "First Person", id: 1, data: Data(json_data: "")), Person(name: "Second Person", id: 1, data: Data(json_data: ""))]
+            $0.rep_ext_person = [Person(name: "First Person", id: 1, data: Squareup_Protos_Person_Data(json_data: "")), Person(name: "Second Person", id: 1, data: Squareup_Protos_Person_Data(json_data: ""))]
             $0.rep_ext_phone_type = [.MOBILE, .HOME]
         }
         let encoder = ProtoEncoder()
@@ -125,7 +125,7 @@ final class ExtensibleTests: XCTestCase {
         XCTAssertEqual(message.rep_ext_double, [3.14159, 1.41421])
         XCTAssertEqual(message.rep_ext_string, ["one", "two", "three"])
         XCTAssertEqual(message.rep_ext_bytes, [Foundation.Data("one".utf8), Foundation.Data("two".utf8)])
-        XCTAssertEqual(message.rep_ext_person, [Person(name: "First Person", id: 1, data: Data(json_data: "")), Person(name: "Second Person", id: 1, data: Data(json_data: ""))])
+        XCTAssertEqual(message.rep_ext_person, [Person(name: "First Person", id: 1, data: Squareup_Protos_Person_Data(json_data: "")), Person(name: "Second Person", id: 1, data: Squareup_Protos_Person_Data(json_data: ""))])
         XCTAssertEqual(message.rep_ext_phone_type, [.MOBILE, .HOME])
     }
 
