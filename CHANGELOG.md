@@ -4,6 +4,24 @@ Change Log
 Unreleased
 ----------
 
+Version 5.3.6
+---------------------
+
+_2025-08-05_
+
+### CLI
+
+* New CLI option `--ignore_unused_roots_and_prunes` (#3354)
+
+### JVM
+
+* Fix: Handle negative hexadecimal in default values (#3355)
+* Optimization: Avoid copying of repeated and map types when mutableTypes are being used (#3352 by [Rahul Ravikumar][tikurahul])
+
+### Swift
+
+* Fix: Properly disambiguate OneOf enum if it has the same name as enclosing type (#3350 by [Dimitris Koutsogiorgas][dnkoutso])
+
 Version 5.3.5
 ---------------------
 
