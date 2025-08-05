@@ -119,10 +119,15 @@ fun optionValueToInt(value: Any?): Int {
   if (value == null) return 0
 
   val string = value.toString()
+  val negativeSign = if (string.startsWith('-')) { "-" } else { "" }
 
   return when {
     // Hexadecimal.
-    string.startsWith("0x") || string.startsWith("0X") -> string.substring("0x".length).toInt(16)
+    string.startsWith("${negativeSign}0x", ignoreCase = true) ->
+      buildString {
+        append(negativeSign)
+        append(string.substring("${negativeSign}0x".length))
+      }.toInt(16)
 
     // Octal.
     string.startsWith("0") && string != "0" -> error("Octal literal unsupported: $value")
@@ -136,10 +141,15 @@ fun optionValueToLong(value: Any?): Long {
   if (value == null) return 0L
 
   val string = value.toString()
+  val negativeSign = if (string.startsWith('-')) { "-" } else { "" }
 
   return when {
     // Hexadecimal.
-    string.startsWith("0x") || string.startsWith("0X") -> string.substring("0x".length).toLong(16)
+    string.startsWith("${negativeSign}0x", ignoreCase = true) ->
+      buildString {
+        append(negativeSign)
+        append(string.substring("${negativeSign}0x".length))
+      }.toLong(16)
 
     // Octal.
     string.startsWith("0") && string != "0" -> error("Octal literal unsupported: $value")

@@ -136,6 +136,8 @@ class KotlinGeneratorTest {
         |  optional double n = 14 [default = -inf];
         |  optional double o = 15 [default = nan];
         |  optional double p = 16 [default = -nan];
+        |  optional int32 q = 17 [default = -0x80000000];
+        |  optional int64 r = 18 [default = -0x7FFFFFFF];
         |}
         """.trimMargin(),
       )
@@ -160,6 +162,8 @@ class KotlinGeneratorTest {
     assertThat(code).contains("const val DEFAULT_N: Double = Double.NEGATIVE_INFINITY")
     assertThat(code).contains("const val DEFAULT_O: Double = Double.NaN")
     assertThat(code).contains("const val DEFAULT_P: Double = Double.NaN")
+    assertThat(code).contains("const val DEFAULT_Q: Int = Int.MIN_VALUE")
+    assertThat(code).contains("const val DEFAULT_R: Long = -2_147_483_647L")
   }
 
   @Test fun nameAllocatorIsUsed() {

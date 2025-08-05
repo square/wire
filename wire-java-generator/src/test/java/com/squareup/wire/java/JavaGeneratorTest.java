@@ -502,6 +502,8 @@ public final class JavaGeneratorTest {
                     + "  optional double f = 6 [default = -inf ];\n"
                     + "  optional double g = 7 [default = nan ];\n"
                     + "  optional double h = 8 [default = -nan ];\n"
+                    + "  optional int32 i = 9 [default = -0x80000000\n];\n"
+                    + "  optional int64 j = 10 [default = -0x7FFFFFFF\n];\n"
                     + "}\n")
             .build();
     String code = new JavaWithProfilesGenerator(schema).generateJava("Message");
@@ -513,6 +515,8 @@ public final class JavaGeneratorTest {
     assertThat(code).contains("  public static final Double DEFAULT_F = Double.NEGATIVE_INFINITY;");
     assertThat(code).contains("  public static final Double DEFAULT_G = Double.NaN;");
     assertThat(code).contains("  public static final Double DEFAULT_H = Double.NaN;");
+    assertThat(code).contains("  public static final Integer DEFAULT_I = -2147483648;");
+    assertThat(code).contains("  public static final Long DEFAULT_J = -2147483647L;");
   }
 
   @Test
