@@ -529,6 +529,7 @@ val generateSwiftProto2Tests by tasks.creating(JavaExec::class) {
     "recursive_map.proto",
     "same_name_enum.proto",
     "swift_edge_cases.proto",
+    "swift_all_wrappers.proto",
     "to_string.proto",
     "unknown_fields.proto"
   )
