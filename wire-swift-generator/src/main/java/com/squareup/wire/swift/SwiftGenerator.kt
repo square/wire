@@ -1892,6 +1892,28 @@ class SwiftGenerator private constructor(
       existingTypeModuleName: Map<ProtoType, String> = emptyMap(),
     ): SwiftGenerator {
       val nameToTypeName = mutableMapOf<ProtoType, DeclaredTypeName>()
+      // Track simple names to detect collisions
+      val simpleNameToProtoTypes = mutableMapOf<String, MutableList<ProtoType>>()
+
+      // First pass: collect all types and track name collisions
+      fun collectTypes(enclosingClassName: DeclaredTypeName?, types: List<Type>) {
+        for (type in types) {
+          val protoType = type.type
+          if (enclosingClassName == null) {
+            // Only track top-level types for collision detection
+            val safeName = protoType.safeName
+            simpleNameToProtoTypes.getOrPut(safeName) { mutableListOf() }.add(protoType)
+          }
+          collectTypes(if (enclosingClassName != null) enclosingClassName.nestedType(protoType.safeName) else null, type.nestedTypes)
+        }
+      }
+
+      for (protoFile in schema.protoFiles) {
+        collectTypes(null, protoFile.types)
+      }
+
+      // Determine which types have name collisions
+      val conflictingNames = simpleNameToProtoTypes.filter { it.value.size > 1 }.keys
 
       fun putAll(enclosingClassName: DeclaredTypeName?, types: List<Type>) {
         for (type in types) {
@@ -1901,13 +1923,29 @@ class SwiftGenerator private constructor(
             enclosingClassName.nestedType(protoType.safeName, alwaysQualify = true)
           } else {
             val safeName = protoType.safeName
-
             val moduleName = existingTypeModuleName[protoType] ?: ""
-            // In some cases a proto declares a message that collides with built-in Foundation and Swift stdlib
-            // types. For those we always qualify the type name to disambiguate.
-
-            if (protoType.simpleName in SWIFT_COMMON_TYPES) {
-              DeclaredTypeName.qualifiedTypeName("$moduleName.$safeName")
+            
+            // Check if this type name conflicts with others or Swift built-in types
+            val hasNameCollision = safeName in conflictingNames || protoType.simpleName in SWIFT_COMMON_TYPES
+            
+            if (hasNameCollision) {
+              // Use package-qualified name to avoid collision
+              val packagePrefix = protoType.enclosingTypeOrPackage
+                ?.split('.')
+                ?.joinToString("_") { it.replaceFirstChar(Char::uppercaseChar) }
+                ?: ""
+              
+              val qualifiedName = if (packagePrefix.isNotEmpty()) {
+                "${packagePrefix}_$safeName"
+              } else {
+                safeName
+              }
+              
+              if (moduleName.isNotEmpty()) {
+                DeclaredTypeName.qualifiedTypeName("$moduleName.$qualifiedName")
+              } else {
+                DeclaredTypeName.qualifiedTypeName(".$qualifiedName")
+              }
             } else {
               DeclaredTypeName(moduleName, safeName)
             }
