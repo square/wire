@@ -1894,6 +1894,10 @@ class SwiftGenerator private constructor(
       val nameToTypeName = mutableMapOf<ProtoType, DeclaredTypeName>()
 
       fun putAll(enclosingClassName: DeclaredTypeName?, types: List<Type>) {
+        val nameToModules: Map<String, List<String>> = existingTypeModuleName
+          .entries
+          .groupBy({ it.key.simpleName }, { it.value })
+
         for (type in types) {
           val protoType = type.type
 
@@ -1903,10 +1907,13 @@ class SwiftGenerator private constructor(
             val safeName = protoType.safeName
 
             val moduleName = existingTypeModuleName[protoType] ?: ""
-            // In some cases a proto declares a message that collides with built-in Foundation and Swift stdlib
-            // types. For those we always qualify the type name to disambiguate.
+            val isCommonSwiftType = protoType.simpleName in SWIFT_COMMON_TYPES
+            val isInMultipleModules = (nameToModules[protoType.simpleName]?.size ?: 0) > 1
 
-            if (protoType.simpleName in SWIFT_COMMON_TYPES) {
+            // In some cases, a proto declares a message that collides with built-in Foundation and
+            // Swift stdlib types or the same name of a type exists across multiple modules.
+            // For those, we always qualify the type name to disambiguate.
+            if (isCommonSwiftType || isInMultipleModules) {
               DeclaredTypeName.qualifiedTypeName("$moduleName.$safeName")
             } else {
               DeclaredTypeName(moduleName, safeName)
