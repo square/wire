@@ -45,20 +45,40 @@ internal class DirectedAcyclicGraph<N>(
   }
 
   fun topologicalOrder(): List<N> {
-    val seen = LinkedHashSet<N>() // Insertion order is important to produce the final list!
-    val queue = ArrayDeque<N>().apply { addAll(seeds) }
-    while (queue.isNotEmpty()) {
-      val currentName = queue.removeFirst()
-      val currentDependencies = edges(currentName).toList()
-      if (seen.containsAll(currentDependencies)) {
-        seen += currentName
-        queue += incomingEdges(currentName)
-      } else {
-        // All dependencies have not been seen so move to the back of the line to try again later.
-        queue += currentName
+    val incomingEdges = mutableMapOf<N, Int>()
+    for (vertex in nodes) {
+      if (vertex !in incomingEdges) {
+        incomingEdges[vertex] = 0
+      }
+      for (edge in edges(vertex)) {
+        incomingEdges[edge] = (incomingEdges[edge] ?: 0) + 1
       }
     }
-    return seen.toList()
+
+    val queue = ArrayDeque<N>()
+    for ((vertex, edges) in incomingEdges) {
+      if (edges == 0) queue += vertex
+    }
+
+    val result = mutableListOf<N>()
+
+    while (queue.isNotEmpty()) {
+      val vertex = queue.removeFirst()
+      result += vertex
+
+      for (edge in edges(vertex)) {
+        incomingEdges[edge] = (incomingEdges[edge] ?: 0) - 1
+        if (incomingEdges[edge] == 0) {
+          queue += edge
+        }
+      }
+    }
+
+    check(result.size == incomingEdges.size) {
+      "Graph contains a cycle, topological sort not possible!"
+    }
+
+    return result
   }
 
   fun transitiveNodes(node: N): Set<N> {
