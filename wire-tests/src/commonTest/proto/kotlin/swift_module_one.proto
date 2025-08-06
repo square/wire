@@ -17,6 +17,9 @@ syntax = "proto2";
 
 package squareup.protos.kotlin.swift_modules;
 
+import "swift_module_address.proto";
+import "swift_module_location.proto";
+
 enum SwiftModuleOneEnum {
   DO_NOT_USE = 0;
   ONE = 1;
@@ -33,4 +36,12 @@ message SwiftModuleOneMessage {
   required string name = 1;
 
   extensions 1000 to 1999;
+}
+
+message SwiftModuleOneAmbiguousMessage {
+  optional string name = 1;
+
+  optional squareup.protos.kotlin.swift_modules.address.Address address = 2;
+
+  optional squareup.protos.kotlin.swift_modules.location.Location location = 3;
 }

@@ -14,14 +14,26 @@
 # limitations under the License.
 #/
 
-# Used between swift_module_one.proto, swift_module_two.proto and swift_module_three.proto
+# Used between swift_module_one.proto, swift_module_two.proto and swift_module_three.proto as well
+# as swift_module_address.proto and swift_module_location.proto.
 
 ---
+module_address:
+  roots:
+    - squareup.protos.kotlin.swift_modules.address.Address
+module_location:
+  roots:
+    - squareup.protos.kotlin.swift_modules.location.Location
+    - squareup.protos.kotlin.swift_modules.location.Address
 module_one:
   roots:
   - squareup.protos.kotlin.swift_modules.SwiftModuleOneEnum
   - squareup.protos.kotlin.swift_modules.SwiftModuleOneMessage
+  - squareup.protos.kotlin.swift_modules.SwiftModuleOneAmbiguousMessage
   - squareup.protos.kotlin.swift_modules.SortOrder
+  dependencies:
+    - module_address
+    - module_location
 module_two:
   roots:
   - squareup.protos.kotlin.swift_modules.SwiftModuleTwoMessage

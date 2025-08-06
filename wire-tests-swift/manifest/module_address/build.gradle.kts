@@ -8,11 +8,9 @@ library {
   sourceCompatibility = SwiftVersion.SWIFT5
   dependencies {
     api(projects.wireRuntimeSwift)
-    implementation(projects.wireTestsSwift.manifest.moduleAddress)
-    implementation(projects.wireTestsSwift.manifest.moduleLocation)
   }
 
-  module.set("module_one")
+  module.set("module_address")
 
   source.from(file("."))
 }
