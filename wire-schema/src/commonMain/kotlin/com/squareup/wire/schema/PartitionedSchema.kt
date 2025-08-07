@@ -34,12 +34,29 @@ internal class PartitionedSchema(
   )
 }
 
+internal fun computeDepths(modules: Map<String, Module>): Map<String, Int> {
+  val memo = mutableMapOf<String, Int>()
+
+  fun dfs(name: String): Int {
+    memo[name]?.let { return it }
+    val depth = 1 + (modules.getValue(name).dependencies.maxOfOrNull { dfs(it) } ?: 0)
+    memo[name] = depth
+    return depth
+  }
+
+  return modules.keys.associateWith { dfs(it) }
+}
+
 internal fun Schema.partition(modules: Map<String, Module>): PartitionedSchema {
   val moduleGraph = DirectedAcyclicGraph(modules.keys) { modules.getValue(it).dependencies }
 
   val errors = mutableListOf<String>()
   val partitions = mutableMapOf<String, Partition>()
-  for (moduleName in moduleGraph.topologicalOrder()) {
+  val topoGraph = moduleGraph.topologicalOrder()
+  val depths = computeDepths(modules)
+  val ordered = topoGraph.sortedBy { depths.getValue(it) }
+
+  for (moduleName in ordered) {
     val module = modules.getValue(moduleName)
 
     val upstreamTypes = buildMap {
