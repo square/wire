@@ -4,6 +4,16 @@ Change Log
 Unreleased
 ----------
 
+Version 5.3.7
+---------------------
+
+_2025-08-07_
+
+### Swift
+
+* Correctly disambiguate types that exist across multiple modules (#3358 by [Dimitris Koutsogiorgas][dnkoutso])
+* Improve performance of topological sort algorithm for partitions (#3359 by [Dimitris Koutsogiorgas][dnkoutso])
+
 Version 5.3.6
 ---------------------
 
