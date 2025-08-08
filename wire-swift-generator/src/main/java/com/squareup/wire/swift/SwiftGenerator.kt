@@ -910,11 +910,14 @@ class SwiftGenerator private constructor(
 
                     val typeName = field.typeName.makeNonOptional()
 
+                    val safeName = field.safeName
+                    val fieldName = if (safeName == "self") "self_" else safeName
+
                     if (index == 0) {
                       beginControlFlow(
                         "if",
                         "let %1N = try container.decodeIfPresent(%2T.self, forKey: %3S)",
-                        field.safeName,
+                        fieldName,
                         typeName,
                         keyName,
                       )
@@ -922,12 +925,12 @@ class SwiftGenerator private constructor(
                       nextControlFlow(
                         "else if",
                         "let %1N = try container.decodeIfPresent(%2T.self, forKey: %3S)",
-                        field.safeName,
+                        fieldName,
                         typeName,
                         keyName,
                       )
                     }
-                    addStatement("self.%1N = .%2N(%2N)", oneOf.name, field.safeName)
+                    addStatement("self.%1N = .%2N(%3N)", oneOf.name, field.safeName, fieldName)
                   }
                   nextControlFlow("else", "")
                   addStatement("self.%N = nil", oneOf.name)
@@ -1803,6 +1806,7 @@ class SwiftGenerator private constructor(
         return when (this.simpleName) {
           "Type" -> "Type_"
           "Error" -> "Error_"
+          "Self" -> "Self_"
           else -> this.simpleName
         }
       }
