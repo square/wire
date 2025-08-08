@@ -4,6 +4,15 @@ Change Log
 Unreleased
 ----------
 
+Version 5.3.8
+---------------------
+
+_2025-08-08_
+
+### Swift
+
+* Fix edge case for oneof field named `self` (#3360 by [Dimitris Koutsogiorgas][dnkoutso])
+
 Version 5.3.7
 ---------------------
 
