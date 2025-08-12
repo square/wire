@@ -2,7 +2,6 @@
 // Source: squareup.protos.kotlin.swift_modules.Error in swift_edge_cases.proto
 import Wire
 
-@objc
 public enum Error_ : Int32, CaseIterable, Proto2Enum {
 
     case UNKNOWN = 0

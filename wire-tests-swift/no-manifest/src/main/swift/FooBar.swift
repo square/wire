@@ -223,7 +223,6 @@ extension FooBar {
 
     }
 
-    @objc
     public enum FooBarBazEnum : Int32, CaseIterable, Proto2Enum {
 
         case FOO = 1

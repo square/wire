@@ -142,7 +142,6 @@ extension Person {
     /**
      * Represents the type of the phone number: mobile, home or work.
      */
-    @objc
     public enum PhoneType : Int32, CaseIterable, Proto2Enum {
 
         case MOBILE = 0

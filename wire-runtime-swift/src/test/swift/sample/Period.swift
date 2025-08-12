@@ -2,7 +2,6 @@
 // Source: squareup.geology.Period in squareup/geology/period.proto
 import Wire
 
-@objc
 public enum Period : Int32, CaseIterable, Proto2Enum {
 
     /**
