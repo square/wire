@@ -2,7 +2,6 @@
 // Source: squareup.protos.kotlin.unknownfields.EnumVersionOne in unknown_fields.proto
 import Wire
 
-@objc
 public enum EnumVersionOne : Int32, CaseIterable, Proto2Enum {
 
     case SHREK_V1 = 1

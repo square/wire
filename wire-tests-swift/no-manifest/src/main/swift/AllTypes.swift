@@ -1940,7 +1940,6 @@ extension AllTypes : Codable {
  */
 extension AllTypes {
 
-    @objc
     public enum NestedEnum : Int32, CaseIterable, Proto2Enum {
 
         case UNKNOWN = 0

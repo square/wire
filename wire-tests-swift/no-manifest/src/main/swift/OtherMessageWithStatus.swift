@@ -72,7 +72,6 @@ extension OtherMessageWithStatus : Codable {
  */
 extension OtherMessageWithStatus {
 
-    @objc
     public enum Status : Int32, CaseIterable, Proto2Enum {
 
         case A = 1

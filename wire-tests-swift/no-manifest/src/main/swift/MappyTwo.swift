@@ -118,7 +118,6 @@ extension MappyTwo : Codable {
  */
 extension MappyTwo {
 
-    @objc
     public enum ValueEnum : Int32, CaseIterable, Proto2Enum {
 
         case DEFAULT = 0

@@ -5,7 +5,6 @@ import Wire
 /**
  * Collides with Foundation.SortOrder
  */
-@objc
 public enum SortOrder : Int32, CaseIterable, Proto2Enum {
 
     case DESC = 0
