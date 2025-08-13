@@ -4,7 +4,7 @@ Change Log
 Unreleased
 ----------
 
-Version 5.3.9
+Version 5.3.10
 ---------------------
 
 _2025-08-13_
@@ -13,7 +13,7 @@ _2025-08-13_
 
 * Breaking: revert "mark generated enums with `@objc`" (#3361 by [Dimitris Koutsogiorgas][dnkoutso])
 
-Version 5.3.8
+Version 5.3.8 / 5.3.9
 ---------------------
 
 _2025-08-08_
