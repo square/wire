@@ -97,6 +97,20 @@ class WirePluginTest {
   }
 
   @Test
+  fun noSourceNoTargetNoError() {
+    val fixtureRoot = File("src/test/projects/no-source-no-target-project")
+
+    gradleRunner.runFixture(fixtureRoot) { build() }
+  }
+
+  @Test
+  fun sourceWithNoTargetDoesError() {
+    val fixtureRoot = File("src/test/projects/source-but-no-target-project")
+
+    gradleRunner.runFixture(fixtureRoot) { build() }
+  }
+
+  @Test
   fun sourcePathDirDoesNotExistButProtoPathDoes() {
     val fixtureRoot = File("src/test/projects/sourcepath-nonexistent-srcdir-with-protopath")
 
