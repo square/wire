@@ -43,6 +43,7 @@ message Screen {
 
   oneof view {
     string view_oneof_string = 5;
+    string container = 6;
   }
 
   message Self {}

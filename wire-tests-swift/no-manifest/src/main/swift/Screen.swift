@@ -56,6 +56,7 @@ extension Screen : Proto2Codable {
             case 3: screen = .screen_oneof_sub_message(try protoReader.decode(Screen.SubMessage.self))
             case 4: screen = .`self`(try protoReader.decode(Screen.Self_.self))
             case 5: view = .view_oneof_string(try protoReader.decode(String.self))
+            case 6: view = .container(try protoReader.decode(String.self))
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -81,46 +82,49 @@ extension Screen : Proto2Codable {
 extension Screen : Codable {
 
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        if let screen_oneof_string = try container.decodeIfPresent(String.self, forKey: "screenOneofString") {
+        let _container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        if let screen_oneof_string = try _container.decodeIfPresent(String.self, forKey: "screenOneofString") {
             self.screen = .screen_oneof_string(screen_oneof_string)
-        } else if let screen_oneof_string = try container.decodeIfPresent(String.self, forKey: "screen_oneof_string") {
+        } else if let screen_oneof_string = try _container.decodeIfPresent(String.self, forKey: "screen_oneof_string") {
             self.screen = .screen_oneof_string(screen_oneof_string)
-        } else if let screen_oneof_int32 = try container.decodeIfPresent(Int32.self, forKey: "screenOneofInt32") {
+        } else if let screen_oneof_int32 = try _container.decodeIfPresent(Int32.self, forKey: "screenOneofInt32") {
             self.screen = .screen_oneof_int32(screen_oneof_int32)
-        } else if let screen_oneof_int32 = try container.decodeIfPresent(Int32.self, forKey: "screen_oneof_int32") {
+        } else if let screen_oneof_int32 = try _container.decodeIfPresent(Int32.self, forKey: "screen_oneof_int32") {
             self.screen = .screen_oneof_int32(screen_oneof_int32)
-        } else if let screen_oneof_sub_message = try container.decodeIfPresent(Screen.SubMessage.self, forKey: "screenOneofSubMessage") {
+        } else if let screen_oneof_sub_message = try _container.decodeIfPresent(Screen.SubMessage.self, forKey: "screenOneofSubMessage") {
             self.screen = .screen_oneof_sub_message(screen_oneof_sub_message)
-        } else if let screen_oneof_sub_message = try container.decodeIfPresent(Screen.SubMessage.self, forKey: "screen_oneof_sub_message") {
+        } else if let screen_oneof_sub_message = try _container.decodeIfPresent(Screen.SubMessage.self, forKey: "screen_oneof_sub_message") {
             self.screen = .screen_oneof_sub_message(screen_oneof_sub_message)
-        } else if let self_ = try container.decodeIfPresent(Screen.Self_.self, forKey: "self") {
+        } else if let self_ = try _container.decodeIfPresent(Screen.Self_.self, forKey: "self") {
             self.screen = .`self`(self_)
         } else {
             self.screen = nil
         }
-        if let view_oneof_string = try container.decodeIfPresent(String.self, forKey: "viewOneofString") {
+        if let view_oneof_string = try _container.decodeIfPresent(String.self, forKey: "viewOneofString") {
             self.view = .view_oneof_string(view_oneof_string)
-        } else if let view_oneof_string = try container.decodeIfPresent(String.self, forKey: "view_oneof_string") {
+        } else if let view_oneof_string = try _container.decodeIfPresent(String.self, forKey: "view_oneof_string") {
             self.view = .view_oneof_string(view_oneof_string)
+        } else if let container = try _container.decodeIfPresent(String.self, forKey: "container") {
+            self.view = .container(container)
         } else {
             self.view = nil
         }
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        var _container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
 
         switch self.screen {
-        case .screen_oneof_string(let screen_oneof_string): try container.encode(screen_oneof_string, forKey: preferCamelCase ? "screenOneofString" : "screen_oneof_string")
-        case .screen_oneof_int32(let screen_oneof_int32): try container.encode(screen_oneof_int32, forKey: preferCamelCase ? "screenOneofInt32" : "screen_oneof_int32")
-        case .screen_oneof_sub_message(let screen_oneof_sub_message): try container.encode(screen_oneof_sub_message, forKey: preferCamelCase ? "screenOneofSubMessage" : "screen_oneof_sub_message")
-        case .`self`(let `self`): try container.encode(`self`, forKey: "self")
+        case .screen_oneof_string(let screen_oneof_string): try _container.encode(screen_oneof_string, forKey: preferCamelCase ? "screenOneofString" : "screen_oneof_string")
+        case .screen_oneof_int32(let screen_oneof_int32): try _container.encode(screen_oneof_int32, forKey: preferCamelCase ? "screenOneofInt32" : "screen_oneof_int32")
+        case .screen_oneof_sub_message(let screen_oneof_sub_message): try _container.encode(screen_oneof_sub_message, forKey: preferCamelCase ? "screenOneofSubMessage" : "screen_oneof_sub_message")
+        case .`self`(let `self`): try _container.encode(`self`, forKey: "self")
         case Optional.none: break
         }
         switch self.view {
-        case .view_oneof_string(let view_oneof_string): try container.encode(view_oneof_string, forKey: preferCamelCase ? "viewOneofString" : "view_oneof_string")
+        case .view_oneof_string(let view_oneof_string): try _container.encode(view_oneof_string, forKey: preferCamelCase ? "viewOneofString" : "view_oneof_string")
+        case .container(let container): try _container.encode(container, forKey: "container")
         case Optional.none: break
         }
     }
@@ -154,10 +158,12 @@ extension Screen {
     public enum View {
 
         case view_oneof_string(String)
+        case container(String)
 
         fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
             case .view_oneof_string(let view_oneof_string): try protoWriter.encode(tag: 5, value: view_oneof_string)
+            case .container(let container): try protoWriter.encode(tag: 6, value: container)
             }
         }
 

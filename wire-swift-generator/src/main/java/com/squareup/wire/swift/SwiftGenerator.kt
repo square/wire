@@ -849,12 +849,15 @@ class SwiftGenerator private constructor(
 
         // We cannot rely upon built-in Codable support since we need to support multiple keys.
         if (type.declaredFieldsAndOneOfFields.isNotEmpty()) {
+          // check for name collisions
+          val container = if ("container" in type.declaredFieldsAndOneOfFields.map { it.name }) "_container" else "container"
+
           addFunction(
             FunctionSpec.constructorBuilder()
               .addParameter("from", "decoder", decoder)
               .addModifiers(PUBLIC)
               .throws(true)
-              .addStatement("let container = try decoder.container(keyedBy: %T.self)", codingKeys)
+              .addStatement("let $container = try decoder.container(keyedBy: %T.self)", codingKeys)
               .apply {
                 type.declaredFields.forEach { field ->
                   val hasPropertyWrapper = !isIndirect(type, field) && (field.defaultedValue != null || field.isProtoDefaulted)
@@ -891,7 +894,7 @@ class SwiftGenerator private constructor(
                   val fieldName = if (hasPropertyWrapper) { "_${field.safeName}" } else { field.safeName }
                   val prefix = if (hasPropertyWrapper) { "self.%1N.wrappedValue" } else { "self.%1N" }
                   addStatement(
-                    "$prefix = try container.$decode($typeArg%2T.self, $forKeys: $keys)",
+                    "$prefix = try $container.$decode($typeArg%2T.self, $forKeys: $keys)",
                     fieldName,
                     typeName,
                   )
@@ -916,7 +919,7 @@ class SwiftGenerator private constructor(
                     if (index == 0) {
                       beginControlFlow(
                         "if",
-                        "let %1N = try container.decodeIfPresent(%2T.self, forKey: %3S)",
+                        "let %1N = try $container.decodeIfPresent(%2T.self, forKey: %3S)",
                         fieldName,
                         typeName,
                         keyName,
@@ -924,7 +927,7 @@ class SwiftGenerator private constructor(
                     } else {
                       nextControlFlow(
                         "else if",
-                        "let %1N = try container.decodeIfPresent(%2T.self, forKey: %3S)",
+                        "let %1N = try $container.decodeIfPresent(%2T.self, forKey: %3S)",
                         fieldName,
                         typeName,
                         keyName,
@@ -944,7 +947,7 @@ class SwiftGenerator private constructor(
               .addParameter("to", "encoder", encoder)
               .addModifiers(PUBLIC)
               .throws(true)
-              .addStatement("var container = encoder.container(keyedBy: %T.self)", codingKeys)
+              .addStatement("var $container = encoder.container(keyedBy: %T.self)", codingKeys)
               .apply {
                 if (type.declaredFieldsAndOneOfFields.any { it.codableName != null }) {
                   addStatement("let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase")
@@ -979,7 +982,7 @@ class SwiftGenerator private constructor(
                     } ?: Pair("%2S", arrayOf(field.name))
 
                     addStatement(
-                      "try container.$encode(${typeArg}self.%1N, forKey: $keys)",
+                      "try $container.$encode(${typeArg}self.%1N, forKey: $keys)",
                       field.safeName,
                       *args,
                     )
@@ -1022,7 +1025,7 @@ class SwiftGenerator private constructor(
                     } ?: Pair("%2S", arrayOf(field.name))
 
                     addStatement(
-                      "case .%1N(let %1N): try container.encode(%1N, forKey: $keys)",
+                      "case .%1N(let %1N): try $container.encode(%1N, forKey: $keys)",
                       field.safeName,
                       *args,
                     )
