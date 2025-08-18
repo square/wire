@@ -4,6 +4,15 @@ Change Log
 Unreleased
 ----------
 
+Version 5.3.11
+---------------------
+
+_2025-08-18_
+
+### Swift
+
+* Fix a naming collision if a oneof is called `container` (#3364 by [John Szumski][jszumski])
+
 Version 5.3.10
 ---------------------
 
@@ -1691,6 +1700,7 @@ Initial version.
  [custom-handlers-recipes]: https://github.com/square/wire/tree/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
  [damianw]: https://github.com/damianw
  [dnkoutso]: https://github.com/dnkoutso
+ [jszumski]: https://github.com/jszumski
  [event_listener]: https://github.com/square/wire/blob/3e300c492a74e80260581e3aee624d9cf3e5b1f8/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/EventListener.kt#L105-L111
  [frojasg]: https://github.com/frojasg
  [javapoet]: https://github.com/square/javapoet
