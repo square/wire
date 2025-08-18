@@ -911,7 +911,7 @@ class SwiftGenerator private constructor(
                     val typeName = field.typeName.makeNonOptional()
 
                     val safeName = field.safeName
-                    val fieldName = if (safeName == "self") "self_" else safeName
+                    val fieldName = if (safeName in setOf("self", "container")) "${safeName}_" else safeName
 
                     if (index == 0) {
                       beginControlFlow(
@@ -1014,16 +1014,19 @@ class SwiftGenerator private constructor(
                 type.oneOfs.forEach { oneOf ->
                   beginControlFlow("switch", "self.%N", oneOf.name)
                   oneOf.fields.forEach { field ->
+                    val fieldSafeName = field.safeName
+                    val fieldSafeParameterName = if (fieldSafeName == "container") "container_" else fieldSafeName
+
                     val (keys, args) = field.codableName?.let { codableName ->
                       Pair(
-                        "preferCamelCase ? %3S : %2S",
-                        arrayOf(field.name, codableName),
+                        "preferCamelCase ? %4S : %3S",
+                        arrayOf(fieldSafeParameterName, field.name, codableName),
                       )
-                    } ?: Pair("%2S", arrayOf(field.name))
+                    } ?: Pair("%3S", arrayOf(fieldSafeParameterName, field.name))
 
                     addStatement(
-                      "case .%1N(let %1N): try container.encode(%1N, forKey: $keys)",
-                      field.safeName,
+                      "case .%1N(let %2N): try container.encode(%2N, forKey: $keys)",
+                      fieldSafeName,
                       *args,
                     )
                   }

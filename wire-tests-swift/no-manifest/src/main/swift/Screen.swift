@@ -54,8 +54,9 @@ extension Screen : Proto2Codable {
             case 1: screen = .screen_oneof_string(try protoReader.decode(String.self))
             case 2: screen = .screen_oneof_int32(try protoReader.decode(Int32.self))
             case 3: screen = .screen_oneof_sub_message(try protoReader.decode(Screen.SubMessage.self))
-            case 4: screen = .`self`(try protoReader.decode(Screen.Self_.self))
-            case 5: view = .view_oneof_string(try protoReader.decode(String.self))
+            case 4: screen = .container(try protoReader.decode(Screen.SubMessage.self))
+            case 5: screen = .`self`(try protoReader.decode(Screen.Self_.self))
+            case 6: view = .view_oneof_string(try protoReader.decode(String.self))
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -94,6 +95,8 @@ extension Screen : Codable {
             self.screen = .screen_oneof_sub_message(screen_oneof_sub_message)
         } else if let screen_oneof_sub_message = try container.decodeIfPresent(Screen.SubMessage.self, forKey: "screen_oneof_sub_message") {
             self.screen = .screen_oneof_sub_message(screen_oneof_sub_message)
+        } else if let container_ = try container.decodeIfPresent(Screen.SubMessage.self, forKey: "container") {
+            self.screen = .container(container_)
         } else if let self_ = try container.decodeIfPresent(Screen.Self_.self, forKey: "self") {
             self.screen = .`self`(self_)
         } else {
@@ -116,6 +119,7 @@ extension Screen : Codable {
         case .screen_oneof_string(let screen_oneof_string): try container.encode(screen_oneof_string, forKey: preferCamelCase ? "screenOneofString" : "screen_oneof_string")
         case .screen_oneof_int32(let screen_oneof_int32): try container.encode(screen_oneof_int32, forKey: preferCamelCase ? "screenOneofInt32" : "screen_oneof_int32")
         case .screen_oneof_sub_message(let screen_oneof_sub_message): try container.encode(screen_oneof_sub_message, forKey: preferCamelCase ? "screenOneofSubMessage" : "screen_oneof_sub_message")
+        case .container(let container_): try container.encode(container_, forKey: "container")
         case .`self`(let `self`): try container.encode(`self`, forKey: "self")
         case Optional.none: break
         }
@@ -138,6 +142,7 @@ extension Screen {
         case screen_oneof_string(String)
         case screen_oneof_int32(Int32)
         case screen_oneof_sub_message(Screen.SubMessage)
+        case container(Screen.SubMessage)
         case `self`(Screen.Self_)
 
         fileprivate func encode(to protoWriter: ProtoWriter) throws {
@@ -145,7 +150,8 @@ extension Screen {
             case .screen_oneof_string(let screen_oneof_string): try protoWriter.encode(tag: 1, value: screen_oneof_string)
             case .screen_oneof_int32(let screen_oneof_int32): try protoWriter.encode(tag: 2, value: screen_oneof_int32)
             case .screen_oneof_sub_message(let screen_oneof_sub_message): try protoWriter.encode(tag: 3, value: screen_oneof_sub_message)
-            case .`self`(let `self`): try protoWriter.encode(tag: 4, value: `self`)
+            case .container(let container): try protoWriter.encode(tag: 4, value: container)
+            case .`self`(let `self`): try protoWriter.encode(tag: 5, value: `self`)
             }
         }
 
@@ -157,7 +163,7 @@ extension Screen {
 
         fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
-            case .view_oneof_string(let view_oneof_string): try protoWriter.encode(tag: 5, value: view_oneof_string)
+            case .view_oneof_string(let view_oneof_string): try protoWriter.encode(tag: 6, value: view_oneof_string)
             }
         }
 
