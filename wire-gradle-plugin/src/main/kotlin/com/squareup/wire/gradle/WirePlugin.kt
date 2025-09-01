@@ -71,6 +71,9 @@ class WirePlugin : Plugin<Project> {
 
     val androidPluginHandler = { _: Plugin<*> ->
       android.set(true)
+      // When `android.builtInKotlin` property is enabled, AGP provides Kotlin support for all projects without
+      // requiring users to apply the `org.jetbrains.kotlin.android` plugin.
+      project.extensions.findByName("kotlin")?.let { kotlin.set(true) }
       project.afterEvaluate {
         project.setupWireTasks(afterAndroid = true)
       }
@@ -83,10 +86,13 @@ class WirePlugin : Plugin<Project> {
 
     val kotlinPluginHandler = { _: Plugin<*> -> kotlin.set(true) }
     project.plugins.withId("org.jetbrains.kotlin.multiplatform", kotlinPluginHandler)
-    project.plugins.withId("org.jetbrains.kotlin.android", kotlinPluginHandler)
     project.plugins.withId("org.jetbrains.kotlin.jvm", kotlinPluginHandler)
     project.plugins.withId("org.jetbrains.kotlin.js", kotlinPluginHandler)
     project.plugins.withId("kotlin2js", kotlinPluginHandler)
+    // When `android.builtInKotlin`` property is disabled, the users  will need to apply either the
+    // `com.android.experimental.built-in-kotlin` plugin or the `org.jetbrains.kotlin.android` plugin to have Kotlin.
+    project.plugins.withId("com.android.experimental.built-in-kotlin", kotlinPluginHandler)
+    project.plugins.withId("org.jetbrains.kotlin.android", kotlinPluginHandler)
 
     val javaPluginHandler = { _: Plugin<*> -> java.set(true) }
     project.plugins.withId("java", javaPluginHandler)

@@ -1408,6 +1408,29 @@ class WirePluginTest {
     assertThat(result.task(":wire-project:generateProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
   }
 
+  @Test
+  fun androidBuiltInFailWhenNotEnabled() {
+    val fixtureRoot = File("src/test/projects/android-builtin-kotlin")
+    val result = gradleRunner.withArguments("-Pandroid.builtInKotlin=false").runFixture(fixtureRoot) { buildAndFail() }
+    result.output.contains("*Wire Gradle plugin applied in project ':' but unable to find either the Java, Kotlin, or Android plugin*")
+  }
+
+  @Ignore("Test requires AGP 9.0.0-alpha03, which has a dependency on Gradle 9, which plugin does not have yet")
+  @Test
+  fun androidBuiltInPassWhenEnabled() {
+    val fixtureRoot = File("src/test/projects/android-builtin-kotlin")
+    val result = gradleRunner.withArguments("-Pandroid.builtInKotlin=true").runFixture(fixtureRoot) { build() }
+    assertThat(result.task(":app:generateProtos")).isNotNull()
+  }
+
+  @Ignore("Test requires KGP version to be at least 2.1.0")
+  @Test
+  fun androidExperimentalBuiltInKotlinPluginPassWhenApplied() {
+    val fixtureRoot = File("src/test/projects/android-experimental-builtin-kotlin-plugin")
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    assertThat(result.task(":app:generateProtos")).isNotNull()
+  }
+
   private fun GradleRunner.runFixture(
     root: File,
     action: GradleRunner.() -> BuildResult,

@@ -32,7 +32,17 @@ gradlePlugin {
   }
 }
 
+// Make TestKit's plugin classpath also include AGP
+configurations.register("agpForTests")
+
+tasks.named<PluginUnderTestMetadata>("pluginUnderTestMetadata") {
+  pluginClasspath.from(configurations.named("agpForTests"))
+}
+
 dependencies {
+  add("agpForTests", libs.pluginz.android)
+  add("agpForTests", libs.pluginz.androidBuiltInKotlin)
+
   compileOnly(gradleApi())
   compileOnly(libs.pluginz.android)
 

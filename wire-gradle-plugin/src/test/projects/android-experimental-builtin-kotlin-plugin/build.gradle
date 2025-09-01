@@ -1,0 +1,4 @@
+plugins {
+  id("com.android.library") version "8.11.0" apply false
+  id("com.android.experimental.built-in-kotlin") version "8.11.0" apply false
+}
