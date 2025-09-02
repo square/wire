@@ -4,6 +4,15 @@ Change Log
 Unreleased
 ----------
 
+Version 5.4.0
+---------------------
+
+_2025-09-02_
+
+### Gradle plugin
+
+* Support `android.builtInKotlin=true` and experimental plugin (#3367 by [Omar Ismail][omarismail94])
+
 Version 5.3.11
 ---------------------
 
@@ -1694,6 +1703,7 @@ Initial version.
  [ShayOinif]: https://github.com/ShayOinif
  [aaron-edwards]: https://github.com/aaron-edwards
  [amorde]: https://github.com/amorde
+ [omarismail94]: https://github.com/omarismail94
  [bom]: https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import
  [brunofrts]: https://github.com/brunofrts
  [custom-handlers-doc]: https://square.github.io/wire/wire_compiler/#custom-handlers
