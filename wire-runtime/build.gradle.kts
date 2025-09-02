@@ -1,5 +1,8 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
+import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 
 plugins {
   kotlin("multiplatform")
@@ -8,17 +11,14 @@ plugins {
 
 kotlin {
   applyDefaultHierarchyTemplate()
-  jvm {
-    withJava()
-  }
+  jvm()
   if (System.getProperty("kjs", "true").toBoolean()) {
     js(IR) {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
-        tasks.getByName(compileKotlinTaskName) {
-          kotlinOptions {
-            moduleKind = "umd"
-            sourceMap = true
-            metaInfo = true
+        tasks.named<KotlinJsCompile>(compileKotlinTaskName) {
+          compilerOptions {
+            moduleKind.set(JsModuleKind.MODULE_UMD)
+            sourceMap.set(true)
           }
         }
       }
