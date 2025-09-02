@@ -1,0 +1,1955 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="gRPC and protocol buffers for Android, Kotlin, and Java.">
+      
+      
+        <meta name="author" content="Square, Inc.">
+      
+      
+        <link rel="canonical" href="https://square.github.io/wire/">
+      
+      
+      
+        <link rel="next" href="wire_compiler/">
+      
+      
+      <link rel="icon" href="images/icon-square.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>Wire</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="css/app.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="white">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#wire" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="Wire" class="md-header__button md-logo" aria-label="Wire" data-md-component="logo">
+      
+  <img src="images/icon-square.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Wire
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="white"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="white"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/square/wire" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Wire
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="Wire" class="md-nav__button md-logo" aria-label="Wire" data-md-component="logo">
+      
+  <img src="images/icon-square.png" alt="logo">
+
+    </a>
+    Wire
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/square/wire" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Wire
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#protocol-buffers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Protocol Buffers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-wire" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Wire?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wire-kotlin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wire Kotlin
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wire-swift" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wire Swift
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wire-grpc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wire gRPC
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generating-code-with-wire" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generating Code With Wire
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get-wire" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get Wire
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unsupported" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unsupported
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Further Documentation
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="wire_compiler/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gradle Plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="wire_grpc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    gRPC
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://stackoverflow.com/questions/tagged/square-wire?sort=active" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Stack Overflow ⏏
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    3.x API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            3.x API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3.x/wire-compiler/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-compiler
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3.x/wire-gradle-plugin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-gradle-plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3.x/wire-grpc-client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-grpc-client
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3.x/wire-gson-support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-gson-support
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3.x/wire-java-generator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-java-generator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3.x/wire-kotlin-generator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-kotlin-generator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3.x/wire-moshi-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-moshi-adapter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3.x/wire-reflector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-reflector
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3.x/wire-runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-runtime
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3.x/wire-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-schema
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3.x/wire-schema-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-schema-tests
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3.x/wire-swift-generator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-swift-generator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    2.x API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            2.x API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://square.github.io/wire/2.x/wire-gson-support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-gson-support ⏏
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://square.github.io/wire/2.x/wire-runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-runtime ⏏
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="wire_json/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    JSON
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="wire_vs_protoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Wire vs Protoc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Change Log
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="code_of_conduct/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://developers.google.com/protocol-buffers/docs/proto" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Protocol Buffers ⏏
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#protocol-buffers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Protocol Buffers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-wire" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Wire?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wire-kotlin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wire Kotlin
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wire-swift" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wire Swift
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wire-grpc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wire gRPC
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generating-code-with-wire" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generating Code With Wire
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get-wire" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get Wire
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unsupported" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unsupported
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Further Documentation
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="wire">Wire<a class="headerlink" href="#wire" title="Permanent link">&para;</a></h1>
+<p><em>“A man got to have a code!”</em> - Omar Little</p>
+<p>As our teams and programs grow, the variety and volume of data also grows. Success will turn your
+simple data models into complex ones! Whether your application is storing data to disk or
+transmitting it over a network, the structure and interpretation of that data should be clear.
+Consumers work best with data they understand!</p>
+<p>Schemas describe and document data models. If you have data, you should have a schema.</p>
+<h2 id="protocol-buffers">Protocol Buffers<a class="headerlink" href="#protocol-buffers" title="Permanent link">&para;</a></h2>
+<p><a href="https://developers.google.com/protocol-buffers/docs/overview">Google&rsquo;s Protocol Buffers</a> are built around a great schema language:</p>
+<ul>
+<li>
+<p>It&rsquo;s cross platform and language independent. Whatever programming language you use, you&rsquo;ll be
+  able to use proto schemas with your application.</p>
+</li>
+<li>
+<p>Proto schemas are backwards-compatible and future-proof. You can evolve your schema as your
+  application loses old features and gains new ones.</p>
+</li>
+<li>
+<p>It&rsquo;s focused. Proto schemas describe your data models. That&rsquo;s it.</p>
+</li>
+</ul>
+<details markdown="1">
+<summary>Protocol Buffer Examples</summary>
+
+Here's a [sample message][dinosaur_proto] definition:
+
+<div class="highlight"><pre><span></span><code><span class="k">syntax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;proto3&quot;</span><span class="p">;</span>
+
+<span class="kn">package</span><span class="w"> </span><span class="nn">squareup</span><span class="o">.</span><span class="n">dinosaurs</span><span class="p">;</span>
+
+<span class="k">option</span><span class="w"> </span><span class="na">java_package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;com.squareup.dinosaurs&quot;</span><span class="p">;</span>
+
+<span class="k">import</span><span class="w"> </span><span class="s">&quot;squareup/geology/period.proto&quot;</span><span class="p">;</span>
+
+<span class="kd">message</span><span class="w"> </span><span class="nc">Dinosaur</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Common name of this dinosaur, like &quot;Stegosaurus&quot;.</span>
+<span class="w">  </span><span class="kt">string</span><span class="w"> </span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// URLs with images of this dinosaur.</span>
+<span class="w">  </span><span class="k">repeated</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="na">picture_urls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">squareup.geology.Period</span><span class="w"> </span><span class="na">period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+And here's an [enum][period_proto] definition:
+
+<div class="highlight"><pre><span></span><code><span class="k">syntax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;proto3&quot;</span><span class="p">;</span>
+
+<span class="kn">package</span><span class="w"> </span><span class="nn">squareup</span><span class="o">.</span><span class="n">geology</span><span class="p">;</span>
+
+
+<span class="k">option</span><span class="w"> </span><span class="na">java_package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;com.squareup.geology&quot;</span><span class="p">;</span>
+
+<span class="kd">enum</span><span class="w"> </span><span class="n">Period</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// 145.5 million years ago — 66.0 million years ago.</span>
+<span class="w">  </span><span class="na">CRETACEOUS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 201.3 million years ago — 145.0 million years ago.</span>
+<span class="w">  </span><span class="na">JURASSIC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 252.17 million years ago — 201.3 million years ago.</span>
+<span class="w">  </span><span class="na">TRIASSIC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+This schema language is Protocol Buffers' best feature. You might even use it purely for
+documentation purposes, such as to describe a JSON API.
+
+Protocol Buffers also defines a compact binary encoding of messages that conform to the schema. This
+encoding is fast to encode, fast to decode, small to transmit, and small to store. The binary
+encoding uses numeric tags from the schema, like the `5` for `period` above.
+
+For example, let's encode this dinosaur:
+
+<div class="highlight"><pre><span></span><code>{
+  name: &quot;Stegosaurus&quot;,
+  period: JURASSIC
+}
+</code></pre></div>
+
+The encoded value is just 15 bytes:
+
+<div class="highlight"><pre><span></span><code>Hex  Description
+ 0a  tag: name(1), field encoding: LENGTH_DELIMITED(2). 1 &lt;&lt; 3 | 2
+ 0b  &quot;Stegosaurus&quot;.length()
+ 53  &#39;S&#39;
+ 74  &#39;t&#39;
+ 65  &#39;e&#39;
+ 67  &#39;g&#39;
+ 6f  &#39;o&#39;
+ 73  &#39;s&#39;
+ 61  &#39;a&#39;
+ 75  &#39;u&#39;
+ 72  &#39;r&#39;
+ 75  &#39;u&#39;
+ 73  &#39;s&#39;
+ 28  tag: period(5), field encoding: VARINT(0). 5 &lt;&lt; 3 | 0
+ 02  JURASSIC(2)
+</code></pre></div>
+</details>
+
+<h2 id="why-wire">Why Wire?<a class="headerlink" href="#why-wire" title="Permanent link">&para;</a></h2>
+<p>The Protocol Buffers schema language and binary encoding are both defined by Google. Wire is an
+independent implementation from Square that&rsquo;s specifically designed for Android and Java.</p>
+<p>For each message type defined in the schema, Wire generates an immutable model class and its
+builder. The generated code looks like code you&rsquo;d write by hand: it&rsquo;s documented, formatted, and
+simple. Wire&rsquo;s APIs should feel at home to programmers who like <a href="https://www.amazon.ca/Effective-Java-3rd-Joshua-Bloch/dp/0134685997/">Effective Java</a>.</p>
+<p>That said, there are some interesting design decisions in Wire:</p>
+<ul>
+<li>
+<p>Wire messages declare <code>public final</code> fields instead of the usual getter methods. This cuts down
+  on both code generated and code executed. Less code is particularly beneficial for Android
+  programs.</p>
+</li>
+<li>
+<p>Wire avoids case mapping. A field declared as <code>picture_urls</code> in a schema yields a Java field
+  <code>picture_urls</code> and not the conventional <code>pictureUrls</code> camel case. Though the name feels awkward
+  at first, it&rsquo;s fantastic whenever you use <code>grep</code> or more sophisticated search tools. No more
+  mapping when navigating between schema, Java source code, and data. It also provides a gentle
+  reminder to calling code that proto messages are a bit special.</p>
+</li>
+<li>
+<p>Primitive types are always boxed. If a field is absent, its value is <code>null</code>. This is used for
+  naturally optional fields, such as a dinosaur whose period is unknown. A field may also be null
+  due to schema evolution: if tomorrow we add a <code>carnivore</code> boolean to our message definition,
+  today&rsquo;s data won’t have a value for that field.</p>
+</li>
+</ul>
+<details markdown="1">
+<summary>Generated Java Code</summary>
+
+Here's the compact [generated code][dinosaur_java] for the `Dinosaur` message defined above:
+
+<div class="highlight"><pre><span></span><code><span class="c1">// Code generated by Wire protocol buffer compiler, do not edit.</span>
+<span class="c1">// Source: squareup.dinosaurs.Dinosaur in squareup/dinosaurs/dinosaur.proto</span>
+<span class="kn">package</span><span class="w"> </span><span class="nn">com.squareup.dinosaurs</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.squareup.geology.Period</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.squareup.wire.Message</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.squareup.wire.ProtoAdapter</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.squareup.wire.Syntax</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.squareup.wire.WireField</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.squareup.wire.internal.Internal</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.lang.Object</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.lang.Override</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.lang.String</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">okio.ByteString</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Dinosaur</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Message</span><span class="o">&lt;</span><span class="n">Dinosaur</span><span class="p">,</span><span class="w"> </span><span class="n">Dinosaur</span><span class="p">.</span><span class="na">Builder</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ProtoAdapter</span><span class="o">&lt;</span><span class="n">Dinosaur</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ADAPTER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ProtoAdapter</span><span class="p">.</span><span class="na">newMessageAdapter</span><span class="p">(</span><span class="n">Dinosaur</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;type.googleapis.com/squareup.dinosaurs.Dinosaur&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Syntax</span><span class="p">.</span><span class="na">PROTO_3</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">serialVersionUID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="n">L</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Common name of this dinosaur, like &quot;Stegosaurus&quot;.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="nd">@WireField</span><span class="p">(</span>
+<span class="w">      </span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="n">adapter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;com.squareup.wire.ProtoAdapter#STRING&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WireField</span><span class="p">.</span><span class="na">Label</span><span class="p">.</span><span class="na">OMIT_IDENTITY</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * URLs with images of this dinosaur.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="nd">@WireField</span><span class="p">(</span>
+<span class="w">      </span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">      </span><span class="n">adapter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;com.squareup.wire.ProtoAdapter#STRING&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WireField</span><span class="p">.</span><span class="na">Label</span><span class="p">.</span><span class="na">REPEATED</span><span class="p">,</span>
+<span class="w">      </span><span class="n">jsonName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;pictureUrls&quot;</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">;</span>
+
+<span class="w">  </span><span class="nd">@WireField</span><span class="p">(</span>
+<span class="w">      </span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">      </span><span class="n">adapter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;com.squareup.geology.Period#ADAPTER&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WireField</span><span class="p">.</span><span class="na">Label</span><span class="p">.</span><span class="na">OMIT_IDENTITY</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Period</span><span class="w"> </span><span class="n">period</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="nf">Dinosaur</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">,</span><span class="w"> </span><span class="n">Period</span><span class="w"> </span><span class="n">period</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">,</span><span class="w"> </span><span class="n">period</span><span class="p">,</span><span class="w"> </span><span class="n">ByteString</span><span class="p">.</span><span class="na">EMPTY</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="nf">Dinosaur</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">,</span><span class="w"> </span><span class="n">Period</span><span class="w"> </span><span class="n">period</span><span class="p">,</span><span class="w"> </span><span class="n">ByteString</span><span class="w"> </span><span class="n">unknownFields</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">super</span><span class="p">(</span><span class="n">ADAPTER</span><span class="p">,</span><span class="w"> </span><span class="n">unknownFields</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalArgumentException</span><span class="p">(</span><span class="s">&quot;name == null&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">picture_urls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Internal</span><span class="p">.</span><span class="na">immutableCopyOf</span><span class="p">(</span><span class="s">&quot;picture_urls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">period</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalArgumentException</span><span class="p">(</span><span class="s">&quot;period == null&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">period</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nd">@Override</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="n">Builder</span><span class="w"> </span><span class="nf">newBuilder</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Builder</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Builder</span><span class="p">();</span>
+<span class="w">    </span><span class="n">builder</span><span class="p">.</span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">builder</span><span class="p">.</span><span class="na">picture_urls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Internal</span><span class="p">.</span><span class="na">copyOf</span><span class="p">(</span><span class="n">picture_urls</span><span class="p">);</span>
+<span class="w">    </span><span class="n">builder</span><span class="p">.</span><span class="na">period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">period</span><span class="p">;</span>
+<span class="w">    </span><span class="n">builder</span><span class="p">.</span><span class="na">addUnknownFields</span><span class="p">(</span><span class="n">unknownFields</span><span class="p">());</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">builder</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nd">@Override</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">other</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">other</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Dinosaur</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Dinosaur</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Dinosaur</span><span class="p">)</span><span class="w"> </span><span class="n">other</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">unknownFields</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="na">unknownFields</span><span class="p">())</span>
+<span class="w">        </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">Internal</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="na">name</span><span class="p">)</span>
+<span class="w">        </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="na">picture_urls</span><span class="p">)</span>
+<span class="w">        </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">Internal</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">period</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="na">period</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nd">@Override</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">hashCode</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">super</span><span class="p">.</span><span class="na">hashCode</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">unknownFields</span><span class="p">().</span><span class="na">hashCode</span><span class="p">();</span>
+<span class="w">      </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">37</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="na">hashCode</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">      </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">37</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">.</span><span class="na">hashCode</span><span class="p">();</span>
+<span class="w">      </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">37</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">period</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">period</span><span class="p">.</span><span class="na">hashCode</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">      </span><span class="kd">super</span><span class="p">.</span><span class="na">hashCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Builder</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Message</span><span class="p">.</span><span class="na">Builder</span><span class="o">&lt;</span><span class="n">Dinosaur</span><span class="p">,</span><span class="w"> </span><span class="n">Builder</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Period</span><span class="w"> </span><span class="n">period</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">Builder</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="n">picture_urls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Internal</span><span class="p">.</span><span class="na">newMutableList</span><span class="p">();</span>
+<span class="w">      </span><span class="n">period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Period</span><span class="p">.</span><span class="na">CRETACEOUS</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * Common name of this dinosaur, like &quot;Stegosaurus&quot;.</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Builder</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">this</span><span class="p">.</span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * URLs with images of this dinosaur.</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Builder</span><span class="w"> </span><span class="nf">picture_urls</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">Internal</span><span class="p">.</span><span class="na">checkElementsNotNull</span><span class="p">(</span><span class="n">picture_urls</span><span class="p">);</span>
+<span class="w">      </span><span class="k">this</span><span class="p">.</span><span class="na">picture_urls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">;</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Builder</span><span class="w"> </span><span class="nf">period</span><span class="p">(</span><span class="n">Period</span><span class="w"> </span><span class="n">period</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">this</span><span class="p">.</span><span class="na">period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">period</span><span class="p">;</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Dinosaur</span><span class="w"> </span><span class="nf">build</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Dinosaur</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">,</span><span class="w"> </span><span class="n">period</span><span class="p">,</span><span class="w"> </span><span class="kd">super</span><span class="p">.</span><span class="na">buildUnknownFields</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+The Java code to create and access proto models is compact and readable:
+
+<div class="highlight"><pre><span></span><code><span class="n">Dinosaur</span><span class="w"> </span><span class="n">stegosaurus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Dinosaur</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;Stegosaurus&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">period</span><span class="p">(</span><span class="n">Period</span><span class="p">.</span><span class="na">JURASSIC</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;My favorite dinosaur existed in the &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">stegosaurus</span><span class="p">.</span><span class="na">period</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; period.&quot;</span><span class="p">);</span>
+</code></pre></div>
+
+Each type has a corresponding `ProtoAdapter` that can encode a message to bytes and decode bytes
+back into a message.
+
+<div class="highlight"><pre><span></span><code><span class="n">Dinosaur</span><span class="w"> </span><span class="n">stegosaurus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span>
+<span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">stegosaurusBytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Dinosaur</span><span class="p">.</span><span class="na">ADAPTER</span><span class="p">.</span><span class="na">encode</span><span class="p">(</span><span class="n">stegosaurus</span><span class="p">);</span>
+
+<span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">tyrannosaurusBytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span>
+<span class="n">Dinosaur</span><span class="w"> </span><span class="n">tyrannosaurus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Dinosaur</span><span class="p">.</span><span class="na">ADAPTER</span><span class="p">.</span><span class="na">decode</span><span class="p">(</span><span class="n">tyrannosaurusBytes</span><span class="p">);</span>
+</code></pre></div>
+
+When accessing a field, use `Wire.get()` to replace null values with the corresponding default:
+
+<div class="highlight"><pre><span></span><code><span class="n">Period</span><span class="w"> </span><span class="n">period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Wire</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">stegosaurus</span><span class="p">.</span><span class="na">period</span><span class="p">,</span><span class="w"> </span><span class="n">Dinosaur</span><span class="p">.</span><span class="na">DEFAULT_PERIOD</span><span class="p">);</span>
+</code></pre></div>
+
+This is equivalent to the following:
+
+<div class="highlight"><pre><span></span><code>Period period = stegosaurus.period != null ? stegosaurus.period : Dinosaur.DEFAULT_PERIOD;
+</code></pre></div>
+</details>
+
+<h2 id="wire-kotlin">Wire Kotlin<a class="headerlink" href="#wire-kotlin" title="Permanent link">&para;</a></h2>
+<p>Since version 3.0.0, Wire can generate Kotlin code. See
+<a href="wire_compiler/">Wire Compiler &amp; Gradle Plugin</a> to learn how to configure your build.</p>
+<p>Kotlin is a pragmatic and expressive programming language that makes it easy to model data. Here&rsquo;s
+how we used Kotlin to model Protocol Buffers messages:</p>
+<ul>
+<li>Messages feel like <code>data</code> classes, but in fact they&rsquo;re not. Compiler still generates <code>equals()</code>,
+  <code>hashCode()</code>, <code>toString()</code> and <code>copy()</code> for you. Wire does not generate <code>componentN()</code> functions
+  though, we believe that destructuring declarations are not a good fit for Protocol Buffers: a
+  change in the schema that removes or adds a field might lead to a situation when your
+  destructuring declaration still compiles but now describes a completely different subset of
+  fields, rendering your code incorrect.</li>
+<li><code>copy()</code> is a substitute for the <code>Builder</code>, which is not used anymore. If your program relies on
+  the <code>Builder</code> to be present, you may generate code in Java interoperability mode -
+  <a href="wire_compiler/">Wire Compiler &amp; Gradle Plugin</a> explains how that works.</li>
+<li>Fields are generated as properties. While this is idiomatic in Kotlin, Java code will now have
+  to access fields using getters. If your program relies on accessing fields directly, use Java
+  interoperability mode - the compiler will generate <code>@JvmField</code> annotations for each field.</li>
+<li>The nullability of each field&rsquo;s type depends on its label: <code>required</code>, <code>repeated</code> and <code>map</code>
+  fields get non-nullable types, whereas <code>optional</code> fields are of nullable types.</li>
+<li>
+<p>With the exception of <code>required</code> fields, each field has a default value:</p>
+</li>
+<li>
+<p>null for <code>optional</code> fields,</p>
+</li>
+<li><code>emptyList()</code> for <code>repeated</code> fields,</li>
+<li><code>emptyMap()</code> for <code>map</code> fields.</li>
+</ul>
+<details markdown="1">
+<summary>Generated Kotlin Code</summary>
+
+Here's the compact [generated code][dinosaur_kotlin] for the `Dinosaur` message defined above:
+
+<div class="highlight"><pre><span></span><code><span class="c1">// Code generated by Wire protocol buffer compiler, do not edit.</span>
+<span class="c1">// Source: squareup.dinosaurs.Dinosaur in squareup/dinosaurs/dinosaur.proto</span>
+<span class="k">package</span><span class="w"> </span><span class="nn">com.squareup.dinosaurs</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">com.squareup.geology.Period</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">com.squareup.wire.FieldEncoding</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">com.squareup.wire.Message</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">com.squareup.wire.ProtoAdapter</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">com.squareup.wire.ProtoReader</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">com.squareup.wire.ProtoWriter</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">com.squareup.wire.Syntax.PROTO_3</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">com.squareup.wire.WireField</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">com.squareup.wire.internal.immutableCopyOf</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">com.squareup.wire.internal.sanitize</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlin.Any</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlin.AssertionError</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlin.Boolean</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlin.Deprecated</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlin.DeprecationLevel</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlin.Int</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlin.Long</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlin.Nothing</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlin.String</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlin.collections.List</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlin.hashCode</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlin.jvm.JvmField</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">okio.ByteString</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">Dinosaur</span><span class="p">(</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Common name of this dinosaur, like &quot;Stegosaurus&quot;.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="nd">@field</span><span class="p">:</span><span class="n">WireField</span><span class="p">(</span>
+<span class="w">    </span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">    </span><span class="n">adapter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;com.squareup.wire.ProtoAdapter#STRING&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WireField</span><span class="p">.</span><span class="na">Label</span><span class="p">.</span><span class="na">OMIT_IDENTITY</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">name</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">picture_urls</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emptyList</span><span class="p">(),</span>
+<span class="w">  </span><span class="nd">@field</span><span class="p">:</span><span class="n">WireField</span><span class="p">(</span>
+<span class="w">    </span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span>
+<span class="w">    </span><span class="n">adapter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;com.squareup.geology.Period#ADAPTER&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WireField</span><span class="p">.</span><span class="na">Label</span><span class="p">.</span><span class="na">OMIT_IDENTITY</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">period</span><span class="p">:</span><span class="w"> </span><span class="n">Period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Period</span><span class="p">.</span><span class="na">CRETACEOUS</span><span class="p">,</span>
+<span class="w">  </span><span class="n">unknownFields</span><span class="p">:</span><span class="w"> </span><span class="n">ByteString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ByteString</span><span class="p">.</span><span class="na">EMPTY</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Message</span><span class="o">&lt;</span><span class="n">Dinosaur</span><span class="p">,</span><span class="w"> </span><span class="n">Nothing</span><span class="o">&gt;</span><span class="p">(</span><span class="n">ADAPTER</span><span class="p">,</span><span class="w"> </span><span class="n">unknownFields</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * URLs with images of this dinosaur.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="nd">@field</span><span class="p">:</span><span class="n">WireField</span><span class="p">(</span>
+<span class="w">    </span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span>
+<span class="w">    </span><span class="n">adapter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;com.squareup.wire.ProtoAdapter#STRING&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WireField</span><span class="p">.</span><span class="na">Label</span><span class="p">.</span><span class="na">REPEATED</span><span class="p">,</span>
+<span class="w">    </span><span class="n">jsonName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;pictureUrls&quot;</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">picture_urls</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">immutableCopyOf</span><span class="p">(</span><span class="s">&quot;picture_urls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">)</span>
+
+<span class="w">  </span><span class="nd">@Deprecated</span><span class="p">(</span>
+<span class="w">    </span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Shouldn&#39;t be used in Kotlin&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DeprecationLevel</span><span class="p">.</span><span class="na">HIDDEN</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">newBuilder</span><span class="p">():</span><span class="w"> </span><span class="n">Nothing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="n">AssertionError</span><span class="p">()</span>
+
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="n">other</span><span class="p">:</span><span class="w"> </span><span class="kt">Any?</span><span class="p">):</span><span class="w"> </span><span class="kt">Boolean</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">other</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">other</span><span class="w"> </span><span class="k">!is</span><span class="w"> </span><span class="n">Dinosaur</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">unknownFields</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">unknownFields</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">name</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">picture_urls</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">picture_urls</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">period</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">period</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">hashCode</span><span class="p">():</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">super</span><span class="p">.</span><span class="na">hashCode</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">unknownFields</span><span class="p">.</span><span class="na">hashCode</span><span class="p">()</span>
+<span class="w">      </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">37</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="na">hashCode</span><span class="p">()</span>
+<span class="w">      </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">37</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">.</span><span class="na">hashCode</span><span class="p">()</span>
+<span class="w">      </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">37</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">period</span><span class="p">.</span><span class="na">hashCode</span><span class="p">()</span>
+<span class="w">      </span><span class="k">super</span><span class="p">.</span><span class="na">hashCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">toString</span><span class="p">():</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="w">    </span><span class="n">result</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;&quot;&quot;name=</span><span class="si">${</span><span class="n">sanitize</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">picture_urls</span><span class="p">.</span><span class="na">isNotEmpty</span><span class="p">())</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;&quot;&quot;picture_urls=</span><span class="si">${</span><span class="n">sanitize</span><span class="p">(</span><span class="n">picture_urls</span><span class="p">)</span><span class="si">}</span><span class="s">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="n">result</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;&quot;&quot;period=</span><span class="si">$</span><span class="n">period</span><span class="s">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="na">joinToString</span><span class="p">(</span><span class="n">prefix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Dinosaur{&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">separator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;, &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">postfix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;}&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span>
+<span class="w">    </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">name</span><span class="p">,</span>
+<span class="w">    </span><span class="n">picture_urls</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">picture_urls</span><span class="p">,</span>
+<span class="w">    </span><span class="n">period</span><span class="p">:</span><span class="w"> </span><span class="n">Period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">period</span><span class="p">,</span>
+<span class="w">    </span><span class="n">unknownFields</span><span class="p">:</span><span class="w"> </span><span class="n">ByteString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">unknownFields</span>
+<span class="w">  </span><span class="p">):</span><span class="w"> </span><span class="n">Dinosaur</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Dinosaur</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">,</span><span class="w"> </span><span class="n">period</span><span class="p">,</span><span class="w"> </span><span class="n">unknownFields</span><span class="p">)</span>
+
+<span class="w">  </span><span class="kd">companion</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="err">{</span>
+<span class="w">    </span><span class="nd">@JvmField</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">ADAPTER</span><span class="p">:</span><span class="w"> </span><span class="n">ProtoAdapter</span><span class="o">&lt;</span><span class="n">Dinosaur</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">object</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nc">ProtoAdapter</span><span class="o">&lt;</span><span class="n">Dinosaur</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">      </span><span class="n">FieldEncoding</span><span class="p">.</span><span class="na">LENGTH_DELIMITED</span><span class="p">,</span>
+<span class="w">      </span><span class="n">Dinosaur</span><span class="o">::</span><span class="n">class</span><span class="p">,</span>
+<span class="w">      </span><span class="s">&quot;type.googleapis.com/squareup.dinosaurs.Dinosaur&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">PROTO_3</span><span class="p">,</span>
+<span class="w">      </span><span class="kc">null</span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">encodedSize</span><span class="p">(</span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="n">Dinosaur</span><span class="p">):</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nv">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="na">unknownFields</span><span class="p">.</span><span class="na">size</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="p">.</span><span class="na">name</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">ProtoAdapter</span><span class="p">.</span><span class="na">STRING</span><span class="p">.</span><span class="na">encodedSizeWithTag</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="na">name</span><span class="p">)</span>
+<span class="w">        </span><span class="n">size</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">ProtoAdapter</span><span class="p">.</span><span class="na">STRING</span><span class="p">.</span><span class="na">asRepeated</span><span class="p">().</span><span class="na">encodedSizeWithTag</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="na">picture_urls</span><span class="p">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="p">.</span><span class="na">period</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">Period</span><span class="p">.</span><span class="na">CRETACEOUS</span><span class="p">)</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">Period</span><span class="p">.</span><span class="na">ADAPTER</span><span class="p">.</span><span class="na">encodedSizeWithTag</span><span class="p">(</span><span class="m">5</span><span class="p">,</span>
+<span class="w">            </span><span class="n">value</span><span class="p">.</span><span class="na">period</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">size</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="n">writer</span><span class="p">:</span><span class="w"> </span><span class="n">ProtoWriter</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="n">Dinosaur</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="p">.</span><span class="na">name</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">ProtoAdapter</span><span class="p">.</span><span class="na">STRING</span><span class="p">.</span><span class="na">encodeWithTag</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="na">name</span><span class="p">)</span>
+<span class="w">        </span><span class="n">ProtoAdapter</span><span class="p">.</span><span class="na">STRING</span><span class="p">.</span><span class="na">asRepeated</span><span class="p">().</span><span class="na">encodeWithTag</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="na">picture_urls</span><span class="p">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="p">.</span><span class="na">period</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">Period</span><span class="p">.</span><span class="na">CRETACEOUS</span><span class="p">)</span><span class="w"> </span><span class="n">Period</span><span class="p">.</span><span class="na">ADAPTER</span><span class="p">.</span><span class="na">encodeWithTag</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="na">period</span><span class="p">)</span>
+<span class="w">        </span><span class="n">writer</span><span class="p">.</span><span class="na">writeBytes</span><span class="p">(</span><span class="n">value</span><span class="p">.</span><span class="na">unknownFields</span><span class="p">)</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">decode</span><span class="p">(</span><span class="n">reader</span><span class="p">:</span><span class="w"> </span><span class="n">ProtoReader</span><span class="p">):</span><span class="w"> </span><span class="n">Dinosaur</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nv">name</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">picture_urls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nv">period</span><span class="p">:</span><span class="w"> </span><span class="n">Period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Period</span><span class="p">.</span><span class="na">CRETACEOUS</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">unknownFields</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reader</span><span class="p">.</span><span class="na">forEachTag</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">          </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">tag</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="m">1</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ProtoAdapter</span><span class="p">.</span><span class="na">STRING</span><span class="p">.</span><span class="na">decode</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+<span class="w">            </span><span class="m">2</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">ProtoAdapter</span><span class="p">.</span><span class="na">STRING</span><span class="p">.</span><span class="na">decode</span><span class="p">(</span><span class="n">reader</span><span class="p">))</span>
+<span class="w">            </span><span class="m">5</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">              </span><span class="n">period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Period</span><span class="p">.</span><span class="na">ADAPTER</span><span class="p">.</span><span class="na">decode</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="p">:</span><span class="w"> </span><span class="n">ProtoAdapter</span><span class="p">.</span><span class="na">EnumConstantNotFoundException</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">              </span><span class="n">reader</span><span class="p">.</span><span class="na">addUnknownField</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span><span class="w"> </span><span class="n">FieldEncoding</span><span class="p">.</span><span class="na">VARINT</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">value</span><span class="p">.</span><span class="na">toLong</span><span class="p">())</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="k">else</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">reader</span><span class="p">.</span><span class="na">readUnknownField</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Dinosaur</span><span class="p">(</span>
+<span class="w">          </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span><span class="p">,</span>
+<span class="w">          </span><span class="n">picture_urls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">picture_urls</span><span class="p">,</span>
+<span class="w">          </span><span class="n">period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">period</span><span class="p">,</span>
+<span class="w">          </span><span class="n">unknownFields</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">unknownFields</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">redact</span><span class="p">(</span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="n">Dinosaur</span><span class="p">):</span><span class="w"> </span><span class="n">Dinosaur</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span>
+<span class="w">        </span><span class="n">unknownFields</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ByteString</span><span class="p">.</span><span class="na">EMPTY</span>
+<span class="w">      </span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">serialVersionUID</span><span class="p">:</span><span class="w"> </span><span class="kt">Long</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0L</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+Creating and accessing proto models is easy:
+
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">stegosaurus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Dinosaur</span><span class="p">(</span>
+<span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Stegosaurus&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Period</span><span class="p">.</span><span class="na">JURASSIC</span>
+<span class="p">)</span>
+
+<span class="n">println</span><span class="p">(</span><span class="s">&quot;My favorite dinosaur existed in the </span><span class="si">${</span><span class="n">stegosaurus</span><span class="p">.</span><span class="na">period</span><span class="si">}</span><span class="s"> period.&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+Here's how you can modify the object to add extra fields:
+
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">stegosaurus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stegosaurus</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span>
+<span class="w">    </span><span class="n">picture_urls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;https://www.flickr.com/photos/tags/Stegosaurus/&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">println</span><span class="p">(</span><span class="s">&quot;Here are some photos of </span><span class="si">${</span><span class="n">stegosaurus</span><span class="p">.</span><span class="na">name</span><span class="si">}</span><span class="s">: </span><span class="si">${</span><span class="n">stegosaurus</span><span class="p">.</span><span class="na">picture_urls</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+</code></pre></div>
+</details>
+
+<h2 id="wire-swift">Wire Swift<a class="headerlink" href="#wire-swift" title="Permanent link">&para;</a></h2>
+<p>Since version 3.3.0, Wire can generate Swift code. See
+<a href="wire_compiler/#swift-support">Wire Compiler &amp; Gradle Plugin</a> to learn how to configure your build.</p>
+<p>Swift support is considered a &ldquo;beta&rdquo; and may still feature breaking changes.
+That being said, Block is shipping it in production apps and SDKs.</p>
+<p>Swift is a pragmatic and expressive programming language with rich support for value types.
+Here&rsquo;s how we used Swift to model Protocol Buffers messages:</p>
+<ul>
+<li>Messages are structs that conform to <code>Equatable</code>, <code>Codable</code> and <code>Sendable</code>. All Messages have value semantics.</li>
+<li>Fields are generated as properties.</li>
+<li>The nullability of each field&rsquo;s type depends on its label: <code>required</code>, <code>repeated</code> and <code>map</code>
+  fields get non-nullable types, whereas <code>optional</code> fields are of nullable types.</li>
+</ul>
+<details markdown="1">
+<summary>Generated Swift Code</summary>
+
+Here's the compact [generated code][dinosaur_swift] for the `Dinosaur` message defined above:
+
+<div class="highlight"><pre><span></span><code><span class="c1">// Code generated by Wire protocol buffer compiler, do not edit.</span>
+<span class="c1">// Source: squareup.dinosaurs.Dinosaur in squareup/dinosaurs/dinosaur.proto</span>
+<span class="kd">import</span><span class="w"> </span><span class="nc">Foundation</span>
+<span class="kd">import</span><span class="w"> </span><span class="nc">Wire</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="nc">Dinosaur</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * Common name of this dinosaur, like &quot;Stegosaurus&quot;.</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="p">@</span><span class="n">ProtoDefaulted</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">name</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">?</span>
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * URLs with images of this dinosaur.</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">picture_urls</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="nb">String</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">    </span><span class="p">@</span><span class="n">ProtoDefaulted</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">length_meters</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span>
+<span class="w">    </span><span class="p">@</span><span class="n">ProtoDefaulted</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">mass_kilograms</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">period</span><span class="p">:</span><span class="w"> </span><span class="n">Period</span><span class="p">?</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">unknownFields</span><span class="p">:</span><span class="w"> </span><span class="n">Foundation</span><span class="p">.</span><span class="n">Data</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">.</span><span class="kd">init</span><span class="p">()</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">init</span><span class="p">(</span><span class="n">configure</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="kr">inout</span><span class="w"> </span><span class="kc">Self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">Swift</span><span class="p">.</span><span class="nb">Void</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kc">_</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">configure</span><span class="p">(&amp;</span><span class="kc">self</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="cp">#if</span><span class="w"> </span><span class="o">!</span><span class="cp">WIRE_REMOVE_EQUATABLE</span>
+<span class="kd">extension</span><span class="w"> </span><span class="nc">Dinosaur</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nb">Equatable</span><span class="w"> </span><span class="p">{</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#if</span><span class="w"> </span><span class="o">!</span><span class="cp">WIRE_REMOVE_HASHABLE</span>
+<span class="kd">extension</span><span class="w"> </span><span class="nc">Dinosaur</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nb">Hashable</span><span class="w"> </span><span class="p">{</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
+
+<span class="kd">extension</span><span class="w"> </span><span class="nc">Dinosaur</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Sendable</span><span class="w"> </span><span class="p">{</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span><span class="w"> </span><span class="nc">Dinosaur</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ProtoDefaultedValue</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">defaultedValue</span><span class="p">:</span><span class="w"> </span><span class="n">Dinosaur</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Dinosaur</span><span class="p">()</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span><span class="w"> </span><span class="nc">Dinosaur</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ProtoMessage</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">func</span><span class="w"> </span><span class="nf">protoMessageTypeURL</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;type.googleapis.com/squareup.dinosaurs.Dinosaur&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="kd">extension</span><span class="w"> </span><span class="nc">Dinosaur</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Proto2Codable</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">init</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="n">protoReader</span><span class="p">:</span><span class="w"> </span><span class="n">ProtoReader</span><span class="p">)</span><span class="w"> </span><span class="kr">throws</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nv">name</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">?</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">nil</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nv">picture_urls</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="nb">String</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nv">length_meters</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">nil</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nv">mass_kilograms</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">nil</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nv">period</span><span class="p">:</span><span class="w"> </span><span class="n">Period</span><span class="p">?</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">nil</span>
+
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">token</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">protoReader</span><span class="p">.</span><span class="n">beginMessage</span><span class="p">()</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">tag</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">protoReader</span><span class="p">.</span><span class="n">nextTag</span><span class="p">(</span><span class="n">token</span><span class="p">:</span><span class="w"> </span><span class="n">token</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">switch</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">protoReader</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="nb">String</span><span class="p">.</span><span class="kc">self</span><span class="p">)</span>
+<span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="mi">2</span><span class="p">:</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">protoReader</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="n">into</span><span class="p">:</span><span class="w"> </span><span class="p">&amp;</span><span class="n">picture_urls</span><span class="p">)</span>
+<span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="mi">3</span><span class="p">:</span><span class="w"> </span><span class="n">length_meters</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">protoReader</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="nb">Double</span><span class="p">.</span><span class="kc">self</span><span class="p">)</span>
+<span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="mi">4</span><span class="p">:</span><span class="w"> </span><span class="n">mass_kilograms</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">protoReader</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="nb">Double</span><span class="p">.</span><span class="kc">self</span><span class="p">)</span>
+<span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="mi">5</span><span class="p">:</span><span class="w"> </span><span class="n">period</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">protoReader</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="n">Period</span><span class="p">.</span><span class="kc">self</span><span class="p">)</span>
+<span class="w">            </span><span class="k">default</span><span class="p">:</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">protoReader</span><span class="p">.</span><span class="n">readUnknownField</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span><span class="w"> </span><span class="n">tag</span><span class="p">)</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="kc">self</span><span class="p">.</span><span class="n">unknownFields</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">protoReader</span><span class="p">.</span><span class="n">endMessage</span><span class="p">(</span><span class="n">token</span><span class="p">:</span><span class="w"> </span><span class="n">token</span><span class="p">)</span>
+
+<span class="w">        </span><span class="kc">self</span><span class="p">.</span><span class="n">_name</span><span class="p">.</span><span class="n">wrappedValue</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">name</span>
+<span class="w">        </span><span class="kc">self</span><span class="p">.</span><span class="n">picture_urls</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">picture_urls</span>
+<span class="w">        </span><span class="kc">self</span><span class="p">.</span><span class="n">_length_meters</span><span class="p">.</span><span class="n">wrappedValue</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">length_meters</span>
+<span class="w">        </span><span class="kc">self</span><span class="p">.</span><span class="n">_mass_kilograms</span><span class="p">.</span><span class="n">wrappedValue</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">mass_kilograms</span>
+<span class="w">        </span><span class="kc">self</span><span class="p">.</span><span class="n">period</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">period</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">func</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="n">to</span><span class="w"> </span><span class="n">protoWriter</span><span class="p">:</span><span class="w"> </span><span class="n">ProtoWriter</span><span class="p">)</span><span class="w"> </span><span class="kr">throws</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="n">protoWriter</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="kc">self</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="n">protoWriter</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="kc">self</span><span class="p">.</span><span class="n">picture_urls</span><span class="p">)</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="n">protoWriter</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="kc">self</span><span class="p">.</span><span class="n">length_meters</span><span class="p">)</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="n">protoWriter</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="kc">self</span><span class="p">.</span><span class="n">mass_kilograms</span><span class="p">)</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="n">protoWriter</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="kc">self</span><span class="p">.</span><span class="n">period</span><span class="p">)</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="n">protoWriter</span><span class="p">.</span><span class="n">writeUnknownFields</span><span class="p">(</span><span class="n">unknownFields</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="cp">#if</span><span class="w"> </span><span class="o">!</span><span class="cp">WIRE_REMOVE_CODABLE</span>
+<span class="kd">extension</span><span class="w"> </span><span class="nc">Dinosaur</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">init</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="n">decoder</span><span class="p">:</span><span class="w"> </span><span class="n">Decoder</span><span class="p">)</span><span class="w"> </span><span class="kr">throws</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">container</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">decoder</span><span class="p">.</span><span class="n">container</span><span class="p">(</span><span class="n">keyedBy</span><span class="p">:</span><span class="w"> </span><span class="n">StringLiteralCodingKeys</span><span class="p">.</span><span class="kc">self</span><span class="p">)</span>
+<span class="w">        </span><span class="kc">self</span><span class="p">.</span><span class="n">_name</span><span class="p">.</span><span class="n">wrappedValue</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">container</span><span class="p">.</span><span class="n">decodeIfPresent</span><span class="p">(</span><span class="nb">String</span><span class="p">.</span><span class="kc">self</span><span class="p">,</span><span class="w"> </span><span class="n">forKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;name&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="kc">self</span><span class="p">.</span><span class="n">picture_urls</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">container</span><span class="p">.</span><span class="n">decodeProtoArray</span><span class="p">(</span><span class="nb">String</span><span class="p">.</span><span class="kc">self</span><span class="p">,</span><span class="w"> </span><span class="n">firstOfKeys</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;pictureUrls&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;picture_urls&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="kc">self</span><span class="p">.</span><span class="n">_length_meters</span><span class="p">.</span><span class="n">wrappedValue</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">container</span><span class="p">.</span><span class="n">decodeIfPresent</span><span class="p">(</span><span class="nb">Double</span><span class="p">.</span><span class="kc">self</span><span class="p">,</span><span class="w"> </span><span class="n">firstOfKeys</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;lengthMeters&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;length_meters&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="kc">self</span><span class="p">.</span><span class="n">_mass_kilograms</span><span class="p">.</span><span class="n">wrappedValue</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">container</span><span class="p">.</span><span class="n">decodeIfPresent</span><span class="p">(</span><span class="nb">Double</span><span class="p">.</span><span class="kc">self</span><span class="p">,</span><span class="w"> </span><span class="n">firstOfKeys</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;massKilograms&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;mass_kilograms&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="kc">self</span><span class="p">.</span><span class="n">period</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">container</span><span class="p">.</span><span class="n">decodeIfPresent</span><span class="p">(</span><span class="n">Period</span><span class="p">.</span><span class="kc">self</span><span class="p">,</span><span class="w"> </span><span class="n">forKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;period&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">func</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="n">to</span><span class="w"> </span><span class="n">encoder</span><span class="p">:</span><span class="w"> </span><span class="n">Encoder</span><span class="p">)</span><span class="w"> </span><span class="kr">throws</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nv">container</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">encoder</span><span class="p">.</span><span class="n">container</span><span class="p">(</span><span class="n">keyedBy</span><span class="p">:</span><span class="w"> </span><span class="n">StringLiteralCodingKeys</span><span class="p">.</span><span class="kc">self</span><span class="p">)</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">preferCamelCase</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">encoder</span><span class="p">.</span><span class="n">protoKeyNameEncodingStrategy</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="p">.</span><span class="n">camelCase</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">includeDefaults</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">encoder</span><span class="p">.</span><span class="n">protoDefaultValuesEncodingStrategy</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="p">.</span><span class="n">include</span>
+
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="n">container</span><span class="p">.</span><span class="n">encodeIfPresent</span><span class="p">(</span><span class="kc">self</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">forKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;name&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">includeDefaults</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="kc">self</span><span class="p">.</span><span class="n">picture_urls</span><span class="p">.</span><span class="bp">isEmpty</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">try</span><span class="w"> </span><span class="n">container</span><span class="p">.</span><span class="n">encodeProtoArray</span><span class="p">(</span><span class="kc">self</span><span class="p">.</span><span class="n">picture_urls</span><span class="p">,</span><span class="w"> </span><span class="n">forKey</span><span class="p">:</span><span class="w"> </span><span class="n">preferCamelCase</span><span class="w"> </span><span class="p">?</span><span class="w"> </span><span class="s">&quot;pictureUrls&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s">&quot;picture_urls&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="n">container</span><span class="p">.</span><span class="n">encodeIfPresent</span><span class="p">(</span><span class="kc">self</span><span class="p">.</span><span class="n">length_meters</span><span class="p">,</span><span class="w"> </span><span class="n">forKey</span><span class="p">:</span><span class="w"> </span><span class="n">preferCamelCase</span><span class="w"> </span><span class="p">?</span><span class="w"> </span><span class="s">&quot;lengthMeters&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s">&quot;length_meters&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="n">container</span><span class="p">.</span><span class="n">encodeIfPresent</span><span class="p">(</span><span class="kc">self</span><span class="p">.</span><span class="n">mass_kilograms</span><span class="p">,</span><span class="w"> </span><span class="n">forKey</span><span class="p">:</span><span class="w"> </span><span class="n">preferCamelCase</span><span class="w"> </span><span class="p">?</span><span class="w"> </span><span class="s">&quot;massKilograms&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s">&quot;mass_kilograms&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="n">container</span><span class="p">.</span><span class="n">encodeIfPresent</span><span class="p">(</span><span class="kc">self</span><span class="p">.</span><span class="n">period</span><span class="p">,</span><span class="w"> </span><span class="n">forKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;period&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="p">}</span>
+<span class="cp">#endif</span>
+</code></pre></div>
+
+Creating and accessing proto models is easy:
+
+<div class="highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="nv">stegosaurus</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Dinosaur</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nv">$0</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Stegosaurus&quot;</span>
+<span class="w">    </span><span class="nv">$0</span><span class="p">.</span><span class="n">period</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">.</span><span class="n">JURASSIC</span>
+<span class="p">}</span>
+
+<span class="bp">print</span><span class="p">(</span><span class="s">&quot;My favorite dinosaur existed in the </span><span class="si">\(</span><span class="n">stegosaurus</span><span class="p">.</span><span class="n">period</span><span class="si">)</span><span class="s"> period.&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+Here's how you can modify the object to add extra fields:
+
+<div class="highlight"><pre><span></span><code><span class="kd">var</span><span class="w"> </span><span class="nv">stegosaurus</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">stegosaurus</span>
+<span class="n">stegosaurus</span><span class="p">.</span><span class="n">picture_urls</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;https://www.flickr.com/photos/tags/Stegosaurus/&quot;</span><span class="p">]</span>
+
+<span class="bp">print</span><span class="p">(</span><span class="s">&quot;Here are some photos of </span><span class="si">\(</span><span class="n">stegosaurus</span><span class="p">.</span><span class="n">name</span><span class="si">)</span><span class="s">: </span><span class="si">\(</span><span class="n">stegosaurus</span><span class="p">.</span><span class="n">picture_urls</span><span class="si">)</span><span class="s">&quot;</span><span class="p">)</span>
+</code></pre></div>
+</details>
+
+<h2 id="wire-grpc">Wire gRPC<a class="headerlink" href="#wire-grpc" title="Permanent link">&para;</a></h2>
+<p>Since version 3.0.0, Wire supports <a href="wire_grpc/">gRPC</a>.</p>
+<h2 id="generating-code-with-wire">Generating Code With Wire<a class="headerlink" href="#generating-code-with-wire" title="Permanent link">&para;</a></h2>
+<p>Wire can read <code>.proto</code> files from the local file system and from within <code>.jar</code> files.</p>
+<p>The compiler can optionally prune your schema to a subset of root types and their transitive
+dependencies. This is useful when sharing a schema between projects: a Java service and Android app
+may each use a subset of a larger shared schema.</p>
+<p>For more info on how to get started, see <a href="wire_compiler/">Wire Compiler &amp; Gradle Plugin</a>.</p>
+<p>If you don&rsquo;t use Gradle, the compiler also has a command line interface. Just substitute
+<code>wire-compiler-VERSION-jar-with-dependencies.jar</code> with the path to your jar. <a href="https://search.maven.org/remote_content?g=com.squareup.wire&amp;a=wire-compiler&amp;c=jar-with-dependencies&amp;v=LATEST">Download</a> the latest precompiled jar.</p>
+<div class="codehilite"><pre><span></span><code>% java -jar wire-compiler-VERSION-jar-with-dependencies.jar \
+    --proto_path=src/main/proto \
+    --java_out=out \
+    squareup/dinosaurs/dinosaur.proto \
+    squareup/geology/period.proto
+Writing com.squareup.dinosaurs.Dinosaur to out
+Writing com.squareup.geology.Period to out
+</code></pre></div>
+
+<p>Supplying the <code>--android</code> flag to the compiler causes Wire messages to implement <code>Parcelable</code>.</p>
+<p>If you use Proguard, then you need to add <code>keep</code> rules.  The simplest option is to tell Proguard not
+to touch the Wire runtime library and your generated protocol buffers (of course these simple rules
+will miss opportunities to shrink and optimize the code):</p>
+<div class="codehilite"><pre><span></span><code>-keep class com.squareup.wire.** { *; }
+-keep class com.yourcompany.yourgeneratedcode.** { *; }
+</code></pre></div>
+
+<h2 id="get-wire">Get Wire<a class="headerlink" href="#get-wire" title="Permanent link">&para;</a></h2>
+<p>The <code>wire-runtime</code> package contains runtime support libraries that must be included in applications
+that use Wire-generated code.</p>
+<p>With Maven:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
+<span class="w">  </span><span class="nt">&lt;groupId&gt;</span>com.squareup.wire<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">  </span><span class="nt">&lt;artifactId&gt;</span>wire-runtime-jvm<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">  </span><span class="nt">&lt;version&gt;</span>4.9.2<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>
+<p>With Gradle:</p>
+<div class="highlight"><pre><span></span><code><span class="n">api</span><span class="w"> </span><span class="s2">&quot;com.squareup.wire:wire-runtime:4.9.2&quot;</span>
+</code></pre></div>
+<p>Snapshots of the development version are available in <a href="https://central.sonatype.com/repository/maven-snapshots/">the Central Portal Snapshots repository</a>.</p>
+<h2 id="unsupported">Unsupported<a class="headerlink" href="#unsupported" title="Permanent link">&para;</a></h2>
+<p>Wire does not support:</p>
+<ul>
+<li>Groups - they are skipped when parsing binary input data</li>
+</ul>
+<p>Wire supports custom options on messages and fields. Other custom options are ignored. Pass
+<code>--excludes=google.protobuf.*</code> to the compiler to omit options from the generated code.</p>
+<h2 id="further-documentation">Further Documentation<a class="headerlink" href="#further-documentation" title="Permanent link">&para;</a></h2>
+<p>See <a href="https://developers.google.com/protocol-buffers/docs/proto">Google&rsquo;s excellent documentation</a> on the structure and syntax of proto schemas.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2023 Square, Inc.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/squareeng" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M459.4 151.7c.3 4.5.3 9.1.3 13.6 0 138.7-105.6 298.6-298.6 298.6-59.5 0-114.7-17.2-161.1-47.1 8.4 1 16.6 1.3 25.3 1.3 49.1 0 94.2-16.6 130.3-44.8-46.1-1-84.8-31.2-98.1-72.8 6.5 1 13 1.6 19.8 1.6 9.4 0 18.8-1.3 27.6-3.6-48.1-9.7-84.1-52-84.1-103v-1.3c14 7.8 30.2 12.7 47.4 13.3-28.3-18.8-46.8-51-46.8-87.4 0-19.5 5.2-37.4 14.3-53C87.4 130.8 165 172.4 252.1 176.9c-1.6-7.8-2.6-15.9-2.6-24C249.5 95.1 296.3 48 354.4 48c30.2 0 57.5 12.7 76.7 33.1 23.7-4.5 46.5-13.3 66.6-25.3-7.8 24.4-24.4 44.8-46.1 57.8 21.1-2.3 41.6-8.1 60.4-16.2-14.3 20.8-32.2 39.3-52.6 54.3"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://stackoverflow.com/questions/tagged/square-wire?sort=active" target="_blank" rel="noopener" title="stackoverflow.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M291 311 95.3 269.7 87.1 309l195.7 41zm51-87L188.5 95.7 163 126.5l153.5 128.3zm-31.2 39.7L129.5 179l-16.7 36.5L294 300zM262.3 32l-32 24 119.3 160.3 32-24zm20.5 328h-200v39.7h200zm39.7 80H43V320H3v160h359.5V320h-40z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>

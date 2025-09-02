@@ -1,0 +1,1903 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="gRPC and protocol buffers for Android, Kotlin, and Java.">
+      
+      
+        <meta name="author" content="Square, Inc.">
+      
+      
+        <link rel="canonical" href="https://square.github.io/wire/wire_compiler/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../wire_grpc/">
+      
+      
+      <link rel="icon" href="../images/icon-square.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>Gradle Plugin - Wire</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/app.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="white">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#wire-compiler-gradle-plugin" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Wire" class="md-header__button md-logo" aria-label="Wire" data-md-component="logo">
+      
+  <img src="../images/icon-square.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Wire
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Gradle Plugin
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="white"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="white"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/square/wire" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Wire
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Wire" class="md-nav__button md-logo" aria-label="Wire" data-md-component="logo">
+      
+  <img src="../images/icon-square.png" alt="logo">
+
+    </a>
+    Wire
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/square/wire" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Wire
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Gradle Plugin
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gradle Plugin
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Started
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inputs-and-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inputs and Outputs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proto-path-for-libraries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proto Path for Libraries
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependencies-between-gradle-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dependencies between Gradle Modules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pruning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pruning
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pruning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-matching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version Matching
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proto-libraries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proto Libraries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dry-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dry run
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customizing-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Customizing Output
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customizing Output">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#java" class="md-nav__link">
+    <span class="md-ellipsis">
+      Java
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proto" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proto
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-handlers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Handlers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#swift-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift Support
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Swift Support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-your-protos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build Your Protos
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift Manifest
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wire_grpc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    gRPC
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://stackoverflow.com/questions/tagged/square-wire?sort=active" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Stack Overflow ⏏
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    3.x API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            3.x API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-compiler/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-compiler
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-gradle-plugin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-gradle-plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-grpc-client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-grpc-client
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-gson-support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-gson-support
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-java-generator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-java-generator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-kotlin-generator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-kotlin-generator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-moshi-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-moshi-adapter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-reflector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-reflector
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-runtime
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-schema
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-schema-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-schema-tests
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-swift-generator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-swift-generator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    2.x API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            2.x API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://square.github.io/wire/2.x/wire-gson-support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-gson-support ⏏
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://square.github.io/wire/2.x/wire-runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-runtime ⏏
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wire_json/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    JSON
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wire_vs_protoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Wire vs Protoc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Change Log
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code_of_conduct/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://developers.google.com/protocol-buffers/docs/proto" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Protocol Buffers ⏏
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Started
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inputs-and-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inputs and Outputs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proto-path-for-libraries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proto Path for Libraries
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependencies-between-gradle-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dependencies between Gradle Modules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pruning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pruning
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pruning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-matching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version Matching
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proto-libraries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proto Libraries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dry-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dry run
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customizing-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Customizing Output
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customizing Output">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#java" class="md-nav__link">
+    <span class="md-ellipsis">
+      Java
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proto" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proto
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-handlers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Handlers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#swift-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift Support
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Swift Support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-your-protos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build Your Protos
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift Manifest
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="wire-compiler-gradle-plugin">Wire Compiler &amp; Gradle Plugin<a class="headerlink" href="#wire-compiler-gradle-plugin" title="Permanent link">&para;</a></h1>
+<p>Wire has two key components: a <strong>compiler</strong> that generates source code at build time, and a
+<strong>runtime library</strong> that supports the generated code when your program executes. The compiler is
+very configurable; this guide explains its features and their use.</p>
+<h2 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
+<p>The best way to configure and execute the Wire compiler is via our <a href="https://gradle.org/">Gradle</a> plugin. It
+requires Gradle 5.5 or newer.</p>
+<p>A typical project has <code>.proto</code> files in the standard <code>src/main/proto</code> directory.</p>
+<div class="highlight"><pre><span></span><code>src/
+  main/
+    proto/
+      com/
+        example/
+          pizza/
+            pizza_delivery.proto
+            pizza.proto
+          sales/
+            price.proto
+            store.proto
+          geo/
+            address.proto
+            country.proto
+    kotlin/
+      com/
+        example/
+          pizza/
+            PizzaApp.kt
+  test/
+    kotlin/
+      com/
+        example/
+          pizza/
+            PizzaAppTest.kt
+build.gradle
+</code></pre></div>
+<p>Because this project uses the default configuration, plugin setup is easy. Just a simple
+block in <code>build.gradle</code>,</p>
+<p>Using plugin application:
+<div class="highlight"><pre><span></span><code><span class="n">buildscript</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">repositories</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">mavenCentral</span><span class="o">()</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="w">  </span><span class="n">dependencies</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">classpath</span><span class="w"> </span><span class="s1">&#39;com.squareup.wire:wire-gradle-plugin:&lt;version&gt;&#39;</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+
+<span class="n">apply</span><span class="w"> </span><span class="nl">plugin:</span><span class="w"> </span><span class="s1">&#39;com.squareup.wire&#39;</span>
+
+<span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">kotlin</span><span class="w"> </span><span class="o">{}</span>
+<span class="o">}</span>
+</code></pre></div></p>
+<p>Using the plugins DSL:
+<div class="highlight"><pre><span></span><code><span class="n">plugins</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="s1">&#39;application&#39;</span>
+<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="s1">&#39;org.jetbrains.kotlin.jvm&#39;</span>
+<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="s1">&#39;com.squareup.wire&#39;</span>
+<span class="o">}</span>
+
+<span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">kotlin</span><span class="w"> </span><span class="o">{}</span>
+<span class="o">}</span>
+</code></pre></div></p>
+<p>The plugin will read the <code>.proto</code> schema definitions, validate them, link them, and generate Kotlin
+code. It uses <a href="https://github.com/square/kotlinpoet">KotlinPoet</a> internally to generate compact and legible source files.</p>
+<p><img alt="Basic" src="../images/gradle_basic%402x.png" /></p>
+<p>If <code>sourcePath</code> isn&rsquo;t set, Wire will look for <code>.proto</code> files in <code>src/main/proto</code> by default.</p>
+<p>Wire will generate files in <code>build/generated/source/wire</code>. It&rsquo;ll also register this directory as a
+source directory for the project so the generated sources are compiled by the Kotlin compiler.</p>
+<p>Replace <code>kotlin</code> with <code>java</code> to generate the Java sources instead.</p>
+<h2 id="inputs-and-outputs">Inputs and Outputs<a class="headerlink" href="#inputs-and-outputs" title="Permanent link">&para;</a></h2>
+<p>Wire can pull source <code>.proto</code> schema definitions from a local directory, a local <code>.jar</code> file, or an
+external artifact specified with <a href="https://maven.apache.org/pom.html#Maven_Coordinates">Maven coordinates</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">sourcePath</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">srcDir</span><span class="w"> </span><span class="s1">&#39;src/main/protos&#39;</span>
+<span class="w">  </span><span class="o">}</span>
+
+<span class="w">  </span><span class="n">sourcePath</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">srcJar</span><span class="w"> </span><span class="s1">&#39;lib/pizza-protos.jar&#39;</span>
+<span class="w">  </span><span class="o">}</span>
+
+<span class="w">  </span><span class="n">sourcePath</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">srcJar</span><span class="w"> </span><span class="s1">&#39;com.example.pizza:pizza-protos:1.0.0&#39;</span>
+<span class="w">  </span><span class="o">}</span>
+
+<span class="w">  </span><span class="o">...</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>If your resource or directory contains more <code>.proto</code> files than you need to compile you can
+constrain the inputs to specific files:</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">sourcePath</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">srcDir</span><span class="w"> </span><span class="s1">&#39;src/main/protos&#39;</span>
+<span class="w">    </span><span class="n">include</span><span class="w"> </span><span class="s1">&#39;com/example/pizza/pizza_delivery.proto&#39;</span>
+<span class="w">    </span><span class="n">include</span><span class="w"> </span><span class="s1">&#39;com/example/pizza/pizza.proto&#39;</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>Wildcards (with two stars) are also accepted:</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">sourcePath</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">srcDir</span><span class="w"> </span><span class="s1">&#39;src/main/protos&#39;</span>
+<span class="w">    </span><span class="n">include</span><span class="w"> </span><span class="s1">&#39;com/example/pizza/**&#39;</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>You can also do the opposite and exclude some files:
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">sourcePath</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">srcDir</span><span class="w"> </span><span class="s1">&#39;src/main/protos&#39;</span>
+<span class="w">    </span><span class="n">exclude</span><span class="w"> </span><span class="s1">&#39;com/example/juice/**&#39;</span>
+<span class="w">    </span><span class="n">exclude</span><span class="w"> </span><span class="s1">&#39;com/example/pizza/toppings.proto&#39;</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></p>
+<p>Wire can emit multiple languages in the same build. Use <code>includes</code> to specify which types are
+emitted for a target language; subsequent languages will emit what&rsquo;s left over.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="o">...</span>
+
+<span class="w">  </span><span class="n">kotlin</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="c1">// Kotlin emits the matched types only.</span>
+<span class="w">    </span><span class="n">includes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s1">&#39;com.example.pizza.*&#39;</span><span class="o">]</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="w">  </span><span class="n">java</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="c1">// Java gets everything else!</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>Note that sources are specified as file system paths (slash delimiter) and targets are specified as
+Proto type names (dot delimiter).</p>
+<p><img alt="Inputs and Outputs" src="../images/gradle_inputs_and_outputs%402x.png" /></p>
+<p>You may also specify targets with excludes. If you have both includes and excludes, excludes take
+precedence.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="o">...</span>
+
+<span class="w">  </span><span class="n">kotlin</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="c1">// Kotlin emits everything but sales and geo packages.</span>
+<span class="w">    </span><span class="n">excludes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s1">&#39;com.example.sales.*&#39;</span><span class="o">,</span><span class="w"> </span><span class="s1">&#39;com.example.geo.*&#39;</span><span class="o">]</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="w">  </span><span class="n">java</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="c1">// Java gets those because they&#39;re left over.</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>Wire will print a warning if any name in includes or excludes is unused.</p>
+<p>When configuring Wire you must use the package name from the <code>.proto</code> file&rsquo;s <code>package</code> declaration.
+The <code>option java_package</code> name is not used for Wire configuration.</p>
+<h2 id="proto-path-for-libraries">Proto Path for Libraries<a class="headerlink" href="#proto-path-for-libraries" title="Permanent link">&para;</a></h2>
+<p>Large projects may span multiple modules. To support this Wire has a &lsquo;proto path&rsquo;. The <code>.proto</code>
+schema files on this path are used for linking and validation, but they do not yield files in the
+generated output.</p>
+<p>The proto path supports the same inputs as the source path: directories, <code>.jar</code> files, and Maven
+coordinates. Similarly, the proto path may be filtered with <code>include</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">protoPath</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">srcDir</span><span class="w"> </span><span class="s1">&#39;src/main/address-protos&#39;</span>
+<span class="w">  </span><span class="o">}</span>
+
+<span class="w">  </span><span class="n">protoPath</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">srcJar</span><span class="w"> </span><span class="s1">&#39;lib/price.jar&#39;</span>
+<span class="w">  </span><span class="o">}</span>
+
+<span class="w">  </span><span class="n">protoPath</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">srcJar</span><span class="w"> </span><span class="s1">&#39;com.example:countries:1.0.0&#39;</span>
+<span class="w">    </span><span class="n">include</span><span class="w"> </span><span class="s1">&#39;com/example/geo/country.proto&#39;</span>
+<span class="w">  </span><span class="o">}</span>
+
+<span class="w">  </span><span class="n">protoPath</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">srcDir</span><span class="w"> </span><span class="s1">&#39;src/main/extra-protos&#39;</span>
+<span class="w">    </span><span class="n">exclude</span><span class="w"> </span><span class="s1">&#39;com/example/**&#39;</span>
+<span class="w">  </span><span class="o">}</span>
+
+<span class="w">  </span><span class="o">...</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>The source path and proto path are linked together but only types on the source path are generated.</p>
+<p><img alt="Library" src="../images/gradle_library%402x.png" /></p>
+<h2 id="dependencies-between-gradle-modules">Dependencies between Gradle Modules<a class="headerlink" href="#dependencies-between-gradle-modules" title="Permanent link">&para;</a></h2>
+<p>Wire provides support to define dependencies between modules within the same project.</p>
+<p>A module can include its <code>.proto</code> files into the output resources. Use this when your <code>.jar</code> file
+can be used as a library for other proto or Wire projects. Note that only the <code>.proto</code> files used
+in the library will be included.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">protoLibrary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>Wire also creates two configurations, <code>protoPath</code> and <code>protoSource</code> you can use to define a
+dependency on another proto or Wire project.</p>
+<div class="highlight"><pre><span></span><code><span class="n">dependencies</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="c1">// The task `:common-protos:jar` will be added into the dependency</span>
+<span class="w">  </span><span class="c1">// graph of this module for the Wire generating tasks.</span>
+<span class="w">  </span><span class="n">protoPath</span><span class="o">(</span><span class="n">project</span><span class="o">(</span><span class="s1">&#39;:common-protos&#39;</span><span class="o">))</span>
+<span class="w">  </span><span class="n">implementation</span><span class="o">(</span><span class="n">project</span><span class="o">(</span><span class="s1">&#39;:common-protos&#39;</span><span class="o">))</span>
+<span class="o">}</span>
+
+<span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">kotlin</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>Note that <code>protoPath</code> and <code>protoSource</code> dependencies are not transitive by default. If needed, you
+can change it manually.</p>
+<div class="highlight"><pre><span></span><code><span class="n">configurations</span><span class="o">.</span><span class="na">protoPath</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">transitive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="o">}</span>
+</code></pre></div>
+<h2 id="pruning">Pruning<a class="headerlink" href="#pruning" title="Permanent link">&para;</a></h2>
+<p>For mobile projects it&rsquo;s easy to generate a lot of unnecessary code. For example, a <code>.proto</code> schema
+might support types for obsolete features.</p>
+<p>General-purpose code-shrinking tools like <a href="https://developer.android.com/studio/build/shrink-code">R8</a> and <a href="https://www.guardsquare.com/en/products/proguard">ProGuard</a> have difficulty
+shrinking Wire-generated sources because the <code>encode()</code> and <code>decode()</code> functions still use them.
+Instead, Wire offers its own code shrinker to eliminate unwanted declarations early.</p>
+<p>Use <code>prune</code> to precisely eliminate an unwanted type or member. These will be eliminated along with
+all references to them.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="o">...</span>
+
+<span class="w">  </span><span class="n">prune</span><span class="w"> </span><span class="s1">&#39;com.example.store.Store&#39;</span>
+<span class="w">  </span><span class="n">prune</span><span class="w"> </span><span class="s1">&#39;com.example.geo.Country&#39;</span>
+
+<span class="w">  </span><span class="o">...</span>
+<span class="o">}</span>
+</code></pre></div>
+<p><img alt="Pruning" src="../images/gradle_pruning%402x.png" /></p>
+<p>Alternately you may prefer to specify what to keep, pruning everything not reachable from that set.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="o">...</span>
+
+<span class="w">  </span><span class="n">root</span><span class="w"> </span><span class="s1">&#39;com.example.pizza.PizzaDelivery&#39;</span>
+
+<span class="w">  </span><span class="o">...</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>By default this feature is strict given unknown <code>root</code> and <code>prune</code> arguments. You may prefer for
+this to be lenient instead:</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">rejectUnusedRootsOrPrunes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">  </span><span class="o">...</span>
+<span class="o">}</span>
+</code></pre></div>
+<h3 id="version-matching">Version Matching<a class="headerlink" href="#version-matching" title="Permanent link">&para;</a></h3>
+<p>Another way to prune obsolete fields is to assign them a version, then to generate your code
+against a version range or a unique version. The fields out of the version range will get pruned.</p>
+<p>Members may be declared with <code>wire.since</code> and <code>wire.until</code> options; enum constant can use
+<code>wire.constant_since</code> and <code>wire.constant_until</code>. For example, these options declare a field <code>age</code>
+that was replaced with <code>birth_date</code> in version &ldquo;5.0&rdquo;:</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="s">&quot;wire/extensions.proto&quot;</span><span class="p">;</span>
+
+<span class="kd">message</span><span class="w"> </span><span class="nc">Singer</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="kt">int32</span><span class="w"> </span><span class="na">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">[(</span><span class="n">wire.until</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;5.0&quot;</span><span class="p">];</span>
+<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="n">Date</span><span class="w"> </span><span class="na">birth_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">[(</span><span class="n">wire.since</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;5.0&quot;</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client code should typically target a single version. In this example, clients will have the
+<code>name</code> and <code>birth_date</code> fields only.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">onlyVersion</span><span class="w"> </span><span class="s2">&quot;5.0&quot;</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>Service code that supports many clients should support the union of versions of all supported
+clients. Such code will have <code>name</code>, as well as both the <code>age</code> and <code>birth_date</code> fields.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">sinceVersion</span><span class="w"> </span><span class="s2">&quot;3.0&quot;</span>
+<span class="w">  </span><span class="n">untilVersion</span><span class="w"> </span><span class="s2">&quot;6.0&quot;</span>
+<span class="o">}</span>
+</code></pre></div>
+<h3 id="proto-libraries">Proto Libraries<a class="headerlink" href="#proto-libraries" title="Permanent link">&para;</a></h3>
+<p>By default, <code>.proto</code> input files are not included in the generated <code>.jar</code> artifact. Use the
+<code>protoLibrary</code> option to include them:</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">protoLibrary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>This is most useful when building <code>.jar</code> files for other <code>wire</code> tasks to use as dependencies. Note
+that only the true sources are included – proto messages that are pruned or not used are not
+included in the output artifact.</p>
+<h3 id="dry-run">Dry run<a class="headerlink" href="#dry-run" title="Permanent link">&para;</a></h3>
+<p>With the dry run option, the compiler will just emit the names of the source files that would be otherwise generated to
+stdout.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">dryRun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="o">}</span>
+</code></pre></div>
+<h2 id="customizing-output">Customizing Output<a class="headerlink" href="#customizing-output" title="Permanent link">&para;</a></h2>
+<h3 id="java">Java<a class="headerlink" href="#java" title="Permanent link">&para;</a></h3>
+<p>Here&rsquo;s an exhaustive Java configuration. Booleans are shown with their default behavior.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">java</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="c1">// Proto types to include generated sources for. Types listed here will be</span>
+<span class="w">    </span><span class="c1">// generated for this target and not for subsequent targets in the task.</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">// This list should contain package names (suffixed with `.*`) and type</span>
+<span class="w">    </span><span class="c1">// names only. It should not contain member names.</span>
+<span class="w">    </span><span class="n">includes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s1">&#39;com.example.pizza.*&#39;</span><span class="o">]</span>
+
+<span class="w">    </span><span class="c1">// Proto types to excluded generated sources for. Types listed here will</span>
+<span class="w">    </span><span class="c1">// not be generated for this target.</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">// This list should contain package names (suffixed with `.*`) and type</span>
+<span class="w">    </span><span class="c1">// names only. It should not contain member names.</span>
+<span class="w">    </span><span class="n">excludes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s1">&#39;com.example.sales.*&#39;</span><span class="o">]</span>
+
+<span class="w">    </span><span class="c1">// True if types emitted for this target should not also be emitted for</span>
+<span class="w">    </span><span class="c1">// other targets. Use this to cause multiple outputs to be emitted for the</span>
+<span class="w">    </span><span class="c1">// same input type.</span>
+<span class="w">    </span><span class="n">exclusive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+
+<span class="w">    </span><span class="c1">// Directory to emit to.</span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="s2">&quot;${buildDir}/custom&quot;</span>
+
+<span class="w">    </span><span class="c1">// True for emitted types to implement android.os.Parcelable.</span>
+<span class="w">    </span><span class="n">android</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+
+<span class="w">    </span><span class="c1">// True to enable the androidx.annotation. Nullable annotation</span>
+<span class="w">    </span><span class="c1">// where applicable.</span>
+<span class="w">    </span><span class="n">androidAnnotations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+
+<span class="w">    </span><span class="c1">// True to emit code that uses reflection for reading, writing, and toString</span>
+<span class="w">    </span><span class="c1">// methods which are normally implemented with generated code.</span>
+<span class="w">    </span><span class="n">compact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+
+<span class="w">    </span><span class="c1">// True to turn visibility of all generated types&#39; constructors</span>
+<span class="w">    </span><span class="c1">// to non-public.</span>
+<span class="w">    </span><span class="n">buildersOnly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+
+<span class="w">    </span><span class="c1">// True to emit types for options declared on messages, fields, etc.</span>
+<span class="w">    </span><span class="n">emitDeclaredOptions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+
+<span class="w">    </span><span class="c1">// True to emit annotations for options applied on messages, fields, etc.</span>
+<span class="w">    </span><span class="n">emitAppliedOptions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<h3 id="kotlin">Kotlin<a class="headerlink" href="#kotlin" title="Permanent link">&para;</a></h3>
+<p>Here&rsquo;s an exhaustive Kotlin configuration. Booleans and enums are shown with their default behavior.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">kotlin</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="c1">// Proto types to include generated sources for. Types listed here will be</span>
+<span class="w">    </span><span class="c1">// generated for this target and not for subsequent targets in the task.</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">// This list should contain package names (suffixed with `.*`) and type</span>
+<span class="w">    </span><span class="c1">// names only. It should not contain member names.</span>
+<span class="w">    </span><span class="n">includes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s1">&#39;com.example.pizza.*&#39;</span><span class="o">]</span>
+
+<span class="w">    </span><span class="c1">// Proto types to excluded generated sources for. Types listed here will not</span>
+<span class="w">    </span><span class="c1">// be generated for this target.</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">// This list should contain package names (suffixed with `.*`) and type</span>
+<span class="w">    </span><span class="c1">// names only. It should not contain member names.</span>
+<span class="w">    </span><span class="n">excludes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s1">&#39;com.example.sales.*&#39;</span><span class="o">]</span>
+
+<span class="w">    </span><span class="c1">// True if types emitted for this target should not also be emitted for</span>
+<span class="w">    </span><span class="c1">// other targets. Use this to cause multiple outputs to be emitted for the</span>
+<span class="w">    </span><span class="c1">// same input type.</span>
+<span class="w">    </span><span class="n">exclusive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+
+<span class="w">    </span><span class="c1">// Directory to emit to.</span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="s2">&quot;${buildDir}/custom&quot;</span>
+
+<span class="w">    </span><span class="c1">// True for emitted types to implement android.os.Parcelable.</span>
+<span class="w">    </span><span class="n">android</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+
+<span class="w">    </span><span class="c1">// True for emitted types to implement APIs for easier migration from the</span>
+<span class="w">    </span><span class="c1">// Java target.</span>
+<span class="w">    </span><span class="n">javaInterop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+
+<span class="w">    </span><span class="c1">// True to turn visibility of all generated types&#39; constructors</span>
+<span class="w">    </span><span class="c1">// to non-public.</span>
+<span class="w">    </span><span class="n">buildersOnly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+
+<span class="w">    </span><span class="c1">// True to emit types for options declared on messages, fields, etc.</span>
+<span class="w">    </span><span class="n">emitDeclaredOptions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+
+<span class="w">    </span><span class="c1">// True to emit annotations for options applied on messages, fields, etc.</span>
+<span class="w">    </span><span class="n">emitAppliedOptions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+
+<span class="w">    </span><span class="c1">// `suspending` to generate coroutines APIs that require a Kotlin</span>
+<span class="w">    </span><span class="c1">// coroutines context.</span>
+<span class="w">    </span><span class="c1">// `blocking` to generate blocking APIs callable by Java and Kotlin.</span>
+<span class="w">    </span><span class="n">rpcCallStyle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;blocking&#39;</span>
+
+<span class="w">    </span><span class="c1">// `client` to generate interfaces best suited to sending outbound calls.</span>
+<span class="w">    </span><span class="c1">// `server` to generate interfaces best suited to receiving inbound calls.</span>
+<span class="w">    </span><span class="c1">// `none` to not generate services.</span>
+<span class="w">    </span><span class="n">rpcRole</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;server&#39;</span>
+
+<span class="w">    </span><span class="c1">// If set, the value will be appended to generated service type names. If</span>
+<span class="w">    </span><span class="c1">// null, their rpcRole will be used as a suffix instead.</span>
+<span class="w">    </span><span class="n">nameSuffix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Suffix&quot;</span>
+
+<span class="w">    </span><span class="c1">// True for emitted services to implement one interface per RPC.</span>
+<span class="w">    </span><span class="n">singleMethodServices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+
+<span class="w">    </span><span class="c1">// Set how many oneof choices are necessary for generated message classes to use the</span>
+<span class="w">    </span><span class="c1">// `OneOf&lt;Key&lt;T&gt;, T&gt;` form rather than the default, where options are flattened into the</span>
+<span class="w">    </span><span class="c1">// enclosing type.</span>
+<span class="w">    </span><span class="n">boxOneOfsMinSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5000</span>
+
+<span class="w">    </span><span class="c1">// True to escape Kotlin keywords like `value` and `data` with backticks. Otherwise an</span>
+<span class="w">    </span><span class="c1">// underscore underscore is added as a suffix, like `value_` and `data_`.</span>
+<span class="w">    </span><span class="n">escapeKotlinKeywords</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+
+<span class="w">    </span><span class="c1">// Defines how an protobuf enum type is to be generated. See `com.squareup.wire.kotlin.EnumMode`</span>
+<span class="w">    </span><span class="n">enumMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;enum_class&quot;</span>
+
+<span class="w">    </span><span class="c1">// True to emit a adapters that include a decode() function that accepts a `ProtoReader32`.</span>
+<span class="w">    </span><span class="c1">// Use this optimization when targeting Kotlin/JS, where `Long` cursors are inefficient.</span>
+<span class="w">    </span><span class="n">emitProtoReader32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<h3 id="proto">Proto<a class="headerlink" href="#proto" title="Permanent link">&para;</a></h3>
+<p>Here&rsquo;s an exhaustive Proto configuration. You can use this target to generate a pruned proto schema,
+or to pretty-print one. Note that even with multiple outputs set, the proto target will always emit
+all types, all services, and all extensions of the schema.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">proto</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="c1">// Directory to emit to.</span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="s2">&quot;${buildDir}/custom&quot;</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<h3 id="custom-handlers">Custom Handlers<a class="headerlink" href="#custom-handlers" title="Permanent link">&para;</a></h3>
+<p>With a custom schema handler, you can handle a proto schema in any way you want, including code
+generation or other side effects such as validation, logging, etc.</p>
+<p>You&rsquo;ll need to first extend the <a href="https://github.com/square/wire/blob/master/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt">SchemaHandler</a> class, and then the <a href="https://github.com/square/wire/blob/master/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/SchemaHandler.kt#L194">SchemaHandler.Factory</a>
+interface which is to return an instance of the former. See our <a href="https://github.com/square/wire/tree/master/wire-schema-tests/src/commonTest/kotlin/com/squareup/wire/recipes">recipes</a> for
+different use cases&rsquo; implementations.</p>
+<p>Build that into an <code>jar</code> artifact and add that as a buildscript dependency to your Gradle project.</p>
+<div class="highlight"><pre><span></span><code><span class="n">buildscript</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">dependencies</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">classpath</span><span class="w"> </span><span class="s2">&quot;com.example.my-custom-handler:my-custom-handler:1.0.0&quot;</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>Next configure the Wire plugin to call your custom handler. Here&rsquo;s an exhaustive custom
+configuration. Booleans and enums are shown with their default behavior.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="n">custom</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="c1">// The name of a Java class to generate code with. This class must:</span>
+<span class="w">    </span><span class="c1">//  * be in the buildscript dependencies for this Gradle project</span>
+<span class="w">    </span><span class="c1">//  * be a public class</span>
+<span class="w">    </span><span class="c1">//  * have a public no-arguments constructor</span>
+<span class="w">    </span><span class="c1">//  * implement the com.squareup.wire.schema.SchemaHandler.Factory interface</span>
+<span class="w">    </span><span class="n">schemaHandlerFactoryClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;com.example.MyCustomHandlerFactory&quot;</span>
+
+<span class="w">    </span><span class="c1">// These options work the same as the java and kotlin targets above.</span>
+<span class="w">    </span><span class="n">includes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s1">&#39;com.example.pizza.*&#39;</span><span class="o">]</span>
+<span class="w">    </span><span class="n">excludes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s1">&#39;com.example.sales.*&#39;</span><span class="o">]</span>
+<span class="w">    </span><span class="n">exclusive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="s2">&quot;${buildDir}/custom&quot;</span>
+
+<span class="w">    </span><span class="c1">// Custom payload which can be passed to the `SchemaHandler.Factory`.</span>
+<span class="w">    </span><span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="nl">a:</span><span class="w"> </span><span class="s2">&quot;one&quot;</span><span class="o">,</span><span class="w"> </span><span class="nl">b:</span><span class="w"> </span><span class="s2">&quot;two&quot;</span><span class="o">,</span><span class="w"> </span><span class="nl">c:</span><span class="w"> </span><span class="s2">&quot;three&quot;</span><span class="o">]</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<h2 id="swift-support">Swift Support<a class="headerlink" href="#swift-support" title="Permanent link">&para;</a></h2>
+<p>The easiest way to get started is to use CocoaPods.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Add the Wire compiler so that it is downloaded and available.</span>
+<span class="c1"># CocoaPods will download the source and build the compiler directly,</span>
+<span class="c1"># so you&#39;ll need Java installed.</span>
+<span class="n">pod</span><span class="w"> </span><span class="s1">&#39;WireCompiler&#39;</span>
+
+<span class="c1"># Add the Wire runtime to do the serializing/deserializing</span>
+<span class="n">pod</span><span class="w"> </span><span class="s1">&#39;Wire&#39;</span>
+</code></pre></div>
+<p>Then run pod install to get the dependencies and build the Wire compiler.</p>
+<p>Swift Package Manager is also supported for linking the Wire runtime.</p>
+<h3 id="build-your-protos">Build Your Protos<a class="headerlink" href="#build-your-protos" title="Permanent link">&para;</a></h3>
+<p>The Wire compiler uses <a href="https://github.com/outfoxx/swiftpoet">SwiftPoet</a> to generate Swift code.
+The resulting objects automatically conform to <code>Equatable</code>, <code>Codable</code> and <code>Sendable</code>.</p>
+<p>Assuming you&rsquo;ve used CocoaPods to download the Wire compiler, to compile your protos into Swift files:</p>
+<div class="highlight"><pre><span></span><code>java<span class="w"> </span>-jar<span class="w"> </span>./Pods/WireCompiler/compiler.jar<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s2">&quot;--proto_path=&lt;directory containing .proto files&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s2">&quot;--swift_out=&lt;directory where the generated .swift files go&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s2">&quot;--experimental-module-manifest=&lt;path to manifest yaml file&gt;&quot;</span>
+</code></pre></div>
+<h3 id="swift-manifest">Swift Manifest<a class="headerlink" href="#swift-manifest" title="Permanent link">&para;</a></h3>
+<p>Swift introduced a new challenge that didn’t exist with Kotlin and Java: modules.
+Kotlin and Java both use fully-qualified package names, but Swift modules are defined by their compilation unit, and thus namespaces aren’t declared at the type or file level.
+This meant that we needed to build a new packaging system for Swift that could deal with Swift module namespacing and imports.</p>
+<p>We decided that the easiest way for a caller to define modules was to make those definitions handled directly by Wire.
+A single manifest file defines the modules, their names, their dependencies, and the content roots and prunes mentioned above.</p>
+<p>In this example manifest the DarkSide and LightSide modules would depend on and import the CommonProtos module:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">CommonProtos</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">roots</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jedi.Lightsaber</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jedi.MindTrick</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jedi.TheForce</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jedi.Anakin</span>
+
+<span class="nt">DarkSideProtos</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">dependencies</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CommonProtos</span>
+<span class="w">  </span><span class="nt">roots</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">darkside.*</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jedi.Lightning</span>
+<span class="w">  </span><span class="nt">prunes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jedi.Mercy</span>
+
+<span class="nt">LightSideProtos</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">dependencies</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CommonProtos</span>
+<span class="w">  </span><span class="nt">roots</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lightside.*</span>
+<span class="w">    </span><span class="c1"># Import the rest of the Jedi powers not already in CommonProtos</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jedi.*</span>
+<span class="w">  </span><span class="nt">prunes</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># Remove unused lightsaber colors</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jedi.LightsaberColor#red</span>
+<span class="w">    </span><span class="c1"># Remove deprecated field. Use green_lightsaber instead.</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lightside.Luke#blue_lightsaber</span>
+<span class="w">    </span><span class="c1"># Remove dark-side-only types</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jedi.Lightning</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2023 Square, Inc.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/squareeng" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M459.4 151.7c.3 4.5.3 9.1.3 13.6 0 138.7-105.6 298.6-298.6 298.6-59.5 0-114.7-17.2-161.1-47.1 8.4 1 16.6 1.3 25.3 1.3 49.1 0 94.2-16.6 130.3-44.8-46.1-1-84.8-31.2-98.1-72.8 6.5 1 13 1.6 19.8 1.6 9.4 0 18.8-1.3 27.6-3.6-48.1-9.7-84.1-52-84.1-103v-1.3c14 7.8 30.2 12.7 47.4 13.3-28.3-18.8-46.8-51-46.8-87.4 0-19.5 5.2-37.4 14.3-53C87.4 130.8 165 172.4 252.1 176.9c-1.6-7.8-2.6-15.9-2.6-24C249.5 95.1 296.3 48 354.4 48c30.2 0 57.5 12.7 76.7 33.1 23.7-4.5 46.5-13.3 66.6-25.3-7.8 24.4-24.4 44.8-46.1 57.8 21.1-2.3 41.6-8.1 60.4-16.2-14.3 20.8-32.2 39.3-52.6 54.3"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://stackoverflow.com/questions/tagged/square-wire?sort=active" target="_blank" rel="noopener" title="stackoverflow.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M291 311 95.3 269.7 87.1 309l195.7 41zm51-87L188.5 95.7 163 126.5l153.5 128.3zm-31.2 39.7L129.5 179l-16.7 36.5L294 300zM262.3 32l-32 24 119.3 160.3 32-24zm20.5 328h-200v39.7h200zm39.7 80H43V320H3v160h359.5V320h-40z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,5811 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="gRPC and protocol buffers for Android, Kotlin, and Java.">
+      
+      
+        <meta name="author" content="Square, Inc.">
+      
+      
+        <link rel="canonical" href="https://square.github.io/wire/changelog/">
+      
+      
+        <link rel="prev" href="../wire_vs_protoc/">
+      
+      
+        <link rel="next" href="../contributing/">
+      
+      
+      <link rel="icon" href="../images/icon-square.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>Change Log - Wire</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/app.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="white">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#change-log" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Wire" class="md-header__button md-logo" aria-label="Wire" data-md-component="logo">
+      
+  <img src="../images/icon-square.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Wire
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Change Log
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="white"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="white"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/square/wire" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Wire
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Wire" class="md-nav__button md-logo" aria-label="Wire" data-md-component="logo">
+      
+  <img src="../images/icon-square.png" alt="logo">
+
+    </a>
+    Wire
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/square/wire" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Wire
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wire_compiler/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gradle Plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wire_grpc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    gRPC
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://stackoverflow.com/questions/tagged/square-wire?sort=active" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Stack Overflow ⏏
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    3.x API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            3.x API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-compiler/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-compiler
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-gradle-plugin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-gradle-plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-grpc-client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-grpc-client
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-gson-support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-gson-support
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-java-generator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-java-generator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-kotlin-generator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-kotlin-generator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-moshi-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-moshi-adapter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-reflector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-reflector
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-runtime
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-schema
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-schema-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-schema-tests
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.x/wire-swift-generator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-swift-generator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    2.x API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            2.x API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://square.github.io/wire/2.x/wire-gson-support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-gson-support ⏏
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://square.github.io/wire/2.x/wire-runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wire-runtime ⏏
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wire_json/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    JSON
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wire_vs_protoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Wire vs Protoc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Change Log
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Change Log
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#unreleased" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unreleased
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-540" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.4.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.4.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gradle-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gradle plugin
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-5311" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.11
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.11">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#swift" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-5310" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.10
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.10">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#swift_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-538-539" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.8 / 5.3.9
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.8 / 5.3.9">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#swift_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-537" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.7
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.7">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#swift_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-536" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.6
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.6">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      CLI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jvm" class="md-nav__link">
+    <span class="md-ellipsis">
+      JVM
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-535" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.5
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.5">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grpc-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      gRPC Client
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-534" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.4
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wire-compiler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wire Compiler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-533" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.3
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gradle-plugin_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gradle plugin
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-532" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.2
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gradle-plugin_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gradle plugin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#java" class="md-nav__link">
+    <span class="md-ellipsis">
+      Java
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-531" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.1
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gradle-plugin_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gradle plugin
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-530" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gradle-plugin_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gradle plugin
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-521" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.2.1
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.2.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jvm-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      JVM generation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-520" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.2.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.2.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cli-wire-compiler" class="md-nav__link">
+    <span class="md-ellipsis">
+      CLI wire-compiler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jvm-generation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      JVM generation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-4911" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.11
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.9.11">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-510" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.1.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.1.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-500" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.0.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.0.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-500-alpha04" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.0.0-alpha04
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.0.0-alpha04">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-500-alpha03" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.0.0-alpha03
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.0.0-alpha03">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#json" class="md-nav__link">
+    <span class="md-ellipsis">
+      JSON
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-500-alpha02" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.0.0-alpha02
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.0.0-alpha02">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-500-alpha01" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.0.0-alpha01
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.0.0-alpha01">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wire-grpc-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      wire-grpc-server
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-bumps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version bumps
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-499" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.9
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.9.9">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-498" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.8
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.9.8">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-497" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.7
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.9.7">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-496" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.6
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.9.6">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-495" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.5
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.9.5">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-494" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.4
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.9.4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#announcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Announcement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-493" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-492" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-491" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-490" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-481" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.8.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-480" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.8.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-472" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.7.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-471" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.7.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-470" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.7.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-462" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.6.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-461" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.6.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-460" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.6.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-456-note-that-this-holds-a-breaking-change-update-directly-to-460-to-avoid-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.5.6 (Note that this holds a breaking change, update directly to 4.6.0 to avoid it.)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-455" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.5.5
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-454" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.5.4
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-453" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.5.3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-452" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.5.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-451" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.5.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-450" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.5.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.5.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#swift_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-443" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.4.3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-442" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.4.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-441" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.4.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-440" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.4.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-430" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.3.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-420" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.2.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-411" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.1.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-410" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.1.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-401" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.0.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-400" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.0.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-371" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.7.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-370" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.7.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-361" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.6.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-360" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.6.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-350" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.5.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-340" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.4.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-330" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.3.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-322" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.2.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-321" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.2.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-320" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.2.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-310" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.1.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-303" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-302" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-301" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-300" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-300-rc03" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.0-rc03
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-300-rc02" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.0-rc02
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 3.0.0-rc02">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kotlin_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grpc" class="md-nav__link">
+    <span class="md-ellipsis">
+      gRPC
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#misc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Misc
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-300-rc01" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.0-rc01
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 3.0.0-rc01">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#compiler-gradle-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compiler + Gradle plugin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grpc_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      gRPC
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#misc_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Misc
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-300-alpha03" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.0-alpha03
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-300-alpha02" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.0-alpha02
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-300-alpha01" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.0-alpha01
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-220" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.2.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-212" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.1.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-211" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.1.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-210" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.1.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-203" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.0.3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-202" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.0.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-201" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.0.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-200" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.0.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 2.0.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-java-generator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema &amp; Java Generator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compiler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compiler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extensions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-180" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.8.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-170" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.7.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-161" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.6.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-160" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.6.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-152" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.5.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-151" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.5.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-150" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.5.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-140" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.4.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-133" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.3.3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-132" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.3.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-131" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.3.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-130" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.3.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-120" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.2.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-111" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.1.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-110" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.1.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-101" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.0.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-100" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.0.0
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code_of_conduct/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://developers.google.com/protocol-buffers/docs/proto" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Protocol Buffers ⏏
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#unreleased" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unreleased
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-540" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.4.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.4.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gradle-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gradle plugin
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-5311" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.11
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.11">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#swift" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-5310" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.10
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.10">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#swift_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-538-539" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.8 / 5.3.9
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.8 / 5.3.9">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#swift_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-537" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.7
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.7">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#swift_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-536" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.6
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.6">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      CLI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jvm" class="md-nav__link">
+    <span class="md-ellipsis">
+      JVM
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-535" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.5
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.5">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grpc-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      gRPC Client
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-534" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.4
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wire-compiler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wire Compiler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-533" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.3
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gradle-plugin_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gradle plugin
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-532" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.2
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gradle-plugin_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gradle plugin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#java" class="md-nav__link">
+    <span class="md-ellipsis">
+      Java
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-531" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.1
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gradle-plugin_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gradle plugin
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-530" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.3.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.3.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gradle-plugin_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gradle plugin
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-521" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.2.1
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.2.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jvm-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      JVM generation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-520" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.2.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.2.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cli-wire-compiler" class="md-nav__link">
+    <span class="md-ellipsis">
+      CLI wire-compiler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jvm-generation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      JVM generation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-4911" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.11
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.9.11">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-510" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.1.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.1.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-500" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.0.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.0.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-500-alpha04" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.0.0-alpha04
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.0.0-alpha04">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-500-alpha03" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.0.0-alpha03
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.0.0-alpha03">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#json" class="md-nav__link">
+    <span class="md-ellipsis">
+      JSON
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-500-alpha02" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.0.0-alpha02
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.0.0-alpha02">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-500-alpha01" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 5.0.0-alpha01
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 5.0.0-alpha01">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wire-grpc-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      wire-grpc-server
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-bumps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version bumps
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-499" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.9
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.9.9">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-498" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.8
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.9.8">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-497" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.7
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.9.7">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-496" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.6
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.9.6">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-495" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.5
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.9.5">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-494" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.4
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.9.4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swift_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#announcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Announcement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-493" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-492" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-491" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-490" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.9.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-481" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.8.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-480" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.8.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-472" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.7.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-471" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.7.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-470" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.7.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-462" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.6.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-461" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.6.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-460" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.6.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-456-note-that-this-holds-a-breaking-change-update-directly-to-460-to-avoid-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.5.6 (Note that this holds a breaking change, update directly to 4.6.0 to avoid it.)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-455" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.5.5
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-454" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.5.4
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-453" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.5.3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-452" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.5.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-451" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.5.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-450" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.5.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 4.5.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#swift_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      Swift
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-443" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.4.3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-442" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.4.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-441" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.4.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-440" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.4.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-430" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.3.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-420" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.2.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-411" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.1.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-410" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.1.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-401" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.0.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-400" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 4.0.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-371" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.7.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-370" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.7.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-361" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.6.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-360" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.6.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-350" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.5.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-340" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.4.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-330" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.3.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-322" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.2.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-321" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.2.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-320" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.2.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-310" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.1.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-303" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-302" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-301" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-300" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-300-rc03" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.0-rc03
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-300-rc02" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.0-rc02
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 3.0.0-rc02">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kotlin_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grpc" class="md-nav__link">
+    <span class="md-ellipsis">
+      gRPC
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#misc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Misc
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-300-rc01" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.0-rc01
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 3.0.0-rc01">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#compiler-gradle-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compiler + Gradle plugin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kotlin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grpc_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      gRPC
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#misc_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Misc
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-300-alpha03" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.0-alpha03
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-300-alpha02" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.0-alpha02
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-300-alpha01" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 3.0.0-alpha01
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-220" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.2.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-212" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.1.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-211" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.1.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-210" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.1.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-203" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.0.3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-202" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.0.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-201" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.0.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-200" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.0.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 2.0.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-java-generator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema &amp; Java Generator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compiler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compiler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extensions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-180" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.8.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-170" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.7.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-161" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.6.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-160" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.6.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-152" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.5.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-151" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.5.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-150" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.5.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-140" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.4.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-133" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.3.3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-132" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.3.2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-131" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.3.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-130" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.3.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-120" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.2.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-111" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.1.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-110" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.1.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-101" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.0.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-100" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.0.0
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="change-log">Change Log<a class="headerlink" href="#change-log" title="Permanent link">&para;</a></h1>
+<h2 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h2 id="version-540">Version 5.4.0<a class="headerlink" href="#version-540" title="Permanent link">&para;</a></h2>
+<p><em>2025-09-02</em></p>
+<h3 id="gradle-plugin">Gradle plugin<a class="headerlink" href="#gradle-plugin" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Support <code>android.builtInKotlin=true</code> and experimental plugin (#3367 by <a href="https://github.com/omarismail94">Omar Ismail</a>)</li>
+</ul>
+<h2 id="version-5311">Version 5.3.11<a class="headerlink" href="#version-5311" title="Permanent link">&para;</a></h2>
+<p><em>2025-08-18</em></p>
+<h3 id="swift">Swift<a class="headerlink" href="#swift" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix a naming collision if a oneof is called <code>container</code> (#3364 by <a href="https://github.com/jszumski">John Szumski</a>)</li>
+</ul>
+<h2 id="version-5310">Version 5.3.10<a class="headerlink" href="#version-5310" title="Permanent link">&para;</a></h2>
+<p><em>2025-08-13</em></p>
+<h3 id="swift_1">Swift<a class="headerlink" href="#swift_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Breaking: revert &ldquo;mark generated enums with <code>@objc</code>&rdquo; (#3361 by <a href="https://github.com/dnkoutso">Dimitris Koutsogiorgas</a>)</li>
+</ul>
+<h2 id="version-538-539">Version 5.3.8 / 5.3.9<a class="headerlink" href="#version-538-539" title="Permanent link">&para;</a></h2>
+<p><em>2025-08-08</em></p>
+<h3 id="swift_2">Swift<a class="headerlink" href="#swift_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix edge case for oneof field named <code>self</code> (#3360 by <a href="https://github.com/dnkoutso">Dimitris Koutsogiorgas</a>)</li>
+</ul>
+<h2 id="version-537">Version 5.3.7<a class="headerlink" href="#version-537" title="Permanent link">&para;</a></h2>
+<p><em>2025-08-07</em></p>
+<h3 id="swift_3">Swift<a class="headerlink" href="#swift_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Correctly disambiguate types that exist across multiple modules (#3358 by <a href="https://github.com/dnkoutso">Dimitris Koutsogiorgas</a>)</li>
+<li>Improve performance of topological sort algorithm for partitions (#3359 by <a href="https://github.com/dnkoutso">Dimitris Koutsogiorgas</a>)</li>
+</ul>
+<h2 id="version-536">Version 5.3.6<a class="headerlink" href="#version-536" title="Permanent link">&para;</a></h2>
+<p><em>2025-08-05</em></p>
+<h3 id="cli">CLI<a class="headerlink" href="#cli" title="Permanent link">&para;</a></h3>
+<ul>
+<li>New CLI option <code>--ignore_unused_roots_and_prunes</code> (#3354)</li>
+</ul>
+<h3 id="jvm">JVM<a class="headerlink" href="#jvm" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix: Handle negative hexadecimal in default values (#3355)</li>
+<li>Optimization: Avoid copying of repeated and map types when mutableTypes are being used (#3352 by <a href="https://github.com/tikurahul">Rahul Ravikumar</a>)</li>
+</ul>
+<h3 id="swift_4">Swift<a class="headerlink" href="#swift_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix: Properly disambiguate OneOf enum if it has the same name as enclosing type (#3350 by <a href="https://github.com/dnkoutso">Dimitris Koutsogiorgas</a>)</li>
+</ul>
+<h2 id="version-535">Version 5.3.5<a class="headerlink" href="#version-535" title="Permanent link">&para;</a></h2>
+<p><em>2025-07-09</em></p>
+<h3 id="grpc-client">gRPC Client<a class="headerlink" href="#grpc-client" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix: use correct class loader for clients and builder (#3347 by <a href="https://github.com/stuartwdouglas">Stuart Douglas</a>)</li>
+</ul>
+<h2 id="version-534">Version 5.3.4<a class="headerlink" href="#version-534" title="Permanent link">&para;</a></h2>
+<p><em>2025-07-08</em></p>
+<h3 id="common">Common<a class="headerlink" href="#common" title="Permanent link">&para;</a></h3>
+<ul>
+<li>In-development snapshots are now published to the Central Portal Snapshots repository at <a href="https://central.sonatype.com/repository/maven-snapshots/">https://central.sonatype.com/repository/maven-snapshots/</a>.</li>
+</ul>
+<h3 id="wire-compiler">Wire Compiler<a class="headerlink" href="#wire-compiler" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add Kotlin enum mode as a compiler arg (#3339 by <a href="https://github.com/JustinBis">Justin Bisignano</a>)</li>
+</ul>
+<h3 id="swift_5">Swift<a class="headerlink" href="#swift_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Mark generated enums with @objc (#3190 by <a href="https://github.com/dnkoutso">Dimitris Koutsogiorgas</a>)</li>
+</ul>
+<h2 id="version-533">Version 5.3.3<a class="headerlink" href="#version-533" title="Permanent link">&para;</a></h2>
+<p><em>2025-06-05</em></p>
+<h3 id="gradle-plugin_1">Gradle plugin<a class="headerlink" href="#gradle-plugin_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Support for Gradle <code>14.1</code> which fixed a bug (#3303) introduced in Wire <code>5.3.0</code> when we removed internal Gradle APIs (#3293)</li>
+</ul>
+<h2 id="version-532">Version 5.3.2<a class="headerlink" href="#version-532" title="Permanent link">&para;</a></h2>
+<p><em>2025-06-03</em></p>
+<h3 id="common_1">Common<a class="headerlink" href="#common_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Adding wasm target to wire runtime (#3304 by <a href="https://github.com/mpawliszyn">Michael Pawliszyn</a>)</li>
+<li>Fix crash when inlined option map values have multiple fields (#3314 by <a href="https://github.com/tejasna">Tejas Gupta</a>)</li>
+</ul>
+<h3 id="gradle-plugin_2">Gradle plugin<a class="headerlink" href="#gradle-plugin_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Update InputLocation to be more cache-friendly (#3313 by <a href="https://github.com/staktrace">Kartikaya Gupta</a>)</li>
+</ul>
+<h3 id="java">Java<a class="headerlink" href="#java" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Include oneOfs in <code>constructorTakesAllFields()</code> and fix null check in <code>generateOptionType</code> (#3310 by <a href="https://github.com/brunofrts">Bruno Freitas</a>)</li>
+</ul>
+<h2 id="version-531">Version 5.3.1<a class="headerlink" href="#version-531" title="Permanent link">&para;</a></h2>
+<p><em>2025-03-05</em></p>
+<h3 id="gradle-plugin_3">Gradle plugin<a class="headerlink" href="#gradle-plugin_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Better remote cache support (#3295)</li>
+<li>Avoid eagerly resolving the configuration (#3302 by <a href="https://github.com/staktrace">Kartikaya Gupta</a>)</li>
+</ul>
+<h2 id="version-530">Version 5.3.0<a class="headerlink" href="#version-530" title="Permanent link">&para;</a></h2>
+<p><em>2025-02-14</em></p>
+<h3 id="common_2">Common<a class="headerlink" href="#common_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add support for weak imports in ProtoParser and ProtoFileElement (#3247 by <a href="https://github.com/paul35621">paul35621</a>)</li>
+<li>Add Gradle and CLI options to load the protobuf schema exhaustively (#3254 by <a href="https://github.com/damianw">Damian Wieczorek</a>)</li>
+</ul>
+<h3 id="swift_6">Swift<a class="headerlink" href="#swift_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix conformance to ProtoMessage for heap allocated protos (#3260 by <a href="https://github.com/dnkoutso">Dimitris Koutsogiorgas</a>)</li>
+</ul>
+<h3 id="gradle-plugin_4">Gradle plugin<a class="headerlink" href="#gradle-plugin_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Removed usage of internal Gradle APIs in the Wire Gradle plugin which were crashing in Gradle <code>8.13</code>.</li>
+</ul>
+<h2 id="version-521">Version 5.2.1<a class="headerlink" href="#version-521" title="Permanent link">&para;</a></h2>
+<p><em>2025-01-07</em></p>
+<h3 id="jvm-generation">JVM generation<a class="headerlink" href="#jvm-generation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix support for mutable messages in Wire&rsquo;s Kotlin Generator. (#3233 by <a href="https://github.com/tikurahul">Rahul Ravikumar</a>)</li>
+</ul>
+<h2 id="version-520">Version 5.2.0<a class="headerlink" href="#version-520" title="Permanent link">&para;</a></h2>
+<p><em>2025-01-06</em></p>
+<h3 id="common_3">Common<a class="headerlink" href="#common_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Enforce recursion limit when parsing nested groups. (#3119)</li>
+</ul>
+<h3 id="cli-wire-compiler">CLI <code>wire-compiler</code><a class="headerlink" href="#cli-wire-compiler" title="Permanent link">&para;</a></h3>
+<ul>
+<li>It is now possible to set multiple targets. (#3106 &amp; #3107)</li>
+<li>The option <code>opaque_types</code> introduced in <code>4.9.2</code> for the Wire Gradle plugin is now available on CLI. (#3147)</li>
+</ul>
+<h3 id="jvm-generation_1">JVM generation<a class="headerlink" href="#jvm-generation_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://square.github.io/kotlinpoet/changelog/#version-200">KotlinPoet has been updated to <code>2.0.0</code></a> which dramatically changes how generated Kotlin files are wrapped. This is neither a source nor a binary breaking changes.</li>
+<li>A new <code>@WireEnclosingType</code> annotation is now applied to generated types so R8 doesn&rsquo;t prune too much. (#3123)</li>
+<li>Split the redact method into chunks when a type has more than 100 fields to avoid compilation error. (#3214 by <a href="https://github.com/damianw">Damian Wieczorek</a>)</li>
+<li>Add support for mutable messages in Wire&rsquo;s Kotlin Generator. (#3217 by <a href="https://github.com/tikurahul">Rahul Ravikumar</a>)</li>
+<li>You can opt-in by adding <code>mutableTypes = true</code> on your Kotlin target. This is unsafe and we do not recommend that you use it unless you have a sound use-case for it.</li>
+<li>Wire is now using Palantir&rsquo;s JavaPoet instead of Square&rsquo;s JavaPoet.</li>
+</ul>
+<h3 id="swift_7">Swift<a class="headerlink" href="#swift_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix buffer overflow and data corruption when a type has more than 5 layers of nesting (#3203 by <a href="https://github.com/amorde">Eric Amorde</a>)</li>
+</ul>
+<h2 id="version-4911">Version 4.9.11<a class="headerlink" href="#version-4911" title="Permanent link">&para;</a></h2>
+<p><em>2024-10-09</em></p>
+<h3 id="common_4">Common<a class="headerlink" href="#common_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix Gradle project isolation issue when reading a property (#3078 by <a href="https://github.com/liutikas">Aurimas</a>)</li>
+</ul>
+<h2 id="version-510">Version 5.1.0<a class="headerlink" href="#version-510" title="Permanent link">&para;</a></h2>
+<p><em>2024-09-11</em></p>
+<h3 id="common_5">Common<a class="headerlink" href="#common_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Support for Kotlin <code>2.0.20</code>. (#3093)</li>
+<li><code>srcDir(String)</code> has been undeprecated. (#3039)</li>
+<li>Some loggings now happen at the debug level, instead of info. (#3041)</li>
+<li>Remove some unactionable warnings on Kotlin/JS (#3047)</li>
+<li>Propagate the deprecated flag on EnumType after pruning by wire-gradle-plugin (#3076 by <a href="https://github.com/aaron-edwards">Aaron Edwards</a>)</li>
+<li>Introduce <code>ProtoReader32</code>, a specialization for Kotlin/JS (#3077)
+    This is an alternative to <code>ProtoReader</code>, which uses <code>Long</code> as a cursor. It originates as an optimization for Kotlin/JS, where <code>Long</code> cursors are prohibitively expensive.</li>
+<li>Fix Gradle project isolation issue when reading a property (#3078 by <a href="https://github.com/liutikas">Aurimas</a>)</li>
+<li>Change the recursion limit to match grpc&rsquo;s default (#3091)</li>
+</ul>
+<h3 id="kotlin">Kotlin<a class="headerlink" href="#kotlin" title="Permanent link">&para;</a></h3>
+<ul>
+<li>New enum option <code>enum_mode</code> to take precedence over the <code>enumMode</code> option added in <code>5.0.0-alpha02</code>. Use this if you want to migrate your enums granularly. (#2993)</li>
+<li>Don&rsquo;t throw if reading trailers fail (#3087)</li>
+</ul>
+<h3 id="swift_8">Swift<a class="headerlink" href="#swift_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Avoid crash when parsing an empty repeated <code>[packed=true]</code> for fixed-length types. (#3044 by <a href="https://github.com/sashaweiss-signal">Sasha Weiss</a>)</li>
+</ul>
+<h2 id="version-500">Version 5.0.0<a class="headerlink" href="#version-500" title="Permanent link">&para;</a></h2>
+<p><em>2024-07-15</em></p>
+<h3 id="common_6">Common<a class="headerlink" href="#common_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Prevent conflicts for options of different types but with similar names (#3005)</li>
+<li>Support all Gradle entries for file collections (#2946)</li>
+<li><code>srcDir(String)</code> has been deprecated in favor of <code>srcDir(Any)</code> which better leverages Gradle to
+  handle dependencies.</li>
+</ul>
+<h2 id="version-500-alpha04">Version 5.0.0-alpha04<a class="headerlink" href="#version-500-alpha04" title="Permanent link">&para;</a></h2>
+<p><em>2024-06-21</em></p>
+<h3 id="common_7">Common<a class="headerlink" href="#common_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Don&rsquo;t crash with inlined map options (#2997)</li>
+</ul>
+<h3 id="swift_9">Swift<a class="headerlink" href="#swift_9" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Escape <code>error</code> names in some cases (#2999 by <a href="https://github.com/lickel">Adam Lickel</a>)</li>
+</ul>
+<h2 id="version-500-alpha03">Version 5.0.0-alpha03<a class="headerlink" href="#version-500-alpha03" title="Permanent link">&para;</a></h2>
+<p><em>2024-06-19</em></p>
+<h3 id="json">JSON<a class="headerlink" href="#json" title="Permanent link">&para;</a></h3>
+<ul>
+<li>A performance degradation in JSON serialization was added in the previous <code>5.0.0</code> alphas. This
+  change has been reverted.</li>
+</ul>
+<h2 id="version-500-alpha02">Version 5.0.0-alpha02<a class="headerlink" href="#version-500-alpha02" title="Permanent link">&para;</a></h2>
+<p><em>2024-06-17</em></p>
+<h3 id="common_8">Common<a class="headerlink" href="#common_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>⚠ Paths and Definitions are properly claims by a SchemaHandler only when it generated something (#2943)</li>
+<li>No eager source access on Task for the Wire Gradle plugin (#2923)</li>
+<li>Fix the UTF-32 BOM in SchemaLoader (#2937 by <a href="https://github.com/Endeavour233">Endeavour233</a>)</li>
+<li>Add support for parsing extensionRangeOptions (#2966)</li>
+</ul>
+<h3 id="kotlin_1">Kotlin<a class="headerlink" href="#kotlin_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>expose the grpc url when converting Response to GrpcException (#2920 by <a href="https://github.com/traviscj">Travis Johnson</a>)</li>
+<li>Support very long field names with builders (#2959)</li>
+<li>New <code>enumMode</code> option added to Kotlin targets in order to generate enum types as sealed classes.
+  Its value can be either <code>enum_class</code> (default value) or <code>sealed_class</code>. <code>enum_class</code> will generate
+  enum types as Kotlin enum classes, which is the current behavior. <code>sealed_class</code> will generate enum
+  types as Kotlin sealed classes, generated each constant of the enum type as data objects. On top of
+  those constants, the sealed class will contain a <code>Unrecognized</code> data class which will contain the
+  real decoded value for this enum if the runtime didn&rsquo;t have any constant matching it. This is the
+  analogue feature of protoc generating a <code>UNRECOGNIZED(-1)</code> constant for enums on proto3. Note
+  however that Wire doesn&rsquo;t limit this option to proto3 enums, this can be used for proto2 enums
+  too.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">kotlin</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">enumMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sealed_class&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Switching to generating sealed class for enums can break the call-site for your consumers. In
+  order to allow gradual migration of enum generation from/to sealed classes, a Protobuf enum option
+  has also been created. This, when set in the <code>.proto</code> file, takes precedence over the global enum
+  mode.</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="s">&quot;wire/extensions.proto&quot;</span><span class="p">;</span>
+
+<span class="kd">enum</span><span class="w"> </span><span class="n">Period</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">option</span><span class="w"> </span><span class="p">(</span><span class="n">wire.enum_mode</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sealed_class&quot;</span><span class="p">;</span><span class="w"> </span><span class="c1">// or `enum_class`.</span>
+<span class="w">  </span><span class="na">CRETACEOUS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="na">JURASSIC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="na">TRIASSIC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="version-500-alpha01">Version 5.0.0-alpha01<a class="headerlink" href="#version-500-alpha01" title="Permanent link">&para;</a></h2>
+<p><em>2024-04-16</em></p>
+<h3 id="common_9">Common<a class="headerlink" href="#common_9" title="Permanent link">&para;</a></h3>
+<ul>
+<li>⚠ Reject unused prunes and roots by default (#2846)
+    This behavior used to be opt-in, now it’s opt-out. You can opt out with <code>rejectUnusedRootsOrPrunes = false</code>
+    in your <code>wire { }</code> block.</li>
+<li>⚠ Remove deprecated <code>SchemaHandler#create</code> method (#2851)
+    Override the other method <code>create(includes, excludes, exclusive, outDirectory, options): SchemaHandler</code> instead if you were not already doing it.</li>
+<li>⚠ Adding a project dependency via <code>srcJar</code> used to work but not anymore. Use <code>srcProject(":my-project")</code> instead.</li>
+<li>Don&rsquo;t warn about an unused emitting rule, when that rule is &lsquo;*&rsquo; (#2829)</li>
+<li>The internal of our Wire Gradle plugin has been refactored where behavior changes should not be
+    expected. If you see anything different, please <a href="https://github.com/square/wire/issues">let us know</a>.</li>
+<li>Allow custom options to be passed in WireCompiler (#2909)</li>
+</ul>
+<h3 id="kotlin_2">Kotlin<a class="headerlink" href="#kotlin_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Propagates Request timeout as grpc-timeout (#2840 by <a href="https://github.com/frojasg">Francisco Rojas</a>)</li>
+<li>Don&rsquo;t override RealGrpcCall.timeout when it&rsquo;s manually set (#2893 by <a href="https://github.com/JGulbronson">Jeff Gulbronson</a>)</li>
+<li>Publish the gRPC Dispatcher (#2872)
+    A new helper class <a href="https://github.com/square/wire/blob/master/wire-grpc-mockwebserver/src/main/java/com/squareup/wire/mockwebserver/GrpcDispatcher.kt#L64">GrpcDispatcher</a> for gRPC testing is available under <code>com.squareup.wire:wire-grpc-mockwebserver</code>.
+    Note that it does not support streaming calls. If you want to contribute, please do!</li>
+</ul>
+<h3 id="swift_10">Swift<a class="headerlink" href="#swift_10" title="Permanent link">&para;</a></h3>
+<ul>
+<li>⚠ Refactored how extensions are emitted and provides a new API to get/set extension fields.
+    Due to the refactor above, Codable fields that are defined in extensions will now break as part of this change.
+    All done by <a href="https://github.com/dnkoutso">Dimitris Koutsogiorgas</a> and <a href="https://github.com/lickel">Adam Lickel</a>!</li>
+</ul>
+<h3 id="wire-grpc-server">wire-grpc-server<a class="headerlink" href="#wire-grpc-server" title="Permanent link">&para;</a></h3>
+<ul>
+<li>⚠ <code>wire-grpc-server</code> has been moved into its own repo: <a href="https://github.com/square/wire-grpc-server">https://github.com/square/wire-grpc-server</a>.
+    If you were using it, you can see how migration is to happen by checking these <a href="https://github.com/square/wire/blob/master/docs/wire_grpc.md#wire-grpc-server">instructions</a>.</li>
+</ul>
+<h3 id="version-bumps">Version bumps<a class="headerlink" href="#version-bumps" title="Permanent link">&para;</a></h3>
+<ul>
+<li>kotlin -&gt; <code>1.9.23</code></li>
+<li>kotlinpoet -&gt; <code>1.16.0</code></li>
+<li>okhttp -&gt; <code>5.0.0-alpha.12</code></li>
+<li>okio -&gt; <code>3.9.0</code></li>
+</ul>
+<h2 id="version-499">Version 4.9.9<a class="headerlink" href="#version-499" title="Permanent link">&para;</a></h2>
+<p><em>2024-04-02</em></p>
+<h3 id="common_10">Common<a class="headerlink" href="#common_10" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Backport JSON serialization for Android SDK below 26 (#2881 by <a href="https://github.com/damianw">Damian Wieczorek</a>)</li>
+</ul>
+<h2 id="version-498">Version 4.9.8<a class="headerlink" href="#version-498" title="Permanent link">&para;</a></h2>
+<p><em>2024-03-18</em></p>
+<h3 id="common_11">Common<a class="headerlink" href="#common_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Retain imports for types used in maps (#2864)</li>
+</ul>
+<h2 id="version-497">Version 4.9.7<a class="headerlink" href="#version-497" title="Permanent link">&para;</a></h2>
+<p><em>2024-02-12</em></p>
+<h3 id="common_12">Common<a class="headerlink" href="#common_12" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Support all struct types for JSON encoding (#2824 by <a href="https://github.com/quanturium">Arnaud Frugier</a>)</li>
+</ul>
+<h2 id="version-496">Version 4.9.6<a class="headerlink" href="#version-496" title="Permanent link">&para;</a></h2>
+<p><em>2024-02-02</em></p>
+<h3 id="common_13">Common<a class="headerlink" href="#common_13" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add public dependencies when encoding the schema (#2801 by <a href="https://github.com/mpeyper">Michael Peyper</a>)</li>
+</ul>
+<h3 id="kotlin_3">Kotlin<a class="headerlink" href="#kotlin_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix RealGrpcCall timeout (#2816 by <a href="https://github.com/JGulbronson">Jeff Gulbronson</a>)</li>
+</ul>
+<h2 id="version-495">Version 4.9.5<a class="headerlink" href="#version-495" title="Permanent link">&para;</a></h2>
+<p><em>2024-01-27</em></p>
+<h3 id="common_14">Common<a class="headerlink" href="#common_14" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix over pruning imports when only option types are being extended in a file (#2800 by <a href="https://github.com/mpeyper">Michael Peyper</a>)</li>
+</ul>
+<h2 id="version-494">Version 4.9.4<a class="headerlink" href="#version-494" title="Permanent link">&para;</a></h2>
+<p><em>2024-01-26</em></p>
+<h3 id="common_15">Common<a class="headerlink" href="#common_15" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added <code>linuxArm64</code> target to wire-runtime module (#2733 by <a href="https://github.com/ShayOinif">Shay Oinif</a>)</li>
+<li>Add <code>ProtoReader</code> API for length-delimited stream reads (#2747 by <a href="https://github.com/JakeWharton">Jake Wharton</a>)</li>
+<li>You can now call <code>ProtoReader#nextLengthDelimited</code> to read and return the length of the next message in a length-delimited stream.</li>
+<li>Ensure <code>ConsoleWireLogger</code> does not print anything if in quiet mode (#2754 by <a href="https://github.com/dnkoutso">Dimitris Koutsogiorgas</a>)</li>
+<li>Provide a built in public <code>EmptyWireLoggerFactory</code> class (#2776 by <a href="https://github.com/dnkoutso">Dimitris Koutsogiorgas</a>)</li>
+<li>Stop logging includes and excludes (#2777)</li>
+<li>Implement equals/hash for Duration and Instant on native and JS (#2781)</li>
+<li>Prune imports no longer used by retained entities in the schema (#2797 by <a href="https://github.com/mpeyper">Michael Peyper</a>)</li>
+</ul>
+<h3 id="kotlin_4">Kotlin<a class="headerlink" href="#kotlin_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Generate Grpc <code>SERVICE_NAME</code> as const (#2773 by <a href="https://github.com/MariusVolkhart">Marius Volkhart</a>)</li>
+<li>Use <code>%N</code> in <code>KotlinGenerator</code> to ensure names are escaped (#2784 by <a href="https://github.com/Egorand">Egor Andreevich</a>)</li>
+<li>Add <code>escapeKotlinKeywords</code> parameter to Kotlin target (#2785 by <a href="https://github.com/Egorand">Egor Andreevich</a>)</li>
+<li>You can now set <code>escapeKotlinKeywords = true</code> within our <code>kotlin {}</code> targets to escape Kotlin keywords with backticks rather than having them suffixed with an <code>_</code>.</li>
+<li>Don&rsquo;t retransmit a <code>PipeDuplexRequestBody</code> (#2791)</li>
+<li>We had crashes that occurred when OkHttp attempted to retry sending the request body of a gRPC streaming connection.</li>
+</ul>
+<h3 id="swift_11">Swift<a class="headerlink" href="#swift_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Remove deprecated cruft (#2721 by <a href="https://github.com/lickel">Adam Lickel</a>)</li>
+<li>Always qualify names for types that conflict with common Swift types (#2764 by <a href="https://github.com/dnkoutso">Dimitris Koutsogiorgas</a>)</li>
+<li>Fix edge case for heap based messages using a redacted description field (#2772 by <a href="https://github.com/dnkoutso">Dimitris Koutsogiorgas</a>)</li>
+<li>Change <code>unknownFields</code> type to <code>[UInt32: Data]</code> from just <code>Data</code>. (#2789 by <a href="https://github.com/dnkoutso">Dimitris Koutsogiorgas</a>)</li>
+<li>Introduce a <code>ProtoExtensible</code> protocol that all messages that have been extended conform to. (#2790 by <a href="https://github.com/dnkoutso">Dimitris Koutsogiorgas</a>)</li>
+</ul>
+<h3 id="announcement">Announcement<a class="headerlink" href="#announcement" title="Permanent link">&para;</a></h3>
+<p>Wire 5.0 is happening soon. This will happen:</p>
+<ul>
+<li><code>SchemaHandler.Factory#create()</code> will be removed. Override its counterpart for painless migration <code>SchemaHandler.Factory#create(includes: List&lt;String&gt;, excludes: List&lt;String&gt;, exclusive: Boolean, outDirectory: String, options: Map&lt;String, String&gt;)</code>.</li>
+<li>The module <code>wire-grpc-server</code> will be extracted into its own repository: <a href="https://github.com/square/wire-grpc-server/">https://github.com/square/wire-grpc-server/</a></li>
+<li>Here is how one should migrate: // TODO</li>
+</ul>
+<h2 id="version-493">Version 4.9.3<a class="headerlink" href="#version-493" title="Permanent link">&para;</a></h2>
+<p><em>2023-11-23</em></p>
+<ul>
+<li>Breaking: Encoding and decoding of negative <code>Int32</code>s was broken in Swift and did not match protobuf spec.
+    Negative <code>Int32</code>s are now correctly encoded as unsigned <code>Int64</code>s. Prior versions of Wire that have
+    serialized a proto containing negative <code>Int32</code> fields will not be correctly decoded using this
+    version onwards.</li>
+<li>Fix: Swift <code>ProtoDefaulted</code> was incorrectly applied in cross-module contexts</li>
+<li>Fix: Message&rsquo;s Builder won&rsquo;t break compilation on multiplatform projects.</li>
+<li>Fix: No hanging anymore on gRPC when receiving an unexpected response.</li>
+</ul>
+<h2 id="version-492">Version 4.9.2<a class="headerlink" href="#version-492" title="Permanent link">&para;</a></h2>
+<p><em>2023-11-13</em></p>
+<ul>
+<li>New: Opaque types. You can now specify types you want Wire to evaluate as being of type <code>bytes</code>.
+    On code generation, the fields of such types will be using the platform equivalent of <code>bytes</code>,
+    like <code>okio.ByteString</code> for the JVM. Use this if there&rsquo;s a dependency heavy type which you do
+    not use. Note that scalar types cannot be opaqued.</li>
+<li>New: Adds a closure into generate types allowing the creation of an instance via the Kotlin DSL.</li>
+<li>Fix: Don&rsquo;t arbitrarily prune <code>oneOf</code> options.</li>
+<li>Change: Swift <code>Defaulted</code> has been renamed <code>CustomDefaulted</code></li>
+<li>New: Swift <code>ProtoDefaulted</code> property wrapper and <code>ProtoDefaultedValue</code> protocol</li>
+<li>Similar to `CustomDefaulted, this adds as projection of the protocol defined default value</li>
+<li>This should not take up any additional storage</li>
+<li>This is attached to optional scalar values and messages with entirely optional values</li>
+<li>New: <code>ProtoDefaulted</code> and <code>CustomDefaulted</code> include setter support</li>
+<li>This enables you to do something like <code>Foo().$bar.$baz += 1</code></li>
+<li>Change: Swift <code>ProtoEnum</code> types now have a raw value of <code>Int32</code>.</li>
+<li>The runtime and generated code both need to be updated to reflect this.</li>
+</ul>
+<h2 id="version-491">Version 4.9.1<a class="headerlink" href="#version-491" title="Permanent link">&para;</a></h2>
+<p><em>2023-09-26</em></p>
+<ul>
+<li>Fix: Missing Swift imports.</li>
+</ul>
+<h2 id="version-490">Version 4.9.0<a class="headerlink" href="#version-490" title="Permanent link">&para;</a></h2>
+<p><em>2023-09-20</em></p>
+<ul>
+<li>Fix: Swift generates all Storage properties. This mitigates performance issues with dynamicMemberLookup</li>
+<li>Change: Swift codegen was reordered for readability</li>
+<li>Change: the type of the Wire option <code>use_array</code> has been changed from <code>string</code> to <code>bool</code>, and its tag has changed from 1180 to 1185.</li>
+<li>New: Swift propertyWrapper @CopyOnWrite. @Heap is now deprecated and will be removed in November 2024.</li>
+<li>New: Wildcards are supported when pruning members such as <code>my.namespace.Type#another.namespace.*</code>. This is handy if one wants to prune extension fields.</li>
+<li>New: Adds warning when one defines a protoLibrary without source sets, which happens on native and JavaScript platforms.</li>
+<li>New: <code>project(..)</code> dependencies are now explicitly limited to the JVM, for otherwise Wire isn&rsquo;t able to pick the correct platform to resolve them.</li>
+<li>New: Wire runtime proto files, such as <code>google/protobuf/descriptor.proto</code> or <code>wire/extensions.proto</code> will not be emitted anymore when <code>protoLibrary = true</code>.</li>
+<li>New: A custom logger can now be configured via the WireCompiler.</li>
+<li>New: <code>wire-schema</code>, and <code>wire-schema-tests</code> are now available on JavaScript and native platforms.</li>
+<li>Update: Okio to <code>3.5.0</code>. All <code>java.nio</code> file systems should now be supported when using Wire.</li>
+<li>Update: Kotlin to <code>1.9.10</code>, Gradle to <code>8.x</code>, and many others to most recent versions.</li>
+</ul>
+<h2 id="version-481">Version 4.8.1<a class="headerlink" href="#version-481" title="Permanent link">&para;</a></h2>
+<p><em>2023-08-17</em></p>
+<ul>
+<li>New: Swift messages now have the form <code>init(REQUIRED FIELDS, (inout Storage) -&gt; Void)</code></li>
+<li>New: Swift, the member-wise initializer has been removed by default. It can be re-enabled by defining <code>WIRE_INCLUDE_MEMBERWISE_INITIALIZER</code>; however, it will be removed in November 2024. See <a href="https://github.com/square/wire/pull/2561">https://github.com/square/wire/pull/2561</a> for details</li>
+<li>Fix: Correctly define sources folders vs. resources folders for Wire generated code.</li>
+<li>Fix: Generated <code>.proto</code> are correctly added to the built artifact.</li>
+<li>New: All options of KotlinTarget available on CLI.</li>
+</ul>
+<h2 id="version-480">Version 4.8.0<a class="headerlink" href="#version-480" title="Permanent link">&para;</a></h2>
+<p><em>2023-07-21</em></p>
+<ul>
+<li>Fix: JSON to Kotlin deserialization is now <em>really</em> bullet-proofed against
+  <code>Class.getDeclaredFields</code> random ordering.</li>
+<li>Fix: proto3 types (<code>Duration</code>, <code>Struct</code>, etc) are now supported when doing dynamic serialization.</li>
+<li>Fix: <code>GrpcStatus</code> is now serializable which enables <code>GrpcException</code> serialization.</li>
+<li>New: <code>GrpcClient</code> is now abstract. You can customize how network calls are implemented.</li>
+<li>New: You can now pass an <a href="https://github.com/square/wire/blob/3e300c492a74e80260581e3aee624d9cf3e5b1f8/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/EventListener.kt#L105-L111">event listener</a> to receive metric events.</li>
+<li>New: New option for the Wire Gradle plugin. <code>rejectUnusedRootsOrPrunes = true</code> will fail the build if
+  any roots or prunes are not used when refactoring the schema. This can help discover incorrect
+  configurations early and avoid mis-expectations about the built schema.</li>
+<li>New: <code>OneOf</code>&rsquo;s options are now loaded to the schema.</li>
+<li>New: Wire will now fail if it detects a type name collision which can happen if a same file is loaded from different paths.</li>
+<li>New: <code>wire-schema-tests</code> is now multiplatform.</li>
+<li>New: <code>SchemaHandler.Factory</code> can now receive payload set within the Wire Gradle plugin. Implement
+  the method <code>fun create(includes, excludes, exclusive, outDirectory. options): SchemaHandler</code> to receive it.</li>
+<li>New: custom targets can now pass custom payloads to their <code>SchemaHandler.Factory</code>. The <code>custom {}</code>
+  takes a map<string, string> to its new field <code>options</code>.</li>
+<li>Swift: Default values are now generated via a <code>Defaulted</code> property wrapper.</li>
+<li>Swift: Fully-qualify <code>Foundation.Data</code> to prevent name collisions with messages named <code>Data</code>.</li>
+<li>Move: Some types have been moved from <code>wire-compiler</code> to <code>wire-run</code>: <code>WireRun</code>, <code>Target</code>, <code>DirectedAcyclicGraph</code>, <code>PartitionedSchema</code>.</li>
+<li>Dependency: KotlinPoet has been bumped to <code>1.14.2</code>.</li>
+</ul>
+<h2 id="version-472">Version 4.7.2<a class="headerlink" href="#version-472" title="Permanent link">&para;</a></h2>
+<p><em>2023-06-18</em></p>
+<ul>
+<li>Swift: Resolve Redactable regression.</li>
+</ul>
+<h2 id="version-471">Version 4.7.1<a class="headerlink" href="#version-471" title="Permanent link">&para;</a></h2>
+<p><em>2023-06-16</em></p>
+<ul>
+<li>Swift: Heap types should use <code>DynamicMemberLookup</code> for storage.</li>
+<li>Fix: Don&rsquo;t drop the wire_package in a <code>protoPath</code>.</li>
+<li>Fix: Normalize conflict strategy for boxed <code>oneof</code> field names.</li>
+<li>Fix: Support all the scalar types in <code>SchemaEncoder</code>.</li>
+</ul>
+<h2 id="version-470">Version 4.7.0<a class="headerlink" href="#version-470" title="Permanent link">&para;</a></h2>
+<p><em>2023-05-24</em></p>
+<ul>
+<li>New: Add a dry run option. If enabled, the compiler will just emit the names of the source files that would be
+  otherwise * generated to stdout. You can use the flag <code>--dry_run</code> with the Wire compiler or define the option with
+  Gradle as the following:</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code><span class="n">wire</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">dryRun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></div>
+* Fix: Correctly set task dependencies on <code>processResources</code> if <code>protoLibrary</code> is set to true.
+* Fix: If a valid grpc-status header is present, raise a GrpcException rather than an IOException.</p>
+<h2 id="version-462">Version 4.6.2<a class="headerlink" href="#version-462" title="Permanent link">&para;</a></h2>
+<p><em>2023-05-11</em></p>
+<ul>
+<li>Fix: Explicitly adds <code>jvm</code> variants of multiplatform artifacts into the BOM.</li>
+<li>Fix: Produce Descriptors for messages without fields after pruning.</li>
+</ul>
+<h2 id="version-461">Version 4.6.1<a class="headerlink" href="#version-461" title="Permanent link">&para;</a></h2>
+<p><em>2023-05-10</em></p>
+<ul>
+<li>Fix: Handle length-prefixed messages of length 0.</li>
+<li>Swift: Bump to <code>1.5</code>.</li>
+</ul>
+<h2 id="version-460">Version 4.6.0<a class="headerlink" href="#version-460" title="Permanent link">&para;</a></h2>
+<p><em>2023-05-01</em></p>
+<ul>
+<li>Fix: the version <code>4.5.6</code> had a breaking change which has been reverted in <code>4.6.0</code> without losing
+  any functionality.</li>
+<li>Update <code>descriptor.proto</code> from the <code>7dbe742</code> version of <code>protocolbuffers/protobuf</code>.</li>
+</ul>
+<h2 id="version-456-note-that-this-holds-a-breaking-change-update-directly-to-460-to-avoid-it">Version 4.5.6 (Note that this holds a breaking change, update directly to <code>4.6.0</code> to avoid it.)<a class="headerlink" href="#version-456-note-that-this-holds-a-breaking-change-update-directly-to-460-to-avoid-it" title="Permanent link">&para;</a></h2>
+<p><em>2023-04-25</em></p>
+<ul>
+<li>Fix: JSON serialization is now bullet-proofed against <code>Class.getDeclaredFields</code> random ordering.</li>
+<li>Perf: Add option <code>wire.use_array</code> to use primitive arrays for packed scalars. This should improve
+  performances as it avoids autoboxing on the JVM. It will use the appropriate array type, for
+  example <code>repeated float</code> would be represented as a <code>FloatArray</code>.</li>
+</ul>
+<h2 id="version-455">Version 4.5.5<a class="headerlink" href="#version-455" title="Permanent link">&para;</a></h2>
+<p><em>2023-04-12</em></p>
+<ul>
+<li>Perf: Optimize packed scalar list sizes in initial allocation.</li>
+</ul>
+<h2 id="version-454">Version 4.5.4<a class="headerlink" href="#version-454" title="Permanent link">&para;</a></h2>
+<p><em>2023-03-31</em></p>
+<ul>
+<li>Kotlin: bump to <code>1.8.20</code>.</li>
+</ul>
+<h2 id="version-453">Version 4.5.3<a class="headerlink" href="#version-453" title="Permanent link">&para;</a></h2>
+<p><em>2023-03-23</em></p>
+<ul>
+<li>Swift: fix proto3 messages not always omitting fields with default values.</li>
+<li>Multiplatform: Builders and their methods are now generated if the configuration requires it.</li>
+<li>Multiplatform: No more duplicate generations, or wrong tasks naming. Task dependencies are fixed.</li>
+<li>Multiplatform: Added <code>mingwX64</code> target.</li>
+<li>Kotlin: bump to <code>1.8.20RC</code>.</li>
+</ul>
+<h2 id="version-452">Version 4.5.2<a class="headerlink" href="#version-452" title="Permanent link">&para;</a></h2>
+<p><em>2023-03-06</em></p>
+<ul>
+<li>Fix: Use <code>rawType</code>&rsquo;s classloader when accessing <code>ProtoAdapter</code>s.</li>
+<li>gRPC: Decode <code>grpc-status-details-bin</code> and add it to <code>GrpcException</code>.</li>
+<li>Swift: Fix base64url decoding when string length is a multiple of 4.</li>
+<li>JSON: Support deserialization of proto3 default param when absent.</li>
+</ul>
+<h2 id="version-451">Version 4.5.1<a class="headerlink" href="#version-451" title="Permanent link">&para;</a></h2>
+<p><em>2023-02-11</em></p>
+<ul>
+<li>Fix swift Copy-on-Write behavior.</li>
+<li>Support deserialization of camelCased fields in proto2.</li>
+</ul>
+<h2 id="version-450">Version 4.5.0<a class="headerlink" href="#version-450" title="Permanent link">&para;</a></h2>
+<p><em>2023-02-02</em></p>
+<ul>
+<li>Add support for <code>tvOS</code>.</li>
+<li>Add ability to supply custom schema handler from command line.</li>
+</ul>
+<h3 id="swift_12">Swift<a class="headerlink" href="#swift_12" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add <code>Sendable</code> conformance to all generated types.</li>
+<li>Improved support for Proto3 types such as <code>Struct</code>, <code>Any</code>, <code>Duration</code>, and <code>Timestamp</code>.</li>
+<li><code>@JsonString</code> has been deprecated and will be removed in a future release.</li>
+<li>Codable conformance has been completely rewritten and should be much more compliant to the spec.<ul>
+<li>This is a somewhat breaking change and heavily dependent upon the types you were using.</li>
+<li>Notably: Dictionaries with non-string keys are not forwards compatible with new models.</li>
+<li>The corrected encoding are not backwards compatible with old models.</li>
+<li>Encoding fixes:<ul>
+<li><code>unknownFields</code> should never be encoded any more.</li>
+<li>Don&rsquo;t encode default values by default (configurable).</li>
+<li>Encode field names in camelCase by default (configurable).</li>
+<li>Encode Enums as Strings by default (configurable).</li>
+<li>Maps will now always encode their keys as Strings.</li>
+</ul>
+</li>
+<li>Decoding fixes:<ul>
+<li>Data now supports both base64 and base64url binary formats.</li>
+<li>Enums can now be decoded from either String or UInt32 values.</li>
+<li>Unknown Enum values can optionally be skipped.</li>
+<li>Both camelCase and snake_case key names are accepted. camelCase is preferred.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="version-443">Version 4.4.3<a class="headerlink" href="#version-443" title="Permanent link">&para;</a></h2>
+<p><em>2022-10-26</em></p>
+<ul>
+<li>Fix: No more NPEs when the building project uses Kotlin <code>1.7.20</code>.</li>
+</ul>
+<h2 id="version-442">Version 4.4.2<a class="headerlink" href="#version-442" title="Permanent link">&para;</a></h2>
+<p><em>2022-10-06</em></p>
+<ul>
+<li>Fix: Use KotlinProjectExtension to access source sets.</li>
+<li>Fix: Improve support for ZIP artifacts.</li>
+<li>Fix: When set to true, <code>buildersOnly</code> will take precedence over <code>javaInterop</code> when generating Kotlin.</li>
+<li>Fix: Support nested extensions in a message.</li>
+</ul>
+<h2 id="version-441">Version 4.4.1<a class="headerlink" href="#version-441" title="Permanent link">&para;</a></h2>
+<p><em>2022-08-05</em></p>
+<ul>
+<li>New: Check HTTP2 protocol is set for passed client to <code>GrpcClient</code>.</li>
+<li>New: Add buildersOnly option for Java and Kotlin target, setting it to true will change the
+  visibility of generate types&rsquo; constructor to non-public.</li>
+<li>Fix: Properly define api dependency for <code>okio</code> in <code>wire-schema</code>.</li>
+<li>Fix: Sort input locations so they match on all platforms.</li>
+<li>Fix: Avoid NPEs with kotlin <code>1.7.20</code> around source sets.</li>
+<li>Update: Bumped KotlinPoet to <code>1.12.0</code>.</li>
+</ul>
+<h2 id="version-440">Version 4.4.0<a class="headerlink" href="#version-440" title="Permanent link">&para;</a></h2>
+<p><em>2022-06-07</em></p>
+<ul>
+<li>New: Custom schema handlers! Wire lets you now plug in your own logic to deal with the protobuf
+    schema the way you want. Check <a href="https://square.github.io/wire/wire_compiler/#custom-handlers">our documentation</a> for details. You can
+    also check our <a href="https://github.com/square/wire/tree/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes">recipe directory</a> for examples.
+    Note that this API obsoletes the <code>CustomHandlerBeta</code> type Wire had until now.</li>
+<li>New: You can now easily create an in-memory protobuf schema with the new <code>SchemaBuilder</code> class.
+    This lives in the new <code>wire-schema-tests</code> artifact. For usage examples, check the tests in
+    <a href="https://github.com/square/wire/tree/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes">custom handler recipes</a>.</li>
+<li>Breaking: the <code>wire-profiles</code> artifact has been removed and is now inlined in <code>wire-schema</code>.</li>
+<li>Breaking: <code>CoreLoader</code> &lsquo;s <code>isWireRuntimeProto</code> methods are now static.</li>
+<li>Breaking: <code>SchemaLoader</code> and related classes have been moved from <code>wire-compiler</code> to
+    <code>wire-schema</code>.</li>
+<li>New: Support packed and map fields when converting to/from JSON with Kotlin.</li>
+<li>New: Support typesafe accessors and version catalogs in Wire plugin.</li>
+<li>New: Generate annotations for repeated options.</li>
+<li>New: Allow parsing of <code>oneof</code> options.</li>
+<li>New: Support map fields in options.</li>
+<li>New: Add macosArm64 support to the KMP projects supporting mac.</li>
+<li>Fix: Properly deal with maps of scalar types, deserializing missing scala key/value into identity.</li>
+<li>Fix: Fix a crash where ProtoMember was populated with the wrong data.</li>
+</ul>
+<h2 id="version-430">Version 4.3.0<a class="headerlink" href="#version-430" title="Permanent link">&para;</a></h2>
+<p><em>2022-03-24</em></p>
+<ul>
+<li>New: reserved tags and names in enum types are now honoured by Wire.</li>
+<li>Fix: <code>max</code> keyword is now correctly parsed for enum types.</li>
+<li>Fix: Wire now writes minus double zeros and minus float zeros on proto3.</li>
+<li>Fix: Wire doesn&rsquo;t write google wrappers types&rsquo; identity values anymore.</li>
+<li>Fix: <code>CoreLoader</code> correctly loads <code>.proto</code> files present in the resources of the project.</li>
+<li>Fix: Propagate <code>GrpcExceptions</code> in <code>GrpcCalls</code>.</li>
+<li>Fix: Change <code>GrpcCall.isCanceled</code> to honor OkHttp cancellations.</li>
+</ul>
+<h2 id="version-420">Version 4.2.0<a class="headerlink" href="#version-420" title="Permanent link">&para;</a></h2>
+<p><em>2022-02-17</em></p>
+<ul>
+<li>
+<p>New: Publish a <a href="https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import">bill of materials (BOM)</a> for Wire. Depend on this from Gradle or Maven to
+   keep all of your Wire artifacts on the same version, even if they&rsquo;re declared via transitive
+   dependencies. You can even omit versions when declaring other Wire dependencies.</p>
+<div class="highlight"><pre><span></span><code><span class="n">dependencies</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="n">platform</span><span class="p">(</span><span class="s">&quot;com.squareup.wire:wire-bom:4.2.0&quot;</span><span class="p">))</span>
+<span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.squareup.wire:wire-compiler&quot;</span><span class="p">)</span><span class="w">      </span><span class="c1">// No version!</span>
+<span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.squareup.wire:wire-gradle-plugin&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// No version!</span>
+<span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.squareup.wire:wire-grpc-client&quot;</span><span class="p">)</span><span class="w">   </span><span class="c1">// No version!</span>
+<span class="w">  </span><span class="c1">// Etc.</span>
+<span class="p">}</span>
+</code></pre></div>
+</li>
+</ul>
+<h2 id="version-411">Version 4.1.1<a class="headerlink" href="#version-411" title="Permanent link">&para;</a></h2>
+<p><em>2022-02-15</em></p>
+<ul>
+<li>Fix: Print target name in <code>ConsoleWireLogger</code>.</li>
+<li>Fix: Throw early when field or constant names start with a digit.</li>
+<li>Update: Bumped SwiftPoet to <code>1.3.1</code>.</li>
+<li>Fix: Wire will not generate annotations for <code>repeated</code> options.</li>
+</ul>
+<h2 id="version-410">Version 4.1.0<a class="headerlink" href="#version-410" title="Permanent link">&para;</a></h2>
+<p><em>2022-01-28</em></p>
+<ul>
+<li>New: When using Wire JSON factories, you can now override the proto3 behavior of skipping default
+   values when writing JSON. Set <code>writeIdentityValues</code> to true for either <code>WireJsonAdapterFactory</code>
+   or <code>WireTypeAdapterFactory</code> to enable it.</li>
+<li>Breaking: WireLogger methods has been refactored to remove platform dependencies and allow more
+   precise callbacks. We might add new methods in the future for better logging still.</li>
+<li>Removal: The <code>dry-run</code> option on <code>WireCompiler</code> has been removed.</li>
+<li>Swift: WireCompiler podspec is now backup by a jar so consumers will not have to locally build it
+    on <code>pod install</code>.</li>
+</ul>
+<h2 id="version-401">Version 4.0.1<a class="headerlink" href="#version-401" title="Permanent link">&para;</a></h2>
+<p><em>2021-12-07</em></p>
+<ul>
+<li>Fix: Don&rsquo;t fail at compilation when an enum is in a <code>oneof</code> for Swift generation.</li>
+</ul>
+<h2 id="version-400">Version 4.0.0<a class="headerlink" href="#version-400" title="Permanent link">&para;</a></h2>
+<p><em>2021-12-03</em></p>
+<ul>
+<li>New: Add &lsquo;nameSuffix&rsquo; parameter for configuring generated service-class names in Kotlin.</li>
+<li>New: Define <code>oneofName</code> in <code>@WireField</code>.</li>
+<li>New: Enable iosSimulatorArm64 for Kotlin multiplatform.</li>
+<li>New: Expose the source <code>.proto</code> file at <code>ProtoAdaper.sourceFile</code>. This is null for built-in types
+   and types generated prior to this release.</li>
+<li>New: Generate Kotlin code whose members match the declaration order of the corresponding <code>.proto</code>
+   files. In previous releases, generated members were sorted by kind (fields, oneofs), then by
+   declaration order. With this update only declaration order is used. <strong>Note that this will change
+   the encoded-bytes of these messages.</strong> This change is both forwards and backwards-compatible.
+   Identical encoding of equal messages across Wire releases is typical but not guaranteed, and this
+   is a rare release that changes that encoding. If you do cryptographic hashes on encoded proto
+   messages, you will notice that the hashes are different in this release.</li>
+<li>New: Option in <code>SchemaLoader</code> to exhaustively load imported files. By default we only load what&rsquo;s
+   immediately necessary to generate code; this new option loads everything reachable into the
+   schema.</li>
+<li>New: Programmatic API to prune schemas. See <code>Pruner</code> in wire-schema.</li>
+<li>New: SchemaLoader doesn&rsquo;t extend the <code>Closeable</code> interface anymore.</li>
+<li>New: Support <code>rpcRole = 'none'</code> in the Gradle plugin to generate neither client nor server code.</li>
+<li>New: Support for Android variants.</li>
+<li>New: Support for glob syntax in srcJar includes.</li>
+<li>New: Support for special float literals.</li>
+<li>New: Swift support <code>Timestamp</code> and <code>Duration</code>.</li>
+<li>New: The Wire plugin requires an output to be set. Before, it would generate Java code by
+   default; it will now throw if there are no <a href="https://square.github.io/wire/wire_compiler/#customizing-output">output</a> defined.</li>
+<li>New: The default value of <code>emitAppliedOptions</code> for our Java and Kotlin target is now set to true.</li>
+<li>New: Wire should build and execute properly on Windows.</li>
+<li>New: <code>@WireRpc</code> has a new <code>sourceFile</code> attribute.</li>
+<li>New: <code>GrpcClient.Builder.minMessageToCompress()</code> configures which messages are compressed. This
+   will completely disable compression if the size is <code>Long.MAX_VALUE</code>. We&rsquo;ve seen problems where
+   some Golang gRPC servers don&rsquo;t support compression; setting this to <code>MAX_VALUE</code> is necessary to
+   interop with them.</li>
+<li>New: <code>SchemaReflector</code> is our initial implementation of the
+   <a href="https://github.com/grpc/grpc/blob/master/doc/server-reflection.md">gRPC Server Reflection Protocol</a>. Note that although we implement the business logic of
+   gRPC reflection, we don&rsquo;t offer a gRPC server built into Wire.</li>
+<li>New: <code>wire-reflector</code> bundles gRPC&rsquo;s <code>reflection.proto</code> which it is built upon.</li>
+<li>New: <code>wire-runtime</code> exposes a <code>com.squareup.wire.VERSION</code> constant reflecting the project version.</li>
+<li>New: change the Gradle plugin so that (unstable) custom handlers can be configured with instance
+   instead of with a class name.</li>
+<li>Fix: Be more aggressive about loading transitive files with <code>SchemaLoader.loadExhaustively</code>.</li>
+<li>Fix: Bugs in JSON serialization of builder-less Kotlin types have been addressed.</li>
+<li>Fix: Compile Kotlin/JS with both LEGACY and IR compilers.</li>
+<li>Fix: Deep copy metadata on <code>GrpcCall.clone()</code>.</li>
+<li>Fix: Don&rsquo;t break task caching by using absolute paths in the Gradle plugin. Wire now uses
+   project-relative paths in any attribute that is used as a cache key.</li>
+<li>Fix: Don&rsquo;t crash encoding schemas when an option contains a repeated field, an enum, or a double.</li>
+<li>Fix: Don&rsquo;t depend on moshi-kotlin in wire-moshi. This caused a transitive dependency on
+   kotlin-reflect, which we neither needed nor wanted.</li>
+<li>Fix: Don&rsquo;t generate invalid code when an enum constant is named <code>name</code> or <code>ordinal</code>.</li>
+<li>Fix: Don&rsquo;t re-use the cache if protobuf inputs have changed.</li>
+<li>Fix: Emitting proper protobuf format for option values defined as a list of enum constants.</li>
+<li>Fix: Explicitly defined Wire gRPC server generation as experimental: the feature isn&rsquo;t complete.</li>
+<li>Fix: Generate <code>@Deprecated</code> annotations on deprecated messages, fields, enums, and enum
+   constants.</li>
+<li>Fix: Handle out of order proto fields when initializing Kotlin constructors.</li>
+<li>Fix: Handle writing/reading exceptions for duplex calls in Wire gRPC.</li>
+<li>Fix: In Java, rename instances to avoid field and class name conflicts.</li>
+<li>Fix: Locate files in the root package when importing.</li>
+<li>Fix: Memory fixes found with Address Sanitizer in Swift.</li>
+<li>Fix: Permit values other than <code>0</code> and <code>1</code> when decoding protobuf-encoded booleans. Previously we
+   threw an <code>IOException</code> for other values; now all non-zero values are true.</li>
+<li>Fix: Redact boxed <code>OneOf</code> fields.</li>
+<li>Fix: Redacted Kotlin scalars now respect nullability.</li>
+<li>Fix: Retain field order when emitting a schema as <code>.proto</code> files.</li>
+<li>Fix: Reverse the topological sort of dependent files in <code>SchemaReflector</code>. We had problems with
+   <code>grpc-curl</code> which expects the requested file to be listed first.</li>
+<li>Fix: Support Kotlin-generated annotations on Java fields.</li>
+<li>Fix: Support for serializing builder-less Kotlin generated classes to JSON.</li>
+<li>Fix: Support reporting errors in <code>CustomHandlerBeta</code>.</li>
+<li>Fix: Suppress deprecation warnings on generated enum&rsquo;s <code>fromValue</code> method in Kotlin.</li>
+<li>Fix: Swift adapters will throw an error when encountering an unexpected
+   <code>ProtoReader.beginMessage()</code> rather than calling <code>fatalError()</code>.</li>
+<li>Fix: Update the Wire Gradle plugin to clear the output directory before generating code. This
+   prevents the need to do a clean build after removing a message type.</li>
+<li>Fix: Update the Wire Gradle plugin to register generated <code>.java</code> sources with the Java compiler.
+   Previously this was broken if the Kotlin plugin was installed.</li>
+<li>Fix: Use Gradle&rsquo;s logging mechanism to reduce output when Wire generates code.</li>
+<li>Fix: Use correct type when referencing a custom adapter in Kotlin generated code.</li>
+<li>Fix: Use relative path sensitivity and file collection.</li>
+<li>Fix: Validate enum constant uniqueness for the entire package.</li>
+<li>Fix: Wire Gradle plugin tasks have been modernized with configuration caching support.</li>
+<li>Fix: Wire will not generate respective built-in types for Java, Kotlin, and Swift generation.
+   Those are usually the google types for which Wire will provide its own implementation.</li>
+<li>Upgrade: Update KotlinPoet to <code>1.8.0</code>.</li>
+<li>Upgrade: <a href="https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493">OkHttp 4.9.3</a>.</li>
+<li>Upgrade: <a href="https://square.github.io/okio/changelog/#version-300">Okio 3.0.0</a>. We now use Okio 3&rsquo;s <code>FileSystem</code> in <code>SchemaLoader</code>, which
+   makes it easier to load <code>.proto</code> files from the classpath. This is binary-incompatible with the
+   Okio 3.0 alpha releases.</li>
+<li>Bye: Drop support for emitKotlinxSerialization.</li>
+</ul>
+<h2 id="version-371">Version 3.7.1<a class="headerlink" href="#version-371" title="Permanent link">&para;</a></h2>
+<p><em>2021-11-03</em></p>
+<ul>
+<li>Fix: Properly load schema located at root without packages.</li>
+</ul>
+<h2 id="version-370">Version 3.7.0<a class="headerlink" href="#version-370" title="Permanent link">&para;</a></h2>
+<p><em>2021-03-25</em></p>
+<ul>
+<li>New: <code>srcProject(":project-name")</code> makes it easier to depend on <code>.proto</code> files of other projects.</li>
+<li>Fix: Don&rsquo;t require source that <code>.proto</code> directories exist at Gradle plugin configuration time.
+   This was preventing Wire from using other tasks&rsquo; outputs as its inputs.</li>
+<li>Fix: Don&rsquo;t fail if options have a <code>.</code> prefix.</li>
+</ul>
+<h2 id="version-361">Version 3.6.1<a class="headerlink" href="#version-361" title="Permanent link">&para;</a></h2>
+<p><em>2021-03-09</em></p>
+<ul>
+<li>Fix: The Wire Gradle plugin now supports Java only Android projects.</li>
+<li>Fix: In the Wire Gradle plugin, <code>sourcePath</code> will now include only protos defined with <code>include</code>
+   if the option is present. It used to include all existing <code>.proto</code> files even if <code>include</code> was
+   used.</li>
+<li>New: Full support Optional Int64 and UInt64 for JSONString in Swift.</li>
+</ul>
+<h2 id="version-360">Version 3.6.0<a class="headerlink" href="#version-360" title="Permanent link">&para;</a></h2>
+<p><em>2021-02-08</em></p>
+<ul>
+<li>New: Automatically add a dependency when a <code>protoPath</code> or <code>protoSource</code> depends on a project.</li>
+<li>New: <code>protoPath</code> and <code>protoSource</code> dependencies are now <em>not</em> transitive by default.</li>
+<li>New: New protoLibrary option for the Wire Gradle plugin. Configuring a project as a protoLibrary
+   will cause the generated <code>.jar</code> file to include <code>.proto</code> sources.</li>
+<li>New: Code generation for plain gRPC server. The Kotlin target now has a new
+   <code>grpcServerCompatible</code> option which if set to <code>true</code> will generate gRPC server-compatible
+   classes.</li>
+<li>New: Introduce <code>GrpcException</code>.</li>
+<li>New: Add GrpcMethod tag to the request.</li>
+<li>New: Adds redacting support for Moshi JSON adapters.</li>
+<li>New: Publish plugin marker for Gradle plugin.</li>
+<li>Fix: Escape square brackets in Kotlin generated code documentation.</li>
+<li>Fix: Improved proto parsing performance.</li>
+</ul>
+<h2 id="version-350">Version 3.5.0<a class="headerlink" href="#version-350" title="Permanent link">&para;</a></h2>
+<p><em>2020-10-27</em></p>
+<ul>
+<li>New: Wire Gradle plugin improvements:</li>
+<li>A task is now created for each available sources (main, Android variants, etc).</li>
+<li>The <code>wire-runtime</code> dependency is automatically added.</li>
+<li>Generated code directories are automatically added into their module&rsquo;s source sets.</li>
+<li>New: Wire&rsquo;s proto parser now knows about <code>oneOfOptions</code>.</li>
+<li>New: Wire will throw when two enum constants are ambiguous, like <code>ZERO</code> and <code>zero</code>.</li>
+<li>New: Bytes options are not eligible anymore as annotation members.</li>
+<li>Fix: Optional fields in proto3 are now generated as nullable fields.</li>
+<li>Fix: JSON camel-casing is updated to fit latest protobuf specifications.</li>
+<li>Fix: Exception messages when gRPC fails have been improved.</li>
+<li>Fix: Allow <code>;</code> as entry separator in option maps.</li>
+<li>Fix: Enum constants are now properly escaped when conflicting with keywords of their generated
+ target platform.</li>
+<li>Fix: Update to KotlinPoet 1.7.2 which makes a lot of change in how Kotlin code is generated.</li>
+</ul>
+<h2 id="version-340">Version 3.4.0<a class="headerlink" href="#version-340" title="Permanent link">&para;</a></h2>
+<p><em>2020-09-24</em></p>
+<ul>
+<li>New: Stop emitting enum constant options as fields for Kotlin.</li>
+<li>New: The Wire Gradle plugin task is now cacheable.</li>
+<li>New: New GrpcCall function to help implement fakes.</li>
+<li>New: Change GrpcStreamingCall.execute() to support structured concurrency.</li>
+</ul>
+<h2 id="version-330">Version 3.3.0<a class="headerlink" href="#version-330" title="Permanent link">&para;</a></h2>
+<p><em>2020-09-14</em></p>
+<ul>
+<li>New: Proto3 support! This includes the new behaviors, the new types, and the JSON.</li>
+<li>New: Swift support for proto2 schemas. The details are in our <a href="https://cashapp.github.io/2020-08-19/wire-support-for-swift-part-1">blog post</a>.</li>
+<li>New: Wire will now throw an error when:</li>
+<li>two generated files end up overriding each other,</li>
+<li>imports form a cycle,</li>
+<li>packages form a cycle. This can be turned off with the flag <code>permitPackageCycles</code>,</li>
+<li>an option within the source set cannot be resolved,</li>
+<li>there are name duplications of members in a message, or of rpcs in a service,</li>
+<li>a map is used as an extension.</li>
+<li>New: Support for the <code>json_name</code> pseudo option.</li>
+<li>New: The <code>wire_package</code> file option allows one to set the JVM package where classes generated
+   from the concerned file will be placed. <code>wire_package</code> takes precedence over <code>java_package</code>.</li>
+<li>New: Lists and maps in Kotlin generated code are now immutable.</li>
+<li>New: Support UTF-8 with BOM in proto files.</li>
+<li>New: <code>wire.since</code> and <code>wire.until</code> have been renamed with the prefix <code>constant_</code> for
+   <code>EnumValueOptions</code>.</li>
+<li>New: Wire generates 1) annotations for options which 2) gets assigned to the generated code where
+   appropriate. Both behavior can be turn on or off via the flags:</li>
+<li><code>emitDeclaredOptions</code>: True to emit types for options declared on messages, fields, etc.
+     Default to true,</li>
+<li><code>emitAppliedOptions</code>: True to emit annotations for options applied on messages, fields, etc.
+     Default to false.</li>
+<li>Fix: Recursive map values.</li>
+<li>Fix: Long expressions in equals and encodedSize functions.</li>
+</ul>
+<h2 id="version-322">Version 3.2.2<a class="headerlink" href="#version-322" title="Permanent link">&para;</a></h2>
+<p><em>2020-05-15</em></p>
+<ul>
+<li>Fix: JSON serialization correctly emits all values.</li>
+</ul>
+<h2 id="version-321">Version 3.2.1<a class="headerlink" href="#version-321" title="Permanent link">&para;</a></h2>
+<p><em>2020-05-02</em></p>
+<ul>
+<li>New: <code>onlyVersion</code> option on the Wire Gradle plugin to target a unique version. By and large,
+   service code that supports many clients would target ranges via <code>sinceVersion</code> and
+   <code>untilVersion</code>, while client code would target a unique version via <code>onlyVersion</code>.</li>
+<li>New: Support for optional fields in Proto3.</li>
+<li>Fix: Restored the <code>GrpcClient.create</code> API to create implementations for gRPC interfaces.</li>
+</ul>
+<h2 id="version-320">Version 3.2.0<a class="headerlink" href="#version-320" title="Permanent link">&para;</a></h2>
+<p><em>2020-04-23</em></p>
+<ul>
+<li>New: <code>wire.since</code> and <code>wire.until</code> options on members and enum values. You can prune fields or
+   constants using these two options. When generating code with the Wire Gradle plugin, define
+   <code>sinceVersion</code> and/or <code>untilVersion</code> to scope the generated code.</li>
+<li>New: Messages&rsquo; <code>toString</code> method on Kotlin and Java now escape string values for easy parsing.</li>
+<li>Fix: Link the entire <code>descriptor.proto</code> every time when building the <code>Schema</code>.</li>
+<li>Fix: Properly handle members named after keywords of the target language for both Java and
+   Kotlin.</li>
+<li>Fix: Use the declared name for keys in JSON when emitting/reading keyword named members.</li>
+<li>Fix: Generated Kotlin code is malformed for long identifiers.</li>
+<li>Fix: Make the Wire Gradle plugin compatible with instant execution.</li>
+</ul>
+<h2 id="version-310">Version 3.1.0<a class="headerlink" href="#version-310" title="Permanent link">&para;</a></h2>
+<p><em>2020-02-06</em></p>
+<p>This release includes major non-backwards-compatible API changes to the <code>wire-schema</code> module. This
+will break tools that use Wire&rsquo;s schema modeling as a standalone library. We are making big changes
+to this component and we sacrificed API compatibility to accelerate these improvements.</p>
+<ul>
+<li>New: <code>proto { ... }</code> target in the Wire Gradle plugin. Use this to perform basic source code
+   transformations on collections of <code>.proto</code> files. We use it to prune large collections of protos
+   to just the subset used by the application.</li>
+<li>Fix: Support all forms of reserved extensions, such as <code>extensions 1, 3 to 5, 7;</code>.</li>
+<li>Fix: Don&rsquo;t re-generate source files when their <code>.proto</code> files haven&rsquo;t changed.</li>
+<li>New: <code>includes</code>, <code>excludes</code>, <code>root</code>, and <code>prune</code> give precedence to the most precise rule.
+   Previously <code>excludes</code> always took precedence over <code>includes</code>, and <code>prune</code> always took precedence
+   over <code>root</code>.</li>
+<li>Fix: Generate non-instantiable class for enclosing types in Kotlin. These are emitted when a
+   nested type is retained but its enclosing type is pruned.</li>
+<li>Fix: Do not fail to build when the profile cannot find a dependency.</li>
+</ul>
+<h2 id="version-303">Version 3.0.3<a class="headerlink" href="#version-303" title="Permanent link">&para;</a></h2>
+<p><em>2019-12-23</em></p>
+<p>Starting with this version the Wire Maven plugin is no longer maintained and has been removed from
+the repository.</p>
+<ul>
+<li>New: Support for custom options in Kotlin.</li>
+<li>New: Kotlin 1.3.61.</li>
+<li>New: Add support for custom targets in <code>WireRun</code> and the Gradle plugin.</li>
+<li>New: Improve schema evaluation algorithm when loading separate <code>sourcePath</code> and <code>protoPath</code>.</li>
+<li>New: Lazy loading of <code>protoPath</code> contents.</li>
+<li>New: Make it possible to customize Gradle plugin&rsquo;s configurations.</li>
+<li>New: Make it possible to customize Gradle plugin&rsquo;s <code>generateProtos</code> task.</li>
+<li>Fix: Use correct <code>ProtoAdapter</code> for packed fields in Kotlin.</li>
+<li>Fix: Properly handle name clashes between fields and enclosing types.</li>
+<li>Fix: Preserve the package name on files loaded from <code>protoPath</code>.</li>
+<li>Fix: ProtoPruner: Properly evaluate Pruner&rsquo;s reachable objects.</li>
+<li>Fix: ProtoPruner: Ensure <code>--excludes</code> properly prunes options.</li>
+<li>Fix: ProtoPruner: Keep used <code>ServiceOptions</code> and <code>MethodOptions</code> when pruning.</li>
+</ul>
+<h2 id="version-302">Version 3.0.2<a class="headerlink" href="#version-302" title="Permanent link">&para;</a></h2>
+<p><em>2019-11-22</em></p>
+<ul>
+<li>Fix: Generate correct unknownFields code if a message field&rsquo;s name is a Kotlin keyword.</li>
+<li>Fix: Properly handle unknown enum values in Kotlin.</li>
+<li>Fix: ProtoPruner: retain used extends.</li>
+<li>Fix: ProtoPruner: retain only used imports.</li>
+<li>Fix: ProtoPruner: use NewSchemaLoader that correctly loads google.protobuf.descriptor.</li>
+<li>Fix: ProtoPruner: print default values for scalar types for proto target within the options.</li>
+<li>Fix: ProtoPruner: fix handling of options.</li>
+<li>Fix: ProtoPruner: print default values for enums.</li>
+</ul>
+<h2 id="version-301">Version 3.0.1<a class="headerlink" href="#version-301" title="Permanent link">&para;</a></h2>
+<p><em>2019-10-18</em></p>
+<ul>
+<li>Fix: Use the correct adapter path for gRPC endpoints that customize the Java package.</li>
+<li>Fix: Preserve documentation in generated services.</li>
+<li>Fix: Fail to generate code if the source directory doesn&rsquo;t exist.</li>
+<li>Fix: Make Kotlin consistent with Java for unknown enum constants. We now treat these as unknown
+   fields rather than failing to decode the enclosing message.</li>
+</ul>
+<h2 id="version-300">Version 3.0.0<a class="headerlink" href="#version-300" title="Permanent link">&para;</a></h2>
+<p><em>2019-10-07</em></p>
+<ul>
+<li>Update: All gRPC networking calls are encoded in gzip.</li>
+</ul>
+<h2 id="version-300-rc03">Version 3.0.0-rc03<a class="headerlink" href="#version-300-rc03" title="Permanent link">&para;</a></h2>
+<p><em>2019-10-04</em></p>
+<ul>
+<li>Fix: Update dependency to a stable version, <code>2.4.1</code> of Okio.</li>
+</ul>
+<h2 id="version-300-rc02">Version 3.0.0-rc02<a class="headerlink" href="#version-300-rc02" title="Permanent link">&para;</a></h2>
+<p><em>2019-10-01</em></p>
+<h3 id="kotlin_5">Kotlin<a class="headerlink" href="#kotlin_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix: Nullify other oneof fields in Builder setters in Kotlin interop.</li>
+<li>Fix: Use unknownFields in <code>hashCode()</code>.</li>
+<li>Fix: Remove <code>withoutUnknownFields()</code> from Kotlin.</li>
+</ul>
+<h3 id="grpc">gRPC<a class="headerlink" href="#grpc" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Update: Total rewrite of the generated interfaces for clients:</li>
+</ul>
+<p>Introduce two interfaces, <code>GrpcCall</code> for simple RPCs, and <code>GrpcStreamingCall</code> fox duplex ones. Both
+   will provide blocking and suspending API, including a reference to the underlying
+   <a href="https://github.com/square/okhttp">OkHttp</a>
+   <a href="https://square.github.io/okhttp/4.x/okhttp/okhttp3/-call/">Call</a> object and its timeout.</p>
+<ul>
+<li>Fix: Send stream cancels from clients.</li>
+</ul>
+<h3 id="misc">Misc<a class="headerlink" href="#misc" title="Permanent link">&para;</a></h3>
+<ul>
+<li>New: Changes printing of options and enums:</li>
+<li>No empty lines between options and fields for enums.</li>
+<li>Print options on new lines only when more than one.</li>
+<li>Fix: Don&rsquo;t cache Message&rsquo;s hash code on Native.</li>
+<li>Fix: Fix handling of map values in <code>FieldBinding</code>.</li>
+<li>Fix: Fix import fails on windows due to path separator.</li>
+<li>Fix: Don&rsquo;t emit proto2 sources for proto3 syntax.</li>
+</ul>
+<h2 id="version-300-rc01">Version 3.0.0-rc01<a class="headerlink" href="#version-300-rc01" title="Permanent link">&para;</a></h2>
+<p><em>2019-08-02</em></p>
+<h3 id="compiler-gradle-plugin">Compiler + Gradle plugin<a class="headerlink" href="#compiler-gradle-plugin" title="Permanent link">&para;</a></h3>
+<ul>
+<li>New: Support includes on Maven coordinate dependencies.</li>
+<li>New: Track includes separately for source vs proto paths.</li>
+<li>New: Follow symlinks when building.</li>
+<li>New: Change the Gradle plugin to track targets as a list.</li>
+<li>New: Includes and Excludes for Wire targets.</li>
+<li>New: Print errors on ambiguous and missing imports.</li>
+<li>Fix: Fix a bug where protopath Maven resources weren&rsquo;t working.</li>
+<li>Fix: Don&rsquo;t reuse source dependencies as protopath dependencies.</li>
+<li>Fix: Fix <code>equals()</code> implementation for messages with no fields.</li>
+</ul>
+<h3 id="kotlin_6">Kotlin<a class="headerlink" href="#kotlin_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>New: Move Wire.kt into <code>jvmMain</code> to discourage its use in common Kotlin code.</li>
+<li>New: Make <code>Message.adapter</code> a <code>val</code>.</li>
+<li>New: Optimize <code>decode()</code> code for protos with no fields.</li>
+<li>New: Update supported Native platforms.</li>
+<li>New: Make <code>Message.unknownFields</code> property non-nullable.</li>
+<li>New: Make <code>Message.unknownFields</code> a <code>val</code>.</li>
+<li>Fix: Don&rsquo;t use <code>KClass.simpleName</code> to avoid needing <code>kotlin-reflect</code> dependency.</li>
+<li>Fix: Use <code>kotlin.UnsupportedOperationException</code> in generated code.</li>
+</ul>
+<h3 id="grpc_1">gRPC<a class="headerlink" href="#grpc_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>New: Introduce <code>MessageSource</code> and <code>MessageSink</code> interfaces in <code>wire-runtime</code>.</li>
+<li>New: Honor Java package names in Wire gRPC services.</li>
+<li>New: Make <code>PipeDuplexRequestBody</code> internal.</li>
+<li>Fix: Workaround for <code>@Generated</code> annotation on Java 9+.</li>
+<li>Fix: Fix types for blocking APIs.</li>
+</ul>
+<h3 id="misc_1">Misc<a class="headerlink" href="#misc_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix: Fix deserializing null values in Gson adapter.</li>
+<li>Fix: Change <code>wire-runtime</code> artifact names to preserve 2.x compatibility.</li>
+</ul>
+<h2 id="version-300-alpha03">Version 3.0.0-alpha03<a class="headerlink" href="#version-300-alpha03" title="Permanent link">&para;</a></h2>
+<p><em>2019-06-22</em></p>
+<ul>
+<li>Similar to alpha02, but with proper <code>wire-runtime</code> multiplatform artifacts.</li>
+</ul>
+<h2 id="version-300-alpha02">Version 3.0.0-alpha02<a class="headerlink" href="#version-300-alpha02" title="Permanent link">&para;</a></h2>
+<p><em>2019-06-21</em></p>
+<ul>
+<li>New: Experimental multiplatform runtime.</li>
+</ul>
+<p>Starting with this version, <code>wire-runtime</code> is published as a multiplatform Kotlin artifact. While
+   the JVM artifact is binary- and behavior-compatible with 3.0.0-alpha01, artifacts for other
+   platforms may not work correctly at this point. The artifact name for the JVM artifact has been
+   changed to <code>wire-runtime-jvm</code>: now, in order to depend on the multiplatform runtime, use the
+   following Gradle dependency declaration:</p>
+<div class="highlight"><pre><span></span><code><span class="n">api</span><span class="w"> </span><span class="s2">&quot;com.squareup.wire:wire-runtime:3.0.0-alpha02&quot;</span>
+</code></pre></div>
+<p>and if you want to depend on the JVM artifact only, use the following declaration:</p>
+<div class="highlight"><pre><span></span><code><span class="n">api</span><span class="w"> </span><span class="s2">&quot;com.squareup.wire:wire-runtime-jvm:3.0.0-alpha02&quot;</span>
+</code></pre></div>
+<ul>
+<li>New: Generate RPCs as Single Abstract Methods.</li>
+<li>New: Add &ldquo;singleMethod&rdquo; Gradle plugin configuration for services.</li>
+<li>New: Add &ldquo;blockingServices&rdquo; Gradle plugin configuration for services.</li>
+<li>New: Support packageless services code generation.</li>
+<li>New: Remove sealed classes-based oneof implementation.</li>
+<li>New: Don&rsquo;t generate a Builder for non-interop Kotlin messages.</li>
+<li>Fix: Kotlin Generator correctly generates code for Protobuf services.</li>
+<li>Fix: Improved formatting of generated Kotlin code.</li>
+<li>Fix: Generate correct adapter names for WireField annotation.</li>
+<li>Fix: Generate labels for WireField annotation.</li>
+<li>Fix: Wrap oneof error message properly.</li>
+</ul>
+<h2 id="version-300-alpha01">Version 3.0.0-alpha01<a class="headerlink" href="#version-300-alpha01" title="Permanent link">&para;</a></h2>
+<p><em>2019-03-14</em></p>
+<ul>
+<li>New: Kotlin Generator</li>
+</ul>
+<p>Wire 3 can generate Kotlin data classes. To enable this feature via the command line API, pass in
+   the <code>--kotlin_out</code> parameter that should specify the output directory for the generated <code>*.kt</code>
+   files.
+   Given the following simple proto:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">message</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">required</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="k">required</span><span class="w"> </span><span class="kt">int32</span><span class="w"> </span><span class="na">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="na">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>the generated Kotlin code will look like the following:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">(</span>
+<span class="w">  </span><span class="nd">@field</span><span class="p">:</span><span class="n">WireField</span><span class="p">(</span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">adapter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;com.squareup.wire.ProtoAdapter#STRING&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">name</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">,</span>
+<span class="w">  </span><span class="nd">@field</span><span class="p">:</span><span class="n">WireField</span><span class="p">(</span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">adapter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;com.squareup.wire.ProtoAdapter#INT32&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">id</span><span class="p">:</span><span class="w"> </span><span class="kt">Int</span><span class="p">,</span>
+<span class="w">  </span><span class="nd">@field</span><span class="p">:</span><span class="n">WireField</span><span class="p">(</span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">adapter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;com.squareup.wire.ProtoAdapter#STRING&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">email</span><span class="p">:</span><span class="w"> </span><span class="kt">String?</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">unknownFields</span><span class="p">:</span><span class="w"> </span><span class="n">ByteString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ByteString</span><span class="p">.</span><span class="na">EMPTY</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Message</span><span class="o">&lt;</span><span class="n">Person</span><span class="p">,</span><span class="w"> </span><span class="n">Person</span><span class="p">.</span><span class="na">Builder</span><span class="o">&gt;</span><span class="p">(</span><span class="n">ADAPTER</span><span class="p">,</span><span class="w"> </span><span class="n">unknownFields</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">companion</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="err">{</span>
+<span class="w">    </span><span class="nd">@JvmField</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">ADAPTER</span><span class="p">:</span><span class="w"> </span><span class="n">ProtoAdapter</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="c1">// code omitted for brevity</span>
+</code></pre></div>
+<p>The <code>copy()</code> method of a data class replaces most usages of the builder. If your code relies on
+   the <code>Builder</code>, you can enable full <code>Builder</code> generation by passing the <code>--java_interop</code> parameter
+   to the compiler.</p>
+<ul>
+<li>New: gRPC support</li>
+</ul>
+<p>In addition to generating Kotlin code from proto messages, Wire can now generate code for gRPC
+   endpoints. Here&rsquo;s an example schema:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">service</span><span class="w"> </span><span class="n">RouteGuide</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// A simple RPC.</span>
+<span class="w">  </span><span class="c1">//</span>
+<span class="w">  </span><span class="c1">// Obtains the feature at a given position.</span>
+<span class="w">  </span><span class="c1">//</span>
+<span class="w">  </span><span class="c1">// A feature with an empty name is returned if there&#39;s no feature at the given</span>
+<span class="w">  </span><span class="c1">// position.</span>
+<span class="w">  </span><span class="k">rpc</span><span class="w"> </span><span class="n">GetFeature</span><span class="p">(</span><span class="n">Point</span><span class="p">)</span><span class="w"> </span><span class="k">returns</span><span class="w"> </span><span class="p">(</span><span class="n">Feature</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The generated code will look like the following (message protos, referenced by the schema, are
+   omitted):</p>
+<div class="highlight"><pre><span></span><code><span class="kd">interface</span><span class="w"> </span><span class="nc">RouteGuide</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Service</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@WireRpc</span><span class="p">(</span>
+<span class="w">      </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/routeguide.RouteGuide/GetFeature&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">requestAdapter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;routeguide.Point#ADAPTER&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">responseAdapter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;routeguide.Feature#ADAPTER&quot;</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="w">  </span><span class="kd">suspend</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">GetFeature</span><span class="p">(</span><span class="n">request</span><span class="p">:</span><span class="w"> </span><span class="n">Point</span><span class="p">):</span><span class="w"> </span><span class="n">Feature</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>All four gRPC modes are supported: the generated code uses suspendable functions to implement
+   non-blocking asynchronous execution. In streaming modes, <code>ReceiveChannel</code> and <code>SendChannel</code> are
+   used to listen to asynchronous data in a non-blocking fashion.</p>
+<p>This feature works out of the box in Wire 3 compiler as long as the input file contains a gRPC
+   schema.</p>
+<ul>
+<li>New: Gradle plugin</li>
+</ul>
+<p>Here&rsquo;s an example Gradle configuration:</p>
+<div class="highlight"><pre><span></span><code><span class="n">apply</span><span class="w"> </span><span class="nl">plugin:</span><span class="w"> </span><span class="s1">&#39;com.squareup.wire&#39;</span>
+
+<span class="n">wire</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="c1">// Keeps only &#39;Dinosaur#name&#39; as the root of the object graph</span>
+<span class="w">  </span><span class="n">roots</span><span class="w"> </span><span class="s1">&#39;squareup.dinosaurs.Dinosaur#name&#39;</span>
+
+<span class="w">  </span><span class="c1">// Keeps all fields, except &#39;name&#39;, in &#39;Dinosaur&#39;</span>
+<span class="w">  </span><span class="n">prunes</span><span class="w"> </span><span class="s1">&#39;squareup.dinosaurs.Dinosaur#name&#39;</span>
+
+<span class="w">  </span><span class="c1">// Both roots and prunes in an external file</span>
+<span class="w">  </span><span class="n">rules</span><span class="w"> </span><span class="s1">&#39;rules.txt&#39;</span>
+
+<span class="w">  </span><span class="n">kotlin</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">javaInterop</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="s2">&quot;${buildDir}/generated/custom&quot;</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>The <code>wire</code> extension introduces the concept of compilation targets, such as <code>kotlin</code> and <code>java</code>,
+   where each target has its own configuration properties. Multiple targets can be supplied, which
+   benefits use cases such as migrating Java protos to Kotlin.</p>
+<ul>
+<li>New: Decouple the option of using Android annotations for nullability from the option of having messages implement Parcelable.</li>
+<li>New: Wire Moshi adapter for serializing proto JSON representation using the Moshi library.</li>
+<li>New: Implement support for custom enum types.</li>
+<li>New: Generate AndroidX nullability annotations instead of old support library annotations.</li>
+<li>New: Import JSR 305 and use it to mark nullability of public API.</li>
+<li>New: Allow inline multiline comments.</li>
+<li>New: Generate an empty class when a nested message is retained but its parent was pruned.</li>
+<li>New: Support rendering a <code>ProtoFile</code> to its schema.</li>
+<li>New: Support hexadecimal numeric literals.</li>
+<li>New: Allow custom types to be constrained with a &lsquo;with&rsquo; clause.</li>
+<li>New: Generate a constructor which takes in a <code>Message.Builder</code> instead of all fields separately.</li>
+<li>New: Add location to the error message about unsupported group elements.</li>
+<li>New: Permit single files to be used on the proto path.</li>
+<li>Fix: Emit &lsquo;=&rsquo; for syntax declaration.</li>
+<li>Fix: Don&rsquo;t crash when a comment has a dollar sign.</li>
+<li>Fix: Return subclass type instead of abstract parameterized type for newBuilder.</li>
+<li>Fix: Validate enum namespace in file context are unique.</li>
+</ul>
+<h2 id="version-220">Version 2.2.0<a class="headerlink" href="#version-220" title="Permanent link">&para;</a></h2>
+<p><em>2016-06-17</em></p>
+<ul>
+<li>New: Support for <code>map</code> type in the schema, compiler, and runtime!</li>
+<li>New: <code>AndroidMessage</code> base class consolidates everything required for supporting Android and will
+   now be used for generating code with <code>--android</code>.</li>
+<li>New: <code>stream</code> keyword in RPC definitions is now parsed and exposed in the schema.</li>
+<li>Fix: Nested types which are retained no longer cause their enclosing type to be retained. Instead,
+   non-instantiable empty types will be generated for pruned enclosing types.</li>
+<li>Fix: Remove per-type <code>Parcelable.Creator</code> classes and instead use a single type which delegates
+   to the message&rsquo;s <code>ProtoAdapter</code>.</li>
+<li>Fix: Retain information on redacted fields even when options were pruned.</li>
+<li>Fix: Do not generate code for handling <code>null</code> from list types (and now map types) which are
+   guaranteed to never be <code>null</code>.</li>
+</ul>
+<h2 id="version-212">Version 2.1.2<a class="headerlink" href="#version-212" title="Permanent link">&para;</a></h2>
+<p><em>2016-04-15</em></p>
+<ul>
+<li>Fix: Gson type adapter now deserializes JSON null literals to empty list for repeated fields.</li>
+</ul>
+<h2 id="version-211">Version 2.1.1<a class="headerlink" href="#version-211" title="Permanent link">&para;</a></h2>
+<p><em>2016-02-01</em></p>
+<ul>
+<li>New: <code>reserved</code> keyword is now supported and enforced.</li>
+<li>Fix: Defer reflection-based lookup of enum method until first use to avoid
+   class loading race conditions.</li>
+<li>Fix: Support single-quoted string literals.</li>
+<li>Fix: Adjacent string literals are not correctly concatenated.</li>
+</ul>
+<h2 id="version-210">Version 2.1.0<a class="headerlink" href="#version-210" title="Permanent link">&para;</a></h2>
+<p><em>2016-01-18</em></p>
+<ul>
+<li><strong>Empty lists of packed values were being encoded incorrectly.</strong> In Wire 2.0.x our message
+   adapters incorrectly included empty lists for <code>[packed=true]</code> rather than omitting them. This is
+   now fixed.</li>
+<li>New: <code>Message.encode()</code> to concisely encode a message.</li>
+<li>New: <code>MessageAdapter.decode(ByteString)</code> to decode a message from a byte string without an
+   intermediate byte array.</li>
+<li>New: Wire now includes a sample code generation for service interfaces.</li>
+</ul>
+<h2 id="version-203">Version 2.0.3<a class="headerlink" href="#version-203" title="Permanent link">&para;</a></h2>
+<p><em>2016-01-04</em></p>
+<ul>
+<li>New: <code>ProtoAdapter.get</code> overload which returns an adapter given an instance of a message.</li>
+<li>New: <code>@Nullable</code> annotations are emitted for <code>optional</code> fields when using <code>--android</code>.</li>
+<li>Fix: Remove the need for <code>javac</code> to generate synthetic accessor methods in the generated code.
+   This results in smaller code size and less method references (for Android users).</li>
+</ul>
+<h2 id="version-202">Version 2.0.2<a class="headerlink" href="#version-202" title="Permanent link">&para;</a></h2>
+<p><em>2015-12-14</em></p>
+<ul>
+<li>Fix: Exclude unknown fields when encoding JSON and drop unknown fields when parsing JSON.</li>
+<li>Fix: Ensure JSON encoding and decoding works in the default generation mode (not just
+   <code>--compact</code>) by always adding <code>@WireField</code> metadata to message fields.</li>
+<li>Fix: Update to JavaPoet 1.4 for more accurate generation of valid Java code.</li>
+</ul>
+<h2 id="version-201">Version 2.0.1<a class="headerlink" href="#version-201" title="Permanent link">&para;</a></h2>
+<p><em>2015-11-12</em></p>
+<ul>
+<li>Fix: Do not emit <code>case</code> statements for aliased enum constant values. The first constant for a
+   value will be returned when deserializing.</li>
+<li>Fix: Emit <code>@Deprecated</code> annotation on deprecated enum constants.</li>
+<li>Fix: Correctly prune dependencies of excluded message, enum, or service members. Previously
+   the dependencies of an excluded member were retained despite the member itself being omitted.</li>
+</ul>
+<h2 id="version-200">Version 2.0.0<a class="headerlink" href="#version-200" title="Permanent link">&para;</a></h2>
+<p><em>2015-10-23</em></p>
+<p>Wire 2 is a backwards-incompatible release. It makes breaking changes to the compiler, runtime,
+extensions, and generated code. These changes aren’t made lightly as we’ve endured the upgrade in
+our own projects! We believe the cost of migration is worth the benefits.</p>
+<p><strong>We’ve created the <code>wire-schema</code> library that models <code>.proto</code> schema definitions.</strong> This is a
+capable library that packs several neat features. You can load a <code>Schema</code> from <code>.proto</code> files
+located on the local file system, a ZIP or JAR file, or any <code>java.nio.FileSystem</code> like
+<a href="https://github.com/google/jimfs">Jimfs</a>. You can prune this schema with includes or excludes, allowing you to reuse <code>.proto</code>
+definitions with minimal code. And you can decode data directly from a schema: no code generation
+is necessary!</p>
+<p><strong>We’ve flattened extensions.</strong> Wire 2.0 combines the fields defined directly on messages with
+fields defined far away in extensions. In the generated code, extension fields look just like every
+other field! One limitation of this approach is that it’s no longer possible to compile extensions
+separately from the messages they extend. For this reason we now recommend always generating all
+Wire code in a single step.</p>
+<p><strong>We’ve rearranged the runtime.</strong> Types related to the protocol buffers format are now prefixed
+<code>Proto</code> and types related to our implementation are prefixed <code>Wire</code>. To encode and decode messages
+you must first get an adapter either from the <code>ADAPTER</code> constant or from <code>ProtoAdapter.get()</code>. You
+no longer need a <code>Wire</code> instance!</p>
+<h4 id="runtime">Runtime<a class="headerlink" href="#runtime" title="Permanent link">&para;</a></h4>
+<ul>
+<li>New <code>ADAPTER</code> constant on most messages gives access to encode &amp; decode values. This replaces
+   the encoding and decoding methods on <code>Wire</code>.</li>
+<li>Guard against null lists. Code that passes <code>null</code> to builder methods expecting a <code>List</code> used to
+   accept that; now Wire throws a <code>NullPointerException</code>. Similarly list elements must also be
+   non-null.</li>
+<li>New <code>Message.newBuilder()</code> API. This replaces the previous copy constructor on <code>Builder</code>.</li>
+<li>New: <code>Message.withoutUnknownFields()</code> strips unknown fields.</li>
+<li>Fix: Always throw <code>ProtocolException</code> when there are decoding problems.</li>
+<li>Fix: Stricter checking for oneof fields. Previously it was possible to create instances with
+   multiple values set!</li>
+<li>Fix: Improve redacting of repeated fields.</li>
+<li>Fix: <code>ProtoReader</code> now silently unpacks packed values.</li>
+<li>Fix: <code>ProtoReader</code> doesn’t return groups to callers.</li>
+</ul>
+<h4 id="schema-java-generator">Schema &amp; Java Generator<a class="headerlink" href="#schema-java-generator" title="Permanent link">&para;</a></h4>
+<ul>
+<li>The Java generator is now standalone. Use these APIs programmatically to build plugins without
+   delegating to the command line interface.</li>
+<li>New: Prune schemas using includes and excludes. The <code>IdentifierSet</code> can be used to configure
+   which types and members are retained and which are pruned.</li>
+<li>New: Encode and decode values directly from the schema.</li>
+<li>New: Improved error messages for validation.</li>
+<li>Fix: Strict imports.</li>
+<li>Fix: Detect and forbid conflicts on extension tags.</li>
+</ul>
+<h4 id="compiler">Compiler<a class="headerlink" href="#compiler" title="Permanent link">&para;</a></h4>
+<ul>
+<li>New: Always use Wire’s bundled <code>descriptor.proto</code>. Previously to define custom options you
+   needed to import a potentially-inconsistent descriptor.</li>
+<li>New: Emit all types when no <code>.proto</code> files are explicitly specified.</li>
+<li>New: Generate code for encoding and decoding messages. The previous, reflection-based
+   encoder and decoder are accessible with <code>--compact</code>.</li>
+<li>New: <code>ServiceFactory</code> has been removed. To generate code for your services, load a schema with
+   <code>wire-schema</code> and then use a library like <a href="https://github.com/square/javapoet">JavaPoet</a> to generate your own code. The
+   <code>JavaGenerator</code> class can be used to look up Java names of message types.</li>
+<li>New: Compiler will load all <code>.proto</code> files if none are explicitly specified.</li>
+<li>New: Load <code>.proto</code> files from ZIP and JAR files.</li>
+<li>New: The <code>--android</code> flag causes Wire messages to implement <code>Parcelable</code>.</li>
+<li>New: Support multiple <code>--proto_path</code> arguments</li>
+<li>New: The <code>--named_files_only</code> flag limits which <code>.proto</code> files yield <code>.java</code> files. This was the
+   default in Wire 1.x.</li>
+<li>New: The <code>--no_options</code> flag has been deleted. Use <code>--excludes=google.protobuf.*</code> instead.</li>
+</ul>
+<h4 id="extensions">Extensions<a class="headerlink" href="#extensions" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Extensions have been flattened.</li>
+<li>Fix: Better field resolution for options.</li>
+<li>Fix: Extension fields must not be <code>required</code>.</li>
+</ul>
+<h2 id="version-180">Version 1.8.0<a class="headerlink" href="#version-180" title="Permanent link">&para;</a></h2>
+<p><em>2015-06-27</em></p>
+<ul>
+<li>New: <code>oneof</code> support!</li>
+<li>Fix: Correct serialization of repeated unknown fields.</li>
+<li>Fix: Removed superfluous <code>private</code> modifier on enum constructor.</li>
+<li>Warning: The &lsquo;protoparser&rsquo; library was updated to version 4.0. This changes the type passed to
+   any <code>ServiceWriter</code> implementations.</li>
+</ul>
+<h2 id="version-170">Version 1.7.0<a class="headerlink" href="#version-170" title="Permanent link">&para;</a></h2>
+<p><em>2015-03-05</em></p>
+<ul>
+<li>New: Messages implement <code>Serializable</code>. The serialized form follows protobuf encoding, so
+   renaming fields is safe as long as tags are consistent. (Renaming classes is unsafe, however).
+   Note that extension fields are deserialized as unknown fields.</li>
+</ul>
+<h2 id="version-161">Version 1.6.1<a class="headerlink" href="#version-161" title="Permanent link">&para;</a></h2>
+<p><em>2015-01-16</em></p>
+<ul>
+<li>New: <code>--quiet</code> and <code>--dry-run</code> command-line arguments.</li>
+<li>Fix: Handle an extension registry with zero or only one item.</li>
+<li>Okio dependency bumped to 1.2.0.</li>
+</ul>
+<h2 id="version-160">Version 1.6.0<a class="headerlink" href="#version-160" title="Permanent link">&para;</a></h2>
+<p><em>2014-10-23</em></p>
+<ul>
+<li>Fix: Correctly throw <code>IOException</code> when parsing bad input fails.</li>
+<li>Fix: Ensure emitted code references to <code>Arrays.asList</code> correctly compiles in some edge cases.</li>
+<li>&lsquo;<strong>UNDEFINED</strong>&rsquo; enum value has been removed.</li>
+</ul>
+<h2 id="version-152">Version 1.5.2<a class="headerlink" href="#version-152" title="Permanent link">&para;</a></h2>
+<p><em>2014-09-15</em></p>
+<ul>
+<li>New: &lsquo;<strong>UNDEFINED</strong>&rsquo; enum value represents values that the generated code is unable to handle.</li>
+<li>New: Service writer implementation can now be specified on the command-line.</li>
+</ul>
+<h2 id="version-151">Version 1.5.1<a class="headerlink" href="#version-151" title="Permanent link">&para;</a></h2>
+<p><em>2014-06-18</em></p>
+<ul>
+<li>New: Generate interface definition for a <code>Service</code> with a partial list of methods.</li>
+<li>Okio dependency bumped to 1.0.0.</li>
+</ul>
+<h2 id="version-150">Version 1.5.0<a class="headerlink" href="#version-150" title="Permanent link">&para;</a></h2>
+<p><em>2014-04-22</em></p>
+<ul>
+<li>New: Options on enums and enum values are now supported.</li>
+<li>New: Options ending with <code>.redacted</code> on fields will omit values from <code>toString</code>.</li>
+<li>New: <code>Redactor</code> creates copies of messages with redacted fields omitted.</li>
+<li>Various internal serialization improvements and memory reduction.</li>
+<li>Okio dependency bumped to 0.9.0.</li>
+</ul>
+<h2 id="version-140">Version 1.4.0<a class="headerlink" href="#version-140" title="Permanent link">&para;</a></h2>
+<p><em>2014-04-22</em></p>
+<ul>
+<li>
+<p>Replace Wire&rsquo;s ByteString class with the one from Okio (<a href="https://github.com/square/okio">https://github.com/square/okio</a>).
+   <strong>This is a breaking API change</strong>.</p>
+</li>
+<li>
+<p>Add a new static method <code>Wire.parseFrom(okio.Source input, Class&lt;M&gt; messageClass)</code>.</p>
+</li>
+<li>
+<p>Reimplement Wire&rsquo;s input handling to use Okio internally.</p>
+</li>
+<li>
+<p>Provide basic support for generating code from service declarations (see README.md).</p>
+</li>
+<li>
+<p>Improve deserialization performance.</p>
+</li>
+<li>
+<p>Fix a bug where no some extension dependencies were not detected.</p>
+</li>
+</ul>
+<h2 id="version-133">Version 1.3.3<a class="headerlink" href="#version-133" title="Permanent link">&para;</a></h2>
+<p><em>2014-03-28</em></p>
+<ul>
+<li>New: Support service declarations as roots. The request and response types of their methods will
+   be included.</li>
+</ul>
+<h2 id="version-132">Version 1.3.2<a class="headerlink" href="#version-132" title="Permanent link">&para;</a></h2>
+<p><em>2014-03-27</em></p>
+<ul>
+<li>Fix: Enum value duplicate check now correctly looks at names instead of values.</li>
+</ul>
+<h2 id="version-131">Version 1.3.1<a class="headerlink" href="#version-131" title="Permanent link">&para;</a></h2>
+<p><em>2014-03-25</em></p>
+<ul>
+<li>New: Automatically add Maven plugin&rsquo;s generated source as a compilation root.</li>
+<li>Fix: Correct Maven plugin&rsquo;s &lsquo;no arguments&rsquo; flag to work properly.</li>
+<li>Fix: Support extend declarations nested inside message types.</li>
+</ul>
+<h2 id="version-130">Version 1.3.0<a class="headerlink" href="#version-130" title="Permanent link">&para;</a></h2>
+<p><em>2014-03-21</em></p>
+<ul>
+<li>New: Empty repeated fields are now initialized to an empty collection.</li>
+<li>New: Emit field options. Use <code>--no_options</code> flag to disable.</li>
+<li>New: <code>@Deprecated</code> is now added to fields and setters on the builder.</li>
+<li>New: Maven plugin for running the compiler as part of a build.</li>
+<li>Fix: Treat empty and null repeated fields the same in <code>equals()</code> and <code>hashCode()</code>.</li>
+</ul>
+<p>Note: This version is not backwards compatible with code generated from previous versions.</p>
+<h2 id="version-120">Version 1.2.0<a class="headerlink" href="#version-120" title="Permanent link">&para;</a></h2>
+<p><em>2013-11-01</em></p>
+<ul>
+<li>New: <code>--registry_class</code> compiler argument emits a class with a list of extensions suitable for
+   passing to the <code>Wire</code> constructor.</li>
+<li>Fix: Ensure all trailing whitespace is trimmed on documentation.</li>
+</ul>
+<h2 id="version-111">Version 1.1.1<a class="headerlink" href="#version-111" title="Permanent link">&para;</a></h2>
+<p><em>2013-10-23</em></p>
+<ul>
+<li>Fix: Correct parsing and emission of multi-line documentation.</li>
+</ul>
+<h2 id="version-110">Version 1.1.0<a class="headerlink" href="#version-110" title="Permanent link">&para;</a></h2>
+<p><em>2013-10-22</em></p>
+<ul>
+<li>New: Support for message options.</li>
+<li>New: Check for duplicate field tag numbers.</li>
+<li>New: Emit Javadoc on messages, enum values, and builder methods.</li>
+<li>Fix: Emit imports for extension fields and classes outside of package.</li>
+<li>Fix: Correctly generate sources for protos with the same basename.</li>
+<li>Fix: Do not generate default constants for message types.</li>
+<li>Fix: Avoid shadowing fields named &ldquo;result&rdquo;, &ldquo;other&rdquo;, or &ldquo;o&rdquo;.</li>
+</ul>
+<h2 id="version-101">Version 1.0.1<a class="headerlink" href="#version-101" title="Permanent link">&para;</a></h2>
+<p><em>2013-08-27</em></p>
+<ul>
+<li>New: Support reading directly from <code>InputStream</code>.</li>
+<li>New: Add &lsquo;<code>other == this</code>&rsquo; shortcut in generated <code>equals()</code> methods.</li>
+</ul>
+<h2 id="version-100">Version 1.0.0<a class="headerlink" href="#version-100" title="Permanent link">&para;</a></h2>
+<p><em>2013-08-23</em></p>
+<p>Initial version.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2023 Square, Inc.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/squareeng" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M459.4 151.7c.3 4.5.3 9.1.3 13.6 0 138.7-105.6 298.6-298.6 298.6-59.5 0-114.7-17.2-161.1-47.1 8.4 1 16.6 1.3 25.3 1.3 49.1 0 94.2-16.6 130.3-44.8-46.1-1-84.8-31.2-98.1-72.8 6.5 1 13 1.6 19.8 1.6 9.4 0 18.8-1.3 27.6-3.6-48.1-9.7-84.1-52-84.1-103v-1.3c14 7.8 30.2 12.7 47.4 13.3-28.3-18.8-46.8-51-46.8-87.4 0-19.5 5.2-37.4 14.3-53C87.4 130.8 165 172.4 252.1 176.9c-1.6-7.8-2.6-15.9-2.6-24C249.5 95.1 296.3 48 354.4 48c30.2 0 57.5 12.7 76.7 33.1 23.7-4.5 46.5-13.3 66.6-25.3-7.8 24.4-24.4 44.8-46.1 57.8 21.1-2.3 41.6-8.1 60.4-16.2-14.3 20.8-32.2 39.3-52.6 54.3"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://stackoverflow.com/questions/tagged/square-wire?sort=active" target="_blank" rel="noopener" title="stackoverflow.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M291 311 95.3 269.7 87.1 309l195.7 41zm51-87L188.5 95.7 163 126.5l153.5 128.3zm-31.2 39.7L129.5 179l-16.7 36.5L294 300zM262.3 32l-32 24 119.3 160.3 32-24zm20.5 328h-200v39.7h200zm39.7 80H43V320H3v160h359.5V320h-40z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>

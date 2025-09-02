@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>KotlinOutput</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+            <a class="library-name--link" href="../../../index.html">
+                    wire-gradle-plugin
+            </a>
+        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle"
+                type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+5.4.0        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active=""
+                        data-filter=":wire-gradle-plugin:dokkaHtml/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox"
+                        data-role="dropdown-toggle"
+                        aria-controls="platform-tags-listbox"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-label="Toggle source sets"
+                ></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":wire-gradle-plugin:dokkaHtml/main"
+                                       data-filter=":wire-gradle-plugin:dokkaHtml/main"/>
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
+                    type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
+                        data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    wire-gradle-plugin
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="wire-gradle-plugin::com.squareup.wire.gradle/KotlinOutput///PointingToDeclaration//1160215128">
+  <div class="breadcrumbs"><a href="../../../index.html">wire-gradle-plugin</a><span class="delimiter">/</span><a href="../index.html">com.squareup.wire.gradle</a><span class="delimiter">/</span><span class="current">KotlinOutput</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Kotlin</span><wbr></wbr><span><span>Output</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">KotlinOutput</a> <span><span class="token annotation builtin">@</span><span data-unresolved-link="javax.inject/Inject///PointingToDeclaration/"><span class="token annotation builtin">Inject</span></span> </span><span class="token keyword">constructor</span> : <a href="../-wire-output/index.html">WireOutput</a></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-1699760874%2FConstructors%2F1160215128" anchor-label="KotlinOutput" id="-1699760874%2FConstructors%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-kotlin-output.html"><span>Kotlin</span><wbr></wbr><span><span>Output</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1699760874%2FConstructors%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="javax.inject/Inject///PointingToDeclaration/"><span class="token annotation builtin">Inject</span></span></div></div><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-981738829%2FProperties%2F1160215128" anchor-label="android" id="-981738829%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="android.html"><span><span>android</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-981738829%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="android.html">android</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">True for emitted types to implement <code class="lang-kotlin">android.os.Parcelable</code>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-184547386%2FProperties%2F1160215128" anchor-label="boxOneOfsMinSize" id="-184547386%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="box-one-ofs-min-size.html"><span>box</span><wbr></wbr><span>One</span><wbr></wbr><span>Ofs</span><wbr></wbr><span>Min</span><wbr></wbr><span><span>Size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-184547386%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="box-one-ofs-min-size.html">boxOneOfsMinSize</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">If a oneof has more than or <a href="box-one-ofs-min-size.html">boxOneOfsMinSize</a> fields, it will be generated using boxed oneofs as defined in <span data-unresolved-link="com.squareup.wire/OneOf///PointingToDeclaration/">OneOf</span>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1941363924%2FProperties%2F1160215128" anchor-label="buildersOnly" id="1941363924%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="builders-only.html"><span>builders</span><wbr></wbr><span><span>Only</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1941363924%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="builders-only.html">buildersOnly</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">If true, the constructor of all generated types will be non-public, and they will be instantiable via their builders, regardless of the value of <a href="java-interop.html">javaInterop</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="728851588%2FProperties%2F1160215128" anchor-label="emitAppliedOptions" id="728851588%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="emit-applied-options.html"><span>emit</span><wbr></wbr><span>Applied</span><wbr></wbr><span><span>Options</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="728851588%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="emit-applied-options.html">emitAppliedOptions</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">True to emit annotations for options applied on messages, fields, etc.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="939136817%2FProperties%2F1160215128" anchor-label="emitDeclaredOptions" id="939136817%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="emit-declared-options.html"><span>emit</span><wbr></wbr><span>Declared</span><wbr></wbr><span><span>Options</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="939136817%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="emit-declared-options.html">emitDeclaredOptions</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">True to emit types for options declared on messages, fields, etc.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1024955531%2FProperties%2F1160215128" anchor-label="emitProtoReader32" id="1024955531%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="emit-proto-reader32.html"><span>emit</span><wbr></wbr><span>Proto</span><wbr></wbr><span><span>Reader32</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1024955531%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="emit-proto-reader32.html">emitProtoReader32</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">If true, adapters will generate decode functions for <code class="lang-kotlin">ProtoReader32</code>. Use this optimization when targeting Kotlin/JS, where <code class="lang-kotlin">Long</code> cursors are inefficient.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1388917740%2FProperties%2F1160215128" anchor-label="enumMode" id="-1388917740%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="enum-mode.html"><span>enum</span><wbr></wbr><span><span>Mode</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1388917740%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="enum-mode.html">enumMode</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">enum_class or sealed_class. See <span data-unresolved-link="com.squareup.wire.kotlin/EnumMode///PointingToDeclaration/">EnumMode</span>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="70563884%2FProperties%2F1160215128" anchor-label="escapeKotlinKeywords" id="70563884%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="escape-kotlin-keywords.html"><span>escape</span><wbr></wbr><span>Kotlin</span><wbr></wbr><span><span>Keywords</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="70563884%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="escape-kotlin-keywords.html">escapeKotlinKeywords</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-188577249%2FProperties%2F1160215128" anchor-label="excludes" id="-188577249%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="excludes.html"><span><span>excludes</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-188577249%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="excludes.html">excludes</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">See <span data-unresolved-link="com.squareup.wire.schema/Target/excludes/#/PointingToDeclaration/">com.squareup.wire.schema.Target.excludes</span></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1041430492%2FProperties%2F1160215128" anchor-label="exclusive" id="-1041430492%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="exclusive.html"><span><span>exclusive</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1041430492%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="exclusive.html">exclusive</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">See <span data-unresolved-link="com.squareup.wire.schema/Target/exclusive/#/PointingToDeclaration/">com.squareup.wire.schema.Target.exclusive</span></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1804227951%2FProperties%2F1160215128" anchor-label="explicitStreamingCalls" id="-1804227951%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="explicit-streaming-calls.html"><span>explicit</span><wbr></wbr><span>Streaming</span><wbr></wbr><span><span>Calls</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1804227951%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="explicit-streaming-calls.html">explicitStreamingCalls</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">If true, the generated gRPC client will use explicit classes for client, server, and bidirectional streaming calls.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1707148435%2FProperties%2F1160215128" anchor-label="includes" id="-1707148435%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="includes.html"><span><span>includes</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1707148435%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="includes.html">includes</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">See <span data-unresolved-link="com.squareup.wire.schema/Target/includes/#/PointingToDeclaration/">com.squareup.wire.schema.Target.includes</span></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1759693593%2FProperties%2F1160215128" anchor-label="javaInterop" id="-1759693593%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="java-interop.html"><span>java</span><wbr></wbr><span><span>Interop</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1759693593%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="java-interop.html">javaInterop</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">True for emitted types to implement APIs for easier migration from the Java target.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1137362235%2FProperties%2F1160215128" anchor-label="mutableTypes" id="-1137362235%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="mutable-types.html"><span>mutable</span><wbr></wbr><span><span>Types</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1137362235%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="mutable-types.html">mutableTypes</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">If true, the generated classes will be mutable..</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-908044068%2FProperties%2F1160215128" anchor-label="nameSuffix" id="-908044068%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="name-suffix.html"><span>name</span><wbr></wbr><span><span>Suffix</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-908044068%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="name-suffix.html">nameSuffix</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">If present, generated services classes will use this as a suffix instead of inferring one from the <a href="rpc-role.html">rpcRole</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1131057872%2FProperties%2F1160215128" anchor-label="out" id="-1131057872%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-wire-output/--out--.html"><span><span>out</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1131057872%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="../-wire-output/--out--.html">out</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Set this to override the default output directory for this <a href="../-wire-output/index.html">WireOutput</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="253383306%2FProperties%2F1160215128" anchor-label="rpcCallStyle" id="253383306%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="rpc-call-style.html"><span>rpc</span><wbr></wbr><span>Call</span><wbr></wbr><span><span>Style</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="253383306%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="rpc-call-style.html">rpcCallStyle</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Blocking or suspending.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2107962023%2FProperties%2F1160215128" anchor-label="rpcRole" id="2107962023%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="rpc-role.html"><span>rpc</span><wbr></wbr><span><span>Role</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2107962023%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="rpc-role.html">rpcRole</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Client, server, or none.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="704206961%2FProperties%2F1160215128" anchor-label="singleMethodServices" id="704206961%2FProperties%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="single-method-services.html"><span>single</span><wbr></wbr><span>Method</span><wbr></wbr><span><span>Services</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="704206961%2FProperties%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="single-method-services.html">singleMethodServices</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">True for emitted services to implement one interface per RPC.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1468502296%2FFunctions%2F1160215128" anchor-label="toTarget" id="1468502296%2FFunctions%2F1160215128" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":wire-gradle-plugin:dokkaHtml/main" data-filterable-set=":wire-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-target.html"><span>to</span><wbr></wbr><span><span>Target</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1468502296%2FFunctions%2F1160215128"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":wire-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="to-target.html"><span class="token function">toTarget</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">outputDirectory<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.squareup.wire.schema/KotlinTarget///PointingToDeclaration/">KotlinTarget</span></div><div class="brief "><p class="paragraph">Transforms this <a href="../-wire-output/index.html">WireOutput</a> into a <span data-unresolved-link="com.squareup.wire.schema/Target///PointingToDeclaration/">Target</span> for which Wire will generate code. The <span data-unresolved-link="com.squareup.wire.schema/Target///PointingToDeclaration/">Target</span> should use <a href="to-target.html">outputDirectory</a> instead of <a href="../-wire-output/--out--.html">WireOutput.out</a> in all cases for its output directory.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
