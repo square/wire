@@ -104,13 +104,18 @@ internal class RealGrpcCall<S : Any, R : Any>(
     use {
       messageSource(method.responseAdapter).use { reader ->
         val result = try {
-          reader.readExactlyOneAndClose()
+          if (reader.isEmptyBody()) {
+            // an empty body is valid for error responses. don't throw so we try to parse trailers.
+            null
+          } else {
+            reader.readExactlyOneAndClose()
+          }
         } catch (e: IOException) {
           throw grpcResponseToException(e)!!
         }
         val exception = grpcResponseToException()
         if (exception != null) throw exception
-        return result
+        return result ?: throw grpcResponseToException(ProtocolException("expected 1 message but got none"))!!
       }
     }
   }
