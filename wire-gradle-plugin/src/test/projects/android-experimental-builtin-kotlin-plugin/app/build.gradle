@@ -1,0 +1,15 @@
+plugins {
+  id "com.android.library"
+  id "com.squareup.wire"
+  id "com.android.experimental.built-in-kotlin"
+}
+
+android {
+  namespace = "com.example.producer"
+  compileSdk = 36
+}
+
+wire {
+  kotlin {}
+}
+
