@@ -1,7 +1,6 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
-import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
+import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
   kotlin("multiplatform")
@@ -13,7 +12,7 @@ kotlin {
   if (System.getProperty("kjs", "true").toBoolean()) {
     js(IR) {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
-        tasks.named<KotlinJsCompile>(compileKotlinTaskName) {
+        tasks.named<Kotlin2JsCompile>(compileKotlinTaskName).configure {
           compilerOptions {
             moduleKind.set(JsModuleKind.MODULE_UMD)
             sourceMap.set(true)

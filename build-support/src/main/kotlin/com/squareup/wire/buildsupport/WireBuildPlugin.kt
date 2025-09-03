@@ -199,9 +199,8 @@ class WireBuildPlugin : Plugin<Project> {
     tasks.withType(KotlinCompilationTask::class.java).configureEach {
       compilerOptions {
         freeCompilerArgs.addAll(
-          listOf(
-            "-Xexpect-actual-classes",
-          ),
+          "-progressive", // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
+          "-Xexpect-actual-classes",
         )
       }
     }
@@ -210,7 +209,7 @@ class WireBuildPlugin : Plugin<Project> {
     tasks.withType(KotlinJvmCompile::class.java).configureEach {
       compilerOptions {
         jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
-        freeCompilerArgs.addAll(listOf("-Xjvm-default=all"))
+        freeCompilerArgs.add("-Xjvm-default=all")
       }
     }
     // Kotlin requires the Java compatibility matches.
