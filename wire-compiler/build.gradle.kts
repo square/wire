@@ -4,11 +4,11 @@ plugins {
   application
   kotlin("jvm")
   id("org.jetbrains.kotlin.plugin.serialization")
-  id("com.github.johnrengelman.shadow").apply(false)
+  id("com.gradleup.shadow").apply(false)
 }
 
 if (project.rootProject.name == "wire") {
-  apply(plugin = "com.github.johnrengelman.shadow")
+  apply(plugin = "com.gradleup.shadow")
 
   val shadowJar by tasks.getting(ShadowJar::class) {
     archiveClassifier.set("jar-with-dependencies")
