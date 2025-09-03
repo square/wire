@@ -40,7 +40,8 @@ import org.gradle.kotlin.dsl.attributes
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
@@ -196,11 +197,10 @@ class WireBuildPlugin : Plugin<Project> {
   }
 
   private fun Project.configureCommonKotlin() {
-    tasks.withType(KotlinCompile::class.java).configureEach {
-      kotlinOptions {
-        freeCompilerArgs += listOf(
-          // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
-          "-progressive",
+    tasks.withType(KotlinCompilationTask::class.java).configureEach {
+      compilerOptions {
+        freeCompilerArgs.addAll(
+          "-progressive",  // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
           "-Xexpect-actual-classes",
         )
       }
@@ -208,11 +208,9 @@ class WireBuildPlugin : Plugin<Project> {
 
     val javaVersion = JavaVersion.VERSION_1_8
     tasks.withType(KotlinJvmCompile::class.java).configureEach {
-      kotlinOptions {
-        jvmTarget = javaVersion.toString()
-        freeCompilerArgs += listOf(
-          "-Xjvm-default=all",
-        )
+      compilerOptions {
+        jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
+        freeCompilerArgs.add("-Xjvm-default=all")
       }
     }
     // Kotlin requires the Java compatibility matches.

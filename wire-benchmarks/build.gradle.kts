@@ -8,7 +8,7 @@ plugins {
   kotlin("jvm")
   id("com.google.protobuf")
   id("com.squareup.wire")
-  id("com.github.johnrengelman.shadow")
+  id("com.gradleup.shadow")
   id("me.champeau.jmh").version("0.7.3")
 }
 

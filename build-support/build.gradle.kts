@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -80,11 +81,12 @@ allprojects {
   }
 
   tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-      jvmTarget = "11"
-      freeCompilerArgs += "-Xjvm-default=all"
-      // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
-      freeCompilerArgs += "-progressive"
+    compilerOptions {
+      jvmTarget.set(JvmTarget.JVM_11)
+      freeCompilerArgs.addAll(
+        "-Xjvm-default=all",
+        "-progressive",       // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
+      )
     }
   }
 }
