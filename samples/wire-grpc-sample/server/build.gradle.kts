@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -16,11 +17,9 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 tasks.withType<KotlinCompile>().configureEach {
-  kotlinOptions {
-    jvmTarget = "17"
-    freeCompilerArgs += "-Xjvm-default=all"
-    // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
-    freeCompilerArgs += "-progressive"
+  compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_17)
+    freeCompilerArgs.add("-Xjvm-default=all")
   }
 }
 
