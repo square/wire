@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
+import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
+
 /*
  * Copyright 2021 Square Inc.
  *
@@ -24,11 +27,10 @@ kotlin {
   if (System.getProperty("kjs", "true").toBoolean()) {
     js(IR) {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
-        tasks.getByName(compileKotlinTaskName) {
-          kotlinOptions {
-            moduleKind = "umd"
-            sourceMap = true
-            metaInfo = true
+        tasks.named<Kotlin2JsCompile>(compileKotlinTaskName).configure {
+          compilerOptions {
+            moduleKind.set(JsModuleKind.MODULE_UMD)
+            sourceMap.set(true)
           }
         }
       }

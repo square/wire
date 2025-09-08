@@ -23,7 +23,7 @@ dependencies {
   wire(projects.wireCompiler)
 }
 
-val generateSwiftProtos by tasks.creating(JavaExec::class) {
+val generateSwiftProtos by tasks.registering(JavaExec::class) {
   val swiftOut = "src/main/swift/wellknowntypes"
   val protoPath = "../wire-schema/src/jvmMain/resources/"
 
@@ -73,7 +73,7 @@ val generateSwiftProtos by tasks.creating(JavaExec::class) {
   }
 }
 
-val generateSampleProtos by tasks.creating(JavaExec::class) {
+val generateSampleProtos by tasks.registering(JavaExec::class) {
   val swiftOut = "src/test/swift/sample"
   val protoPath = "../samples/simple-sample/src/main/proto"
 
@@ -91,7 +91,7 @@ val generateSampleProtos by tasks.creating(JavaExec::class) {
   )
 }
 
-val generateTestProtos by tasks.creating(JavaExec::class) {
+val generateTestProtos by tasks.registering(JavaExec::class) {
   val swiftOut = "src/test/swift/gen"
   val protoPath = "src/test/proto"
 

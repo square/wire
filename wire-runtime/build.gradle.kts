@@ -1,5 +1,7 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
+import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
   kotlin("multiplatform")
@@ -14,11 +16,10 @@ kotlin {
   if (System.getProperty("kjs", "true").toBoolean()) {
     js(IR) {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
-        tasks.getByName(compileKotlinTaskName) {
-          kotlinOptions {
-            moduleKind = "umd"
-            sourceMap = true
-            metaInfo = true
+        tasks.named<Kotlin2JsCompile>(compileKotlinTaskName).configure {
+          compilerOptions {
+            moduleKind.set(JsModuleKind.MODULE_UMD)
+            sourceMap.set(true)
           }
         }
       }
@@ -123,7 +124,7 @@ kotlin {
 }
 
 afterEvaluate {
-  val installLocally by tasks.creating {
+  val installLocally by tasks.registering {
     dependsOn("publishKotlinMultiplatformPublicationToTestRepository")
     dependsOn("publishJvmPublicationToTestRepository")
     if (System.getProperty("kjs", "true").toBoolean()) {
