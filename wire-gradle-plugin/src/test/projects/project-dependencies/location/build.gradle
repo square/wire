@@ -1,7 +1,19 @@
-plugins {
-  id 'com.squareup.wire'
-  id 'org.jetbrains.kotlin.jvm'
+buildscript {
+  dependencies {
+    classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+  }
+
+  repositories {
+    maven {
+      url "file://${rootDir.absolutePath}/../../../../../build/localMaven"
+    }
+    mavenCentral()
+    google()
+  }
 }
+
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'com.squareup.wire'
 
 wire {
   protoLibrary = true

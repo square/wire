@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.gradle
 
-import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.Source
@@ -23,6 +22,7 @@ import com.squareup.wire.gradle.kotlin.sourceRoots
 import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.newEventListenerFactory
+import com.squareup.wire.wireVersion
 import java.io.File
 import java.lang.reflect.Array as JavaArray
 import java.util.concurrent.atomic.AtomicBoolean
@@ -165,6 +165,9 @@ class WirePlugin : Plugin<Project> {
           .map { target -> project.file(target.outDirectory) }
           .toSet()
 
+      // TODO(Benoit) Either throw or handle multiple proto targets. Along side `protoLibrary`.
+      val protoTarget = targets.filterIsInstance<ProtoTarget>().firstOrNull()
+
       // Both the JavaCompile and KotlinCompile tasks might already have been configured by now.
       // Even though we add the Wire output directories into the corresponding sourceSets, the
       // compilation tasks won't know about them so we fix that here.
@@ -223,8 +226,8 @@ class WirePlugin : Plugin<Project> {
         task.protoSourceConfiguration.setFrom(protoSourceConfiguration)
         task.protoPathConfiguration.setFrom(protoPathConfiguration)
         task.projectDependenciesJvmConfiguration.setFrom(projectDependenciesJvmConfiguration)
-        if (extension.protoLibrary) {
-          task.protoLibraryOutput.set(File(project.libraryProtoOutputPath()))
+        if (protoTarget != null) {
+          task.protoLibraryOutput.set(project.file(protoTarget.outDirectory))
         }
         task.sourceInput.set(project.provider { protoSourceProtoRootSets.inputLocations })
         task.protoInput.set(project.provider { protoPathProtoRootSets.inputLocations })
@@ -257,7 +260,7 @@ class WirePlugin : Plugin<Project> {
       source.registerGeneratedDirectory?.invoke(taskOutputDirectories)
 
       val protoOutputDirectory = task.map { it.protoLibraryOutput }
-      if (extension.protoLibrary) {
+      if (protoTarget != null) {
         val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
         // Note that there are no source sets for some platforms such as native.
         // TODO(Benoit) Probably should be checking for other names than `main`. As well, source
@@ -331,7 +334,7 @@ class WirePlugin : Plugin<Project> {
     return if (isInternalBuild) {
       project.project(":wire-runtime")
     } else {
-      project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION")
+      project.dependencies.create("com.squareup.wire:wire-runtime:$wireVersion")
     }
   }
 
