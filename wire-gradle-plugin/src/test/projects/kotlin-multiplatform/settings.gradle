@@ -1,0 +1,19 @@
+pluginManagement {
+  repositories {
+    maven {
+      url = uri("file://${rootDir.absolutePath}/../../../../../build/localMaven")
+    }
+    google()
+    mavenCentral()
+  }
+}
+
+include ':'
+
+dependencyResolutionManagement {
+  versionCatalogs {
+    libs {
+      from(files('../../../../../gradle/libs.versions.toml'))
+    }
+  }
+}

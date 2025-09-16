@@ -139,8 +139,6 @@ buildConfig {
 
   packageName("com.squareup.wire")
   buildConfigField("String", "wireVersion", "\"${project.version}\"")
-  // We keep it so as to not break consumers.
-  buildConfigField("String", "VERSION", "\"${project.version}\"")
 }
 
 if (project.rootProject.name == "wire") {

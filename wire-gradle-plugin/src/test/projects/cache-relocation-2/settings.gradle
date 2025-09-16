@@ -3,3 +3,13 @@ buildCache {
     directory = new File(rootDir, '../.relocation-build-cache')
   }
 }
+
+include ':'
+
+dependencyResolutionManagement {
+  versionCatalogs {
+    libs {
+      from(files('../../../../../gradle/libs.versions.toml'))
+    }
+  }
+}

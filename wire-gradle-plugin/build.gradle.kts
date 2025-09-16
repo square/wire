@@ -18,7 +18,7 @@ if (project.rootProject.name == "wire") {
 } else {
   // Move the build directory when included in build-support so as to not poison the real build.
   // If we don't there's a chance incorrect build config values (configured below) will be used.
-  // layout.buildDirectory = File(rootDir, "build/wire-gradle-plugin")
+  layout.buildDirectory = File(rootDir, "build/wire-gradle-plugin")
 }
 
 gradlePlugin {
@@ -94,8 +94,6 @@ buildConfig {
 
   packageName("com.squareup.wire")
   buildConfigField("String", "wireVersion", "\"${project.version}\"")
-  // We keep it so as to not break consumers.
-  buildConfigField("String", "VERSION", "\"${project.version}\"")
 }
 
 tasks.withType<JavaCompile>().configureEach {

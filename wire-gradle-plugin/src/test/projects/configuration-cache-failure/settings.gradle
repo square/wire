@@ -1,3 +1,13 @@
+pluginManagement {
+  repositories {
+    maven {
+      url = uri("file://${rootDir.absolutePath}/../../../../../build/localMaven")
+    }
+    google()
+    mavenCentral()
+  }
+}
+
 include ':'
 
 dependencyResolutionManagement {

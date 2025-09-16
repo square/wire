@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.internal
 
-import com.squareup.wire.VERSION
 import com.squareup.wire.wireVersion
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -93,7 +92,6 @@ class InternalTest {
   }
 
   @Test fun versionIsExposed() {
-    assertNotNull(VERSION)
     assertNotNull(wireVersion)
   }
 }

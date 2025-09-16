@@ -16,11 +16,11 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.DryRunFileSystem
-import com.squareup.wire.wireVersion
 import com.squareup.wire.gradle.internal.GradleWireLogger
 import com.squareup.wire.schema.EventListener
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
+import com.squareup.wire.wireVersion
 import javax.inject.Inject
 import okio.FileSystem
 import org.gradle.api.file.ConfigurableFileCollection
