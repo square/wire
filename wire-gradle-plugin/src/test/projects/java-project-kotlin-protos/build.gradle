@@ -1,10 +1,22 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-plugins {
-  id 'application'
-  id 'org.jetbrains.kotlin.jvm'
-  id 'com.squareup.wire'
+buildscript {
+  dependencies {
+    classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+  }
+
+  repositories {
+    maven {
+      url "file://${rootDir.absolutePath}/../../../../../build/localMaven"
+    }
+    mavenCentral()
+    google()
+  }
 }
+
+apply plugin: 'application'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'com.squareup.wire'
 
 mainClassName = 'com.squareup.dinosaurs.Sample'
 
@@ -16,7 +28,7 @@ repositories {
 }
 
 dependencies {
-  implementation "com.squareup.wire:wire-runtime:$VERSION_NAME"
+  implementation "com.squareup.wire:wire-runtime:$wireVersion"
 }
 
 wire {

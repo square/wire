@@ -122,16 +122,6 @@ kotlin {
   }
 }
 
-afterEvaluate {
-  val installLocally by tasks.creating {
-    dependsOn("publishKotlinMultiplatformPublicationToTestRepository")
-    dependsOn("publishJvmPublicationToTestRepository")
-    if (System.getProperty("kjs", "true").toBoolean()) {
-      dependsOn("publishJsPublicationToTestRepository")
-    }
-  }
-}
-
 // TODO(egorand): Remove when https://github.com/srs/gradle-node-plugin/issues/301 is fixed
 repositories.whenObjectAdded {
   if (this is IvyArtifactRepository) {
@@ -148,6 +138,8 @@ buildConfig {
   }
 
   packageName("com.squareup.wire")
+  buildConfigField("String", "wireVersion", "\"${project.version}\"")
+  // We keep it so as to not break consumers.
   buildConfigField("String", "VERSION", "\"${project.version}\"")
 }
 

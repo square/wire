@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.gradle
 
-import com.squareup.wire.VERSION
+import com.squareup.wire.wireVersion
 import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.Source
@@ -331,7 +331,7 @@ class WirePlugin : Plugin<Project> {
     return if (isInternalBuild) {
       project.project(":wire-runtime")
     } else {
-      project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION")
+      project.dependencies.create("com.squareup.wire:wire-runtime:$wireVersion")
     }
   }
 

@@ -16,7 +16,7 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.DryRunFileSystem
-import com.squareup.wire.VERSION
+import com.squareup.wire.wireVersion
 import com.squareup.wire.gradle.internal.GradleWireLogger
 import com.squareup.wire.schema.EventListener
 import com.squareup.wire.schema.Target
@@ -74,7 +74,7 @@ abstract class WireTask @Inject constructor(
 
   @get:Input
   val pluginVersion: Property<String> = objects.property(String::class.java)
-    .convention(VERSION)
+    .convention(wireVersion)
 
   @get:Nested
   internal abstract val sourceInput: ListProperty<InputLocation>

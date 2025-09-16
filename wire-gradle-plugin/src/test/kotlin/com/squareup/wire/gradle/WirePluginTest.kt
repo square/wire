@@ -33,6 +33,7 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.support.expected
 import com.squareup.wire.VERSION
+import com.squareup.wire.wireVersion
 import com.squareup.wire.testing.withPlatformSlashes
 import java.io.File
 import java.io.IOException
@@ -56,25 +57,25 @@ class WirePluginTest {
   @Rule
   val tmpFolder = TemporaryFolder()
 
-  private lateinit var gradleRunner: GradleRunner
-
-  @Before
-  fun setUp() {
-    gradleRunner = GradleRunner.create()
-      .withPluginClasspath()
-      // Ensure individual tests are isolated and not reusing each other's previous outputs
-      // by setting project dir and gradle home directly.
-      .withProjectDir(tmpFolder.newFolder("project-dir"))
-      .withArguments(
-        "-g",
-        tmpFolder.newFolder("gradle-home").absolutePath,
-        "generateProtos",
-        "--stacktrace",
-        "--info",
-        "--configuration-cache",
-      )
-      .withDebug(true)
-  }
+  // private lateinit var gradleRunner: GradleRunner
+  //
+  // @Before
+  // fun setUp() {
+  //   gradleRunner = GradleRunner.create()
+  //     .withPluginClasspath()
+  //     // Ensure individual tests are isolated and not reusing each other's previous outputs
+  //     // by setting project dir and gradle home directly.
+  //     .withProjectDir(tmpFolder.newFolder("project-dir"))
+  //     .withArguments(
+  //       "-g",
+  //       tmpFolder.newFolder("gradle-home").absolutePath,
+  //       "generateProtos",
+  //       "--stacktrace",
+  //       "--info",
+  //       "--configuration-cache",
+  //     )
+  //     .withDebug(true)
+  // }
 
   @After
   fun clearOutputs() {
@@ -84,13 +85,14 @@ class WirePluginTest {
 
   @Test fun versionIsExposed() {
     assertThat(VERSION).isNotNull()
+    assertThat(wireVersion).isNotNull()
   }
 
   @Test
   fun missingPlugin() {
     val fixtureRoot = File("src/test/projects/missing-plugin")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureGradleRunner(fixtureRoot).buildAndFail()
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output).contains("Wire Gradle plugin applied in project ':' but unable to find either the Java, Kotlin, or Android plugin")
@@ -100,7 +102,7 @@ class WirePluginTest {
   fun sourcePathDirDoesNotExistButProtoPathDoes() {
     val fixtureRoot = File("src/test/projects/sourcepath-nonexistent-srcdir-with-protopath")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateMainProtos")).isNotNull()
     assertThat(result.output).contains("NO-SOURCE")
@@ -110,7 +112,7 @@ class WirePluginTest {
   fun sourcePathDirDoesNotExist() {
     val fixtureRoot = File("src/test/projects/sourcepath-nonexistent-dir")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateMainProtos")?.getOutcome())
       .isEqualTo(TaskOutcome.NO_SOURCE)
@@ -120,7 +122,7 @@ class WirePluginTest {
   fun sourcePathSrcDirDoesNotExist() {
     val fixtureRoot = File("src/test/projects/sourcepath-nonexistent-srcdir")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateMainProtos")).isNotNull()
     assertThat(result.output).contains("NO-SOURCE")
@@ -131,7 +133,7 @@ class WirePluginTest {
   fun sourcePathBuildDir() {
     val fixtureRoot = File("src/test/projects/sourcepath-build-dir")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { withDebug(false).build() }
+    val result = fixtureGradleRunner(fixtureRoot).withDebug(false).build()
     assertThat(result.task(":copyProtos")).isNotNull()
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(result.output).all {
@@ -144,7 +146,7 @@ class WirePluginTest {
   fun requireTarget() {
     val fixtureRoot = File("src/test/projects/require-target")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureGradleRunner(fixtureRoot).buildAndFail()
 
     val task = result.task(":generateProtos")
     assertThat(task).isNull()
@@ -157,7 +159,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcepath-default")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
@@ -170,7 +172,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/dry-run")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
@@ -183,7 +185,7 @@ class WirePluginTest {
   fun sourcePathWithoutSources() {
     val fixtureRoot = File("src/test/projects/sourcepath-no-sources")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureGradleRunner(fixtureRoot).buildAndFail()
 
     val task = result.task(":generateMainProtos")
     assertThat(task).isNotNull()
@@ -194,7 +196,7 @@ class WirePluginTest {
   fun sourcePathStringShouldNotBeRegularFile() {
     val fixtureRoot = File("src/test/projects/sourcepath-file")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureGradleRunner(fixtureRoot).buildAndFail()
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
@@ -216,7 +218,7 @@ class WirePluginTest {
   fun sourcePathStringShouldNotBeUri() {
     val fixtureRoot = File("src/test/projects/sourcepath-uri")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureGradleRunner(fixtureRoot).buildAndFail()
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
@@ -230,7 +232,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcepath-dir")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -242,7 +244,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcepath-maven")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -254,7 +256,7 @@ class WirePluginTest {
   fun listener() {
     val fixtureRoot = File("src/test/projects/listener")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
     assertThat(result.output).all {
       contains("runStart")
       contains("loadSchemaStart")
@@ -275,7 +277,7 @@ class WirePluginTest {
   fun listenerNoSuchClass() {
     val fixtureRoot = File("src/test/projects/listener-no-such-class")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureGradleRunner(fixtureRoot).buildAndFail()
     assertThat(result.output)
       .contains("Couldn't find EventListenerClass 'NoSuchClass'")
   }
@@ -285,7 +287,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcepath-maven-single-file")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).doesNotExist()
@@ -297,7 +299,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcetree-one-srcdir-one-file")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/geology/Period.java")).exists()
@@ -308,7 +310,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcetree-one-srcdir-many-files")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -319,7 +321,7 @@ class WirePluginTest {
   fun rejectUnused() {
     val fixtureRoot = File("src/test/projects/reject-unused")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureGradleRunner(fixtureRoot).buildAndFail()
 
     assertThat(result.task(":generateMainProtos")!!.outcome).isEqualTo(TaskOutcome.FAILED)
     assertThat(result.output)
@@ -339,7 +341,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcetree-many-srcdirs")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -351,7 +353,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcejar-local-many-files")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -363,7 +365,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcejar-local-nonproto-file")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -375,7 +377,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcejar-local-single-file")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).doesNotExist()
@@ -387,7 +389,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcejar-mixed-conflicts")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -400,7 +402,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcejar-remote-many-files")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -412,7 +414,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcejar-remote-wildcards")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -425,7 +427,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcejar-remote-protopath")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { withDebug(true).build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -437,7 +439,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcejar-remote-version-catalog")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { withDebug(true).build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/geology/Period.java")).exists()
@@ -448,7 +450,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcezip-local-protopath")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { withDebug(true).build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -460,7 +462,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourceaar-local-protopath")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { withDebug(true).build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -471,9 +473,7 @@ class WirePluginTest {
   fun projectDependencyViaTypesafeAccessor() {
     val fixtureRoot = File("src/test/projects/project-dependencies-typesafe-accessor")
 
-    val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateMainProtos", "--stacktrace", "--info").build()
-    }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":dinosaurs:generateMainProtos")?.outcome)
       .isIn(TaskOutcome.SUCCESS, TaskOutcome.UP_TO_DATE)
@@ -509,7 +509,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/protopath-maven")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).doesNotExist()
@@ -522,7 +522,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/different-java-out")
     val outputRoot = File(fixtureRoot, "custom")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/geology/Period.java")).exists()
@@ -533,7 +533,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/different-kotlin-out")
     val outputRoot = File(fixtureRoot, "custom")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/geology/Period.kt")).exists()
@@ -544,7 +544,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/different-proto-out")
     val outputRoot = File(fixtureRoot, "custom")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "squareup/geology/period.proto")).exists()
@@ -554,7 +554,7 @@ class WirePluginTest {
   fun kotlinTargetMissingKotlinPlugin() {
     val fixtureRoot = File("src/test/projects/missing-kotlin-plugin")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureGradleRunner(fixtureRoot).buildAndFail()
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
@@ -567,7 +567,7 @@ class WirePluginTest {
   fun rootKeepsField() {
     val fixtureRoot = File("src/test/projects/field-root")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
 
@@ -584,7 +584,7 @@ class WirePluginTest {
   fun multipleRoots() {
     val fixtureRoot = File("src/test/projects/field-roots")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
 
@@ -603,7 +603,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/field-prune")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     val actual = File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")
@@ -617,7 +617,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/field-prunes")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     val actual = File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")
@@ -630,7 +630,7 @@ class WirePluginTest {
   fun ruleKeepsField() {
     val fixtureRoot = File("src/test/projects/field-rule-root")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
 
@@ -648,7 +648,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/field-rule-prune")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/geology/Period.kt")).exists()
@@ -662,9 +662,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/java-project-java-protos")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace", "--info").build()
-    }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateMainProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -676,9 +674,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/java-project-kotlin-protos")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace", "--info").build()
-    }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateMainProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")).exists()
@@ -690,9 +686,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/kotlin-project-java-protos")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace", "--info").build()
-    }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateMainProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -704,9 +698,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/kotlin-project-kotlin-protos")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace", "--info").build()
-    }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateMainProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")).exists()
@@ -717,9 +709,7 @@ class WirePluginTest {
   fun protoLibrary() {
     val fixtureRoot = File("src/test/projects/proto-library")
 
-    gradleRunner.runFixture(fixtureRoot) {
-      withArguments("jar", "--stacktrace", "--info").build()
-    }
+     fixtureGradleRunner(fixtureRoot, "clean", "jar").build()
 
     ZipFile(File(fixtureRoot, "build/libs/proto-library.jar")).use {
       assertThat(it.getEntry("squareup/geology/period.proto")).isNotNull()
@@ -732,7 +722,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcedir-exclude")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateMainProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")).exists()
@@ -745,9 +735,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcedir-include")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace", "--info").build()
-    }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateMainProtos")).isNotNull()
 
@@ -761,7 +749,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcepath-and-protopath-intersect")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
@@ -772,7 +760,7 @@ class WirePluginTest {
   fun emitJavaThenEmitKotlin() {
     val fixtureRoot = File("src/test/projects/emit-java-then-emit-kotlin")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
@@ -789,7 +777,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/do-not-emit-wire-runtime-protos")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     // We should generate Octagon only. Other proto files in this project are all the special ones
     // which Wire doesn't want to generate, google types and Wire extensions.
@@ -804,7 +792,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/emit-kotlin-then-emit-java")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
@@ -818,7 +806,7 @@ class WirePluginTest {
   fun emitKotlinAndEmitJava() {
     val fixtureRoot = File("src/test/projects/emit-kotlin-and-emit-java")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
@@ -835,7 +823,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/emit-service")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
@@ -847,7 +835,7 @@ class WirePluginTest {
   fun dontEmitServiceIfRoleIsNone() {
     val fixtureRoot = File("src/test/projects/emit-service-none")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
@@ -862,7 +850,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/emit-service-two-ways")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
@@ -880,7 +868,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/emit-service-name-suffix")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
     val task = result.task(":generateProtos")
 
     assertThat(task).isNotNull()
@@ -897,7 +885,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/customize-configuration")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).doesNotExist()
@@ -914,7 +902,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/customize-task")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateMainProtos")).isNotNull()
     assertThat(result.task(":helloWorld")).isNotNull()
@@ -927,7 +915,7 @@ class WirePluginTest {
   fun customOutput() {
     val fixtureRoot = File("src/test/projects/custom-output")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureGradleRunner(fixtureRoot).buildAndFail()
     assertThat(result.output)
       .contains(
         "custom handler is running!! " +
@@ -941,7 +929,7 @@ class WirePluginTest {
   fun customOutputNoSuchClass() {
     val fixtureRoot = File("src/test/projects/custom-output-no-such-class")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureGradleRunner(fixtureRoot).buildAndFail()
     assertThat(result.output)
       .contains("Couldn't find SchemaHandlerClass 'NoSuchClass'")
   }
@@ -951,7 +939,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/since-until")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
 
@@ -969,7 +957,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/only-version")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     val actual = File(outputRoot, "com/squareup/media/NewsFlash.kt")
@@ -987,15 +975,12 @@ class WirePluginTest {
     val kmpJsEnabled = System.getProperty("kjs", "true")!!.toBoolean()
     val kmpNativeEnabled = System.getProperty("knative", "true")!!.toBoolean()
 
-    val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments(
-        "assemble",
-        "--stacktrace",
-        "-Dkjs=$kmpJsEnabled",
-        "-Dknative=$kmpNativeEnabled",
-        "--debug",
+    val result = fixtureGradleRunner(fixtureRoot,
+      "assemble",
+      "-Dkjs=$kmpJsEnabled",
+      "-Dknative=$kmpNativeEnabled",
+      "--debug",
       ).build()
-    }
 
     println(result.tasks.joinToString { it.toString() })
     assertThat(result.task(":generateCommonMainProtos")).isNotNull()
@@ -1027,7 +1012,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/emit-proto")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
@@ -1040,7 +1025,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/emit-proto-with-prune")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
@@ -1054,7 +1039,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/emit-proto-with-root")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
@@ -1068,11 +1053,11 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/consecutive-runs")
     val outputRoot = File(fixtureRoot, "custom")
 
-    val firstRun = gradleRunner.runFixture(fixtureRoot) { build() }
+    val firstRun = fixtureGradleRunner(fixtureRoot).build()
     assertThat(firstRun.task(":generateMainProtos")).isNotNull()
     assertThat(File(outputRoot, "com/squareup/geology/Period.kt")).exists()
 
-    val secondRun = gradleRunner.runFixture(fixtureRoot) { build() }
+    val secondRun = fixtureGradleRunner(fixtureRoot).build()
     assertThat(secondRun.task(":generateMainProtos")).isNotNull()
     assertThat(secondRun.output)
       .contains("Task :generateMainProtos UP-TO-DATE")
@@ -1083,7 +1068,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/move-message")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
@@ -1100,7 +1085,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/opaque-message")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull()
@@ -1116,7 +1101,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/emit-java-options")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
 
@@ -1129,7 +1114,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/emit-kotlin-options")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
 
@@ -1142,7 +1127,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/emit-options-with-includes")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
 
@@ -1159,7 +1144,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/emit-options-without-conflicts")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
 
@@ -1183,7 +1168,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/kotlin-enum-mode")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
 
@@ -1208,7 +1193,7 @@ class WirePluginTest {
   fun packageCycles() {
     val fixtureRoot = File("src/test/projects/package-cycles")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureGradleRunner(fixtureRoot).buildAndFail()
     assertThat(result.output).contains("packages form a cycle")
   }
 
@@ -1217,7 +1202,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/package-cycles-permitted")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    gradleRunner.runFixture(fixtureRoot) { build() }
+    fixtureGradleRunner(fixtureRoot).build()
     assertThat(File(outputRoot, "people/Employee.kt")).exists()
     assertThat(File(outputRoot, "people/OfficeManager.kt")).exists()
     assertThat(File(outputRoot, "locations/Office.kt")).exists()
@@ -1230,9 +1215,7 @@ class WirePluginTest {
     val dinosaursOutputRoot = File(fixtureRoot, "dinosaurs/build/generated/source/wire")
     val geologyOutputRoot = File(fixtureRoot, "geology/build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateMainProtos", "--stacktrace", "--info").build()
-    }
+    val result = fixtureGradleRunner(fixtureRoot).build()
 
     assertThat(result.task(":dinosaurs:generateMainProtos")?.outcome)
       .isIn(TaskOutcome.SUCCESS, TaskOutcome.UP_TO_DATE)
@@ -1258,9 +1241,10 @@ class WirePluginTest {
     val generatedProto = "build/generated/source/wire/com/squareup/geology/Period.kt"
 
     val fixtureRoot = File("src/test/projects/cache-relocation-1")
-    val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("-g", tmpFolder.newFolder("gradle-home-1").absolutePath, "generateProtos", "--build-cache", "--stacktrace", "--info").build()
-    }
+
+    val result = fixtureGradleRunner(fixtureRoot, "generateProtos", "--build-cache")
+      .withArguments("-g", tmpFolder.newFolder("gradle-home-1").absolutePath)
+      .build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
@@ -1272,9 +1256,9 @@ class WirePluginTest {
     assertThat(buildCacheDir.exists()).isTrue()
 
     val relocatedRoot = File("src/test/projects/cache-relocation-2")
-    val relocatedResult = gradleRunner.runFixture(relocatedRoot) {
-      withArguments("-g", tmpFolder.newFolder("gradle-home-2").absolutePath, "generateProtos", "--build-cache", "--stacktrace", "--info").build()
-    }
+    val relocatedResult = fixtureGradleRunner(fixtureRoot, "generateProtos", "--build-cache")
+      .withArguments("-g", tmpFolder.newFolder("gradle-home-2").absolutePath)
+      .build()
 
     assertThat(relocatedResult.task(":generateProtos")).isNotNull()
     assertThat(relocatedResult.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.FROM_CACHE)
@@ -1295,9 +1279,7 @@ class WirePluginTest {
     val generatedPeriodProto = "build/generated/source/wire/com/squareup/geology/Period.kt"
 
     val fixtureRoot = File("src/test/projects/cache-include-paths-1")
-    val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--debug").build()
-    }
+    val result = fixtureGradleRunner(fixtureRoot, "generateProtos", "--build-cache", "--stacktrace", "--debug").build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
@@ -1307,9 +1289,7 @@ class WirePluginTest {
     // The task has been cached.
     assertThat(buildCacheDir.exists()).isTrue()
 
-    val cachedResult = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--debug").build()
-    }
+    val cachedResult = fixtureGradleRunner(fixtureRoot, "generateProtos", "--build-cache", "--stacktrace", "--debug").build()
 
     assertThat(cachedResult.task(":generateProtos")).isNotNull()
     assertThat(cachedResult.output).doesNotContain("Writing com.squareup.geology.Period")
@@ -1331,9 +1311,7 @@ class WirePluginTest {
     val generatedDinosaurProto = "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt"
 
     val fixtureRoot = File("src/test/projects/cache-include-paths-1")
-    val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
-    }
+    val result = fixtureGradleRunner(fixtureRoot, "generateProtos", "--build-cache").build()
 
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
@@ -1347,9 +1325,7 @@ class WirePluginTest {
     // Even though the task is now cached, the configuration of the sourcePath has now changed. We
     // expect the new task to run again, without using the cache.
     val modifiedFixtureRoot = File("src/test/projects/cache-include-paths-2")
-    val modifiedResult = gradleRunner.runFixture(modifiedFixtureRoot) {
-      withArguments("generateProtos", "--build-cache", "--stacktrace", "--debug").build()
-    }
+    val modifiedResult =fixtureGradleRunner(fixtureRoot, "generateProtos", "--build-cache").build()
 
     assertThat(modifiedResult.task(":generateProtos")).isNotNull()
     assertThat(modifiedResult.output).contains("Writing com.squareup.geology.Period")
@@ -1366,9 +1342,8 @@ class WirePluginTest {
   fun configurationCacheFailure() {
     val fixtureRoot = File("src/test/projects/configuration-cache-failure")
 
-    val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("clean", "generateMainProtos", "--stacktrace", "--info").build()
-    }
+    val result = fixtureGradleRunner(fixtureRoot).build()
+
     assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
   }
 
@@ -1376,9 +1351,7 @@ class WirePluginTest {
   fun kotlinSourcesJarHasSingleCopyOnly() {
     val fixtureRoot = File("src/test/projects/kotlinsourcesjar")
 
-    gradleRunner.runFixture(fixtureRoot) {
-      withArguments("clean", "kotlinSourcesJar", "--stacktrace", "--info").build()
-    }
+     fixtureGradleRunner(fixtureRoot, "clean", "kotlinSourcesJar").build()
 
     ZipFile(File(fixtureRoot, "build/libs/kotlinsourcesjar-sources.jar")).use {
       assertThat(it.stream().filter { it.name.contains("Period.kt") }.count()).isEqualTo(1)
@@ -1390,9 +1363,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/task-dependency")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
-    val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("clean", "generateMainProtos", "--stacktrace", "--info").build()
-    }
+    val result = fixtureGradleRunner(fixtureRoot).build()
     assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
     assertThat(File(outputRoot, "Dinosaur.kt")).exists()
     assertThat(File(outputRoot, "Period.kt")).exists()
@@ -1402,16 +1373,15 @@ class WirePluginTest {
   fun lazyConfigurationResolution() {
     val fixtureRoot = File("src/test/projects/lazy-configuration-resolution")
 
-    val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("wire-project:generateProtos", "--stacktrace", "--info").build()
-    }
+    val result = fixtureGradleRunner(fixtureRoot, "wire-project:generateProtos").build()
     assertThat(result.task(":wire-project:generateProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
   }
 
   @Test
   fun androidBuiltInFailWhenNotEnabled() {
     val fixtureRoot = File("src/test/projects/android-builtin-kotlin")
-    val result = gradleRunner.withArguments("-Pandroid.builtInKotlin=false").runFixture(fixtureRoot) { buildAndFail() }
+
+    val result = fixtureGradleRunner(fixtureRoot).withArguments("-Pandroid.builtInKotlin=false").buildAndFail()
     result.output.contains("*Wire Gradle plugin applied in project ':' but unable to find either the Java, Kotlin, or Android plugin*")
   }
 
@@ -1419,7 +1389,7 @@ class WirePluginTest {
   @Test
   fun androidBuiltInPassWhenEnabled() {
     val fixtureRoot = File("src/test/projects/android-builtin-kotlin")
-    val result = gradleRunner.withArguments("-Pandroid.builtInKotlin=true").runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).withArguments("-Pandroid.builtInKotlin=true").build()
     assertThat(result.task(":app:generateProtos")).isNotNull()
   }
 
@@ -1427,52 +1397,52 @@ class WirePluginTest {
   @Test
   fun androidExperimentalBuiltInKotlinPluginPassWhenApplied() {
     val fixtureRoot = File("src/test/projects/android-experimental-builtin-kotlin-plugin")
-    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val result = fixtureGradleRunner(fixtureRoot).build()
     assertThat(result.task(":app:generateProtos")).isNotNull()
   }
 
-  private fun GradleRunner.runFixture(
-    root: File,
-    action: GradleRunner.() -> BuildResult,
-  ): BuildResult {
-    var generatedSettings = false
-    val settings = File(root, "settings.gradle")
-    var generatedGradleProperties = false
-    val gradleProperties = File(root, "gradle.properties")
-    return try {
-      if (!settings.exists()) {
-        settings.createNewFile()
-        generatedSettings = true
-      }
-
-      if (!gradleProperties.exists()) {
-        val rootGradleProperties = File("../gradle.properties")
-        if (!rootGradleProperties.exists()) {
-          fail("Root gradle.properties doesn't exist at $rootGradleProperties.")
-        }
-        val versionName = rootGradleProperties.useLines { lines ->
-          lines.firstOrNull { it.startsWith("VERSION_NAME") }
-        }
-        if (versionName == null) {
-          fail("Root gradle.properties is missing the VERSION_NAME entry.")
-        }
-        gradleProperties.createNewFile()
-        gradleProperties.writeText(versionName!!)
-        generatedGradleProperties = true
-      } else {
-        gradleProperties.useLines { lines ->
-          if (lines.none { it.startsWith("VERSION_NAME") }) {
-            fail("Fixture's gradle.properties has to include the VERSION_NAME entry.")
-          }
-        }
-      }
-
-      withProjectDir(root).action()
-    } finally {
-      if (generatedSettings) settings.delete()
-      if (generatedGradleProperties) gradleProperties.delete()
-    }
-  }
+  // private fun GradleRunner.runFixture(
+  //   root: File,
+  //   action: GradleRunner.() -> BuildResult,
+  // ): BuildResult {
+  //   var generatedSettings = false
+  //   val settings = File(root, "settings.gradle")
+  //   var generatedGradleProperties = false
+  //   val gradleProperties = File(root, "gradle.properties")
+  //   return try {
+  //     if (!settings.exists()) {
+  //       settings.createNewFile()
+  //       generatedSettings = true
+  //     }
+  //
+  //     if (!gradleProperties.exists()) {
+  //       val rootGradleProperties = File("../gradle.properties")
+  //       if (!rootGradleProperties.exists()) {
+  //         fail("Root gradle.properties doesn't exist at $rootGradleProperties.")
+  //       }
+  //       val versionName = rootGradleProperties.useLines { lines ->
+  //         lines.firstOrNull { it.startsWith("VERSION_NAME") }
+  //       }
+  //       if (versionName == null) {
+  //         fail("Root gradle.properties is missing the VERSION_NAME entry.")
+  //       }
+  //       gradleProperties.createNewFile()
+  //       gradleProperties.writeText(versionName!!)
+  //       generatedGradleProperties = true
+  //     } else {
+  //       gradleProperties.useLines { lines ->
+  //         if (lines.none { it.startsWith("VERSION_NAME") }) {
+  //           fail("Fixture's gradle.properties has to include the VERSION_NAME entry.")
+  //         }
+  //       }
+  //     }
+  //
+  //     withProjectDir(root).action()
+  //   } finally {
+  //     if (generatedSettings) settings.delete()
+  //     if (generatedGradleProperties) gradleProperties.delete()
+  //   }
+  // }
 
   companion object {
     private val OUTPUT_DIRECTORY_NAMES = arrayOf("build", "custom")
@@ -1491,6 +1461,19 @@ class WirePluginTest {
       }
       f.delete()
     }
+  }
+
+  private fun fixtureGradleRunner(
+    fixtureDir: File,
+    vararg tasks: String = arrayOf("generateProtos", "--info"),
+  ): GradleRunner {
+    val gradleRoot = File(fixtureDir, "gradle").also { it.mkdir() }
+    File("../gradle/wrapper").copyRecursively(File(gradleRoot, "wrapper"), true)
+
+    return GradleRunner.create()
+      .withProjectDir(fixtureDir)
+      .withArguments(*tasks, "--no-build-cache", "--stacktrace", "-PwireVersion=${wireVersion}")
+      .withDebug(true) // Do not use a daemon.
   }
 }
 

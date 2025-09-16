@@ -15,6 +15,10 @@ plugins {
 // We only want to publish when it's being built in the root project.
 if (project.rootProject.name == "wire") {
   apply(plugin = "com.gradle.plugin-publish")
+} else {
+  // Move the build directory when included in build-support so as to not poison the real build.
+  // If we don't there's a chance incorrect build config values (configured below) will be used.
+  // layout.buildDirectory = File(rootDir, "build/wire-gradle-plugin")
 }
 
 gradlePlugin {
@@ -64,7 +68,16 @@ val installProtoJars by tasks.creating(Copy::class) {
 tasks.withType<Test>().configureEach {
   jvmArgs("--add-opens", "java.base/java.util=ALL-UNNAMED")
   dependsOn(installProtoJars)
-  dependsOn(":wire-runtime:installLocally")
+  dependsOn(":wire-gradle-plugin:publishAllPublicationsToLocalMavenRepository")
+  dependsOn(":wire-compiler:publishAllPublicationsToLocalMavenRepository")
+  dependsOn(":wire-java-generator:publishAllPublicationsToLocalMavenRepository")
+  dependsOn(":wire-kotlin-generator:publishAllPublicationsToLocalMavenRepository")
+  dependsOn(":wire-swift-generator:publishAllPublicationsToLocalMavenRepository")
+  dependsOn(":wire-runtime:publishAllPublicationsToLocalMavenRepository")
+  dependsOn(":wire-schema:publishAllPublicationsToLocalMavenRepository")
+  dependsOn(":wire-grpc-client:publishAllPublicationsToLocalMavenRepository")
+
+  inputs.dir(project.file("src/test/projects"))
 }
 
 val test by tasks.getting(Test::class) {
@@ -80,6 +93,8 @@ buildConfig {
   }
 
   packageName("com.squareup.wire")
+  buildConfigField("String", "wireVersion", "\"${project.version}\"")
+  // We keep it so as to not break consumers.
   buildConfigField("String", "VERSION", "\"${project.version}\"")
 }
 

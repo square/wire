@@ -1,7 +1,19 @@
-plugins {
-  id 'application'
-  id 'com.squareup.wire'
+buildscript {
+  dependencies {
+    classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+  }
+
+  repositories {
+    maven {
+      url "file://${rootDir.absolutePath}/../../../../../build/localMaven"
+    }
+    mavenCentral()
+    google()
+  }
 }
+
+apply plugin: 'application'
+apply plugin: 'com.squareup.wire'
 
 // See installProtoJars task in wire-gradle-plugin/build.gradle.kts
 repositories {
