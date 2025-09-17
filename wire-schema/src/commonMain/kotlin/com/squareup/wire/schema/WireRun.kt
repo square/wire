@@ -255,6 +255,13 @@ class WireRun(
     val fullSchema = schemaLoader.loadSchema()
     eventListeners.forEach { it.loadSchemaSuccess(fullSchema) }
 
+    if (targets.isEmpty() && fullSchema.protoFiles.all { isWireRuntimeProto(it.location) }) {
+      // We have sources but no target to handle them.
+      IllegalStateException("Sources have been found but no target are set. " +
+        "At least one target must be provided for this project\n" +
+        "See our documentation for details: https://square.github.io/wire/wire_compiler/#customizing-output")
+    }
+
     // Refactor the schema.
     val schema = refactorSchema(
       schema = fullSchema,
