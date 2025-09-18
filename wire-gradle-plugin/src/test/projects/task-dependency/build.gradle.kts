@@ -3,6 +3,7 @@ import org.gradle.api.internal.file.FileOperations
 buildscript {
   dependencies {
     classpath("com.squareup.wire:wire-gradle-plugin:${properties["wireVersion"]}")
+    classpath(libs.pluginz.kotlin)
   }
 
   repositories {

@@ -49,11 +49,11 @@ dependencies {
 
   compileOnly(gradleApi())
   compileOnly(libs.pluginz.android)
+  compileOnly(libs.pluginz.kotlin)
 
   implementation(projects.wireCompiler)
   implementation(projects.wireKotlinGenerator)
   implementation(libs.swiftpoet)
-  implementation(libs.pluginz.kotlin)
 
   testImplementation(libs.junit)
   testImplementation(libs.assertk)

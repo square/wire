@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 buildscript {
   dependencies {
     classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+    classpath libs.pluginz.kotlin
   }
 
   repositories {
@@ -14,7 +15,6 @@ buildscript {
   }
 }
 
-apply plugin: 'application'
 apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'com.squareup.wire'
 
