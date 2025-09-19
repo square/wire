@@ -2,7 +2,6 @@
 android = "4.1.1.4"
 androidGradlePlugin = "8.13.0"
 asm = "9.8"
-assertj = "3.27.5"
 checkerQual = "3.49.4"
 coroutines = "1.9.0"
 dokka = "2.0.0"
@@ -33,7 +32,6 @@ androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayo
 androidx-ktx = { module = "androidx.core:core-ktx", version = "1.16.0" }
 androidx-test-runner = { module = "androidx.test:runner", version = "1.6.2" }
 asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
-assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
 checker-qual = { module = "org.checkerframework:checker-qual", version.ref = "checkerQual" }
 contour = { module = "app.cash.contour:contour", version = "1.1.0" }

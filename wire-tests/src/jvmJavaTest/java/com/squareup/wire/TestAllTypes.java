@@ -15,8 +15,8 @@
  */
 package com.squareup.wire;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.squareup.wire.protos.alltypes.AllTypes.NestedEnum.A;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 import com.squareup.wire.protos.alltypes.AllTypes;
@@ -301,7 +301,7 @@ public class TestAllTypes {
     AllTypes.Builder builder = allTypes.newBuilder();
     assertThat(builder.build()).isEqualTo(allTypes);
     builder.opt_bool = false;
-    assertThat(builder.build()).isNotSameAs(allTypes);
+    assertThat(builder.build()).isNotSameInstanceAs(allTypes);
   }
 
   @Test
@@ -453,7 +453,9 @@ public class TestAllTypes {
       builder.build();
       fail();
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("Required fields not set:\n  req_int32\n  req_sfixed64\n  req_bool");
+      assertThat(e)
+          .hasMessageThat()
+          .contains("Required fields not set:\n  req_int32\n  req_sfixed64\n  req_bool");
     }
   }
 
@@ -548,7 +550,8 @@ public class TestAllTypes {
       fail();
     } catch (IllegalArgumentException expected) {
       assertThat(expected)
-          .hasMessage("Wire type FIXED32 differs from previous type VARINT for tag 10000");
+          .hasMessageThat()
+          .contains("Wire type FIXED32 differs from previous type VARINT for tag 10000");
     }
   }
 
@@ -559,7 +562,7 @@ public class TestAllTypes {
       getBuilder().rep_nested_enum(Arrays.asList(A, null, A));
       fail();
     } catch (NullPointerException e) {
-      assertThat(e).hasMessage("Element at index 1 is null");
+      assertThat(e).hasMessageThat().contains("Element at index 1 is null");
     }
   }
 
@@ -571,7 +574,8 @@ public class TestAllTypes {
       fail();
     } catch (NullPointerException e) {
       assertThat(e)
-          .hasMessage(
+          .hasMessageThat()
+          .contains(
               "Parameter specified as non-null is null: method "
                   + "com.squareup.wire.internal.Internal__InternalKt.checkElementsNotNull, parameter list");
     }

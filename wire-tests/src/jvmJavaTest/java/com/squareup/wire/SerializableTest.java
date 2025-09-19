@@ -15,7 +15,7 @@
  */
 package com.squareup.wire;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.google.common.truth.Truth.assertThat;
 
 import com.squareup.wire.protos.edgecases.NoFields;
 import com.squareup.wire.protos.person.Person;

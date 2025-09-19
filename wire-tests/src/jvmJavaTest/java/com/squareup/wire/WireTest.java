@@ -15,8 +15,8 @@
  */
 package com.squareup.wire;
 
+import static com.google.common.truth.Truth.assertThat;
 import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 import com.squareup.wire.protos.custom_options.FooBar;
@@ -80,7 +80,7 @@ public class WireTest {
     // Modifying the builder list does not affect an already-built message
     List<Double> savedData = new ArrayList<Double>(msg.repeated_double);
     doubles.set(1, 1.1);
-    assertThat(msg.repeated_double).isNotSameAs(doubles);
+    assertThat(msg.repeated_double).isNotSameInstanceAs(doubles);
     assertThat(msg.repeated_double).isEqualTo(savedData);
 
     // Rebuilding will use the new list
@@ -93,7 +93,7 @@ public class WireTest {
       builder.build();
       fail();
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("Required field not set:\n  required_int32");
+      assertThat(e).hasMessageThat().contains("Required field not set:\n  required_int32");
     }
 
     // The message list is immutable
@@ -350,7 +350,8 @@ public class WireTest {
       fail();
     } catch (NullPointerException expected) {
       assertThat(expected)
-          .hasMessage(
+          .hasMessageThat()
+          .contains(
               "Parameter specified as non-null is null: "
                   + "method com.squareup.wire.internal.Internal__InternalKt.immutableCopyOf, parameter list");
     }
@@ -366,7 +367,7 @@ public class WireTest {
       builder.build();
       fail();
     } catch (IllegalArgumentException expected) {
-      assertThat(expected).hasMessage("phone.contains(null)");
+      assertThat(expected).hasMessageThat().contains("phone.contains(null)");
     }
   }
 
