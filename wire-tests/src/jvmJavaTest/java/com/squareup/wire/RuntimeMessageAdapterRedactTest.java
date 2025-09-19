@@ -15,7 +15,7 @@
  */
 package com.squareup.wire;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
 import com.squareup.wire.protos.redacted.NotRedacted;
@@ -121,7 +121,7 @@ public class RuntimeMessageAdapterRedactTest {
       adapter.redact(new RedactedRequired("a"));
       fail();
     } catch (UnsupportedOperationException e) {
-      assertThat(e).hasMessage("Field 'a' is required and cannot be redacted.");
+      assertThat(e).hasMessageThat().contains("Field 'a' is required and cannot be redacted.");
     }
   }
 

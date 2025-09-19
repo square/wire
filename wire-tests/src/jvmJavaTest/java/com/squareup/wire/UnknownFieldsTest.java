@@ -15,7 +15,7 @@
  */
 package com.squareup.wire;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.google.common.truth.Truth.assertThat;
 
 import com.squareup.wire.protos.unknownfields.EnumVersionTwo;
 import com.squareup.wire.protos.unknownfields.NestedVersionOne;
