@@ -534,7 +534,7 @@ class WirePluginTest {
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
       .contains(
-        "Wire Gradle plugin applied in project ':' but no supported Kotlin plugin was found",
+        "Wire Gradle plugin applied in project ':' to generate Kotlin types but no supported Kotlin plugin was found",
       )
   }
 

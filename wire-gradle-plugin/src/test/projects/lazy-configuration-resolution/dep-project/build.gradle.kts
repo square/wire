@@ -1,3 +1,17 @@
+buildscript {
+  dependencies {
+    classpath(libs.pluginz.kotlin)
+  }
+
+  repositories {
+    maven {
+      setUrl("file://${rootDir.absolutePath}/../../../../../build/localMaven")
+    }
+    mavenCentral()
+    google()
+  }
+}
+
 plugins {
   id("org.jetbrains.kotlin.jvm") version "1.9.22"
 }

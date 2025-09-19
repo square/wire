@@ -11,6 +11,7 @@ import org.slf4j.Logger
 buildscript {
   dependencies {
     classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+    classpath libs.pluginz.kotlin
   }
 
   repositories {
