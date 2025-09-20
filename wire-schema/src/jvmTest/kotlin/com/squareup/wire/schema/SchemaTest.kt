@@ -167,7 +167,7 @@ class SchemaTest {
       }
       fail()
     } catch (expected: SchemaException) {
-      assertThat(expected.message).isEqualTo(
+      assertThat(expected).hasMessage(
         """
         |tag is out of range: 0
         |  for field a (/sourcePath/message.proto:2:3)
@@ -1198,7 +1198,7 @@ class SchemaTest {
       }
       fail()
     } catch (expected: SchemaException) {
-      assertThat(expected.message).isEqualTo(
+      assertThat(expected).hasMessage(
         """
         |a.proto needs to import b.proto
         |  for field b (/sourcePath/a.proto:3:3)
@@ -1232,7 +1232,7 @@ class SchemaTest {
       }
       fail()
     } catch (expected: SchemaException) {
-      assertThat(expected.message).isEqualTo(
+      assertThat(expected).hasMessage(
         """
         |a.proto needs to import b.proto
         |  for field b (/sourcePath/a.proto:3:3)
@@ -1294,7 +1294,7 @@ class SchemaTest {
       }
       fail()
     } catch (expected: SchemaException) {
-      assertThat(expected.message).isEqualTo(
+      assertThat(expected).hasMessage(
         """
         |a.proto needs to import b.proto
         |  for rpc Call (/sourcePath/a.proto:3:3)
@@ -1360,7 +1360,7 @@ class SchemaTest {
       }
       fail()
     } catch (expected: SchemaException) {
-      assertThat(expected.message).isEqualTo(
+      assertThat(expected).hasMessage(
         """
         |a.proto needs to import b.proto
         |  for extend pb.B (/sourcePath/a.proto:2:1)
@@ -1403,7 +1403,7 @@ class SchemaTest {
       }
       fail()
     } catch (expected: SchemaException) {
-      assertThat(expected.message).isEqualTo(
+      assertThat(expected).hasMessage(
         """
         |a.proto needs to import c.proto
         |  for field c (/sourcePath/a.proto:4:3)

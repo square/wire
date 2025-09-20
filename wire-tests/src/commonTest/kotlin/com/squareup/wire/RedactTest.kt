@@ -15,6 +15,9 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
 import com.squareup.wire.protos.kotlin.redacted.NotRedacted
 import com.squareup.wire.protos.kotlin.redacted.RedactedChild
 import com.squareup.wire.protos.kotlin.redacted.RedactedCycleA
@@ -32,33 +35,31 @@ import com.squareup.wire.protos.kotlin.redacted.buildersonly.RedactedFields as R
 import com.squareup.wire.protos.kotlin.redacted.buildersonly.RedactedRepeated as RedactedRepeatedBuildersOnly
 import com.squareup.wire.protos.kotlin.redacted.buildersonly.RedactedRequired as RedactedRequiredBuildersOnly
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.fail
 
 class RedactTest {
   @Test fun string() {
     val redacted = RedactedFields(a = "a", b = "b", c = "c")
-    assertEquals("RedactedFields{a=██, b=b, c=c}", redacted.toString())
+    assertThat(redacted.toString()).isEqualTo("RedactedFields{a=██, b=b, c=c}")
     val redactedRepeated = RedactedRepeated(
       a = listOf("a", "b"),
       b = listOf(RedactedFields("a", "b", "c", null), RedactedFields("d", "e", "f", null)),
     )
-    assertEquals(
+    assertThat(redactedRepeated.toString()).isEqualTo(
       "RedactedRepeated{a=██, b=[RedactedFields{a=██, b=b, c=c}, " +
         "RedactedFields{a=██, b=e, c=f}]}",
-      redactedRepeated.toString(),
     )
   }
 
   @Test fun message() {
     val message = RedactedFields(a = "a", b = "b", c = "c")
     val expected = message.copy(a = null)
-    assertEquals(expected, RedactedFields.ADAPTER.redact(message))
+    assertThat(RedactedFields.ADAPTER.redact(message)).isEqualTo(expected)
   }
 
   @Test fun messageWithNoRedactions() {
     val message = NotRedacted(a = "a", b = "b")
-    assertEquals(message, NotRedacted.ADAPTER.redact(message))
+    assertThat(NotRedacted.ADAPTER.redact(message)).isEqualTo(message)
   }
 
   @Test fun nestedRedactions() {
@@ -68,19 +69,19 @@ class RedactTest {
       c = NotRedacted(a = "a", b = "b"),
     )
     val expected = message.copy(b = message.b!!.copy(a = null))
-    assertEquals(expected, RedactedChild.ADAPTER.redact(message))
+    assertThat(RedactedChild.ADAPTER.redact(message)).isEqualTo(expected)
   }
 
   @Test fun redactedExtensions() {
     val message = RedactedFields(extension = RedactedExtension(d = "d", e = "e"))
     val expected = RedactedFields(extension = RedactedExtension(e = "e"))
-    assertEquals(expected, RedactedFields.ADAPTER.redact(message))
+    assertThat(RedactedFields.ADAPTER.redact(message)).isEqualTo(expected)
   }
 
   @Test fun messageCycle() {
     var message = RedactedCycleA()
     message = message.copy(b = RedactedCycleB(message))
-    assertEquals(message, RedactedCycleA.ADAPTER.redact(message))
+    assertThat(RedactedCycleA.ADAPTER.redact(message)).isEqualTo(message)
   }
 
   @Test fun repeatedField() {
@@ -92,7 +93,7 @@ class RedactTest {
       b = listOf(RedactedFields(null, "b", "c", null), RedactedFields(null, "e", "f", null)),
     )
     val actual = RedactedRepeated.ADAPTER.redact(message)
-    assertEquals(expected, actual)
+    assertThat(actual).isEqualTo(expected)
   }
 
   @Test fun requiredRedactedFieldThrowsRedacting() {
@@ -101,38 +102,42 @@ class RedactTest {
       adapter.redact(RedactedRequired("a"))
       fail()
     } catch (e: UnsupportedOperationException) {
-      assertEquals("Field 'a' is required and cannot be redacted.", e.message)
+      assertThat(e).hasMessage("Field 'a' is required and cannot be redacted.")
     }
   }
 
   @Test fun requiredRedactedFieldToString() {
     val adapter = RedactedRequired.ADAPTER
-    assertEquals("RedactedRequired{a=██}", adapter.toString(RedactedRequired("a")))
+    assertThat(adapter.toString(RedactedRequired("a"))).isEqualTo("RedactedRequired{a=██}")
   }
 
   @Test fun string_buildersOnly() {
     val redacted = RedactedFieldsBuildersOnly.Builder().a("a").b("b").c("c").build()
-    assertEquals("RedactedFields{a=██, b=b, c=c}", redacted.toString())
+    assertThat(redacted.toString()).isEqualTo("RedactedFields{a=██, b=b, c=c}")
     val redactedRepeated = RedactedRepeatedBuildersOnly.Builder()
       .a(listOf("a", "b"))
-      .b(listOf(RedactedFieldsBuildersOnly.Builder().a("a").b("b").c("c").extension(null).build(), RedactedFieldsBuildersOnly.Builder().a("d").b("e").c("f").extension(null).build()))
+      .b(
+        listOf(
+          RedactedFieldsBuildersOnly.Builder().a("a").b("b").c("c").extension(null).build(),
+          RedactedFieldsBuildersOnly.Builder().a("d").b("e").c("f").extension(null).build(),
+        ),
+      )
       .build()
-    assertEquals(
+    assertThat(redactedRepeated.toString()).isEqualTo(
       "RedactedRepeated{a=██, b=[RedactedFields{a=██, b=b, c=c}, " +
         "RedactedFields{a=██, b=e, c=f}]}",
-      redactedRepeated.toString(),
     )
   }
 
   @Test fun message_buildersOnly() {
     val message = RedactedFieldsBuildersOnly.Builder().a("a").b("b").c("c").build()
     val expected = message.newBuilder().a(null).build()
-    assertEquals(expected, RedactedFieldsBuildersOnly.ADAPTER.redact(message))
+    assertThat(RedactedFieldsBuildersOnly.ADAPTER.redact(message)).isEqualTo(expected)
   }
 
   @Test fun messageWithNoRedactions_buildersOnly() {
     val message = NotRedactedBuildersOnly.Builder().a("a").b("b").build()
-    assertEquals(message, NotRedactedBuildersOnly.ADAPTER.redact(message))
+    assertThat(NotRedactedBuildersOnly.ADAPTER.redact(message)).isEqualTo(message)
   }
 
   @Test fun nestedRedactions_buildersOnly() {
@@ -142,31 +147,44 @@ class RedactTest {
       .c(NotRedactedBuildersOnly.Builder().a("a").b("b").build())
       .build()
     val expected = message.newBuilder().b(message.b!!.newBuilder().a(null).build()).build()
-    assertEquals(expected, RedactedChildBuildersOnly.ADAPTER.redact(message))
+    assertThat(RedactedChildBuildersOnly.ADAPTER.redact(message)).isEqualTo(expected)
   }
 
   @Test fun redactedExtensions_buildersOnly() {
-    val message = RedactedFieldsBuildersOnly.Builder().extension(RedactedExtensionBuildersOnly.Builder().d("d").e("e").build()).build()
-    val expected = RedactedFieldsBuildersOnly.Builder().extension(RedactedExtensionBuildersOnly.Builder().e("e").build()).build()
-    assertEquals(expected, RedactedFieldsBuildersOnly.ADAPTER.redact(message))
+    val message = RedactedFieldsBuildersOnly.Builder()
+      .extension(RedactedExtensionBuildersOnly.Builder().d("d").e("e").build()).build()
+    val expected = RedactedFieldsBuildersOnly.Builder()
+      .extension(RedactedExtensionBuildersOnly.Builder().e("e").build()).build()
+    assertThat(RedactedFieldsBuildersOnly.ADAPTER.redact(message)).isEqualTo(expected)
   }
 
   @Test fun messageCycle_buildersOnly() {
     var message = RedactedCycleABuildersOnly.Builder().build()
-    message = message.newBuilder().b(RedactedCycleBBuildersOnly.Builder().a(message).build()).build()
-    assertEquals(message, RedactedCycleABuildersOnly.ADAPTER.redact(message))
+    message =
+      message.newBuilder().b(RedactedCycleBBuildersOnly.Builder().a(message).build()).build()
+    assertThat(RedactedCycleABuildersOnly.ADAPTER.redact(message)).isEqualTo(message)
   }
 
   @Test fun repeatedField_buildersOnly() {
     val message = RedactedRepeatedBuildersOnly.Builder()
       .a(listOf("a", "b"))
-      .b(listOf(RedactedFieldsBuildersOnly.Builder().a("a").b("b").c("c").extension(null).build(), RedactedFieldsBuildersOnly.Builder().a("d").b("e").c("f").extension(null).build()))
+      .b(
+        listOf(
+          RedactedFieldsBuildersOnly.Builder().a("a").b("b").c("c").extension(null).build(),
+          RedactedFieldsBuildersOnly.Builder().a("d").b("e").c("f").extension(null).build(),
+        ),
+      )
       .build()
     val expected = RedactedRepeatedBuildersOnly.Builder()
-      .b(listOf(RedactedFieldsBuildersOnly.Builder().a(null).b("b").c("c").extension(null).build(), RedactedFieldsBuildersOnly.Builder().a(null).b("e").c("f").extension(null).build()))
+      .b(
+        listOf(
+          RedactedFieldsBuildersOnly.Builder().a(null).b("b").c("c").extension(null).build(),
+          RedactedFieldsBuildersOnly.Builder().a(null).b("e").c("f").extension(null).build(),
+        ),
+      )
       .build()
     val actual = RedactedRepeatedBuildersOnly.ADAPTER.redact(message)
-    assertEquals(expected, actual)
+    assertThat(actual).isEqualTo(expected)
   }
 
   @Test fun requiredRedactedFieldThrowsRedacting_buildersOnly() {
@@ -175,12 +193,16 @@ class RedactTest {
       adapter.redact(RedactedRequiredBuildersOnly.Builder().a("a").build())
       fail()
     } catch (e: UnsupportedOperationException) {
-      assertEquals("Field 'a' is required and cannot be redacted.", e.message)
+      assertThat(e).hasMessage("Field 'a' is required and cannot be redacted.")
     }
   }
 
   @Test fun requiredRedactedFieldToString_buildersOnly() {
     val adapter = RedactedRequiredBuildersOnly.ADAPTER
-    assertEquals("RedactedRequired{a=██}", adapter.toString(RedactedRequiredBuildersOnly.Builder().a("a").build()))
+    assertThat(
+      adapter.toString(
+        RedactedRequiredBuildersOnly.Builder().a("a").build(),
+      ),
+    ).isEqualTo("RedactedRequired{a=██}")
   }
 }

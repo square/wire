@@ -15,12 +15,13 @@
  */
 package com.squareup.wire.recipes
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.WireTestLogger
 import com.squareup.wire.addFakeRuntimeProtos
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.SchemaHandler
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import okio.BufferedSource
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
@@ -73,6 +74,6 @@ class LogToFileHandlerTest {
         |Generating service: test.MyService
         |
     """.trimMargin()
-    assertEquals(expected, content)
+    assertThat(content).isEqualTo(expected)
   }
 }

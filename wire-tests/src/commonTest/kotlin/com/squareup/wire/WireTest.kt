@@ -15,24 +15,25 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import com.squareup.wire.protos.kotlin.person.Person
 import com.squareup.wire.protos.kotlin.simple.ExternalMessage
 import com.squareup.wire.protos.kotlin.simple.SimpleMessage
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 class WireTest {
   @Test fun simpleMessage() {
     var msg = SimpleMessage(required_int32 = 456)
-    assertNull(msg.optional_int32)
-    assertNull(msg.optional_nested_msg)
-    assertNull(msg.optional_external_msg)
-    assertNull(msg.default_nested_enum)
-    assertEquals(456, msg.required_int32)
-    assertNotNull(msg.repeated_double)
-    assertEquals(0, msg.repeated_double.size)
+    assertThat(msg.optional_int32).isNull()
+    assertThat(msg.optional_nested_msg).isNull()
+    assertThat(msg.optional_external_msg).isNull()
+    assertThat(msg.default_nested_enum).isNull()
+    assertThat(msg.required_int32).isEqualTo(456)
+    assertThat(msg.repeated_double).isNotNull()
+    assertThat(msg.repeated_double.size).isEqualTo(0)
 
     val doubles = listOf(1.0, 2.0, 3.0)
     msg = msg.copy(
@@ -44,28 +45,28 @@ class WireTest {
       repeated_double = doubles,
     )
 
-    assertEquals(789, msg.optional_int32)
-    assertEquals(2, msg.optional_nested_msg!!.bb)
+    assertThat(msg.optional_int32).isEqualTo(789)
+    assertThat(msg.optional_nested_msg!!.bb).isEqualTo(2)
     assertFloatEquals(99.9f, msg.optional_external_msg!!.f!!)
-    assertEquals(SimpleMessage.NestedEnum.BAR, msg.default_nested_enum)
-    assertEquals(456, msg.required_int32)
-    assertEquals(doubles, msg.repeated_double)
+    assertThat(msg.default_nested_enum).isEqualTo(SimpleMessage.NestedEnum.BAR)
+    assertThat(msg.required_int32).isEqualTo(456)
+    assertThat(msg.repeated_double).isEqualTo(doubles)
 
     // Rebuilding will use the new list
 
     msg = msg.copy()
-    assertEquals(doubles, msg.repeated_double)
+    assertThat(msg.repeated_double).isEqualTo(doubles)
 
     val adapter = SimpleMessage.ADAPTER
     val result = adapter.encode(msg)
-    assertEquals(46, result.size)
+    assertThat(result.size).isEqualTo(46)
     val newMsg = adapter.decode(result)
-    assertEquals(789, newMsg.optional_int32)
-    assertEquals(2, newMsg.optional_nested_msg!!.bb)
+    assertThat(newMsg.optional_int32).isEqualTo(789)
+    assertThat(newMsg.optional_nested_msg!!.bb).isEqualTo(2)
     assertFloatEquals(99.9f, newMsg.optional_external_msg!!.f!!)
-    assertEquals(SimpleMessage.NestedEnum.BAR, newMsg.default_nested_enum)
-    assertEquals(456, newMsg.required_int32)
-    assertEquals(doubles, msg.repeated_double)
+    assertThat(newMsg.default_nested_enum).isEqualTo(SimpleMessage.NestedEnum.BAR)
+    assertThat(newMsg.required_int32).isEqualTo(456)
+    assertThat(msg.repeated_double).isEqualTo(doubles)
   }
 
   @Test fun sanitizedToString() {
@@ -82,6 +83,6 @@ class WireTest {
           |, aliases=[B-lo\,ved, D\{esperado\}]
           |}
     """.trimMargin().replace("\n", "")
-    assertEquals(expected, person.toString())
+    assertThat(person.toString()).isEqualTo(expected)
   }
 }
