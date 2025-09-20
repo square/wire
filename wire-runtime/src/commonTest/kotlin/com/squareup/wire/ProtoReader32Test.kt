@@ -15,11 +15,13 @@
  */
 package com.squareup.wire
 
-import assertk.assertions.message
+import assertk.assertFailure
+import assertk.assertThat
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import com.squareup.wire.ReverseProtoWriterTest.Person
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import okio.ByteString.Companion.decodeHex
 import okio.IOException
 
@@ -28,11 +30,11 @@ class ProtoReader32Test {
     val packedEncoded = "d20504d904bd05".decodeHex()
     val reader = ProtoReader32(packedEncoded)
     val token = reader.beginMessage()
-    assertEquals(90, reader.nextTag())
-    assertEquals(601, ProtoAdapter.INT32.decode(reader))
-    assertEquals(90, reader.nextTag())
-    assertEquals(701, ProtoAdapter.INT32.decode(reader))
-    assertEquals(-1, reader.nextTag())
+    assertThat(reader.nextTag()).isEqualTo(90)
+    assertThat(ProtoAdapter.INT32.decode(reader)).isEqualTo(601)
+    assertThat(reader.nextTag()).isEqualTo(90)
+    assertThat(ProtoAdapter.INT32.decode(reader)).isEqualTo(701)
+    assertThat(reader.nextTag()).isEqualTo(-1)
     reader.endMessageAndGetUnknownFields(token)
   }
 
@@ -45,20 +47,20 @@ class ProtoReader32Test {
       ).decodeHex()
     val reader = ProtoReader32(encoded)
 
-    assertEquals(2, reader.nextLengthDelimited())
+    assertThat(reader.nextLengthDelimited()).isEqualTo(2)
 
     val firstToken = reader.beginMessage()
-    assertEquals(1, reader.nextTag())
-    assertEquals(2, ProtoAdapter.INT32.decode(reader))
-    assertEquals(-1, reader.nextTag())
+    assertThat(reader.nextTag()).isEqualTo(1)
+    assertThat(ProtoAdapter.INT32.decode(reader)).isEqualTo(2)
+    assertThat(reader.nextTag()).isEqualTo(-1)
     reader.endMessageAndGetUnknownFields(firstToken)
 
-    assertEquals(6, reader.nextLengthDelimited())
+    assertThat(reader.nextLengthDelimited()).isEqualTo(6)
 
     val secondToken = reader.beginMessage()
-    assertEquals(1, reader.nextTag())
-    assertEquals(Int.MAX_VALUE, ProtoAdapter.INT32.decode(reader))
-    assertEquals(-1, reader.nextTag())
+    assertThat(reader.nextTag()).isEqualTo(1)
+    assertThat(ProtoAdapter.INT32.decode(reader)).isEqualTo(Int.MAX_VALUE)
+    assertThat(reader.nextTag()).isEqualTo(-1)
     reader.endMessageAndGetUnknownFields(secondToken)
   }
 
@@ -71,10 +73,9 @@ class ProtoReader32Test {
       }
     }
 
-    val failed = assertFailsWith<IOException> {
+    assertFailure {
       Person.ADAPTER.decode(data)
-    }
-    assertEquals("Wire recursion limit exceeded", failed.message)
+    }.isInstanceOf<IOException>().hasMessage("Wire recursion limit exceeded")
   }
 
   // Consider pasting new tests into ProtoReaderTest.kt also.

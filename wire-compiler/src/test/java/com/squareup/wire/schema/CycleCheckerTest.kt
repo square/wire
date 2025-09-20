@@ -17,10 +17,10 @@
 
 package com.squareup.wire.schema
 
-import assertk.assertThat
+import assertk.assertFailure
 import assertk.assertions.hasMessage
+import assertk.assertions.isInstanceOf
 import com.squareup.wire.testing.add
-import kotlin.test.assertFailsWith
 import okio.Path
 import okio.fakefilesystem.FakeFileSystem
 import org.junit.Test
@@ -42,10 +42,9 @@ class CycleCheckerTest {
       """.trimMargin(),
     )
 
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       loadAndLinkSchema()
-    }
-    assertThat(exception).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
         |imports form a cycle:
         |  ouroboros.proto:
@@ -84,10 +83,9 @@ class CycleCheckerTest {
       """.trimMargin(),
     )
 
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       loadAndLinkSchema()
-    }
-    assertThat(exception).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
         |imports form a cycle:
         |  paper.proto:
@@ -140,10 +138,9 @@ class CycleCheckerTest {
       """.trimMargin(),
     )
 
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       loadAndLinkSchema()
-    }
-    assertThat(exception).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
         |imports form a cycle:
         |  a.proto:
@@ -203,10 +200,9 @@ class CycleCheckerTest {
       """.trimMargin(),
     )
 
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       loadAndLinkSchema()
-    }
-    assertThat(exception).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
         |packages form a cycle:
         |  locations imports people
@@ -269,10 +265,9 @@ class CycleCheckerTest {
       """.trimMargin(),
     )
 
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       loadAndLinkSchema()
-    }
-    assertThat(exception).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
         |packages form a cycle:
         |  a imports b
@@ -315,10 +310,9 @@ class CycleCheckerTest {
       """.trimMargin(),
     )
 
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       loadAndLinkSchema()
-    }
-    assertThat(exception).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
         |packages form a cycle:
         |  <default> imports b

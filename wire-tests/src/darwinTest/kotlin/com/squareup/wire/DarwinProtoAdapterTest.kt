@@ -19,7 +19,6 @@ import com.squareup.wire.protos.kotlin.person.Person
 import com.squareup.wire.protos.kotlin.person.Person.PhoneNumber
 import com.squareup.wire.protos.kotlin.person.Person.PhoneType.WORK
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import platform.Foundation.NSData
 import platform.Foundation.create
 

@@ -15,10 +15,11 @@
  */
 package com.squareup.wire.android.app.kotlin.minsdk
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import com.squareup.wire.WireJsonAdapterFactory
-import kotlin.test.assertEquals
 import org.junit.Test
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -30,6 +31,6 @@ class DeserializeTest {
       .add(WireJsonAdapterFactory())
       .build()
       .adapter<SomeText>()
-    assertEquals(SomeText(value_ = "Hi"), jsonAdapter.fromJson("""{"value": "Hi"}"""))
+    assertThat(jsonAdapter.fromJson("""{"value": "Hi"}""")).isEqualTo(SomeText(value_ = "Hi"))
   }
 }

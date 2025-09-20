@@ -15,9 +15,10 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.protos.kotlin.person.Person
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.fail
 
 class KotlinListTest {
@@ -36,6 +37,6 @@ class KotlinListTest {
 
     // Mutate the values used to create the map. Wire should have defensive copies.
     list.clear()
-    assertEquals(listOf("a", "b"), person.aliases)
+    assertThat(person.aliases).isEqualTo(listOf("a", "b"))
   }
 }

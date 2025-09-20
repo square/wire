@@ -15,12 +15,13 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.TestAllTypesData.allTypes
 import com.squareup.wire.protos.kotlin.alltypes.AllTypes
 import com.squareup.wire.protos.kotlin.alltypes.AllTypes.NestedMessage
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 /**
  * This test is similar to `ProtoReader32AdapterTest.kt` except it targets code generated without
@@ -31,19 +32,19 @@ class ProtoReader32AsProtoReaderTest {
   @Test
   fun decodeProtoReader32ByteString() {
     val protoReader32 = ProtoReader32(allTypes.encodeByteString())
-    assertEquals(allTypes, AllTypes.ADAPTER.decode(protoReader32))
+    assertThat(AllTypes.ADAPTER.decode(protoReader32)).isEqualTo(allTypes)
   }
 
   @Test
   fun decodeProtoReader32ByteArray() {
     val protoReader32 = ProtoReader32(allTypes.encode())
-    assertEquals(allTypes, AllTypes.ADAPTER.decode(protoReader32))
+    assertThat(AllTypes.ADAPTER.decode(protoReader32)).isEqualTo(allTypes)
   }
 
   @Test
   fun decodeProtoReader32AsProtoReader() {
     val protoReader = ProtoReader32(allTypes.encode()).asProtoReader()
-    assertEquals(allTypes, AllTypes.ADAPTER.decode(protoReader))
+    assertThat(AllTypes.ADAPTER.decode(protoReader)).isEqualTo(allTypes)
   }
 
   /**
@@ -55,7 +56,7 @@ class ProtoReader32AsProtoReaderTest {
     val abc = Abc("one", allTypes, "three")
     val abcBytes = Abc.ADAPTER.encodeByteString(abc)
     val protoReader32 = ProtoReader32(abcBytes)
-    assertEquals(abc, Abc.ADAPTER.decode(protoReader32))
+    assertThat(Abc.ADAPTER.decode(protoReader32)).isEqualTo(abc)
   }
 
   data class Abc(

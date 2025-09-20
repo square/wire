@@ -19,7 +19,7 @@ dependencies {
 
   androidTestImplementation(libs.androidx.test.runner)
   androidTestImplementation(libs.junit)
-  androidTestImplementation(libs.kotlin.test.junit)
+  androidTestImplementation(libs.assertk)
 }
 
 buildscript {

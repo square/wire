@@ -15,11 +15,12 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.internal.createRuntimeMessageAdapter
 import com.squareup.wire.protos.kotlin.repeated.Repeated
 import com.squareup.wire.protos.kotlin.repeated.Thing
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.toByteString
@@ -33,13 +34,13 @@ class KotlinRepeatedTest {
   )
 
   @Test fun serialize() {
-    assertEquals(BYTES, adapter.encode(THREE).toByteString())
+    assertThat(adapter.encode(THREE).toByteString()).isEqualTo(BYTES)
 
-    assertEquals(0, adapter.encode(EMPTY).size)
+    assertThat(adapter.encode(EMPTY).size).isEqualTo(0)
   }
 
   @Test fun deserialize() {
-    assertEquals(THREE, adapter.decode(BYTES))
+    assertThat(adapter.decode(BYTES)).isEqualTo(THREE)
 
     val empty = adapter.decode(ByteArray(0))
     assertNotNull(empty.things)

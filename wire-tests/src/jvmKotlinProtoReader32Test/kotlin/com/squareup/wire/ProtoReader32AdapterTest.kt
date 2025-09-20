@@ -21,7 +21,6 @@ import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.protos.kotlin.alltypes.AllTypes
 import com.squareup.wire.protos.kotlin.alltypes.AllTypes.NestedMessage
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import okio.Buffer
 import okio.ByteString
 
@@ -138,7 +137,7 @@ class ProtoReader32AdapterTest {
     val abc = Abc("one", allTypes, "three")
     val abcBytes = Abc.ADAPTER.encodeByteString(abc)
     val protoReader = ProtoReader(Buffer().write(abcBytes))
-    assertEquals(abc, Abc.ADAPTER.decode(protoReader))
+    assertThat(Abc.ADAPTER.decode(protoReader)).isEqualTo(abc)
   }
 
   data class Abc(
