@@ -15,12 +15,13 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import com.squareup.wire.internal.createRuntimeMessageAdapter
 import com.squareup.wire.protos.kotlin.map.Mappy
 import com.squareup.wire.protos.kotlin.map.Thing
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
 
@@ -33,16 +34,16 @@ class KotlinMapTest {
   )
 
   @Test fun serialize() {
-    assertEquals(BYTES, ByteString.of(*adapter.encode(THREE)))
+    assertThat(ByteString.of(*adapter.encode(THREE))).isEqualTo(BYTES)
 
-    assertEquals(0, adapter.encode(EMPTY).size)
+    assertThat(adapter.encode(EMPTY).size).isEqualTo(0)
   }
 
   @Test fun deserialize() {
-    assertEquals(THREE, adapter.decode(BYTES))
+    assertThat(adapter.decode(BYTES)).isEqualTo(THREE)
 
     val empty = adapter.decode(ByteArray(0))
-    assertNotNull(empty.things)
+    assertThat(empty.things).isNotNull()
   }
 
   companion object {

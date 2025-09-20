@@ -15,8 +15,9 @@
  */
 package com.squareup.wire.internal
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class FloatArrayListTest {
   @Test
@@ -27,9 +28,9 @@ class FloatArrayListTest {
     arrayList.add(3f)
 
     val array = arrayList.toArray()
-    assertEquals(array.size, 3)
+    assertThat(3).isEqualTo(array.size)
     for (i in 0..2) {
-      assertEquals(array[i], (i + 1).toFloat())
+      assertThat((i + 1).toFloat()).isEqualTo(array[i])
     }
   }
 
@@ -40,6 +41,6 @@ class FloatArrayListTest {
     arrayList.add(2f)
     arrayList.add(3f)
 
-    assertEquals(arrayList.toString(), floatArrayOf(1f, 2f, 3f).contentToString())
+    assertThat(floatArrayOf(1f, 2f, 3f).contentToString()).isEqualTo<String>(arrayList.toString())
   }
 }

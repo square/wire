@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.containsOnly
@@ -22,21 +23,20 @@ import assertk.assertions.hasMessage
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import com.squareup.wire.kotlin.EnumMode
 import com.squareup.wire.schema.WireRun
 import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintWriter
-import kotlin.test.assertFailsWith
 import org.junit.Test
 
 class CommandLineOptionsTest {
   @Test
   fun unknownArgumentFails() {
-    val e = assertFailsWith<IllegalArgumentException> {
+    assertFailure {
       parseArgs("--do-work")
-    }
-    assertThat(e).hasMessage("Unknown argument '--do-work'.")
+    }.isInstanceOf<IllegalArgumentException>().hasMessage("Unknown argument '--do-work'.")
   }
 
   @Test
@@ -58,9 +58,9 @@ class CommandLineOptionsTest {
 
   @Test
   fun javaOut() {
-    assertFailsWith<WireException> {
+    assertFailure {
       WireCompiler.forArgs()
-    }
+    }.isInstanceOf<WireException>()
 
     val compiler = parseArgs("--java_out=baz/qux")
     assertThat(compiler.javaOut).isEqualTo("baz/qux")
@@ -179,10 +179,9 @@ class CommandLineOptionsTest {
     assertThat(compiler.kotlinEnumMode).isEqualTo(EnumMode.SEALED_CLASS)
 
     // Invalid values should throw an exception pointing to the EnumMode class and the invalid value
-    val e = assertFailsWith<IllegalArgumentException> {
+    assertFailure {
       parseArgs("--kotlin_out=.", "--kotlin_enum_mode=invalid")
-    }
-    assertThat(e).hasMessage("No enum constant com.squareup.wire.kotlin.EnumMode.INVALID")
+    }.isInstanceOf<IllegalArgumentException>().hasMessage("No enum constant com.squareup.wire.kotlin.EnumMode.INVALID")
   }
 
   private fun parseArgs(vararg args: String) = WireCompiler.forArgs(args = *args)

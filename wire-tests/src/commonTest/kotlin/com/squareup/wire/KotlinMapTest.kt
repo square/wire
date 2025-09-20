@@ -15,11 +15,12 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import com.squareup.wire.protos.kotlin.map.Mappy
 import com.squareup.wire.protos.kotlin.map.Thing
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.fail
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
@@ -28,16 +29,16 @@ class KotlinMapTest {
   private val adapter = Mappy.ADAPTER
 
   @Test fun serialize() {
-    assertEquals(BYTES, ByteString.of(*adapter.encode(THREE)))
+    assertThat(ByteString.of(*adapter.encode(THREE))).isEqualTo(BYTES)
 
-    assertEquals(0, adapter.encode(EMPTY).size)
+    assertThat(adapter.encode(EMPTY).size).isEqualTo(0)
   }
 
   @Test fun deserialize() {
-    assertEquals(THREE, adapter.decode(BYTES))
+    assertThat(adapter.decode(BYTES)).isEqualTo(THREE)
 
     val empty = adapter.decode(ByteArray(0))
-    assertNotNull(empty.things)
+    assertThat(empty.things).isNotNull()
   }
 
   @IgnoreJs
@@ -56,7 +57,7 @@ class KotlinMapTest {
 
     // Mutate the values used to create the map. Wire should have defensive copies.
     map.clear()
-    assertEquals(mapOf("one" to Thing("One")), mappy.things)
+    assertThat(mappy.things).isEqualTo(mapOf("one" to Thing("One")))
   }
 
   companion object {

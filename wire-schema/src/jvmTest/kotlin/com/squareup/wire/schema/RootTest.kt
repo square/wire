@@ -15,17 +15,19 @@
  */
 package com.squareup.wire.schema
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.containsOnly
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
+import java.lang.IllegalArgumentException
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
 import okio.Path
 import okio.fakefilesystem.FakeFileSystem
 
@@ -119,10 +121,8 @@ class RootTest {
     fs.add("sample/src/main/proto/squareup/dinosaurs/raptor.nba", "/* raptor.nba */")
 
     val onlyFile = Location.get("sample/src/main/proto/squareup/dinosaurs/raptor.nba")
-    val exception = assertFailsWith<IllegalArgumentException> {
+    assertFailure {
       onlyFile.roots(fs)
-    }
-    assertThat(exception)
-      .hasMessage("expected a directory, archive (.zip / .jar / etc.), or .proto: $onlyFile")
+    }.isInstanceOf<IllegalArgumentException>().hasMessage("expected a directory, archive (.zip / .jar / etc.), or .proto: $onlyFile")
   }
 }

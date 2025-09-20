@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.containsExactlyInAnyOrder
@@ -26,7 +27,6 @@ import com.squareup.wire.schema.internal.CommonSchemaLoader
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
 import kotlin.text.Charsets.UTF_16BE
 import kotlin.text.Charsets.UTF_16LE
 import kotlin.text.Charsets.UTF_32BE
@@ -137,12 +137,11 @@ class SchemaLoaderTest {
 
   @Test
   fun noSourcesFound() {
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       val loader = CommonSchemaLoader(fs)
       loader.initRoots(sourcePath = listOf())
       loader.loadSourcePathFiles()
-    }
-    assertThat(exception).hasMessage("no sources")
+    }.isInstanceOf<SchemaException>().hasMessage("no sources")
   }
 
   @Test
@@ -178,14 +177,13 @@ class SchemaLoaderTest {
       """.trimMargin(),
     )
 
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       val loader = CommonSchemaLoader(fs)
       loader.initRoots(
         sourcePath = listOf(Location.get("colors/src/main/proto/squareup/shapes/blue.proto")),
       )
       loader.loadSourcePathFiles()
-    }
-    assertThat(exception).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       "expected colors/src/main/proto/squareup/shapes/blue.proto " +
         "to have a path ending with squareup/colors/blue.proto",
     )
@@ -381,10 +379,9 @@ class SchemaLoaderTest {
     val loader = CommonSchemaLoader(fs)
     loader.initRoots(sourcePath = listOf(Location.get("colors"), Location.get("colors/squareup")))
 
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       loader.loadSchema()
-    }
-    assertThat(exception).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
         |same type 'squareup.colors.Blue' from the same file loaded from different paths:
         |  1. base:colors, path:squareup/colors/a.proto:3:1
@@ -454,7 +451,7 @@ class SchemaLoaderTest {
       """.trimMargin(),
     )
 
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       val loader = CommonSchemaLoader(fs)
       loader.initRoots(
         sourcePath = listOf(
@@ -469,8 +466,7 @@ class SchemaLoaderTest {
       loader.load("squareup/curves/circle.proto")
       loader.load("squareup/polygons/rectangle.proto")
       loader.reportLoadingErrors()
-    }
-    assertThat(exception).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
         |unable to find squareup/curves/circle.proto
         |  searching 2 proto paths:
@@ -515,7 +511,7 @@ class SchemaLoaderTest {
       """.trimMargin(),
     )
 
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       val loader = CommonSchemaLoader(fs)
       loader.initRoots(
         sourcePath = listOf(
@@ -529,8 +525,7 @@ class SchemaLoaderTest {
       loader.loadSourcePathFiles()
       loader.load("squareup/curves/circle.proto")
       loader.reportLoadingErrors()
-    }
-    assertThat(exception).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
         |squareup/curves/circle.proto is ambiguous:
         |  lib/curves.zip/squareup/curves/circle.proto

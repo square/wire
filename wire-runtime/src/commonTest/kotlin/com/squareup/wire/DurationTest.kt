@@ -15,35 +15,36 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class DurationTest {
   @Test fun positiveValues() {
     val wireMessage = durationOfSeconds(1L, 200_000_000L)
-    assertEquals(1L, wireMessage.getSeconds())
-    assertEquals(200_000_000, wireMessage.getNano())
+    assertThat(wireMessage.getSeconds()).isEqualTo(1L)
+    assertThat(wireMessage.getNano()).isEqualTo(200_000_000)
   }
 
   @Test fun zero() {
     val wireMessage = durationOfSeconds(0L, 0L)
-    assertEquals(0L, wireMessage.getSeconds())
-    assertEquals(0, wireMessage.getNano())
+    assertThat(wireMessage.getSeconds()).isEqualTo(0L)
+    assertThat(wireMessage.getNano()).isEqualTo(0)
   }
 
   @Test fun negativeNearZero() {
     val wireMessage = durationOfSeconds(0L, -200_000_000L)
-    assertEquals(-1L, wireMessage.getSeconds())
-    assertEquals(800_000_000, wireMessage.getNano())
+    assertThat(wireMessage.getSeconds()).isEqualTo(-1L)
+    assertThat(wireMessage.getNano()).isEqualTo(800_000_000)
   }
 
   @Test fun negativeValues() {
     val wireMessage = durationOfSeconds(-1L, -200_000_000L)
-    assertEquals(-2L, wireMessage.getSeconds())
-    assertEquals(800_000_000, wireMessage.getNano())
+    assertThat(wireMessage.getSeconds()).isEqualTo(-2L)
+    assertThat(wireMessage.getNano()).isEqualTo(800_000_000)
   }
 
   @Test fun equality() {
-    assertEquals(durationOfSeconds(0L, 0L), durationOfSeconds(0L, 0L))
+    assertThat(durationOfSeconds(0L, 0L)).isEqualTo(durationOfSeconds(0L, 0L))
   }
 }

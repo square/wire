@@ -15,9 +15,10 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.protos.kotlin.simple.buildersonly.SimpleMessage
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class KotlinBuildTest {
   @Test fun kotlinBuildEquivalentToBuilderResult() {
@@ -39,6 +40,6 @@ class KotlinBuildTest {
           .build(),
       ).build()
 
-    assertEquals(kotlinBuildResult, builderResult)
+    assertThat(builderResult).isEqualTo(kotlinBuildResult)
   }
 }

@@ -15,22 +15,21 @@
  */
 package com.squareup.wire
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsExactlyInAnyOrder
-import assertk.assertions.isEqualTo
-import assertk.assertions.message
+import assertk.assertions.hasMessage
+import assertk.assertions.isInstanceOf
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.SchemaException
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
 import okio.Path.Companion.toPath
 
 class SchemaBuilderJvmTest {
   @Test fun emptySchema() {
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       buildSchema {}
-    }
-    assertThat(exception.message).isEqualTo("no sources")
+    }.isInstanceOf<SchemaException>().hasMessage("no sources")
   }
 
   @Test fun sourcePathOnly() {

@@ -15,12 +15,13 @@
  */
 package com.squareup.wire
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.doesNotContain
 import assertk.assertions.hasMessage
+import assertk.assertions.isInstanceOf
 import com.squareup.wire.schema.SchemaException
-import kotlin.test.assertFailsWith
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
@@ -76,17 +77,16 @@ class WireCompilerErrorTest {
 
   @Test
   fun testZeroTag() {
-    val e = assertFailsWith<SchemaException> {
+    assertFailure {
       compile(
         """
-          |package com.squareup.protos.test;
-          |message Simple {
-          |  optional int32 f = 0;
-          |}
+            |package com.squareup.protos.test;
+            |message Simple {
+            |  optional int32 f = 0;
+            |}
         """.trimMargin(),
       )
-    }
-    assertThat(e).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
           |tag is out of range: 0
           |  for field f (/source/test_1.proto:3:3)
@@ -97,18 +97,17 @@ class WireCompilerErrorTest {
 
   @Test
   fun testDuplicateTag() {
-    val e = assertFailsWith<SchemaException> {
+    assertFailure {
       compile(
         """
-          |package com.squareup.protos.test;
-          |message Simple {
-          |  optional int32 f = 1;
-          |  optional int32 g = 1;
-          |}
+            |package com.squareup.protos.test;
+            |message Simple {
+            |  optional int32 f = 1;
+            |  optional int32 g = 1;
+            |}
         """.trimMargin(),
       )
-    }
-    assertThat(e).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
           |multiple fields share tag 1:
           |  1. f (/source/test_1.proto:3:3)
@@ -120,25 +119,24 @@ class WireCompilerErrorTest {
 
   @Test
   fun testEnumNamespaceType() {
-    val e = assertFailsWith<SchemaException> {
+    assertFailure {
       compile(
         """
-          |package com.squareup.protos.test;
-          |message Foo {
-          |  enum Bar {
-          |    QUIX = 0;
-          |    FOO = 1;
-          |  }
-          |
-          |  enum Bar2 {
-          |    BAZ = 0;
-          |    QUIX = 1;
-          |  }
-          |}
+            |package com.squareup.protos.test;
+            |message Foo {
+            |  enum Bar {
+            |    QUIX = 0;
+            |    FOO = 1;
+            |  }
+            |
+            |  enum Bar2 {
+            |    BAZ = 0;
+            |    QUIX = 1;
+            |  }
+            |}
         """.trimMargin(),
       )
-    }
-    assertThat(e).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
           |multiple enums share constant QUIX:
           |  1. com.squareup.protos.test.Foo.Bar.QUIX (/source/test_1.proto:4:5)
@@ -150,27 +148,26 @@ class WireCompilerErrorTest {
 
   @Test
   fun testEnumNamespaceTypeSplitAcrossTwoFiles() {
-    val e = assertFailsWith<SchemaException> {
+    assertFailure {
       compile(
         """
-          |package com.squareup.protos.test;
-          |
-          |enum Bar {
-          |  QUIX = 0;
-          |  FOO = 1;
-          |}
+            |package com.squareup.protos.test;
+            |
+            |enum Bar {
+            |  QUIX = 0;
+            |  FOO = 1;
+            |}
         """.trimMargin(),
         """
-          |package com.squareup.protos.test;
-          |
-          |enum Bar2 {
-          |  BAZ = 0;
-          |  QUIX = 1;
-          |}
+            |package com.squareup.protos.test;
+            |
+            |enum Bar2 {
+            |  BAZ = 0;
+            |  QUIX = 1;
+            |}
         """.trimMargin(),
       )
-    }
-    assertThat(e).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
         |multiple enums share constant QUIX:
         |  1. com.squareup.protos.test.Bar.QUIX (/source/test_1.proto:4:3)
@@ -182,24 +179,23 @@ class WireCompilerErrorTest {
 
   @Test
   fun testEnumNamespaceFile() {
-    val e = assertFailsWith<SchemaException> {
+    assertFailure {
       compile(
         """
-          |package com.squareup.protos.test;
-          |
-          |enum Bar {
-          |  QUIX = 0;
-          |  FOO = 1;
-          |}
-          |
-          |enum Bar2 {
-          |  BAZ = 0;
-          |  QUIX = 1;
-          |}
+            |package com.squareup.protos.test;
+            |
+            |enum Bar {
+            |  QUIX = 0;
+            |  FOO = 1;
+            |}
+            |
+            |enum Bar2 {
+            |  BAZ = 0;
+            |  QUIX = 1;
+            |}
         """.trimMargin(),
       )
-    }
-    assertThat(e).hasMessage(
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
           |multiple enums share constant QUIX:
           |  1. com.squareup.protos.test.Bar.QUIX (/source/test_1.proto:4:3)

@@ -15,7 +15,9 @@
  */
 package com.squareup.wire.recipes
 
-import assertk.assertThat
+import assertk.assertFailure
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotNull
 import assertk.assertions.message
 import assertk.assertions.startsWith
 import com.squareup.wire.WireTestLogger
@@ -25,7 +27,6 @@ import com.squareup.wire.schema.ErrorCollector
 import com.squareup.wire.schema.SchemaException
 import com.squareup.wire.schema.SchemaHandler
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 
@@ -66,10 +67,8 @@ class ErrorReportingSchemaHandlerTest {
     )
 
     ErrorReportingSchemaHandler().handle(schema, context)
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       errorCollector.throwIfNonEmpty()
-    }
-
-    assertThat(exception.message!!).startsWith("field starts with 'a'")
+    }.isInstanceOf<SchemaException>().message().isNotNull().startsWith("field starts with 'a'")
   }
 }
