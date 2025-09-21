@@ -15,10 +15,10 @@
  */
 package com.squareup.wire
 
-import assertk.assertions.message
+import assertk.assertThat
+import assertk.assertions.hasMessage
 import com.squareup.wire.protos.kotlin.OneOfMessage
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.fail
 
 class OneOfTest {
@@ -28,7 +28,7 @@ class OneOfTest {
       OneOfMessage(foo = 1, bar = "two", baz = null)
       fail()
     } catch (expected: IllegalArgumentException) {
-      assertEquals("At most one of foo, bar, baz may be non-null", expected.message)
+      assertThat(expected).hasMessage("At most one of foo, bar, baz may be non-null")
     }
   }
 }

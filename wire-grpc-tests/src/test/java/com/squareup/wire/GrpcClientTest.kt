@@ -18,6 +18,7 @@
 package com.squareup.wire
 
 import assertk.all
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.cause
 import assertk.assertions.hasMessage
@@ -45,7 +46,6 @@ import io.grpc.StatusException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.test.assertFailsWith
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -176,7 +176,6 @@ class GrpcClientTest {
       .build()
   }
 
-  @Suppress("ReplaceCallWithBinaryOperator") // We are explicitly testing this behavior.
   @Test
   fun objectMethodsStillWork() {
     assertThat(routeGuideService.hashCode()).isNotZero()
@@ -330,12 +329,13 @@ class GrpcClientTest {
     // Confirm we get an IOException from the broken connection and not an IllegalStateException
     // from incorrectly attempting to recover.
     val (requestChannel, deferredResponse) = routeGuideService.RecordRoute().executeBlocking()
-    val e = assertFailsWith<IOException> {
+    assertFailure {
       requestChannel.close()
       deferredResponse.get()
+    }.isInstanceOf<IOException>().all {
+      hasMessage("stream was reset: CANCEL")
+      cause().isNull()
     }
-    assertThat(e).hasMessage("stream was reset: CANCEL")
-    assertThat(e.cause).isNull()
   }
 
   @Test
@@ -609,10 +609,9 @@ class GrpcClientTest {
     runBlocking {
       val (_, responseChannel) = routeGuideService.RouteChat().executeIn(this)
 
-      val expected = assertFailsWith<IOException> {
+      assertFailure {
         responseChannel.receive()
-      }
-      assertThat(expected).all {
+      }.isInstanceOf<IOException>().all {
         hasMessage("gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)")
         // Synthetic exception added by coroutines in StackTraceRecovery.kt.
         cause()
@@ -1731,7 +1730,7 @@ class GrpcClientTest {
         fail()
       } catch (expected: IOException) {
         assertThat(expected).isInstanceOf<IOException>()
-        assertThat(expected.message).isEqualTo("expected gRPC but was HTTP status=520, content-type=application/grpc")
+        assertThat(expected).hasMessage("expected gRPC but was HTTP status=520, content-type=application/grpc")
         assertThat(call.isCanceled()).isTrue()
       }
     }
@@ -1845,7 +1844,7 @@ class GrpcClientTest {
       .build()
     val response = okhttpClient.newCall(request).execute()
     response.use {
-      response.body!!.bytes()
+      response.body.bytes()
     }
     return response
   }

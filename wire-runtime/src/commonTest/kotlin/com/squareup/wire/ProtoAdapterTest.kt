@@ -15,32 +15,33 @@
  */
 package com.squareup.wire
 
+import assertk.assertFailure
+import assertk.assertions.isInstanceOf
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
 
 class ProtoAdapterTest {
   @Test fun repeatedRepeatedProtoAdapterForbidden() {
-    assertFailsWith(UnsupportedOperationException::class) {
+    assertFailure {
       ProtoAdapter.BOOL.asRepeated().asRepeated()
-    }
+    }.isInstanceOf<UnsupportedOperationException>()
   }
 
   @Test fun packedPackedProtoAdapterForbidden() {
     // Unable to pack a length-delimited type.
-    assertFailsWith(IllegalArgumentException::class) {
+    assertFailure {
       ProtoAdapter.BOOL.asPacked().asPacked()
-    }
+    }.isInstanceOf<IllegalArgumentException>()
   }
 
   @Test fun repeatedPackedProtoAdapterForbidden() {
-    assertFailsWith(UnsupportedOperationException::class) {
+    assertFailure {
       ProtoAdapter.BOOL.asRepeated().asPacked()
-    }
+    }.isInstanceOf<UnsupportedOperationException>()
   }
 
   @Test fun packedRepeatedProtoAdapterForbidden() {
-    assertFailsWith(UnsupportedOperationException::class) {
+    assertFailure {
       ProtoAdapter.BOOL.asPacked().asRepeated()
-    }
+    }.isInstanceOf<UnsupportedOperationException>()
   }
 }

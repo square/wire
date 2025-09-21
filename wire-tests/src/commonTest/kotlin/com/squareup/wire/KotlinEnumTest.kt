@@ -15,16 +15,17 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.protos.kotlin.person.Person
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class KotlinEnumTest {
   @Test fun getValue() {
-    assertEquals(1, Person.PhoneType.HOME.value)
+    assertThat(Person.PhoneType.HOME.value).isEqualTo(1)
   }
 
   @Test fun fromValue() {
-    assertEquals(Person.PhoneType.HOME, Person.PhoneType.fromValue(1))
+    assertThat(Person.PhoneType.fromValue(1)).isEqualTo(Person.PhoneType.HOME)
   }
 }

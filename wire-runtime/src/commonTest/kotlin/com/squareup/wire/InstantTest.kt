@@ -15,35 +15,36 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class InstantTest {
   @Test fun positiveValues() {
     val wireMessage = ofEpochSecond(1L, 200_000_000L)
-    assertEquals(1L, wireMessage.getEpochSecond())
-    assertEquals(200_000_000, wireMessage.getNano())
+    assertThat(wireMessage.getEpochSecond()).isEqualTo(1L)
+    assertThat(wireMessage.getNano()).isEqualTo(200_000_000)
   }
 
   @Test fun zero() {
     val wireMessage = ofEpochSecond(0L, 0L)
-    assertEquals(0L, wireMessage.getEpochSecond())
-    assertEquals(0, wireMessage.getNano())
+    assertThat(wireMessage.getEpochSecond()).isEqualTo(0L)
+    assertThat(wireMessage.getNano()).isEqualTo(0)
   }
 
   @Test fun negativeNearZero() {
     val wireMessage = ofEpochSecond(0L, -200_000_000L)
-    assertEquals(-1L, wireMessage.getEpochSecond())
-    assertEquals(800_000_000, wireMessage.getNano())
+    assertThat(wireMessage.getEpochSecond()).isEqualTo(-1L)
+    assertThat(wireMessage.getNano()).isEqualTo(800_000_000)
   }
 
   @Test fun negativeValues() {
     val wireMessage = ofEpochSecond(-1L, -200_000_000L)
-    assertEquals(-2L, wireMessage.getEpochSecond())
-    assertEquals(800_000_000, wireMessage.getNano())
+    assertThat(wireMessage.getEpochSecond()).isEqualTo(-2L)
+    assertThat(wireMessage.getNano()).isEqualTo(800_000_000)
   }
 
   @Test fun equality() {
-    assertEquals(ofEpochSecond(0L, 0L), ofEpochSecond(0L, 0L))
+    assertThat(ofEpochSecond(0L, 0L)).isEqualTo(ofEpochSecond(0L, 0L))
   }
 }

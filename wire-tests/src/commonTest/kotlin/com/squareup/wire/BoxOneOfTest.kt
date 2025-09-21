@@ -15,10 +15,10 @@
  */
 package com.squareup.wire
 
-import assertk.assertions.message
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.protos.kotlin.Form
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import okio.ByteString.Companion.decodeHex
 
 class BoxOneOfTest {
@@ -28,7 +28,7 @@ class BoxOneOfTest {
     val message = Form(choice = choice)
 
     val expectedBytes = "32080a0648656c6c6f21".decodeHex()
-    assertEquals(expectedBytes, Form.ADAPTER.encodeByteString(message))
-    assertEquals(message, Form.ADAPTER.decode(expectedBytes))
+    assertThat(Form.ADAPTER.encodeByteString(message)).isEqualTo(expectedBytes)
+    assertThat(Form.ADAPTER.decode(expectedBytes)).isEqualTo(message)
   }
 }

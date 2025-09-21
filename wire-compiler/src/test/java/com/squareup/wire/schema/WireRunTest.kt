@@ -16,12 +16,14 @@
 package com.squareup.wire.schema
 
 import assertk.all
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.doesNotContain
 import assertk.assertions.hasMessage
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEmpty
 import assertk.assertions.prop
 import com.squareup.wire.StringWireLogger
@@ -35,7 +37,6 @@ import com.squareup.wire.testing.add
 import com.squareup.wire.testing.containsExactlyInAnyOrderAsRelativePaths
 import com.squareup.wire.testing.findFiles
 import com.squareup.wire.testing.readUtf8
-import kotlin.test.assertFailsWith
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
@@ -310,29 +311,23 @@ class WireRunTest {
 
   @Test
   fun noSuchClassEventListener() {
-    assertThat(
-      assertFailsWith<IllegalArgumentException> {
-        newEventListenerFactory("foo").create()
-      },
-    ).hasMessage("Couldn't find EventListenerClass 'foo'")
+    assertFailure {
+      newEventListenerFactory("foo").create()
+    }.isInstanceOf<IllegalArgumentException>().hasMessage("Couldn't find EventListenerClass 'foo'")
   }
 
   @Test
   fun noPublicConstructorEventListener() {
-    assertThat(
-      assertFailsWith<IllegalArgumentException> {
-        newEventListenerFactory("java.lang.Void").create()
-      },
-    ).hasMessage("No public constructor on java.lang.Void")
+    assertFailure {
+      newEventListenerFactory("java.lang.Void").create()
+    }.isInstanceOf<IllegalArgumentException>().hasMessage("No public constructor on java.lang.Void")
   }
 
   @Test
   fun classDoesNotImplementEventListenerInterface() {
-    assertThat(
-      assertFailsWith<IllegalArgumentException> {
-        newEventListenerFactory("java.lang.Object").create()
-      },
-    ).hasMessage("java.lang.Object does not implement EventListener.Factory")
+    assertFailure {
+      newEventListenerFactory("java.lang.Object").create()
+    }.isInstanceOf<IllegalArgumentException>().hasMessage("java.lang.Object does not implement EventListener.Factory")
   }
 
   @Test
@@ -988,29 +983,23 @@ class WireRunTest {
 
   @Test
   fun noSuchClass() {
-    assertThat(
-      assertFailsWith<IllegalArgumentException> {
-        callCustomHandler(newSchemaHandler("foo"))
-      },
-    ).hasMessage("Couldn't find SchemaHandlerClass 'foo'")
+    assertFailure {
+      callCustomHandler(newSchemaHandler("foo"))
+    }.isInstanceOf<IllegalArgumentException>().hasMessage("Couldn't find SchemaHandlerClass 'foo'")
   }
 
   @Test
   fun noPublicConstructor() {
-    assertThat(
-      assertFailsWith<IllegalArgumentException> {
-        callCustomHandler(newSchemaHandler("java.lang.Void"))
-      },
-    ).hasMessage("No public constructor on java.lang.Void")
+    assertFailure {
+      callCustomHandler(newSchemaHandler("java.lang.Void"))
+    }.isInstanceOf<IllegalArgumentException>().hasMessage("No public constructor on java.lang.Void")
   }
 
   @Test
   fun classDoesNotImplementCustomHandlerInterface() {
-    assertThat(
-      assertFailsWith<IllegalArgumentException> {
-        callCustomHandler(newSchemaHandler("java.lang.Object"))
-      },
-    ).hasMessage("java.lang.Object does not implement SchemaHandler.Factory")
+    assertFailure {
+      callCustomHandler(newSchemaHandler("java.lang.Object"))
+    }.isInstanceOf<IllegalArgumentException>().hasMessage("java.lang.Object does not implement SchemaHandler.Factory")
   }
 
   class ErrorReportingCustomHandler : SchemaHandler.Factory {
@@ -1049,11 +1038,9 @@ class WireRunTest {
       "${WireRunTest::class.qualifiedName}${"$"}ErrorReportingCustomHandler",
     )
 
-    assertThat(
-      assertFailsWith<SchemaException> {
-        callCustomHandler(customHandler)
-      },
-    ).hasMessage(
+    assertFailure {
+      callCustomHandler(customHandler)
+    }.isInstanceOf<SchemaException>().hasMessage(
       """
         |field starts with 'a'
         |  for field angles (polygons/src/main/proto/squareup/polygons/triangle.proto:4:3)
@@ -1917,27 +1904,21 @@ class WireRunTest {
   }
 
   @Test fun noSuchClassLogger() {
-    assertThat(
-      assertFailsWith<IllegalArgumentException> {
-        newLoggerFactory("foo").create()
-      },
-    ).hasMessage("Couldn't find LoggerClass 'foo'")
+    assertFailure {
+      newLoggerFactory("foo").create()
+    }.isInstanceOf<IllegalArgumentException>().hasMessage("Couldn't find LoggerClass 'foo'")
   }
 
   @Test fun noPublicConstructorLogger() {
-    assertThat(
-      assertFailsWith<IllegalArgumentException> {
-        newLoggerFactory("java.lang.Void").create()
-      },
-    ).hasMessage("No public constructor on java.lang.Void")
+    assertFailure {
+      newLoggerFactory("java.lang.Void").create()
+    }.isInstanceOf<IllegalArgumentException>().hasMessage("No public constructor on java.lang.Void")
   }
 
   @Test fun classDoesNotImplementWireLoggerInterface() {
-    assertThat(
-      assertFailsWith<IllegalArgumentException> {
-        newLoggerFactory("java.lang.Object").create()
-      },
-    ).hasMessage("java.lang.Object does not implement WireLogger.Factory")
+    assertFailure {
+      newLoggerFactory("java.lang.Object").create()
+    }.isInstanceOf<IllegalArgumentException>().hasMessage("java.lang.Object does not implement WireLogger.Factory")
   }
 
   @Test fun customLogger() {

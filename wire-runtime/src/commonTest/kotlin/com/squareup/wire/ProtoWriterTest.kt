@@ -15,8 +15,9 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import okio.Buffer
 import okio.utf8Size
 
@@ -55,7 +56,7 @@ class ProtoWriterTest {
     val buffer = Buffer()
     val writer = ProtoWriter(buffer)
     writer.writeString(string)
-    assertEquals(expectedHex, buffer.readByteString().hex())
-    assertEquals((expectedHex.length / 2).toLong(), string.utf8Size())
+    assertThat(buffer.readByteString().hex()).isEqualTo(expectedHex)
+    assertThat(string.utf8Size()).isEqualTo((expectedHex.length / 2).toLong())
   }
 }
