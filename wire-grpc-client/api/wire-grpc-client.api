@@ -120,8 +120,10 @@ public final class com/squareup/wire/GrpcStatus : java/io/Serializable {
 	public static final field UNIMPLEMENTED Lcom/squareup/wire/GrpcStatus;
 	public static final field UNKNOWN Lcom/squareup/wire/GrpcStatus;
 	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
 	public final fun getCode ()I
 	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
 }
 
 public final class com/squareup/wire/GrpcStatus$Companion {
