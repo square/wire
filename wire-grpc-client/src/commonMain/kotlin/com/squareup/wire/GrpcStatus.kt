@@ -17,59 +17,83 @@ package com.squareup.wire
 
 import com.squareup.wire.internal.Serializable
 import kotlin.jvm.JvmField
-import kotlin.jvm.Synchronized
 
 class GrpcStatus private constructor(
   val name: String,
   val code: Int,
 ) : Serializable {
+  init {
+    require(code >= 0)
+  }
+
+  override fun equals(other: Any?): Boolean = other is GrpcStatus && other.code == code
+
+  override fun hashCode(): Int = code
+
   companion object {
-    private val INSTANCES = mutableMapOf<Int, GrpcStatus>()
+    @JvmField val OK: GrpcStatus = GrpcStatus("OK", 0)
 
-    @JvmField val OK: GrpcStatus = create("OK", 0)
+    @JvmField val CANCELLED: GrpcStatus = GrpcStatus("CANCELLED", 1)
 
-    @JvmField val CANCELLED: GrpcStatus = create("CANCELLED", 1)
+    @JvmField val UNKNOWN: GrpcStatus = GrpcStatus("UNKNOWN", 2)
 
-    @JvmField val UNKNOWN: GrpcStatus = create("UNKNOWN", 2)
+    @JvmField val INVALID_ARGUMENT: GrpcStatus = GrpcStatus("INVALID_ARGUMENT", 3)
 
-    @JvmField val INVALID_ARGUMENT: GrpcStatus = create("INVALID_ARGUMENT", 3)
+    @JvmField val DEADLINE_EXCEEDED: GrpcStatus = GrpcStatus("DEADLINE_EXCEEDED", 4)
 
-    @JvmField val DEADLINE_EXCEEDED: GrpcStatus = create("DEADLINE_EXCEEDED", 4)
+    @JvmField val NOT_FOUND: GrpcStatus = GrpcStatus("NOT_FOUND", 5)
 
-    @JvmField val NOT_FOUND: GrpcStatus = create("NOT_FOUND", 5)
+    @JvmField val ALREADY_EXISTS: GrpcStatus = GrpcStatus("ALREADY_EXISTS", 6)
 
-    @JvmField val ALREADY_EXISTS: GrpcStatus = create("ALREADY_EXISTS", 6)
+    @JvmField val PERMISSION_DENIED: GrpcStatus = GrpcStatus("PERMISSION_DENIED", 7)
 
-    @JvmField val PERMISSION_DENIED: GrpcStatus = create("PERMISSION_DENIED", 7)
+    @JvmField val RESOURCE_EXHAUSTED: GrpcStatus = GrpcStatus("RESOURCE_EXHAUSTED", 8)
 
-    @JvmField val RESOURCE_EXHAUSTED: GrpcStatus = create("RESOURCE_EXHAUSTED", 8)
+    @JvmField val FAILED_PRECONDITION: GrpcStatus = GrpcStatus("FAILED_PRECONDITION", 9)
 
-    @JvmField val FAILED_PRECONDITION: GrpcStatus = create("FAILED_PRECONDITION", 9)
+    @JvmField val ABORTED: GrpcStatus = GrpcStatus("ABORTED", 10)
 
-    @JvmField val ABORTED: GrpcStatus = create("ABORTED", 10)
+    @JvmField val OUT_OF_RANGE: GrpcStatus = GrpcStatus("OUT_OF_RANGE", 11)
 
-    @JvmField val OUT_OF_RANGE: GrpcStatus = create("OUT_OF_RANGE", 11)
+    @JvmField val UNIMPLEMENTED: GrpcStatus = GrpcStatus("UNIMPLEMENTED", 12)
 
-    @JvmField val UNIMPLEMENTED: GrpcStatus = create("UNIMPLEMENTED", 12)
+    @JvmField val INTERNAL: GrpcStatus = GrpcStatus("INTERNAL", 13)
 
-    @JvmField val INTERNAL: GrpcStatus = create("INTERNAL", 13)
+    @JvmField val UNAVAILABLE: GrpcStatus = GrpcStatus("UNAVAILABLE", 14)
 
-    @JvmField val UNAVAILABLE: GrpcStatus = create("UNAVAILABLE", 14)
+    @JvmField val DATA_LOSS: GrpcStatus = GrpcStatus("DATA_LOSS", 15)
 
-    @JvmField val DATA_LOSS: GrpcStatus = create("DATA_LOSS", 15)
+    @JvmField val UNAUTHENTICATED: GrpcStatus = GrpcStatus("UNAUTHENTICATED", 16)
 
-    @JvmField val UNAUTHENTICATED: GrpcStatus = create("UNAUTHENTICATED", 16)
-
-    private fun create(name: String, status: Int): GrpcStatus {
-      val result = GrpcStatus(name, status)
-      INSTANCES[status] = result
-      return result
+    private val INSTANCES = listOf(
+      OK,
+      CANCELLED,
+      UNKNOWN,
+      INVALID_ARGUMENT,
+      DEADLINE_EXCEEDED,
+      NOT_FOUND,
+      ALREADY_EXISTS,
+      PERMISSION_DENIED,
+      RESOURCE_EXHAUSTED,
+      FAILED_PRECONDITION,
+      ABORTED,
+      OUT_OF_RANGE,
+      UNIMPLEMENTED,
+      INTERNAL,
+      UNAVAILABLE,
+      DATA_LOSS,
+      UNAUTHENTICATED,
+    ).also {
+      for ((index, grpcStatus) in it.withIndex()) {
+        check(index == grpcStatus.code)
+      }
     }
 
-    @Synchronized
-    fun get(status: Int): GrpcStatus {
-      require(status >= 0)
-      return INSTANCES.getOrPut(status) { GrpcStatus("STATUS_$status", status) }
-    }
+    /**
+     * Returns an instance with a well-known name (like "OK"), or a string like "STATUS_99" if the
+     * code was not known when this was built.
+     */
+    fun get(status: Int): GrpcStatus =
+      INSTANCES.getOrNull(status) ?: GrpcStatus("STATUS_$status", status)
   }
 }

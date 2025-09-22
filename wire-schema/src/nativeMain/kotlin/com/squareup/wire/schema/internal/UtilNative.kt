@@ -17,7 +17,7 @@ package com.squareup.wire.schema.internal
 
 internal actual fun Char.isDigit() = this in '0'..'9'
 
-internal actual fun String.toEnglishLowerCase() = toLowerCase()
+internal actual fun String.toEnglishLowerCase() = lowercase()
 
 actual interface MutableQueue<T : Any> : MutableCollection<T> {
   actual fun poll(): T?
