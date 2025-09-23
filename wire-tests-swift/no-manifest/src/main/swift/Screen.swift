@@ -4,8 +4,8 @@ import Wire
 
 public struct Screen {
 
-    public var screen: Screen_OneOf?
-    public var view: View?
+    public var screen: Screen.Screen_OneOf?
+    public var view: Screen.View?
     public var unknownFields: UnknownFields = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {

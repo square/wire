@@ -32,7 +32,6 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 /**
  * @return A list of source roots and their dependencies.
@@ -50,9 +49,11 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
  *    Multiplatform environment with android target (oh boy)
  */
 internal fun WirePlugin.sourceRoots(kotlin: Boolean, java: Boolean): List<Source> {
-  // Multiplatform project.
-  project.extensions.findByType(KotlinMultiplatformExtension::class.java)?.let {
-    return it.sourceRoots()
+  if (kotlin) {
+    // Multiplatform project.
+    project.extensions.findByType(KotlinMultiplatformExtension::class.java)?.let {
+      return it.sourceRoots()
+    }
   }
 
   // Java project.
@@ -60,7 +61,6 @@ internal fun WirePlugin.sourceRoots(kotlin: Boolean, java: Boolean): List<Source
     val sourceSets = project.property("sourceSets") as SourceSetContainer
     return listOf(
       Source(
-        type = KotlinPlatformType.jvm,
         kotlinSourceDirectorySet = null,
         javaSourceDirectorySet = WireSourceDirectorySet.of(sourceSets.getByName("main").java),
         name = "main",
@@ -80,7 +80,6 @@ internal fun WirePlugin.sourceRoots(kotlin: Boolean, java: Boolean): List<Source
     WireSourceDirectorySet.of(sourceDirectorySet = sourceSets.getByName("main").kotlin)
   return listOf(
     Source(
-      type = KotlinPlatformType.jvm,
       kotlinSourceDirectorySet = sourceDirectorySet,
       javaSourceDirectorySet = null,
       name = "main",
@@ -94,7 +93,6 @@ private fun KotlinMultiplatformExtension.sourceRoots(): List<Source> {
   // `expect` and `actual` classes which doesn't make much sense for what Wire does.
   return listOf(
     Source(
-      type = KotlinPlatformType.common,
       name = "commonMain",
       variantName = null,
       kotlinSourceDirectorySet = WireSourceDirectorySet.of(sourceSets.getByName("commonMain").kotlin),
@@ -149,7 +147,6 @@ private fun BaseExtension.sourceRoots(project: Project, kotlin: Boolean): List<S
     }
 
     Source(
-      type = KotlinPlatformType.androidJvm,
       kotlinSourceDirectorySet = kotlinSourceDirectSet,
       javaSourceDirectorySet = javaSourceDirectorySet,
       name = variant.name,
@@ -174,7 +171,6 @@ private fun BaseExtension.sourceRoots(project: Project, kotlin: Boolean): List<S
 }
 
 internal data class Source(
-  val type: KotlinPlatformType,
   val kotlinSourceDirectorySet: WireSourceDirectorySet?,
   val javaSourceDirectorySet: WireSourceDirectorySet?,
   val name: String,

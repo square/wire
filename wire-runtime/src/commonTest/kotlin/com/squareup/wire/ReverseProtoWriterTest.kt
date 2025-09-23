@@ -15,11 +15,12 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.squareup.wire.FieldEncoding.LENGTH_DELIMITED
 import com.squareup.wire.ProtoAdapter.Companion.newMapAdapter
 import com.squareup.wire.Syntax.PROTO_2
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import okio.Buffer
 import okio.ByteString.Companion.encodeUtf8
 import okio.utf8Size
@@ -72,7 +73,7 @@ class ReverseProtoWriterTest {
       writeTo(reverseBuffer)
     }
 
-    assertEquals(forwardBuffer, reverseBuffer)
+    assertThat(reverseBuffer).isEqualTo(forwardBuffer)
   }
 
   @Test fun consistentWithRegularProtoWriterByteStrings() {
@@ -92,7 +93,7 @@ class ReverseProtoWriterTest {
       writeTo(reverseBuffer)
     }
 
-    assertEquals(forwardBuffer, reverseBuffer)
+    assertThat(reverseBuffer).isEqualTo(forwardBuffer)
   }
 
   @Test fun multipleStringWritesSpanSegments() {
@@ -100,22 +101,22 @@ class ReverseProtoWriterTest {
       writeString("a".repeat(SEGMENT_SIZE - 1))
       writeString("b".repeat(2))
     }
-    assertEquals("b".repeat(2) + "a".repeat(SEGMENT_SIZE - 1), buffer.readUtf8())
+    assertThat(buffer.readUtf8()).isEqualTo("b".repeat(2) + "a".repeat(SEGMENT_SIZE - 1))
   }
 
   @Test fun writeStringExactlySegmentSize() {
     val buffer = reverseWrite { writeString("a".repeat(SEGMENT_SIZE)) }
-    assertEquals("a".repeat(SEGMENT_SIZE), buffer.readUtf8())
+    assertThat(buffer.readUtf8()).isEqualTo("a".repeat(SEGMENT_SIZE))
   }
 
   @Test fun writeStringLargerThanSegmentSize() {
     val buffer = reverseWrite { writeString("a".repeat(SEGMENT_SIZE + 1)) }
-    assertEquals("a".repeat(SEGMENT_SIZE + 1), buffer.readUtf8())
+    assertThat(buffer.readUtf8()).isEqualTo("a".repeat(SEGMENT_SIZE + 1))
   }
 
   @Test fun writeStringSpanningMultipleSegments() {
     val buffer = reverseWrite { writeString("a".repeat(SEGMENT_SIZE + SEGMENT_SIZE + 1)) }
-    assertEquals("a".repeat(SEGMENT_SIZE + SEGMENT_SIZE + 1), buffer.readUtf8())
+    assertThat(buffer.readUtf8()).isEqualTo("a".repeat(SEGMENT_SIZE + SEGMENT_SIZE + 1))
   }
 
   @Test fun multipleByteStringWritesSpanSegments() {
@@ -123,24 +124,24 @@ class ReverseProtoWriterTest {
       writeBytes("a".repeat(SEGMENT_SIZE - 1).encodeUtf8())
       writeBytes("b".repeat(2).encodeUtf8())
     }
-    assertEquals("b".repeat(2) + "a".repeat(SEGMENT_SIZE - 1), buffer.readUtf8())
+    assertThat(buffer.readUtf8()).isEqualTo("b".repeat(2) + "a".repeat(SEGMENT_SIZE - 1))
   }
 
   @Test fun writeByteStringExactlySegmentSize() {
     val buffer = reverseWrite { writeBytes("a".repeat(SEGMENT_SIZE).encodeUtf8()) }
-    assertEquals("a".repeat(SEGMENT_SIZE), buffer.readUtf8())
+    assertThat(buffer.readUtf8()).isEqualTo("a".repeat(SEGMENT_SIZE))
   }
 
   @Test fun writeByteStringLargerThanSegmentSize() {
     val buffer = reverseWrite { writeBytes("a".repeat(SEGMENT_SIZE + 1).encodeUtf8()) }
-    assertEquals("a".repeat(SEGMENT_SIZE + 1), buffer.readUtf8())
+    assertThat(buffer.readUtf8()).isEqualTo("a".repeat(SEGMENT_SIZE + 1))
   }
 
   @Test fun writeByteStringSpanningMultipleSegments() {
     val buffer = reverseWrite {
       writeBytes("a".repeat(SEGMENT_SIZE + SEGMENT_SIZE + 1).encodeUtf8())
     }
-    assertEquals("a".repeat(SEGMENT_SIZE + SEGMENT_SIZE + 1), buffer.readUtf8())
+    assertThat(buffer.readUtf8()).isEqualTo("a".repeat(SEGMENT_SIZE + SEGMENT_SIZE + 1))
   }
 
   @Test fun reverseEncodedMessageEmbedsForwardEncodedMessage() {
@@ -153,10 +154,10 @@ class ReverseProtoWriterTest {
       assignee = alanGrant,
     )
     val alanGrantEncoded = Person.ADAPTER.encodeByteString(alanGrant)
-    assertEquals(alanGrant, Person.ADAPTER.decode(alanGrantEncoded))
+    assertThat(Person.ADAPTER.decode(alanGrantEncoded)).isEqualTo(alanGrant)
 
     val digUpDinosaursEncoded = Task.ADAPTER.encodeByteString(digUpDinosaurs)
-    assertEquals(digUpDinosaurs, Task.ADAPTER.decode(digUpDinosaursEncoded))
+    assertThat(Task.ADAPTER.decode(digUpDinosaursEncoded)).isEqualTo(digUpDinosaurs)
   }
 
   @Test fun mapEncodingPreservesOrder() {
@@ -174,8 +175,8 @@ class ReverseProtoWriterTest {
         else -> protoReader.readUnknownField(tag)
       }
     }
-    assertEquals(expectedMap, decodedMap)
-    assertEquals(expectedMap.keys.toList(), decodedMap.keys.toList())
+    assertThat<Map<String, Int>>(decodedMap).isEqualTo(expectedMap)
+    assertThat(decodedMap.keys.toList()).isEqualTo(expectedMap.keys.toList())
   }
 
   private fun reverseWrite(block: ReverseProtoWriter.() -> Unit): Buffer {
@@ -190,8 +191,8 @@ class ReverseProtoWriterTest {
     val buffer = reverseWrite {
       writeString(string)
     }
-    assertEquals(expectedHex, buffer.readByteString().hex())
-    assertEquals((expectedHex.length / 2).toLong(), string.utf8Size())
+    assertThat(buffer.readByteString().hex()).isEqualTo(expectedHex)
+    assertThat(string.utf8Size()).isEqualTo((expectedHex.length / 2).toLong())
   }
 
   /**

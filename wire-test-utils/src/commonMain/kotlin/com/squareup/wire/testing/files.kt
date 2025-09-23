@@ -38,8 +38,7 @@ fun FileSystem.readUtf8(pathString: String): String {
   }
 }
 
-// We return an Iterable instead of a Set to please ambiguous APIs for Assertj.
-fun FileSystem.findFiles(path: String): Iterable<String> {
+fun FileSystem.findFiles(path: String): Set<String> {
   return listRecursively(path.withPlatformSlashes().toPath())
     .filter { !metadata(it).isDirectory }
     .map { it.toString() }
@@ -50,7 +49,7 @@ fun FileSystem.findFiles(path: String): Iterable<String> {
  * This asserts that [this] contains exactly in any order all [values] regardless of the slash they
  * may contain. This is useful to write one assertion which can be run on both macOS and Windows.
  */
-fun Assert<Iterable<String>>.containsExactlyInAnyOrderAsRelativePaths(vararg values: String) {
+fun Assert<Set<String>>.containsExactlyInAnyOrderAsRelativePaths(vararg values: String) {
   @Suppress("NAME_SHADOWING")
   val values = values.map { it.withPlatformSlashes() }
   return containsExactlyInAnyOrder(*values.toTypedArray())

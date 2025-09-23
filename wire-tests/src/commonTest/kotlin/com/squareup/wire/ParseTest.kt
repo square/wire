@@ -15,14 +15,15 @@
  */
 package com.squareup.wire
 
-import assertk.assertions.message
+import assertk.assertThat
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotEqualTo
 import com.squareup.wire.internal.ProtocolException
 import com.squareup.wire.protos.kotlin.edgecases.OneBytesField
 import com.squareup.wire.protos.kotlin.edgecases.OneField
 import com.squareup.wire.protos.kotlin.edgecases.Recursive
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 import kotlin.test.fail
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
@@ -37,8 +38,8 @@ class ParseTest {
     val data = "08c803109506".decodeHex()
     val oneField = OneField.ADAPTER.decode(data.toByteArray())
     val expected = OneField(opt_int32 = 456)
-    assertNotEquals(expected, oneField)
-    assertEquals(expected, oneField.copy(unknownFields = ByteString.EMPTY))
+    assertThat(oneField).isNotEqualTo(expected)
+    assertThat(oneField.copy(unknownFields = ByteString.EMPTY)).isEqualTo(expected)
   }
 
   @Test
@@ -50,7 +51,7 @@ class ParseTest {
       OneField.ADAPTER.decode(data.toByteArray())
       fail()
     } catch (expected: ProtocolException) {
-      assertEquals("Unexpected field encoding: 7", expected.message)
+      assertThat(expected).hasMessage("Unexpected field encoding: 7")
     }
   }
 
@@ -71,7 +72,7 @@ class ParseTest {
     // tag 1 / type 0: 789
     val data = "08c803089506".decodeHex()
     val oneField = OneField.ADAPTER.decode(data.toByteArray())
-    assertEquals(oneField, OneField(opt_int32 = 789))
+    assertThat(OneField(opt_int32 = 789)).isEqualTo(oneField)
   }
 
   @Test
@@ -87,7 +88,7 @@ class ParseTest {
         "10120e120c120a1208120612041202120008c803"
       ).decodeHex()
     val recursive = Recursive.ADAPTER.decode(data.toByteArray())
-    assertEquals(456, recursive.value_!!.toInt())
+    assertThat(recursive.value_!!.toInt()).isEqualTo(456)
   }
 
   @Test
@@ -106,7 +107,7 @@ class ParseTest {
       Recursive.ADAPTER.decode(data.toByteArray())
       fail()
     } catch (expected: IOException) {
-      assertEquals("Wire recursion limit exceeded", expected.message)
+      assertThat(expected).hasMessage("Wire recursion limit exceeded")
     }
   }
 }

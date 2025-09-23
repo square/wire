@@ -15,8 +15,8 @@
  */
 package com.squareup.wire;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.squareup.wire.json.JsonUtils.assertJsonEquals;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;

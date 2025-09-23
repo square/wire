@@ -1,7 +1,20 @@
-plugins {
-  id 'org.jetbrains.kotlin.jvm'
-  id 'com.squareup.wire'
+buildscript {
+  dependencies {
+    classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+    classpath libs.pluginz.kotlin
+  }
+
+  repositories {
+    maven {
+      url "file://${rootDir.absolutePath}/../../../../../build/localMaven"
+    }
+    mavenCentral()
+    google()
+  }
 }
+
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'com.squareup.wire'
 
 // This file should be kept in sync with `cache-include-paths-1/build.gradle` with the exception of
 // the missing `include` statement inside `sourcePath`.

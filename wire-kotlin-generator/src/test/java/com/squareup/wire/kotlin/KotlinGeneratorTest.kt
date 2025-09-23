@@ -20,15 +20,14 @@ import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.containsMatch
 import assertk.assertions.doesNotContain
+import assertk.assertions.isEqualTo
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.buildSchema
-import com.squareup.wire.kotlin.EnumMode.SEALED_CLASS
 import com.squareup.wire.kotlin.KotlinGenerator.Companion.sanitizeKdoc
 import com.squareup.wire.schema.PruningRules
 import com.squareup.wire.schema.addFromTest
 import kotlin.test.Test
 import kotlin.test.assertContains
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import okio.Path.Companion.toPath
@@ -281,9 +280,8 @@ class KotlinGeneratorTest {
         """.trimMargin(),
       )
     }
-    assertEquals(
+    assertThat(KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")).isEqualTo(
       listOf(expectedInterface, expectedImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide"),
     )
   }
 
@@ -330,14 +328,13 @@ class KotlinGeneratorTest {
         """.trimMargin(),
       )
     }
-    assertEquals(
-      listOf(expected),
+    assertThat(
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.BLOCKING,
         rpcRole = RpcRole.SERVER,
       ),
-    )
+    ).isEqualTo(listOf(expected))
   }
 
   @Test fun blockingStreamingRequestSingleResponse() {
@@ -384,14 +381,13 @@ class KotlinGeneratorTest {
         """.trimMargin(),
       )
     }
-    assertEquals(
-      listOf(expected),
+    assertThat(
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.BLOCKING,
         rpcRole = RpcRole.SERVER,
       ),
-    )
+    ).isEqualTo(listOf(expected))
   }
 
   @Test fun blockingSingleRequestStreamingResponse() {
@@ -439,14 +435,13 @@ class KotlinGeneratorTest {
         """.trimMargin(),
       )
     }
-    assertEquals(
-      listOf(expected),
+    assertThat(
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.BLOCKING,
         rpcRole = RpcRole.SERVER,
       ),
-    )
+    ).isEqualTo(listOf(expected))
   }
 
   @Test fun blockingStreamingRequestStreamingResponse() {
@@ -497,14 +492,13 @@ class KotlinGeneratorTest {
         """.trimMargin(),
       )
     }
-    assertEquals(
-      listOf(expected),
+    assertThat(
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.BLOCKING,
         rpcRole = RpcRole.SERVER,
       ),
-    )
+    ).isEqualTo(listOf(expected))
   }
 
   @Test fun javaPackageOption() {
@@ -557,14 +551,13 @@ class KotlinGeneratorTest {
         """.trimMargin(),
       )
     }
-    assertEquals(
-      listOf(expected),
+    assertThat(
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.BLOCKING,
         rpcRole = RpcRole.SERVER,
       ),
-    )
+    ).isEqualTo(listOf(expected))
   }
 
   @Test fun noPackage() {
@@ -623,9 +616,8 @@ class KotlinGeneratorTest {
         """.trimMargin(),
       )
     }
-    assertEquals(
+    assertThat(KotlinWithProfilesGenerator(schema).generateGrpcKotlin("RouteGuide")).isEqualTo(
       listOf(expectedInterface, expectedImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("RouteGuide"),
     )
   }
 
@@ -691,9 +683,8 @@ class KotlinGeneratorTest {
         """.trimMargin(),
       )
     }
-    assertEquals(
+    assertThat(KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.grpc.RouteGuide")).isEqualTo(
       listOf(expectedInterface, expectedImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.grpc.RouteGuide"),
     )
   }
 
@@ -759,9 +750,8 @@ class KotlinGeneratorTest {
         """.trimMargin(),
       )
     }
-    assertEquals(
+    assertThat(KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")).isEqualTo(
       listOf(expectedInterface, expectedImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide"),
     )
   }
 
@@ -828,9 +818,8 @@ class KotlinGeneratorTest {
         """.trimMargin(),
       )
     }
-    assertEquals(
+    assertThat(KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")).isEqualTo(
       listOf(expectedInterface, expectedImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide"),
     )
   }
 
@@ -994,38 +983,34 @@ class KotlinGeneratorTest {
       )
     }
 
-    assertEquals(
-      listOf(blockingClientInterface, blockingClientImplementation),
+    assertThat(
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.BLOCKING,
         rpcRole = RpcRole.CLIENT,
       ),
-    )
-    assertEquals(
-      listOf(blockingServer),
+    ).isEqualTo(listOf(blockingClientInterface, blockingClientImplementation))
+    assertThat(
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.BLOCKING,
         rpcRole = RpcRole.SERVER,
       ),
-    )
-    assertEquals(
-      listOf(suspendingClientInterface, suspendingClientImplementation),
+    ).isEqualTo(listOf(blockingServer))
+    assertThat(
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.SUSPENDING,
         rpcRole = RpcRole.CLIENT,
       ),
-    )
-    assertEquals(
-      listOf(suspendingServer),
+    ).isEqualTo(listOf(suspendingClientInterface, suspendingClientImplementation))
+    assertThat(
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         "routeguide.RouteGuide",
         rpcCallStyle = RpcCallStyle.SUSPENDING,
         rpcRole = RpcRole.SERVER,
       ),
-    )
+    ).isEqualTo(listOf(suspendingServer))
   }
 
   @Test fun multipleRpcs() {
@@ -1109,9 +1094,8 @@ class KotlinGeneratorTest {
         """.trimMargin(),
       )
     }
-    assertEquals(
+    assertThat(KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide")).isEqualTo(
       listOf(expectedInterface, expectedImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide"),
     )
   }
 
@@ -1164,10 +1148,12 @@ class KotlinGeneratorTest {
           |
     """.trimMargin()
 
-    assertEquals(
-      listOf(expectedGetFeatureInterface, expectedGetFeatureImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide", "GetFeature"),
-    )
+    assertThat(
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
+        "routeguide.RouteGuide",
+        "GetFeature",
+      ),
+    ).isEqualTo(listOf(expectedGetFeatureInterface, expectedGetFeatureImplementation))
 
     val expectedRouteChatInterface = """
           |package routeguide
@@ -1199,10 +1185,12 @@ class KotlinGeneratorTest {
           |
     """.trimMargin()
 
-    assertEquals(
-      listOf(expectedRouteChatInterface, expectedRouteChatImplementation),
-      KotlinWithProfilesGenerator(schema).generateGrpcKotlin("routeguide.RouteGuide", "RouteChat"),
-    )
+    assertThat(
+      KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
+        "routeguide.RouteGuide",
+        "RouteChat",
+      ),
+    ).isEqualTo(listOf(expectedRouteChatInterface, expectedRouteChatImplementation))
   }
 
   @Test fun nameSuffixes() {
@@ -1276,25 +1264,23 @@ class KotlinGeneratorTest {
       )
     }
 
-    assertEquals(
-      listOf(suspendingInterface),
+    assertThat(
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         serviceName = "routeguide.RouteGuide",
         rpcRole = RpcRole.SERVER,
         rpcCallStyle = RpcCallStyle.SUSPENDING,
         nameSuffix = "",
       ),
-    )
+    ).isEqualTo(listOf(suspendingInterface))
 
-    assertEquals(
-      listOf(blockingInterface),
+    assertThat(
       KotlinWithProfilesGenerator(schema).generateGrpcKotlin(
         serviceName = "routeguide.RouteGuide",
         rpcRole = RpcRole.SERVER,
         rpcCallStyle = RpcCallStyle.BLOCKING,
         nameSuffix = "Thing",
       ),
-    )
+    ).isEqualTo(listOf(blockingInterface))
   }
 
   @Test fun nameAllocatorIsUsedInDecodeForReaderTag() {
@@ -1468,13 +1454,13 @@ class KotlinGeneratorTest {
   @Test fun sanitizeJavadocStripsTrailingWhitespace() {
     val input = "The quick brown fox  \nJumps over  \n\t \t\nThe lazy dog  "
     val expected = "The quick brown fox\nJumps over\n\nThe lazy dog"
-    assertEquals(expected, input.sanitizeKdoc())
+    assertThat(input.sanitizeKdoc()).isEqualTo(expected)
   }
 
   @Test fun sanitizeJavadocStarSlash() {
     val input = "/* comment inside comment. */"
     val expected = "/&#42; comment inside comment. &#42;/"
-    assertEquals(expected, input.sanitizeKdoc())
+    assertThat(input.sanitizeKdoc()).isEqualTo(expected)
   }
 
   @Test fun handleLongIdentifiers() {
@@ -1735,27 +1721,26 @@ class KotlinGeneratorTest {
         """.trimMargin(),
       )
     }
-    assertEquals(
-      listOf(expectedInterface, expectedImplementation),
+    assertThat(
       KotlinWithProfilesGenerator(schema)
         .withProfile(
           "java.wire",
           """
-          |syntax = "wire2";
-          |import "routeguide.proto";
-          |
-          |type routeguide.Point {
-          |  target java.lang.String using com.example.StringPointAdapter#INSTANCE;
-          |}
-          |
-          |type routeguide.Feature {
-          |  target java.util.Properties using com.example.PropertiesFeatureAdapter#ADAPTER;
-          |}
-          |
+            |syntax = "wire2";
+            |import "routeguide.proto";
+            |
+            |type routeguide.Point {
+            |  target java.lang.String using com.example.StringPointAdapter#INSTANCE;
+            |}
+            |
+            |type routeguide.Feature {
+            |  target java.util.Properties using com.example.PropertiesFeatureAdapter#ADAPTER;
+            |}
+            |
           """.trimMargin(),
         )
         .generateGrpcKotlin("routeguide.RouteGuide", profileName = "java"),
-    )
+    ).isEqualTo(listOf(expectedInterface, expectedImplementation))
   }
 
   @Test fun profileHonoredInMessage() {

@@ -15,8 +15,7 @@
  */
 package com.squareup.wire;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
 
 import com.squareup.wire.protos.person.Person;
 import java.io.IOException;
@@ -43,14 +42,14 @@ public final class ProtoAdapterTest {
     ProtoAdapter<Person> instanceAdapter = ProtoAdapter.get(person);
     ProtoAdapter<Person> classAdapter = ProtoAdapter.get(Person.class);
 
-    assertThat(instanceAdapter).isSameAs(classAdapter);
+    assertThat(instanceAdapter).isSameInstanceAs(classAdapter);
   }
 
   @Test
   public void repeatedHelpersCacheInstances() {
     ProtoAdapter<?> adapter = ProtoAdapter.UINT64;
-    assertThat(adapter.asRepeated()).isSameAs(adapter.asRepeated());
-    assertThat(adapter.asPacked()).isSameAs(adapter.asPacked());
+    assertThat(adapter.asRepeated()).isSameInstanceAs(adapter.asRepeated());
+    assertThat(adapter.asPacked()).isSameInstanceAs(adapter.asPacked());
   }
 
   /** https://github.com/square/wire/issues/541 */
@@ -63,6 +62,6 @@ public final class ProtoAdapterTest {
             .build();
     OuterMessage outerMessagesAfterSerialisation =
         OuterMessage.ADAPTER.decode(OuterMessage.ADAPTER.encode(outerMessage));
-    assertEquals(outerMessagesAfterSerialisation, outerMessage);
+    assertThat(outerMessagesAfterSerialisation).isEqualTo(outerMessage);
   }
 }

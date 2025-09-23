@@ -1,9 +1,22 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-plugins {
-  id 'org.jetbrains.kotlin.multiplatform'
-  id 'com.squareup.wire'
+buildscript {
+  dependencies {
+    classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+    classpath libs.pluginz.kotlin
+  }
+
+  repositories {
+    maven {
+      url "file://${rootDir.absolutePath}/../../../../../build/localMaven"
+    }
+    mavenCentral()
+    google()
+  }
 }
+
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+apply plugin: 'com.squareup.wire'
 
 repositories {
   maven {

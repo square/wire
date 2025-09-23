@@ -17,14 +17,15 @@
 
 package com.squareup.wire.schema
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.messageContains
 import com.squareup.wire.testing.add
-import kotlin.test.assertFailsWith
 import okio.ForwardingFileSystem
 import okio.Path
 import okio.Path.Companion.toPath
@@ -146,10 +147,9 @@ class LinkerTest {
           |}
       """.trimMargin(),
     )
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       loadAndLinkSchema(opaqueTypes = listOf(ProtoType.get("cafe.Roast")))
-    }
-    assertThat(exception).messageContains(
+    }.isInstanceOf<SchemaException>().messageContains(
       """
       |Enums like cafe.Roast cannot be opaqued
       |  for field roast (source-path/cafe/cafe.proto:11:3)
@@ -299,10 +299,9 @@ class LinkerTest {
       """.trimMargin(),
     )
 
-    val exception = assertFailsWith<SchemaException> {
+    assertFailure {
       loadAndLinkSchema(opaqueTypes = listOf(ProtoType.INT32))
-    }
-    assertThat(exception).messageContains(
+    }.isInstanceOf<SchemaException>().messageContains(
       """
       |Scalar types like int32 cannot be opaqued
       |  for field size_ounces (source-path/cafe/cafe.proto:6:3)

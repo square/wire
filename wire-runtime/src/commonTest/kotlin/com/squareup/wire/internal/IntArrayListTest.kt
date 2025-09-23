@@ -15,8 +15,10 @@
  */
 package com.squareup.wire.internal
 
+import assertk.assertThat
+import assertk.assertions.hasSize
+import assertk.assertions.isEqualTo
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class IntArrayListTest {
   @Test
@@ -27,9 +29,9 @@ class IntArrayListTest {
     arrayList.add(3)
 
     val array = arrayList.toArray()
-    assertEquals(array.size, 3)
+    assertThat(array).hasSize(3)
     for (i in 0..2) {
-      assertEquals(array[i], i + 1)
+      assertThat(i + 1).isEqualTo(array[i])
     }
   }
 
@@ -40,6 +42,6 @@ class IntArrayListTest {
     arrayList.add(2)
     arrayList.add(3)
 
-    assertEquals(arrayList.toString(), intArrayOf(1, 2, 3).contentToString())
+    assertThat(intArrayOf(1, 2, 3).contentToString()).isEqualTo(arrayList.toString())
   }
 }

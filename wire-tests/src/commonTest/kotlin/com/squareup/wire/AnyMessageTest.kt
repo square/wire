@@ -15,17 +15,23 @@
  */
 package com.squareup.wire
 
+import assertk.all
+import assertk.assertFailure
+import assertk.assertThat
+import assertk.assertions.endsWith
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import assertk.assertions.message
+import assertk.assertions.startsWith
 import com.squareup.wire.protos.kotlin.edgecases.NoFields
 import com.squareup.wire.protos.kotlin.edgecases.OneField
 import com.squareup.wire.protos.usesany.UsesAny
+import kotlin.IllegalStateException
 import kotlin.jvm.JvmField
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.test.fail
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
 
@@ -42,13 +48,15 @@ class AnyMessageTest {
       ),
     )
 
-    assertEquals(three, usesAny.just_one!!.unpack(OneField.ADAPTER))
-    assertEquals(listOf(three, four), usesAny.many_anys.map { it.unpack(OneField.ADAPTER) })
+    assertThat(usesAny.just_one!!.unpack(OneField.ADAPTER)).isEqualTo(three)
+    assertThat(usesAny.many_anys.map { it.unpack(OneField.ADAPTER) }).isEqualTo(
+      listOf(three, four),
+    )
 
-    assertFailsWith<IllegalStateException> {
+    assertFailure {
       usesAny.just_one.unpack(ProtoAdapter.BOOL)
-    }
-    assertEquals(null, usesAny.just_one.unpackOrNull(ProtoAdapter.BOOL))
+    }.isInstanceOf<IllegalStateException>()
+    assertThat(usesAny.just_one.unpackOrNull(ProtoAdapter.BOOL)).isEqualTo(null)
   }
 
   @Test fun encodeAndDecode() {
@@ -69,18 +77,18 @@ class AnyMessageTest {
       ),
     )
 
-    assertEquals(hex, usesAny.encodeByteString().hex())
-    assertEquals(usesAny, UsesAny.ADAPTER.decode(hex.decodeHex()))
+    assertThat(usesAny.encodeByteString().hex()).isEqualTo(hex)
+    assertThat(UsesAny.ADAPTER.decode(hex.decodeHex())).isEqualTo(usesAny)
   }
 
   @Test fun decodingWithMissingTypeUrl() {
     val hex = "0a0412020803120412020803120412020804"
 
     val usesAny = UsesAny.ADAPTER.decode(hex.decodeHex())
-    assertEquals("", usesAny.just_one!!.typeUrl)
-    assertEquals(2, usesAny.many_anys.size)
+    assertThat(usesAny.just_one!!.typeUrl).isEqualTo("")
+    assertThat(usesAny.many_anys.size).isEqualTo(2)
     for (manyAny in usesAny.many_anys) {
-      assertEquals("", manyAny.typeUrl)
+      assertThat(manyAny.typeUrl).isEqualTo("")
     }
   }
 
@@ -90,16 +98,12 @@ class AnyMessageTest {
       many_anys = listOf(),
     )
 
-    try {
+    assertFailure {
       usesAny.just_one!!.unpack(NoFields.ADAPTER)
-      fail()
-    } catch (expected: IllegalStateException) {
-      assertEquals(
-        "type mismatch: type.googleapis.com/squareup.protos.kotlin.edgecases.OneField " +
-          "!= type.googleapis.com/squareup.protos.kotlin.edgecases.NoFields",
-        expected.message,
-      )
-    }
+    }.isInstanceOf<IllegalStateException>().hasMessage(
+      "type mismatch: type.googleapis.com/squareup.protos.kotlin.edgecases.OneField " +
+        "!= type.googleapis.com/squareup.protos.kotlin.edgecases.NoFields",
+    )
   }
 
   @Test fun unpackOrNullWithWrongTypeUrlReturnsNull() {
@@ -108,20 +112,17 @@ class AnyMessageTest {
       many_anys = listOf(),
     )
 
-    assertNull(usesAny.just_one!!.unpackOrNull(NoTypeUrlMessage.ADAPTER))
+    assertThat(usesAny.just_one!!.unpackOrNull(NoTypeUrlMessage.ADAPTER)).isNull()
   }
 
   @Test fun packWithoutATypeUrlThrows() {
-    try {
+    assertFailure {
       AnyMessage.pack(NoTypeUrlMessage())
-      fail()
-    } catch (expected: IllegalStateException) {
-      assertTrue(expected.message!!.startsWith("recompile class "), expected.message)
-      assertTrue(
-        expected.message!!.endsWith("NoTypeUrlMessage to use it with AnyMessage"),
-        expected.message,
-      )
-    }
+    }.isInstanceOf<IllegalStateException>()
+      .message().isNotNull().all {
+        startsWith("recompile class ")
+        endsWith("NoTypeUrlMessage to use it with AnyMessage")
+      }
   }
 
   private class NoTypeUrlMessage(

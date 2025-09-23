@@ -1,3 +1,11 @@
 include ':dinosaurs'
 include ':geology'
 include ':location'
+
+dependencyResolutionManagement {
+  versionCatalogs {
+    libs {
+      from(files('../../../../../gradle/libs.versions.toml'))
+    }
+  }
+}

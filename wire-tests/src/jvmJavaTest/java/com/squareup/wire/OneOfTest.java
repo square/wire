@@ -15,7 +15,7 @@
  */
 package com.squareup.wire;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
 import com.squareup.wire.protos.oneof.OneOfMessage;
@@ -65,7 +65,9 @@ public class OneOfTest {
       builder.build();
       fail();
     } catch (IllegalArgumentException expected) {
-      assertThat(expected).hasMessage("at most one of foo, bar, baz may be non-null");
+      assertThat(expected)
+          .hasMessageThat()
+          .contains("at most one of foo, bar, baz may be non-null");
     }
   }
 
@@ -75,7 +77,9 @@ public class OneOfTest {
       new OneOfMessage(1, "two", null);
       fail();
     } catch (IllegalArgumentException expected) {
-      assertThat(expected).hasMessage("at most one of foo, bar, baz may be non-null");
+      assertThat(expected)
+          .hasMessageThat()
+          .contains("at most one of foo, bar, baz may be non-null");
     }
   }
 

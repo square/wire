@@ -19,10 +19,8 @@ import assertk.assertThat
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
-import assertk.assertions.message
 import com.squareup.wire.protos.kotlin.Form
 import com.squareup.wire.protos.kotlin.OneOfMessage
-import kotlin.test.assertEquals
 import org.junit.Assert.fail
 import org.junit.Test
 
@@ -101,8 +99,8 @@ class OneOfTest {
       decision = OneOf(Form.DECISION_D, "Hi!"),
     )
 
-    assertEquals(viaBuilder, viaConstructor)
-    assertEquals(viaBuilder.toString(), viaConstructor.toString())
+    assertThat(viaConstructor).isEqualTo(viaBuilder)
+    assertThat(viaConstructor.toString()).isEqualTo(viaBuilder.toString())
 
     assertThat(viaBuilder.choice!!.getOrNull(Form.CHOICE_ADDRESS_ELEMENT)).isNull()
     assertThat(viaBuilder.choice.getOrNull(Form.CHOICE_TEXT_ELEMENT))

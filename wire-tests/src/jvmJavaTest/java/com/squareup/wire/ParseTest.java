@@ -15,7 +15,7 @@
  */
 package com.squareup.wire;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
 import com.squareup.wire.protos.edgecases.OneBytesField;
@@ -49,7 +49,7 @@ public final class ParseTest {
       OneField.ADAPTER.decode(data.toByteArray());
       fail();
     } catch (ProtocolException expected) {
-      assertThat(expected).hasMessage("Unexpected field encoding: 7");
+      assertThat(expected).hasMessageThat().contains("Unexpected field encoding: 7");
     }
   }
 
@@ -85,7 +85,8 @@ public final class ParseTest {
       fail();
     } catch (ProtocolException expected) {
       assertThat(expected)
-          .hasMessage("Wire type VARINT differs from previous type LENGTH_DELIMITED for tag 2");
+          .hasMessageThat()
+          .contains("Wire type VARINT differs from previous type LENGTH_DELIMITED for tag 2");
     }
   }
 
@@ -130,7 +131,7 @@ public final class ParseTest {
       Recursive.ADAPTER.decode(data.toByteArray());
       fail();
     } catch (IOException expected) {
-      assertThat(expected).hasMessage("Wire recursion limit exceeded");
+      assertThat(expected).hasMessageThat().contains("Wire recursion limit exceeded");
     }
   }
 }

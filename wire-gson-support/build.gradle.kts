@@ -7,7 +7,7 @@ dependencies {
   api(libs.gson)
   api(libs.okio.core)
   testImplementation(libs.junit)
-  testImplementation(libs.assertj)
   testImplementation(libs.assertk)
+  testImplementation(libs.truth)
   testImplementation(projects.wireTestUtils)
 }

@@ -15,12 +15,12 @@
  */
 package com.squareup.wire
 
-import assertk.assertions.isTrue
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isSameInstanceAs
 import com.squareup.wire.proto3.kotlin.person.Person
 import com.squareup.wire.protos.kotlin.bool.TrueBoolean
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertSame
 import okio.ByteString.Companion.decodeHex
 import squareup.protos.packed_encoding.EmbeddedMessage
 import squareup.protos.packed_encoding.OuterMessage
@@ -28,8 +28,8 @@ import squareup.protos.packed_encoding.OuterMessage
 class ProtoAdapterTest {
   @Test fun repeatedHelpersCacheInstances() {
     val adapter: ProtoAdapter<*> = ProtoAdapter.UINT64
-    assertSame(adapter.asRepeated(), adapter.asRepeated())
-    assertSame(adapter.asPacked(), adapter.asPacked())
+    assertThat(adapter.asRepeated()).isSameInstanceAs(adapter.asRepeated())
+    assertThat(adapter.asPacked()).isSameInstanceAs(adapter.asPacked())
   }
 
   /** https://github.com/square/wire/issues/541  */
@@ -40,7 +40,7 @@ class ProtoAdapterTest {
     )
     val outerMessagesAfterSerialisation = OuterMessage.ADAPTER
       .decode(OuterMessage.ADAPTER.encode(outerMessage))
-    assertEquals(outerMessagesAfterSerialisation, outerMessage)
+    assertThat(outerMessage).isEqualTo(outerMessagesAfterSerialisation)
   }
 
   @Test fun getFromClassProto3() {
@@ -49,14 +49,14 @@ class ProtoAdapterTest {
       phones = listOf(Person.PhoneNumber()),
     )
     val hexByteString = "0a08536f6d65626f64792200"
-    assertEquals(hexByteString, Person.ADAPTER.encodeByteString(person).hex())
-    assertEquals(person, Person.ADAPTER.decode(hexByteString.decodeHex()))
+    assertThat(Person.ADAPTER.encodeByteString(person).hex()).isEqualTo(hexByteString)
+    assertThat(Person.ADAPTER.decode(hexByteString.decodeHex())).isEqualTo(person)
   }
 
   @Test fun lenientBooleanParsing() {
     // 0 is false, the rest is true.
-    assertEquals(false, TrueBoolean.ADAPTER.decode("0800".decodeHex()).isTrue)
-    assertEquals(true, TrueBoolean.ADAPTER.decode("0801".decodeHex()).isTrue)
-    assertEquals(true, TrueBoolean.ADAPTER.decode("0802".decodeHex()).isTrue)
+    assertThat(TrueBoolean.ADAPTER.decode("0800".decodeHex()).isTrue).isEqualTo(false)
+    assertThat(TrueBoolean.ADAPTER.decode("0801".decodeHex()).isTrue).isEqualTo(true)
+    assertThat(TrueBoolean.ADAPTER.decode("0802".decodeHex()).isTrue).isEqualTo(true)
   }
 }

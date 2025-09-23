@@ -15,17 +15,19 @@
  */
 package com.squareup.wire.gradle
 
-import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.internal.libraryProtoOutputPath
+import com.squareup.wire.gradle.internal.protoProjectDependenciesJvmConfiguration
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.Source
 import com.squareup.wire.gradle.kotlin.sourceRoots
 import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.newEventListenerFactory
+import com.squareup.wire.wireVersion
 import java.io.File
 import java.lang.reflect.Array as JavaArray
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.LazyThreadSafetyMode.NONE
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.UnknownConfigurationException
@@ -34,9 +36,7 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
-import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class WirePlugin : Plugin<Project> {
@@ -58,19 +58,14 @@ class WirePlugin : Plugin<Project> {
     extension.addProtoPathProtoRootSet()
     extension.addProtoSourceProtoRootSet()
 
-    project.configurations.create("protoProjectDependenciesJvm").also {
-      it.isCanBeResolved = true
-      it.isCanBeConsumed = false
-      it.attributes { attributesContainer ->
-        // TODO(Benoit) If another project, on which this one depends, exposes multiple variants,
-        //  Wire won't be able to pick one. We force the resolution to JVM. On the other hand, this
-        //  breaks inter-module dependencies for non-jvm modules. We need to fix it.
-        attributesContainer.attribute(KotlinPlatformType.attribute, KotlinPlatformType.jvm)
-      }
-    }
+    project.configurations.create("protoProjectDependenciesJvm")
+      .also(protoProjectDependenciesJvmConfiguration(WirePlugin::class.java.classLoader))
 
     val androidPluginHandler = { _: Plugin<*> ->
       android.set(true)
+      // When `android.builtInKotlin` property is enabled, AGP provides Kotlin support for all projects without
+      // requiring users to apply the `org.jetbrains.kotlin.android` plugin.
+      project.extensions.findByName("kotlin")?.let { kotlin.set(true) }
       project.afterEvaluate {
         project.setupWireTasks(afterAndroid = true)
       }
@@ -83,10 +78,13 @@ class WirePlugin : Plugin<Project> {
 
     val kotlinPluginHandler = { _: Plugin<*> -> kotlin.set(true) }
     project.plugins.withId("org.jetbrains.kotlin.multiplatform", kotlinPluginHandler)
-    project.plugins.withId("org.jetbrains.kotlin.android", kotlinPluginHandler)
     project.plugins.withId("org.jetbrains.kotlin.jvm", kotlinPluginHandler)
     project.plugins.withId("org.jetbrains.kotlin.js", kotlinPluginHandler)
     project.plugins.withId("kotlin2js", kotlinPluginHandler)
+    // When `android.builtInKotlin`` property is disabled, the users  will need to apply either the
+    // `com.android.experimental.built-in-kotlin` plugin or the `org.jetbrains.kotlin.android` plugin to have Kotlin.
+    project.plugins.withId("com.android.experimental.built-in-kotlin", kotlinPluginHandler)
+    project.plugins.withId("org.jetbrains.kotlin.android", kotlinPluginHandler)
 
     val javaPluginHandler = { _: Plugin<*> -> java.set(true) }
     project.plugins.withId("java", javaPluginHandler)
@@ -126,7 +124,7 @@ class WirePlugin : Plugin<Project> {
     val hasJavaOutput = outputs.any { it is JavaOutput }
     val hasKotlinOutput = outputs.any { it is KotlinOutput }
     check(!hasKotlinOutput || kotlin.get()) {
-      "Wire Gradle plugin applied in " + "project '${project.path}' but no supported Kotlin plugin was found"
+      "Wire Gradle plugin applied in " + "project '${project.path}' to generate Kotlin types but no supported Kotlin plugin was found"
     }
 
     addWireRuntimeDependency(hasJavaOutput, hasKotlinOutput)
@@ -159,6 +157,9 @@ class WirePlugin : Plugin<Project> {
           .map { target -> project.file(target.outDirectory) }
           .toSet()
 
+      // TODO(Benoit) Either throw or handle multiple proto targets. Along side `protoLibrary`.
+      val protoTarget = targets.filterIsInstance<ProtoTarget>().firstOrNull()
+
       // Both the JavaCompile and KotlinCompile tasks might already have been configured by now.
       // Even though we add the Wire output directories into the corresponding sourceSets, the
       // compilation tasks won't know about them so we fix that here.
@@ -170,9 +171,14 @@ class WirePlugin : Plugin<Project> {
             it.source(generatedSourcesDirectories)
           }
       }
-      if (hasJavaOutput || hasKotlinOutput) {
+      if ((hasJavaOutput || hasKotlinOutput) && kotlin.get()) {
+        val kotlinCompileClass = Class.forName(
+          "org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile",
+          false,
+          this@WirePlugin::class.java.classLoader,
+        ) as Class<out org.gradle.api.Task>
         project.tasks
-          .withType(AbstractKotlinCompile::class.java)
+          .withType(kotlinCompileClass)
           .matching {
             it.name.equals("compileKotlin") || it.name == "compile${source.name.capitalize()}Kotlin"
           }.configureEach {
@@ -217,8 +223,8 @@ class WirePlugin : Plugin<Project> {
         task.protoSourceConfiguration.setFrom(protoSourceConfiguration)
         task.protoPathConfiguration.setFrom(protoPathConfiguration)
         task.projectDependenciesJvmConfiguration.setFrom(projectDependenciesJvmConfiguration)
-        if (extension.protoLibrary) {
-          task.protoLibraryOutput.set(File(project.libraryProtoOutputPath()))
+        if (protoTarget != null) {
+          task.protoLibraryOutput.set(project.file(protoTarget.outDirectory))
         }
         task.sourceInput.set(project.provider { protoSourceProtoRootSets.inputLocations })
         task.protoInput.set(project.provider { protoPathProtoRootSets.inputLocations })
@@ -251,7 +257,7 @@ class WirePlugin : Plugin<Project> {
       source.registerGeneratedDirectory?.invoke(taskOutputDirectories)
 
       val protoOutputDirectory = task.map { it.protoLibraryOutput }
-      if (extension.protoLibrary) {
+      if (protoTarget != null) {
         val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
         // Note that there are no source sets for some platforms such as native.
         // TODO(Benoit) Probably should be checking for other names than `main`. As well, source
@@ -325,7 +331,7 @@ class WirePlugin : Plugin<Project> {
     return if (isInternalBuild) {
       project.project(":wire-runtime")
     } else {
-      project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION")
+      project.dependencies.create("com.squareup.wire:wire-runtime:$wireVersion")
     }
   }
 
@@ -343,9 +349,11 @@ class WirePlugin : Plugin<Project> {
     // both.
     // 1.6.x: `fun source(vararg sources: Any): SourceTask`
     // 1.7.x: `fun source(vararg sources: Any)`
-    private val SOURCE_FUNCTION = KotlinCompile::class.java.getMethod(
-      "source",
-      JavaArray.newInstance(Any::class.java, 0).javaClass,
-    )
+    private val SOURCE_FUNCTION by lazy(NONE) {
+      KotlinCompile::class.java.getMethod(
+        "source",
+        JavaArray.newInstance(Any::class.java, 0).javaClass,
+      )
+    }
   }
 }

@@ -8,11 +8,24 @@ import com.squareup.wire.schema.internal.TypeMover
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
 
-plugins {
-  id 'application'
-  id 'org.jetbrains.kotlin.jvm'
-  id 'com.squareup.wire'
+buildscript {
+  dependencies {
+    classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+    classpath libs.pluginz.kotlin
+  }
+
+  repositories {
+    maven {
+      url "file://${rootDir.absolutePath}/../../../../../build/localMaven"
+    }
+    mavenCentral()
+    google()
+  }
 }
+
+apply plugin: 'application'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'com.squareup.wire'
 
 class MyEventListenerFactory implements EventListener.Factory {
   @Override public EventListener create() {
