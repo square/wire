@@ -211,12 +211,7 @@ class WireBuildPlugin : Plugin<Project> {
     tasks.withType(KotlinJvmCompile::class.java).configureEach {
       compilerOptions {
         jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
-        freeCompilerArgs.addAll(
-          listOf(
-            "-Xjvm-default=all",
-            "-Xjdk-release=$javaVersion"
-          ),
-        )
+        freeCompilerArgs.addAll(listOf("-Xjvm-default=all"))
       }
     }
     // Kotlin requires the Java compatibility matches.
