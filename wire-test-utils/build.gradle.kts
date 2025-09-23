@@ -18,7 +18,6 @@ import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 
-
 plugins {
   kotlin("multiplatform")
 }

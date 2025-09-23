@@ -42,7 +42,6 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
@@ -200,7 +199,6 @@ class WireBuildPlugin : Plugin<Project> {
   private fun Project.configureCommonKotlin() {
     tasks.withType(KotlinCompilationTask::class.java).configureEach {
       compilerOptions {
-        languageVersion.set(KotlinVersion.KOTLIN_2_0)
         freeCompilerArgs.addAll(
           listOf(
             "-Xexpect-actual-classes",
@@ -212,11 +210,11 @@ class WireBuildPlugin : Plugin<Project> {
     val javaVersion = JavaVersion.VERSION_1_8
     tasks.withType(KotlinJvmCompile::class.java).configureEach {
       compilerOptions {
-        languageVersion.set(KotlinVersion.KOTLIN_2_0)
         jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
         freeCompilerArgs.addAll(
           listOf(
             "-Xjvm-default=all",
+            "-Xjdk-release=$javaVersion"
           ),
         )
       }
