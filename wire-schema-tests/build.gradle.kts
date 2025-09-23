@@ -1,21 +1,21 @@
+import org.gradle.kotlin.dsl.named
+import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
+
 plugins {
   kotlin("multiplatform")
 }
 
 kotlin {
   applyDefaultHierarchyTemplate()
-  jvm {
-    // Required by MavenPublishBaseExtension even though we do not have Java sources.
-    withJava()
-  }
+  jvm()
   if (System.getProperty("kjs", "true").toBoolean()) {
     js(IR) {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
-        tasks.getByName(compileKotlinTaskName) {
-          kotlinOptions {
-            moduleKind = "umd"
-            sourceMap = true
-            metaInfo = true
+        tasks.named<KotlinJsCompile>(compileKotlinTaskName) {
+          compilerOptions {
+            moduleKind.set(JsModuleKind.MODULE_UMD)
+            sourceMap.set(true)
           }
         }
       }

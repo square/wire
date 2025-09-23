@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -23,7 +24,7 @@ buildscript {
 plugins {
   `kotlin-dsl`
   `java-gradle-plugin`
-  kotlin("jvm") version "2.0.21"
+  kotlin("jvm") version "2.1.21"
 }
 
 repositories {
@@ -80,11 +81,9 @@ allprojects {
   }
 
   tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-      jvmTarget = "11"
-      freeCompilerArgs += "-Xjvm-default=all"
-      // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
-      freeCompilerArgs += "-progressive"
+    compilerOptions {
+      jvmTarget.set(JvmTarget.JVM_11)
+      freeCompilerArgs.add("-Xjvm-default=all")
     }
   }
 }
