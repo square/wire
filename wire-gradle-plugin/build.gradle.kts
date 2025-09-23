@@ -104,5 +104,10 @@ tasks.withType<JavaCompile>().configureEach {
 tasks.withType<KotlinJvmCompile>().configureEach {
   compilerOptions {
     jvmTarget.set(JvmTarget.JVM_11)
+    freeCompilerArgs.addAll(
+      listOf(
+        "-Xjdk-release=11"
+      ),
+    )
   }
 }
