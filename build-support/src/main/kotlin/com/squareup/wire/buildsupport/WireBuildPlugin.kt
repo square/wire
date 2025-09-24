@@ -19,7 +19,6 @@ import com.android.build.gradle.BaseExtension
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.spotless.LineEnding
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import com.vanniktech.maven.publish.SonatypeHost
 import java.io.File
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.ExperimentalBCVApi
@@ -311,7 +310,7 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
         // configure(KotlinJvm(javadocJar = Dokka("dokkaHtml"), sourcesJar = true))
       }
 
-      publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
+      publishToMavenCentral(automaticRelease = true)
       val inMemoryKey = project.findProperty("signingInMemoryKey") as String?
       if (!inMemoryKey.isNullOrEmpty()) {
         signAllPublications()
