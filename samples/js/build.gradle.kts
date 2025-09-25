@@ -19,6 +19,7 @@ kotlin {
     }
     nodejs {
     }
+    outputModuleName = "wire-js-module"
   }
 }
 
