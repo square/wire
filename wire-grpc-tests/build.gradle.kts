@@ -27,18 +27,15 @@ protobuf {
   }
 
   protoc {
-    // TODO(Benoit) Replace with `artifact = libs.protobuf.protoc.get().toString()` once gRPC-java
-    //  starts supporting protoc 4+. See https://github.com/grpc/grpc-java/issues/10976
-    artifact = "com.google.protobuf:protoc:4.32.1"
+    artifact = libs.protobuf.protoc.get().toString()
   }
 
   generateProtoTasks {
     ofSourceSet("test").forEach {
       it.plugins {
-        // Apply the "grpc" plugin whose spec is defined above, without
-        // options.  Note the braces cannot be omitted, otherwise the
-        // plugin will not be added. This is because of the implicit way
-        // NamedDomainObjectContainer binds the methods.
+        // Apply the "grpc" plugin whose spec is defined above, without options.  Note the braces
+        // cannot be omitted, otherwise the plugin will not be added. This is because of the
+        // implicit way NamedDomainObjectContainer binds the methods.
         id("grpc") {}
       }
     }
@@ -70,6 +67,7 @@ dependencies {
   testImplementation(libs.grpc.protobuf)
   testImplementation(libs.grpc.stub)
   testImplementation(libs.kotlin.test.junit)
+  testImplementation(libs.protobuf.java)
 }
 
 val test by tasks.getting(Test::class) {
