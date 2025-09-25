@@ -13,7 +13,6 @@ buildscript {
     classpath(libs.protobuf.gradlePlugin)
     classpath(libs.vanniktechPublishPlugin)
     classpath(libs.pluginz.buildConfig)
-    classpath(libs.guava)
     classpath(libs.asm)
 
     classpath("com.squareup.wire:wire-gradle-plugin")

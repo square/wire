@@ -11,7 +11,6 @@ buildscript {
     classpath(libs.pluginz.kotlinSerialization)
     classpath(libs.pluginz.shadow)
     classpath(libs.pluginz.buildConfig)
-    classpath(libs.guava)
   }
 
   repositories {
@@ -46,7 +45,6 @@ dependencies {
   implementation(libs.pluginz.kotlinSerialization)
   implementation(libs.pluginz.shadow)
   implementation(libs.pluginz.buildConfig)
-  implementation(libs.guava)
 
   // Expose the generated version catalog API to the plugin.
   implementation(files(libs::class.java.superclass.protectionDomain.codeSource.location))
