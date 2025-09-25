@@ -7,7 +7,16 @@ dependencies {
   api(projects.wireSchema)
   implementation(projects.wireRuntime)
   implementation(libs.okio.core)
-  implementation(libs.guava)
+  constraints {
+    add("implementation", libs.guava) {
+      attributes {
+        attribute(
+          TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+          objects.named(TargetJvmEnvironment::class.java, TargetJvmEnvironment.STANDARD_JVM),
+        )
+      }
+    }
+  }
   api(libs.javapoet)
   compileOnly(libs.jsr305)
   testImplementation(projects.wireTestUtils)
