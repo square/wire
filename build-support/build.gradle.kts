@@ -74,13 +74,13 @@ allprojects {
   }
 
   tasks.withType<JavaCompile>().configureEach {
-    sourceCompatibility = JavaVersion.VERSION_11.toString()
-    targetCompatibility = JavaVersion.VERSION_11.toString()
+    sourceCompatibility = JavaVersion.VERSION_17.toString()
+    targetCompatibility = JavaVersion.VERSION_17.toString()
   }
 
   tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
-      jvmTarget.set(JvmTarget.JVM_11)
+      jvmTarget.set(JvmTarget.JVM_17)
       freeCompilerArgs.add("-Xjvm-default=all")
     }
   }
