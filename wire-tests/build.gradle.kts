@@ -1,7 +1,6 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
-import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
+import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
   kotlin("multiplatform")
@@ -21,7 +20,7 @@ kotlin {
           implementation(libs.kotlin.reflect)
         }
       }
-      val jvmKotlinInteropTest by tasks.creating(Test::class) {
+      val jvmKotlinInteropTest by tasks.registering(Test::class) {
         classpath = compileDependencyFiles + runtimeDependencyFiles + output.allOutputs
         testClassesDirs = output.classesDirs
       }
@@ -42,7 +41,7 @@ kotlin {
           implementation(libs.assertk)
         }
       }
-      val jvmKotlinAndroidTest by tasks.creating(Test::class) {
+      val jvmKotlinAndroidTest by tasks.registering(Test::class) {
         classpath = compileDependencyFiles + runtimeDependencyFiles + output.allOutputs
         testClassesDirs = output.classesDirs
       }
@@ -60,7 +59,7 @@ kotlin {
           implementation(libs.kotlin.reflect)
         }
       }
-      val jvmProtoReader32Test by tasks.creating(Test::class) {
+      val jvmProtoReader32Test by tasks.registering(Test::class) {
         classpath = compileDependencyFiles + runtimeDependencyFiles + output.allOutputs
         testClassesDirs = output.classesDirs
       }
@@ -75,7 +74,7 @@ kotlin {
   if (System.getProperty("kjs", "true").toBoolean()) {
     js(IR) {
       configure(listOf(compilations.getByName("main"), compilations.getByName("test"))) {
-        tasks.named<KotlinJsCompile>(compileKotlinTaskName) {
+        tasks.named<Kotlin2JsCompile>(compileKotlinTaskName).configure {
           compilerOptions {
             moduleKind.set(JsModuleKind.MODULE_UMD)
             sourceMap.set(true)
@@ -146,7 +145,7 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
       java.srcDir("src/jvmJavaTest/proto-java")
       java.srcDir("src/jvmJavaTest/proto-kotlin")
     }
-    val jvmJavaTest by tasks.creating(Test::class) {
+    val jvmJavaTest by tasks.registering(Test::class) {
       classpath = javaTest.runtimeClasspath
       testClassesDirs = javaTest.output.classesDirs
     }
@@ -155,7 +154,7 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
     val javaNoOptionsTest by creating {
       java.srcDir("src/jvmJavaNoOptionsTest/proto-java")
     }
-    val jvmJavaNoOptionsTest by tasks.creating(Test::class) {
+    val jvmJavaNoOptionsTest by tasks.registering(Test::class) {
       classpath = javaNoOptionsTest.runtimeClasspath
       testClassesDirs = javaNoOptionsTest.output.classesDirs
     }
@@ -164,7 +163,7 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
     val javaCompactTest by creating {
       java.srcDir("src/jvmJavaCompactTest/proto-java")
     }
-    val jvmJavaCompactTest by tasks.creating(Test::class) {
+    val jvmJavaCompactTest by tasks.registering(Test::class) {
       classpath = javaCompactTest.runtimeClasspath
       testClassesDirs = javaCompactTest.output.classesDirs
     }
@@ -173,7 +172,7 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
     val javaPrunedTest by creating {
       java.srcDir("src/jvmJavaPrunedTest/proto-java")
     }
-    val jvmJavaPrunedTest by tasks.creating(Test::class) {
+    val jvmJavaPrunedTest by tasks.registering(Test::class) {
       classpath = javaPrunedTest.runtimeClasspath
       testClassesDirs = javaPrunedTest.output.classesDirs
     }
@@ -182,7 +181,7 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
     val javaAndroidTest by creating {
       java.srcDir("src/jvmJavaAndroidTest/proto-java")
     }
-    val jvmJavaAndroidTest by tasks.creating(Test::class) {
+    val jvmJavaAndroidTest by tasks.registering(Test::class) {
       classpath = javaAndroidTest.runtimeClasspath
       testClassesDirs = javaAndroidTest.output.classesDirs
     }
@@ -191,7 +190,7 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
     val javaAndroidCompactTest by creating {
       java.srcDir("src/jvmJavaAndroidCompactTest/proto-java")
     }
-    val jvmJavaAndroidCompactTest by tasks.creating(Test::class) {
+    val jvmJavaAndroidCompactTest by tasks.registering(Test::class) {
       classpath = javaAndroidCompactTest.runtimeClasspath
       testClassesDirs = javaAndroidCompactTest.output.classesDirs
     }
@@ -201,7 +200,7 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
       java.srcDir("src/jvmJsonTest/kotlin")
       java.srcDir("src/jvmJsonJavaTest/proto-java")
     }
-    val jvmJsonJavaTest by tasks.creating(Test::class) {
+    val jvmJsonJavaTest by tasks.registering(Test::class) {
       classpath = jsonJavaTest.runtimeClasspath
       testClassesDirs = jsonJavaTest.output.classesDirs
     }
@@ -211,7 +210,7 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
       java.srcDir("src/jvmJsonTest/kotlin")
       java.srcDir("src/jvmJsonKotlinTest/proto-kotlin")
     }
-    val jvmJsonKotlinTest by tasks.creating(Test::class) {
+    val jvmJsonKotlinTest by tasks.registering(Test::class) {
       classpath = jsonKotlinTest.runtimeClasspath
       testClassesDirs = jsonKotlinTest.output.classesDirs
     }

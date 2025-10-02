@@ -60,7 +60,7 @@ dependencies {
   testImplementation(projects.wireTestUtils)
 }
 
-val installProtoJars by tasks.creating(Copy::class) {
+val installProtoJars by tasks.registering(Copy::class) {
   into("${rootDir.path}/build/localMaven")
   from("${projectDir.path}/src/test/libs")
 }
