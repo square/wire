@@ -165,7 +165,7 @@ jobs:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
 
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v5
 
       - name: Run Tests
         uses: reactivecircus/android-emulator-runner@v2
