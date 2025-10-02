@@ -67,9 +67,6 @@ kotlin {
         dependsOn(jvmProtoReader32Test)
       }
     }
-    // FIXME(egor): withJava() has to be declared after all custom compilations.
-    // See https://youtrack.jetbrains.com/issue/KT-41506.
-    withJava()
   }
   if (System.getProperty("kjs", "true").toBoolean()) {
     js(IR) {
