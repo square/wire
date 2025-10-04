@@ -1,7 +1,7 @@
 [versions]
 android = "4.1.1.4"
 androidGradlePlugin = "8.13.0"
-asm = "9.8"
+asm = "9.9"
 checkerQual = "3.51.1"
 coroutines = "1.10.2"
 dokka = "2.0.0"
