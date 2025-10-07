@@ -14,7 +14,7 @@ dependencies {
   api(projects.wireSchema)
   implementation(libs.okio.core)
   api(libs.guava)
-  implementation("io.grpc:grpc-protobuf:1.75.0")
+  implementation("io.grpc:grpc-protobuf:1.76.0")
   implementation("com.google.protobuf:protoc:4.32.1")
 
   testImplementation(projects.wireTestUtils)
