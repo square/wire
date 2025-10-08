@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-syntax = "proto2";
+syntax = "proto3";
 
 package squareup.protos.kotlin.swift_modules;
 
@@ -33,7 +33,7 @@ enum SortOrder {
 }
 
 message SwiftModuleOneMessage {
-  required string name = 1;
+  optional string name = 1;
 
   extensions 1000 to 1999;
 }

@@ -15,14 +15,9 @@
  */
 syntax = "proto3";
 
-package squareup.protos.kotlin.swift_modules.location;
+package squareup.protos.kotlin.swift_modules;
 
-message Location {
-  optional bool home = 1;
-}
-
-// This message exists in both this file and swift_module_address.proto in order to verify
-// correct disambiguation logic.
-message Address {
-  optional string street_1 = 1;
+enum SomeEnum {
+  FIRST = 0;
+  SECOND = 1;
 }

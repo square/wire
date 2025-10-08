@@ -491,6 +491,7 @@ val generateSwiftProto2ManifestTests by tasks.creating(JavaExec::class) {
     "swift_module_one.proto",
     "swift_module_two.proto",
     "swift_module_three.proto",
+    "swift_module_four.proto",
     "swift_module_address.proto",
     "swift_module_location.proto",
   )
