@@ -64,6 +64,7 @@ class ErrorReportingSchemaHandlerTest {
       outDirectory = "out".toPath(),
       logger = WireTestLogger(),
       errorCollector = errorCollector,
+      unpartitionedSchema = schema,
     )
 
     ErrorReportingSchemaHandler().handle(schema, context)

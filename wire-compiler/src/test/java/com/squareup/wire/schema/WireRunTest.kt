@@ -1070,6 +1070,7 @@ class WireRunTest {
           logger = EmptyWireLogger(),
           errorCollector = errorCollector,
           claimedPaths = ClaimedPaths(),
+          unpartitionedSchema = schema,
         ),
       )
 
