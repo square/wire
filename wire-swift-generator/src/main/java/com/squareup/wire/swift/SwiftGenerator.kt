@@ -292,28 +292,6 @@ class SwiftGenerator private constructor(
     return field.type in referenceCycleIndirections.getOrDefault(type.type, emptySet())
   }
 
-  /**
-   * Checks that every enum in a proto3 message contains a value with tag 0.
-   *
-   * @throws NoSuchElementException if the case doesn't exist
-   */
-  @Throws(NoSuchElementException::class)
-  private fun validateProto3DefaultsExist(type: MessageType) {
-    // TODO: Remove when we support unknown cases
-    if (type.syntax == PROTO_2) { return }
-
-    // validate each enum field
-    type
-      .fields
-      .mapNotNull { schema.getType(it.type!!) as? EnumType }
-      .forEach { enum ->
-        // ensure that a protoDefaultedName case exists
-        if (enum.protoDefaultedName == null) {
-          throw NoSuchElementException("Missing a zero value for ${enum.name}")
-        }
-      }
-  }
-
   @OptIn(ExperimentalStdlibApi::class) // TODO move to build flag
   private fun generateMessage(
     type: MessageType,
@@ -331,8 +309,6 @@ class SwiftGenerator private constructor(
     val storageName = if ("storage" in propertyNames) "_storage" else "storage"
 
     val typeSpecs = mutableListOf<TypeSpec>()
-
-    validateProto3DefaultsExist(type)
 
     typeSpecs += TypeSpec.structBuilder(structType)
       .addModifiers(PUBLIC)
