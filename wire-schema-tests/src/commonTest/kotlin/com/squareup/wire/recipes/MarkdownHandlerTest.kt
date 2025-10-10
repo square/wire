@@ -79,6 +79,7 @@ class MarkdownHandlerTest {
       outDirectory = "generated/markdown".toPath(),
       logger = WireTestLogger(),
       sourcePathPaths = setOf("squareup/colors/red.proto", "squareup/colors/blue.proto"),
+      unpartitionedSchema = schema,
     )
     MarkdownHandler().handle(schema, context)
 

@@ -107,6 +107,9 @@ abstract class SchemaHandler {
      * is unstable and can change at anytime.
      */
     val profileLoader: ProfileLoader? = null,
+
+    /** The full [Schema] prior to any partitions. */
+    val unpartitionedSchema: Schema,
   ) {
     /** True if this [protoFile] ia part of a `sourcePath` root. */
     fun inSourcePath(protoFile: ProtoFile): Boolean {
