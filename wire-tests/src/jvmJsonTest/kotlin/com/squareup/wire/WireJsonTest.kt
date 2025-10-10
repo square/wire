@@ -352,7 +352,7 @@ class WireJsonTest {
     assertThat(value.drink).isEqualTo(FreeDrinkPromotion.Drink.ROOT_BEER)
   }
 
-  @Test fun unknownEnumValueInRepeatedFieldReplacedWithIdentityInProto3() {
+  @Test fun unknownEnumValueInRepeatedFieldShouldDefaultToUnknown() {
     val expected = AllTypesProto3.Builder()
       .rep_nested_enum(listOf(AllTypesProto3.NestedEnum.A, AllTypesProto3.NestedEnum.UNKNOWN))
       .build()
@@ -363,7 +363,7 @@ class WireJsonTest {
     assertThat(parsed).isEqualTo(expected)
   }
 
-  @Test fun unknownEnumValueInMapReplacedWithIdentityInProto3() {
+  @Test fun unknownEnumValueInMapShouldDefaultToUnknown() {
     val expected = AllTypesProto3.Builder()
       .map_string_enum(
         mapOf(
