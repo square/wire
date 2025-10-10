@@ -352,6 +352,33 @@ class WireJsonTest {
     assertThat(value.drink).isEqualTo(FreeDrinkPromotion.Drink.ROOT_BEER)
   }
 
+  @Test fun unknownEnumValueInRepeatedFieldReplacedWithIdentityInProto3() {
+    val expected = AllTypesProto3.Builder()
+      .rep_nested_enum(listOf(AllTypesProto3.NestedEnum.A, AllTypesProto3.NestedEnum.UNKNOWN))
+      .build()
+    val parsed = jsonLibrary.fromJson(
+      """{"repNestedEnum":["A","B"]}""", // B doesn't exist in AppTypes.NestedEnum.
+      AllTypesProto3::class.java
+    )
+    assertThat(parsed).isEqualTo(expected)
+  }
+
+  @Test fun unknownEnumValueInMapReplacedWithIdentityInProto3() {
+    val expected = AllTypesProto3.Builder()
+      .map_string_enum(
+        mapOf(
+          "first" to AllTypesProto3.NestedEnum.A,
+          "second" to AllTypesProto3.NestedEnum.UNKNOWN
+        )
+      )
+      .build()
+    val parsed = jsonLibrary.fromJson(
+      """{"mapStringEnum":{"first":"A","second":"B"}}""", // B doesn't exist in AppTypes.NestedEnum.
+      AllTypesProto3::class.java
+    )
+    assertThat(parsed).isEqualTo(expected)
+  }
+
   @Test fun all64MaxValue() {
     val value = All64.Builder()
       .my_int64(Long.MAX_VALUE)
