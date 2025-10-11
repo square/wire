@@ -2255,6 +2255,39 @@ class KotlinGeneratorTest {
     assertContains(code, "values = ArrayList(initialCapacity)")
   }
 
+  @Test fun customFieldOptionsUseFieldUseSiteTarget() {
+    val schema = buildSchema {
+      add(
+        "custom_options.proto".toPath(),
+        """
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.FieldOptions {
+        |  optional int32 my_field_value = 50000;
+        |}
+        |
+        |message MyMessage {
+        |  repeated string items = 1 [(my_field_value) = 42];
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("MyMessage")
+    assertThat(code).contains("@field:MyFieldValueOption(42)")
+    assertThat(code).contains(
+      """
+      |  @field:MyFieldValueOption(42)
+      |  @field:WireField(
+      |    tag = 1,
+      |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      |    label = WireField.Label.REPEATED,
+      |    schemaIndex = 0,
+      |  )
+      |  public val items: List<String> = immutableCopyOf("items", items)
+      """.trimMargin(),
+    )
+  }
+
   /**
    * We had a bug where java_package and wire_package were asymmetric. We would lose the
    * wire_package when it was used on the protoPath.
