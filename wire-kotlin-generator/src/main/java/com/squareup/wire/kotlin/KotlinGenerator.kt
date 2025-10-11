@@ -2905,6 +2905,7 @@ class KotlinGenerator private constructor(
     val fieldValue = defaultFieldInitializer(field.type!!, value, annotation = true)
 
     return AnnotationSpec.builder(type)
+      .useSiteTarget(FIELD)
       .addMember(fieldValue)
       .build()
   }
