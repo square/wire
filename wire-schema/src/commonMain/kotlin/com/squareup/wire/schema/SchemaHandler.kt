@@ -108,8 +108,8 @@ abstract class SchemaHandler {
      */
     val profileLoader: ProfileLoader? = null,
 
-    /** The full [Schema] prior to any partitions. */
-    val unpartitionedSchema: Schema,
+    /** The full refactored [Schema] prior partitioning. See [WireRun.modules]. */
+    val fullSchema: Schema,
   ) {
     /** True if this [protoFile] ia part of a `sourcePath` root. */
     fun inSourcePath(protoFile: ProtoFile): Boolean {

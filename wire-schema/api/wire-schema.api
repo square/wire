@@ -852,12 +852,12 @@ public final class com/squareup/wire/schema/SchemaHandler$Context {
 	public final fun getEmittingRules ()Lcom/squareup/wire/schema/EmittingRules;
 	public final fun getErrorCollector ()Lcom/squareup/wire/schema/ErrorCollector;
 	public final fun getFileSystem ()Lokio/FileSystem;
+	public final fun getFullSchema ()Lcom/squareup/wire/schema/Schema;
 	public final fun getLogger ()Lcom/squareup/wire/WireLogger;
 	public final fun getModule ()Lcom/squareup/wire/schema/SchemaHandler$Module;
 	public final fun getOutDirectory ()Lokio/Path;
 	public final fun getProfileLoader ()Lcom/squareup/wire/schema/ProfileLoader;
 	public final fun getSourcePathPaths ()Ljava/util/Set;
-	public final fun getUnpartitionedSchema ()Lcom/squareup/wire/schema/Schema;
 	public fun hashCode ()I
 	public final fun inSourcePath (Lcom/squareup/wire/schema/Location;)Z
 	public final fun inSourcePath (Lcom/squareup/wire/schema/ProtoFile;)Z

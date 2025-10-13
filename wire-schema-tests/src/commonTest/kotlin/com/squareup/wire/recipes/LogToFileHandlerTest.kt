@@ -64,7 +64,7 @@ class LogToFileHandlerTest {
       outDirectory = "/".toPath(),
       logger = WireTestLogger(),
       sourcePathPaths = setOf("test/message.proto", "test/service.proto"),
-      unpartitionedSchema = schema,
+      fullSchema = schema,
     )
     LogToFileHandler().handle(schema, context)
 
