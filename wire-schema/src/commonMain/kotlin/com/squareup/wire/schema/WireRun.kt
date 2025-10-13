@@ -313,6 +313,7 @@ class WireRun(
           sourcePathPaths = sourcePathPaths,
           module = module,
           profileLoader = schemaLoader,
+          fullSchema = schema,
         )
 
         eventListeners.forEach {

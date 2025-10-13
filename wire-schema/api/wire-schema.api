@@ -831,10 +831,11 @@ public abstract class com/squareup/wire/schema/SchemaHandler {
 }
 
 public final class com/squareup/wire/schema/SchemaHandler$Context {
-	public fun <init> (Lokio/FileSystem;Lokio/Path;Lcom/squareup/wire/WireLogger;Lcom/squareup/wire/schema/ErrorCollector;Lcom/squareup/wire/schema/EmittingRules;Lcom/squareup/wire/schema/ClaimedDefinitions;Lcom/squareup/wire/schema/ClaimedPaths;Lcom/squareup/wire/schema/SchemaHandler$Module;Ljava/util/Set;Lcom/squareup/wire/schema/ProfileLoader;)V
-	public synthetic fun <init> (Lokio/FileSystem;Lokio/Path;Lcom/squareup/wire/WireLogger;Lcom/squareup/wire/schema/ErrorCollector;Lcom/squareup/wire/schema/EmittingRules;Lcom/squareup/wire/schema/ClaimedDefinitions;Lcom/squareup/wire/schema/ClaimedPaths;Lcom/squareup/wire/schema/SchemaHandler$Module;Ljava/util/Set;Lcom/squareup/wire/schema/ProfileLoader;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lokio/FileSystem;Lokio/Path;Lcom/squareup/wire/WireLogger;Lcom/squareup/wire/schema/ErrorCollector;Lcom/squareup/wire/schema/EmittingRules;Lcom/squareup/wire/schema/ClaimedDefinitions;Lcom/squareup/wire/schema/ClaimedPaths;Lcom/squareup/wire/schema/SchemaHandler$Module;Ljava/util/Set;Lcom/squareup/wire/schema/ProfileLoader;Lcom/squareup/wire/schema/Schema;)V
+	public synthetic fun <init> (Lokio/FileSystem;Lokio/Path;Lcom/squareup/wire/WireLogger;Lcom/squareup/wire/schema/ErrorCollector;Lcom/squareup/wire/schema/EmittingRules;Lcom/squareup/wire/schema/ClaimedDefinitions;Lcom/squareup/wire/schema/ClaimedPaths;Lcom/squareup/wire/schema/SchemaHandler$Module;Ljava/util/Set;Lcom/squareup/wire/schema/ProfileLoader;Lcom/squareup/wire/schema/Schema;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lokio/FileSystem;
 	public final fun component10 ()Lcom/squareup/wire/schema/ProfileLoader;
+	public final fun component11 ()Lcom/squareup/wire/schema/Schema;
 	public final fun component2 ()Lokio/Path;
 	public final fun component3 ()Lcom/squareup/wire/WireLogger;
 	public final fun component4 ()Lcom/squareup/wire/schema/ErrorCollector;
@@ -843,14 +844,15 @@ public final class com/squareup/wire/schema/SchemaHandler$Context {
 	public final fun component7 ()Lcom/squareup/wire/schema/ClaimedPaths;
 	public final fun component8 ()Lcom/squareup/wire/schema/SchemaHandler$Module;
 	public final fun component9 ()Ljava/util/Set;
-	public final fun copy (Lokio/FileSystem;Lokio/Path;Lcom/squareup/wire/WireLogger;Lcom/squareup/wire/schema/ErrorCollector;Lcom/squareup/wire/schema/EmittingRules;Lcom/squareup/wire/schema/ClaimedDefinitions;Lcom/squareup/wire/schema/ClaimedPaths;Lcom/squareup/wire/schema/SchemaHandler$Module;Ljava/util/Set;Lcom/squareup/wire/schema/ProfileLoader;)Lcom/squareup/wire/schema/SchemaHandler$Context;
-	public static synthetic fun copy$default (Lcom/squareup/wire/schema/SchemaHandler$Context;Lokio/FileSystem;Lokio/Path;Lcom/squareup/wire/WireLogger;Lcom/squareup/wire/schema/ErrorCollector;Lcom/squareup/wire/schema/EmittingRules;Lcom/squareup/wire/schema/ClaimedDefinitions;Lcom/squareup/wire/schema/ClaimedPaths;Lcom/squareup/wire/schema/SchemaHandler$Module;Ljava/util/Set;Lcom/squareup/wire/schema/ProfileLoader;ILjava/lang/Object;)Lcom/squareup/wire/schema/SchemaHandler$Context;
+	public final fun copy (Lokio/FileSystem;Lokio/Path;Lcom/squareup/wire/WireLogger;Lcom/squareup/wire/schema/ErrorCollector;Lcom/squareup/wire/schema/EmittingRules;Lcom/squareup/wire/schema/ClaimedDefinitions;Lcom/squareup/wire/schema/ClaimedPaths;Lcom/squareup/wire/schema/SchemaHandler$Module;Ljava/util/Set;Lcom/squareup/wire/schema/ProfileLoader;Lcom/squareup/wire/schema/Schema;)Lcom/squareup/wire/schema/SchemaHandler$Context;
+	public static synthetic fun copy$default (Lcom/squareup/wire/schema/SchemaHandler$Context;Lokio/FileSystem;Lokio/Path;Lcom/squareup/wire/WireLogger;Lcom/squareup/wire/schema/ErrorCollector;Lcom/squareup/wire/schema/EmittingRules;Lcom/squareup/wire/schema/ClaimedDefinitions;Lcom/squareup/wire/schema/ClaimedPaths;Lcom/squareup/wire/schema/SchemaHandler$Module;Ljava/util/Set;Lcom/squareup/wire/schema/ProfileLoader;Lcom/squareup/wire/schema/Schema;ILjava/lang/Object;)Lcom/squareup/wire/schema/SchemaHandler$Context;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getClaimedDefinitions ()Lcom/squareup/wire/schema/ClaimedDefinitions;
 	public final fun getClaimedPaths ()Lcom/squareup/wire/schema/ClaimedPaths;
 	public final fun getEmittingRules ()Lcom/squareup/wire/schema/EmittingRules;
 	public final fun getErrorCollector ()Lcom/squareup/wire/schema/ErrorCollector;
 	public final fun getFileSystem ()Lokio/FileSystem;
+	public final fun getFullSchema ()Lcom/squareup/wire/schema/Schema;
 	public final fun getLogger ()Lcom/squareup/wire/WireLogger;
 	public final fun getModule ()Lcom/squareup/wire/schema/SchemaHandler$Module;
 	public final fun getOutDirectory ()Lokio/Path;
