@@ -138,6 +138,13 @@ data class KotlinTarget(
   val enumMode: EnumMode = EnumMode.ENUM_CLASS,
 
   /**
+   * If true, option annotations on fields will be marked with the `@field:` use-site target.
+   * This ensures the annotations are applied to the backing field rather than the property,
+   * enabling Java reflection access to field-level annotations.
+   */
+  val useFieldAnnotationTarget: Boolean = false,
+
+  /**
    * If true, adapters will generate decode functions for `ProtoReader32`. Use this optimization
    * when targeting Kotlin/JS, where `Long` cursors are inefficient.
    */
@@ -173,6 +180,7 @@ data class KotlinTarget(
       emitProtoReader32 = emitProtoReader32,
       mutableTypes = mutableTypes,
       explicitStreamingCalls = explicitStreamingCalls,
+      useFieldAnnotationTarget = useFieldAnnotationTarget,
     )
   }
 

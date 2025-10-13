@@ -165,6 +165,13 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
    */
   var explicitStreamingCalls: Boolean = false
 
+  /**
+   * If true, option annotations on fields will be marked with the `@field:` use-site target.
+   * This ensures the annotations are applied to the backing field rather than the property,
+   * enabling Java reflection access to field-level annotations.
+   */
+  val useFieldAnnotationTarget: Boolean = false
+
   override fun toTarget(outputDirectory: String): KotlinTarget {
     if (grpcServerCompatible) {
       throw IllegalArgumentException(
@@ -210,6 +217,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       emitProtoReader32 = emitProtoReader32,
       mutableTypes = mutableTypes,
       explicitStreamingCalls = explicitStreamingCalls,
+      useFieldAnnotationTarget = useFieldAnnotationTarget,
     )
   }
 }

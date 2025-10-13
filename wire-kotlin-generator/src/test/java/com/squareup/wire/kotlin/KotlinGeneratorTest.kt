@@ -2255,6 +2255,185 @@ class KotlinGeneratorTest {
     assertContains(code, "values = ArrayList(initialCapacity)")
   }
 
+  @Test fun customFieldOptionsUseFieldUseSiteTarget() {
+    val schema = buildSchema {
+      add(
+        "custom_options.proto".toPath(),
+        """
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.FieldOptions {
+        |  optional int32 my_field_value = 50000;
+        |}
+        |
+        |message MyMessage {
+        |  repeated string items = 1 [(my_field_value) = 42];
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin(
+      typeName = "MyMessage",
+      useFieldAnnotationTarget = true
+    )
+    assertThat(code).contains("@field:MyFieldValueOption(42)")
+    assertThat(code).contains(
+      """
+      |  @field:MyFieldValueOption(42)
+      |  @field:WireField(
+      |    tag = 1,
+      |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      |    label = WireField.Label.REPEATED,
+      |    schemaIndex = 0,
+      |  )
+      |  public val items: List<String> = immutableCopyOf("items", items)
+      """.trimMargin(),
+    )
+  }
+
+  @Test fun customMethodOptionsShouldNotUseFieldUseSiteTarget() {
+    val schema = buildSchema {
+      add(
+        "custom_options.proto".toPath(),
+        """
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.MethodOptions {
+        |  optional bool my_method = 50001;
+        |}
+        |
+        |service MyService {
+        |  rpc MyMethod(MyRequest) returns (MyResponse) {
+        |    option (my_method) = true;
+        |  }
+        |}
+        |
+        |message MyRequest {}
+        |message MyResponse {}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateGrpcKotlin("MyService").first()
+    // Method options should NOT have @field: prefix - they're applied to methods
+    assertThat(code).contains(
+      """
+      |import com.squareup.wire.GrpcCall
+      |import com.squareup.wire.Service
+      |
+      |public interface MyServiceClient : Service {
+      |  @MyMethodOption(true)
+      |  public fun MyMethod(): GrpcCall<MyRequest, MyResponse>
+      |}
+      """.trimMargin(),
+    )
+  }
+
+  @Test fun customMessageOptionsShouldNotUseFieldUseSiteTarget() {
+    val schema = buildSchema {
+      add(
+        "custom_options.proto".toPath(),
+        """
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.MessageOptions {
+        |  optional string my_message = 50002;
+        |}
+        |
+        |message MyMessage {
+        |  option (my_message) = "test";
+        |  optional string name = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("MyMessage")
+    // Message options should NOT have @field: prefix - they're applied to the class
+    assertThat(code).contains("@MyMessageOption(\"test\")")
+    assertThat(code).doesNotContain("@field:MyMessageOption")
+    assertThat(code).contains(
+      """
+      |@MyMessageOption("test")
+      |public class MyMessage(
+      """.trimMargin(),
+    )
+  }
+
+  @Test fun customEnumOptionsShouldNotUseFieldUseSiteTarget() {
+    val schema = buildSchema {
+      add(
+        "custom_options.proto".toPath(),
+        """
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.EnumOptions {
+        |  optional int32 my_enum = 50003;
+        |}
+        |
+        |enum MyEnum {
+        |  option (my_enum) = 123;
+        |  UNKNOWN = 0;
+        |  OPTION_A = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("MyEnum")
+    // Enum options should NOT have @field: prefix
+    assertThat(code).contains("@MyEnumOption(123)")
+    assertThat(code).doesNotContain("@field:MyEnumOption")
+  }
+
+  @Test fun customEnumValueOptionsShouldNotUseFieldUseSiteTarget() {
+    val schema = buildSchema {
+      add(
+        "custom_options.proto".toPath(),
+        """
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.EnumValueOptions {
+        |  optional string my_enum_value = 50004;
+        |}
+        |
+        |enum MyEnum {
+        |  UNKNOWN = 0;
+        |  OPTION_A = 1 [(my_enum_value) = "special"];
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("MyEnum")
+    // Enum value options should NOT have @field: prefix
+    assertThat(code).contains("@MyEnumValueOption(\"special\")")
+    assertThat(code).doesNotContain("@field:MyEnumValueOption")
+  }
+
+  @Test fun customServiceOptionsShouldNotUseFieldUseSiteTarget() {
+    val schema = buildSchema {
+      add(
+        "custom_options.proto".toPath(),
+        """
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.ServiceOptions {
+        |  optional double my_service = 50005;
+        |}
+        |
+        |service MyService {
+        |  option (my_service) = 3.14;
+        |  rpc MyMethod(MyRequest) returns (MyResponse);
+        |}
+        |
+        |message MyRequest {}
+        |message MyResponse {}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateGrpcKotlin("MyService").first()
+    // Service options should NOT have @field: prefix
+    assertThat(code).contains("@MyServiceOption(3.14)")
+    assertThat(code).doesNotContain("@field:MyServiceOption")
+  }
+
   /**
    * We had a bug where java_package and wire_package were asymmetric. We would lose the
    * wire_package when it was used on the protoPath.

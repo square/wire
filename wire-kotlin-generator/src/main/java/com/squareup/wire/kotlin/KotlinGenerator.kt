@@ -141,6 +141,7 @@ class KotlinGenerator private constructor(
   private val emitProtoReader32: Boolean,
   private val mutableTypes: Boolean,
   private val explicitStreamingCalls: Boolean,
+  private val useFieldAnnotationTarget: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -1280,7 +1281,7 @@ class KotlinGenerator private constructor(
               .build(),
           )
         }
-        for (annotation in optionAnnotations(field.options)) {
+        for (annotation in optionAnnotations(field.options, isField = true)) {
           addAnnotation(annotation)
         }
         addAnnotation(wireFieldAnnotation(message, field, schemaIndex))
@@ -2884,10 +2885,10 @@ class KotlinGenerator private constructor(
       }
     }
 
-  private fun optionAnnotations(options: Options): List<AnnotationSpec> {
+  private fun optionAnnotations(options: Options, isField: Boolean = false): List<AnnotationSpec> {
     val result = mutableListOf<AnnotationSpec>()
     for ((key, value) in options.map) {
-      val annotationSpec = optionAnnotation(key, value!!)
+      val annotationSpec = optionAnnotation(key, value!!, isField)
       if (annotationSpec != null) {
         result.add(annotationSpec)
       }
@@ -2895,7 +2896,7 @@ class KotlinGenerator private constructor(
     return result
   }
 
-  private fun optionAnnotation(protoMember: ProtoMember, value: Any): AnnotationSpec? {
+  private fun optionAnnotation(protoMember: ProtoMember, value: Any, isField: Boolean = false): AnnotationSpec? {
     if (!emitAppliedOptions) return null
 
     val field: Field = schema.getField(protoMember) ?: return null
@@ -2905,6 +2906,11 @@ class KotlinGenerator private constructor(
     val fieldValue = defaultFieldInitializer(field.type!!, value, annotation = true)
 
     return AnnotationSpec.builder(type)
+      .apply {
+        if (useFieldAnnotationTarget && isField) {
+          useSiteTarget(FIELD)
+        }
+      }
       .addMember(fieldValue)
       .build()
   }
@@ -3045,7 +3051,7 @@ class KotlinGenerator private constructor(
               .build(),
           )
         }
-        for (annotation in optionAnnotations(field.options)) {
+        for (annotation in optionAnnotations(field.options, isField = true)) {
           addAnnotation(annotation)
         }
       }
@@ -3185,6 +3191,7 @@ class KotlinGenerator private constructor(
       emitProtoReader32: Boolean = false,
       mutableTypes: Boolean = false,
       explicitStreamingCalls: Boolean = false,
+      useFieldAnnotationTarget: Boolean = false,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -3239,6 +3246,7 @@ class KotlinGenerator private constructor(
         emitProtoReader32 = emitProtoReader32,
         mutableTypes = mutableTypes,
         explicitStreamingCalls = explicitStreamingCalls,
+        useFieldAnnotationTarget = useFieldAnnotationTarget,
       )
     }
 

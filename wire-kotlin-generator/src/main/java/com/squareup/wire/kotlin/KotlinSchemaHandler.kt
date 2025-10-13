@@ -96,6 +96,13 @@ class KotlinSchemaHandler(
    * If true, streaming calls will generate explicit call types for client,server, and bidirectional streaming.
    */
   private val explicitStreamingCalls: Boolean = false,
+
+  /**
+   * If true, option annotations on fields will be marked with the `@field:` use-site target.
+   * This ensures the annotations are applied to the backing field rather than the property,
+   * enabling Java reflection access to field-level annotations.
+   */
+  private val useFieldAnnotationTarget: Boolean = false,
 ) : SchemaHandler() {
   private lateinit var kotlinGenerator: KotlinGenerator
 
@@ -119,6 +126,7 @@ class KotlinSchemaHandler(
       emitProtoReader32 = emitProtoReader32,
       mutableTypes = mutableTypes,
       explicitStreamingCalls = explicitStreamingCalls,
+      useFieldAnnotationTarget = useFieldAnnotationTarget,
     )
     context.fileSystem.createDirectories(context.outDirectory)
     super.handle(schema, context)

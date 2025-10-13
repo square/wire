@@ -151,6 +151,7 @@ class WireCompiler internal constructor(
   val emitProtoReader32: Boolean,
   val kotlinExplicitStreamingCalls: Boolean,
   val kotlinEnumMode: EnumMode,
+  val kotlinUseFieldAnnotationTarget: Boolean,
   val eventListenerFactoryClasses: List<String>,
   val customOptions: Map<String, String>,
   val opaqueTypes: List<String> = listOf(),
@@ -187,6 +188,7 @@ class WireCompiler internal constructor(
         escapeKotlinKeywords = kotlinEscapeKeywords,
         emitProtoReader32 = emitProtoReader32,
         explicitStreamingCalls = kotlinExplicitStreamingCalls,
+        useFieldAnnotationTarget = kotlinUseFieldAnnotationTarget,
         enumMode = kotlinEnumMode,
       )
     }
@@ -305,6 +307,8 @@ class WireCompiler internal constructor(
     private const val OPAQUE_TYPES_FLAG = "--opaque_types="
     private const val IGNORE_UNUSED_ROOTS_AND_PRUNES = "--ignore_unused_roots_and_prunes"
     private const val KOTLIN_EXPLICIT_STREAMING_CALLS = "--kotlin_explicit_streaming_calls"
+    private const val KOTLIN_USE_FIELD_ANNOTATION_TARGET = "--kotlin_use_field_annotation_target"
+
 
     @Throws(IOException::class)
     @JvmStatic
@@ -370,6 +374,7 @@ class WireCompiler internal constructor(
       var emitProtoReader32 = false
       var kotlinEnumMode = EnumMode.ENUM_CLASS
       var kotlinExplicitStreamingCalls = false
+      var kotlinUseFieldAnnotationTarget = false
       var dryRun = false
       val customOptions = mutableMapOf<String, String>()
       var rejectUnusedRootsOrPrunes = true
@@ -496,6 +501,7 @@ class WireCompiler internal constructor(
           arg == JAVA_INTEROP -> javaInterop = true
           arg == EMIT_PROTO_READER_32 -> emitProtoReader32 = true
           arg == KOTLIN_EXPLICIT_STREAMING_CALLS -> kotlinExplicitStreamingCalls = true
+          arg == KOTLIN_USE_FIELD_ANNOTATION_TARGET -> kotlinUseFieldAnnotationTarget = true
           arg == IGNORE_UNUSED_ROOTS_AND_PRUNES -> rejectUnusedRootsOrPrunes = false
           arg.startsWith("--") -> throw IllegalArgumentException("Unknown argument '$arg'.")
           else -> sourceFileNames.add(arg)
@@ -554,6 +560,7 @@ class WireCompiler internal constructor(
         opaqueTypes = opaqueTypes,
         rejectUnusedRootsOrPrunes = rejectUnusedRootsOrPrunes,
         kotlinExplicitStreamingCalls = kotlinExplicitStreamingCalls,
+        kotlinUseFieldAnnotationTarget = kotlinUseFieldAnnotationTarget,
       )
     }
   }
