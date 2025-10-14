@@ -16,6 +16,7 @@
 package com.squareup.wire.internal
 
 import com.squareup.wire.EnumAdapter
+import com.squareup.wire.Syntax
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
 import java.lang.reflect.Constructor
@@ -35,6 +36,11 @@ class EnumJsonFormatter<E : WireEnum>(
    * The `Unrecognized(value: Int) class that might have been generated. See [EnumMode][com.squareup.wire.kotlin.EnumMode].
    */
   private var unrecognizedClassConstructor: Constructor<E>? = null
+
+  /**
+   * The `UNRECOGNIZED(0)` constant that might have been generated. See [EnumMode][com.squareup.wire.kotlin.EnumMode].
+   */
+  private var unrecognizedConstant: E? = null
 
   init {
     val mutableStringToValue = mutableMapOf<String, E>()
@@ -86,6 +92,11 @@ class EnumJsonFormatter<E : WireEnum>(
           mutableValueToString[constant] = wireEnumConstant.declaredName
         }
       }
+
+      val firstConstant = enumConstants.firstOrNull()
+      if (adapter.syntax == Syntax.PROTO_3 && (firstConstant as? WireEnum)?.value == 0) {
+        unrecognizedConstant = firstConstant
+      }
     }
 
     stringToValue = mutableStringToValue
@@ -97,6 +108,8 @@ class EnumJsonFormatter<E : WireEnum>(
       // If the constant is unknown to our runtime, we return a `Unrecognized` instance if it has
       // been generated.
       ?: unrecognizedClassConstructor?.newInstance(value.toInt())
+      // If the enum has been generated with a `UNRECOGNIZED(0)` constant, we return it.
+      ?: unrecognizedConstant
   }
 
   override fun toStringOrNumber(value: E): Any {
