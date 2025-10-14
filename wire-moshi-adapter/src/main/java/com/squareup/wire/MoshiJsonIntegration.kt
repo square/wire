@@ -30,9 +30,12 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
     type: Type,
   ): JsonAdapter<Any?> = framework.adapter<Any?>(type).nullSafe()
 
-  override fun listAdapter(elementAdapter: JsonAdapter<Any?>): JsonAdapter<Any?> {
+  override fun listAdapter(
+    elementAdapter: JsonAdapter<Any?>,
+    skipNull: Boolean,
+  ): JsonAdapter<Any?> {
     @Suppress("UNCHECKED_CAST")
-    return ListJsonAdapter(elementAdapter).nullSafe() as JsonAdapter<Any?>
+    return ListJsonAdapter(elementAdapter, skipNull).nullSafe() as JsonAdapter<Any?>
   }
 
   override fun mapAdapter(
@@ -80,12 +83,15 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
   /** Adapt a list of values by delegating to an adapter for a single value. */
   private class ListJsonAdapter<T>(
     private val single: JsonAdapter<T>,
+    private val skipNull: Boolean,
   ) : JsonAdapter<List<T?>>() {
     override fun fromJson(reader: JsonReader): List<T?> {
       val result = mutableListOf<T?>()
       reader.beginArray()
       while (reader.hasNext()) {
-        result.add(single.fromJson(reader))
+        val fromJson = single.fromJson(reader)
+        if (fromJson == null && skipNull) continue
+        result.add(fromJson)
       }
       reader.endArray()
       return result

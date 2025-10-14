@@ -30,6 +30,7 @@ import com.google.protobuf.Struct
 import com.google.protobuf.Timestamp
 import com.google.protobuf.Value
 import com.google.protobuf.util.JsonFormat
+import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtension as RequiredExtensionK
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtensionMessage as RequiredExtensionMessageK
@@ -46,6 +47,8 @@ import squareup.proto2.kotlin.interop.type.MessageProto2 as MessageProto2K
 import squareup.proto3.java.alltypes.AllTypes as AllTypesJ
 import squareup.proto3.java.alltypes.AllWrappers as AllWrappersJ
 import squareup.proto3.java.interop.InteropMessage as InteropMessageJ
+import squareup.proto3.java.interop.InteropRepeatedEnums as InteropRepeatedEnumsJ3
+import squareup.proto3.java.interop.InteropTest.InteropRepeatedEnums
 import squareup.proto3.java.interop.type.EnumProto3 as EnumProto3J
 import squareup.proto3.java.interop.type.MessageProto3 as MessageProto3J
 import squareup.proto3.kotlin.MapTypes as MapTypesK
@@ -60,6 +63,7 @@ import squareup.proto3.kotlin.alltypes.CamelCaseOuterClass
 import squareup.proto3.kotlin.extensions.WireMessageOuterClass
 import squareup.proto3.kotlin.interop.InteropMessage as InteropMessageK
 import squareup.proto3.kotlin.interop.InteropMessageOuterClass
+import squareup.proto3.kotlin.interop.InteropRepeatedEnums as InteropRepeatedEnumsK3
 import squareup.proto3.kotlin.interop.type.EnumProto3 as EnumProto3K
 import squareup.proto3.kotlin.interop.type.InteropTypes.EnumProto3
 import squareup.proto3.kotlin.interop.type.InteropTypes.MessageProto3
@@ -73,6 +77,9 @@ import squareup.proto3.kotlin.unrecognized_constant.EasterOuterClass.EasterAnima
 import squareup.proto3.wire.extensions.WireMessage
 
 class Proto3WireProtocCompatibilityTests {
+  private val moshi = Moshi.Builder()
+    .add(WireJsonAdapterFactory())
+    .build()
 
   // Note: this test mostly make sure we compile required extension without failing.
   @Test fun protocAndRequiredExtensions() {
@@ -174,6 +181,96 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(AllTypesJ.ADAPTER.decode(protocBytes)).isEqualTo(wireMessageJava)
     assertThat(AllTypesK.ADAPTER.encode(wireMessageKotlin)).isEqualTo(protocBytes)
     assertThat(AllTypesK.ADAPTER.decode(protocBytes)).isEqualTo(wireMessageKotlin)
+  }
+
+  @Test fun deserializeUnknownEnumConstantName() {
+    val json = """{"availableSizes":["SMALL","MEDIUM","SURPRISE","LARGE"]}"""
+
+    val jsonParser = JsonFormat.parser().ignoringUnknownFields()
+    val parsed = InteropRepeatedEnums.newBuilder()
+      .apply { jsonParser.merge(json, this) }
+      .build()
+
+    // Protobuf ignored the unknown constant.
+    val expectedProtoc = InteropRepeatedEnums.newBuilder()
+      .addAllAvailableSizes(
+        listOf(
+          InteropRepeatedEnums.Size.SMALL,
+          InteropRepeatedEnums.Size.MEDIUM,
+          InteropRepeatedEnums.Size.LARGE,
+        ),
+      )
+      .build()
+    assertThat(parsed).isEqualTo(expectedProtoc)
+    val jsonPrinter = JsonFormat.printer()
+    assertJsonEquals("""{"availableSizes":["SMALL","MEDIUM","LARGE"]}""", jsonPrinter.print(expectedProtoc))
+
+    val expectedJava = InteropRepeatedEnumsJ3(
+      listOf(
+        InteropRepeatedEnumsJ3.Size.SMALL,
+        InteropRepeatedEnumsJ3.Size.MEDIUM,
+        InteropRepeatedEnumsJ3.Size.LARGE,
+      ),
+    )
+    assertThat(moshi.adapter(InteropRepeatedEnumsJ3::class.java).fromJson(json))
+      .isEqualTo(expectedJava)
+
+    val expectedKotlinSealedMode = InteropRepeatedEnumsK3(
+      available_sizes = listOf(
+        InteropRepeatedEnumsK3.Size.SMALL,
+        InteropRepeatedEnumsK3.Size.MEDIUM,
+        InteropRepeatedEnumsK3.Size.LARGE,
+      ),
+    )
+    assertThat(moshi.adapter(InteropRepeatedEnumsK3::class.java).fromJson(json))
+      .isEqualTo(expectedKotlinSealedMode)
+  }
+
+  @Test fun deserializeUnknownEnumConstantValue() {
+    val json = """{"availableSizes":["SMALL","MEDIUM",6,"LARGE"]}"""
+
+    val jsonParser = JsonFormat.parser().ignoringUnknownFields()
+    val parsed = InteropRepeatedEnums.newBuilder()
+      .apply { jsonParser.merge(json, this) }
+      .build()
+
+    // Protobuf stored the unknown constant value.
+    val expectedProtoc = InteropRepeatedEnums.newBuilder()
+      .addAllAvailableSizesValue(
+        listOf(
+          InteropRepeatedEnums.Size.SMALL_VALUE,
+          InteropRepeatedEnums.Size.MEDIUM_VALUE,
+          6,
+          InteropRepeatedEnums.Size.LARGE_VALUE,
+        ),
+      )
+      .build()
+    assertThat(parsed).isEqualTo(expectedProtoc)
+    val jsonPrinter = JsonFormat.printer()
+    assertJsonEquals(json, jsonPrinter.print(expectedProtoc))
+
+    // The unknown constant is lost for regular enums.
+    val expectedJava = InteropRepeatedEnumsJ3(
+      listOf(
+        InteropRepeatedEnumsJ3.Size.SMALL,
+        InteropRepeatedEnumsJ3.Size.MEDIUM,
+        InteropRepeatedEnumsJ3.Size.LARGE,
+      ),
+    )
+    assertThat(moshi.adapter(InteropRepeatedEnumsJ3::class.java).fromJson(json))
+      .isEqualTo(expectedJava)
+
+    // The unknown constant is stored in the `Unrecognized` for `EnumMode.SEALED_CLASS`.
+    val expectedKotlinSealedMode = InteropRepeatedEnumsK3(
+      available_sizes = listOf(
+        InteropRepeatedEnumsK3.Size.SMALL,
+        InteropRepeatedEnumsK3.Size.MEDIUM,
+        InteropRepeatedEnumsK3.Size.Unrecognized(6),
+        InteropRepeatedEnumsK3.Size.LARGE,
+      ),
+    )
+    assertThat(moshi.adapter(InteropRepeatedEnumsK3::class.java).fromJson(json))
+      .isEqualTo(expectedKotlinSealedMode)
   }
 
   @Test fun deserializeDefaultAllTypesProtoc() {

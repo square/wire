@@ -32,8 +32,11 @@ abstract class JsonIntegration<F, A> {
   /** Returns [framework]'s built-in adapter for [type]. */
   abstract fun frameworkAdapter(framework: F, type: Type): A
 
-  /** Returns an adapter iterates a list of the target adapter. */
-  abstract fun listAdapter(elementAdapter: A): A
+  /**
+   * Returns an adapter iterates a list of the target adapter. If [skipNull] is true, null evaluated
+   * value will be ignored.
+   */
+  abstract fun listAdapter(elementAdapter: A, skipNull: Boolean): A
 
   /** Returns an adapter iterates keys and values of the target adapter. */
   abstract fun mapAdapter(
@@ -77,7 +80,11 @@ abstract class JsonIntegration<F, A> {
     }
 
     return when {
-      field.label.isRepeated -> listAdapter(singleAdapter)
+      field.label.isRepeated -> listAdapter(
+        elementAdapter = singleAdapter,
+        // We ignore unrecognized constants in repeated fields for enums.
+        skipNull = jsonStringAdapter is EnumJsonFormatter<*>,
+      )
       field.isMap -> mapAdapter(
         framework = framework,
         keyFormatter = mapKeyJsonFormatter(field.keyAdapter),

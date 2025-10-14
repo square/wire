@@ -68,3 +68,13 @@ message InteropWrappers {
   google.protobuf.StringValue string_value = 8;
   google.protobuf.BytesValue bytes_value = 9;
 }
+
+message InteropRepeatedEnums {
+  enum Size {
+    SMALL = 0;
+    MEDIUM = 1;
+    LARGE = 2;
+  }
+
+  repeated Size available_sizes = 1 [packed = false];
+}

@@ -34,9 +34,12 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
     return framework.getAdapter(TypeToken.get(type)).nullSafe() as TypeAdapter<Any?>
   }
 
-  override fun listAdapter(elementAdapter: TypeAdapter<Any?>): TypeAdapter<Any?> {
+  override fun listAdapter(
+    elementAdapter: TypeAdapter<Any?>,
+    skipNull: Boolean,
+  ): TypeAdapter<Any?> {
     @Suppress("UNCHECKED_CAST")
-    return ListJsonAdapter(elementAdapter).nullSafe() as TypeAdapter<Any?>
+    return ListJsonAdapter(elementAdapter, skipNull).nullSafe() as TypeAdapter<Any?>
   }
 
   override fun mapAdapter(
@@ -103,12 +106,15 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
   /** Adapt a list of values by delegating to an adapter for a single value. */
   private class ListJsonAdapter<T>(
     private val single: TypeAdapter<T>,
+    private val skipNull: Boolean,
   ) : TypeAdapter<List<T?>>() {
     override fun read(reader: JsonReader): List<T?> {
       val result = mutableListOf<T?>()
       reader.beginArray()
       while (reader.hasNext()) {
-        result.add(single.read(reader))
+        val fromJson = single.read(reader)
+        if (fromJson == null && skipNull) continue
+        result.add(fromJson)
       }
       reader.endArray()
       return result

@@ -620,7 +620,7 @@ public abstract class com/squareup/wire/internal/JsonIntegration {
 	public abstract fun formatterAdapter (Lcom/squareup/wire/internal/JsonFormatter;)Ljava/lang/Object;
 	public abstract fun frameworkAdapter (Ljava/lang/Object;Ljava/lang/reflect/Type;)Ljava/lang/Object;
 	public final fun jsonAdapters (Lcom/squareup/wire/internal/RuntimeMessageAdapter;Ljava/lang/Object;)Ljava/util/List;
-	public abstract fun listAdapter (Ljava/lang/Object;)Ljava/lang/Object;
+	public abstract fun listAdapter (Ljava/lang/Object;Z)Ljava/lang/Object;
 	public abstract fun mapAdapter (Ljava/lang/Object;Lcom/squareup/wire/internal/JsonFormatter;Ljava/lang/Object;)Ljava/lang/Object;
 	public abstract fun structAdapter (Ljava/lang/Object;)Ljava/lang/Object;
 }
