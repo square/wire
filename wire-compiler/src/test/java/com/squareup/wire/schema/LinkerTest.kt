@@ -158,6 +158,34 @@ class LinkerTest {
     )
   }
 
+  @Test fun escapedSequenceInStringLiterals() {
+    fs.add(
+      "source-path/cafe/cafe.proto",
+      """
+        |syntax = "proto2";
+        |
+        |package cafe;
+        |
+        |option php_namespace = "\"\\\a\b\f\n\r\t\v";
+        |
+      """.trimMargin(),
+    )
+    val schema = loadAndLinkSchema()
+    assertThat(schema.protoFile("cafe/cafe.proto")!!.toSchema()).isEqualTo(
+      """
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: cafe/cafe.proto
+        |
+        |syntax = "proto2";
+        |
+        |package cafe;
+        |
+        |option php_namespace = "\"\\\a\b\f\n\r\t\v";
+        |
+      """.trimMargin(),
+    )
+  }
+
   @Test fun opaqueExtensionField() {
     fs.add(
       "source-path/cafe/cafe.proto",
