@@ -364,6 +364,9 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
 
     project.extensions.getByType(ApiValidationExtension::class.java).apply {
       ignoredPackages += "grpc.reflection.v1alpha"
+      ignoredPackages += "com.squareup.wire.gradle.internal"
+      ignoredPackages += "com.squareup.wire.internal"
+      ignoredPackages += "com.squareup.wire.schema.internal"
     }
   }
 
