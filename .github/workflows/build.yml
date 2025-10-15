@@ -24,6 +24,10 @@ jobs:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
 
+      - uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: false
+
       - name: Check test files
         run: |
           ./gradlew generateTests -Pswift=false --stacktrace --warning-mode all
@@ -48,6 +52,10 @@ jobs:
         with:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
+
+      - uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: false
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -83,6 +91,10 @@ jobs:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
 
+      - uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: false
+
       - name: Check test files
         run: |
           ./gradlew generateTests --stacktrace --warning-mode all
@@ -112,6 +124,10 @@ jobs:
         with:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
+
+      - uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: false
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
