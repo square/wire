@@ -52,7 +52,7 @@ class EnumJsonFormatter<E : WireEnum>(
 
         val field = subClass.declaredFields.first()
         if (field.name == "INSTANCE") {
-          @Suppress("UNCHECKED_CAST") // We know it's a E since we generated it.
+          @Suppress("UNCHECKED_CAST") // We know it's an E since we generated it.
           val subClassInstance = field.get(null) as E
           mutableStringToValue[subClass.simpleName] = subClassInstance
           mutableStringToValue[subClassInstance.value.toString()] = subClassInstance
@@ -94,9 +94,9 @@ class EnumJsonFormatter<E : WireEnum>(
 
   override fun fromString(value: String): E? {
     return stringToValue[value]
-      // If the constant is unknown to our runtime, we return a `Unrecognized` instance if it has
-      // been generated.
-      ?: unrecognizedClassConstructor?.newInstance(value.toInt())
+      // In case the `Unrecognized` instance is generated, we store the value assuming it represents
+      // a constant value (integer), and ignore it otherwise (name as string).
+      ?: value.toIntOrNull()?.let { value -> unrecognizedClassConstructor?.newInstance(value) }
   }
 
   override fun toStringOrNumber(value: E): Any {

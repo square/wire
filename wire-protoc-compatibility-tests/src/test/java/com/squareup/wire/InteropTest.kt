@@ -47,6 +47,7 @@ import squareup.proto3.java.interop.InteropTest.InteropBoxOneOf as InteropBoxOne
 import squareup.proto3.java.interop.InteropTest.InteropCamelCase as InteropCamelCaseP3
 import squareup.proto3.java.interop.InteropTest.InteropDuration as InteropDurationP3
 import squareup.proto3.java.interop.InteropTest.InteropJsonName as InteropJsonNameP3
+import squareup.proto3.java.interop.InteropTest.InteropRepeatedEnums
 import squareup.proto3.java.interop.InteropTest.InteropUint64 as InteropUint64P3
 import squareup.proto3.java.interop.InteropTest.InteropWrappers
 import squareup.proto3.java.interop.InteropUint64 as InteropUint64J3
@@ -56,6 +57,7 @@ import squareup.proto3.kotlin.interop.InteropCamelCase as InteropCamelCaseK3
 import squareup.proto3.kotlin.interop.InteropDuration as InteropDurationK3
 import squareup.proto3.kotlin.interop.InteropJsonName as InteropJsonNameK3
 import squareup.proto3.kotlin.interop.InteropOptional as InteropOptionalK3
+import squareup.proto3.kotlin.interop.InteropRepeatedEnums as InteropRepeatedEnumsK3
 import squareup.proto3.kotlin.interop.InteropUint64 as InteropUint64K3
 import squareup.proto3.kotlin.interop.InteropWrappers as InteropWrappersK3
 import squareup.proto3.kotlin.interop.TestProto3Optional.InteropOptional as InteropOptionalP3
@@ -450,6 +452,45 @@ class InteropTest {
         .bool_value(true)
         .string_value("string")
         .bytes_value(ByteString.of(1))
+        .build(),
+    )
+  }
+
+  @Test fun repeatedEnums() {
+    val checker = InteropChecker(
+      protocMessage = InteropRepeatedEnums.newBuilder()
+        .addAllAvailableSizes(
+          listOf(
+            InteropRepeatedEnums.Size.SMALL,
+            InteropRepeatedEnums.Size.MEDIUM,
+            InteropRepeatedEnums.Size.LARGE,
+          ),
+        )
+        .addAllAvailableSizesValue(listOf(8))
+        .build(),
+      canonicalJson = """{"availableSizes":["SMALL","MEDIUM","LARGE",8]}""",
+    )
+    // TODO(Benoit) Without EnumMode.SEALED_CLASS, Wire fails to print the unknown constant.
+    // checker.check(
+    //   InteropRepeatedEnumsJ3.Builder()
+    //     .available_sizes(listOf(
+    //       InteropRepeatedEnumsJ3.Size.SMALL,
+    //       InteropRepeatedEnumsJ3.Size.MEDIUM,
+    //       InteropRepeatedEnumsJ3.Size.LARGE,
+    //       ))
+    //     .addUnknownField(3, FieldEncoding.VARINT, 8)
+    //     .build(),
+    // )
+    checker.check(
+      InteropRepeatedEnumsK3.Builder()
+        .available_sizes(
+          listOf(
+            InteropRepeatedEnumsK3.Size.SMALL,
+            InteropRepeatedEnumsK3.Size.MEDIUM,
+            InteropRepeatedEnumsK3.Size.LARGE,
+            InteropRepeatedEnumsK3.Size.Unrecognized(8),
+          ),
+        )
         .build(),
     )
   }
