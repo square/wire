@@ -15,33 +15,65 @@
  */
 syntax = "proto2";
 
-package squareup.protos.kotlin.swift_modules;
+package squareup.protos.kotlin.swift_modules.module_one;
 
-import "swift_module_address.proto";
-import "swift_module_location.proto";
+//import "swift_module_address.proto";
+//import "swift_module_location.proto";
 
-enum SwiftModuleOneEnum {
-  DO_NOT_USE = 0;
-  ONE = 1;
-  TWO = 2;
+message DateTime {
+  /**
+   * in usec; datum reference: the Unix epoch
+   * What Joda calls instant except in usec rather than msec.
+   *
+   * Range: 1970 +/- 300K years
+   */
+  optional int64 instant_usec = 1;
+
+  /**
+   * in minutes; datum reference: UTC
+   * What Joda calls offset except in minutes rather than msec.
+   */
+  optional sint32 timezone_offset_min = 2;
+
+  /**
+   * as defined in draft-sharhalakis-httptz-05
+   */
+  optional string posix_tz = 3;
+
+  /**
+   * as defined in draft-sharhalakis-httptz-05
+   */
+  repeated string tz_name = 4;
+
+  /**
+   * An arbitrary value that can be used to break sorting ties when
+   * instant_usec does not provide sufficient granularity (e.g.
+   * System.nanoTime() in Java)
+   */
+  optional int64 ordinal = 5;
 }
 
-// Collides with Foundation.SortOrder
-enum SortOrder {
-  DESC = 0;
-  ASC = 1;
-}
-
-message SwiftModuleOneMessage {
-  required string name = 1;
-
-  extensions 1000 to 1999;
-}
-
-message SwiftModuleOneAmbiguousMessage {
-  optional string name = 1;
-
-  optional squareup.protos.kotlin.swift_modules.address.Address address = 2;
-
-  optional squareup.protos.kotlin.swift_modules.location.Location location = 3;
-}
+//enum SwiftModuleOneEnum {
+//  DO_NOT_USE = 0;
+//  ONE = 1;
+//  TWO = 2;
+//}
+//
+//// Collides with Foundation.SortOrder
+//enum SortOrder {
+//  DESC = 0;
+//  ASC = 1;
+//}
+//
+//message SwiftModuleOneMessage {
+//  required string name = 1;
+//
+//  extensions 1000 to 1999;
+//}
+//
+//message SwiftModuleOneAmbiguousMessage {
+//  optional string name = 1;
+//
+//  optional squareup.protos.kotlin.swift_modules.address.Address address = 2;
+//
+//  optional squareup.protos.kotlin.swift_modules.location.Location location = 3;

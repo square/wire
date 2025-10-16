@@ -15,23 +15,27 @@
  */
 syntax = "proto2";
 
-package squareup.protos.kotlin.swift_modules;
+package squareup.protos.kotlin.swift_modules.module_three;
 
 import "swift_module_one.proto";
 
-message SwiftModuleThreeMessage {
-  optional string name = 1;
-
-  message NestedMessage {
-    map<string, SwiftModuleOneEnum> map_string_types = 1;
-    optional SwiftModuleOneMessage module_type = 2;
-
-    extend SwiftModuleOneMessage {
-      optional ExtensionMessage extension_message = 1000;
-    }
-  }
+message DateTime {
+  optional squareup.protos.kotlin.swift_modules.module_one.DateTime value = 1;
 }
 
-message ExtensionMessage {
-  optional string value = 1;
-}
+//message SwiftModuleThreeMessage {
+//  optional string name = 1;
+//
+//  message NestedMessage {
+//    map<string, SwiftModuleOneEnum> map_string_types = 1;
+//    optional SwiftModuleOneMessage module_type = 2;
+//
+//    extend SwiftModuleOneMessage {
+//      optional ExtensionMessage extension_message = 1000;
+//    }
+//  }
+//}
+//
+//message ExtensionMessage {
+//  optional string value = 1;
+//}

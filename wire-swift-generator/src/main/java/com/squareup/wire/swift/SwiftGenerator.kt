@@ -1879,6 +1879,7 @@ class SwiftGenerator private constructor(
         val nameToModules: Map<String, List<String>> = existingTypeModuleName
           .entries
           .groupBy({ it.key.simpleName }, { it.value })
+          .mapValues { it.value.distinct() }
 
         for (type in types) {
           val protoType = type.type
