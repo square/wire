@@ -129,7 +129,7 @@ internal class ByteArrayProtoReader32(
     nextFieldEncoding = FieldEncoding.LENGTH_DELIMITED
     state = STATE_LENGTH_DELIMITED
     val length = internalReadVarint32()
-    if (length < 0) throw ProtocolException("Negative length: $length")
+    if (length < 0) throw ProtocolException("Negative length: $length. Reader position: $pos. Last read tag: $tag.")
     if (pushedLimit != -1) throw IllegalStateException()
     // Push the current limit, and set a new limit to the length of this value.
     pushedLimit = limit
@@ -148,7 +148,7 @@ internal class ByteArrayProtoReader32(
 
     loop@ while (pos < limit) {
       val tagAndFieldEncoding = internalReadVarint32()
-      if (tagAndFieldEncoding == 0) throw ProtocolException("Unexpected tag 0")
+      if (tagAndFieldEncoding == 0) throw ProtocolException("Unexpected tag 0. Reader position: $pos. Last read tag: $tag.")
 
       tag = tagAndFieldEncoding shr TAG_FIELD_ENCODING_BITS
       when (val groupOrFieldEncoding = tagAndFieldEncoding and FIELD_ENCODING_MASK) {
@@ -157,7 +157,7 @@ internal class ByteArrayProtoReader32(
           continue@loop
         }
 
-        STATE_END_GROUP -> throw ProtocolException("Unexpected end group")
+        STATE_END_GROUP -> throw ProtocolException("Unexpected end group. Reader position: $pos. Last read tag: $tag.")
 
         STATE_LENGTH_DELIMITED -> {
           internalNextLengthDelimited()
@@ -182,7 +182,7 @@ internal class ByteArrayProtoReader32(
           return tag
         }
 
-        else -> throw ProtocolException("Unexpected field encoding: $groupOrFieldEncoding")
+        else -> throw ProtocolException("Unexpected field encoding: $groupOrFieldEncoding. Reader position: $pos. Last read tag: $tag.")
       }
     }
     return -1
@@ -207,7 +207,7 @@ internal class ByteArrayProtoReader32(
   private fun skipGroup(expectedEndTag: Int) {
     while (pos < limit) {
       val tagAndFieldEncoding = internalReadVarint32()
-      if (tagAndFieldEncoding == 0) throw ProtocolException("Unexpected tag 0")
+      if (tagAndFieldEncoding == 0) throw ProtocolException("Unexpected tag 0. Reader position: $pos. Last read tag: $tag.")
       val tag = tagAndFieldEncoding shr TAG_FIELD_ENCODING_BITS
       when (val groupOrFieldEncoding = tagAndFieldEncoding and FIELD_ENCODING_MASK) {
         STATE_START_GROUP -> {
@@ -224,7 +224,7 @@ internal class ByteArrayProtoReader32(
         }
         STATE_END_GROUP -> {
           if (tag == expectedEndTag) return // Success!
-          throw ProtocolException("Unexpected end group")
+          throw ProtocolException("Unexpected end group. Reader position: $pos. Last read tag: $tag.")
         }
         STATE_LENGTH_DELIMITED -> {
           val length = internalReadVarint32()
@@ -242,7 +242,7 @@ internal class ByteArrayProtoReader32(
           state = STATE_FIXED32
           readFixed32()
         }
-        else -> throw ProtocolException("Unexpected field encoding: $groupOrFieldEncoding")
+        else -> throw ProtocolException("Unexpected field encoding: $groupOrFieldEncoding. Reader position: $pos. Last read tag: $tag.")
       }
     }
     throw EOFException()
@@ -272,7 +272,7 @@ internal class ByteArrayProtoReader32(
       STATE_FIXED32,
       -> true // Not packed.
 
-      else -> throw ProtocolException("unexpected state: $state")
+      else -> throw ProtocolException("unexpected state: $state. Reader position: $pos. Last read tag: $tag.")
     }
   }
 
@@ -283,7 +283,7 @@ internal class ByteArrayProtoReader32(
 
   override fun readVarint32(): Int {
     if (state != STATE_VARINT && state != STATE_LENGTH_DELIMITED) {
-      throw ProtocolException("Expected VARINT or LENGTH_DELIMITED but was $state")
+      throw ProtocolException("Expected VARINT or LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
     val result = internalReadVarint32()
     afterPackableScalar(STATE_VARINT)
@@ -320,7 +320,7 @@ internal class ByteArrayProtoReader32(
                 return result
               }
             }
-            throw ProtocolException("Malformed VARINT")
+            throw ProtocolException("Malformed VARINT. Reader position: $pos. Last read tag: $tag.")
           }
         }
       }
@@ -330,7 +330,7 @@ internal class ByteArrayProtoReader32(
 
   override fun readVarint64(): Long {
     if (state != STATE_VARINT && state != STATE_LENGTH_DELIMITED) {
-      throw ProtocolException("Expected VARINT or LENGTH_DELIMITED but was $state")
+      throw ProtocolException("Expected VARINT or LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
     var shift = 0
     var result: Long = 0
@@ -343,12 +343,12 @@ internal class ByteArrayProtoReader32(
       }
       shift += 7
     }
-    throw ProtocolException("WireInput encountered a malformed varint")
+    throw ProtocolException("WireInput encountered a malformed varint. Reader position: $pos. Last read tag: $tag.")
   }
 
   override fun readFixed32(): Int {
     if (state != STATE_FIXED32 && state != STATE_LENGTH_DELIMITED) {
-      throw ProtocolException("Expected FIXED32 or LENGTH_DELIMITED but was $state")
+      throw ProtocolException("Expected FIXED32 or LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
     val result = readIntLe()
     afterPackableScalar(STATE_FIXED32)
@@ -357,7 +357,7 @@ internal class ByteArrayProtoReader32(
 
   override fun readFixed64(): Long {
     if (state != STATE_FIXED64 && state != STATE_LENGTH_DELIMITED) {
-      throw ProtocolException("Expected FIXED64 or LENGTH_DELIMITED but was $state")
+      throw ProtocolException("Expected FIXED64 or LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
     val result = readLongLe()
     afterPackableScalar(STATE_FIXED64)
@@ -383,7 +383,7 @@ internal class ByteArrayProtoReader32(
 
   private fun beforeLengthDelimitedScalar(): Int {
     if (state != STATE_LENGTH_DELIMITED) {
-      throw ProtocolException("Expected LENGTH_DELIMITED but was $state")
+      throw ProtocolException("Expected LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
     val byteCount = limit - pos
     state = STATE_TAG
