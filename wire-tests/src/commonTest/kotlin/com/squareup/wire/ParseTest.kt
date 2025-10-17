@@ -51,7 +51,7 @@ class ParseTest {
       OneField.ADAPTER.decode(data.toByteArray())
       fail()
     } catch (expected: ProtocolException) {
-      assertThat(expected).hasMessage("Unexpected field encoding: 7")
+      assertThat(expected).hasMessage("Unexpected field encoding: 7. Reader position: 4. Last read tag: 2.")
     }
   }
 

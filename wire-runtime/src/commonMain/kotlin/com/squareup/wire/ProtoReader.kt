@@ -154,7 +154,7 @@ open class ProtoReader(private val source: BufferedSource) {
     nextFieldEncoding = FieldEncoding.LENGTH_DELIMITED
     state = STATE_LENGTH_DELIMITED
     val length = internalReadVarint32()
-    if (length < 0) throw ProtocolException("Negative length: $length")
+    if (length < 0) throw ProtocolException("Negative length: $length. Reader position: $pos. Last read tag: $tag.")
     if (pushedLimit != -1L) throw IllegalStateException()
     // Push the current limit, and set a new limit to the length of this value.
     pushedLimit = limit
@@ -179,7 +179,7 @@ open class ProtoReader(private val source: BufferedSource) {
 
     loop@ while (pos < limit && !source.exhausted()) {
       val tagAndFieldEncoding = internalReadVarint32()
-      if (tagAndFieldEncoding == 0) throw ProtocolException("Unexpected tag 0")
+      if (tagAndFieldEncoding == 0) throw ProtocolException("Unexpected tag 0. Reader position: $pos. Last read tag: $tag.")
 
       tag = tagAndFieldEncoding shr TAG_FIELD_ENCODING_BITS
       when (val groupOrFieldEncoding = tagAndFieldEncoding and FIELD_ENCODING_MASK) {
@@ -188,7 +188,7 @@ open class ProtoReader(private val source: BufferedSource) {
           continue@loop
         }
 
-        STATE_END_GROUP -> throw ProtocolException("Unexpected end group")
+        STATE_END_GROUP -> throw ProtocolException("Unexpected end group. Reader position: $pos. Last read tag: $tag.")
 
         STATE_LENGTH_DELIMITED -> {
           internalNextLengthDelimited()
@@ -213,7 +213,7 @@ open class ProtoReader(private val source: BufferedSource) {
           return tag
         }
 
-        else -> throw ProtocolException("Unexpected field encoding: $groupOrFieldEncoding")
+        else -> throw ProtocolException("Unexpected field encoding: $groupOrFieldEncoding. Reader position: $pos. Last read tag: $tag.")
       }
     }
     return -1
@@ -246,7 +246,7 @@ open class ProtoReader(private val source: BufferedSource) {
   private fun skipGroup(expectedEndTag: Int) {
     while (pos < limit && !source.exhausted()) {
       val tagAndFieldEncoding = internalReadVarint32()
-      if (tagAndFieldEncoding == 0) throw ProtocolException("Unexpected tag 0")
+      if (tagAndFieldEncoding == 0) throw ProtocolException("Unexpected tag 0. Reader position: $pos. Last read tag: $tag.")
       val tag = tagAndFieldEncoding shr TAG_FIELD_ENCODING_BITS
       when (val groupOrFieldEncoding = tagAndFieldEncoding and FIELD_ENCODING_MASK) {
         STATE_START_GROUP -> {
@@ -263,7 +263,7 @@ open class ProtoReader(private val source: BufferedSource) {
         }
         STATE_END_GROUP -> {
           if (tag == expectedEndTag) return // Success!
-          throw ProtocolException("Unexpected end group")
+          throw ProtocolException("Unexpected end group. Reader position: $pos. Last read tag: $tag.")
         }
         STATE_LENGTH_DELIMITED -> {
           val length = internalReadVarint32()
@@ -282,7 +282,7 @@ open class ProtoReader(private val source: BufferedSource) {
           state = STATE_FIXED32
           readFixed32()
         }
-        else -> throw ProtocolException("Unexpected field encoding: $groupOrFieldEncoding")
+        else -> throw ProtocolException("Unexpected field encoding: $groupOrFieldEncoding. Reader position: $pos. Last read tag: $tag.")
       }
     }
     throw EOFException()
@@ -322,7 +322,7 @@ open class ProtoReader(private val source: BufferedSource) {
       STATE_FIXED32,
       -> true // Not packed.
 
-      else -> throw ProtocolException("unexpected state: $state")
+      else -> throw ProtocolException("unexpected state: $state. Reader position: $pos. Last read tag: $tag.")
     }
   }
 
@@ -340,7 +340,7 @@ open class ProtoReader(private val source: BufferedSource) {
   @Throws(IOException::class)
   open fun readVarint32(): Int {
     if (state != STATE_VARINT && state != STATE_LENGTH_DELIMITED) {
-      throw ProtocolException("Expected VARINT or LENGTH_DELIMITED but was $state")
+      throw ProtocolException("Expected VARINT or LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
     val result = internalReadVarint32()
     afterPackableScalar(STATE_VARINT)
@@ -389,7 +389,7 @@ open class ProtoReader(private val source: BufferedSource) {
                 return result
               }
             }
-            throw ProtocolException("Malformed VARINT")
+            throw ProtocolException("Malformed VARINT. Reader position: $pos. Last read tag: $tag.")
           }
         }
       }
@@ -401,7 +401,7 @@ open class ProtoReader(private val source: BufferedSource) {
   @Throws(IOException::class)
   open fun readVarint64(): Long {
     if (state != STATE_VARINT && state != STATE_LENGTH_DELIMITED) {
-      throw ProtocolException("Expected VARINT or LENGTH_DELIMITED but was $state")
+      throw ProtocolException("Expected VARINT or LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
     var shift = 0
     var result: Long = 0
@@ -416,14 +416,14 @@ open class ProtoReader(private val source: BufferedSource) {
       }
       shift += 7
     }
-    throw ProtocolException("WireInput encountered a malformed varint")
+    throw ProtocolException("Malformed VARINT. Reader position: $pos. Last read tag: $tag.")
   }
 
   /** Reads a 32-bit little-endian integer from the stream.  */
   @Throws(IOException::class)
   open fun readFixed32(): Int {
     if (state != STATE_FIXED32 && state != STATE_LENGTH_DELIMITED) {
-      throw ProtocolException("Expected FIXED32 or LENGTH_DELIMITED but was $state")
+      throw ProtocolException("Expected FIXED32 or LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
     source.require(4) // Throws EOFException if insufficient bytes are available.
     pos += 4
@@ -436,7 +436,7 @@ open class ProtoReader(private val source: BufferedSource) {
   @Throws(IOException::class)
   open fun readFixed64(): Long {
     if (state != STATE_FIXED64 && state != STATE_LENGTH_DELIMITED) {
-      throw ProtocolException("Expected FIXED64 or LENGTH_DELIMITED but was $state")
+      throw ProtocolException("Expected FIXED64 or LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
     source.require(8) // Throws EOFException if insufficient bytes are available.
     pos += 8
@@ -466,7 +466,7 @@ open class ProtoReader(private val source: BufferedSource) {
   @Throws(IOException::class)
   private fun beforeLengthDelimitedScalar(): Long {
     if (state != STATE_LENGTH_DELIMITED) {
-      throw ProtocolException("Expected LENGTH_DELIMITED but was $state")
+      throw ProtocolException("Expected LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
     val byteCount = limit - pos
     source.require(byteCount) // Throws EOFException if insufficient bytes are available.

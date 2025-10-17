@@ -49,7 +49,9 @@ public final class ParseTest {
       OneField.ADAPTER.decode(data.toByteArray());
       fail();
     } catch (ProtocolException expected) {
-      assertThat(expected).hasMessageThat().contains("Unexpected field encoding: 7");
+      assertThat(expected)
+          .hasMessageThat()
+          .contains("Unexpected field encoding: 7. Reader position: 4. Last read tag: 2.");
     }
   }
 

@@ -172,7 +172,7 @@ class SchemaProtoAdapterTest {
       adapter.decode(Buffer().write(encoded))
       fail()
     } catch (expected: ProtocolException) {
-      assertThat(expected).hasMessage("Unexpected end group")
+      assertThat(expected).hasMessage("Unexpected end group. Reader position: 4. Last read tag: 3.")
     }
   }
 
@@ -194,7 +194,7 @@ class SchemaProtoAdapterTest {
       adapter.decode(Buffer().write(encoded))
       fail()
     } catch (expected: ProtocolException) {
-      assertThat(expected).hasMessage("Unexpected end group")
+      assertThat(expected).hasMessage("Unexpected end group. Reader position: 5. Last read tag: 3.")
     }
   }
 
