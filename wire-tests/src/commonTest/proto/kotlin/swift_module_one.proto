@@ -15,7 +15,7 @@
  */
 syntax = "proto2";
 
-package squareup.protos.kotlin.swift_modules;
+package squareup.protos.kotlin.swift_modules.module_one;
 
 import "swift_module_address.proto";
 import "swift_module_location.proto";
@@ -44,4 +44,7 @@ message SwiftModuleOneAmbiguousMessage {
   optional squareup.protos.kotlin.swift_modules.address.Address address = 2;
 
   optional squareup.protos.kotlin.swift_modules.location.Location location = 3;
+}
+
+message DateTime {
 }

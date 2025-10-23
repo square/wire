@@ -15,16 +15,16 @@
  */
 syntax = "proto2";
 
-package squareup.protos.kotlin.swift_modules;
+package squareup.protos.kotlin.swift_modules.module_two;
 
 import "swift_module_one.proto";
 
 message SwiftModuleTwoMessage {
   optional string name = 1;
-  optional SortOrder order = 2;
+  optional module_one.SortOrder order = 2;
 
   message NestedMessage {
-    repeated SwiftModuleOneEnum array_types = 1;
-    optional SwiftModuleOneMessage module_type = 2;
+    repeated module_one.SwiftModuleOneEnum array_types = 1;
+    optional module_one.SwiftModuleOneMessage module_type = 2;
   }
 }

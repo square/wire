@@ -27,23 +27,25 @@ module_location:
     - squareup.protos.kotlin.swift_modules.location.Address
 module_one:
   roots:
-  - squareup.protos.kotlin.swift_modules.SwiftModuleOneEnum
-  - squareup.protos.kotlin.swift_modules.SwiftModuleOneMessage
-  - squareup.protos.kotlin.swift_modules.SwiftModuleOneAmbiguousMessage
-  - squareup.protos.kotlin.swift_modules.SortOrder
+  - squareup.protos.kotlin.swift_modules.module_one.SwiftModuleOneEnum
+  - squareup.protos.kotlin.swift_modules.module_one.SwiftModuleOneMessage
+  - squareup.protos.kotlin.swift_modules.module_one.SwiftModuleOneAmbiguousMessage
+  - squareup.protos.kotlin.swift_modules.module_one.SortOrder
+  - squareup.protos.kotlin.swift_modules.module_one.DateTime
   dependencies:
     - module_address
     - module_location
 module_two:
   roots:
-  - squareup.protos.kotlin.swift_modules.SwiftModuleTwoMessage
-  - squareup.protos.kotlin.swift_modules.SwiftModuleTwoMessage.NestedMessage
+  - squareup.protos.kotlin.swift_modules.module_two.SwiftModuleTwoMessage
+  - squareup.protos.kotlin.swift_modules.module_two.SwiftModuleTwoMessage.NestedMessage
   dependencies:
   - module_one
 module_three:
   roots:
-  - squareup.protos.kotlin.swift_modules.SwiftModuleThreeMessage
-  - squareup.protos.kotlin.swift_modules.SwiftModuleThreeMessage.NestedMessage
-  - squareup.protos.kotlin.swift_modules.ExtensionMessage
+  - squareup.protos.kotlin.swift_modules.module_three.SwiftModuleThreeMessage
+  - squareup.protos.kotlin.swift_modules.module_three.SwiftModuleThreeMessage.NestedMessage
+  - squareup.protos.kotlin.swift_modules.module_three.ExtensionMessage
+  - squareup.protos.kotlin.swift_modules.module_three.DateTime
   dependencies:
   - module_one
