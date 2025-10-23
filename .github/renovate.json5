@@ -11,13 +11,6 @@
       automerge: true,
     },
     {
-      groupName: 'Kotlin and KSP',
-      matchPackageNames: [
-        'org.jetbrains.kotlin:kotlin{/,}**',
-        'com.google.devtools.ksp{/,}**',
-      ],
-    },
-    {
       matchPackageNames: ['com.squareup.misk:misk'],
       extends: ['schedule:monthly'],
     },
