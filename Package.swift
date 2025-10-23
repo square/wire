@@ -33,9 +33,34 @@ let package = Package(
             dependencies: ["Wire"],
             path: "wire-tests-swift/no-manifest/src/main/swift"
         ),
+        .target(
+            name: "module_address",
+            dependencies: ["Wire"],
+            path: "wire-tests-swift/manifest/module_address"
+        ),
+        .target(
+            name: "module_location",
+            dependencies: ["Wire"],
+            path: "wire-tests-swift/manifest/module_location"
+        ),
+        .target(
+            name: "module_one",
+            dependencies: ["Wire", "module_address", "module_location"],
+            path: "wire-tests-swift/manifest/module_one"
+        ),
+        .target(
+            name: "module_two",
+            dependencies: ["Wire", "module_one"],
+            path: "wire-tests-swift/manifest/module_two"
+        ),
+        .target(
+            name: "module_three",
+            dependencies: ["Wire", "module_one"],
+            path: "wire-tests-swift/manifest/module_three"
+        ),
         .testTarget(
             name: "WireCompilerTests",
-            dependencies: ["WireTests"],
+            dependencies: ["WireTests", "module_address", "module_location", "module_one", "module_two", "module_three"],
             path: "wire-tests-swift/no-manifest/src/test/swift"
         ),
     ],
