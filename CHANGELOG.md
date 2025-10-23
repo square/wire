@@ -4,6 +4,27 @@ Change Log
 Unreleased
 ----------
 
+Version 6.0.0-alpha01
+---------------------
+
+_2025-10-23_
+
+### Gradle plugin
+
+* Breaking: the Wire Gradle plugin doesn't transitively apply the Kotlin Gradle plugin anymore. You'll have to manually add it if your project requires it and didn't explicitly apply until now. (#3375)
+
+### Common
+
+* `SchemaHandler.Context` has now access to the full schema, before partitioning. (#3422 by [Dimitris Koutsogiorgas][dnkoutso])
+* Escape quoted strings when printing option values (#3433)
+* Best effort to store unknown repeated enums in JSON (#3434)
+* Improve ProtocolException's message (#3439)
+
+### Swift
+
+* Delete redundant proto3 enum check for default value (#3421 by [Dimitris Koutsogiorgas][dnkoutso])
+* Fix edge case for disambiguating messages with same name (#3443 by [Dimitris Koutsogiorgas][dnkoutso])
+
 Version 5.4.0
 ---------------------
 
