@@ -69,9 +69,6 @@ jobs:
           pip3 install mkdocs-material mkdocs-macros-plugin
           mkdocs build
 
-      - name: Restore 2.x docs
-        run: .buildscript/restore_v2_docs.sh
-
       - name: Deploy docs
         if: success()
         uses: JamesIves/github-pages-deploy-action@releases/v3
