@@ -35,7 +35,7 @@ dependencies {
 
 // JAVA
 
-val generateJavaTests by tasks.creating(JavaExec::class) {
+val generateJavaTests by tasks.registering(JavaExec::class) {
   group = "Generate Tests"
   description = "Generates Java classes from the test protos"
   classpath = wire
@@ -47,7 +47,7 @@ val generateJavaTests by tasks.creating(JavaExec::class) {
   ) + PROTOS
 }
 
-val generateKotlinClassAmongJavaTests by tasks.creating(JavaExec::class) {
+val generateKotlinClassAmongJavaTests by tasks.registering(JavaExec::class) {
   group = "Generate Tests"
   description = "Generates Kotlin classes from the Java test protos"
   classpath = wire
@@ -61,7 +61,7 @@ val generateKotlinClassAmongJavaTests by tasks.creating(JavaExec::class) {
 
 // NO OPTIONS
 
-val generateNoOptionsTests by tasks.creating(JavaExec::class) {
+val generateNoOptionsTests by tasks.registering(JavaExec::class) {
   group = "Generate Tests"
   description = "Generates Java classes with no options from the test protos"
   classpath = wire
@@ -155,7 +155,7 @@ val generateGsonAdapterKotlinTests by tasks.creating(JavaExec::class) {
   )
 }
 
-val generateGsonTests by tasks.creating {
+val generateGsonTests by tasks.registering {
   group = "Generate Tests"
   description = "Generates Java and Kotlin classes that use Gson from the test protos"
   dependsOn(
@@ -536,7 +536,7 @@ val generateSwiftProto2Tests by tasks.creating(JavaExec::class) {
   )
 }
 
-val generateSwiftTests by tasks.creating {
+val generateSwiftTests by tasks.registering {
   group = "Generate Tests"
   description = "Generates Swift classes from the test protos"
   if (project.properties.get("swift") != "false") {
@@ -638,7 +638,7 @@ val generateMoshiAdapterKotlinTests by tasks.creating(JavaExec::class) {
   )
 }
 
-val generateMoshiTests by tasks.creating {
+val generateMoshiTests by tasks.registering {
   group = "Generate Tests"
   description = "Generates Java and Kotlin classes that use Moshi from the test protos"
   dependsOn(
@@ -695,7 +695,7 @@ val generateSharedJsonKotlinTests by tasks.creating(JavaExec::class) {
   )
 }
 
-val generateSharedJson by tasks.creating {
+val generateSharedJson by tasks.registering {
   group = "Generate Tests"
   description = "Generates Java and Kotlin classes for shared JSON tests"
   dependsOn(
@@ -704,7 +704,7 @@ val generateSharedJson by tasks.creating {
   )
 }
 
-val generateTests by tasks.creating {
+val generateTests by tasks.registering {
   group = "Generate Tests"
   description = "Generates all test classes"
   dependsOn(
