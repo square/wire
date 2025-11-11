@@ -28,19 +28,26 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.distribution.plugins.DistributionPlugin
 import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.AbstractTestTask
+import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.gradle.kotlin.dsl.attributes
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
@@ -368,6 +375,67 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
       ignoredPackages += "com.squareup.wire.internal"
       ignoredPackages += "com.squareup.wire.schema.internal"
     }
+  }
+
+  override fun createKotlinJvmTestTask(
+    taskName: String,
+    block: KotlinSourceSet.() -> Unit,
+  ) {
+    project.plugins.withId("org.jetbrains.kotlin.multiplatform") {
+      val kotlin = project.extensions.getByName("kotlin") as KotlinMultiplatformExtension
+
+      val compilationName = "${taskName}Sources"
+      val compilation = kotlin.jvm().compilations.create(compilationName).apply {
+        defaultSourceSet {
+          block()
+        }
+      }
+
+      val task = project.tasks.register(taskName, Test::class) {
+        classpath = compilation.compileDependencyFiles + compilation.runtimeDependencyFiles + compilation.output.allOutputs
+        testClassesDirs = compilation.output.classesDirs
+      }
+
+      val jvmTest = project.tasks["jvmTest"]
+      jvmTest.dependsOn(task)
+    }
+  }
+
+  override fun createJavaTestTask(
+    taskName: String,
+    block: JavaTestTaskScope.() -> Unit,
+  ) {
+    val sourceSets = project.extensions.getByType<SourceSetContainer>()
+
+    val sourceSetName = "${taskName}Sources"
+    val sourceSet = sourceSets.create(sourceSetName)
+
+    val task = project.tasks.register(taskName, Test::class) {
+      classpath = sourceSet.runtimeClasspath
+      testClassesDirs = sourceSet.output.classesDirs
+    }
+
+    val jvmTest = project.tasks["jvmTest"]
+    jvmTest.dependsOn(task)
+
+    val javaTestTaskScope = object : JavaTestTaskScope {
+      override val sourceSet: SourceSet
+        get() = sourceSet
+
+      override fun implementation(dependencyNotation: Any) {
+        project.dependencies {
+          add("${sourceSetName}Implementation", dependencyNotation)
+        }
+      }
+
+      override fun compileOnly(dependencyNotation: Any) {
+        project.dependencies {
+          add("${sourceSetName}CompileOnly", dependencyNotation)
+        }
+      }
+    }
+
+    javaTestTaskScope.block()
   }
 
   private val Project.isWireGradlePlugin
