@@ -15,6 +15,8 @@
  */
 package com.squareup.wire.buildsupport
 
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+
 interface WireBuildExtension {
 
   /**
@@ -23,4 +25,20 @@ interface WireBuildExtension {
    * The published `artifactId` will be set to the project name.
    */
   fun publishing()
+
+  /**
+   * Registers a new compilation and test task, and sets it as a task dependency of `jvmTest`.
+   */
+  fun createKotlinJvmTestTask(
+    taskName: String,
+    block: KotlinSourceSet.() -> Unit,
+  )
+
+  /**
+   * Registers a new source set and test task, and sets it as a task dependency of `jvmTest`.
+   */
+  fun createJavaTestTask(
+    taskName: String,
+    block: JavaTestTaskScope.() -> Unit,
+  )
 }

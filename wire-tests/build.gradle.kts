@@ -10,63 +10,6 @@ plugins {
 kotlin {
   applyDefaultHierarchyTemplate()
   jvm {
-    val kotlinInteropTest by compilations.creating {
-      defaultSourceSet {
-        kotlin.srcDir("src/jvmKotlinInteropTest/proto-kotlin")
-        dependencies {
-          implementation(projects.wireRuntime)
-          implementation(libs.kotlin.test.junit)
-          implementation(libs.assertk)
-          implementation(libs.kotlin.reflect)
-        }
-      }
-      val jvmKotlinInteropTest by tasks.registering(Test::class) {
-        classpath = compileDependencyFiles + runtimeDependencyFiles + output.allOutputs
-        testClassesDirs = output.classesDirs
-      }
-      val jvmTest by tasks.getting {
-        dependsOn(jvmKotlinInteropTest)
-        dependencies {
-          implementation(projects.wireGrpcClient)
-        }
-      }
-    }
-    val kotlinAndroidTest by compilations.creating {
-      defaultSourceSet {
-        kotlin.srcDir("src/jvmKotlinAndroidTest/proto-kotlin")
-        dependencies {
-          implementation(projects.wireRuntime)
-          compileOnly(libs.android)
-          implementation(libs.kotlin.test.junit)
-          implementation(libs.assertk)
-        }
-      }
-      val jvmKotlinAndroidTest by tasks.registering(Test::class) {
-        classpath = compileDependencyFiles + runtimeDependencyFiles + output.allOutputs
-        testClassesDirs = output.classesDirs
-      }
-      val jvmTest by tasks.getting {
-        dependsOn(jvmKotlinAndroidTest)
-      }
-    }
-    val kotlinProtoReader32Test by compilations.creating {
-      defaultSourceSet {
-        kotlin.srcDir("src/jvmKotlinProtoReader32Test/proto-kotlin")
-        dependencies {
-          implementation(projects.wireRuntime)
-          implementation(libs.kotlin.test.junit)
-          implementation(libs.assertk)
-          implementation(libs.kotlin.reflect)
-        }
-      }
-      val jvmProtoReader32Test by tasks.registering(Test::class) {
-        classpath = compileDependencyFiles + runtimeDependencyFiles + output.allOutputs
-        testClassesDirs = output.classesDirs
-      }
-      val jvmTest by tasks.getting {
-        dependsOn(jvmProtoReader32Test)
-      }
-    }
     // FIXME(egor): withJava() has to be declared after all custom compilations.
     // See https://youtrack.jetbrains.com/issue/KT-41506.
     withJava()
@@ -133,128 +76,105 @@ kotlin {
   }
 }
 
-val jvmTest by tasks.getting
-
-for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
-  target.project.sourceSets {
-    val test by getting {
-      java.srcDir("src/jvmTest/proto-java")
-    }
-
-    val javaTest by creating {
-      java.srcDir("src/jvmJavaTest/proto-java")
-      java.srcDir("src/jvmJavaTest/proto-kotlin")
-    }
-    val jvmJavaTest by tasks.registering(Test::class) {
-      classpath = javaTest.runtimeClasspath
-      testClassesDirs = javaTest.output.classesDirs
-    }
-    jvmTest.dependsOn(jvmJavaTest)
-
-    val javaNoOptionsTest by creating {
-      java.srcDir("src/jvmJavaNoOptionsTest/proto-java")
-    }
-    val jvmJavaNoOptionsTest by tasks.registering(Test::class) {
-      classpath = javaNoOptionsTest.runtimeClasspath
-      testClassesDirs = javaNoOptionsTest.output.classesDirs
-    }
-    jvmTest.dependsOn(jvmJavaNoOptionsTest)
-
-    val javaCompactTest by creating {
-      java.srcDir("src/jvmJavaCompactTest/proto-java")
-    }
-    val jvmJavaCompactTest by tasks.registering(Test::class) {
-      classpath = javaCompactTest.runtimeClasspath
-      testClassesDirs = javaCompactTest.output.classesDirs
-    }
-    jvmTest.dependsOn(jvmJavaCompactTest)
-
-    val javaPrunedTest by creating {
-      java.srcDir("src/jvmJavaPrunedTest/proto-java")
-    }
-    val jvmJavaPrunedTest by tasks.registering(Test::class) {
-      classpath = javaPrunedTest.runtimeClasspath
-      testClassesDirs = javaPrunedTest.output.classesDirs
-    }
-    jvmTest.dependsOn(jvmJavaPrunedTest)
-
-    val javaAndroidTest by creating {
-      java.srcDir("src/jvmJavaAndroidTest/proto-java")
-    }
-    val jvmJavaAndroidTest by tasks.registering(Test::class) {
-      classpath = javaAndroidTest.runtimeClasspath
-      testClassesDirs = javaAndroidTest.output.classesDirs
-    }
-    jvmTest.dependsOn(jvmJavaAndroidTest)
-
-    val javaAndroidCompactTest by creating {
-      java.srcDir("src/jvmJavaAndroidCompactTest/proto-java")
-    }
-    val jvmJavaAndroidCompactTest by tasks.registering(Test::class) {
-      classpath = javaAndroidCompactTest.runtimeClasspath
-      testClassesDirs = javaAndroidCompactTest.output.classesDirs
-    }
-    jvmTest.dependsOn(jvmJavaAndroidCompactTest)
-
-    val jsonJavaTest by creating {
-      java.srcDir("src/jvmJsonTest/kotlin")
-      java.srcDir("src/jvmJsonJavaTest/proto-java")
-    }
-    val jvmJsonJavaTest by tasks.registering(Test::class) {
-      classpath = jsonJavaTest.runtimeClasspath
-      testClassesDirs = jsonJavaTest.output.classesDirs
-    }
-    jvmTest.dependsOn(jvmJsonJavaTest)
-
-    val jsonKotlinTest by creating {
-      java.srcDir("src/jvmJsonTest/kotlin")
-      java.srcDir("src/jvmJsonKotlinTest/proto-kotlin")
-    }
-    val jvmJsonKotlinTest by tasks.registering(Test::class) {
-      classpath = jsonKotlinTest.runtimeClasspath
-      testClassesDirs = jsonKotlinTest.output.classesDirs
-    }
-    jvmTest.dependsOn(jvmJsonKotlinTest)
-
+wireBuild {
+  createKotlinJvmTestTask("jvmKotlinInteropTest") {
+    kotlin.srcDir("src/jvmKotlinInteropTest/proto-kotlin")
     dependencies {
-      add("javaTestImplementation", projects.wireRuntime)
-      add("javaNoOptionsTestImplementation", projects.wireRuntime)
-      add("javaCompactTestImplementation", projects.wireRuntime)
-      add("javaPrunedTestImplementation", projects.wireRuntime)
-      add("javaAndroidTestImplementation", projects.wireRuntime)
-      add("javaAndroidCompactTestImplementation", projects.wireRuntime)
-      add("jsonJavaTestImplementation", projects.wireRuntime)
-      add("jsonKotlinTestImplementation", projects.wireRuntime)
-
-      add("javaAndroidTestCompileOnly", libs.android)
-      add("javaAndroidCompactTestCompileOnly", libs.android)
-      add("javaAndroidTestCompileOnly", libs.androidx.annotations)
-      add("javaAndroidCompactTestCompileOnly", libs.androidx.annotations)
-
-      add("javaTestImplementation", libs.kotlin.test.junit)
-      add("javaTestImplementation", libs.assertk)
-      add("javaTestImplementation", libs.jimfs)
-      add("javaTestImplementation", libs.truth)
-      add("jsonJavaTestImplementation", projects.wireMoshiAdapter)
-      add("jsonJavaTestImplementation", projects.wireGsonSupport)
-      add("jsonJavaTestImplementation", projects.wireTestUtils)
-      add("jsonJavaTestImplementation", libs.kotlin.test.junit)
-      add("jsonJavaTestImplementation", libs.assertk)
-      add("jsonJavaTestImplementation", libs.jimfs)
-      add("jsonJavaTestImplementation", libs.truth)
-      add("jsonKotlinTestImplementation", projects.wireMoshiAdapter)
-      add("jsonKotlinTestImplementation", projects.wireGsonSupport)
-      add("jsonKotlinTestImplementation", projects.wireTestUtils)
-      add("jsonKotlinTestImplementation", libs.kotlin.test.junit)
-      add("jsonKotlinTestImplementation", libs.assertk)
-      add("jsonKotlinTestImplementation", libs.jimfs)
-      add("jsonKotlinTestImplementation", libs.truth)
-
-      add("jvmJavaTestImplementation", projects.wireMoshiAdapter)
-      add("jvmJavaTestImplementation", libs.kotlin.reflect)
-      add("jvmJavaTestImplementation", libs.moshi)
-      add("jvmJavaTestImplementation", libs.moshiKotlin)
+      implementation(projects.wireRuntime)
+      implementation(libs.kotlin.test.junit)
+      implementation(libs.assertk)
+      implementation(libs.kotlin.reflect)
+      implementation(projects.wireGrpcClient)
     }
+  }
+
+  createKotlinJvmTestTask("jvmKotlinAndroidTest") {
+    kotlin.srcDir("src/jvmKotlinAndroidTest/proto-kotlin")
+    dependencies {
+      implementation(projects.wireRuntime)
+      implementation(libs.kotlin.test.junit)
+      implementation(libs.assertk)
+      compileOnly(libs.android)
+    }
+  }
+
+  createKotlinJvmTestTask("jvmProtoReader32Test") {
+    kotlin.srcDir("src/jvmKotlinProtoReader32Test/proto-kotlin")
+    dependencies {
+      implementation(projects.wireRuntime)
+      implementation(libs.kotlin.test.junit)
+      implementation(libs.assertk)
+      implementation(libs.kotlin.reflect)
+    }
+  }
+
+  createJavaTestTask("jvmJavaTest") {
+    sourceSet.java.srcDir("src/jvmJavaTest/proto-java")
+    sourceSet.java.srcDir("src/jvmJavaTest/proto-kotlin")
+    implementation(libs.assertk)
+    implementation(libs.jimfs)
+    implementation(libs.kotlin.reflect)
+    implementation(libs.kotlin.test.junit)
+    implementation(libs.moshi)
+    implementation(libs.moshiKotlin)
+    implementation(libs.truth)
+    implementation(projects.wireMoshiAdapter)
+    implementation(projects.wireRuntime)
+  }
+
+  createJavaTestTask("jvmJavaNoOptionsTest") {
+    sourceSet.java.srcDir("src/jvmJavaNoOptionsTest/proto-java")
+    implementation(projects.wireRuntime)
+  }
+
+  createJavaTestTask("jvmJavaCompactTest") {
+    sourceSet.java.srcDir("src/jvmJavaCompactTest/proto-java")
+    implementation(projects.wireRuntime)
+  }
+
+  createJavaTestTask("jvmJavaPrunedTest") {
+    sourceSet.java.srcDir("src/jvmJavaPrunedTest/proto-java")
+    implementation(projects.wireRuntime)
+  }
+
+  createJavaTestTask("jvmJavaAndroidTest") {
+    sourceSet.java.srcDir("src/jvmJavaAndroidTest/proto-java")
+    implementation(projects.wireRuntime)
+    compileOnly(libs.android)
+    compileOnly(libs.androidx.annotations)
+  }
+
+  createJavaTestTask("jvmJavaAndroidCompactTest") {
+    sourceSet.java.srcDir("src/jvmJavaAndroidCompactTest/proto-java")
+    implementation(projects.wireRuntime)
+    compileOnly(libs.android)
+    compileOnly(libs.androidx.annotations)
+  }
+
+  createJavaTestTask("jvmJsonJavaTest") {
+    sourceSet.java.srcDir("src/jvmJsonTest/kotlin")
+    sourceSet.java.srcDir("src/jvmJsonJavaTest/proto-java")
+    implementation(libs.assertk)
+    implementation(libs.jimfs)
+    implementation(libs.kotlin.test.junit)
+    implementation(libs.truth)
+    implementation(projects.wireGsonSupport)
+    implementation(projects.wireMoshiAdapter)
+    implementation(projects.wireRuntime)
+    implementation(projects.wireTestUtils)
+  }
+
+  createJavaTestTask("jvmJsonKotlinTest") {
+    sourceSet.java.srcDir("src/jvmJsonTest/kotlin")
+    sourceSet.java.srcDir("src/jvmJsonKotlinTest/proto-kotlin")
+    implementation(libs.assertk)
+    implementation(libs.jimfs)
+    implementation(libs.kotlin.test.junit)
+    implementation(libs.truth)
+    implementation(projects.wireGsonSupport)
+    implementation(projects.wireMoshiAdapter)
+    implementation(projects.wireRuntime)
+    implementation(projects.wireTestUtils)
   }
 }
 
