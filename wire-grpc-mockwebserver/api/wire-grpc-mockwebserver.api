@@ -25,6 +25,14 @@ public final class com/squareup/wire/mockwebserver/GrpcDispatcher$Companion$Null
 	public synthetic fun isExecuted ()Z
 	public fun request ()Ljava/lang/Void;
 	public synthetic fun request ()Lokhttp3/Request;
+	public synthetic fun tag (Ljava/lang/Class;)Ljava/lang/Object;
+	public fun tag (Ljava/lang/Class;)Ljava/lang/Void;
+	public synthetic fun tag (Ljava/lang/Class;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun tag (Ljava/lang/Class;Lkotlin/jvm/functions/Function0;)Ljava/lang/Void;
+	public synthetic fun tag (Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun tag (Lkotlin/reflect/KClass;)Ljava/lang/Void;
+	public synthetic fun tag (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun tag (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function0;)Ljava/lang/Void;
 	public fun timeout ()Lokio/Timeout;
 }
 
