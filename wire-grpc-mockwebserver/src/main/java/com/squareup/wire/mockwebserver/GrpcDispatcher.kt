@@ -30,6 +30,7 @@ import com.squareup.wire.Service
 import com.squareup.wire.internal.GrpcMessageSink
 import com.squareup.wire.internal.GrpcMessageSource
 import java.lang.reflect.Method
+import kotlin.reflect.KClass
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Headers.Companion.headersOf
@@ -204,6 +205,10 @@ class GrpcDispatcher(
       override fun isExecuted() = error("unexpected call")
       override fun request() = error("unexpected call")
       override fun timeout() = Timeout.NONE
+      override fun <T : Any> tag(type: KClass<T>) = error("unexpected call")
+      override fun <T> tag(type: Class<out T>) = error("unexpected call")
+      override fun <T : Any> tag(type: KClass<T>, computeIfAbsent: () -> T) = error("unexpected call")
+      override fun <T : Any> tag(type: Class<T>, computeIfAbsent: () -> T) = error("unexpected call")
     }
 
     /**
