@@ -163,19 +163,6 @@ wireBuild {
     implementation(projects.wireRuntime)
     implementation(projects.wireTestUtils)
   }
-
-  createJavaTestTask("jvmJsonKotlinTest") {
-    sourceSet.java.srcDir("src/jvmJsonTest/kotlin")
-    sourceSet.java.srcDir("src/jvmJsonKotlinTest/proto-kotlin")
-    implementation(libs.assertk)
-    implementation(libs.jimfs)
-    implementation(libs.kotlin.test.junit)
-    implementation(libs.truth)
-    implementation(projects.wireGsonSupport)
-    implementation(projects.wireMoshiAdapter)
-    implementation(projects.wireRuntime)
-    implementation(projects.wireTestUtils)
-  }
 }
 
 configure<SpotlessExtension> {
@@ -193,7 +180,6 @@ configure<SpotlessExtension> {
       "src/jvmKotlinInteropTest/proto-kotlin/**/*.kt",
       "src/jvmKotlinProtoReader32Test/proto-kotlin/**/*.kt",
       "src/jvmJsonJavaTest/proto-java/**/*.kt",
-      "src/jvmJsonKotlinTest/proto-kotlin/**/*.kt",
     )
   }
   java {

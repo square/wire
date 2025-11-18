@@ -1245,7 +1245,7 @@ class WireJsonTest {
     )
 
     private fun loadJson(fileName: String): String {
-      return File("src/commonTest/shared/json", fileName).source().use { it.buffer().readUtf8() }
+      return File("../../wire-tests/src/commonTest/shared/json", fileName).source().use { it.buffer().readUtf8() }
     }
   }
 }

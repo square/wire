@@ -673,34 +673,11 @@ val generateSharedJsonCompactJavaTests by tasks.creating(JavaExec::class) {
   )
 }
 
-val generateSharedJsonKotlinTests by tasks.creating(JavaExec::class) {
-  group = "Generate Shared JSON Tests"
-  description = "Generates Kotlin classes for shared JSON tests"
-  classpath = wire
-  mainClass.set("com.squareup.wire.WireCompiler")
-  args = listOf(
-          "--proto_path=wire-tests/src/commonTest/shared/proto/proto2",
-          "--proto_path=wire-tests/src/commonTest/shared/proto/proto3",
-          "--kotlin_out=wire-tests/src/jvmJsonKotlinTest/proto-kotlin",
-          "--java_interop",
-          "all32.proto",
-          "all64.proto",
-          "all_types_proto2.proto",
-          "all_types_proto3_test_proto3_optional.proto",
-          "all_structs.proto",
-          "all_wrappers.proto",
-          "camel_case.proto",
-          "map_types.proto",
-          "pizza.proto"
-  )
-}
-
 val generateSharedJson by tasks.creating {
   group = "Generate Tests"
   description = "Generates Java and Kotlin classes for shared JSON tests"
   dependsOn(
     generateSharedJsonCompactJavaTests,
-    generateSharedJsonKotlinTests
   )
 }
 
@@ -757,6 +734,5 @@ val cleanGeneratedTests by tasks.creating(Delete::class) {
     "wire-tests/src/jvmKotlinInteropTest/proto-kotlin",
     "wire-tests/src/jvmKotlinProtoReader32Test/proto-kotlin",
     "wire-tests/src/jvmJsonJavaTest/proto-java",
-    "wire-tests/src/jvmJsonKotlinTest/proto-kotlin"
   )
 }

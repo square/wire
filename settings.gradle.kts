@@ -60,6 +60,7 @@ include(":wire-schema-tests")
 include(":wire-swift-generator")
 include(":wire-test-utils")
 include(":wire-tests")
+include(":wire-tests-2:jvm-json-kotlin")
 if (startParameter.projectProperties.get("swift") != "false") {
   include(":wire-runtime-swift")
   include(":wire-tests-swift")
