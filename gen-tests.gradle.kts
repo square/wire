@@ -649,61 +649,6 @@ val generateMoshiTests by tasks.creating {
   )
 }
 
-// Shared Json tests.
-
-val generateSharedJsonCompactJavaTests by tasks.creating(JavaExec::class) {
-  group = "Generate Shared JSON Tests"
-  description = "Generates compat Java classes for shared JSON tests"
-  classpath = wire
-  mainClass.set("com.squareup.wire.WireCompiler")
-  args = listOf(
-          "--proto_path=wire-tests/src/commonTest/shared/proto/proto2",
-          "--proto_path=wire-tests/src/commonTest/shared/proto/proto3",
-          "--java_out=wire-tests/src/jvmJsonJavaTest/proto-java",
-          "--compact",
-          "all32.proto",
-          "all64.proto",
-          "all_types_proto2.proto",
-          "all_types_proto3_test_proto3_optional.proto",
-          "all_structs.proto",
-          "all_wrappers.proto",
-          "camel_case.proto",
-          "map_types.proto",
-          "pizza.proto"
-  )
-}
-
-val generateSharedJsonKotlinTests by tasks.creating(JavaExec::class) {
-  group = "Generate Shared JSON Tests"
-  description = "Generates Kotlin classes for shared JSON tests"
-  classpath = wire
-  mainClass.set("com.squareup.wire.WireCompiler")
-  args = listOf(
-          "--proto_path=wire-tests/src/commonTest/shared/proto/proto2",
-          "--proto_path=wire-tests/src/commonTest/shared/proto/proto3",
-          "--kotlin_out=wire-tests/src/jvmJsonKotlinTest/proto-kotlin",
-          "--java_interop",
-          "all32.proto",
-          "all64.proto",
-          "all_types_proto2.proto",
-          "all_types_proto3_test_proto3_optional.proto",
-          "all_structs.proto",
-          "all_wrappers.proto",
-          "camel_case.proto",
-          "map_types.proto",
-          "pizza.proto"
-  )
-}
-
-val generateSharedJson by tasks.creating {
-  group = "Generate Tests"
-  description = "Generates Java and Kotlin classes for shared JSON tests"
-  dependsOn(
-    generateSharedJsonCompactJavaTests,
-    generateSharedJsonKotlinTests
-  )
-}
-
 val generateTests by tasks.creating {
   group = "Generate Tests"
   description = "Generates all test classes"
@@ -731,7 +676,6 @@ val generateTests by tasks.creating {
     generateProto3KotlinTests,
     generateProto3JavaTests,
     generateProtoReader32KotlinTests,
-    generateSharedJson,
     generateOpaqueTypeTests,
   )
 }

@@ -1,0 +1,451 @@
+/*
+ * Copyright (C) 2013 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.wire;
+
+import static com.google.common.truth.Truth.assertThat;
+import static java.util.Collections.singletonList;
+import static org.junit.Assert.fail;
+
+import com.squareup.wire.protos.custom_options.FooBar;
+import com.squareup.wire.protos.custom_options.MessageWithOptions;
+import com.squareup.wire.protos.custom_options.MyFieldOptionOneOption;
+import com.squareup.wire.protos.custom_options.MyFieldOptionThreeOption;
+import com.squareup.wire.protos.custom_options.MyFieldOptionTwoOption;
+import com.squareup.wire.protos.custom_options.MyMessageOptionFourOption;
+import com.squareup.wire.protos.custom_options.MyMessageOptionTwoOption;
+import com.squareup.wire.protos.edgecases.NoFields;
+import com.squareup.wire.protos.person.Person;
+import com.squareup.wire.protos.person.Person.PhoneNumber;
+import com.squareup.wire.protos.person.Person.PhoneType;
+import com.squareup.wire.protos.simple.ExternalMessage;
+import com.squareup.wire.protos.simple.SimpleMessage;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import okio.Buffer;
+import okio.ByteString;
+import org.junit.Test;
+
+/** Test Wire runtime. */
+public class WireTest {
+
+  @Test
+  public void testSimpleMessage() throws Exception {
+    SimpleMessage msg = new SimpleMessage.Builder().required_int32(456).build();
+    assertThat(msg.optional_int32).isNull();
+    assertThat(msg.optional_nested_msg).isNull();
+    assertThat(msg.optional_external_msg).isNull();
+    assertThat(msg.default_nested_enum).isNull();
+    assertThat(msg.required_int32).isEqualTo(new Integer(456));
+    assertThat(msg.repeated_double).isNotNull();
+    assertThat(msg.repeated_double).hasSize(0);
+
+    SimpleMessage.Builder builder = new SimpleMessage.Builder();
+    builder.optional_int32(789);
+    SimpleMessage.NestedMessage.Builder nested_msg_builder =
+        new SimpleMessage.NestedMessage.Builder();
+    nested_msg_builder.bb(2);
+    builder.optional_nested_msg(nested_msg_builder.build());
+    ExternalMessage.Builder external_msg_builder = new ExternalMessage.Builder();
+    external_msg_builder.f(99.9f);
+    builder.optional_external_msg(external_msg_builder.build());
+    builder.default_nested_enum(SimpleMessage.NestedEnum.BAR);
+    builder.required_int32(456);
+    List<Double> doubles = Arrays.asList(1.0, 2.0, 3.0);
+    builder.repeated_double(doubles);
+
+    msg = builder.build();
+    assertThat(msg.optional_int32).isEqualTo(new Integer(789));
+    assertThat(msg.optional_nested_msg.bb).isEqualTo(new Integer(2));
+    assertThat(msg.optional_external_msg.f).isEqualTo(new Float(99.9f));
+    assertThat(msg.default_nested_enum).isEqualTo(SimpleMessage.NestedEnum.BAR);
+    assertThat(msg.required_int32).isEqualTo(new Integer(456));
+    assertThat(msg.repeated_double).isEqualTo(doubles);
+
+    // Modifying the builder list does not affect an already-built message
+    List<Double> savedData = new ArrayList<Double>(msg.repeated_double);
+    doubles.set(1, 1.1);
+    assertThat(msg.repeated_double).isNotSameInstanceAs(doubles);
+    assertThat(msg.repeated_double).isEqualTo(savedData);
+
+    // Rebuilding will use the new list
+    msg = builder.build();
+    assertThat(msg.repeated_double).isEqualTo(doubles);
+
+    // Check for required fields
+    builder.required_int32(null);
+    try {
+      builder.build();
+      fail();
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessageThat().contains("Required field not set:\n  required_int32");
+    }
+
+    // The message list is immutable
+    try {
+      msg.repeated_double.set(0, 0.0);
+      fail();
+    } catch (UnsupportedOperationException e) {
+      // expected
+    }
+
+    ProtoAdapter<SimpleMessage> adapter = SimpleMessage.ADAPTER;
+
+    byte[] result = adapter.encode(msg);
+    assertThat(result.length).isEqualTo(46);
+
+    SimpleMessage newMsg = adapter.decode(result);
+    assertThat(newMsg.optional_int32).isEqualTo(new Integer(789));
+    assertThat(newMsg.optional_nested_msg.bb).isEqualTo(new Integer(2));
+    assertThat(newMsg.optional_external_msg.f).isEqualTo(new Float(99.9F));
+    assertThat(newMsg.default_nested_enum).isEqualTo(SimpleMessage.NestedEnum.BAR);
+    assertThat(newMsg.required_int32).isEqualTo(new Integer(456));
+    assertThat(msg.repeated_double).isEqualTo(doubles);
+  }
+
+  @Test
+  public void mutateBuilder() throws Exception {
+    SimpleMessage message = new SimpleMessage.Builder().required_int32(10).build();
+
+    SimpleMessage.Builder builder = message.newBuilder();
+    builder.required_int32 = 20;
+    builder.repeated_double.add(30.5);
+    builder.optional_int32 = 40;
+
+    assertThat(builder.build())
+        .isEqualTo(
+            new SimpleMessage.Builder()
+                .required_int32(20)
+                .repeated_double(Arrays.asList(30.5))
+                .optional_int32(40)
+                .build());
+  }
+
+  @Test
+  public void testPerson() throws IOException {
+    Person person =
+        new Person.Builder()
+            .name("Omar")
+            .id(1234)
+            .email("omar@wire.com")
+            .phone(
+                Arrays.asList(
+                    new PhoneNumber.Builder()
+                        .number("410-555-0909")
+                        .type(PhoneType.MOBILE)
+                        .build()))
+            .build();
+
+    ProtoAdapter<Person> adapter = Person.ADAPTER;
+
+    byte[] data = adapter.encode(person);
+    adapter.decode(data);
+  }
+
+  @Test
+  public void testExtensions() throws Exception {
+    ExternalMessage optional_external_msg =
+        new ExternalMessage.Builder()
+            .fooext(Arrays.asList(444, 555))
+            .barext(333)
+            .bazext(222)
+            .nested_message_ext(new SimpleMessage.NestedMessage.Builder().bb(77).build())
+            .nested_enum_ext(SimpleMessage.NestedEnum.BAZ)
+            .build();
+
+    SimpleMessage msg =
+        new SimpleMessage.Builder()
+            .optional_external_msg(optional_external_msg)
+            .required_int32(456)
+            .build();
+
+    assertThat(msg.optional_external_msg.fooext).containsExactly(444, 555);
+    assertThat(msg.optional_external_msg.barext).isEqualTo(new Integer(333));
+    assertThat(msg.optional_external_msg.bazext).isEqualTo(new Integer(222));
+    assertThat(msg.optional_external_msg.nested_message_ext.bb).isEqualTo(new Integer(77));
+    assertThat(msg.optional_external_msg.nested_enum_ext).isEqualTo(SimpleMessage.NestedEnum.BAZ);
+
+    ProtoAdapter<SimpleMessage> adapter = SimpleMessage.ADAPTER;
+
+    byte[] result = adapter.encode(msg);
+    assertThat(result.length).isEqualTo(29);
+
+    SimpleMessage newMsg = adapter.decode(result);
+    assertThat(newMsg.optional_external_msg.fooext).containsExactly(444, 555);
+    assertThat(newMsg.optional_external_msg.barext).isEqualTo(new Integer(333));
+    assertThat(newMsg.optional_external_msg.bazext).isEqualTo(new Integer(222));
+  }
+
+  @Test
+  public void testExtensionEnum() throws Exception {
+    ExternalMessage optional_external_msg =
+        new ExternalMessage.Builder().nested_enum_ext(SimpleMessage.NestedEnum.BAZ).build();
+
+    SimpleMessage msg =
+        new SimpleMessage.Builder()
+            .optional_external_msg(optional_external_msg)
+            .required_int32(456)
+            .build();
+
+    ProtoAdapter<SimpleMessage> adapter = SimpleMessage.ADAPTER;
+
+    byte[] data = adapter.encode(msg);
+
+    // Change BAZ enum to a value not known by this client.
+    data[4] = 17;
+
+    // Parse the altered message.
+    SimpleMessage newMsg = adapter.decode(data);
+
+    // Original value shows up as an extension.
+    assertThat(msg.toString()).contains("nested_enum_ext=BAZ");
+    // New value is unknown in the tag map.
+    ProtoReader reader =
+        new ProtoReader(new Buffer().write(newMsg.optional_external_msg.unknownFields()));
+    reader.beginMessage();
+    assertThat(reader.nextTag()).isEqualTo(129);
+    assertThat(reader.peekFieldEncoding().rawProtoAdapter().decode(reader)).isEqualTo(17L);
+
+    // Serialized outputs are the same.
+    byte[] newData = adapter.encode(newMsg);
+    assertThat(data).isEqualTo(newData);
+  }
+
+  @Test
+  public void testExtensionsNoRegistry() throws Exception {
+    ExternalMessage optional_external_msg =
+        new ExternalMessage.Builder()
+            .fooext(Arrays.asList(444, 555))
+            .barext(333)
+            .bazext(222)
+            .build();
+
+    SimpleMessage msg =
+        new SimpleMessage.Builder()
+            .optional_external_msg(optional_external_msg)
+            .required_int32(456)
+            .build();
+
+    assertThat(msg.optional_external_msg.fooext).containsExactly(444, 555);
+    assertThat(msg.optional_external_msg.barext).isEqualTo(new Integer(333));
+    assertThat(msg.optional_external_msg.bazext).isEqualTo(new Integer(222));
+
+    ProtoAdapter<SimpleMessage> adapter = SimpleMessage.ADAPTER;
+
+    byte[] result = adapter.encode(msg);
+    assertThat(result.length).isEqualTo(21);
+
+    SimpleMessage newMsg = adapter.decode(result);
+    assertThat(newMsg.optional_external_msg.fooext).isEqualTo(Arrays.asList(444, 555));
+    assertThat(newMsg.optional_external_msg.barext).isEqualTo(333);
+    assertThat(newMsg.optional_external_msg.bazext).isEqualTo(222);
+  }
+
+  @Test
+  public void testEmptyList() throws IOException {
+    SimpleMessage noListMessage = new SimpleMessage.Builder().required_int32(1).build();
+    SimpleMessage emptyListMessage =
+        new SimpleMessage.Builder()
+            .required_int32(1)
+            .repeated_double(new ArrayList<Double>())
+            .build();
+
+    assertThat(noListMessage.repeated_double).isNotNull();
+    assertThat(noListMessage.repeated_double).hasSize(0);
+    assertThat(emptyListMessage.repeated_double).isNotNull();
+    assertThat(emptyListMessage.repeated_double).hasSize(0);
+
+    // Empty lists and null lists compare as equals()
+    assertThat(noListMessage).isEqualTo(emptyListMessage);
+
+    // Empty lists and null lists have the same hashCode()
+    int noListHashCode = noListMessage.hashCode();
+    int emptyListHashCode = emptyListMessage.hashCode();
+    assertThat(noListHashCode).isEqualTo(emptyListHashCode);
+
+    ProtoAdapter<SimpleMessage> adapter = SimpleMessage.ADAPTER;
+
+    // Empty lists and null lists occupy 0 bytes in the wire encoding
+    byte[] noListBytes = adapter.encode(noListMessage);
+    byte[] emptyListBytes = adapter.encode(emptyListMessage);
+
+    assertThat(noListBytes.length).isEqualTo(2);
+    assertThat(emptyListBytes.length).isEqualTo(2);
+
+    assertThat(emptyListBytes[0]).isEqualTo(noListBytes[0]);
+    assertThat(emptyListBytes[1]).isEqualTo(noListBytes[1]);
+
+    // Parsed results have a null list
+    SimpleMessage noListParsed = adapter.decode(noListBytes);
+    SimpleMessage emptyListParsed = adapter.decode(emptyListBytes);
+
+    assertThat(noListParsed.repeated_double).isNotNull();
+    assertThat(noListParsed.repeated_double).hasSize(0);
+    assertThat(emptyListParsed.repeated_double).isNotNull();
+    assertThat(emptyListParsed.repeated_double).hasSize(0);
+  }
+
+  @Test
+  public void testBadEnum() throws IOException {
+    Person person =
+        new Person.Builder()
+            .id(1)
+            .name("Joe Schmoe")
+            .phone(
+                Arrays.asList(
+                    new PhoneNumber.Builder().number("555-1212").type(PhoneType.WORK).build()))
+            .build();
+
+    assertThat(person.phone.get(0).type).isEqualTo(PhoneType.WORK);
+
+    ProtoAdapter<Person> adapter = Person.ADAPTER;
+
+    byte[] data = adapter.encode(person);
+    assertThat(data[27]).isEqualTo((byte) PhoneType.WORK.getValue());
+
+    // Corrupt the PhoneNumber type field with an undefined value
+    data[27] = 17;
+    // Parsed PhoneNumber has no value set
+    Person result = adapter.decode(data);
+    assertThat(result.phone.get(0).type).isNull();
+
+    // The value 17 will be stored as an unknown varint with tag number 2
+    ByteString unknownFields = result.phone.get(0).unknownFields();
+    ProtoReader reader = new ProtoReader(new Buffer().write(unknownFields));
+    long token = reader.beginMessage();
+    assertThat(reader.nextTag()).isEqualTo(2);
+    assertThat(reader.peekFieldEncoding()).isEqualTo(FieldEncoding.VARINT);
+    assertThat(FieldEncoding.VARINT.rawProtoAdapter().decode(reader)).isEqualTo(17L);
+    assertThat(reader.nextTag()).isEqualTo(-1);
+    reader.endMessageAndGetUnknownFields(token);
+
+    // Serialize again, value is preserved
+    byte[] newData = adapter.encode(result);
+    assertThat(data).isEqualTo(newData);
+  }
+
+  @Test
+  public void listMustBeNonNull() {
+    Person.Builder builder = new Person.Builder();
+    builder.id = 1;
+    builder.name = "Joe Schmoe";
+    builder.phone = null;
+    try {
+      builder.build();
+      fail();
+    } catch (NullPointerException expected) {
+      assertThat(expected)
+          .hasMessageThat()
+          .contains(
+              "Parameter specified as non-null is null: "
+                  + "method com.squareup.wire.internal.Internal__InternalKt.immutableCopyOf, parameter list");
+    }
+  }
+
+  @Test
+  public void listElementsMustBeNonNull() {
+    Person.Builder builder = new Person.Builder();
+    builder.id = 1;
+    builder.name = "Joe Schmoe";
+    builder.phone.add(null);
+    try {
+      builder.build();
+      fail();
+    } catch (IllegalArgumentException expected) {
+      assertThat(expected).hasMessageThat().contains("phone.contains(null)");
+    }
+  }
+
+  @Test
+  public void builderListsAreAlwaysMutable() {
+    PhoneNumber phone = new PhoneNumber.Builder().number("555-1212").type(PhoneType.WORK).build();
+
+    Person.Builder newBuilder = new Person.Builder();
+    newBuilder.phone.add(phone);
+
+    Person person =
+        new Person.Builder().id(1).name("Joe Schmoe").phone(singletonList(phone)).build();
+    Person.Builder copyBuilder = person.newBuilder();
+    copyBuilder.phone.add(phone);
+  }
+
+  @Test
+  public void emptyMessageToString() {
+    NoFields empty = new NoFields();
+    assertThat(empty.toString()).isEqualTo("NoFields{}");
+  }
+
+  @Test
+  public void sanitizedToString() {
+    Person person =
+        new Person.Builder()
+            .id(1)
+            .name("Such, I mean it, such [a] {funny} name.")
+            .phone(singletonList(new PhoneNumber.Builder().number("123,456,789").build()))
+            .aliases(Arrays.asList("B-lo,ved", "D{esperado}"))
+            .build();
+
+    String printedPerson = person.toString();
+    assertThat(printedPerson)
+        .isEqualTo(
+            "Person{"
+                + "id=1, "
+                + "name=Such\\, I mean it\\, such \\[a\\] \\{funny\\} name., "
+                + "phone=[PhoneNumber{number=123\\,456\\,789}], "
+                + "aliases=[B-lo\\,ved, D\\{esperado\\}]"
+                + "}");
+  }
+
+  @Test
+  public void createUseResursiveMapBuilderWithoutCrashing() {
+    ModelEvaluation model =
+        new ModelEvaluation.Builder()
+            .name("name")
+            .score(33.0)
+            .models(new LinkedHashMap<>())
+            .build();
+    assertThat(ModelEvaluation.ADAPTER.encodeByteString(model).hex())
+        .isEqualTo("0a046e616d65110000000000804040");
+  }
+
+  @Test
+  public void optionsOnMessageType() {
+    MyMessageOptionTwoOption myMessageOptionTwo =
+        MessageWithOptions.class.getAnnotation(MyMessageOptionTwoOption.class);
+    assertThat(myMessageOptionTwo.value()).isEqualTo(91011.0f);
+
+    MyMessageOptionFourOption myMessageOptionFour =
+        MessageWithOptions.class.getAnnotation(MyMessageOptionFourOption.class);
+    assertThat(myMessageOptionFour.value()).isEqualTo(FooBar.FooBarBazEnum.FOO);
+  }
+
+  @Test
+  public void optionsOnField() throws Exception {
+    MyFieldOptionOneOption myFieldOptionOne =
+        FooBar.class.getDeclaredField("foo").getAnnotation(MyFieldOptionOneOption.class);
+    assertThat(myFieldOptionOne.value()).isEqualTo(17);
+
+    MyFieldOptionTwoOption myFieldOptionTwo =
+        FooBar.class.getDeclaredField("bar").getAnnotation(MyFieldOptionTwoOption.class);
+    assertThat(myFieldOptionTwo.value()).isEqualTo(33.5f);
+
+    MyFieldOptionThreeOption myFieldOptionThree =
+        FooBar.class.getDeclaredField("baz").getAnnotation(MyFieldOptionThreeOption.class);
+    assertThat(myFieldOptionThree.value()).isEqualTo(FooBar.FooBarBazEnum.BAR);
+  }
+}
