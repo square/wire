@@ -669,7 +669,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("person.proto"),
+                Path.get("person_proto3.proto"),
                 ""
                     + "package common.proto;\n"
                     + "enum Gender {\n"
@@ -815,7 +815,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("proto_package/person.proto"),
+                Path.get("proto_package/person_proto3.proto"),
                 "package proto_package;\n"
                     + "import \"wire/extensions.proto\";\n"
                     + "\n"
@@ -836,7 +836,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("proto_package/person.proto"),
+                Path.get("proto_package/person_proto3.proto"),
                 "package proto_package;\n"
                     + "import \"wire/extensions.proto\";\n"
                     + "\n"
@@ -882,7 +882,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("proto_package/person.proto"),
+                Path.get("proto_package/person_proto3.proto"),
                 "package proto_package;\n"
                     + "import \"wire/extensions.proto\";\n"
                     + "\n"
@@ -894,7 +894,7 @@ public final class JavaGeneratorTest {
             .add(
                 Path.get("city_package/home.proto"),
                 "package city_package;\n"
-                    + "import \"proto_package/person.proto\";\n"
+                    + "import \"proto_package/person_proto3.proto\";\n"
                     + "\n"
                     + "message Home {\n"
                     + "	repeated proto_package.Person person = 1;\n"
@@ -910,7 +910,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("proto_package/person.proto"),
+                Path.get("proto_package/person_proto3.proto"),
                 "package proto_package;\n"
                     + "enum Direction {\n"
                     + "  option deprecated = true;\n"
@@ -929,7 +929,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("proto_package/person.proto"),
+                Path.get("proto_package/person_proto3.proto"),
                 "package proto_package;\n"
                     + "enum Direction {\n"
                     + "  NORTH = 1;\n"
@@ -947,7 +947,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("proto_package/person.proto"),
+                Path.get("proto_package/person_proto3.proto"),
                 "package proto_package;\n"
                     + "message Person {\n"
                     + "  optional string name = 1 [deprecated = true];\n"
@@ -962,7 +962,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("proto_package/person.proto"),
+                Path.get("proto_package/person_proto3.proto"),
                 "package proto_package;\n"
                     + "message Person {\n"
                     + "  option deprecated = true;\n"

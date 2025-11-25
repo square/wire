@@ -1,0 +1,39 @@
+/*
+ * Copyright 2019 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto2";
+
+package com.squareup.wire.protos.kotlin.map;
+
+message Mappy {
+  map<string, Thing> things = 1;
+}
+
+message MappyTwo {
+  enum ValueEnum {
+    DEFAULT = 0;
+    FOO = 1;
+    BAR = 2;
+  }
+
+  map<string, ValueEnum> string_enums = 1;
+  map<sint64, Thing> int_things = 2;
+  map<string, sint64> string_ints = 3;
+  map<sint32, Thing> int_things_two = 4;
+}
+
+message Thing {
+  optional string name = 1;
+}

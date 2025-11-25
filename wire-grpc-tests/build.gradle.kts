@@ -46,7 +46,6 @@ sourceSets {
   val test by getting {
     java.srcDir("build/generated/source/proto/test/grpc")
     java.srcDir("build/generated/source/proto/test/java")
-    java.srcDir("src/test/proto-grpc")
   }
 }
 
@@ -68,20 +67,12 @@ dependencies {
   testImplementation(libs.grpc.stub)
   testImplementation(libs.kotlin.test.junit)
   testImplementation(libs.protobuf.java)
+  testImplementation(projects.wireTestProtoGeneration.grpc)
 }
 
 val test by tasks.getting(Test::class) {
   testLogging {
     events("passed", "skipped", "failed")
     exceptionFormat = TestExceptionFormat.FULL
-  }
-}
-
-configure<SpotlessExtension> {
-  kotlin {
-    targetExclude(
-      // Generated files.
-      "src/test/proto-grpc/**/*.kt",
-    )
   }
 }

@@ -82,7 +82,7 @@ class WireCompilerTest {
 
   @Test
   fun testPerson() {
-    val sources = arrayOf("person.proto")
+    val sources = arrayOf("person_proto3.proto")
     compileToJava(sources)
 
     val outputs = arrayOf("com/squareup/wire/protos/person/Person.java")
@@ -91,7 +91,7 @@ class WireCompilerTest {
 
   @Test
   fun testPersonDryRun() {
-    val sources = arrayOf("person.proto")
+    val sources = arrayOf("person_proto3.proto")
 
     val args = mutableListOf(
       TargetLanguage.JAVA.protoPathArg(),
@@ -122,7 +122,7 @@ class WireCompilerTest {
 
   @Test
   fun runMultipleTargets() {
-    val sources = arrayOf("person.proto")
+    val sources = arrayOf("person_proto3.proto")
 
     val args = mutableListOf(
       TargetLanguage.JAVA.protoPathArg(),
@@ -161,7 +161,7 @@ class WireCompilerTest {
 
   @Test
   fun notExclusiveTargets() {
-    val sources = arrayOf("person.proto")
+    val sources = arrayOf("person_proto3.proto")
 
     val args = mutableListOf(
       TargetLanguage.JAVA.protoPathArg(),
@@ -197,14 +197,14 @@ class WireCompilerTest {
     // But we logged things because we're dry-running.
     assertThat(logs).containsExactly(
       "artifactHandled(com.squareup.wire.protos.person.Person, Kotlin)",
-      "artifactHandled(.Person declared in person.proto, Swift)",
+      "artifactHandled(.Person declared in person_proto3.proto, Swift)",
       "artifactHandled(com.squareup.wire.protos.person.Person, Java)",
     )
   }
 
   @Test
   fun testPersonAndroid() {
-    val sources = arrayOf("person.proto")
+    val sources = arrayOf("person_proto3.proto")
     compileToJava(sources, "--android")
 
     val outputs = arrayOf("com/squareup/wire/protos/person/Person.java")
@@ -598,7 +598,7 @@ class WireCompilerTest {
 
   @Test
   fun testPersonKotlin() {
-    val sources = arrayOf("person.proto")
+    val sources = arrayOf("person_proto3.proto")
     compileToKotlin(sources)
 
     val outputs = arrayOf("com/squareup/wire/protos/kotlin/person/Person.kt")
@@ -607,7 +607,7 @@ class WireCompilerTest {
 
   @Test
   fun testPersonAndroidKotlin() {
-    val sources = arrayOf("person.proto")
+    val sources = arrayOf("person_proto3.proto")
     compileToKotlin(sources, "--android")
 
     val outputs = arrayOf("com/squareup/wire/protos/kotlin/person/Person.kt")
@@ -616,7 +616,7 @@ class WireCompilerTest {
 
   @Test
   fun testPersonJavaInteropKotlin() {
-    val sources = arrayOf("person.proto")
+    val sources = arrayOf("person_proto3.proto")
     compileToKotlin(sources, "--java_interop")
 
     val outputs = arrayOf("com/squareup/wire/protos/kotlin/person/Person.kt")

@@ -1,0 +1,179 @@
+{
+  "myInt32": 111,
+  "myUint32": 112,
+  "mySint32": 113,
+  "myFixed32": 114,
+  "mySfixed32": 115,
+  "myInt64": "116",
+  "myUint64": "117",
+  "mySint64": "118",
+  "myFixed64": "119",
+  "mySfixed64": "120",
+  "myBool": true,
+  "myFloat": 122.0,
+  "myDouble": 123.0,
+  "myString": "124",
+  "myBytes": "e30=",
+  "nestedEnum": "A",
+  "nestedMessage": {
+    "a": 999
+  },
+  "optInt32": 111,
+  "optUint32": 112,
+  "optSint32": 113,
+  "optFixed32": 114,
+  "optSfixed32": 115,
+  "optInt64": "116",
+  "optUint64": "117",
+  "optSint64": "118",
+  "optFixed64": "119",
+  "optSfixed64": "120",
+  "optBool": true,
+  "optFloat": 122.0,
+  "optDouble": 123.0,
+  "optString": "124",
+  "optBytes": "e30=",
+  "repInt32": [
+    111,
+    111
+  ],
+  "repUint32": [
+    112,
+    112
+  ],
+  "repSint32": [
+    113,
+    113
+  ],
+  "repFixed32": [
+    114,
+    114
+  ],
+  "repSfixed32": [
+    115,
+    115
+  ],
+  "repInt64": [
+    "116",
+    "116"
+  ],
+  "repUint64": [
+    "117",
+    "117"
+  ],
+  "repSint64": [
+    "118",
+    "118"
+  ],
+  "repFixed64": [
+    "119",
+    "119"
+  ],
+  "repSfixed64": [
+    "120",
+    "120"
+  ],
+  "repBool": [
+    true,
+    true
+  ],
+  "repFloat": [
+    122.0,
+    122.0
+  ],
+  "repDouble": [
+    123.0,
+    123.0
+  ],
+  "repString": [
+    "124",
+    "124"
+  ],
+  "repBytes": [
+    "e30=",
+    "e30="
+  ],
+  "repNestedEnum": [
+    "A",
+    "A"
+  ],
+  "repNestedMessage": [
+    {
+      "a": 999
+    },
+    {
+      "a": 999
+    }
+  ],
+  "packInt32": [
+    111,
+    111
+  ],
+  "packUint32": [
+    112,
+    112
+  ],
+  "packSint32": [
+    113,
+    113
+  ],
+  "packFixed32": [
+    114,
+    114
+  ],
+  "packSfixed32": [
+    115,
+    115
+  ],
+  "packInt64": [
+    "116",
+    "116"
+  ],
+  "packUint64": [
+    "117",
+    "117"
+  ],
+  "packSint64": [
+    "118",
+    "118"
+  ],
+  "packFixed64": [
+    "119",
+    "119"
+  ],
+  "packSfixed64": [
+    "120",
+    "120"
+  ],
+  "packBool": [
+    true,
+    true
+  ],
+  "packFloat": [
+    122.0,
+    122.0
+  ],
+  "packDouble": [
+    123.0,
+    123.0
+  ],
+  "packNestedEnum": [
+    "A",
+    "A"
+  ],
+  "mapInt32Int32": {
+    "1": 2
+  },
+  "mapStringString": {
+    "key": "value"
+  },
+  "mapStringMessage": {
+    "message": {
+      "a": 1
+    }
+  },
+  "mapStringEnum": {
+    "enum": "A"
+  },
+  "oneofInt32": 0.0
+}

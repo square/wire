@@ -1,0 +1,65 @@
+/*
+ * Copyright 2013 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package squareup.protos.kotlin.unknownfields;
+
+option java_package = "com.squareup.wire.protos.kotlin.unknownfields";
+
+message VersionOne {
+  optional int32 i = 1;
+
+  optional NestedVersionOne obj = 7;
+  optional EnumVersionOne en = 8;
+}
+
+message NestedVersionOne {
+  optional int32 i = 1;
+}
+
+enum EnumVersionOne {
+  SHREK_V1 = 1;
+  DONKEY_V1 = 2;
+  FIONA_V1 = 3;
+}
+
+message VersionTwo {
+  optional int32 i = 1;
+
+  optional int32 v2_i = 2;
+  optional string v2_s = 3;
+  optional fixed32 v2_f32 = 4;
+  optional fixed64 v2_f64 = 5;
+  repeated string v2_rs = 6;
+
+  optional NestedVersionTwo obj = 7;
+  optional EnumVersionTwo en = 8;
+}
+
+message NestedVersionTwo {
+  optional int32 i = 1;
+
+  optional int32 v2_i = 2;
+  optional string v2_s = 3;
+  optional fixed32 v2_f32 = 4;
+  optional fixed64 v2_f64 = 5;
+  repeated string v2_rs = 6;
+}
+
+enum EnumVersionTwo {
+  SHREK_V2 = 1;
+  DONKEY_V2 = 2;
+  FIONA_V2 = 3;
+  PUSS_IN_BOOTS_V2 = 4;
+}
