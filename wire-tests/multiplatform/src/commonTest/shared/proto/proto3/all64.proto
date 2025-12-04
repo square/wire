@@ -1,0 +1,49 @@
+/*
+ * Copyright 2020 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto3";
+package squareup.proto3;
+
+message All64 {
+  // Prefixing so the generated code doesn't rename it weirdly.
+  int64 my_int64 = 1;
+  uint64 my_uint64 = 2;
+  sint64 my_sint64 = 3;
+  fixed64 my_fixed64 = 4;
+  sfixed64 my_sfixed64 = 5;
+
+  repeated int64 rep_int64 = 201 [packed = false];
+  repeated uint64 rep_uint64 = 202 [packed = false];
+  repeated sint64 rep_sint64 = 203 [packed = false];
+  repeated fixed64 rep_fixed64 = 204 [packed = false];
+  repeated sfixed64 rep_sfixed64 = 205 [packed = false];
+
+  repeated int64 pack_int64 = 301 [packed = true];
+  repeated uint64 pack_uint64 = 302 [packed = true];
+  repeated sint64 pack_sint64 = 303 [packed = true];
+  repeated fixed64 pack_fixed64 = 304 [packed = true];
+  repeated sfixed64 pack_sfixed64 = 305 [packed = true];
+
+  oneof choice {
+    int64 oneof_int64 = 401;
+    sfixed64 oneof_sfixed64 = 402;
+  }
+
+  map<int64, int64> map_int64_int64 = 501;
+  map<int64, uint64> map_int64_uint64 = 502;
+  map<int64, sint64> map_int64_sint64 = 503;
+  map<int64, fixed64> map_int64_fixed64 = 504;
+  map<int64, sfixed64> map_int64_sfixed64 = 505;
+}

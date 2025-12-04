@@ -1,0 +1,49 @@
+/*
+ * Copyright 2020 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto3";
+package squareup.proto3;
+
+message All32 {
+  // Prefixing so the generated code doesn't rename it weirdly.
+  int32 my_int32 = 1;
+  uint32 my_uint32 = 2;
+  sint32 my_sint32 = 3;
+  fixed32 my_fixed32 = 4;
+  sfixed32 my_sfixed32 = 5;
+
+  repeated int32 rep_int32 = 201 [packed = false];
+  repeated uint32 rep_uint32 = 202 [packed = false];
+  repeated sint32 rep_sint32 = 203 [packed = false];
+  repeated fixed32 rep_fixed32 = 204 [packed = false];
+  repeated sfixed32 rep_sfixed32 = 205 [packed = false];
+
+  repeated int32 pack_int32 = 301 [packed = true];
+  repeated uint32 pack_uint32 = 302 [packed = true];
+  repeated sint32 pack_sint32 = 303 [packed = true];
+  repeated fixed32 pack_fixed32 = 304 [packed = true];
+  repeated sfixed32 pack_sfixed32 = 305 [packed = true];
+
+  oneof choice {
+    int32 oneof_int32 = 401;
+    sfixed32 oneof_sfixed32 = 402;
+  }
+
+  map<int32, int32> map_int32_int32 = 501;
+  map<int32, uint32> map_int32_uint32 = 502;
+  map<int32, sint32> map_int32_sint32 = 503;
+  map<int32, fixed32> map_int32_fixed32 = 504;
+  map<int32, sfixed32> map_int32_sfixed32 = 505;
+}
