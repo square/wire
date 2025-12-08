@@ -2,7 +2,7 @@
 android = "4.1.1.4"
 androidGradlePlugin = "8.13.1"
 asm = "9.9"
-checkerQual = "3.52.0"
+checkerQual = "3.52.1"
 coroutines = "1.10.2"
 dokka = "2.0.0"
 grpc = "1.76.0"
