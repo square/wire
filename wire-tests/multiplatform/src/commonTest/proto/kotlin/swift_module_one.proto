@@ -1,0 +1,50 @@
+/*
+ * Copyright 2023 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto2";
+
+package squareup.protos.kotlin.swift_modules.module_one;
+
+import "swift_module_address.proto";
+import "swift_module_location.proto";
+
+enum SwiftModuleOneEnum {
+  DO_NOT_USE = 0;
+  ONE = 1;
+  TWO = 2;
+}
+
+// Collides with Foundation.SortOrder
+enum SortOrder {
+  DESC = 0;
+  ASC = 1;
+}
+
+message SwiftModuleOneMessage {
+  required string name = 1;
+
+  extensions 1000 to 1999;
+}
+
+message SwiftModuleOneAmbiguousMessage {
+  optional string name = 1;
+
+  optional squareup.protos.kotlin.swift_modules.address.Address address = 2;
+
+  optional squareup.protos.kotlin.swift_modules.location.Location location = 3;
+}
+
+message DateTime {
+}

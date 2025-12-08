@@ -1,0 +1,15 @@
+{
+  "address": null,
+  "deliveredWithinOrFree": null,
+  "pizzas": [
+    {
+      "toppings": null
+    }
+  ],
+  "loyalty": null,
+  "promotion": {
+    "@type": "type.googleapis.com/squareup.proto3.BuyOneGetOnePromotion",
+    "coupon": null
+  },
+  "orderedAt": null
+}

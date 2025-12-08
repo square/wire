@@ -1319,7 +1319,7 @@ class KotlinGeneratorTest {
   @Test fun generateTypeUsesPackageNameOnFieldAndClassNameClash() {
     val schema = buildSchema {
       add(
-        "person.proto".toPath(),
+        "person_proto3.proto".toPath(),
         """
         |package common.proto;
         |enum Gender {
@@ -1530,7 +1530,7 @@ class KotlinGeneratorTest {
   @Test fun wirePackageTakesPrecedenceOverJavaPackage() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto".toPath(),
+        "proto_package/person_proto3.proto".toPath(),
         """
         |package proto_package;
         |import "wire/extensions.proto";
@@ -1553,7 +1553,7 @@ class KotlinGeneratorTest {
   @Test fun wirePackageTakesPrecedenceOverProtoPackage() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto".toPath(),
+        "proto_package/person_proto3.proto".toPath(),
         """
         |package proto_package;
         |import "wire/extensions.proto";
@@ -1575,7 +1575,7 @@ class KotlinGeneratorTest {
   @Test fun wirePackageUsedInImport() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto".toPath(),
+        "proto_package/person_proto3.proto".toPath(),
         """
         |package proto_package;
         |import "wire/extensions.proto";
@@ -1592,7 +1592,7 @@ class KotlinGeneratorTest {
         "city_package/home.proto".toPath(),
         """
         |package city_package;
-        |import "proto_package/person.proto";
+        |import "proto_package/person_proto3.proto";
         |
         |message Home {
         |	repeated proto_package.Person person = 1;
@@ -1609,7 +1609,7 @@ class KotlinGeneratorTest {
   @Test fun useArrayUsesTheCorrectType() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto".toPath(),
+        "proto_package/person_proto3.proto".toPath(),
         """
         |package proto_package;
         |import "wire/extensions.proto";
@@ -1826,7 +1826,7 @@ class KotlinGeneratorTest {
   @Test fun deprecatedEnum() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto".toPath(),
+        "proto_package/person_proto3.proto".toPath(),
         """
          |package proto_package;
          |enum Direction {
@@ -1851,7 +1851,7 @@ class KotlinGeneratorTest {
   @Test fun deprecatedEnumConstant() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto".toPath(),
+        "proto_package/person_proto3.proto".toPath(),
         """
         |package proto_package;
         |enum Direction {
@@ -1879,7 +1879,7 @@ class KotlinGeneratorTest {
   @Test fun deprecatedField() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto".toPath(),
+        "proto_package/person_proto3.proto".toPath(),
         """
         |package proto_package;
         |message Person {
@@ -1905,7 +1905,7 @@ class KotlinGeneratorTest {
   @Test fun deprecatedMessage() {
     val schema = buildSchema {
       add(
-        "proto_package/person.proto".toPath(),
+        "proto_package/person_proto3.proto".toPath(),
         """
         |package proto_package;
         |message Person {
@@ -2262,7 +2262,7 @@ class KotlinGeneratorTest {
   @Test fun wirePackageInProtoPathHonoredWhenGeneratingCode() {
     val schema = buildSchema {
       addProtoPath(
-        "person_proto_package/person.proto".toPath(),
+        "person_proto_package/person_proto3.proto".toPath(),
         """
         |package person_proto_package;
         |import "wire/extensions.proto";
@@ -2279,7 +2279,7 @@ class KotlinGeneratorTest {
         "employer_proto_package/employer.proto".toPath(),
         """
         |package employer_proto_package;
-        |import "person_proto_package/person.proto";
+        |import "person_proto_package/person_proto3.proto";
         |
         |message Employer {
         |	repeated person_proto_package.Person employees = 1;
