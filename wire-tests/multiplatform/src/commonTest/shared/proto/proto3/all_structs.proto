@@ -1,0 +1,50 @@
+/*
+ * Copyright 2020 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto3";
+
+package squareup.proto3;
+
+import "google/protobuf/struct.proto";
+
+message AllStructs {
+  google.protobuf.Struct struct = 1;
+  google.protobuf.ListValue list = 2;
+  google.protobuf.NullValue null_value = 3;
+  google.protobuf.Value value_a = 4;
+  google.protobuf.Value value_b = 5;
+  google.protobuf.Value value_c = 6;
+  google.protobuf.Value value_d = 7;
+  google.protobuf.Value value_e = 8;
+  google.protobuf.Value value_f = 9;
+
+  repeated google.protobuf.Struct rep_struct = 101;
+  repeated google.protobuf.ListValue rep_list = 102;
+  repeated google.protobuf.Value rep_value_a = 103;
+  repeated google.protobuf.NullValue rep_null_value = 104;
+
+  // We don't support `Value` and `NullValue` in oneof's.
+  oneof choice {
+    google.protobuf.Struct oneof_struct = 201;
+    google.protobuf.ListValue oneof_list = 202;
+    // google.protobuf.Value oneof_value_a = 203;
+    // google.protobuf.NullValue oneof_null_value = 204;
+  }
+
+  map<int32, google.protobuf.Struct> map_int32_struct = 301;
+  map<int32, google.protobuf.ListValue> map_int32_list = 302;
+  map<int32, google.protobuf.Value> map_int32_value_a = 303;
+  map<int32, google.protobuf.NullValue> map_int32_null_value = 304;
+}

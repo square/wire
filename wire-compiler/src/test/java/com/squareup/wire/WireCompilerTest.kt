@@ -19,7 +19,6 @@ package com.squareup.wire
 
 import assertk.all
 import assertk.assertThat
-import assertk.assertions.contains
 import assertk.assertions.containsExactly
 import assertk.assertions.containsOnly
 import assertk.assertions.isEmpty
@@ -29,7 +28,6 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
-import assertk.assertions.size
 import com.squareup.wire.kotlin.EnumMode
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
@@ -103,7 +101,7 @@ class WireCompilerTest {
     }
   }
 
-  @Test // TODO(Benoit) Delete? Nobody wanna maintain such a test
+  @Test
   fun allFlags() {
     fileSystem.appendingSink("foo.proto".toPath())
     fileSystem.appendingSink("bar.proto".toPath())

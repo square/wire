@@ -29,15 +29,3 @@ fun SchemaBuilder.addLocal(path: Path): SchemaBuilder {
     return add(path, protoFile)
   }
 }
-
-/**
- * This will read the content of [path] in the context of `../wire-tests/src/commonTest/proto/java/`
- * and add it to the [SchemaBuilder].
- */
-fun SchemaBuilder.addFromTest(path: Path): SchemaBuilder {
-  val file = File("../wire-tests/src/commonTest/proto/java/$path")
-  file.source().use { source ->
-    val protoFile = source.buffer().readUtf8()
-    return add(path, protoFile)
-  }
-}

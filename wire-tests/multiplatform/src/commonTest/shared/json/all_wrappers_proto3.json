@@ -1,0 +1,74 @@
+{
+  "boolValue": true,
+  "bytesValue": "e30=",
+  "doubleValue": 33.0,
+  "floatValue": 806.0,
+  "int32Value": -2.147483648E9,
+  "int64Value": "-9223372036854775808",
+  "mapInt32BoolValue": {
+    "23": true
+  },
+  "mapInt32BytesValue": {
+    "23": "e30="
+  },
+  "mapInt32DoubleValue": {
+    "23": 33.0
+  },
+  "mapInt32FloatValue": {
+    "23": 806.0
+  },
+  "mapInt32Int32Value": {
+    "23": -2.147483648E9
+  },
+  "mapInt32Int64Value": {
+    "23": "-9223372036854775808"
+  },
+  "mapInt32StringValue": {
+    "23": "Bo knows wrappers"
+  },
+  "mapInt32Uint32Value": {
+    "23": 4.294967295E9
+  },
+  "mapInt32Uint64Value": {
+    "23": "18446744073709551615"
+  },
+  "repBoolValue": [
+    true,
+    true
+  ],
+  "repBytesValue": [
+    "e30=",
+    "e30="
+  ],
+  "repDoubleValue": [
+    -33.0,
+    -33.0
+  ],
+  "repFloatValue": [
+    -806.0,
+    -806.0
+  ],
+  "repInt32Value": [
+    2.147483647E9,
+    2.147483647E9
+  ],
+  "repInt64Value": [
+    "9223372036854775807",
+    "9223372036854775807"
+  ],
+  "repStringValue": [
+    "Bo knows wrappers",
+    "Bo knows wrappers"
+  ],
+  "repUint32Value": [
+    4.294967295E9,
+    4.294967295E9
+  ],
+  "repUint64Value": [
+    "18446744073709551615",
+    "18446744073709551615"
+  ],
+  "stringValue": "Bo knows wrappers",
+  "uint32Value": 2.147483648E9,
+  "uint64Value": "9223372036854775808"
+}
