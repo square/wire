@@ -64,7 +64,6 @@ public final class com/squareup/wire/FieldEncoding : java/lang/Enum {
 	public static final field FIXED64 Lcom/squareup/wire/FieldEncoding;
 	public static final field LENGTH_DELIMITED Lcom/squareup/wire/FieldEncoding;
 	public static final field VARINT Lcom/squareup/wire/FieldEncoding;
-	public static final fun get$wire_runtime (I)Lcom/squareup/wire/FieldEncoding;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun rawProtoAdapter ()Lcom/squareup/wire/ProtoAdapter;
 	public static fun valueOf (Ljava/lang/String;)Lcom/squareup/wire/FieldEncoding;
