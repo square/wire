@@ -15,7 +15,6 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.internal.JvmStatic
 import kotlin.reflect.KClass
 import okio.BufferedSink
 import okio.BufferedSource
@@ -166,7 +165,6 @@ actual abstract class ProtoAdapter<E> actual constructor(
      * the returned adapter, only single-element maps will be returned and it is the caller's
      * responsibility to merge them into the final map.
      */
-    @JvmStatic
     actual fun <K, V> newMapAdapter(
       keyAdapter: ProtoAdapter<K>,
       valueAdapter: ProtoAdapter<V>,
