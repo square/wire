@@ -25,7 +25,6 @@ import com.squareup.wire.ProtoWriter.Companion.int32Size
 import com.squareup.wire.ProtoWriter.Companion.tagSize
 import com.squareup.wire.ProtoWriter.Companion.varint32Size
 import com.squareup.wire.ProtoWriter.Companion.varint64Size
-import com.squareup.wire.internal.JvmStatic
 import kotlin.reflect.KClass
 import okio.Buffer
 import okio.BufferedSink
@@ -180,7 +179,6 @@ expect abstract class ProtoAdapter<E>(
      * the returned adapter, only single-element maps will be returned and it is the caller's
      * responsibility to merge them into the final map.
      */
-    @JvmStatic
     fun <K, V> newMapAdapter(
       keyAdapter: ProtoAdapter<K>,
       valueAdapter: ProtoAdapter<V>,
