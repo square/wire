@@ -48,9 +48,29 @@ data class OptionElement(
 
   private val formattedName = if (isParenthesized) "($name)" else name
 
+  private fun String.escapeQuotedString(): String = buildString {
+    for (ch in this@escapeQuotedString) {
+      append(
+        when (ch) {
+          '"' -> "\\\""
+          '\'' -> "\\'"
+          '\\' -> "\\\\"
+          '\b' -> "\\b"
+          '\n' -> "\\n"
+          '\r' -> "\\r"
+          '\t' -> "\\t"
+          '\u0007' -> "\\a"
+          '\u000C' -> "\\f"
+          '\u000b' -> "\\v"
+          else -> ch
+        },
+      )
+    }
+  }
+
   fun toSchema(): String = buildString {
     when (kind) {
-      STRING -> append("""$formattedName = "$value"""")
+      STRING -> append("""$formattedName = "${value.toString().escapeQuotedString()}"""")
       BOOLEAN,
       NUMBER,
       ENUM,
