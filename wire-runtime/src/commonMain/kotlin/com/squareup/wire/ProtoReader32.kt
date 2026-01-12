@@ -43,7 +43,8 @@ import okio.IOException
  *
  * This is an alternative to [ProtoReader], which uses `Long` as a cursor. It originates as an
  * optimization for Kotlin/JS, where `Long` cursors are prohibitively expensive. It doesn't subclass
- * [ProtoReader] because [nextTag] and [forEachTag] must each return the appropriate cursor type.
+ * [ProtoReader] because [beginMessage], [endMessageAndGetUnknownFields], and [nextFieldMinLengthInBytes]
+ *    must operate on the correct cursor type.
  */
 interface ProtoReader32 {
   /** Returns a [ProtoReader] that reads the same data as this using a different type. */
