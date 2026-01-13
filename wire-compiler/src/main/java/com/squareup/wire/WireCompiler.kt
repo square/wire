@@ -158,6 +158,12 @@ class WireCompiler internal constructor(
 
   @Throws(IOException::class)
   fun compile() {
+    val wireRun = createRun()
+    wireRun.execute(fs, log)
+  }
+
+  @Throws(IOException::class)
+  fun createRun(): WireRun {
     val targets = mutableListOf<Target>()
     if (javaOut != null) {
       targets += JavaTarget(
@@ -221,7 +227,7 @@ class WireCompiler internal constructor(
       protoPath = listOf()
     }
 
-    val wireRun = WireRun(
+    return WireRun(
       sourcePath = sourcePath,
       protoPath = protoPath,
       treeShakingRoots = treeShakingRoots,
@@ -234,8 +240,6 @@ class WireCompiler internal constructor(
       rejectUnusedRootsOrPrunes = rejectUnusedRootsOrPrunes,
       opaqueTypes = opaqueTypes,
     )
-
-    wireRun.execute(fs, log)
   }
 
   /** Searches [sources] trying to resolve [proto]. Returns the location if it is found. */

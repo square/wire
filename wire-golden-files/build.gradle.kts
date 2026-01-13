@@ -5,6 +5,11 @@ plugins {
 }
 
 wire {
+  java {
+    includes = listOf("squareup.wire.alltypes.proto3.*")
+    out = "src/main/java"
+  }
+
   kotlin {
     includes = listOf("squareup.wire.mutable.*")
     out = "src/main/kotlin"
@@ -32,6 +37,12 @@ wire {
     out = "src/main/kotlin"
     javaInterop = true
     boxOneOfsMinSize = 1
+  }
+
+  opaque("squareup.protos.opaque_types.OuterOpaqueType.InnerOpaqueType1")
+  kotlin {
+    includes = listOf("squareup.protos.opaque_types.*")
+    out = "src/main/kotlin"
   }
 
   kotlin {

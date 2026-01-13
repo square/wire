@@ -1,0 +1,13 @@
+{
+  "RepInt32": [
+    1.0,
+    2.0
+  ],
+  "IDitItMyWAy": "frank",
+  "mapInt32Int32": {
+    "1": 2.0
+  },
+  "nestedMessage": {
+    "oneInt32": 1.0
+  }
+}

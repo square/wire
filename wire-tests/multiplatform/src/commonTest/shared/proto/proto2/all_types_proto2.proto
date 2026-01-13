@@ -1,0 +1,183 @@
+/*
+ * Copyright 2020 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package squareup.proto2;
+
+option java_package = "com.squareup.wire.proto2.alltypes";
+option java_outer_classname = "AlltypesProtos";
+
+message AllTypes {
+
+  extensions 1001 to 1217;
+
+  enum NestedEnum {
+    UNKNOWN = 0;
+    A = 1;
+  }
+
+  message NestedMessage {
+    optional int32 a = 1;
+  }
+
+  optional int32 opt_int32 = 1;
+  optional uint32 opt_uint32 = 2;
+  optional sint32 opt_sint32 = 3;
+  optional fixed32 opt_fixed32 = 4;
+  optional sfixed32 opt_sfixed32 = 5;
+  optional int64 opt_int64 = 6;
+  optional uint64 opt_uint64 = 7;
+  optional sint64 opt_sint64 = 8;
+  optional fixed64 opt_fixed64 = 9;
+  optional sfixed64 opt_sfixed64 = 10;
+  optional bool opt_bool = 11;
+  optional float opt_float = 12;
+  optional double opt_double = 13;
+  optional string opt_string = 14;
+  optional bytes opt_bytes = 15;
+  optional NestedEnum opt_nested_enum = 16;
+  optional NestedMessage opt_nested_message = 17;
+
+  required int32 req_int32 = 101;
+  required uint32 req_uint32 = 102;
+  required sint32 req_sint32 = 103;
+  required fixed32 req_fixed32 = 104;
+  required sfixed32 req_sfixed32 = 105;
+  required int64 req_int64 = 106;
+  required uint64 req_uint64 = 107;
+  required sint64 req_sint64 = 108;
+  required fixed64 req_fixed64 = 109;
+  required sfixed64 req_sfixed64 = 110;
+  required bool req_bool = 111;
+  required float req_float = 112;
+  required double req_double = 113;
+  required string req_string = 114;
+  required bytes req_bytes = 115;
+  required NestedEnum req_nested_enum = 116;
+  required NestedMessage req_nested_message = 117;
+
+  repeated int32 rep_int32 = 201;
+  repeated uint32 rep_uint32 = 202;
+  repeated sint32 rep_sint32 = 203;
+  repeated fixed32 rep_fixed32 = 204;
+  repeated sfixed32 rep_sfixed32 = 205;
+  repeated int64 rep_int64 = 206;
+  repeated uint64 rep_uint64 = 207;
+  repeated sint64 rep_sint64 = 208;
+  repeated fixed64 rep_fixed64 = 209;
+  repeated sfixed64 rep_sfixed64 = 210;
+  repeated bool rep_bool = 211;
+  repeated float rep_float = 212;
+  repeated double rep_double = 213;
+  repeated string rep_string = 214;
+  repeated bytes rep_bytes = 215;
+  repeated NestedEnum rep_nested_enum = 216;
+  repeated NestedMessage rep_nested_message = 217;
+
+  repeated int32 pack_int32 = 301 [packed = true];
+  repeated uint32 pack_uint32 = 302 [packed = true];
+  repeated sint32 pack_sint32 = 303 [packed = true];
+  repeated fixed32 pack_fixed32 = 304 [packed = true];
+  repeated sfixed32 pack_sfixed32 = 305 [packed = true];
+  repeated int64 pack_int64 = 306 [packed = true];
+  repeated uint64 pack_uint64 = 307 [packed = true];
+  repeated sint64 pack_sint64 = 308 [packed = true];
+  repeated fixed64 pack_fixed64 = 309 [packed = true];
+  repeated sfixed64 pack_sfixed64 = 310 [packed = true];
+  repeated bool pack_bool = 311 [packed = true];
+  repeated float pack_float = 312 [packed = true];
+  repeated double pack_double = 313 [packed = true];
+  repeated NestedEnum pack_nested_enum = 316 [packed = true];
+
+  optional int32 default_int32 = 401 [default = 2147483647 ];
+  optional uint32 default_uint32 = 402 [default = 4294967295 ];
+  optional sint32 default_sint32 = 403 [default = -2147483648 ];
+  optional fixed32 default_fixed32 = 404 [default = 4294967295 ];
+  optional sfixed32 default_sfixed32 = 405 [default = -2147483648 ];
+  optional int64 default_int64 = 406 [default = 9223372036854775807 ];
+  optional uint64 default_uint64 = 407 [default = 18446744073709551615 ];
+  optional sint64 default_sint64 = 408 [default = -9223372036854775808 ];
+  optional fixed64 default_fixed64 = 409 [default = 18446744073709551615 ];
+  optional sfixed64 default_sfixed64 = 410 [default = -9223372036854775808 ];
+  optional bool default_bool = 411 [default = true ];
+  optional float default_float = 412 [default = 123.456e7 ];
+  optional double default_double = 413 [default = 123.456e78 ];
+  optional string default_string = 414 [default = "çok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11güzel" ];
+  optional bytes default_bytes = 415 [default = "çok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11güzel" ];
+  optional NestedEnum default_nested_enum = 416 [default = A ];
+
+  map<int32, int32> map_int32_int32 = 501;
+  map<string, string> map_string_string = 502;
+  map<string, NestedMessage> map_string_message = 503;
+  map<string, NestedEnum> map_string_enum = 504;
+
+  oneof choice {
+    string oneof_string = 601;
+    int32 oneof_int32 = 602;
+    NestedMessage oneof_nested_message = 603;
+  }
+}
+
+extend AllTypes {
+  optional int32 ext_opt_int32 = 1001;
+  optional uint32 ext_opt_uint32 = 1002;
+  optional sint32 ext_opt_sint32 = 1003;
+  optional fixed32 ext_opt_fixed32 = 1004;
+  optional sfixed32 ext_opt_sfixed32 = 1005;
+  optional int64 ext_opt_int64 = 1006;
+  optional uint64 ext_opt_uint64 = 1007;
+  optional sint64 ext_opt_sint64 = 1008;
+  optional fixed64 ext_opt_fixed64 = 1009;
+  optional sfixed64 ext_opt_sfixed64 = 1010;
+  optional bool ext_opt_bool = 1011;
+  optional float ext_opt_float = 1012;
+  optional double ext_opt_double = 1013;
+  optional string ext_opt_string = 1014;
+  optional bytes ext_opt_bytes = 1015;
+  optional AllTypes.NestedEnum ext_opt_nested_enum = 1016;
+  optional AllTypes.NestedMessage ext_opt_nested_message = 1017;
+
+  repeated int32 ext_rep_int32 = 1101;
+  repeated uint32 ext_rep_uint32 = 1102;
+  repeated sint32 ext_rep_sint32 = 1103;
+  repeated fixed32 ext_rep_fixed32 = 1104;
+  repeated sfixed32 ext_rep_sfixed32 = 1105;
+  repeated int64 ext_rep_int64 = 1106;
+  repeated uint64 ext_rep_uint64 = 1107;
+  repeated sint64 ext_rep_sint64 = 1108;
+  repeated fixed64 ext_rep_fixed64 = 1109;
+  repeated sfixed64 ext_rep_sfixed64 = 1110;
+  repeated bool ext_rep_bool = 1111;
+  repeated float ext_rep_float = 1112;
+  repeated double ext_rep_double = 1113;
+  repeated string ext_rep_string = 1114;
+  repeated bytes ext_rep_bytes = 1115;
+  repeated AllTypes.NestedEnum ext_rep_nested_enum = 1116;
+  repeated AllTypes.NestedMessage ext_rep_nested_message = 1117;
+
+  repeated int32 ext_pack_int32 = 1201 [packed = true];
+  repeated uint32 ext_pack_uint32 = 1202 [packed = true];
+  repeated sint32 ext_pack_sint32 = 1203 [packed = true];
+  repeated fixed32 ext_pack_fixed32 = 1204 [packed = true];
+  repeated sfixed32 ext_pack_sfixed32 = 1205 [packed = true];
+  repeated int64 ext_pack_int64 = 1206 [packed = true];
+  repeated uint64 ext_pack_uint64 = 1207 [packed = true];
+  repeated sint64 ext_pack_sint64 = 1208 [packed = true];
+  repeated fixed64 ext_pack_fixed64 = 1209 [packed = true];
+  repeated sfixed64 ext_pack_sfixed64 = 1210 [packed = true];
+  repeated bool ext_pack_bool = 1211 [packed = true];
+  repeated float ext_pack_float = 1212 [packed = true];
+  repeated double ext_pack_double = 1213 [packed = true];
+  repeated AllTypes.NestedEnum ext_pack_nested_enum = 1216 [packed = true];
+}

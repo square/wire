@@ -1,0 +1,17 @@
+{
+  "address": "507 Cross Street",
+  "deliveredWithinOrFree": "1799.500s",
+  "pizzas": [
+    {
+      "toppings": [
+        "pineapple",
+        "onion"
+      ]
+    }
+  ],
+  "loyalty": {},
+  "promotion": {
+    "is_extra_cheesey": true
+  },
+  "orderedAt": "1950-01-01T00:00:00.250Z"
+}

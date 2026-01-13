@@ -1,0 +1,15 @@
+syntax = "proto3";
+package squareup;
+
+message Easter {
+  optional EasterAnimal optional_easter_animal = 2;
+  EasterAnimal identity_easter_animal = 3;
+  repeated EasterAnimal easter_animals = 4;
+  repeated EasterAnimal easter_animals_packed = 5 [packed = true];
+}
+
+enum EasterAnimal {
+  EASTER_ANIMAL_DEFAULT = 0;
+  BUNNY = 1;
+  HEN = 2;
+}

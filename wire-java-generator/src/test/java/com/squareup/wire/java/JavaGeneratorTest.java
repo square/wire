@@ -16,7 +16,6 @@
 package com.squareup.wire.java;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.squareup.wire.schema.SchemaHelpersJvmKt.addFromTest;
 import static org.junit.Assert.fail;
 
 import com.palantir.javapoet.JavaFile;
@@ -434,8 +433,21 @@ public final class JavaGeneratorTest {
                     + "import \"option_redacted.proto\";\n"
                     + "message ProtoMessage {\n"
                     + "  optional string secret = 1 [(squareup.protos.redacted_option.redacted) = true];\n"
+                    + "}\n")
+            .add(
+                Path.get("option_redacted.proto"),
+                ""
+                    + "package squareup.protos.redacted_option;\n"
+                    + "\n"
+                    + "option java_package = \"com.squareup.wire.protos.redacted\";\n"
+                    + "\n"
+                    + "import \"google/protobuf/descriptor.proto\";\n"
+                    + "\n"
+                    + "extend google.protobuf.FieldOptions {\n"
+                    + "\n"
+                    + "  /** Fields marked with redacted are not to be logged, generally for PCI or PII. */\n"
+                    + "  optional bool redacted = 22200;\n"
                     + "}\n");
-    addFromTest(builder, Path.get("option_redacted.proto"));
     Schema schema = builder.build();
     assertThat(
             new JavaWithProfilesGenerator(schema)
@@ -669,7 +681,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("person.proto"),
+                Path.get("person_proto3.proto"),
                 ""
                     + "package common.proto;\n"
                     + "enum Gender {\n"
@@ -815,7 +827,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("proto_package/person.proto"),
+                Path.get("proto_package/person_proto3.proto"),
                 "package proto_package;\n"
                     + "import \"wire/extensions.proto\";\n"
                     + "\n"
@@ -836,7 +848,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("proto_package/person.proto"),
+                Path.get("proto_package/person_proto3.proto"),
                 "package proto_package;\n"
                     + "import \"wire/extensions.proto\";\n"
                     + "\n"
@@ -882,7 +894,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("proto_package/person.proto"),
+                Path.get("proto_package/person_proto3.proto"),
                 "package proto_package;\n"
                     + "import \"wire/extensions.proto\";\n"
                     + "\n"
@@ -894,7 +906,7 @@ public final class JavaGeneratorTest {
             .add(
                 Path.get("city_package/home.proto"),
                 "package city_package;\n"
-                    + "import \"proto_package/person.proto\";\n"
+                    + "import \"proto_package/person_proto3.proto\";\n"
                     + "\n"
                     + "message Home {\n"
                     + "	repeated proto_package.Person person = 1;\n"
@@ -910,7 +922,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("proto_package/person.proto"),
+                Path.get("proto_package/person_proto3.proto"),
                 "package proto_package;\n"
                     + "enum Direction {\n"
                     + "  option deprecated = true;\n"
@@ -929,7 +941,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("proto_package/person.proto"),
+                Path.get("proto_package/person_proto3.proto"),
                 "package proto_package;\n"
                     + "enum Direction {\n"
                     + "  NORTH = 1;\n"
@@ -947,7 +959,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("proto_package/person.proto"),
+                Path.get("proto_package/person_proto3.proto"),
                 "package proto_package;\n"
                     + "message Person {\n"
                     + "  optional string name = 1 [deprecated = true];\n"
@@ -962,7 +974,7 @@ public final class JavaGeneratorTest {
     Schema schema =
         new SchemaBuilder()
             .add(
-                Path.get("proto_package/person.proto"),
+                Path.get("proto_package/person_proto3.proto"),
                 "package proto_package;\n"
                     + "message Person {\n"
                     + "  option deprecated = true;\n"

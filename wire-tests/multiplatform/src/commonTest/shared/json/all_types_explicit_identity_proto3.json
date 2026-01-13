@@ -1,0 +1,77 @@
+{
+  "mapInt32Int32": {
+    "0": 0.0
+  },
+  "mapStringEnum": {
+    "": "UNKNOWN"
+  },
+  "mapStringMessage": {
+    "": {}
+  },
+  "nestedMessage": {},
+  "oneofInt32": 0.0,
+  "packBool": [
+    false,
+    false
+  ],
+  "packDouble": [
+    0.0,
+    0.0
+  ],
+  "packFixed64": [
+    "0",
+    "0"
+  ],
+  "packFloat": [
+    0.0,
+    0.0
+  ],
+  "packInt64": [
+    "0",
+    "0"
+  ],
+  "packNestedEnum": [
+    "UNKNOWN",
+    "UNKNOWN"
+  ],
+  "packSfixed32": [
+    0.0,
+    0.0
+  ],
+  "packSfixed64": [
+    "0",
+    "0"
+  ],
+  "packSint64": [
+    "0",
+    "0"
+  ],
+  "packUint64": [
+    "0",
+    "0"
+  ],
+  "repBytes": [
+    "",
+    ""
+  ],
+  "repFixed32": [
+    0.0,
+    0.0
+  ],
+  "repInt32": [
+    0.0,
+    0.0
+  ],
+  "repSint32": [
+    0.0,
+    0.0
+  ],
+  "repString": [
+    "",
+    ""
+  ],
+  "repUint32": [
+    0.0,
+    0.0
+  ]
+}
