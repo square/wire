@@ -4,6 +4,15 @@ Change Log
 Unreleased
 ----------
 
+Version 5.5.0
+---------------------
+
+_2026-01-12_
+
+### Common
+
+* Escape quoted strings when printing option values (#3433)
+
 Version 6.0.0-alpha01
 ---------------------
 
