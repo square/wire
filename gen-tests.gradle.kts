@@ -1,26 +1,13 @@
-import okio.FileSystem
-import okio.Path.Companion.toPath
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 buildscript {
   dependencies {
     classpath(libs.pluginz.kotlin)
-    classpath(platform(libs.okio.bom))
-    classpath(libs.okio.core)
   }
   repositories {
     mavenCentral()
   }
 }
-
-val fileSystem = FileSystem.SYSTEM
-val protosDir = "${rootProject.rootDir}/wire-tests/fixtures/proto/java".toPath()
-val PROTOS = fileSystem.listRecursively(protosDir)
-  .filter { fileSystem.metadata(it).isRegularFile }
-  .map { it.relativeTo(protosDir).toString() }
-  .filter { it.endsWith(".proto") }
-  .sorted()
-  .toList()
 
 val wire by configurations.creating {
   attributes {
