@@ -18,13 +18,13 @@
 package com.squareup.wire
 
 import com.squareup.wire.internal.createRuntimeMessageAdapter
-import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import kotlin.reflect.KClass
 import okio.BufferedSink
 import okio.BufferedSource
 import okio.ByteString
+import okio.IOException
 import okio.buffer
 import okio.sink
 import okio.source

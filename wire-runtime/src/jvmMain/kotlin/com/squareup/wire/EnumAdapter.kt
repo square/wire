@@ -16,8 +16,8 @@
 package com.squareup.wire
 
 import com.squareup.wire.internal.identityOrNull
-import java.io.IOException
 import kotlin.reflect.KClass
+import okio.IOException
 
 /**
  * An abstract [ProtoAdapter] that converts values of an enum to and from integers.
