@@ -16,6 +16,7 @@
 package com.squareup.wire
 
 import kotlin.Throws
+import okio.Closeable
 import okio.IOException
 
 /**
@@ -39,8 +40,11 @@ import okio.IOException
  * You should ensure that such backpressure propagates to the originator of outbound messages.
  *
  * Instances of this interface are not safe for concurrent use.
+ *
+ * Closing a sink will terminate the stream and release its resources. If this has not been canceled
+ * this signals a normal completion of the stream.
  */
-expect interface MessageSink<in T : Any> {
+interface MessageSink<in T : Any> : Closeable {
   /**
    * Encode [message] to bytes and enqueue the bytes for delivery, waiting if necessary until the
    * delivery channel has capacity for the encoded message.
@@ -60,11 +64,4 @@ expect interface MessageSink<in T : Any> {
    */
   @Throws(IOException::class)
   fun cancel()
-
-  /**
-   * Terminate the stream and release its resources. If this has not been canceled this signals a
-   * normal completion of the stream.
-   */
-  @Throws(IOException::class)
-  fun close()
 }

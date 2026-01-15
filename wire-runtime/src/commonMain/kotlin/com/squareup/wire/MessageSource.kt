@@ -16,6 +16,7 @@
 package com.squareup.wire
 
 import kotlin.Throws
+import okio.Closeable
 import okio.IOException
 
 /**
@@ -35,7 +36,7 @@ import okio.IOException
  *
  * Instances of this interface are not safe for concurrent use.
  */
-expect interface MessageSource<out T : Any> {
+interface MessageSource<out T : Any> : Closeable {
   /**
    * Read the next length-prefixed message on the stream and return it. Returns null if there are
    * no further messages on this stream.
@@ -45,7 +46,4 @@ expect interface MessageSource<out T : Any> {
    */
   @Throws(IOException::class)
   fun read(): T?
-
-  @Throws(IOException::class)
-  fun close()
 }
