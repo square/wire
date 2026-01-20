@@ -8,7 +8,7 @@ buildscript {
 
   repositories {
     maven {
-      setUrl("file://${rootDir.absolutePath}/../../../../../build/localMaven")
+      setUrl(File(rootDir, "../../../../../build/localMaven").toURI().toString())
     }
     mavenCentral()
     google()

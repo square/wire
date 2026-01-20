@@ -16,7 +16,7 @@ buildscript {
 
   repositories {
     maven {
-      url "file://${rootDir.absolutePath}/../../../../../build/localMaven"
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
     }
     mavenCentral()
     google()
