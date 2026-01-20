@@ -4,7 +4,7 @@ plugins {
 }
 
 val main by sourceSets.getting {
-  java.srcDir("$buildDir/wire")
+  java.srcDir(layout.buildDirectory.dir("wire"))
 }
 
 dependencies {
@@ -35,7 +35,7 @@ val generateReflectionProtos by tasks.registering(JavaExec::class) {
   classpath = generateReflectionProtosClasspath
   args(
     "--proto_path=$projectDir/src/main/resources",
-    "--kotlin_out=$buildDir/wire",
+    "--kotlin_out=${layout.buildDirectory.get()}/wire",
     "grpc/reflection/v1alpha/reflection.proto"
   )
 }

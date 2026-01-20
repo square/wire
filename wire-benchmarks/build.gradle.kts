@@ -15,7 +15,7 @@ plugins {
 sourceSets {
   main {
     // Adds protobuf generated classes to our source sets.
-    java.srcDir("$buildDir/generated/source/proto/main/java")
+    java.srcDir(layout.buildDirectory.dir("generated/source/proto/main/java"))
   }
 }
 
