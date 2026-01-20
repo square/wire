@@ -60,7 +60,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: '26.2.0'
 
       # We set `SDKROOT` as a workaround for https://github.com/gradle/gradle/pull/29227
       - name: Check test files
@@ -132,7 +132,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: '26.2.0'
 
       # We set `SDKROOT` as a workaround for https://github.com/gradle/gradle/pull/29227
       - name: Test Swift Runtime
@@ -210,7 +210,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: '26.2.0'
 
       # We set `SDKROOT` as a workaround for https://github.com/gradle/gradle/pull/29227
       - name: Upload Artifacts
