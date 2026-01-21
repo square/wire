@@ -3309,10 +3309,6 @@ class KotlinGenerator private constructor(
   }
 }
 
-private fun PropertySpec.Builder.jvmField(): PropertySpec.Builder = addAnnotation(
-  ClassName("com.squareup.wire.internal", "JvmField"),
-)
-
 private fun PropertySpec.Builder.jvmFieldIf(addJvmField: Boolean): PropertySpec.Builder =
   if (addJvmField) {
     this.addAnnotation(
