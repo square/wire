@@ -12,11 +12,11 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
-import com.squareup.wire.`internal`.JvmField
-import com.squareup.wire.`internal`.JvmStatic
 import kotlin.ConsistentCopyVisibility
 import kotlin.Int
 import kotlin.Suppress
+import kotlin.jvm.JvmField
+import kotlin.jvm.JvmStatic
 
 public sealed class EasterAnimal(
   override val `value`: Int,

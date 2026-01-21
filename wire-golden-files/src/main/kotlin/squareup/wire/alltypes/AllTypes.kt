@@ -20,9 +20,6 @@ import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.DoubleArrayList
 import com.squareup.wire.`internal`.FloatArrayList
 import com.squareup.wire.`internal`.IntArrayList
-import com.squareup.wire.`internal`.JvmField
-import com.squareup.wire.`internal`.JvmStatic
-import com.squareup.wire.`internal`.JvmSynthetic
 import com.squareup.wire.`internal`.LongArrayList
 import com.squareup.wire.`internal`.checkElementsNotNull
 import com.squareup.wire.`internal`.decodePrimitive_double
@@ -67,6 +64,9 @@ import kotlin.Suppress
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
+import kotlin.jvm.JvmField
+import kotlin.jvm.JvmStatic
+import kotlin.jvm.JvmSynthetic
 import kotlin.lazy
 import okio.ByteString
 import okio.ByteString.Companion.decodeBase64
