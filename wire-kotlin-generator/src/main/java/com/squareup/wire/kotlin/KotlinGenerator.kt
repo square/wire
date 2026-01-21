@@ -143,6 +143,7 @@ class KotlinGenerator private constructor(
   private val explicitStreamingCalls: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
+  private val jvmAnnotationPackage = if (javaInterOp) "kotlin.jvm" else "com.squareup.wire.internal"
 
   @Suppress("RecursivePropertyAccessor")
   private val ProtoType.typeName: TypeName
@@ -991,7 +992,7 @@ class KotlinGenerator private constructor(
           val propertyBuilder = PropertySpec.builder(fieldName, fieldOrOneOf.typeNameForBuilderField)
             .mutable(true)
             .initializer(fieldOrOneOf.identityValue)
-            .jvmFieldIf(javaInterOp)
+            .jvmFieldIf(javaInterOp, jvmAnnotationPackage)
 
           builder.addProperty(propertyBuilder.build())
         }
@@ -1002,7 +1003,7 @@ class KotlinGenerator private constructor(
           val propertyBuilder = PropertySpec.builder(fieldName, fieldClass)
             .mutable(true)
             .initializer(CodeBlock.of("null"))
-            .jvmFieldIf(javaInterOp)
+            .jvmFieldIf(javaInterOp, jvmAnnotationPackage)
 
           builder.addProperty(propertyBuilder.build())
         }
@@ -1278,7 +1279,7 @@ class KotlinGenerator private constructor(
           addAnnotation(annotation)
         }
         addAnnotation(wireFieldAnnotation(message, field, schemaIndex))
-        jvmFieldIf(javaInterOp)
+        jvmFieldIf(javaInterOp, jvmAnnotationPackage)
         if (field.documentation.isNotBlank()) {
           addKdoc("%L\n", field.documentation.sanitizeKdoc())
         }
@@ -1303,7 +1304,7 @@ class KotlinGenerator private constructor(
     val propertySpec = PropertySpec.builder(fieldName, fieldClass)
       .mutable(mutableTypes)
       .initializer(CodeBlock.of(if (buildersOnly) "builder.%N" else "%N", fieldName))
-      .jvmFieldIf(javaInterOp)
+      .jvmFieldIf(javaInterOp, jvmAnnotationPackage)
       .apply {
         if (oneOf.documentation.isNotBlank()) {
           addKdoc("%L\n", oneOf.documentation.sanitizeKdoc())
@@ -1493,7 +1494,7 @@ class KotlinGenerator private constructor(
             if (field.type!!.isScalar && field.type != ProtoType.BYTES) {
               addModifiers(CONST)
             } else {
-              jvmFieldIf(true)
+              jvmFieldIf(true, jvmAnnotationPackage)
             }
           }
           .initializer(fieldValue)
@@ -1660,7 +1661,7 @@ class KotlinGenerator private constructor(
 
     companionObjBuilder.addProperty(
       PropertySpec.builder(adapterName, adapterType)
-        .jvmFieldIf(true)
+        .jvmFieldIf(true, jvmAnnotationPackage)
         .initializer("%L", adapterObject.build())
         .build(),
     )
@@ -2628,7 +2629,7 @@ class KotlinGenerator private constructor(
       .build()
 
     return PropertySpec.builder(adapterName, adapterType)
-      .jvmFieldIf(true)
+      .jvmFieldIf(true, jvmAnnotationPackage)
       .initializer("%L", adapterObject)
       .build()
   }
@@ -2651,7 +2652,7 @@ class KotlinGenerator private constructor(
 
     companionObjBuilder.addProperty(
       PropertySpec.builder(creatorName, creatorTypeName)
-        .jvmFieldIf(true)
+        .jvmFieldIf(true, jvmAnnotationPackage)
         .initializer("%T.newCreator(ADAPTER)", ANDROID_MESSAGE)
         .build(),
     )
@@ -3309,10 +3310,10 @@ class KotlinGenerator private constructor(
   }
 }
 
-private fun PropertySpec.Builder.jvmFieldIf(addJvmField: Boolean): PropertySpec.Builder =
+private fun PropertySpec.Builder.jvmFieldIf(addJvmField: Boolean, jvmAnnotationPackage: String): PropertySpec.Builder =
   if (addJvmField) {
     this.addAnnotation(
-      ClassName("com.squareup.wire.internal", "JvmField"),
+      ClassName(jvmAnnotationPackage, "JvmField"),
     )
   } else {
     this
