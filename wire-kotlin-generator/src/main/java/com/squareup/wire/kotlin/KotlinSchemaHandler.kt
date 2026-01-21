@@ -68,7 +68,7 @@ class KotlinSchemaHandler(
 
   /**
    * If true, the constructor of all generated types will be non-public, and they will be
-   * instantiable via their builders, regardless of the value of [javaInterop].
+   * instantiable via their builders. It will also override [javaInterop] and set it to true.
    */
   private val buildersOnly: Boolean = false,
 
