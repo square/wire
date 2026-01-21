@@ -8,7 +8,7 @@ public final class com/squareup/wire/kotlin/EnumMode : java/lang/Enum {
 
 public final class com/squareup/wire/kotlin/KotlinGenerator {
 	public static final field Companion Lcom/squareup/wire/kotlin/KotlinGenerator$Companion;
-	public synthetic fun <init> (Lcom/squareup/wire/schema/Schema;Ljava/util/Map;Ljava/util/Map;Lcom/squareup/wire/schema/Profile;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ILjava/lang/String;ZZLcom/squareup/wire/kotlin/EnumMode;ZZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lcom/squareup/wire/schema/Schema;Ljava/util/Map;Ljava/util/Map;Lcom/squareup/wire/schema/Profile;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ILjava/lang/String;ZZLcom/squareup/wire/kotlin/EnumMode;ZZZLjava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun generateOptionType (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Field;)Lcom/squareup/kotlinpoet/TypeSpec;
 	public final fun generateServiceTypeSpecs (Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/Rpc;)Ljava/util/Map;
 	public static synthetic fun generateServiceTypeSpecs$default (Lcom/squareup/wire/kotlin/KotlinGenerator;Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/Rpc;ILjava/lang/Object;)Ljava/util/Map;
