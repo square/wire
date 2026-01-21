@@ -15,6 +15,8 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.`internal`.JvmField
+import com.squareup.wire.`internal`.JvmSynthetic
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -22,8 +24,6 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Suppress
 import kotlin.Unit
-import kotlin.jvm.JvmField
-import kotlin.jvm.JvmSynthetic
 import okio.ByteString
 
 public class SomeMessage private constructor(

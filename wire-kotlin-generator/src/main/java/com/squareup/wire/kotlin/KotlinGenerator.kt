@@ -141,9 +141,9 @@ class KotlinGenerator private constructor(
   private val emitProtoReader32: Boolean,
   private val mutableTypes: Boolean,
   private val explicitStreamingCalls: Boolean,
+  private val jvmAnnotationPackage: String,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
-  private val jvmAnnotationPackage = if (javaInterOp) "kotlin.jvm" else "com.squareup.wire.internal"
 
   @Suppress("RecursivePropertyAccessor")
   private val ProtoType.typeName: TypeName
@@ -3211,6 +3211,8 @@ class KotlinGenerator private constructor(
 
       typeToKotlinName.putAll(BUILT_IN_TYPES)
 
+      val jvmAnnotationPackage = if (javaInterop) "kotlin.jvm" else "com.squareup.wire.internal"
+
       return KotlinGenerator(
         schema = schema,
         profile = profile,
@@ -3230,6 +3232,7 @@ class KotlinGenerator private constructor(
         emitProtoReader32 = emitProtoReader32,
         mutableTypes = mutableTypes,
         explicitStreamingCalls = explicitStreamingCalls,
+        jvmAnnotationPackage = jvmAnnotationPackage,
       )
     }
 
