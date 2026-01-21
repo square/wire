@@ -2661,7 +2661,7 @@ class KotlinGenerator private constructor(
 
     companionObjBuilder.addProperty(
       PropertySpec.builder(creatorName, creatorTypeName)
-        .jvmField()
+        .jvmFieldIf(true)
         .initializer("%T.newCreator(ADAPTER)", ANDROID_MESSAGE)
         .build(),
     )
