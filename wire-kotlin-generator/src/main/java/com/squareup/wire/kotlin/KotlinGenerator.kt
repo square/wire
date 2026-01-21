@@ -1494,7 +1494,7 @@ class KotlinGenerator private constructor(
             if (field.type!!.isScalar && field.type != ProtoType.BYTES) {
               addModifiers(CONST)
             } else {
-              jvmFieldIf(true, jvmAnnotationPackage)
+              addAnnotation(ClassName(jvmAnnotationPackage, "JvmField"))
             }
           }
           .initializer(fieldValue)
@@ -1661,7 +1661,7 @@ class KotlinGenerator private constructor(
 
     companionObjBuilder.addProperty(
       PropertySpec.builder(adapterName, adapterType)
-        .jvmFieldIf(true, jvmAnnotationPackage)
+        .addAnnotation(ClassName(jvmAnnotationPackage, "JvmField"))
         .initializer("%L", adapterObject.build())
         .build(),
     )
@@ -2629,7 +2629,7 @@ class KotlinGenerator private constructor(
       .build()
 
     return PropertySpec.builder(adapterName, adapterType)
-      .jvmFieldIf(true, jvmAnnotationPackage)
+      .addAnnotation(ClassName(jvmAnnotationPackage, "JvmField"))
       .initializer("%L", adapterObject)
       .build()
   }
@@ -2652,7 +2652,7 @@ class KotlinGenerator private constructor(
 
     companionObjBuilder.addProperty(
       PropertySpec.builder(creatorName, creatorTypeName)
-        .jvmFieldIf(true, jvmAnnotationPackage)
+        .addAnnotation(ClassName(jvmAnnotationPackage, "JvmField"))
         .initializer("%T.newCreator(ADAPTER)", ANDROID_MESSAGE)
         .build(),
     )
