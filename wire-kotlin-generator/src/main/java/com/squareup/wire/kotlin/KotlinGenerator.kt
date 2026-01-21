@@ -1670,7 +1670,7 @@ class KotlinGenerator private constructor(
 
     companionObjBuilder.addProperty(
       PropertySpec.builder(adapterName, adapterType)
-        .jvmField()
+        .jvmFieldIf(true)
         .initializer("%L", adapterObject.build())
         .build(),
     )
@@ -2638,7 +2638,7 @@ class KotlinGenerator private constructor(
       .build()
 
     return PropertySpec.builder(adapterName, adapterType)
-      .jvmField()
+      .jvmFieldIf(true)
       .initializer("%L", adapterObject)
       .build()
   }
@@ -3322,3 +3322,12 @@ class KotlinGenerator private constructor(
 private fun PropertySpec.Builder.jvmField(): PropertySpec.Builder = addAnnotation(
   ClassName("com.squareup.wire.internal", "JvmField"),
 )
+
+private fun PropertySpec.Builder.jvmFieldIf(addJvmField: Boolean): PropertySpec.Builder =
+  if (addJvmField) {
+    this.addAnnotation(
+      ClassName("com.squareup.wire.internal", "JvmField"),
+    )
+  } else {
+    this
+  }
