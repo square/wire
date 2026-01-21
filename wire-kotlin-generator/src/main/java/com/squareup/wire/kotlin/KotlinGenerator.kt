@@ -2096,7 +2096,7 @@ class KotlinGenerator private constructor(
     val buildFunction = FunSpec.builder("build")
       .addModifiers(INLINE)
       // We hide it to Java callers.
-      .addAnnotation(ClassName("com.squareup.wire.internal", "JvmSynthetic"))
+      .addAnnotation(ClassName(jvmAnnotationPackage, "JvmSynthetic"))
       .addParameter(
         "body",
         LambdaTypeName.get(
@@ -2566,7 +2566,7 @@ class KotlinGenerator private constructor(
     val parentClassName = typeToKotlinName.getValue(message.type)
     val valueName = "value"
     val fromValue = FunSpec.builder("fromValue")
-      .addAnnotation(ClassName("com.squareup.wire.internal", "JvmStatic"))
+      .addAnnotation(ClassName(jvmAnnotationPackage, "JvmStatic"))
       .addParameter(valueName, Int::class)
       .returns(parentClassName.copy(nullable = enumMode == ENUM_CLASS))
       .apply {
@@ -3002,7 +3002,7 @@ class KotlinGenerator private constructor(
         keysFieldName,
         Set::class.asClassName().parameterizedBy(boxClassName.parameterizedBy(STAR)),
       )
-      .addAnnotation(ClassName("com.squareup.wire.internal", "JvmStatic"))
+      .addAnnotation(ClassName(jvmAnnotationPackage, "JvmStatic"))
       .initializer(
         CodeBlock.of(
           """setOf(${keyFieldNames.map { "%L" }.joinToString(", ")})""",
