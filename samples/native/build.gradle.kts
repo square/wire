@@ -25,7 +25,6 @@ kotlin {
     }
   }
   sourceSets {
-    val commonMain by getting
     val nativeMain by getting
     val nativeTest by getting
   }
