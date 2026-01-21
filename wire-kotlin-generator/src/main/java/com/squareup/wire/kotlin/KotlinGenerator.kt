@@ -991,10 +991,7 @@ class KotlinGenerator private constructor(
           val propertyBuilder = PropertySpec.builder(fieldName, fieldOrOneOf.typeNameForBuilderField)
             .mutable(true)
             .initializer(fieldOrOneOf.identityValue)
-
-          if (javaInterOp) {
-            propertyBuilder.jvmField()
-          }
+            .jvmFieldIf(javaInterOp)
 
           builder.addProperty(propertyBuilder.build())
         }
@@ -1005,10 +1002,7 @@ class KotlinGenerator private constructor(
           val propertyBuilder = PropertySpec.builder(fieldName, fieldClass)
             .mutable(true)
             .initializer(CodeBlock.of("null"))
-
-          if (javaInterOp) {
-            propertyBuilder.jvmField()
-          }
+            .jvmFieldIf(javaInterOp)
 
           builder.addProperty(propertyBuilder.build())
         }
@@ -1284,9 +1278,7 @@ class KotlinGenerator private constructor(
           addAnnotation(annotation)
         }
         addAnnotation(wireFieldAnnotation(message, field, schemaIndex))
-        if (javaInterOp) {
-          jvmField()
-        }
+        jvmFieldIf(javaInterOp)
         if (field.documentation.isNotBlank()) {
           addKdoc("%L\n", field.documentation.sanitizeKdoc())
         }
@@ -1311,10 +1303,8 @@ class KotlinGenerator private constructor(
     val propertySpec = PropertySpec.builder(fieldName, fieldClass)
       .mutable(mutableTypes)
       .initializer(CodeBlock.of(if (buildersOnly) "builder.%N" else "%N", fieldName))
+      .jvmFieldIf(javaInterOp)
       .apply {
-        if (javaInterOp) {
-          jvmField()
-        }
         if (oneOf.documentation.isNotBlank()) {
           addKdoc("%L\n", oneOf.documentation.sanitizeKdoc())
         }
