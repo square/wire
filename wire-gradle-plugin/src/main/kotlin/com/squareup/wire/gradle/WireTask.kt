@@ -46,12 +46,16 @@ import org.gradle.api.tasks.TaskAction
 
 @CacheableTask
 abstract class WireTask @Inject constructor(
-  objects: ObjectFactory,
+  private val objects: ObjectFactory,
   private val fileOperations: FileOperations,
 ) : SourceTask() {
 
+  @get:Internal
+  internal val outputDirectories: MutableList<DirectoryProperty> = mutableListOf()
+
   @get:OutputDirectories
-  abstract val outputDirectories: ConfigurableFileCollection
+  val outputDirectoriesFiles: ConfigurableFileCollection
+    get() = objects.fileCollection().from(outputDirectories)
 
   /** This input only exists to signal task dependencies. The files are read via [source]. */
   @get:InputFiles

@@ -181,7 +181,7 @@ public abstract class com/squareup/wire/gradle/WireTask : org/gradle/api/tasks/S
 	public abstract fun getMoves ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getOnlyVersion ()Lorg/gradle/api/provider/Property;
 	public abstract fun getOpaques ()Lorg/gradle/api/provider/ListProperty;
-	public abstract fun getOutputDirectories ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public final fun getOutputDirectoriesFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	public final fun getPermitPackageCycles ()Lorg/gradle/api/provider/Property;
 	public final fun getPluginVersion ()Lorg/gradle/api/provider/Property;
 	public abstract fun getProjectDependenciesJvmConfiguration ()Lorg/gradle/api/file/ConfigurableFileCollection;
