@@ -51,11 +51,11 @@ abstract class WireTask @Inject constructor(
 ) : SourceTask() {
 
   @get:Internal
-  internal val outputDirectories: MutableList<DirectoryProperty> = mutableListOf()
+  internal val outputDirectoriesList: MutableList<DirectoryProperty> = mutableListOf()
 
   @get:OutputDirectories
-  val outputDirectoriesFiles: ConfigurableFileCollection
-    get() = objects.fileCollection().from(outputDirectories)
+  val outputDirectories: ConfigurableFileCollection
+    get() = objects.fileCollection().from(outputDirectoriesList)
 
   /** This input only exists to signal task dependencies. The files are read via [source]. */
   @get:InputFiles

@@ -17,13 +17,18 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.protoProjectDependenciesJvmConfiguration
-import com.squareup.wire.gradle.kotlin.getWireTaskFactory
+import com.squareup.wire.gradle.kotlin.WireSource
+import com.squareup.wire.gradle.kotlin.forEachWireSource
+import com.squareup.wire.schema.ProtoTarget
+import com.squareup.wire.schema.newEventListenerFactory
 import com.squareup.wire.wireVersion
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.UnknownConfigurationException
+import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.SourceSetContainer
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
@@ -110,8 +115,127 @@ class WirePlugin : Plugin<Project> {
       it.description = "Aggregation task which runs every generation task for every given source"
     }
 
-    val factory = getWireTaskFactory(project, kotlin.get(), java.get(), android.get())
-    factory.createWireTasks(project, extension)
+    forEachWireSource(project, kotlin.get(), java.get(), android.get()) { source ->
+      setupWireTask(project, extension, source)
+    }
+  }
+
+  private fun setupWireTask(
+    project: Project,
+    extension: WireExtension,
+    source: WireSource,
+  ) {
+    val outputs = extension.outputs
+
+    val protoSourceProtoRootSets = extension.protoSourceProtoRootSets.toMutableList()
+    val protoPathProtoRootSets = extension.protoPathProtoRootSets.toMutableList()
+
+    if (protoSourceProtoRootSets.all { it.isEmpty }) {
+      val sourceSetProtoRootSet = WireExtension.ProtoRootSet(
+        project = project,
+        name = "${source.name}ProtoSource",
+      )
+      protoSourceProtoRootSets += sourceSetProtoRootSet
+      for (sourceFolder in source.defaultSourceFolders(project)) {
+        sourceSetProtoRootSet.srcDir(sourceFolder)
+      }
+    }
+
+    val targets = outputs.map {
+      it.toTarget(project.relativePath(it.out ?: source.outputDir(project)))
+    }
+
+    val protoTarget = targets.filterIsInstance<ProtoTarget>().singleOrNull()
+
+    val taskName = "generate${source.name.replaceFirstChar { it.uppercase() }}Protos"
+    val task = project.tasks.register(taskName, WireTask::class.java) { task: WireTask ->
+      task.group = GROUP
+      task.description = "Generate protobuf implementation for ${source.name}"
+
+      var addedSourcesDependencies = false
+      // Flatten all the input files here. Changes to any of them will cause the task to re-run.
+      for (rootSet in protoSourceProtoRootSets) {
+        task.source(rootSet.configuration)
+        if (!rootSet.isEmpty) {
+          // Use the isEmpty flag to avoid resolving the configuration eagerly
+          addedSourcesDependencies = true
+        }
+      }
+      // We only want to add ProtoPath sources if we have other sources already. The WireTask
+      // would otherwise run even through we have no sources.
+      if (addedSourcesDependencies) {
+        for (rootSet in protoPathProtoRootSets) {
+          task.source(rootSet.configuration)
+        }
+      }
+
+      targets
+        // Emitted `.proto` files have a special treatment. Their root should be a resource, not
+        // a source. We exclude the `ProtoTarget` and we'll add its output to the resources
+        // below.
+        .filterNot { it is ProtoTarget }.forEach { target ->
+          val dir = project.objects.directoryProperty()
+          dir.set(
+            project.tasks.named(taskName).map {
+              project.layout.projectDirectory.dir(target.outDirectory)
+            },
+          )
+          task.outputDirectoriesList.add(dir)
+        }
+      task.protoSourceConfiguration.setFrom(project.configurations.getByName("protoSource"))
+      task.protoPathConfiguration.setFrom(project.configurations.getByName("protoPath"))
+      task.projectDependenciesJvmConfiguration.setFrom(project.configurations.getByName("protoProjectDependenciesJvm"))
+      if (protoTarget != null) {
+        task.protoLibraryOutput.set(project.file(protoTarget.outDirectory))
+      }
+      task.sourceInput.set(project.provider { protoSourceProtoRootSets.inputLocations })
+      task.protoInput.set(project.provider { protoPathProtoRootSets.inputLocations })
+      task.roots.set(extension.roots.toList())
+      task.prunes.set(extension.prunes.toList())
+      task.moves.set(extension.moves.toList())
+      task.opaques.set(extension.opaques.toList())
+      task.sinceVersion.set(extension.sinceVersion)
+      task.untilVersion.set(extension.untilVersion)
+      task.onlyVersion.set(extension.onlyVersion)
+      task.rules.set(extension.rules)
+      task.targets.set(targets)
+      task.permitPackageCycles.set(extension.permitPackageCycles)
+      task.loadExhaustively.set(extension.loadExhaustively)
+      task.dryRun.set(extension.dryRun)
+      task.rejectUnusedRootsOrPrunes.set(extension.rejectUnusedRootsOrPrunes)
+
+      task.projectDirProperty.set(project.layout.projectDirectory)
+      task.buildDirProperty.set(project.layout.buildDirectory)
+
+      val factories = extension.eventListenerFactories + extension.eventListenerFactoryClasses().map(::newEventListenerFactory)
+      task.eventListenerFactories.set(factories)
+    }
+
+    source.registerGeneratedSources(
+      project,
+      task,
+      targets.filterNot { it is ProtoTarget },
+    )
+
+    val protoOutputDirectory = task.map { it.protoLibraryOutput }
+    if (protoTarget != null) {
+      val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
+      // Note that there are no source sets for some platforms such as native.
+      // TODO(Benoit) Probably should be checking for other names than `main`. As well, source
+      //  sets might be created 'afterEvaluate'. Does that mean we should do this work in
+      //  `afterEvaluate` as well? See: https://kotlinlang.org/docs/multiplatform-dsl-reference.html#source-sets
+      if (sourceSets.findByName("main") != null) {
+        sourceSets.getByName("main") { main: SourceSet ->
+          main.resources.srcDir(protoOutputDirectory)
+        }
+      } else {
+        project.logger.warn("${project.displayName} doesn't have a 'main' source sets. The .proto files will not automatically be added to the artifact.")
+      }
+    }
+
+    project.tasks.named(ROOT_TASK).configure {
+      it.dependsOn(task)
+    }
   }
 
   private fun Project.addWireRuntimeDependency(
