@@ -15,207 +15,193 @@
  */
 package com.squareup.wire.gradle.kotlin
 
-import com.android.build.api.dsl.AndroidSourceDirectorySet
-import com.android.build.gradle.AppExtension
-import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.api.BaseVariant
-import com.android.build.gradle.internal.tasks.factory.dependsOn
-import com.squareup.wire.gradle.WirePlugin
+import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.Variant
 import com.squareup.wire.gradle.WireTask
-import org.gradle.api.DomainObjectSet
+import com.squareup.wire.gradle.internal.targetDefaultOutputPath
+import com.squareup.wire.schema.CustomTarget
+import com.squareup.wire.schema.JavaTarget
+import com.squareup.wire.schema.KotlinTarget
+import com.squareup.wire.schema.ProtoTarget
+import com.squareup.wire.schema.Target
+import java.io.File
 import org.gradle.api.Project
-import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.SourceDirectorySet
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
-/**
- * @return A list of source roots and their dependencies.
- *
- * Examples:
- *   Multiplatform Environment. Ios target labeled "ios".
- *     -> iosMain deps [commonMain]
- *
- *   Android environment. internal, production, release, debug variants.
- *     -> internalDebug deps [internal, debug, main]
- *     -> internalRelease deps [internal, release, main]
- *     -> productionDebug deps [production, debug, main]
- *     -> productionRelease deps [production, release, main]
- *
- *    Multiplatform environment with android target (oh boy)
- */
-internal fun WirePlugin.sourceRoots(kotlin: Boolean, java: Boolean): List<Source> {
-  if (kotlin) {
-    // Multiplatform project.
-    project.extensions.findByType(KotlinMultiplatformExtension::class.java)?.let {
-      return it.sourceRoots()
-    }
-  }
+internal fun forEachWireSource(
+  project: Project,
+  hasKotlin: Boolean,
+  hasJava: Boolean,
+  hasAndroid: Boolean,
+  sourceHandler: (WireSource) -> Unit,
+) {
+  when {
+    hasAndroid -> {
+      val extension = project.extensions.getByType(AndroidComponentsExtension::class.java)
+      extension.onVariants { variant ->
+        val sourceSetNames = mutableListOf("main")
+        variant.buildType?.let { sourceSetNames.add(it) }
+        sourceSetNames.addAll(variant.productFlavors.map { it.second })
+        sourceSetNames.add(variant.name)
 
-  // Java project.
-  if (!kotlin && java) {
-    val sourceSets = project.property("sourceSets") as SourceSetContainer
-    return listOf(
-      Source(
-        kotlinSourceDirectorySet = null,
-        javaSourceDirectorySet = WireSourceDirectorySet.of(sourceSets.getByName("main").java),
+        val source = AndroidSource(
+          name = variant.name,
+          sourceSets = sourceSetNames.distinct(),
+          variant = variant,
+        )
+        sourceHandler(source)
+      }
+    }
+    hasKotlin && project.extensions.findByType(KotlinMultiplatformExtension::class.java) != null -> {
+      val extension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
+      extension.sourceRoots().forEach(sourceHandler)
+    }
+    hasKotlin -> {
+      val kotlinSourceSets = project.extensions.findByType(KotlinProjectExtension::class.java)?.sourceSets
+      val javaSourceSets = project.extensions.findByType(SourceSetContainer::class.java)
+      val kotlinSourceDirectorySet = kotlinSourceSets?.findByName("main")?.kotlin
+      val javaSourceDirectorySet = javaSourceSets?.findByName("main")?.java
+      val source = JvmOrKmpSource(
         name = "main",
         sourceSets = listOf("main"),
-      ),
-    )
+        kotlinSourceDirectorySet = kotlinSourceDirectorySet,
+        javaSourceDirectorySet = javaSourceDirectorySet,
+      )
+      sourceHandler(source)
+    }
+    hasJava -> {
+      val javaSourceSets = project.extensions.findByType(SourceSetContainer::class.java)
+      val javaSourceDirectorySet = javaSourceSets?.findByName("main")?.java
+      val source = JvmOrKmpSource(
+        name = "main",
+        sourceSets = listOf("main"),
+        kotlinSourceDirectorySet = null,
+        javaSourceDirectorySet = javaSourceDirectorySet,
+      )
+      sourceHandler(source)
+    }
+    else -> {
+      throw IllegalStateException("Wire Gradle plugin requires Android, Kotlin, or Java to be configured on project '${project.name}'.")
+    }
+  }
+}
+
+internal abstract class WireSource(
+  val name: String,
+  private val sourceSets: List<String>,
+) {
+  fun defaultSourceFolders(project: Project): Set<String> {
+    return sourceSets.map { "src/$it/proto" }
+      .filter { path -> File(project.projectDir, path).exists() }
+      .toSet()
   }
 
-  // Android project.
-  project.extensions.findByName("android")?.let {
-    return (it as BaseExtension).sourceRoots(project, kotlin)
-  }
+  abstract fun outputDir(project: Project): File
 
-  // Kotlin project.
-  val sourceSets = (project.extensions.getByName("kotlin") as KotlinProjectExtension).sourceSets
-  val sourceDirectorySet =
-    WireSourceDirectorySet.of(sourceDirectorySet = sourceSets.getByName("main").kotlin)
-  return listOf(
-    Source(
-      kotlinSourceDirectorySet = sourceDirectorySet,
-      javaSourceDirectorySet = null,
-      name = "main",
-      sourceSets = listOf("main"),
-    ),
+  abstract fun registerGeneratedSources(
+    project: Project,
+    wireTask: TaskProvider<WireTask>,
+    targets: List<Target>,
   )
 }
 
-private fun KotlinMultiplatformExtension.sourceRoots(): List<Source> {
+private fun KotlinMultiplatformExtension.sourceRoots(): List<WireSource> {
   // Wire only supports commonMain as in other cases, we'd be expected to generate both
   // `expect` and `actual` classes which doesn't make much sense for what Wire does.
   return listOf(
-    Source(
+    JvmOrKmpSource(
       name = "commonMain",
-      variantName = null,
-      kotlinSourceDirectorySet = WireSourceDirectorySet.of(sourceSets.getByName("commonMain").kotlin),
+      kotlinSourceDirectorySet = sourceSets.getByName("commonMain").kotlin,
       javaSourceDirectorySet = null,
       sourceSets = listOf("commonMain"),
     ),
   )
 }
 
-private fun BaseExtension.sourceRoots(project: Project, kotlin: Boolean): List<Source> {
-  val variants: DomainObjectSet<out BaseVariant> = when (this) {
-    is AppExtension -> applicationVariants
-    is LibraryExtension -> libraryVariants
-    else -> throw IllegalStateException("Unknown Android plugin $this")
-  }
-  val androidSourceSets: Map<String, AndroidSourceDirectorySet>? =
-    if (kotlin) {
-      null
-    } else {
-      sourceSets
-        .associate { sourceSet ->
-          sourceSet.name to sourceSet.java
-        }
-    }
-  val sourceSets: Map<String, SourceDirectorySet?>? = run {
-    if (kotlin) {
-      val kotlinSourceSets =
-        (project.extensions.getByName("kotlin") as KotlinProjectExtension).sourceSets
-      sourceSets
-        .associate { sourceSet ->
-          sourceSet.name to kotlinSourceSets.getByName(sourceSet.name).kotlin
-        }
-    } else {
-      null
-    }
+private class JvmOrKmpSource(
+  name: String,
+  sourceSets: List<String>,
+  private val kotlinSourceDirectorySet: SourceDirectorySet?,
+  private val javaSourceDirectorySet: SourceDirectorySet?,
+) : WireSource(name, sourceSets) {
+  override fun outputDir(project: Project): File {
+    return File(project.targetDefaultOutputPath())
   }
 
-  return variants.map { variant ->
-    val kotlinSourceDirectSet = when {
-      kotlin -> {
-        val sourceDirectorySet = sourceSets!![variant.name]!!
-        WireSourceDirectorySet.of(sourceDirectorySet)
+  override fun registerGeneratedSources(
+    project: Project,
+    wireTask: TaskProvider<WireTask>,
+    targets: List<Target>,
+  ) {
+    targets.forEachIndexed { index, target ->
+      val outputDirectory = wireTask.flatMap { it.outputDirectoriesList[index] }
+      when (target) {
+        is JavaTarget -> {
+          javaSourceDirectorySet?.srcDir(outputDirectory)
+        }
+        is KotlinTarget -> {
+          kotlinSourceDirectorySet?.srcDir(outputDirectory)
+        }
+        is CustomTarget -> {
+          // Custom targets are wildcards, so we add all output directories.
+          javaSourceDirectorySet?.srcDir(outputDirectory)
+          kotlinSourceDirectorySet?.srcDir(outputDirectory)
+        }
+        is ProtoTarget -> {
+          // Do nothing
+        }
+        else -> {
+          throw IllegalArgumentException(
+            "Wire target ${target::class.simpleName} is not supported in project ${project.path}",
+          )
+        }
       }
-
-      else -> null
     }
-    val androidSourceDirectorySet = androidSourceSets?.get(variant.name)
-    if (!kotlin) checkNotNull(androidSourceDirectorySet)
-    val javaSourceDirectorySet = when {
-      androidSourceDirectorySet != null -> WireSourceDirectorySet.of(androidSourceDirectorySet)
-      else -> null
-    }
-
-    Source(
-      kotlinSourceDirectorySet = kotlinSourceDirectSet,
-      javaSourceDirectorySet = javaSourceDirectorySet,
-      name = variant.name,
-      variantName = variant.name,
-      sourceSets = variant.sourceSets.map { it.name },
-      registerGeneratedDirectory = { outputDirectory ->
-        variant.addJavaSourceFoldersToModel(outputDirectory.get().files)
-      },
-      registerTaskDependency = { task ->
-        // TODO: Lazy task configuration!!!
-        variant.registerJavaGeneratingTask(task.get(), task.get().outputDirectories.files)
-        val compileTaskName =
-          if (kotlin) {
-            """compile${variant.name.capitalize()}Kotlin"""
-          } else {
-            """compile${variant.name.capitalize()}Sources"""
-          }
-        project.tasks.named(compileTaskName).dependsOn(task)
-      },
-    )
   }
 }
 
-internal data class Source(
-  val kotlinSourceDirectorySet: WireSourceDirectorySet?,
-  val javaSourceDirectorySet: WireSourceDirectorySet?,
-  val name: String,
-  val variantName: String? = null,
-  val sourceSets: List<String>,
-  val registerGeneratedDirectory: ((Provider<ConfigurableFileCollection>) -> Unit)? = null,
-  val registerTaskDependency: ((TaskProvider<WireTask>) -> Unit)? = null,
-)
-
-internal class WireSourceDirectorySet private constructor(
-  private val sourceDirectorySet: SourceDirectorySet?,
-  private val androidSourceDirectorySet: AndroidSourceDirectorySet?,
-) {
-  init {
-    check(
-      (sourceDirectorySet == null || androidSourceDirectorySet == null) &&
-        (sourceDirectorySet != null || androidSourceDirectorySet != null),
-    ) {
-      "At least and at most one of sourceDirectorySet, androidSourceDirectorySet should be non-null"
-    }
+private class AndroidSource(
+  name: String,
+  sourceSets: List<String>,
+  private val variant: Variant,
+) : WireSource(name, sourceSets) {
+  override fun outputDir(project: Project): File {
+    return File(project.targetDefaultOutputPath(), name)
   }
 
-  /** Adds the path to this set. */
-  fun srcDir(fileCollectionProvider: Provider<ConfigurableFileCollection>): WireSourceDirectorySet {
-    sourceDirectorySet?.srcDir(fileCollectionProvider)
-    androidSourceDirectorySet?.setSrcDirs(fileCollectionProvider.get().files)
-
-    return this
-  }
-
-  /** Adds the path to this set. */
-  fun srcDir(path: String): WireSourceDirectorySet {
-    sourceDirectorySet?.srcDir(path)
-    androidSourceDirectorySet?.srcDir(path)
-
-    return this
-  }
-
-  companion object {
-    fun of(sourceDirectorySet: SourceDirectorySet): WireSourceDirectorySet {
-      return WireSourceDirectorySet(sourceDirectorySet, null)
-    }
-
-    fun of(androidSourceDirectorySet: AndroidSourceDirectorySet?): WireSourceDirectorySet {
-      return WireSourceDirectorySet(null, androidSourceDirectorySet)
+  override fun registerGeneratedSources(
+    project: Project,
+    wireTask: TaskProvider<WireTask>,
+    targets: List<Target>,
+  ) {
+    targets.forEachIndexed { index, target ->
+      when (target) {
+        is JavaTarget -> {
+          variant.sources.java?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
+        }
+        is KotlinTarget -> {
+          variant.sources.kotlin?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
+          // Remove line below when AGP is upgraded to 9.0+ as it will contain fix for https://issuetracker.google.com/446220448
+          variant.sources.java?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
+        }
+        is CustomTarget -> {
+          // Custom targets are wildcards, so we add all output directories.
+          variant.sources.java?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
+          variant.sources.kotlin?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
+        }
+        is ProtoTarget -> {
+          // Do nothing
+        }
+        else -> {
+          throw IllegalArgumentException(
+            "Wire target ${target::class.simpleName} is not supported in Android project ${project.path}",
+          )
+        }
+      }
     }
   }
 }
