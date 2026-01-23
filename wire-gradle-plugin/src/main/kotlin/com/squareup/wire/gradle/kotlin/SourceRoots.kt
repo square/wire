@@ -19,6 +19,10 @@ import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.squareup.wire.gradle.WireTask
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
+import com.squareup.wire.schema.CustomTarget
+import com.squareup.wire.schema.JavaTarget
+import com.squareup.wire.schema.KotlinTarget
+import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.Target
 import java.io.File
 import org.gradle.api.Project
@@ -48,7 +52,6 @@ internal fun forEachWireSource(
           name = variant.name,
           sourceSets = sourceSetNames.distinct(),
           variant = variant,
-          kotlin = hasKotlin,
         )
         sourceHandler(source)
       }
@@ -62,7 +65,7 @@ internal fun forEachWireSource(
       val javaSourceSets = project.extensions.findByType(SourceSetContainer::class.java)
       val kotlinSourceDirectorySet = kotlinSourceSets?.findByName("main")?.kotlin
       val javaSourceDirectorySet = javaSourceSets?.findByName("main")?.java
-      val source = JvmSource(
+      val source = JvmOrKmpSource(
         name = "main",
         sourceSets = listOf("main"),
         kotlinSourceDirectorySet = kotlinSourceDirectorySet,
@@ -73,7 +76,7 @@ internal fun forEachWireSource(
     hasJava -> {
       val javaSourceSets = project.extensions.findByType(SourceSetContainer::class.java)
       val javaSourceDirectorySet = javaSourceSets?.findByName("main")?.java
-      val source = JvmSource(
+      val source = JvmOrKmpSource(
         name = "main",
         sourceSets = listOf("main"),
         kotlinSourceDirectorySet = null,
@@ -110,7 +113,7 @@ private fun KotlinMultiplatformExtension.sourceRoots(): List<WireSource> {
   // Wire only supports commonMain as in other cases, we'd be expected to generate both
   // `expect` and `actual` classes which doesn't make much sense for what Wire does.
   return listOf(
-    JvmSource(
+    JvmOrKmpSource(
       name = "commonMain",
       kotlinSourceDirectorySet = sourceSets.getByName("commonMain").kotlin,
       javaSourceDirectorySet = null,
@@ -119,7 +122,7 @@ private fun KotlinMultiplatformExtension.sourceRoots(): List<WireSource> {
   )
 }
 
-private class JvmSource(
+private class JvmOrKmpSource(
   name: String,
   sourceSets: List<String>,
   private val kotlinSourceDirectorySet: SourceDirectorySet?,
@@ -134,11 +137,29 @@ private class JvmSource(
     wireTask: TaskProvider<WireTask>,
     targets: List<Target>,
   ) {
-    val taskOutputDirectories = wireTask.map { it.outputDirectories }
-    if (javaSourceDirectorySet != null) {
-      javaSourceDirectorySet.srcDir(taskOutputDirectories)
-    } else {
-      kotlinSourceDirectorySet?.srcDir(taskOutputDirectories)
+    targets.forEachIndexed { index, target ->
+      val outputDirectory = wireTask.flatMap { it.outputDirectoriesList[index] }
+      when (target) {
+        is JavaTarget -> {
+          javaSourceDirectorySet?.srcDir(outputDirectory)
+        }
+        is KotlinTarget -> {
+          kotlinSourceDirectorySet?.srcDir(outputDirectory)
+        }
+        is CustomTarget -> {
+          // Custom targets are wildcards, so we add all output directories.
+          javaSourceDirectorySet?.srcDir(outputDirectory)
+          kotlinSourceDirectorySet?.srcDir(outputDirectory)
+        }
+        is ProtoTarget -> {
+          // Do nothing
+        }
+        else -> {
+          throw IllegalArgumentException(
+            "Wire target ${target::class.simpleName} is not supported in project ${project.path}",
+          )
+        }
+      }
     }
   }
 }
@@ -147,7 +168,6 @@ private class AndroidSource(
   name: String,
   sourceSets: List<String>,
   private val variant: Variant,
-  private val kotlin: Boolean,
 ) : WireSource(name, sourceSets) {
   override fun outputDir(project: Project): File {
     return File(project.targetDefaultOutputPath(), name)
@@ -158,10 +178,29 @@ private class AndroidSource(
     wireTask: TaskProvider<WireTask>,
     targets: List<Target>,
   ) {
-    targets.forEachIndexed { index, _ ->
-      variant.sources.java?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
-      if (kotlin) {
-        variant.sources.kotlin?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
+    targets.forEachIndexed { index, target ->
+      when (target) {
+        is JavaTarget -> {
+          variant.sources.java?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
+        }
+        is KotlinTarget -> {
+          variant.sources.kotlin?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
+          // Remove line below when AGP is upgraded to 9.0+ as it will contain fix for https://issuetracker.google.com/446220448
+          variant.sources.java?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
+        }
+        is CustomTarget -> {
+          // Custom targets are wildcards, so we add all output directories.
+          variant.sources.java?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
+          variant.sources.kotlin?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
+        }
+        is ProtoTarget -> {
+          // Do nothing
+        }
+        else -> {
+          throw IllegalArgumentException(
+            "Wire target ${target::class.simpleName} is not supported in Android project ${project.path}",
+          )
+        }
       }
     }
   }

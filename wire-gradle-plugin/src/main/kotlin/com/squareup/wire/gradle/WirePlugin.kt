@@ -211,11 +211,7 @@ class WirePlugin : Plugin<Project> {
       task.eventListenerFactories.set(factories)
     }
 
-    source.registerGeneratedSources(
-      project,
-      task,
-      targets.filterNot { it is ProtoTarget },
-    )
+    source.registerGeneratedSources(project, task, targets)
 
     val protoOutputDirectory = task.map { it.protoLibraryOutput }
     if (protoTarget != null) {
