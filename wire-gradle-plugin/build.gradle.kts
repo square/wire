@@ -49,8 +49,8 @@ dependencies {
 
   compileOnly(gradleApi())
   compileOnly(libs.pluginz.android)
-  compileOnly(libs.pluginz.kotlin)
 
+  implementation(libs.pluginz.kotlin)
   implementation(projects.wireCompiler)
   implementation(projects.wireKotlinGenerator)
   implementation(libs.swiftpoet)

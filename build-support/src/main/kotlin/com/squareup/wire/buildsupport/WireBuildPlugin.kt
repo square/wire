@@ -24,9 +24,12 @@ import java.io.File
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.ExperimentalBCVApi
 import org.gradle.accessors.dm.LibrariesForLibs
+import org.gradle.api.GradleException
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalog
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.distribution.plugins.DistributionPlugin
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.tasks.SourceSet
@@ -47,7 +50,11 @@ import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -209,10 +216,14 @@ class WireBuildPlugin : Plugin<Project> {
   private fun Project.configureCommonKotlin() {
     tasks.withType(KotlinCompilationTask::class.java).configureEach {
       compilerOptions {
-        freeCompilerArgs.addAll(
-          "-progressive", // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
-          "-Xexpect-actual-classes",
-        )
+        freeCompilerArgs.addAll("-Xexpect-actual-classes")
+        apiVersion.set(KotlinVersion.KOTLIN_2_0)
+        languageVersion.set(KotlinVersion.KOTLIN_2_0)
+      }
+    }
+    afterEvaluate {
+      extensions.findByType(KotlinProjectExtension::class.java)?.apply {
+        coreLibrariesVersion = project.getVersionByName("kotlinCoreLibrariesVersion")
       }
     }
 
@@ -237,6 +248,53 @@ class WireBuildPlugin : Plugin<Project> {
         languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
         languageSettings.optIn("kotlinx.cinterop.BetaInteropApi")
         languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
+      }
+      kotlin.configureWebKotlinLibraries()
+    }
+    plugins.withId("org.jetbrains.kotlin.js") {
+      val kotlin = extensions.getByName("kotlin") as KotlinJsProjectExtension
+      kotlin.configureWebKotlinLibraries()
+    }
+  }
+
+  // For KotlinWasm/Js, versions of toolchain and stdlib need to be the same:
+  // https://youtrack.jetbrains.com/issue/KT-71032
+  private fun KotlinProjectExtension.configureWebKotlinLibraries() {
+    val kotlinVersion = project.getVersionByName("kotlin")
+
+    when (this) {
+      is KotlinJsProjectExtension -> {
+        val suffix = "js"
+        sourceSets.apply {
+          getByName("main").dependencies {
+            implementation("org.jetbrains.kotlin:kotlin-stdlib-$suffix:$kotlinVersion")
+          }
+          getByName("test").dependencies {
+            implementation("org.jetbrains.kotlin:kotlin-stdlib-$suffix:$kotlinVersion")
+            implementation("org.jetbrains.kotlin:kotlin-test-$suffix:$kotlinVersion")
+          }
+        }
+      }
+
+      is KotlinMultiplatformExtension -> {
+        targets.matching { it.platformType in listOf(KotlinPlatformType.js, KotlinPlatformType.wasm) }.configureEach {
+          val suffix = when (platformType) {
+            KotlinPlatformType.js -> "js"
+            KotlinPlatformType.wasm -> if (targetName.contains("wasi", true)) "wasm-wasi" else "wasm-js"
+            else -> return@configureEach
+          }
+
+          this@configureWebKotlinLibraries.sourceSets.apply {
+            getByName("${targetName}Main").dependencies {
+              implementation("org.jetbrains.kotlin:kotlin-stdlib-$suffix:$kotlinVersion")
+            }
+
+            getByName("${targetName}Test").dependencies {
+              implementation("org.jetbrains.kotlin:kotlin-stdlib-$suffix:$kotlinVersion")
+              implementation("org.jetbrains.kotlin:kotlin-test-$suffix:$kotlinVersion")
+            }
+          }
+        }
       }
     }
   }
@@ -447,4 +505,16 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
 
   private val Project.isWireBom
     get() = name.contains("wire-bom")
+}
+
+val Project.versionCatalog: VersionCatalog
+  get() = project.extensions.getByType(VersionCatalogsExtension::class.java).find("libs").get()
+
+fun Project.getVersionByName(name: String): String {
+  val version = versionCatalog.findVersion(name)
+  return if (version.isPresent) {
+    version.get().requiredVersion
+  } else {
+    throw GradleException("Could not find a version for `$name`")
+  }
 }
