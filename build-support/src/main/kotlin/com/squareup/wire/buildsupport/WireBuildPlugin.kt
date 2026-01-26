@@ -15,7 +15,8 @@
  */
 package com.squareup.wire.buildsupport
 
-import com.android.build.gradle.BaseExtension
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.CommonExtension
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.spotless.LineEnding
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
@@ -178,25 +179,28 @@ class WireBuildPlugin : Plugin<Project> {
 
   private fun Project.configureCommonAndroid() {
     plugins.withId("com.android.base") {
-      val android = extensions.getByName("android") as BaseExtension
-      android.apply {
-        compileSdkVersion(36)
-        compileOptions {
+      project.extensions.getByType(CommonExtension::class.java).apply {
+        compileSdk = 36
+        compileOptions.apply {
           sourceCompatibility = JavaVersion.VERSION_1_8
           targetCompatibility = JavaVersion.VERSION_1_8
         }
-        defaultConfig {
-          if (project.name.contains("app")) {
-            applicationId("$group.${project.name}".replace(oldChar = '-', newChar = '.'))
+        defaultConfig.minSdk { version = release(28) }
+
+        if (this is ApplicationExtension) {
+          defaultConfig.apply {
+            if (project.name.contains("app")) {
+              applicationId = "$group.${project.name}".replace(oldChar = '-', newChar = '.')
+            }
+            targetSdk = 33
+            versionCode = 1
+            versionName = "1.0"
           }
-          minSdk = 28
-          targetSdk = 33
-          versionCode = 1
-          versionName = "1.0"
         }
-        lintOptions {
-          isCheckDependencies = true
-          isCheckReleaseBuilds = false // Full lint runs as part of 'build' task.
+
+        lint.apply {
+          checkDependencies = true
+          checkReleaseBuilds = false // Full lint runs as part of 'build' task.
         }
       }
     }
