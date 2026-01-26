@@ -4,6 +4,17 @@ Change Log
 Unreleased
 ----------
 
+Version 6.0.0-alpha02
+---------------------
+
+_2026-01-26_
+
+### Gradle plugin
+
+* Refactor to Factory pattern and use modern Android Variant API (#3503 by [Omar Ismail][omarismail94])
+* Migrate to new Android Gradle Plugin DSL (#3504 by [Omar Ismail][omarismail94])
+* Ensure compatibility with older Kotlin consumers (#3505 by [Omar Ismail][omarismail94])
+
 Version 5.5.0
 ---------------------
 
