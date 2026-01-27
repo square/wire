@@ -54,7 +54,10 @@ abstract class JsonIntegration<F, A> {
   /** Returns an adapter that applies [jsonStringAdapter] to each value. */
   abstract fun formatterAdapter(jsonStringAdapter: JsonFormatter<*>): A
 
-  /** Returns a message type that supports encoding and decoding JSON objects of type [type]. */
+  /**
+   * Returns a list of adapters that support encoding and decoding JSON objects of each specific
+   * message type.
+   */
   fun <M : Any, B : Any> jsonAdapters(
     adapter: RuntimeMessageAdapter<M, B>,
     framework: F,

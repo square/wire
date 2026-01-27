@@ -4,6 +4,7 @@ plugins {
   application
   kotlin("jvm")
   id("org.jetbrains.kotlin.plugin.serialization")
+  id("org.jetbrains.dokka")
   id("com.gradleup.shadow").apply(false)
 }
 
@@ -32,4 +33,6 @@ dependencies {
   testImplementation(libs.assertk)
   testImplementation(libs.kotlin.test.junit)
   testImplementation(projects.wireTestUtils)
+
+  dokka(projects.wireGradlePlugin)
 }

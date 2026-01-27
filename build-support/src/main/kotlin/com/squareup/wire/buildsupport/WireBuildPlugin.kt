@@ -48,7 +48,7 @@ import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -370,14 +370,6 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
 
     val mavenPublishing = project.extensions.getByName("mavenPublishing") as MavenPublishBaseExtension
     mavenPublishing.apply {
-      // The Gradle plugin publish plugin configures `wire-gradle-plugin` for us, and we don't need
-      // to configure `wire-bom`.
-      if (!project.isWireGradlePlugin && !project.isWireBom) {
-        // TODO(Benoit) Fix, this is failing with
-        //  `SoftwareComponent with name 'java' not found.`
-        // configure(KotlinJvm(javadocJar = Dokka("dokkaHtml"), sourcesJar = true))
-      }
-
       publishToMavenCentral(automaticRelease = true)
       val inMemoryKey = project.findProperty("signingInMemoryKey") as String?
       if (!inMemoryKey.isNullOrEmpty()) {
@@ -416,8 +408,10 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
 
     if (project.isWireBom) return
 
-    project.tasks.withType(DokkaTask::class.java).configureEach {
-      outputDirectory.set(project.file("${project.rootDir}/docs/3.x/${project.name}"))
+    project.extensions.configure(DokkaExtension::class.java) {
+      dokkaPublications.named("html") {
+        outputDirectory.set(project.file("${project.rootDir}/docs/3.x/${project.name}"))
+      }
       dokkaSourceSets.configureEach {
         reportUndocumented.set(false)
         skipDeprecated.set(true)

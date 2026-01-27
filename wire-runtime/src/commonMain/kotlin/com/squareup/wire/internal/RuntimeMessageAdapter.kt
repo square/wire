@@ -35,7 +35,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
 
   /**
    * Field bindings by index. The indexes are consistent across all related fields including
-   * [jsonNames], [jsonAlternateNames], and the result of [jsonAdapters].
+   * [jsonNames], [jsonAlternateNames], and the result of [writeAllFields]'s `jsonAdapters`.
    */
   val fieldBindingsArray: Array<FieldOrOneOfBinding<M, B>> = fields.values.toTypedArray()
   val jsonNames: List<String> = fieldBindingsArray.map { it.jsonName }
