@@ -52,8 +52,9 @@ interface ProtoReader32 {
 
   /**
    * Begin a nested message. A call to this method will restrict the reader so that [nextTag]
-   * returns -1 when the message is complete. An accompanying call to [endMessage] must then occur
-   * with the opaque token returned from this method.
+   * returns -1 when the message is complete. An accompanying call to
+   * [endMessageAndGetUnknownFields] must then occur with the opaque token returned from this
+   * method.
    */
   @Throws(IOException::class)
   fun beginMessage(): Int

@@ -9,7 +9,7 @@
 set -ex
 
 # Generate the API docs
-./gradlew dokkaHtml
+./gradlew dokkaGenerateHtml
 
 # Copy in special files that GitHub wants in the project root.
 cp CHANGELOG.md docs/changelog.md
