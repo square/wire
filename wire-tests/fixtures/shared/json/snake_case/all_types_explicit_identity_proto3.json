@@ -1,0 +1,77 @@
+{
+  "map_int32_int32": {
+    "0": 0.0
+  },
+  "map_string_enum": {
+    "": "UNKNOWN"
+  },
+  "map_string_message": {
+    "": {}
+  },
+  "nested_message": {},
+  "oneof_int32": 0.0,
+  "pack_bool": [
+    false,
+    false
+  ],
+  "pack_double": [
+    0.0,
+    0.0
+  ],
+  "pack_fixed64": [
+    "0",
+    "0"
+  ],
+  "pack_float": [
+    0.0,
+    0.0
+  ],
+  "pack_int64": [
+    "0",
+    "0"
+  ],
+  "pack_nested_enum": [
+    "UNKNOWN",
+    "UNKNOWN"
+  ],
+  "pack_sfixed32": [
+    0.0,
+    0.0
+  ],
+  "pack_sfixed64": [
+    "0",
+    "0"
+  ],
+  "pack_sint64": [
+    "0",
+    "0"
+  ],
+  "pack_uint64": [
+    "0",
+    "0"
+  ],
+  "rep_bytes": [
+    "",
+    ""
+  ],
+  "rep_fixed32": [
+    0.0,
+    0.0
+  ],
+  "rep_int32": [
+    0.0,
+    0.0
+  ],
+  "rep_sint32": [
+    0.0,
+    0.0
+  ],
+  "rep_string": [
+    "",
+    ""
+  ],
+  "rep_uint32": [
+    0.0,
+    0.0
+  ]
+}

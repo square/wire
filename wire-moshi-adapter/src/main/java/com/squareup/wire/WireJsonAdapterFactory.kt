@@ -44,6 +44,7 @@ import java.lang.reflect.Type
 class WireJsonAdapterFactory @JvmOverloads constructor(
   private val typeUrlToAdapter: Map<String, ProtoAdapter<*>> = mapOf(),
   private val writeIdentityValues: Boolean = false,
+  private val preservingProtoFieldNames: Boolean = false,
 ) : JsonAdapter.Factory {
   /**
    * Returns a new WireJsonAdapterFactory that can encode the messages for [adapters] if they're
@@ -57,7 +58,7 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
       )
       newMap[key] = adapter
     }
-    return WireJsonAdapterFactory(newMap, writeIdentityValues)
+    return WireJsonAdapterFactory(newMap, writeIdentityValues, preservingProtoFieldNames)
   }
 
   /**
@@ -81,9 +82,10 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
       rawType == AnyMessage::class.java -> AnyMessageJsonAdapter(moshi, typeUrlToAdapter)
       Message::class.java.isAssignableFrom(rawType) -> {
         val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(
-          type as Class<Nothing>,
-          writeIdentityValues,
-          rawType.classLoader,
+          messageType = type as Class<Nothing>,
+          writeIdentityValues = writeIdentityValues,
+          preservingProtoFieldNames = preservingProtoFieldNames,
+          classLoader = rawType.classLoader,
         )
         val jsonAdapters = MoshiJsonIntegration.jsonAdapters(messageAdapter, moshi)
         val redactedFieldsAdapter = moshi.adapter<List<String>>(

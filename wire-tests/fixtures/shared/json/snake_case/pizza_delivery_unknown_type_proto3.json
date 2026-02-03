@@ -1,0 +1,18 @@
+{
+  "address": "507 Cross Street",
+  "delivered_within_or_free": "1799.500s",
+  "pizzas": [
+    {
+      "toppings": [
+        "pineapple",
+        "onion"
+      ]
+    }
+  ],
+  "loyalty": {},
+  "promotion": {
+    "@type": "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion",
+    "is_extra_cheesey": true
+  },
+  "ordered_at": "1950-01-01T00:00:00.250Z"
+}

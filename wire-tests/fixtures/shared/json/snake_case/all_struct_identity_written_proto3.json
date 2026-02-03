@@ -1,0 +1,31 @@
+{
+  "map_int32_list": {},
+  "map_int32_null_value": {},
+  "map_int32_struct": {},
+  "map_int32_value_a": {},
+  "rep_list": [],
+  "rep_null_value": [],
+  "rep_struct": [],
+  "rep_value_a": [],
+  "struct": {
+    "a": null
+  },
+  "list": [],
+  "value_a": {
+    "a": [
+      "b",
+      2.0,
+      {
+        "c": false
+      }
+    ]
+  },
+  "value_b": [
+    {
+      "d": null,
+      "e": "trois"
+    }
+  ],
+  "value_c": [],
+  "value_d": {}
+}

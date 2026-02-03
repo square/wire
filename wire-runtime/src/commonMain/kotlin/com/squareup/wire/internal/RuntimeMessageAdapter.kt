@@ -24,6 +24,7 @@ import com.squareup.wire.WireField
 
 class RuntimeMessageAdapter<M : Any, B : Any>(
   private val binding: MessageBinding<M, B>,
+  private val preservingProtoFieldNames: Boolean = false,
 ) : ProtoAdapter<M>(
   fieldEncoding = FieldEncoding.LENGTH_DELIMITED,
   type = binding.messageType,
@@ -76,7 +77,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
 
   /** When writing each field as JSON this is the name to use. */
   val FieldOrOneOfBinding<*, *>.jsonName: String
-    get() = if (wireFieldJsonName.isEmpty()) declaredName else wireFieldJsonName
+    get() = if (wireFieldJsonName.isEmpty() || preservingProtoFieldNames) declaredName else wireFieldJsonName
 
   fun newBuilder(): B = binding.newBuilder()
 
