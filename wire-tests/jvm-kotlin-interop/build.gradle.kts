@@ -25,6 +25,7 @@ wire {
       "external_message.proto",
       "foreign.proto",
       "form.proto",
+      "large_field_message.proto",
       "map.proto",
       "person.proto",
       "no_fields.proto",
