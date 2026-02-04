@@ -55,6 +55,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import okhttp3.Call
+import okhttp3.Headers
 import okhttp3.Interceptor
 import okhttp3.Interceptor.Chain
 import okhttp3.MediaType.Companion.toMediaType
@@ -66,6 +67,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
+import okhttp3.TrailersSource
 import okio.Buffer
 import okio.ByteString
 import okio.ForwardingSource
@@ -1227,6 +1229,39 @@ class GrpcClientTest {
     } catch (expected: GrpcException) {
       assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.UNKNOWN)
       assertThat(expected.grpcMessage).isNull()
+    }
+  }
+
+  @Test
+  fun requestFailureInTrailersNotInHeadersWithEmptyResponseBody() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendError(
+      Status.UNAUTHENTICATED.withDescription("not logged in")
+        .asRuntimeException(),
+    )
+    mockService.enqueue(SendCompleted)
+
+    interceptor = Interceptor { chain ->
+      val response = chain.proceed(chain.request())
+      response.newBuilder()
+        .headers(Headers.headersOf())
+        .trailers(
+          object : TrailersSource {
+            override fun get() = response.headers
+          },
+        )
+        .build()
+    }
+
+    val grpcCall = routeGuideService.GetFeature()
+    try {
+      grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+      fail()
+    } catch (expected: GrpcException) {
+      assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.UNAUTHENTICATED)
+      assertThat(expected.grpcMessage).isEqualTo("not logged in")
     }
   }
 

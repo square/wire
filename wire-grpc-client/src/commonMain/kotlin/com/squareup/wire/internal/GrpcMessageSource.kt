@@ -61,6 +61,8 @@ internal class GrpcMessageSource<T : Any>(
     }
   }
 
+  fun isEmptyBody(): Boolean = source.exhausted()
+
   fun readExactlyOneAndClose(): T {
     use(GrpcMessageSource<T>::close) { reader ->
       val result = reader.read() ?: throw ProtocolException("expected 1 message but got none")
