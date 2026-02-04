@@ -17,18 +17,12 @@ package com.squareup.wire
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.squareup.wire.internal.createRuntimeMessageAdapter
 import com.squareup.wire.protos.kotlin.large_field.LargeFieldMessage
 import kotlin.test.Test
 
 class LargeFieldNumberTest {
 
-  private val adapter = createRuntimeMessageAdapter(
-    LargeFieldMessage::class.java,
-    "square.github.io/wire/unknown",
-    Syntax.PROTO_2,
-    LargeFieldNumberTest::class.java.classLoader,
-  )
+  private val adapter = LargeFieldMessage.ADAPTER
 
   @Test fun encodeDecode_largeFieldNumbers() {
     val original = LargeFieldMessage(
