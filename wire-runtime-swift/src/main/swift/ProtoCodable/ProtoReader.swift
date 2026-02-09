@@ -127,7 +127,7 @@ public final class ProtoReader {
             return -1
         }
 
-        if (messageStackIndex + 1) > ProtoReader.recursionLimit {
+        if (messageStackIndex + 1) >= ProtoReader.recursionLimit {
             throw ProtoDecoder.Error.recursionLimitExceeded
         }
 
