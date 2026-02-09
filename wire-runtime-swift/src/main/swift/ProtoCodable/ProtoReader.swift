@@ -104,7 +104,7 @@ public final class ProtoReader {
     deinit {
          //If decoding fails for any reason, there may be unknownFields to
          //clean up that were not caught by the defer block in endMessage
-        if messageStackIndex > 0 {
+        if messageStackIndex >= 0 {
             for index in 0...messageStackIndex {
                 messageStack[index].unknownFields.removeAll()
             }
