@@ -1292,6 +1292,28 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
+    // MARK: - Tests - Recursion Limit
+
+    func testRecursionLimitExceeded() throws {
+        // 65 wraps + 1 inner = 66 beginMessage calls, exceeds limit of 65
+        let data = buildNestedMessage(depth: 65)
+
+        XCTAssertThrowsError(try decodeNestedMessage(data)) { error in
+            guard case ProtoDecoder.Error.recursionLimitExceeded = error else {
+                XCTFail("Unexpected error: \(error)")
+                return
+            }
+        }
+    }
+
+    func testRecursionAtLimit() throws {
+        // 64 wraps + 1 inner = 65 beginMessage calls, exactly at limit
+        let data = buildNestedMessage(depth: 64)
+
+        // Should not throw
+        try decodeNestedMessage(data)
+    }
+
     // MARK: - Private Methods
 
     private func test(data: Foundation.Data, enumStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy = .throwError, test: (ProtoReader) throws -> Void) rethrows {
@@ -1331,5 +1353,52 @@ extension ProtoReader {
             try decode(tag)
         }
         return try endMessage(token: token)
+    }
+}
+
+// MARK: -
+
+extension ProtoReaderTests {
+    /// Encode a varint length into Data
+    fileprivate func encodeVarint(_ value: Int) -> Foundation.Data {
+        var result = Foundation.Data()
+        var v = value
+        while v > 0x7F {
+            result.append(UInt8((v & 0x7F) | 0x80))
+            v >>= 7
+        }
+        result.append(UInt8(v))
+        return result
+    }
+
+    /// Build a nested message with the specified number of wrapper levels
+    fileprivate func buildNestedMessage(depth: Int) -> Foundation.Data {
+        // Innermost is an empty message so decoding terminates cleanly
+        var data = Foundation.Data([0x0A, 0x00]) // Tag 1, length-delimited, length 0
+
+        for _ in 0..<depth {
+            var wrapper = Foundation.Data()
+            wrapper.append(0x0A) // Tag 1, length-delimited
+            wrapper.append(encodeVarint(data.count))
+            wrapper.append(data)
+            data = wrapper
+        }
+        return data
+    }
+
+    /// Decode a nested message by recursively reading tag 1 fields
+    fileprivate func decodeNestedMessage(_ data: Foundation.Data) throws {
+        try test(data: data) { reader in
+            func decodeNested(_ reader: ProtoReader) throws {
+                let token = try reader.beginMessage()
+                while let tag = try reader.nextTag(token: token) {
+                    if tag == 1 {
+                        try decodeNested(reader)
+                    }
+                }
+                _ = try reader.endMessage(token: token)
+            }
+            try decodeNested(reader)
+        }
     }
 }
