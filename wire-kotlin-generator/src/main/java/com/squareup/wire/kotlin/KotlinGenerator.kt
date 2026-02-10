@@ -1248,7 +1248,7 @@ class KotlinGenerator private constructor(
         CodeBlock.of(if (buildersOnly) "builder.$fieldName" else fieldName)
       }
       field.isRepeated || field.isMap -> {
-        if (mutableTypes) {
+        if (mutableTypes || !field.makeImmutableCopy) {
           // For mutable types, don't bother using immutableCopyOf(...)
           CodeBlock.of("%N", fieldName)
         } else {
