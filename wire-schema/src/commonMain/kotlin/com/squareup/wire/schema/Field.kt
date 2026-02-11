@@ -110,9 +110,6 @@ data class Field(
   val useArray: Boolean
     get() = options.get(WIRE_USE_ARRAY) == "true"
 
-  val makeImmutableCopy: Boolean
-    get() = options.get(WIRE_MAKE_IMMUTABLE_COPY) != "false"
-
   // Null until this field is linked.
   var jsonName: String? = null
     private set
@@ -157,9 +154,6 @@ data class Field(
     }
     if (useArray && type?.isScalar != true) {
       linker.errors += "wire.use_array=true only permitted on scalar fields"
-    }
-    if (!makeImmutableCopy && !(type!!.isMap || isRepeated)) {
-      linker.errors += "wire.make_immutable_copy=false only permitted on map or repeated fields"
     }
     if (isExtension) {
       if (isRequired) {
@@ -259,7 +253,6 @@ data class Field(
     internal val DEPRECATED = ProtoMember.get(FIELD_OPTIONS, "deprecated")
     internal val PACKED = ProtoMember.get(FIELD_OPTIONS, "packed")
     internal val WIRE_USE_ARRAY = ProtoMember.get(FIELD_OPTIONS, "wire.use_array")
-    internal val WIRE_MAKE_IMMUTABLE_COPY = ProtoMember.get(FIELD_OPTIONS, "wire.make_immutable_copy")
 
     @JvmStatic
     fun fromElements(

@@ -96,6 +96,16 @@ class KotlinSchemaHandler(
    * If true, streaming calls will generate explicit call types for client,server, and bidirectional streaming.
    */
   private val explicitStreamingCalls: Boolean = false,
+
+  /**
+   * If false, repeated and map fields will not have immutable copies made when constructing
+   * a [com.squareup.wire.Message]. It is up to the developer to avoid mutating any Maps or Lists
+   * after they are used to create a [com.squareup.wire.Message] as the [com.squareup.wire.Message]
+   * will reference those collections rather than creating a copy. In exchange, the developer can
+   * avoid the overhead of creating a list which can be excessive for long lists or for performance
+   * critical usages.
+   */
+  private val makeImmutableCopies: Boolean = true,
 ) : SchemaHandler() {
   private lateinit var kotlinGenerator: KotlinGenerator
 
@@ -119,6 +129,7 @@ class KotlinSchemaHandler(
       emitProtoReader32 = emitProtoReader32,
       mutableTypes = mutableTypes,
       explicitStreamingCalls = explicitStreamingCalls,
+      makeImmutableCopies = makeImmutableCopies,
     )
     context.fileSystem.createDirectories(context.outDirectory)
     super.handle(schema, context)

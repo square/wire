@@ -35,6 +35,12 @@ wire {
   }
 
   kotlin {
+    includes = listOf("squareup.wire.no_immutable_copies.*")
+    out = "src/main/kotlin"
+    makeImmutableCopies = false
+  }
+
+  kotlin {
     out = "src/main/kotlin"
   }
 }

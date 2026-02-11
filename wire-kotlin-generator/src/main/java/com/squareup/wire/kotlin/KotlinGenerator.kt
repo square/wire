@@ -141,6 +141,7 @@ class KotlinGenerator private constructor(
   private val emitProtoReader32: Boolean,
   private val mutableTypes: Boolean,
   private val explicitStreamingCalls: Boolean,
+  private val makeImmutableCopies: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -1251,7 +1252,7 @@ class KotlinGenerator private constructor(
         CodeBlock.of(if (buildersOnly) "builder.$fieldName" else fieldName)
       }
       field.isRepeated || field.isMap -> {
-        if (mutableTypes || !field.makeImmutableCopy) {
+        if (mutableTypes || !makeImmutableCopies) {
           // For mutable types, don't bother using immutableCopyOf(...)
           CodeBlock.of("%N", fieldName)
         } else {
@@ -3185,6 +3186,7 @@ class KotlinGenerator private constructor(
       emitProtoReader32: Boolean = false,
       mutableTypes: Boolean = false,
       explicitStreamingCalls: Boolean = false,
+      makeImmutableCopies: Boolean = true,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -3239,6 +3241,7 @@ class KotlinGenerator private constructor(
         emitProtoReader32 = emitProtoReader32,
         mutableTypes = mutableTypes,
         explicitStreamingCalls = explicitStreamingCalls,
+        makeImmutableCopies = makeImmutableCopies,
       )
     }
 
