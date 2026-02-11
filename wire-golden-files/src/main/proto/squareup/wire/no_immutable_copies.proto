@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+package squareup.wire.no_immutable_copies;
+
+message NoImmutableCopiesPayload {
+  map<string, string> headers = 1;
+  repeated string footers = 2;
+}
