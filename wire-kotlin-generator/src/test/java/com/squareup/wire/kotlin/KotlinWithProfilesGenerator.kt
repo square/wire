@@ -55,6 +55,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
     javaInterop: Boolean = false,
     enumMode: EnumMode = EnumMode.ENUM_CLASS,
     mutableTypes: Boolean = false,
+    makeImmutableCopies: Boolean = true,
   ): String {
     val kotlinGenerator = KotlinGenerator(
       schema,
@@ -64,6 +65,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
       javaInterop = javaInterop,
       enumMode = enumMode,
       mutableTypes = mutableTypes,
+      makeImmutableCopies = makeImmutableCopies,
     )
     val type = schema.getType(typeName)!!
     val typeSpec = kotlinGenerator.generateType(type)

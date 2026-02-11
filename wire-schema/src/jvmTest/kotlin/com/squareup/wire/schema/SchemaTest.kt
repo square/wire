@@ -345,33 +345,6 @@ class SchemaTest {
   }
 
   @Test
-  fun fieldUsesMakeImmutableCopyButShouldntBe() {
-    try {
-      buildSchema {
-        add(
-          "message.proto".toPath(),
-          """
-          |import "wire/extensions.proto";
-          |
-          |message Message {
-          |  optional float a = 1 [wire.make_immutable_copy=false];
-          |}
-          """.trimMargin(),
-        )
-      }
-      fail()
-    } catch (expected: SchemaException) {
-      assertThat(expected).hasMessage(
-        """
-        |wire.make_immutable_copy=false only permitted on map or repeated fields
-        |  for field a (/sourcePath/message.proto:4:3)
-        |  in message Message (/sourcePath/message.proto:3:1)
-        """.trimMargin(),
-      )
-    }
-  }
-
-  @Test
   fun fieldIsDeprecated() {
     val schema = buildSchema {
       add(

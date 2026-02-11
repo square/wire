@@ -165,6 +165,16 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
    */
   var explicitStreamingCalls: Boolean = false
 
+  /**
+   * If false, repeated and map fields will not have immutable copies made when constructing
+   * a [com.squareup.wire.Message]. It is up to the developer to avoid mutating any Maps or Lists
+   * after they are used to create a [com.squareup.wire.Message] as the [com.squareup.wire.Message]
+   * will reference those collections rather than creating a copy. In exchange, the developer can
+   * avoid the overhead of creating a list which can be excessive for long lists or for performance
+   * critical usages.
+   */
+  var makeImmutableCopies: Boolean = true
+
   override fun toTarget(outputDirectory: String): KotlinTarget {
     if (grpcServerCompatible) {
       throw IllegalArgumentException(
@@ -210,6 +220,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       emitProtoReader32 = emitProtoReader32,
       mutableTypes = mutableTypes,
       explicitStreamingCalls = explicitStreamingCalls,
+      makeImmutableCopies = makeImmutableCopies,
     )
   }
 }

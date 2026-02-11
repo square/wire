@@ -1625,7 +1625,7 @@ class KotlinGeneratorTest {
     assertContains(code, "ProtoAdapter.FLOAT_ARRAY.encodeWithTag(writer, 1, value.info)")
   }
 
-  @Test fun makeImmutableCopyFalseDoesNotMakeAnImmutableCopy() {
+  @Test fun makeImmutableCopiesFalseDoesNotMakeImmutableCopies() {
     val schema = buildSchema {
       add(
         "proto_package/person_proto3.proto".toPath(),
@@ -1634,14 +1634,17 @@ class KotlinGeneratorTest {
         |import "wire/extensions.proto";
         |
         |message Person {
-        |	 repeated string names = 1 [wire.make_immutable_copy = false];
-        |	 map<string, string> friendsNicknames = 2 [wire.make_immutable_copy = false];
+        |	 repeated string names = 1;
+        |	 map<string, string> friendsNicknames = 2;
         |}
         |
         """.trimMargin(),
       )
     }
-    val code = KotlinWithProfilesGenerator(schema).generateKotlin("proto_package.Person")
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin(
+      typeName = "proto_package.Person",
+      makeImmutableCopies = false,
+    )
     assertThat(code).contains("public val names: List<String> = emptyList()")
     assertThat(code).contains("public val friendsNicknames: Map<String, String> = emptyMap()")
     assertThat(code).doesNotContain("immutableCopyOf")

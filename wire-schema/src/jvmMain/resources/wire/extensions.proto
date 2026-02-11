@@ -41,17 +41,6 @@ extend google.protobuf.FieldOptions {
    * array type, for example `repeated float` would be represented as a FloatArray.
    */
   optional bool use_array = 1185;
-
-  /**
-   * Whether to make an immutable copy of a repeated or map field. Defaults to true.
-   *
-   * When set to false, it is up to the developer to avoid mutating any Maps or Lists after they are used
-   * to create a Message as the Message will reference those collections rather than creating a copy. In exchange,
-   * the developer can avoid the overhead of creating a list which can be excessive for long lists or for performance
-   * critical usages.
-   */
-   // TODO(jeff) - Reserve an actual option similar to https://github.com/protocolbuffers/protobuf/pull/12491/changes
-  optional bool make_immutable_copy = 1186;
 }
 
 extend google.protobuf.EnumOptions {
