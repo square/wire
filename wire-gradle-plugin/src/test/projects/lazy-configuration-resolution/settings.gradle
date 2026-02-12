@@ -1,7 +1,7 @@
 pluginManagement {
   repositories {
     maven {
-      url = uri("file://${rootDir.absolutePath}/../../../../../build/localMaven")
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
     }
     google()
     mavenCentral()

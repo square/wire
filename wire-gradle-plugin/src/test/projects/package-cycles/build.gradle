@@ -6,7 +6,7 @@ buildscript {
 
   repositories {
     maven {
-      url "file://${rootDir.absolutePath}/../../../../../build/localMaven"
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
     }
     mavenCentral()
     google()
@@ -19,7 +19,7 @@ apply plugin: 'com.squareup.wire'
 
 repositories {
   maven {
-    url "file://${projectDir.absolutePath}/../../../../../build/localMaven"
+    url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
   }
   mavenCentral()
 }
