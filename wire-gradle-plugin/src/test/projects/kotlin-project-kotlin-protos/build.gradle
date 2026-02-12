@@ -19,7 +19,8 @@ apply plugin: 'application'
 apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'com.squareup.wire'
 
-mainClassName = 'com.squareup.dinosaurs.Sample'
+application.mainClass = "com.squareup.dinosaurs.Sample"
+
 
 repositories {
   maven {

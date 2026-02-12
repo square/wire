@@ -15,7 +15,7 @@ buildscript {
 apply plugin: 'application'
 apply plugin: 'com.squareup.wire'
 
-mainClassName = 'com.squareup.dinosaurs.Sample'
+application.mainClass = "com.squareup.dinosaurs.Sample"
 
 repositories {
   maven {
