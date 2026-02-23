@@ -5,7 +5,7 @@ plugins {
 }
 
 library {
-  sourceCompatibility = SwiftVersion.SWIFT5
+  sourceCompatibility = SwiftVersion.SWIFT6
   dependencies {
     api(projects.wireRuntimeSwift)
     implementation(projects.wireTestsSwift.manifest.moduleAddress)

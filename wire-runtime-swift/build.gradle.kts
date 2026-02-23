@@ -7,7 +7,7 @@ plugins {
 }
 
 library {
-  sourceCompatibility = SwiftVersion.SWIFT5
+  sourceCompatibility = SwiftVersion.SWIFT6
   module.set("Wire")
 }
 
