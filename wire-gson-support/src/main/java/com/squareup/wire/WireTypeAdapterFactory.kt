@@ -48,6 +48,7 @@ import com.squareup.wire.internal.createRuntimeMessageAdapter
 class WireTypeAdapterFactory @JvmOverloads constructor(
   private val typeUrlToAdapter: Map<String, ProtoAdapter<*>> = mapOf(),
   private val writeIdentityValues: Boolean = false,
+  private val preservingProtoFieldNames: Boolean = false,
 ) : TypeAdapterFactory {
   /**
    * Returns a new WireJsonAdapterFactory that can encode the messages for [adapters] if they're
@@ -61,7 +62,7 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
       )
       newMap[key] = adapter
     }
-    return WireTypeAdapterFactory(newMap, writeIdentityValues)
+    return WireTypeAdapterFactory(newMap, writeIdentityValues, preservingProtoFieldNames)
   }
 
   /**
@@ -80,9 +81,10 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
       rawType == AnyMessage::class.java -> AnyMessageTypeAdapter(gson, typeUrlToAdapter) as TypeAdapter<T>
       Message::class.java.isAssignableFrom(rawType) -> {
         val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(
-          rawType as Class<Nothing>,
-          writeIdentityValues,
-          rawType.classLoader,
+          messageType = rawType as Class<Nothing>,
+          writeIdentityValues = writeIdentityValues,
+          preservingProtoFieldNames = preservingProtoFieldNames,
+          classLoader = rawType.classLoader,
         )
         val jsonAdapters = GsonJsonIntegration.jsonAdapters(messageAdapter, gson)
         MessageTypeAdapter(messageAdapter, jsonAdapters).nullSafe() as TypeAdapter<T>

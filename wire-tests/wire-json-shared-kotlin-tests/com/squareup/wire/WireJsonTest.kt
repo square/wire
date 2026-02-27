@@ -111,6 +111,8 @@ class WireJsonTest {
   }
 
   @Test fun fieldNamesAreEncodedWithCamelCaseAndDecodedWithEither() {
+    if (jsonLibrary.preservingProtoFieldNames) return
+
     val nested = NestedCamelCase.Builder().one_int32(1).build()
     assertThat(jsonLibrary.fromJson("""{"oneInt32":1}""", NestedCamelCase::class.java))
       .isEqualTo(nested)
@@ -463,8 +465,13 @@ class WireJsonTest {
     ).isEqualTo(signed)
 
     val signedJson = jsonLibrary.toJson(signed, All64::class.java)
-    assertThat(signedJson).contains(""""mySint64":"123"""")
-    assertThat(signedJson).contains(""""repSint64":["456"]""")
+    if (jsonLibrary.preservingProtoFieldNames) {
+      assertThat(signedJson).contains(""""my_sint64":"123"""")
+      assertThat(signedJson).contains(""""rep_sint64":["456"]""")
+    } else {
+      assertThat(signedJson).contains(""""mySint64":"123"""")
+      assertThat(signedJson).contains(""""repSint64":["456"]""")
+    }
 
     val unsigned = All64.Builder().my_uint64(123).rep_uint64(listOf(456)).build()
     assertThat(
@@ -487,8 +494,13 @@ class WireJsonTest {
     ).isEqualTo(unsigned)
 
     val unsignedJson = jsonLibrary.toJson(unsigned, All64::class.java)
-    assertThat(unsignedJson).contains(""""myUint64":"123"""")
-    assertThat(unsignedJson).contains(""""repUint64":["456"]""")
+    if (jsonLibrary.preservingProtoFieldNames) {
+      assertThat(unsignedJson).contains(""""my_uint64":"123"""")
+      assertThat(unsignedJson).contains(""""rep_uint64":["456"]""")
+    } else {
+      assertThat(unsignedJson).contains(""""myUint64":"123"""")
+      assertThat(unsignedJson).contains(""""repUint64":["456"]""")
+    }
   }
 
   @Test fun `int32s are encoded as unsigned decoded with either`() {
@@ -513,8 +525,13 @@ class WireJsonTest {
     ).isEqualTo(signed)
 
     val signedJson = jsonLibrary.toJson(signed, All32::class.java)
-    assertThat(signedJson).contains(""""mySint32":-2147483648""")
-    assertThat(signedJson).contains(""""repSint32":[-2147483648]""")
+    if (jsonLibrary.preservingProtoFieldNames) {
+      assertThat(signedJson).contains(""""my_sint32":-2147483648""")
+      assertThat(signedJson).contains(""""rep_sint32":[-2147483648]""")
+    } else {
+      assertThat(signedJson).contains(""""mySint32":-2147483648""")
+      assertThat(signedJson).contains(""""repSint32":[-2147483648]""")
+    }
 
     val unsigned =
       All32.Builder().my_uint32(Int.MIN_VALUE).rep_uint32(listOf(Int.MIN_VALUE)).build()
@@ -550,8 +567,13 @@ class WireJsonTest {
     ).isEqualTo(unsigned)
 
     val unsignedJson = jsonLibrary.toJson(unsigned, All32::class.java)
-    assertThat(unsignedJson).contains(""""myUint32":2147483648""")
-    assertThat(unsignedJson).contains(""""repUint32":[2147483648]""")
+    if (jsonLibrary.preservingProtoFieldNames) {
+      assertThat(unsignedJson).contains(""""my_uint32":2147483648""")
+      assertThat(unsignedJson).contains(""""rep_uint32":[2147483648]""")
+    } else {
+      assertThat(unsignedJson).contains(""""myUint32":2147483648""")
+      assertThat(unsignedJson).contains(""""repUint32":[2147483648]""")
+    }
   }
 
   @Test fun serializeAllTypesProto3() {
@@ -618,6 +640,8 @@ class WireJsonTest {
   }
 
   @Test fun minusDoubleZero() {
+    if (jsonLibrary.preservingProtoFieldNames) return
+
     val value = AllTypesProto3.Builder().my_double(-0.0).build()
     val json = "\"myDouble\":-0.0"
 
@@ -630,6 +654,8 @@ class WireJsonTest {
   }
 
   @Test fun minusFloatZero() {
+    if (jsonLibrary.preservingProtoFieldNames) return
+
     val value = AllTypesProto3.Builder().my_float(-0f).build()
     val json = "\"myFloat\":-0.0"
 
@@ -801,6 +827,62 @@ class WireJsonTest {
       jsonLibrary.toJson(parsed, All32::class.java),
       jsonLibrary.toJson(value, All32::class.java),
     )
+  }
+
+  private val ALL_TYPES_PROTO2_JSON get() = loadJson("all_types_proto2.json")
+
+  private val ALL_TYPES_IDENTITY_PROTO2_JSON get() = loadJson("all_types_identity_proto2.json")
+
+  private val ALL_TYPES_PROTO3_JSON get() = loadJson("all_types_proto3.json")
+
+  private val ALL_TYPES_IDENTITY_PROTO3_JSON get() = loadJson("all_types_identity_proto3.json")
+
+  private val ALL_TYPES_EXPLICIT_IDENTITY_PROTO3_JSON get() =
+    loadJson("all_types_explicit_identity_proto3.json")
+
+  private val ALL_TYPES_IDENTITY_WRITTEN_PROTO3_JSON get() =
+    loadJson("all_types_identity_written_proto3.json")
+
+  private val CAMEL_CASE_JSON get() = loadJson("camel_case_proto3.json")
+
+  private val ALL_STRUCT_JSON get() = loadJson("all_struct_proto3.json")
+
+  private val ALL_STRUCT_IDENTITY_JSON get() = loadJson("all_struct_identity_proto3.json")
+
+  private val ALL_STRUCT_IDENTITY_WRITTEN_JSON get() = loadJson("all_struct_identity_written_proto3.json")
+
+  private val PIZZA_DELIVERY_JSON get() = loadJson("pizza_delivery_proto3.json")
+
+  private val PIZZA_DELIVERY_UNKNOWN_TYPE_JSON get() =
+    loadJson("pizza_delivery_unknown_type_proto3.json")
+
+  private val PIZZA_DELIVERY_WITHOUT_TYPE_JSON get() =
+    loadJson("pizza_delivery_without_type_proto3.json")
+
+  private val PIZZA_DELIVERY_LITERAL_NULLS_JSON get() =
+    loadJson("pizza_delivery_literal_nulls_proto3.json")
+
+  private val ALL_64_JSON_MIN_VALUE get() = loadJson("all_64_min_proto3.json")
+
+  private val ALL_64_JSON_MAX_VALUE get() = loadJson("all_64_max_proto3.json")
+
+  private val ALL_32_JSON_MIN_VALUE get() = loadJson("all_32_min_proto3.json")
+
+  private val ALL_32_JSON_MAX_VALUE get() = loadJson("all_32_max_proto3.json")
+
+  private val ALL_WRAPPERS_JSON get() = loadJson("all_wrappers_proto3.json")
+
+  private val ALL_WRAPPERS_SNAKE_JSON get() = loadJson("all_wrappers_proto3_snake.json")
+
+  private val MAP_TYPES_JSON get() = loadJson("map_types_proto3.json")
+
+  private fun loadJson(fileName: String): String {
+    val path = if (jsonLibrary.preservingProtoFieldNames) {
+      "../fixtures/shared/json/snake_case"
+    } else {
+      "../fixtures/shared/json"
+    }
+    return File(path, fileName).source().use { it.buffer().readUtf8() }
   }
 
   companion object {
@@ -1104,59 +1186,15 @@ class WireJsonTest {
         .map_int32_bytes_value(mapOf(23 to ByteString.of(123, 125)))
     }
 
-    private val ALL_TYPES_PROTO2_JSON = loadJson("all_types_proto2.json")
-
-    private val ALL_TYPES_IDENTITY_PROTO2_JSON = loadJson("all_types_identity_proto2.json")
-
-    private val ALL_TYPES_PROTO3_JSON = loadJson("all_types_proto3.json")
-
-    private val ALL_TYPES_IDENTITY_PROTO3_JSON = loadJson("all_types_identity_proto3.json")
-
-    private val ALL_TYPES_EXPLICIT_IDENTITY_PROTO3_JSON =
-      loadJson("all_types_explicit_identity_proto3.json")
-
-    private val ALL_TYPES_IDENTITY_WRITTEN_PROTO3_JSON =
-      loadJson("all_types_identity_written_proto3.json")
-
-    private val CAMEL_CASE_JSON = loadJson("camel_case_proto3.json")
-
-    private val ALL_STRUCT_JSON = loadJson("all_struct_proto3.json")
-
-    private val ALL_STRUCT_IDENTITY_JSON = loadJson("all_struct_identity_proto3.json")
-
-    private val ALL_STRUCT_IDENTITY_WRITTEN_JSON = loadJson("all_struct_identity_written_proto3.json")
-
-    private val PIZZA_DELIVERY_JSON = loadJson("pizza_delivery_proto3.json")
-
-    private val PIZZA_DELIVERY_UNKNOWN_TYPE_JSON =
-      loadJson("pizza_delivery_unknown_type_proto3.json")
-
-    private val PIZZA_DELIVERY_WITHOUT_TYPE_JSON =
-      loadJson("pizza_delivery_without_type_proto3.json")
-
-    private val PIZZA_DELIVERY_LITERAL_NULLS_JSON =
-      loadJson("pizza_delivery_literal_nulls_proto3.json")
-
-    private val ALL_64_JSON_MIN_VALUE = loadJson("all_64_min_proto3.json")
-
-    private val ALL_64_JSON_MAX_VALUE = loadJson("all_64_max_proto3.json")
-
-    private val ALL_32_JSON_MIN_VALUE = loadJson("all_32_min_proto3.json")
-
-    private val ALL_32_JSON_MAX_VALUE = loadJson("all_32_max_proto3.json")
-
-    private val ALL_WRAPPERS_JSON = loadJson("all_wrappers_proto3.json")
-
-    private val MAP_TYPES_JSON = loadJson("map_types_proto3.json")
-
     private val moshi = object : JsonLibrary {
       override fun toString() = "Moshi"
 
       override val writeIdentityValues = false
+      override val preservingProtoFieldNames = false
 
       private val moshi = Moshi.Builder()
         .add(
-          WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues)
+          WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
             .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
         )
         .build()
@@ -1174,10 +1212,11 @@ class WireJsonTest {
       override fun toString() = "Gson"
 
       override val writeIdentityValues = false
+      override val preservingProtoFieldNames = false
 
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
-          WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues)
+          WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
             .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
         )
         .disableHtmlEscaping()
@@ -1196,10 +1235,11 @@ class WireJsonTest {
       override fun toString() = "WriteIdentitiesMoshi"
 
       override val writeIdentityValues = true
+      override val preservingProtoFieldNames = false
 
       private val moshi = Moshi.Builder()
         .add(
-          WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues)
+          WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
             .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
         )
         .build()
@@ -1217,10 +1257,11 @@ class WireJsonTest {
       override fun toString() = "writeIdentitiesGson"
 
       override val writeIdentityValues = true
+      override val preservingProtoFieldNames = false
 
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
-          WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues)
+          WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
             .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
         )
         .disableHtmlEscaping()
@@ -1235,6 +1276,52 @@ class WireJsonTest {
       }
     }
 
+    private val preservingProtoFieldNamesMoshi = object : JsonLibrary {
+      override fun toString() = "PreservingProtoFieldNamesMoshi"
+
+      override val writeIdentityValues = false
+      override val preservingProtoFieldNames = true
+
+      private val moshi = Moshi.Builder()
+        .add(
+          WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+        )
+        .build()
+
+      override fun <T> fromJson(json: String, type: Class<T>): T {
+        return moshi.adapter(type).fromJson(json)!!
+      }
+
+      override fun <T> toJson(value: T, type: Class<T>): String {
+        return moshi.adapter(type).toJson(value)
+      }
+    }
+
+    private val preservingProtoFieldNamesGson = object : JsonLibrary {
+      override fun toString() = "PreservingProtoFieldNamesGson"
+
+      override val writeIdentityValues = false
+      override val preservingProtoFieldNames = true
+
+      private val gson = GsonBuilder()
+        .registerTypeAdapterFactory(
+          WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+        )
+        .disableHtmlEscaping()
+        .create()
+
+      override fun <T> fromJson(json: String, type: Class<T>): T {
+        return gson.fromJson(json, type)
+      }
+
+      override fun <T> toJson(value: T, type: Class<T>): String {
+        return gson.toJson(value, type)
+      }
+    }
+
+
     @Parameters(name = "{0}")
     @JvmStatic
     internal fun parameters() = listOf(
@@ -1242,16 +1329,15 @@ class WireJsonTest {
       arrayOf(moshi),
       arrayOf(writeIdentitiesMoshi),
       arrayOf(writeIdentitiesGson),
+      arrayOf(preservingProtoFieldNamesMoshi),
+      arrayOf(preservingProtoFieldNamesGson),
     )
-
-    private fun loadJson(fileName: String): String {
-      return File("../fixtures/shared/json", fileName).source().use { it.buffer().readUtf8() }
-    }
   }
 }
 
 internal interface JsonLibrary {
   val writeIdentityValues: Boolean
+  val preservingProtoFieldNames: Boolean
   fun <T> fromJson(json: String, type: Class<T>): T
   fun <T> toJson(value: T, type: Class<T>): String
 }

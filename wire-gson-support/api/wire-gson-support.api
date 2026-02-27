@@ -10,7 +10,8 @@ public final class com/squareup/wire/WireTypeAdapterFactory : com/google/gson/Ty
 	public fun <init> ()V
 	public fun <init> (Ljava/util/Map;)V
 	public fun <init> (Ljava/util/Map;Z)V
-	public synthetic fun <init> (Ljava/util/Map;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/util/Map;ZZ)V
+	public synthetic fun <init> (Ljava/util/Map;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcom/google/gson/Gson;Lcom/google/gson/reflect/TypeToken;)Lcom/google/gson/TypeAdapter;
 	public final fun plus (Lcom/squareup/wire/ProtoAdapter;)Lcom/squareup/wire/WireTypeAdapterFactory;
 	public final fun plus (Ljava/util/List;)Lcom/squareup/wire/WireTypeAdapterFactory;

@@ -1,0 +1,13 @@
+{
+  "rep_int32": [
+    1.0,
+    2.0
+  ],
+  "i_dit_it_my_w_ay": "frank",
+  "map_int32_int32": {
+    "1": 2.0
+  },
+  "nested_message": {
+    "one_int32": 1.0
+  }
+}
