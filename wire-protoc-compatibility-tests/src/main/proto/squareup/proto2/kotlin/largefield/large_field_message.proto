@@ -15,11 +15,12 @@
  */
 syntax = "proto2";
 
-package com.squareup.wire.protos.kotlin.large_field;
+package squareup.proto2.kotlin.largefield;
+
+option java_package = "com.squareup.wire.proto2.kotlin.largefield";
 
 message LargeFieldMessage {
-  optional string a = 268435455;
-  optional string b = 268435456; // 0x10000000
-  optional string large_string_field = 290848974;
-  optional int32 large_int_field = 290848975;
+  optional string below_boundary = 268435455;
+  optional string at_boundary = 268435456;
+  optional string max_field = 536870911;
 }
