@@ -150,7 +150,7 @@ internal class ByteArrayProtoReader32(
       val tagAndFieldEncoding = internalReadVarint32()
       if (tagAndFieldEncoding == 0) throw ProtocolException("Unexpected tag 0. Reader position: $pos. Last read tag: $tag.")
 
-      tag = tagAndFieldEncoding shr TAG_FIELD_ENCODING_BITS
+      tag = tagAndFieldEncoding ushr TAG_FIELD_ENCODING_BITS
       when (val groupOrFieldEncoding = tagAndFieldEncoding and FIELD_ENCODING_MASK) {
         STATE_START_GROUP -> {
           skipGroup(tag)
@@ -208,7 +208,7 @@ internal class ByteArrayProtoReader32(
     while (pos < limit) {
       val tagAndFieldEncoding = internalReadVarint32()
       if (tagAndFieldEncoding == 0) throw ProtocolException("Unexpected tag 0. Reader position: $pos. Last read tag: $tag.")
-      val tag = tagAndFieldEncoding shr TAG_FIELD_ENCODING_BITS
+      val tag = tagAndFieldEncoding ushr TAG_FIELD_ENCODING_BITS
       when (val groupOrFieldEncoding = tagAndFieldEncoding and FIELD_ENCODING_MASK) {
         STATE_START_GROUP -> {
           recursionDepth++
