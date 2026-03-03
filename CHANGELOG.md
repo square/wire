@@ -4,6 +4,39 @@ Change Log
 Unreleased
 ----------
 
+Version 6.0.0-alpha03
+---------------------
+
+_2026-03-03_
+
+### Common
+
+* Fix support for big tag values (#3509 by [xi0yu][xi0yu])
+
+### Kotlin
+
+* Add option to avoid making immutable copies for Kotlin generations (#3513 by [Jeff Gulbronson][JGulbronson])
+  If set to false, Wire will not use immutable copies for repeated or map fields.
+
+```kotlin
+wire {
+  kotlin {
+    makeImmutableCopies = false
+  }
+}
+ ```
+
+### Swift
+
+* Memory management fixes (#3514 by [Jamie Quadri][jamieQ])
+
+### JSON
+
+* Add `preservingProtoFieldNames` option (#3521 by [Jacob P][jdbp-classpass])
+  For JSON serialisation with either Moshi or Gson, you can set `preservingProtoFieldNames` to true
+  when instantiating `WireJsonAdapterFactory` or `WireTypeAdapterFactory` respectively, if you want
+  to keep the field names unchanged from their protobuf schema definition.
+
 Version 6.0.0-alpha02
 ---------------------
 
@@ -1740,38 +1773,41 @@ Initial version.
  [Endeavour233]: https://github.com/Endeavour233
  [JGulbronson]: https://github.com/JGulbronson
  [JakeWharton]: https://github.com/JakeWharton
+ [JustinBis]: https://github.com/JustinBis
  [MariusVolkhart]: https://github.com/MariusVolkhart
  [ShayOinif]: https://github.com/ShayOinif
  [aaron-edwards]: https://github.com/aaron-edwards
  [amorde]: https://github.com/amorde
- [omarismail94]: https://github.com/omarismail94
  [bom]: https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import
  [brunofrts]: https://github.com/brunofrts
  [custom-handlers-doc]: https://square.github.io/wire/wire_compiler/#custom-handlers
  [custom-handlers-recipes]: https://github.com/square/wire/tree/c3c5f559556ad9d41582a0e0a025679b5493f7aa/wire-library/wire-schema-tests/src/test/java/com/squareup/wire/recipes
  [damianw]: https://github.com/damianw
  [dnkoutso]: https://github.com/dnkoutso
- [jszumski]: https://github.com/jszumski
  [event_listener]: https://github.com/square/wire/blob/3e300c492a74e80260581e3aee624d9cf3e5b1f8/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/EventListener.kt#L105-L111
  [frojasg]: https://github.com/frojasg
+ [jamieQ]: https://github.com/jamieQ
  [javapoet]: https://github.com/square/javapoet
+ [jdbp-classpass]: https://github.com/jdbp-classpass
  [jimfs]: https://github.com/google/jimfs
+ [jszumski]: https://github.com/jszumski
  [lickel]: https://github.com/lickel
  [liutikas]: https://github.com/liutikas
- [JustinBis]: https://github.com/JustinBis
- [stuartwdouglas]: https://github.com/stuartwdouglas
  [mpawliszyn]: https://github.com/mpawliszyn
  [mpeyper]: https://github.com/mpeyper
  [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
  [okio_3_0_0]: https://square.github.io/okio/changelog/#version-300
  [okio_3_0_0_a_3]: https://square.github.io/okio/changelog/#version-300-alpha3
+ [omarismail94]: https://github.com/omarismail94
  [paul35621]: https://github.com/paul35621
  [quanturium]: https://github.com/quanturium
  [reflect]: https://github.com/grpc/grpc/blob/master/doc/server-reflection.md
  [sashaweiss-signal]: https://github.com/sashaweiss-signal
  [staktrace]: https://github.com/staktrace
+ [stuartwdouglas]: https://github.com/stuartwdouglas
  [swiftblogpost]: https://cashapp.github.io/2020-08-19/wire-support-for-swift-part-1
  [tejasna]: https://github.com/tejasna
  [tikurahul]: https://github.com/tikurahul
  [traviscj]: https://github.com/traviscj
  [wire-customizing-output]: https://square.github.io/wire/wire_compiler/#customizing-output
+ [xi0yu]: https://github.com/xi0yu

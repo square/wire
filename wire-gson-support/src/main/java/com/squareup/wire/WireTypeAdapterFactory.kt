@@ -44,6 +44,11 @@ import com.squareup.wire.internal.createRuntimeMessageAdapter
  * In Proto3, if a field is set to its default (or identity) value, it will be omitted in the
  * JSON-encoded data. Set [writeIdentityValues] to true if you want Wire to always write values,
  * including default ones.
+ *
+ * Set [preservingProtoFieldNames] to true if you want the field names to be unchanged from their
+ * definition in the protobuf schema on JSON serialisation. If false, Wire will follow the official
+ * specification (i.e. camelCase). Note that [preservingProtoFieldNames], when true, takes
+ * precedence over the `jsonName` option.
  */
 class WireTypeAdapterFactory @JvmOverloads constructor(
   private val typeUrlToAdapter: Map<String, ProtoAdapter<*>> = mapOf(),
